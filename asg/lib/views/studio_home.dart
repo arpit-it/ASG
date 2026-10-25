@@ -101,7 +101,12 @@ class _StudioHomeState extends State<StudioHome> {
         ),
         IconButton(
           tooltip: 'New project',
-          onPressed: controller.busy || workspacePending ? null : create,
+          onPressed:
+              controller.busy ||
+                  workspacePending ||
+                  controller.savedCreation != null
+              ? null
+              : create,
           icon: const Icon(Icons.add),
         ),
       ],
@@ -135,6 +140,13 @@ class _StudioHomeState extends State<StudioHome> {
                   controller.error!,
                   style: TextStyle(color: Theme.of(context).colorScheme.error),
                 ),
+              ),
+            if (controller.savedCreation != null)
+              TextButton(
+                onPressed: controller.busy || workspacePending
+                    ? null
+                    : controller.retrySavedCreation,
+                child: const Text('Retry opening saved project'),
               ),
             if (controller.busy) const LinearProgressIndicator(),
             Expanded(
@@ -172,7 +184,9 @@ class _StudioHomeState extends State<StudioHome> {
                               ),
                               const SizedBox(height: 20),
                               FilledButton.icon(
-                                onPressed: create,
+                                onPressed: controller.savedCreation != null
+                                    ? null
+                                    : create,
                                 icon: const Icon(Icons.chat_bubble_outline),
                                 label: const Text('Let’s create something'),
                               ),
