@@ -4,17 +4,22 @@ import '../models/project.dart';
 import '../models/generation_event.dart';
 import '../controllers/chat_controller.dart';
 import 'generation_status_view.dart';
+import '../services/conversation_store.dart';
 
 class ModelChat extends StatefulWidget {
-  const ModelChat({super.key, required this.project});
+  const ModelChat({super.key, required this.project, this.openStore});
   final StudioProject project;
+  final Future<ConversationStore> Function()? openStore;
   @override
   State<ModelChat> createState() => _ModelChatState();
 }
 
 class _ModelChatState extends State<ModelChat> {
   final input = TextEditingController();
-  late final controller = ChatController(widget.project);
+  late final controller = ChatController(
+    widget.project,
+    openStore: widget.openStore,
+  );
   @override
   void initState() {
     super.initState();

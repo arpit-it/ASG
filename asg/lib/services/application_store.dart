@@ -2,6 +2,9 @@ import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'record_storage.dart';
+import 'studio_database.dart';
+
 import '../models/app_definition.dart';
 import '../models/chat_message.dart';
 import '../models/project.dart';
@@ -14,12 +17,14 @@ class ApplicationSnapshot {
 }
 
 class ApplicationStore {
-  ApplicationStore(this.preferences);
-  final SharedPreferences preferences;
+  ApplicationStore(this.records);
+  ApplicationStore.fromPreferences(SharedPreferences preferences)
+    : this(PreferenceRecords(preferences));
+  final RecordStorage records;
   static Future<ApplicationStore> open() async =>
-      ApplicationStore(await SharedPreferences.getInstance());
+      ApplicationStore(await StudioDatabase.open());
   ApplicationSnapshot load(StudioProject project) {
-    final raw = preferences.getString('studio.application.v1.${project.id}');
+    final raw = records.getString('studio.application.v1.${project.id}');
     if (raw == null) return ApplicationSnapshot(starter(project), const [], 1);
     final data = jsonDecode(raw) as Map<String, dynamic>;
     return ApplicationSnapshot(
@@ -32,7 +37,7 @@ class ApplicationStore {
   }
 
   Future<void> save(String id, ApplicationSnapshot state) async {
-    if (!await preferences.setString(
+    if (!await records.setString(
       'studio.application.v1.$id',
       jsonEncode({
         'definition': state.definition.toJson(),

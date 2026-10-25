@@ -4,3 +4,5 @@
 
 
 Current increment: MLX local inference, real custom-edit verification, streamed chat and visible progress are implemented. Continue from durable AGENT_MEMORY.md and PROGRESS.md. Next: transactional project/application storage and a safe independently buildable Flutter source-template vertical slice. Expand framework adapters incrementally toward the general software-generation goal; do not describe bounded prototypes as completed source generation.
+
+Issue #4 implements transactional native/web storage with retained legacy migration and durable prototype interactions. Next: owner-requested repository safeguards (#8), then the independent Flutter source-generation vertical slice (#3).

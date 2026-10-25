@@ -20,11 +20,56 @@ class AppWorkspaceController extends BaseController {
   ApplicationStore? _store;
   ApplicationSnapshot? _state;
   AppDefinition? _runtimeDefinition;
-  void recordRuntimeState(AppDefinition value) {
-    if (!_busy && !isDisposed) _runtimeDefinition = value;
+  Future<bool>? _interactionWrite;
+  bool get savingInteractions => _interactionWrite != null;
+  bool get hasUnsavedInteractions => _runtimeDefinition != null;
+
+  Future<void> recordRuntimeState(AppDefinition value) async {
+    if (_busy || isDisposed || _state == null) return;
+    _runtimeDefinition = value;
+    await saveInteractions();
   }
 
-  AppDefinition? get definition => _state?.definition;
+  Future<bool> saveInteractions() {
+    final active = _interactionWrite;
+    if (active != null) return active;
+    final future = _flushInteractions().whenComplete(() {
+      _interactionWrite = null;
+      update();
+    });
+    _interactionWrite = future;
+    update();
+    return future;
+  }
+
+  Future<bool> _flushInteractions() async {
+    while (_runtimeDefinition != null) {
+      final definition = _runtimeDefinition!;
+      final current = _state;
+      final store = _store;
+      if (current == null || store == null) return false;
+      try {
+        final snapshot = ApplicationSnapshot(
+          definition,
+          current.messages,
+          current.revision,
+        );
+        await store.save(project.id, snapshot);
+        _state = snapshot;
+        if (identical(_runtimeDefinition, definition)) {
+          _runtimeDefinition = null;
+        }
+        _error = null;
+      } catch (e) {
+        _error =
+            'Preview changes are not saved. Retry saving before leaving this project. $e';
+        return false;
+      }
+    }
+    return true;
+  }
+
+  AppDefinition? get definition => _runtimeDefinition ?? _state?.definition;
   List<ChatMessage> get messages => List.unmodifiable(_state?.messages ?? []);
   int get revision => _state?.revision ?? 0;
   GenerationPhase _phase = GenerationPhase.idle;
@@ -61,16 +106,24 @@ class AppWorkspaceController extends BaseController {
 
   Future<bool> apply(String instruction) async {
     final text = instruction.trim();
-    final current = _state;
     final store = _store;
     if (_busy ||
-        current == null ||
+        _state == null ||
         store == null ||
         text.isEmpty ||
         isDisposed) {
       return false;
     }
     _busy = true;
+    _phase = GenerationPhase.applying;
+    update();
+    if (!await saveInteractions() || isDisposed) {
+      _busy = false;
+      _phase = GenerationPhase.idle;
+      update();
+      return false;
+    }
+    final current = _state!;
     _cancelRequested = false;
     _phase = GenerationPhase.thinking;
     _draftResponse = '';
@@ -79,7 +132,7 @@ class AppWorkspaceController extends BaseController {
     update();
     try {
       final change = await _editor.apply(
-        ModelSettingsStore(store.preferences).load(),
+        ModelSettingsStore(store.records).load(),
         _runtimeDefinition ?? current.definition,
         text,
         onProgress: (event) {

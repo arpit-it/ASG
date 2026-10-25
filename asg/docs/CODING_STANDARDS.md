@@ -54,7 +54,7 @@ Flutter's official architecture guidance favors MVVM. This project deliberately 
 - Access preferences, files and network clients through services/repositories. Controllers coordinate them; views display outcomes.
 - Preserve current keys and record formats: `studio.projects.v1`, `studio.localModel.v1`, `studio.chat.v1.<projectId>`. Add a tested migration before changing durable schemas.
 - Treat corrupted saved data as an error; do not silently replace it with an empty database.
-- Preferences currently hold small foundation records. Use transactional storage before expanding to large histories or resumable execution state; preferences are not a secrets store.
+- Production records use transactional storage behind RecordStorage. Preserve atomic migration and retained legacy preference backups; see STORAGE.md. Do not use preferences for new production writes or either store for secrets.
 - Keep runtime/model configuration outside orchestration logic. Current initial model: existing local Qwen3.5-9B; see `LOCAL_QWEN.md` for its location, setup and limits.
 - Keep HTTP endpoints configurable, validate allowed destinations, close clients, and return actionable errors without logging prompts, credentials or sensitive filesystem content.
 - Do not hardcode machine-specific model/SDK paths in reusable Dart features. Machine setup belongs in configuration and setup documentation.

@@ -5,6 +5,8 @@ import '../models/generation_event.dart';
 import '../controllers/app_workspace_controller.dart';
 import 'live_application_view.dart';
 import 'generation_status_view.dart';
+import '../services/record_storage.dart';
+import '../services/application_store.dart';
 
 class ProjectWorkspace extends StatefulWidget {
   const ProjectWorkspace({
@@ -12,8 +14,12 @@ class ProjectWorkspace extends StatefulWidget {
     required this.project,
     this.embedded = false,
     this.controller,
+    this.records,
+    this.onPendingChanged,
   });
   final StudioProject project;
+  final RecordStorage? records;
+  final ValueChanged<bool>? onPendingChanged;
   final bool embedded;
   final AppWorkspaceController? controller;
   @override
@@ -22,7 +28,13 @@ class ProjectWorkspace extends StatefulWidget {
 
 class _ProjectWorkspaceState extends State<ProjectWorkspace> {
   late final controller =
-      widget.controller ?? AppWorkspaceController(widget.project);
+      widget.controller ??
+      AppWorkspaceController(
+        widget.project,
+        openStore: widget.records == null
+            ? null
+            : () async => ApplicationStore(widget.records!),
+      );
   final input = TextEditingController();
   final conversationScroll = ScrollController();
   int lastMessageCount = 0;
@@ -39,6 +51,11 @@ class _ProjectWorkspaceState extends State<ProjectWorkspace> {
   void refresh() {
     if (!mounted) return;
     setState(() {});
+    widget.onPendingChanged?.call(
+      controller.busy ||
+          controller.savingInteractions ||
+          controller.hasUnsavedInteractions,
+    );
     if (controller.messages.length != lastMessageCount ||
         controller.draftResponse != lastDraft ||
         controller.busy != lastBusy) {
@@ -239,11 +256,20 @@ class _ProjectWorkspaceState extends State<ProjectWorkspace> {
             Text(
               controller.definition == null
                   ? 'Loading'
+                  : controller.savingInteractions
+                  ? 'Saving…'
+                  : controller.hasUnsavedInteractions
+                  ? 'Unsaved changes'
                   : 'Live · v${controller.revision}',
             ),
           ],
         ),
       ),
+      if (controller.hasUnsavedInteractions && !controller.savingInteractions)
+        TextButton(
+          onPressed: controller.busy ? null : controller.saveInteractions,
+          child: const Text('Retry saving preview'),
+        ),
       const Padding(
         padding: EdgeInsets.fromLTRB(16, 0, 16, 12),
         child: Text(
@@ -262,10 +288,14 @@ class _ProjectWorkspaceState extends State<ProjectWorkspace> {
               )
             : ClipRRect(
                 borderRadius: const BorderRadius.all(Radius.circular(12)),
-                child: LiveApplicationView(
-                  key: ValueKey(widget.project.id),
-                  definition: controller.definition!,
-                  onStateChanged: controller.recordRuntimeState,
+                child: IgnorePointer(
+                  ignoring: controller.busy,
+                  child: LiveApplicationView(
+                    key: ValueKey(widget.project.id),
+                    definition: controller.definition!,
+                    enabled: !controller.busy,
+                    onStateChanged: controller.recordRuntimeState,
+                  ),
                 ),
               ),
       ),
@@ -324,11 +354,17 @@ class _ProjectWorkspaceState extends State<ProjectWorkspace> {
         );
       },
     );
-    return widget.embedded
-        ? body
-        : Scaffold(
-            appBar: AppBar(title: Text(widget.project.name)),
-            body: body,
-          );
+    return PopScope(
+      canPop:
+          !controller.busy &&
+          !controller.savingInteractions &&
+          !controller.hasUnsavedInteractions,
+      child: widget.embedded
+          ? body
+          : Scaffold(
+              appBar: AppBar(title: Text(widget.project.name)),
+              body: body,
+            ),
+    );
   }
 }

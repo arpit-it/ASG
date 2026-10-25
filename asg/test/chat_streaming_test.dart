@@ -44,7 +44,9 @@ void main() {
   testWidgets(
     'chat shows thinking, streamed writing, then refreshed application',
     (tester) async {
-      final store = ApplicationStore(await SharedPreferences.getInstance());
+      final store = ApplicationStore.fromPreferences(
+        await SharedPreferences.getInstance(),
+      );
       final provider = ControlledProvider();
       final controller = AppWorkspaceController(
         project,
@@ -103,7 +105,9 @@ void main() {
   test(
     'cancelled partial output cannot update or persist an application',
     () async {
-      final store = ApplicationStore(await SharedPreferences.getInstance());
+      final store = ApplicationStore.fromPreferences(
+        await SharedPreferences.getInstance(),
+      );
       final provider = ControlledProvider();
       final controller = AppWorkspaceController(
         project,

@@ -6,12 +6,13 @@ import 'package:asg/services/studio_store.dart';
 import 'package:asg/services/execution_policy.dart';
 import 'package:asg/views/studio_app.dart';
 import 'package:asg/views/model_chat.dart';
+import 'package:asg/services/conversation_store.dart';
 
 void main() {
   test('records survive repository reload', () async {
     SharedPreferences.setMockInitialValues({});
     final preferences = await SharedPreferences.getInstance();
-    final store = StudioStore(preferences);
+    final store = StudioStore.fromPreferences(preferences);
     await store.save([
       const StudioProject(
         id: '1',
@@ -22,7 +23,10 @@ void main() {
         location: '',
       ),
     ]);
-    expect(StudioStore(preferences).load().single.name, 'Task manager');
+    expect(
+      StudioStore.fromPreferences(preferences).load().single.name,
+      'Task manager',
+    );
   });
   test('build requires explicit plan approval', () {
     final policy = ExecutionPolicy();
@@ -38,7 +42,9 @@ void main() {
     tester,
   ) async {
     SharedPreferences.setMockInitialValues({});
-    final store = StudioStore(await SharedPreferences.getInstance());
+    final store = StudioStore.fromPreferences(
+      await SharedPreferences.getInstance(),
+    );
     await tester.pumpWidget(StudioApp(store: store));
     await tester.tap(find.text('Let’s create something'));
     await tester.pumpAndSettle();
@@ -79,9 +85,12 @@ void main() {
           '[{"role":"user","content":"Build a task planner"}]',
     });
     await tester.pumpWidget(
-      const MaterialApp(
+      MaterialApp(
         home: ModelChat(
-          project: StudioProject(
+          openStore: () async => ConversationStore.fromPreferences(
+            await SharedPreferences.getInstance(),
+          ),
+          project: const StudioProject(
             id: 'chat-test',
             name: 'Planner',
             description: '',

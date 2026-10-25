@@ -35,7 +35,7 @@ class FakeProvider implements ModelProvider {
 }
 
 class FailingStore extends StudioStore {
-  FailingStore(super.preferences);
+  FailingStore(super.preferences) : super.fromPreferences();
   @override
   Future<void> save(List<StudioProject> projects) async =>
       throw StateError('Disk unavailable');
@@ -66,7 +66,9 @@ void main() {
     controller.dispose();
   });
   test('chat controller saves both messages through repository', () async {
-    final store = ConversationStore(await SharedPreferences.getInstance());
+    final store = ConversationStore.fromPreferences(
+      await SharedPreferences.getInstance(),
+    );
     final provider = FakeProvider(Future.value('Let us define requirements.'));
     final controller = ChatController(
       project,
@@ -83,7 +85,9 @@ void main() {
   test(
     'failed inference preserves user message and releases busy state',
     () async {
-      final store = ConversationStore(await SharedPreferences.getInstance());
+      final store = ConversationStore.fromPreferences(
+        await SharedPreferences.getInstance(),
+      );
       final controller = ChatController(
         project,
         openStore: () async => store,
@@ -103,7 +107,9 @@ void main() {
     },
   );
   test('disposing during inference prevents reply persistence', () async {
-    final store = ConversationStore(await SharedPreferences.getInstance());
+    final store = ConversationStore.fromPreferences(
+      await SharedPreferences.getInstance(),
+    );
     final reply = Completer<String>();
     final provider = FakeProvider(reply.future);
     final controller = ChatController(

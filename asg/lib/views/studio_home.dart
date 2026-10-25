@@ -22,6 +22,7 @@ class StudioHome extends StatefulWidget {
 }
 
 class _StudioHomeState extends State<StudioHome> {
+  bool workspacePending = false;
   late final controller = StudioSessionController(
     StudioSessionStore(widget.store),
     widget.projects,
@@ -71,12 +72,12 @@ class _StudioHomeState extends State<StudioHome> {
       actions: [
         IconButton(
           tooltip: 'Projects',
-          onPressed: projects,
+          onPressed: workspacePending ? null : projects,
           icon: const Icon(Icons.folder_open),
         ),
         IconButton(
           tooltip: 'New project',
-          onPressed: controller.busy ? null : create,
+          onPressed: controller.busy || workspacePending ? null : create,
           icon: const Icon(Icons.add),
         ),
       ],
@@ -88,8 +89,8 @@ class _StudioHomeState extends State<StudioHome> {
         MaterialPageRoute<void>(
           builder: (_) => RuntimeSetupScreen(
             controller: RuntimeSetupController(
-              store: RuntimeSetupStore(widget.store.preferences),
-              modelStore: ModelSettingsStore(widget.store.preferences),
+              store: RuntimeSetupStore(widget.store.records),
+              modelStore: ModelSettingsStore(widget.store.records),
               host: createRuntimeHost(),
             ),
           ),
@@ -113,6 +114,12 @@ class _StudioHomeState extends State<StudioHome> {
               ? Padding(
                   padding: const EdgeInsets.only(top: 56),
                   child: ProjectWorkspace(
+                    records: widget.store.records,
+                    onPendingChanged: (value) {
+                      if (mounted && workspacePending != value) {
+                        setState(() => workspacePending = value);
+                      }
+                    },
                     key: ValueKey(controller.current!.id),
                     project: controller.current!,
                     embedded: true,

@@ -9,8 +9,10 @@ class LiveApplicationView extends StatefulWidget {
     super.key,
     required this.definition,
     this.onStateChanged,
+    this.enabled = true,
   });
   final AppDefinition definition;
+  final bool enabled;
   final ValueChanged<AppDefinition>? onStateChanged;
   @override
   State<LiveApplicationView> createState() => _LiveApplicationViewState();
@@ -20,7 +22,7 @@ class _LiveApplicationViewState extends State<LiveApplicationView> {
   final items = <String, List<String>>{},
       counters = <String, int>{},
       inputs = <String, TextEditingController>{};
-  final noteValues = <String, String>{};
+  final notes = <String, TextEditingController>{};
   final completed = <String, Set<int>>{};
   @override
   void initState() {
@@ -35,11 +37,13 @@ class _LiveApplicationViewState extends State<LiveApplicationView> {
   }
 
   void change(VoidCallback action) {
+    if (!widget.enabled) return;
     setState(action);
     reportState();
   }
 
   void reportState() {
+    if (!widget.enabled) return;
     widget.onStateChanged?.call(
       AppDefinition(
         title: widget.definition.title,
@@ -53,12 +57,15 @@ class _LiveApplicationViewState extends State<LiveApplicationView> {
                 items: e.kind == ElementKind.taskList
                     ? List.unmodifiable(items[e.id] ?? e.items)
                     : e.items,
+                completed: e.kind == ElementKind.taskList
+                    ? List.unmodifiable(completed[e.id] ?? e.completed.toSet())
+                    : e.completed,
                 action: e.action,
                 target: e.target,
                 value: e.kind == ElementKind.counter
                     ? '${counters[e.id] ?? 0}'
                     : e.kind == ElementKind.notes
-                    ? noteValues[e.id] ?? e.value
+                    ? notes[e.id]?.text ?? e.value
                     : e.value,
               ),
             )
@@ -72,21 +79,35 @@ class _LiveApplicationViewState extends State<LiveApplicationView> {
     for (final id in inputs.keys.where((id) => !ids.contains(id)).toList()) {
       inputs.remove(id)?.dispose();
     }
+    for (final id in notes.keys.where((id) => !ids.contains(id)).toList()) {
+      notes.remove(id)?.dispose();
+    }
     for (final e in widget.definition.elements) {
       final previous = old?.elements
           .where((item) => item.id == e.id)
           .firstOrNull;
       if (e.kind == ElementKind.taskList &&
-          (previous == null || !listEquals(previous.items, e.items))) {
+          (previous == null ||
+              previous.kind != e.kind ||
+              !listEquals(previous.items, e.items) ||
+              !listEquals(previous.completed, e.completed))) {
         items[e.id] = List.of(e.items);
-        completed[e.id] = {};
+        completed[e.id] = e.completed.toSet();
       }
       if (e.kind == ElementKind.notes &&
-          (previous == null || previous.value != e.value)) {
-        noteValues[e.id] = e.value;
+          (previous == null ||
+              previous.kind != e.kind ||
+              previous.value != e.value)) {
+        final input = notes.putIfAbsent(
+          e.id,
+          () => TextEditingController(text: e.value),
+        );
+        if (input.text != e.value) input.text = e.value;
       }
       if (e.kind == ElementKind.counter &&
-          (previous == null || previous.value != e.value)) {
+          (previous == null ||
+              previous.kind != e.kind ||
+              previous.value != e.value)) {
         counters[e.id] = int.tryParse(e.value) ?? 0;
       }
     }
@@ -94,14 +115,18 @@ class _LiveApplicationViewState extends State<LiveApplicationView> {
 
   @override
   void dispose() {
-    for (final input in inputs.values) {
+    for (final input in [...inputs.values, ...notes.values]) {
       input.dispose();
     }
     super.dispose();
   }
 
   void add(String id, String text) {
-    if (text.trim().isEmpty) return;
+    if (text.trim().isEmpty ||
+        text.trim().length > 200 ||
+        (items[id]?.length ?? 0) >= 100) {
+      return;
+    }
     change(() => (items[id] ??= []).add(text.trim()));
   }
 
@@ -133,13 +158,17 @@ class _LiveApplicationViewState extends State<LiveApplicationView> {
       case ElementKind.text:
         return Text(e.label);
       case ElementKind.button:
-        return FilledButton(onPressed: () => action(e), child: Text(e.label));
+        return FilledButton(
+          onPressed: widget.enabled ? () => action(e) : null,
+          child: Text(e.label),
+        );
       case ElementKind.notes:
         return TextFormField(
-          key: ValueKey('notes_${e.id}_${e.value}'),
-          initialValue: noteValues[e.id] ?? e.value,
+          enabled: widget.enabled,
+          key: ValueKey('notes_${e.id}'),
+          controller: notes[e.id],
+          maxLength: 500,
           onChanged: (value) {
-            noteValues[e.id] = value;
             reportState();
           },
           minLines: 3,
@@ -158,9 +187,8 @@ class _LiveApplicationViewState extends State<LiveApplicationView> {
               children: [
                 IconButton(
                   tooltip: 'Decrease ${e.label}',
-                  onPressed: () => setState(
-                    () => counters[e.id] = (counters[e.id] ?? 0) - 1,
-                  ),
+                  onPressed: () =>
+                      change(() => counters[e.id] = (counters[e.id] ?? 0) - 1),
                   icon: const Icon(Icons.remove),
                 ),
                 Text(
@@ -169,9 +197,8 @@ class _LiveApplicationViewState extends State<LiveApplicationView> {
                 ),
                 IconButton(
                   tooltip: 'Increase ${e.label}',
-                  onPressed: () => setState(
-                    () => counters[e.id] = (counters[e.id] ?? 0) + 1,
-                  ),
+                  onPressed: () =>
+                      change(() => counters[e.id] = (counters[e.id] ?? 0) + 1),
                   icon: const Icon(Icons.add),
                 ),
               ],
@@ -193,6 +220,7 @@ class _LiveApplicationViewState extends State<LiveApplicationView> {
               children: [
                 Expanded(
                   child: TextField(
+                    enabled: widget.enabled,
                     controller: input,
                     onSubmitted: (text) {
                       add(e.id, text);
@@ -206,10 +234,12 @@ class _LiveApplicationViewState extends State<LiveApplicationView> {
                 ),
                 IconButton(
                   tooltip: 'Add item',
-                  onPressed: () {
-                    add(e.id, input.text);
-                    input.clear();
-                  },
+                  onPressed: !widget.enabled
+                      ? null
+                      : () {
+                          add(e.id, input.text);
+                          input.clear();
+                        },
                   icon: const Icon(Icons.add_circle_outline),
                 ),
               ],
@@ -221,20 +251,27 @@ class _LiveApplicationViewState extends State<LiveApplicationView> {
                 children: [
                   Checkbox(
                     value: completed[e.id]?.contains(entry.key) ?? false,
-                    onChanged: (value) => change(() {
-                      final done = completed.putIfAbsent(e.id, () => {});
-                      value == true
-                          ? done.add(entry.key)
-                          : done.remove(entry.key);
-                    }),
+                    onChanged: !widget.enabled
+                        ? null
+                        : (value) => change(() {
+                            final done = completed.putIfAbsent(e.id, () => {});
+                            value == true
+                                ? done.add(entry.key)
+                                : done.remove(entry.key);
+                          }),
                   ),
                   Expanded(child: Text(entry.value)),
                   IconButton(
                     tooltip: 'Remove item',
-                    onPressed: () => change(() {
-                      list.removeAt(entry.key);
-                      completed[e.id] = {};
-                    }),
+                    onPressed: !widget.enabled
+                        ? null
+                        : () => change(() {
+                            list.removeAt(entry.key);
+                            completed[e.id] = (completed[e.id] ?? <int>{})
+                                .where((i) => i != entry.key)
+                                .map((i) => i > entry.key ? i - 1 : i)
+                                .toSet();
+                          }),
                     icon: const Icon(Icons.close),
                   ),
                 ],
