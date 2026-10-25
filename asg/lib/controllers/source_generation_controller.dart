@@ -14,6 +14,7 @@ import '../services/source_generation_store.dart';
 import '../services/runtime_setup_store.dart';
 import '../services/requirements_store.dart';
 import 'base_controller.dart';
+import 'source_review_controller.dart';
 
 class SourceGenerationController extends BaseController {
   SourceGenerationController({
@@ -62,6 +63,16 @@ class SourceGenerationController extends BaseController {
       host.supported && !_historyInvalid && project.type == 'Flutter';
   Uri? _preview;
   Uri? get preview => _preview;
+
+  SourceReviewController? createSourceReview() {
+    final saved = _result;
+    if (_busy || !available || saved == null || isDisposed) return null;
+    return SourceReviewController(
+      project: project,
+      generated: saved,
+      records: store.records,
+    );
+  }
 
   String get planStatus {
     try {

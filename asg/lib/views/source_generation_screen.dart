@@ -4,6 +4,7 @@ import '../controllers/source_generation_controller.dart';
 import '../models/source_generation.dart';
 import '../services/folder_picker.dart';
 import 'board_verification_progress.dart';
+import 'source_review_screen.dart';
 
 class SourceGenerationScreen extends StatefulWidget {
   const SourceGenerationScreen({
@@ -208,6 +209,21 @@ class _SourceGenerationScreenState extends State<SourceGenerationScreen> {
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               SelectableText(result.directory),
+              OutlinedButton(
+                onPressed: controller.busy || !controller.available
+                    ? null
+                    : () {
+                        final review = controller.createSourceReview();
+                        if (review == null) return;
+                        Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) =>
+                                SourceReviewScreen(controller: review),
+                          ),
+                        );
+                      },
+                child: const Text('Review model source proposal'),
+              ),
               Text(
                 result.approval == null
                     ? 'Legacy outcome: authorizing plan is unknown. Generate a new folder to bind a current approval before retrying verification.'
