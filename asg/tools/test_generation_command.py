@@ -13,14 +13,38 @@ spec.loader.exec_module(module)
 
 @unittest.skipUnless(os.name == "posix", "POSIX process groups required")
 class CommandTests(unittest.TestCase):
-    def test_success_failure_and_bounded_output(self):
+    def test_success_failure_and_exact_output_boundary(self):
         with tempfile.TemporaryDirectory() as directory:
-            result = module.run(sys.executable, ['-c', 'print("x" * 100000)'], directory, 5)
+            result = module.run(sys.executable, ['-c', 'import sys; sys.stdout.write("x" * 65536)'], directory, 5)
             self.assertEqual(result['exitCode'], 0)
             self.assertEqual(len(result['output']), 65536)
             self.assertFalse(result['timedOut'])
+            self.assertFalse(result['outputLimitExceeded'])
             result = module.run(sys.executable, ['-c', 'raise SystemExit(7)'], directory, 5)
             self.assertEqual(result['exitCode'], 7)
+    def test_output_exhaustion_kills_descendants_and_stops_before_deadline(self):
+        with tempfile.TemporaryDirectory() as directory:
+            marker = str(Path(directory) / 'unexpected')
+            child = 'import time; from pathlib import Path; time.sleep(1); Path(' + repr(marker) + ').write_text("bad")'
+            parent = 'import subprocess,sys,time; subprocess.Popen([sys.executable,"-c",' + repr(child) + ']); sys.stdout.write("x" * 65537); sys.stdout.flush(); time.sleep(10)'
+            started = time.monotonic()
+            result = module.run(sys.executable, ['-c', parent], directory, 5)
+            self.assertLess(time.monotonic() - started, 4)
+            self.assertTrue(result['outputLimitExceeded'])
+            self.assertFalse(result['timedOut'])
+            self.assertNotEqual(result['exitCode'], 0)
+            self.assertEqual(len(result['output']), 65536)
+            time.sleep(1.1)
+            self.assertFalse(Path(marker).exists())
+
+    def test_exited_zero_command_over_limit_is_still_failure(self):
+        with tempfile.TemporaryDirectory() as directory:
+            for stream in ('stdout', 'stderr'):
+                result = module.run(sys.executable, ['-c', 'import sys; sys.' + stream + '.write("x" * 65537)'], directory, 5)
+                self.assertTrue(result['outputLimitExceeded'])
+                self.assertNotEqual(result['exitCode'], 0)
+                self.assertFalse(result['timedOut'])
+
     def test_timeout_kills_owned_descendant_before_it_writes(self):
         with tempfile.TemporaryDirectory() as directory:
             marker = str(Path(directory) / 'unexpected')

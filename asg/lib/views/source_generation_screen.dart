@@ -242,7 +242,9 @@ class _SourceGenerationScreenState extends State<SourceGenerationScreen> {
               for (final step in result.steps)
                 ExpansionTile(
                   title: Text(
-                    '${step.operation}: ${step.timedOut
+                    '${step.operation}: ${step.outputLimitExceeded
+                        ? 'output limit exceeded (64 KiB)'
+                        : step.timedOut
                         ? 'timed out'
                         : step.exitCode == 0
                         ? 'passed'

@@ -24,15 +24,18 @@ class GenerationStep {
     required this.exitCode,
     required this.output,
     this.timedOut = false,
+    this.outputLimitExceeded = false,
   });
   final String operation, output;
   final int exitCode;
-  final bool timedOut;
+  final bool timedOut, outputLimitExceeded;
+  bool get succeeded => exitCode == 0 && !timedOut && !outputLimitExceeded;
   Map<String, Object> toJson() => {
     'operation': operation,
     'exitCode': exitCode,
     'output': output,
     'timedOut': timedOut,
+    'outputLimitExceeded': outputLimitExceeded,
   };
   factory GenerationStep.fromJson(Map<String, dynamic> json) {
     final step = GenerationStep(
@@ -40,6 +43,7 @@ class GenerationStep {
       exitCode: json['exitCode'] as int,
       output: json['output'] as String,
       timedOut: json['timedOut'] as bool,
+      outputLimitExceeded: json['outputLimitExceeded'] as bool? ?? false,
     );
     if (!['resolve', 'analyze', 'test', 'build'].contains(step.operation) ||
         step.output.length > 65536) {
@@ -116,12 +120,10 @@ class GeneratedProject {
     if (index < 0) return BuildTaskStatus.blocked;
     if (index < steps.length) {
       final step = steps[index];
-      return step.exitCode == 0 && !step.timedOut
-          ? BuildTaskStatus.passed
-          : BuildTaskStatus.failed;
+      return step.succeeded ? BuildTaskStatus.passed : BuildTaskStatus.failed;
     }
     if (task.operation.name == failedOperation) return BuildTaskStatus.failed;
-    if (steps.any((s) => s.exitCode != 0 || s.timedOut) ||
+    if (steps.any((s) => !s.succeeded) ||
         phase == SourceGenerationPhase.failed) {
       return BuildTaskStatus.blocked;
     }
@@ -225,9 +227,7 @@ class GeneratedProject {
         .toList();
     for (var i = 0; i < result.steps.length; i++) {
       if (result.steps[i].operation != operations[i] ||
-          (i > 0 &&
-              (result.steps[i - 1].exitCode != 0 ||
-                  result.steps[i - 1].timedOut))) {
+          (i > 0 && !result.steps[i - 1].succeeded)) {
         throw const FormatException('Invalid verification history order.');
       }
     }
@@ -235,12 +235,12 @@ class GeneratedProject {
         (result.phase != SourceGenerationPhase.failed ||
             result.steps.length >= operations.length ||
             operations[result.steps.length] != result.failedOperation ||
-            result.steps.any((step) => step.exitCode != 0 || step.timedOut))) {
+            result.steps.any((step) => !step.succeeded))) {
       throw const FormatException('Invalid failed operation identity.');
     }
     if (result.phase == SourceGenerationPhase.ready &&
         (result.steps.length != 4 ||
-            result.steps.any((step) => step.exitCode != 0 || step.timedOut) ||
+            result.steps.any((step) => !step.succeeded) ||
             !result.outputs.containsKey('index.html') ||
             !result.outputs.containsKey('main.dart.js'))) {
       throw const FormatException(

@@ -9,6 +9,8 @@ import sys
 import threading
 import time
 
+OUTPUT_LIMIT_BYTES = 65536
+
 OPERATIONS = {
     'resolve': ['pub', 'get', '--offline'],
     'analyze': ['analyze', '--no-pub'],
@@ -20,6 +22,7 @@ def run(executable, arguments, cwd, timeout, parent_pid=None):
     captured = bytearray()
     lock = threading.Lock()
     cancelled = threading.Event()
+    output_limit_exceeded = threading.Event()
     previous = {}
     if threading.current_thread() is threading.main_thread():
         for sig in (signal.SIGTERM, signal.SIGINT):
@@ -42,18 +45,20 @@ def run(executable, arguments, cwd, timeout, parent_pid=None):
                                    stderr=subprocess.STDOUT, start_new_session=True)
         def consume():
             while True:
-                chunk = process.stdout.read(4096)
+                chunk = process.stdout.read1(4096)
                 if not chunk:
                     break
                 with lock:
-                    remaining = 65536 - len(captured)
+                    remaining = OUTPUT_LIMIT_BYTES - len(captured)
+                    if len(chunk) > remaining:
+                        output_limit_exceeded.set()
                     if remaining > 0:
                         captured.extend(chunk[:remaining])
         reader = threading.Thread(target=consume, daemon=True)
         reader.start()
         deadline = time.monotonic() + timeout
         while process.poll() is None:
-            if cancelled.is_set() or (parent_pid and os.getppid() != parent_pid) or time.monotonic() >= deadline:
+            if output_limit_exceeded.is_set() or cancelled.is_set() or (parent_pid and os.getppid() != parent_pid) or time.monotonic() >= deadline:
                 timed_out = time.monotonic() >= deadline
                 break
             time.sleep(0.05)
@@ -67,8 +72,8 @@ def run(executable, arguments, cwd, timeout, parent_pid=None):
         reader.join(timeout=2)
         with lock:
             output = bytes(captured).decode('utf-8', errors='replace')
-        return {'exitCode': -1 if timed_out or cancelled.is_set() else process.returncode,
-                'timedOut': timed_out, 'output': output}
+        return {'exitCode': -1 if timed_out or cancelled.is_set() or output_limit_exceeded.is_set() else process.returncode,
+                'timedOut': timed_out, 'outputLimitExceeded': output_limit_exceeded.is_set(), 'output': output}
     finally:
         if process is not None:
             signal_group(signal.SIGKILL)
