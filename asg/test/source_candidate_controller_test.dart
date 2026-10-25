@@ -49,6 +49,7 @@ class AtomicRecords extends ControlledRecords
 }
 
 class FailedCheckHost extends FixtureHost {
+  void Function()? beforeFailure;
   @override
   Future<GeneratedProject> verify(
     GeneratedProject project,
@@ -79,6 +80,7 @@ class FailedCheckHost extends FixtureHost {
           ),
         ],
       );
+      if (failed) beforeFailure?.call();
       await progress(current);
       if (failed) return current;
     }
@@ -320,8 +322,83 @@ void main() {
       expect(workingHost.server, isTrue);
       expect(working.result!.directory, '/working');
       expect(candidateHost.operations, ['resolve', 'analyze']);
+      final history = find.text('Saved candidate check runs');
+      await tester.ensureVisible(history);
+      await tester.tap(history);
+      await tester.pumpAndSettle();
+      final run = find.text('Run 1: stopped');
+      await tester.ensureVisible(run);
+      await tester.tap(run);
+      await tester.pumpAndSettle();
+      final exit = find.text('analyze: exit 65');
+      await tester.ensureVisible(exit);
+      await tester.tap(exit);
+      await tester.pumpAndSettle();
+      expect(find.text('Undefined name at lib/main.dart:7'), findsWidgets);
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox());
+    },
+  );
+
+  test(
+    'late Stop retains actual failed exit without authorizing more checks',
+    () async {
+      final initial = candidate.result;
+      final evidence = candidate.evidence;
+      candidate.dispose();
+      final failedHost = FailedCheckHost();
+      candidateHost = failedHost;
+      candidate = SourceCandidateController(
+        project: project,
+        candidate: initial,
+        evidence: evidence,
+        records: records,
+        host: candidateHost,
+        publish: (value, host, guard) => working.promoteCandidate(
+          value,
+          host,
+          guard,
+          expectedWorking: saved,
+        ),
+      );
+      failedHost.beforeFailure = candidate.cancel;
+      await candidate.verify(approved: true);
+      expect(candidate.history.single.snapshot.steps.last.exitCode, 65);
+      expect(
+        candidate.history.single.snapshot.steps.last.output,
+        contains('Undefined name'),
+      );
+      expect(candidate.history.single.status, 'stopped');
+      expect(candidateHost.operations, ['resolve', 'analyze']);
+      expect(candidate.canPromote, isFalse);
+      expect(workingHost.server, isTrue);
+    },
+  );
+
+  test('retries preserve actual results in separate saved runs', () async {
+    candidateHost.throwAnalyze = true;
+    await candidate.verify(approved: true);
+    final first = candidate.history.single.snapshot.toJson();
+    expect(candidate.history.single.finished, isTrue);
+    candidateHost.throwAnalyze = false;
+    await candidate.verify(approved: true);
+    expect(candidate.history.length, 2);
+    expect(candidate.history.first.snapshot.toJson(), first);
+    expect(candidate.history.last.status, 'checks passed');
+    expect(candidate.history.last.number, 2);
+    expect(workingHost.server, isTrue);
+  });
+
+  test(
+    'corrupt journal blocks host entry without replacing evidence',
+    () async {
+      final key = 'studio.candidateChecks.v1.${project.id}';
+      records.values[key] = '{broken';
+      await candidate.verify(approved: true);
+      expect(candidateHost.verifications, 0);
+      expect(records.values[key], '{broken');
+      expect(candidate.historyError, contains('unreadable'));
+      expect(workingHost.server, isTrue);
     },
   );
 
@@ -374,7 +451,7 @@ void main() {
   test(
     'checkpoint write failure never executes and disposal stops owned host',
     () async {
-      records.failWrite = records.writes + 1;
+      records.failCommit = true;
       await candidate.verify(approved: true);
       expect(candidateHost.operations, isEmpty);
       expect(candidate.canPromote, isFalse);

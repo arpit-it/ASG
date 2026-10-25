@@ -1,6 +1,8 @@
 import '../models/approved_source_proposal.dart';
 import '../models/build_plan.dart';
 import '../models/candidate_failure.dart';
+import '../models/candidate_verification_run.dart';
+import '../services/candidate_verification_store.dart';
 import '../services/requirements_store.dart';
 import '../models/project.dart';
 import '../models/source_generation.dart';
@@ -9,7 +11,6 @@ import '../services/approved_source_proposer.dart';
 import '../services/generation_host.dart';
 import '../services/generation_input.dart';
 import '../services/record_storage.dart';
-import '../services/source_generation_store.dart';
 import 'base_controller.dart';
 
 typedef CandidatePromotion = Future<Uri> Function(
@@ -28,18 +29,31 @@ class SourceCandidateController extends BaseController {
     required this.host,
     required this.publish,
     this.requireWorking,
-  }) : _result = candidate,
-       _store = SourceGenerationStore(
-         records,
-         prefix: 'studio.sourceCandidate.v1.',
-       );
+  }) : _result = candidate {
+    _refreshHistory();
+  }
   final StudioProject project;
   final ApprovedSourceProposal evidence;
   final RecordStorage records;
   final GenerationHost host;
   final CandidatePromotion publish;
   final void Function()? requireWorking;
-  final SourceGenerationStore _store;
+  CandidateVerificationStore? _activeStore;
+  List<CandidateVerificationRun> _history = const [];
+  List<CandidateVerificationRun> get history => _history;
+  String? _historyError;
+  String? get historyError => _historyError;
+  void _refreshHistory() {
+    try {
+      _history = CandidateVerificationStore(records, project.id).load().runs;
+      _historyError = null;
+    } catch (_) {
+      _historyError =
+          'Saved candidate check history is unreadable. '
+          'Verification is blocked; retained records have not been replaced.';
+    }
+  }
+
   GeneratedProject _result;
   GeneratedProject get result => _result;
   bool _busy = false,
@@ -97,11 +111,19 @@ class SourceCandidateController extends BaseController {
   }
 
   Future<void> _progress(GeneratedProject value) async {
+    // Exit observations must survive a late Stop/withdrawal. Pending dispatch
+    // checkpoints still require current authority before they can unblock work.
+    final observation =
+        value.steps.length > _result.steps.length ||
+        value.phase == SourceGenerationPhase.failed;
+    if (!observation) _authorize();
+    await _activeStore!.checkpoint(value, observation ? () {} : _authorize);
+    if (!isDisposed) {
+      _result = value;
+      _refreshHistory();
+      update();
+    }
     _authorize();
-    await _store.save(project.id, value);
-    _authorize();
-    _result = value;
-    update();
   }
 
   Future<void> verify({required bool approved}) async {
@@ -112,7 +134,24 @@ class SourceCandidateController extends BaseController {
     update();
     try {
       _authorize();
+      final store = CandidateVerificationStore(records, project.id);
+      final initial = _result.copy(
+        phase: SourceGenerationPhase.verifying,
+        checkpointVersion: 1,
+        steps: [],
+        outputs: {},
+        pendingOperation: '',
+        failedOperation: '',
+      );
+      await store.start(initial, _authorize);
+      _activeStore = store;
+      _authorize();
+      _result = initial;
+      _refreshHistory();
+      _authorize();
       final verified = await host.verify(_result, _progress);
+      _authorize();
+      await store.checkpoint(verified, _authorize, finished: true);
       _authorize();
       _result = verified;
     } catch (error) {
@@ -125,12 +164,16 @@ class SourceCandidateController extends BaseController {
         );
         // Retain real completed evidence, but do not invent a command outcome.
         try {
-          await _store.save(project.id, _result);
+          // Recording an observed stop grants no command or promotion authority.
+          // CAS still prevents a superseded session from overwriting history.
+          await _activeStore?.checkpoint(_result, () {}, finished: true);
         } catch (_) {
           _error = '$_error Candidate checkpoint could not be saved.';
         }
       }
     } finally {
+      _activeStore = null;
+      if (!isDisposed) _refreshHistory();
       _busy = false;
       update();
     }
