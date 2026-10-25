@@ -7,6 +7,7 @@ import '../models/requirements_board.dart';
 import '../models/source_edit_proposal.dart';
 import '../models/source_generation.dart';
 import '../services/approved_source_proposer.dart';
+import '../services/candidate_repair_evidence.dart';
 import '../services/model_settings_store.dart';
 import '../services/folder_picker.dart';
 import '../services/generation_host.dart';
@@ -81,6 +82,7 @@ class SourceReviewController extends BaseController {
   String? _candidateParent;
   String? get candidateParent => _candidateParent;
   GeneratedProject? _candidate;
+  GeneratedProject? _proposalSource;
   GeneratedProject? get candidate => _candidateSession?.result ?? _candidate;
 
   Future<void> selectCandidateParent() async {
@@ -126,7 +128,7 @@ class SourceReviewController extends BaseController {
 
       final value = await _prepareCandidate(
         project: project,
-        generated: generated,
+        generated: _proposalSource ?? generated,
         evidence: evidence,
         records: records,
         parent: parent,
@@ -135,13 +137,22 @@ class SourceReviewController extends BaseController {
       // Retain the path even if cancellation/withdrawal follows the last write.
       if (!isDisposed) _candidate = value;
       checkActive();
+      // The reviewed diff has now been captured in a separate candidate. Its
+      // subsequent check journal replaces latest-failure evidence intentionally.
+      final candidateEvidence = ApprovedSourceProposal(
+        projectId: evidence.projectId,
+        boardTaskId: evidence.boardTaskId,
+        approval: evidence.approval,
+        proposal: evidence.proposal,
+      );
+      _proposal = candidateEvidence;
       if (publishCandidate != null) {
         _candidateSession?.removeListener(_sessionChanged);
         _candidateSession?.dispose();
         _candidateSession = SourceCandidateController(
           project: project,
           candidate: value,
-          evidence: evidence,
+          evidence: candidateEvidence,
           records: records,
           host: _createCandidateHost(),
           publish: publishCandidate!,
@@ -176,11 +187,13 @@ class SourceReviewController extends BaseController {
   String? _error;
   String? get error => _error;
   bool _busy = false, _cancelled = false;
+  bool get reviewBusy => _busy;
   bool get busy => _busy || (_candidateSession?.busy ?? false);
   String _status = '';
   String get status {
     final session = _candidateSession;
-    if (session == null) return _status;
+    if (session == null || _busy) return _status;
+    if (proposal?.repairRun != null && !session.busy) return _status;
     if (session.promoted) {
       return 'Candidate promoted. Working source and preview now use the verified candidate.';
     }
@@ -214,6 +227,24 @@ class SourceReviewController extends BaseController {
 
   bool get stale => !promoted && _proposal != null && proposal == null;
 
+  bool get canRequestRepair {
+    final session = _candidateSession;
+    if (busy || promoted || isDisposed || session == null || proposal == null) {
+      return false;
+    }
+    try {
+      requireRepairFailure(records, project.id, session.result);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<void> requestRepair(List<String> selected) async {
+    if (!canRequestRepair) return;
+    await request(proposal!.boardTaskId, selected, repair: true);
+  }
+
   void refreshApproval() {
     if (busy || isDisposed) return;
     try {
@@ -236,8 +267,14 @@ class SourceReviewController extends BaseController {
     update();
   }
 
-  Future<void> request(String taskId, List<String> selected) async {
+  Future<void> request(
+    String taskId,
+    List<String> selected, {
+    bool repair = false,
+  }) async {
     if (busy || promoted || isDisposed) return;
+    final repairCandidate = repair ? _candidateSession?.result : null;
+    if (repair && !canRequestRepair) return;
     refreshApproval();
     if (!_tasks.any((task) => task.id == taskId)) {
       _error = 'Select a task in the current approved Plan.';
@@ -257,17 +294,27 @@ class SourceReviewController extends BaseController {
     final started = PlanApprovalStore(records).requireCurrentApproval(project);
     _busy = true;
     _cancelled = false;
-    _candidateSession?.removeListener(_sessionChanged);
-    _candidateSession?.dispose();
-    _candidateSession = null;
-    _proposal = null;
+    if (!repair) {
+      _candidateSession?.removeListener(_sessionChanged);
+      _candidateSession?.dispose();
+      _candidateSession = null;
+    }
+    if (!repair) _proposal = null;
     _candidateParent = null;
     _error = null;
     _status = 'Reading recorded source…';
     update();
     try {
-      final originals = await _readSnapshot(generated, selection);
+      final failure = repairCandidate == null
+          ? null
+          : requireRepairFailure(records, project.id, repairCandidate);
+      final source = repairCandidate ?? generated;
+      final originals = await _readSnapshot(source, selection);
       if (_cancelled || isDisposed) return;
+      _requireWorking();
+      if (failure != null) {
+        requireRepairFailure(records, project.id, source, expected: failure);
+      }
       final current = PlanApprovalStore(records)
           .requireCurrentApproval(project);
       if (!started.matches(current)) {
@@ -280,10 +327,13 @@ class SourceReviewController extends BaseController {
         boardTaskId: taskId,
         config: ModelSettingsStore(records).load(),
         originals: originals,
+        repairCandidate: repairCandidate,
       );
       if (_cancelled || isDisposed) return;
       _proposer.requireCurrent(project, value);
+      _requireWorking();
       _proposal = value;
+      _proposalSource = source;
       _status = 'Proposal ready for review. No files changed.';
     } catch (error) {
       if (!isDisposed && !_cancelled) _error = 'Source proposal failed. $error';
