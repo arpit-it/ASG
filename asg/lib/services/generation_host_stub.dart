@@ -24,8 +24,9 @@ class UnsupportedGenerationHost implements GenerationHost {
   @override
   Future<GeneratedProject> verify(
     GeneratedProject project,
-    GenerationProgress progress,
-  ) async => unavailable();
+    GenerationProgress progress, {
+    bool resume = false,
+  }) async => unavailable();
   @override
   void cancelVerification() {}
   @override

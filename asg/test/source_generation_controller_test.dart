@@ -71,6 +71,7 @@ class FixtureHost implements GenerationHost {
   bool throwAnalyze = false;
   final operations = <String>[];
   int generations = 0, verifications = 0;
+  bool? lastResume;
   bool failVerification = false, disposed = false, server = false;
   @override
   bool supported = true;
@@ -94,13 +95,24 @@ class FixtureHost implements GenerationHost {
   @override
   Future<GeneratedProject> verify(
     GeneratedProject project,
-    GenerationProgress progress,
-  ) async {
+    GenerationProgress progress, {
+    bool resume = false,
+  }) async {
     verifications++;
+    lastResume = resume;
     await progress(project.copy(phase: SourceGenerationPhase.verifying));
     if (failVerification) throw StateError('Missing interpreter');
-    var current = project.copy(steps: const [], failedOperation: '');
-    for (final operation in ['resolve', 'analyze', 'test', 'build']) {
+    var current = project.copy(
+      steps: resume ? project.steps : const [],
+      failedOperation: '',
+      checkpointVersion: 1,
+    );
+    for (final operation in [
+      'resolve',
+      'analyze',
+      'test',
+      'build',
+    ].skip(current.steps.length)) {
       await progress(current.copy(phase: SourceGenerationPhase.verifying));
       operations.add(operation);
       if (throwAnalyze && operation == 'analyze') {
@@ -196,6 +208,101 @@ void main() {
   tearDown(() {
     if (!c.isDisposed) c.dispose();
   });
+
+  Future<void> savedCheckpoint({int version = 1, String pending = ''}) async {
+    final approval = PlanApprovalStore(store.records)
+        .requireCurrentApproval(project);
+    await store.save(
+      'p',
+      generated.copy(
+        phase: SourceGenerationPhase.verifying,
+        checkpointVersion: version,
+        pendingOperation: pending,
+        approval: approval,
+        tasks: BuildTask.starter,
+        steps: const [
+          GenerationStep(operation: 'resolve', exitCode: 0, output: 'saved'),
+        ],
+      ),
+    );
+    c.dispose();
+    c = SourceGenerationController(
+      project: project,
+      definition: definition,
+      store: store,
+      host: host,
+    );
+  }
+
+  test(
+    'resume reopens successful evidence and requires separate consent',
+    () async {
+      await savedCheckpoint();
+      expect(await c.verifyAgain(approved: false, resume: true), isFalse);
+      expect(host.verifications, 0);
+      expect(await c.verifyAgain(approved: true, resume: true), isTrue);
+      expect(host.lastResume, isTrue);
+      expect(host.operations, ['analyze', 'test', 'build']);
+      expect(store.load('p')!.steps.first.output, 'saved');
+      expect(await c.verifyAgain(approved: true, resume: true), isFalse);
+      expect(host.verifications, 1);
+    },
+  );
+
+  test('resume rejects legacy, uncertain, changed toolchain and stale approval before host work', () async {
+    await savedCheckpoint(version: 0);
+    expect(await c.verifyAgain(approved: true, resume: true), isFalse);
+    await savedCheckpoint(pending: 'analyze');
+    expect(await c.verifyAgain(approved: true, resume: true), isFalse);
+    await savedCheckpoint();
+    expect(
+      await c.verifyAgain(approved: true, resume: true, sdk: '/different'),
+      isFalse,
+    );
+    final plans = ConversationStore(store.records).load('p');
+    await PlanApprovalStore(store.records).save(project, plans, false);
+    expect(await c.verifyAgain(approved: true, resume: true), isFalse);
+    expect(host.verifications, 0);
+    expect(store.load('p')!.steps.single.output, 'saved');
+  });
+
+  testWidgets(
+    'reopened checkpoint offers explicit resume with retained results',
+    (tester) async {
+      await savedCheckpoint();
+      await tester.pumpWidget(
+        MaterialApp(home: SourceGenerationScreen(controller: c)),
+      );
+      final resume = find.widgetWithText(
+        OutlinedButton,
+        'Resume remaining checks',
+      );
+      await tester.scrollUntilVisible(
+        resume,
+        250,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(tester.widget<OutlinedButton>(resume).onPressed, isNull);
+      final consent = find.byType(CheckboxListTile);
+      await tester.scrollUntilVisible(
+        consent,
+        -250,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.tap(consent);
+      await tester.pump();
+      await tester.scrollUntilVisible(
+        resume,
+        250,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.tap(resume);
+      await tester.pumpAndSettle();
+      expect(host.lastResume, isTrue);
+      expect(host.operations, ['analyze', 'test', 'build']);
+      await tester.pumpWidget(const SizedBox.shrink());
+    },
+  );
 
   testWidgets(
     'reopened uncertain dispatch explains retry without host effects',

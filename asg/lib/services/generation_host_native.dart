@@ -237,9 +237,16 @@ class NativeGenerationHost implements GenerationHost {
   @override
   Future<GeneratedProject> verify(
     GeneratedProject project,
-    GenerationProgress progress,
-  ) async {
+    GenerationProgress progress, {
+    bool resume = false,
+  }) async {
     _verificationCancelled = false;
+    // Validate even programmatically constructed snapshots before trusting a prefix.
+    if (resume) {
+      GeneratedProject.fromJson(project.toJson());
+      final refusal = project.resumeRefusal;
+      if (refusal != null) throw StateError('Resume refused. $refusal');
+    }
     if (!path.isAbsolute(project.sdk) ||
         project.python.trim().isEmpty ||
         await Directory(project.sdk).resolveSymbolicLinks() !=
@@ -254,7 +261,8 @@ class NativeGenerationHost implements GenerationHost {
     var current = project.copy(
       sdk: path.normalize(project.sdk),
       phase: SourceGenerationPhase.verifying,
-      steps: const [],
+      steps: resume ? project.steps : const [],
+      checkpointVersion: 1,
       failedOperation: '',
       pendingOperation: '',
       outputs: const {},
@@ -263,7 +271,9 @@ class NativeGenerationHost implements GenerationHost {
     // Legacy snapshots retain the same trusted fixed adapter. New snapshots
     // carry its validated named graph in sequential dependency order alongside
     // their exact authorizing approval.
-    for (final task in project.tasks ?? BuildTask.starter) {
+    for (final task in (project.tasks ?? BuildTask.starter).skip(
+      current.steps.length,
+    )) {
       final operation = task.operation.name;
       late GenerationStep result;
       try {

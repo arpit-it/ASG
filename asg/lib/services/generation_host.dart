@@ -17,10 +17,14 @@ abstract interface class GenerationHost {
     // An already dispatched filesystem operation may finish.
     void Function()? authorizeWrite,
   });
+
+  /// Resume preserves a confirmed successful prefix and refuses uncertain
+  /// dispatches. The default explicit retry restarts the complete fixed graph.
   Future<GeneratedProject> verify(
     GeneratedProject project,
-    GenerationProgress progress,
-  );
+    GenerationProgress progress, {
+    bool resume = false,
+  });
 
   /// Requests termination of verification; completion is reported via progress.
   void cancelVerification();

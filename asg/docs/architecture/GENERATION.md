@@ -66,3 +66,10 @@ The version-1 `asg-build` contract accepts only `flutter-starter` and its canoni
 
 
 Command results now retain `cancelled` separately from timeout and output exhaustion. SIGTERM/SIGINT or observed parent loss makes a helper result fail even if the child exits zero. Legacy saved results omit this field and read as false. This records cancellation evidence when a result reaches storage; process teardown or application death does not guarantee a final saved result. User Stop controls and checkpoint resume remain F03 work.
+
+
+## Explicit safe-boundary resume
+
+Verification writes additive `checkpointVersion: 1` evidence before dispatch. Resume remaining checks requires separate operation consent, the exact current approval/task graph and prototype/project/board inputs, and the saved SDK/Python settings. Source and dependency fingerprints are revalidated before remaining work. A successful prefix is retained; only its unexecuted suffix is dispatched, with the existing awaited pending marker and result protocol. The fixed graph bounds total operations to four, including retained successes. Every command retains the existing time/output bounds.
+
+Legacy/versionless history remains readable but cannot resume because absence of a pending marker was not guaranteed historically. Pending dispatch with no durable result may already have caused side effects: resume refuses it rather than replaying it. Failed/cancelled command results and all-complete records also refuse resume. Explicit Retry remains a full restart, with its own consent, and may repeat checks. Interrupted dependency resolution whose metadata changed still fails closed and can require a new output folder. Reopening never starts commands automatically. These controls are for the existing trusted starter and single application session, not arbitrary project execution or a cross-process lock.

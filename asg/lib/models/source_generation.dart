@@ -70,6 +70,7 @@ class GeneratedProject {
     this.error = '',
     this.failedOperation = '',
     this.pendingOperation = '',
+    this.checkpointVersion = 0,
     this.approval,
     List<BuildTask>? tasks,
   }) : sources = Map.unmodifiable(sources),
@@ -91,6 +92,30 @@ class GeneratedProject {
   /// Dispatch was authorized and may have started; no durable result yet.
   /// This marker never authorizes replay or implies successful execution.
   final String pendingOperation;
+
+  /// Zero denotes legacy evidence without the resume protocol.
+  final int checkpointVersion;
+
+  String? get resumeRefusal {
+    if (checkpointVersion != 1) {
+      return 'Legacy history has no safe resume checkpoint.';
+    }
+    if (phase != SourceGenerationPhase.verifying &&
+        phase != SourceGenerationPhase.failed) {
+      return 'There is no interrupted verification to resume.';
+    }
+    if (pendingOperation.isNotEmpty) {
+      return 'A dispatched command has no saved result and may have changed files.';
+    }
+    if (steps.any((step) => !step.succeeded)) {
+      return 'A failed or cancelled command requires an explicit full retry.';
+    }
+    if (steps.length >= (tasks ?? BuildTask.starter).length) {
+      return 'All commands already completed; resume cannot replay them.';
+    }
+    return null;
+  }
+
   final PlanApproval? approval;
   final List<BuildTask>? tasks;
 
@@ -152,6 +177,7 @@ class GeneratedProject {
     String? python,
     String? failedOperation,
     String? pendingOperation,
+    int? checkpointVersion,
     List<GenerationStep>? steps,
     Map<String, String>? outputs,
     Map<String, String>? resolution,
@@ -171,6 +197,7 @@ class GeneratedProject {
     error: error,
     failedOperation: failedOperation ?? this.failedOperation,
     pendingOperation: pendingOperation ?? this.pendingOperation,
+    checkpointVersion: checkpointVersion ?? this.checkpointVersion,
   );
   Map<String, Object> toJson() => {
     'directory': directory,
@@ -184,6 +211,7 @@ class GeneratedProject {
     'error': error,
     if (failedOperation.isNotEmpty) 'failedOperation': failedOperation,
     if (pendingOperation.isNotEmpty) 'pendingOperation': pendingOperation,
+    if (checkpointVersion != 0) 'checkpointVersion': checkpointVersion,
     if (approval != null) 'approval': approval!.toJson(),
     if (tasks != null) 'tasks': tasks!.map((t) => t.toJson()).toList(),
   };
@@ -214,8 +242,10 @@ class GeneratedProject {
       error: json['error'] as String,
       failedOperation: json['failedOperation'] as String? ?? '',
       pendingOperation: json['pendingOperation'] as String? ?? '',
+      checkpointVersion: json['checkpointVersion'] as int? ?? 0,
     );
-    if ((result.approval != null && !result.approval!.approved) ||
+    if ((result.checkpointVersion != 0 && result.checkpointVersion != 1) ||
+        (result.approval != null && !result.approval!.approved) ||
         result.directory.isEmpty ||
         result.sdk.isEmpty ||
         result.python.isEmpty ||
