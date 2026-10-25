@@ -85,6 +85,7 @@ void main() {
       await show(find.text('Original analyze exit 65'));
       await show(find.text('Undefined name at lib/main.dart:7'));
       await show(find.text('Line changes'));
+      await show(find.textContaining('Outcome not recorded;'));
       expect(tester.takeException(), isNull);
       expect(records.values, saved);
       await tester.pumpWidget(const SizedBox());

@@ -191,6 +191,37 @@ void main() {
         ),
         findsOneWidget,
       );
+      final attempts = RepairAttemptStore(records, project.id);
+      final failure = requireRepairFailure(
+        records,
+        project.id,
+        controller.candidate!,
+      );
+      for (var i = 0; i < 3; i++) {
+        await tester.runAsync(() async {
+          await RepairAttemptStore(records, project.id).reserve(failure, () {});
+        });
+      }
+      expect(attempts.load().attempts.length, 3);
+      controller.refreshApproval();
+      await tester.pumpAndSettle();
+      await tester.scrollUntilVisible(
+        action,
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.ensureVisible(action);
+      await tester.pumpAndSettle();
+      final button = tester.widget<FilledButton>(
+        find.ancestor(of: action, matching: find.byType(FilledButton)),
+      );
+      expect(button.onPressed, isNull);
+      await tester.scrollUntilVisible(
+        find.textContaining('Repair budget exhausted:'),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(find.textContaining('Repair budget exhausted:'), findsOneWidget);
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox());
     },
