@@ -1,3 +1,4 @@
+import '../models/build_plan.dart';
 import '../services/plan_task_import.dart';
 import '../services/requirements_store.dart';
 import '../models/chat_message.dart';
@@ -131,6 +132,40 @@ class ChatController extends BaseController {
       busy = false;
       phase = GenerationPhase.idle;
       update();
+    }
+  }
+
+  String get executionPlanPreview {
+    if (!ready || isDisposed) return 'Saved Plan is unavailable.';
+    if (busy || hasUnsavedResponse) {
+      return 'Wait until the current response or save finishes to review executable tasks.';
+    }
+    final plan = latestPlan;
+    if (plan == null) return 'No saved Plan to validate. Draft a Plan first.';
+    try {
+      final approvals = PlanApprovalStore(_store!.records);
+      final current = approvals.currentProject(project.id);
+      final saved = _store!.load(project.id);
+      final index = PlanApprovalStore.latestPlan(saved);
+      if (index != latestPlanIndex ||
+          index < 0 ||
+          saved[index].content != plan.content ||
+          saved[index].planContext != plan.planContext ||
+          PlanApprovalStore.context(current) !=
+              PlanApprovalStore.context(project) ||
+          plan.planContext != approvals.contextFor(current)) {
+        return 'Saved Plan is outdated or replaced. Reopen and draft a current Plan before Build.';
+      }
+      if (!plan.content.contains('```asg-build')) {
+        return 'Advisory Plan only: no executable task contract. Approval does not make this work executable.';
+      }
+      final parsed = BuildPlan.parse(plan.content);
+      return 'Validated fixed Flutter starter tasks (not execution results):\n'
+          '${parsed.preview}\n'
+          'Creates a separate starter from the saved prototype; no custom source edits. '
+          'Build rechecks the current saved Plan approval and requires separate operation consent.';
+    } catch (e) {
+      return 'Executable tasks unavailable: $e';
     }
   }
 

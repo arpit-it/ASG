@@ -86,6 +86,12 @@ class _ModelChatState extends State<ModelChat> {
                         ? 'Earlier approval is outdated. Review a current draft.'
                         : 'No current plan approval. Only newly saved Plan drafts can be approved.'),
               ),
+              if (controller.latestPlan != null) ...[
+                const SizedBox(height: 12),
+                const Text('Executable tasks — review before approval'),
+                SelectableText(controller.executionPlanPreview),
+                const SizedBox(height: 12),
+              ],
               if (controller.latestPlan?.content.contains('```asg-tasks') ==
                   true) ...[
                 const SizedBox(height: 12),

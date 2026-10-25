@@ -357,6 +357,16 @@ void main() {
       expect(find.text('Requirements: weekly view'), findsOneWidget);
       await provider.events.close();
       await tester.pumpAndSettle();
+      await tester.scrollUntilVisible(
+        find.textContaining('[Plan draft — not approved]'),
+        180,
+        scrollable: find
+            .descendant(
+              of: find.byType(ListView).first,
+              matching: find.byType(Scrollable),
+            )
+            .first,
+      );
       expect(
         find.textContaining('[Plan draft — not approved]'),
         findsOneWidget,
