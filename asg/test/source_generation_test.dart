@@ -61,6 +61,7 @@ void main() {
   Future<GeneratedProject> generate({
     String name = 'generated_app',
     String? parent,
+    void Function()? authorizeWrite,
   }) => host.generate(
     project: project,
     definition: definition,
@@ -68,6 +69,7 @@ void main() {
     name: name,
     sdk: sdk,
     python: 'python3',
+    authorizeWrite: authorizeWrite,
   );
   setUp(() async {
     temp = await Directory.systemTemp.createTemp('asg-generator-test-');
@@ -96,6 +98,68 @@ void main() {
   tearDown(() async {
     await host.stopPreview();
     await temp.delete(recursive: true);
+  });
+
+  test('approval guard refuses creation after path preparation', () async {
+    var checks = 0;
+    await expectLater(
+      generate(
+        authorizeWrite: () {
+          if (++checks == 2) throw StateError('Approval withdrawn');
+        },
+      ),
+      throwsStateError,
+    );
+    expect(checks, 2);
+    expect(await Directory('${temp.path}/generated_app').exists(), isFalse);
+  });
+
+  test('approval changes during asset loading stop all file writes', () async {
+    var approved = true;
+    host = NativeGenerationHost(
+      loadAsset: (name) async {
+        final asset = await assets(name);
+        approved = false;
+        return asset;
+      },
+    );
+    await expectLater(
+      generate(
+        authorizeWrite: () {
+          if (!approved) throw StateError('Approval withdrawn');
+        },
+      ),
+      throwsStateError,
+    );
+    final destination = Directory('${temp.path}/generated_app');
+    expect(await destination.exists(), isTrue);
+    expect(await destination.list().toList(), isEmpty);
+  });
+
+  test('later authorization refusal preserves partial files', () async {
+    final destination = Directory('${temp.path}/generated_app');
+    Map<String, String>? retained;
+    await expectLater(
+      generate(
+        authorizeWrite: () {
+          if (!destination.existsSync()) return;
+          final files = destination.listSync(recursive: true).whereType<File>();
+          if (files.any((file) => file.lengthSync() > 0)) {
+            retained = {
+              for (final file in files) file.path: file.readAsStringSync(),
+            };
+            throw StateError('Approval withdrawn');
+          }
+        },
+      ),
+      throwsStateError,
+    );
+    expect(retained, isNotEmpty);
+    expect({
+      for (final file
+          in destination.listSync(recursive: true).whereType<File>())
+        file.path: file.readAsStringSync(),
+    }, retained);
   });
 
   test(

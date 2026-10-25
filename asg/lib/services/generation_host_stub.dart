@@ -19,6 +19,7 @@ class UnsupportedGenerationHost implements GenerationHost {
     required String name,
     required String sdk,
     required String python,
+    void Function()? authorizeWrite,
   }) async => unavailable();
   @override
   Future<GeneratedProject> verify(
