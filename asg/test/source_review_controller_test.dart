@@ -137,7 +137,13 @@ void main() {
 
   for (final repair in [false, true]) {
     for (final stage in ['Reading recorded source', 'Requesting local model']) {
-      for (final action in ['stop', 'dispose', 'working', 'approval']) {
+      for (final action in [
+        'stop',
+        'dispose',
+        'working',
+        'approval',
+        if (repair) 'stop then verify',
+      ]) {
         test('progress boundary $stage $action (repair: $repair)', () async {
           controller.dispose();
           controller = create(
@@ -197,7 +203,7 @@ void main() {
             if (triggered || !controller.status.startsWith(stage)) return;
             triggered = true;
             switch (action) {
-              case 'stop':
+              case 'stop' || 'stop then verify':
                 unawaited(controller.cancel());
               case 'dispose':
                 controller.dispose();
@@ -236,6 +242,19 @@ void main() {
           );
           if (action != 'working') {
             expect(records.getString(workingKey), working);
+          }
+          if (action == 'stop then verify') {
+            expect(controller.status, contains('cancelled'));
+            controller.removeListener(listener);
+            final statuses = <String>[];
+            controller.addListener(() => statuses.add(controller.status));
+            await controller.candidateSession!.verify(approved: true);
+            expect(
+              statuses,
+              contains(contains('Verifying isolated candidate')),
+            );
+            expect(controller.status, contains('Candidate checks stopped'));
+            expect(controller.status, isNot(contains('cancelled')));
           }
           if (action == 'stop') {
             expect(controller.status, contains('cancelled'));

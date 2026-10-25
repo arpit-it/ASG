@@ -79,7 +79,12 @@ class SourceReviewController extends BaseController {
   final GenerationHost Function() _createCandidateHost;
   SourceCandidateController? _candidateSession;
   SourceCandidateController? get candidateSession => _candidateSession;
-  void _sessionChanged() => update();
+  void _sessionChanged() {
+    // A new candidate action supersedes the preceding review cancellation.
+    if (!_busy && (_candidateSession?.busy ?? false)) _cancelled = false;
+    update();
+  }
+
   bool get candidateSupported => _folderPicker.supported;
   String? _candidateParent;
   String? get candidateParent => _candidateParent;
