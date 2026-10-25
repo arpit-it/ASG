@@ -53,6 +53,8 @@ class FixtureHost implements GenerationHost {
   Completer<GeneratedProject>? generationGate;
   Completer<Uri>? previewGate;
   Future<void> Function()? afterResolve;
+  Future<void> Function()? beforeGenerationWrite;
+  int writes = 0;
   bool failAfterResolveEvidence = false;
   final operations = <String>[];
   int generations = 0, verifications = 0;
@@ -67,8 +69,12 @@ class FixtureHost implements GenerationHost {
     required String name,
     required String sdk,
     required String python,
+    void Function()? authorizeWrite,
   }) async {
     generations++;
+    await beforeGenerationWrite?.call();
+    authorizeWrite?.call();
+    writes++;
     return generationGate == null ? generated : generationGate!.future;
   }
 
@@ -167,6 +173,32 @@ void main() {
   tearDown(() {
     if (!c.isDisposed) c.dispose();
   });
+
+  for (final change in ['withdraw', 'prototype', 'dispose']) {
+    test('generation write guard rejects $change after preparation', () async {
+      expect(await generate(true), isTrue);
+      final previous = store.records.getString('studio.generation.v1.p');
+      expect(previous, isNotNull);
+      final writes = host.writes;
+      final verifications = host.verifications;
+      host.beforeGenerationWrite = () async {
+        if (change == 'withdraw') {
+          await PlanApprovalStore(store.records)
+              .save(project, ConversationStore(store.records).load('p'), false);
+        } else if (change == 'prototype') {
+          await ApplicationStore(store.records)
+              .save('p', const ApplicationSnapshot(definition, [], 2));
+        } else {
+          c.dispose();
+        }
+      };
+      expect(await generate(true), isFalse);
+      expect(host.writes, writes);
+      expect(host.verifications, verifications);
+      expect(store.records.getString('studio.generation.v1.p'), previous);
+      if (change != 'dispose') expect(c.error, contains('preserved'));
+    });
+  }
 
   test(
     'changed prototype and stale Build inputs preserve preview and history',

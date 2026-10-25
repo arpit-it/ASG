@@ -13,6 +13,9 @@ abstract interface class GenerationHost {
     required String name,
     required String sdk,
     required String python,
+    // Synchronous guard immediately before each filesystem mutation.
+    // An already dispatched filesystem operation may finish.
+    void Function()? authorizeWrite,
   });
   Future<GeneratedProject> verify(
     GeneratedProject project,

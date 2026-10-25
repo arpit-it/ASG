@@ -174,6 +174,10 @@ class SourceGenerationController extends BaseController {
         name: name,
         sdk: sdk,
         python: python,
+        authorizeWrite: () {
+          if (isDisposed) throw StateError('Generation screen closed.');
+          _recheckPlan(approval);
+        },
       )).copy(approval: approval, tasks: plan.tasks);
       if (isDisposed) return false;
       await _save(active);

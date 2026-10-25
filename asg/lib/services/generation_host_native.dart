@@ -44,8 +44,14 @@ class NativeGenerationHost implements GenerationHost {
     required String name,
     required String sdk,
     required String python,
+    void Function()? authorizeWrite,
   }) async {
-    checkOpen();
+    void checkWrite() {
+      checkOpen();
+      authorizeWrite?.call();
+    }
+
+    checkWrite();
     if (project.type != 'Flutter') {
       throw UnsupportedError('Only the Flutter template is available.');
     }
@@ -83,6 +89,7 @@ class NativeGenerationHost implements GenerationHost {
       );
     }
     // Exclusive single-directory creation prevents races with an existing file.
+    checkWrite();
     final created = await Process.run('/bin/mkdir', [
       destination,
     ], runInShell: false).timeout(const Duration(seconds: 5));
@@ -100,12 +107,14 @@ class NativeGenerationHost implements GenerationHost {
       definition,
       await loadAsset('lib/models/app_definition.dart'),
     );
-    checkOpen();
+    checkWrite();
     for (final entry in files.entries) {
-      checkOpen();
+      checkWrite();
       final file = File(path.join(destination, entry.key));
       await file.parent.create(recursive: true);
+      checkWrite();
       await file.create(exclusive: true);
+      checkWrite();
       await file.writeAsString(entry.value, flush: true);
     }
     return GeneratedProject(
