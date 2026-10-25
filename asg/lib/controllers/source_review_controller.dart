@@ -9,6 +9,9 @@ import '../models/source_generation.dart';
 import '../services/approved_source_proposer.dart';
 import '../services/model_settings_store.dart';
 import '../services/folder_picker.dart';
+import '../services/generation_host.dart';
+import '../services/generation_host_factory.dart';
+import 'source_candidate_controller.dart';
 import '../services/source_candidate.dart';
 import '../services/plan_approval_store.dart';
 import '../services/record_storage.dart';
@@ -40,13 +43,28 @@ class SourceReviewController extends BaseController {
     SourceSnapshotReader? readSnapshot,
     SourceCandidatePreparer? prepareCandidate,
     FolderPicker? folderPicker,
+    this.publishCandidate,
+    GenerationHost Function()? createCandidateHost,
   }) : _proposer = proposer ?? ApprovedSourceProposer(records),
        _readSnapshot = readSnapshot ?? readSourceReviewSnapshot,
        _prepareCandidate = prepareCandidate ?? prepareSourceCandidate,
-       _folderPicker = folderPicker ?? FolderPicker() {
+       _folderPicker = folderPicker ?? FolderPicker(),
+       _createCandidateHost = createCandidateHost ?? createGenerationHost {
+    _workingRecord = records.getString('studio.generation.v1.${project.id}');
     refreshApproval();
   }
 
+  late final String? _workingRecord;
+  void _requireWorking() {
+    if (records.getString('studio.generation.v1.${project.id}') !=
+        _workingRecord) {
+      throw StateError(
+        'Working build changed. Return to Build and reopen source review.',
+      );
+    }
+  }
+
+  bool get promoted => _candidateSession?.promoted ?? false;
   final StudioProject project;
   final GeneratedProject generated;
   final RecordStorage records;
@@ -54,14 +72,19 @@ class SourceReviewController extends BaseController {
   final SourceSnapshotReader _readSnapshot;
   final SourceCandidatePreparer _prepareCandidate;
   final FolderPicker _folderPicker;
+  final CandidatePromotion? publishCandidate;
+  final GenerationHost Function() _createCandidateHost;
+  SourceCandidateController? _candidateSession;
+  SourceCandidateController? get candidateSession => _candidateSession;
+  void _sessionChanged() => update();
   bool get candidateSupported => _folderPicker.supported;
   String? _candidateParent;
   String? get candidateParent => _candidateParent;
   GeneratedProject? _candidate;
-  GeneratedProject? get candidate => _candidate;
+  GeneratedProject? get candidate => _candidateSession?.result ?? _candidate;
 
   Future<void> selectCandidateParent() async {
-    if (_busy || isDisposed || !candidateSupported || proposal == null) return;
+    if (busy || isDisposed || !candidateSupported || proposal == null) return;
     _busy = true;
     _error = null;
     update();
@@ -79,7 +102,7 @@ class SourceReviewController extends BaseController {
   }
 
   Future<void> prepareCandidate() async {
-    if (_busy || isDisposed) return;
+    if (busy || isDisposed) return;
     final evidence = proposal;
     final parent = _candidateParent;
     if (evidence == null || parent == null) {
@@ -97,6 +120,7 @@ class SourceReviewController extends BaseController {
         if (_cancelled || isDisposed) {
           throw StateError('Candidate preparation cancelled.');
         }
+        _requireWorking();
         _proposer.requireCurrent(project, evidence);
       }
 
@@ -111,6 +135,20 @@ class SourceReviewController extends BaseController {
       // Retain the path even if cancellation/withdrawal follows the last write.
       if (!isDisposed) _candidate = value;
       checkActive();
+      if (publishCandidate != null) {
+        _candidateSession?.removeListener(_sessionChanged);
+        _candidateSession?.dispose();
+        _candidateSession = SourceCandidateController(
+          project: project,
+          candidate: value,
+          evidence: evidence,
+          records: records,
+          host: _createCandidateHost(),
+          publish: publishCandidate!,
+          requireWorking: _requireWorking,
+        );
+        _candidateSession!.addListener(_sessionChanged);
+      }
       _candidateParent = null;
       _status =
           'Unverified candidate prepared. Working source and preview retained.';
@@ -138,7 +176,7 @@ class SourceReviewController extends BaseController {
   String? _error;
   String? get error => _error;
   bool _busy = false, _cancelled = false;
-  bool get busy => _busy;
+  bool get busy => _busy || (_candidateSession?.busy ?? false);
   String _status = '';
   String get status => _status;
 
@@ -147,6 +185,7 @@ class SourceReviewController extends BaseController {
     final value = _proposal;
     if (value == null) return null;
     try {
+      _requireWorking();
       _proposer.requireCurrent(project, value);
       return value;
     } catch (_) {
@@ -154,10 +193,10 @@ class SourceReviewController extends BaseController {
     }
   }
 
-  bool get stale => _proposal != null && proposal == null;
+  bool get stale => !promoted && _proposal != null && proposal == null;
 
   void refreshApproval() {
-    if (_busy || isDisposed) return;
+    if (busy || isDisposed) return;
     try {
       final approval = PlanApprovalStore(records)
           .requireCurrentApproval(project);
@@ -179,7 +218,7 @@ class SourceReviewController extends BaseController {
   }
 
   Future<void> request(String taskId, List<String> selected) async {
-    if (_busy || isDisposed) return;
+    if (busy || promoted || isDisposed) return;
     refreshApproval();
     if (!_tasks.any((task) => task.id == taskId)) {
       _error = 'Select a task in the current approved Plan.';
@@ -199,6 +238,9 @@ class SourceReviewController extends BaseController {
     final started = PlanApprovalStore(records).requireCurrentApproval(project);
     _busy = true;
     _cancelled = false;
+    _candidateSession?.removeListener(_sessionChanged);
+    _candidateSession?.dispose();
+    _candidateSession = null;
     _proposal = null;
     _candidateParent = null;
     _error = null;
@@ -234,6 +276,10 @@ class SourceReviewController extends BaseController {
   }
 
   Future<void> cancel() async {
+    if (_candidateSession?.busy ?? false) {
+      _candidateSession!.cancel();
+      return;
+    }
     if (!_busy || _cancelled || isDisposed) return;
     _cancelled = true;
     _status = 'Cancelling review…';
@@ -247,6 +293,8 @@ class SourceReviewController extends BaseController {
 
   @override
   void dispose() {
+    _candidateSession?.removeListener(_sessionChanged);
+    _candidateSession?.dispose();
     _cancelled = true;
     unawaited(_proposer.cancel().catchError((Object _) {}));
     super.dispose();

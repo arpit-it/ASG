@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import '../models/app_definition.dart';
 import '../models/build_plan.dart';
@@ -6,6 +7,7 @@ import '../models/plan_approval.dart';
 import '../models/project.dart';
 import '../models/source_generation.dart';
 import '../services/generation_host.dart';
+import '../services/record_storage.dart';
 import '../services/application_store.dart';
 import '../services/plan_approval_store.dart';
 import '../services/generation_input.dart';
@@ -21,8 +23,10 @@ class SourceGenerationController extends BaseController {
     required this.project,
     required this.definition,
     required this.store,
-    required this.host,
-  }) {
+    required GenerationHost host,
+    // Preserve the public injection name while allowing promoted-host ownership.
+    // ignore: prefer_initializing_formals
+  }) : _host = host {
     try {
       _input = GenerationInput(project, definition);
       _result = store.load(project.id);
@@ -36,7 +40,8 @@ class SourceGenerationController extends BaseController {
   final StudioProject project;
   final AppDefinition definition;
   final SourceGenerationStore store;
-  final GenerationHost host;
+  GenerationHost _host;
+  GenerationHost get host => _host;
   GenerationInput? _input;
   GeneratedSnapshotStatus get snapshotStatus =>
       _input?.compare(_result) ?? GeneratedSnapshotStatus.unknown;
@@ -64,14 +69,109 @@ class SourceGenerationController extends BaseController {
   Uri? _preview;
   Uri? get preview => _preview;
 
-  SourceReviewController? createSourceReview() {
+  SourceReviewController? createSourceReview({
+    FolderPicker? folderPicker,
+    GenerationHost Function()? createCandidateHost,
+  }) {
     final saved = _result;
     if (_busy || !available || saved == null || isDisposed) return null;
     return SourceReviewController(
       project: project,
       generated: saved,
       records: store.records,
+      publishCandidate: (value, candidateHost, authorize) => promoteCandidate(
+        value,
+        candidateHost,
+        authorize,
+        expectedWorking: saved,
+      ),
+      folderPicker: folderPicker,
+      createCandidateHost: createCandidateHost,
     );
+  }
+
+  Future<Uri> promoteCandidate(
+    GeneratedProject candidate,
+    GenerationHost candidateHost,
+    void Function() authorize, {
+    required GeneratedProject expectedWorking,
+  }) async {
+    if (_busy || isDisposed) throw StateError('Build session unavailable.');
+    final records = store.records;
+    if (records is! ConditionalRecordStorage) {
+      throw UnsupportedError(
+        'Atomic conditional storage is required for promotion.',
+      );
+    }
+    final current = _result;
+    if (current == null ||
+        identical(candidateHost, _host) ||
+        jsonEncode(current.toJson()) != jsonEncode(expectedWorking.toJson()) ||
+        candidate.directory == current.directory ||
+        !candidate.confined ||
+        candidate.phase != SourceGenerationPhase.ready) {
+      throw StateError('A separately verified candidate is required.');
+    }
+    GeneratedProject.fromJson(candidate.toJson());
+    _busy = true;
+    update();
+    var committed = false;
+    try {
+      void check() {
+        if (isDisposed) throw StateError('Build session closed.');
+        authorize();
+        _recheckPlan(candidate.approval!);
+      }
+
+      check();
+      final generationKey = 'studio.generation.v1.${project.id}';
+      final old = records.getString(generationKey);
+      if (old == null ||
+          jsonEncode(store.load(project.id)!.toJson()) !=
+              jsonEncode(current.toJson())) {
+        throw StateError('Working build changed. Reopen review.');
+      }
+      final expected = <String, String?>{
+        for (final key in [
+          generationKey,
+          'studio.projects.v1',
+          'studio.application.v1.${project.id}',
+          'studio.requirements.v1.${project.id}',
+          'studio.planApproval.v1.${project.id}',
+          'studio.chat.v1.${project.id}',
+        ])
+          key: records.getString(key),
+      };
+      // Separate host: validating/starting the new preview cannot stop the old one.
+      final uri = await candidateHost.startPreview(candidate);
+      check();
+      await records.commitRecords(
+        expected: expected,
+        updates: {
+          generationKey: jsonEncode(candidate.toJson()),
+          'studio.generationPrevious.v1.${project.id}': old,
+        },
+        authorize: check,
+      );
+      // The atomic commit is the publication point. No cancellable work follows.
+      final previousHost = _host;
+      _host = candidateHost;
+      _result = candidate;
+      _preview = uri;
+      committed = true;
+      if (isDisposed) {
+        unawaited(candidateHost.dispose().catchError((Object _) {}));
+      }
+      unawaited(previousHost.dispose().catchError((Object _) {}));
+      return uri;
+    } finally {
+      try {
+        if (!committed) await candidateHost.stopPreview();
+      } finally {
+        _busy = false;
+        update();
+      }
+    }
   }
 
   String get planStatus {
@@ -269,6 +369,12 @@ class SourceGenerationController extends BaseController {
     update();
     var verificationStarted = false;
     try {
+      if (current.confined) {
+        throw StateError(
+          'Model-written working output is preserved. Reopen source review '
+          'and prepare a separate candidate for further verification.',
+        );
+      }
       if (resume &&
           (current.resumeRefusal != null ||
               current.sdk != _result?.sdk ||

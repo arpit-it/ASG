@@ -73,7 +73,7 @@ Flutter's official architecture guidance favors MVVM. This project deliberately 
 - Add dependencies only for a concrete requirement; review compatibility and license terms, and keep `pubspec.lock` for this application.
 - Never commit secrets, model weights, local runtime dependencies, SDK paths, build output or private IDE state.
 - Future generated-code tools must enforce project path scope, validate structured actions, bound retries/time/output and honor plan approval. A policy class alone does not enforce an execution sandbox.
-- Never overwrite existing user project files or alter the installed stable app during self-development. Only the explicitly approved fixed Flutter web generator is implemented; arbitrary source execution and self-development remain unavailable. See GENERATION.md.
+- Never overwrite existing user project files or alter the installed stable app during self-development. Initial generation uses the fixed Flutter web starter. Reviewed scoped Dart candidates require explicit confined verification/promotion; unrestricted source execution and self-development remain unavailable. See GENERATION.md.
 - Future generated Flutter templates should follow this MVC structure when their generator is implemented. Do not represent this standards document as a working generator.
 
 ## Tests and completion checks

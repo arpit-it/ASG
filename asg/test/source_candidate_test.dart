@@ -2,6 +2,7 @@
 library;
 
 import 'dart:convert';
+import 'dart:async';
 import 'dart:io';
 
 import 'package:asg/models/approved_source_proposal.dart';
@@ -105,6 +106,18 @@ void main() {
     await File(path.join(original.path, 'pubspec.lock')).writeAsString('lock');
   });
   tearDown(() async => base.delete(recursive: true));
+
+  test('authorization with an unsendable database-like context stays out of capture isolate', () async {
+    final pendingCommit = Completer<void>();
+    final candidate = await prepare(
+      active: () => expect(pendingCommit.isCompleted, isFalse),
+    );
+    expect(
+      await File(path.join(candidate.directory, 'lib/main.dart'))
+          .readAsString(),
+      after,
+    );
+  });
 
   test('candidate copies exact bytes, preserves working output and starts unverified', () async {
     final writes = records.writes;

@@ -51,6 +51,7 @@ Future<GeneratedProject> prepareSourceCandidate({
     authorize();
     return GeneratedProject(
       directory: candidate.directory,
+      confined: true,
       sdk: generated.sdk,
       python: generated.python,
       sources: candidate.sources,

@@ -17,3 +17,12 @@ class PreferenceRecords implements RecordStorage {
   Future<bool> setString(String key, String value) =>
       preferences.setString(key, value);
 }
+
+/// Atomic conditional publication, including a durable previous-working pointer.
+abstract interface class ConditionalRecordStorage implements RecordStorage {
+  Future<void> commitRecords({
+    required Map<String, String?> expected,
+    required Map<String, String> updates,
+    required void Function() authorize,
+  });
+}
