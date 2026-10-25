@@ -44,3 +44,5 @@ Issue #22 (`codex/22-discussion-plan-mode`) adds the documented conversational P
 Issue #22 local validation: analyzer, 132 default Flutter tests (three opt-in tests skipped), web build and the explicit real local Qwen planning test passed. Real planning streamed multiple chunks and persisted the labeled draft using the existing MLX runtime; this verifies the bounded conversation flow, not arbitrary implementation. The linked PR will carry exact-revision independent review, required CI and merge evidence.
 
 Issue #22 additional validation: formatter passed with no changes; macOS debug build passed and the existing opt-in real Qwen instruction test passed, confirming a custom instruction still streams, saves a revision and refreshes the prototype. The stable installed app was not replaced.
+
+Issue #22 delivery: [PR #23](https://github.com/arpit-it/ASG/pull/23), branch `codex/22-discussion-plan-mode`. The published implementation tree exactly matches the locally tested tree. Independent review, required CI and protected merge evidence are recorded in the PR; until verified there, treat delivery as pending. No executable approved-plan workflow is claimed.
