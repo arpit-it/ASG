@@ -30,12 +30,42 @@ class ChatController extends BaseController {
   ConversationMode get mode => _mode;
   void selectMode(ConversationMode value) {
     if (busy ||
+        hasUnsavedResponse ||
         isDisposed ||
         ![ConversationMode.discuss, ConversationMode.plan].contains(value)) {
       return;
     }
     _mode = value;
     update();
+  }
+
+  ChatMessage? _unsavedResponse;
+  ChatMessage? get unsavedResponse => _unsavedResponse;
+  bool get hasUnsavedResponse => _unsavedResponse != null;
+
+  Future<void> retrySavingResponse() async {
+    if (busy || isDisposed || !hasUnsavedResponse) return;
+    busy = true;
+    phase = GenerationPhase.applying;
+    error = null;
+    update();
+    try {
+      await _saveCompletedResponse();
+    } catch (e) {
+      if (!isDisposed) error = '$e';
+    } finally {
+      busy = false;
+      phase = GenerationPhase.idle;
+      update();
+    }
+  }
+
+  Future<void> _saveCompletedResponse() async {
+    final completed = [..._messages, _unsavedResponse!];
+    await _store!.save(project.id, completed);
+    if (isDisposed) return;
+    _messages = completed;
+    _unsavedResponse = null;
   }
 
   bool cancelled = false;
@@ -51,6 +81,7 @@ class ChatController extends BaseController {
   bool get ready => _store != null;
   String? error;
   Future<void> load() async {
+    if (busy || hasUnsavedResponse || isDisposed) return;
     try {
       final store = await _openStore();
       final saved = store.load(project.id);
@@ -65,7 +96,9 @@ class ChatController extends BaseController {
 
   Future<bool> send(String prompt) async {
     final text = prompt.trim();
-    if (text.isEmpty || busy || !ready || isDisposed) return false;
+    if (text.isEmpty || busy || hasUnsavedResponse || !ready || isDisposed) {
+      return false;
+    }
     busy = true;
     cancelled = false;
     phase = GenerationPhase.thinking;
@@ -119,17 +152,13 @@ class ChatController extends BaseController {
         throw StateError('The local model returned no response.');
       }
       if (isDisposed) return accepted;
-      final completed = [
-        ..._messages,
-        ChatMessage(
-          role: 'assistant',
-          content: requestMode.labelResponse(result),
-        ),
-      ];
+      _unsavedResponse = ChatMessage(
+        role: 'assistant',
+        content: requestMode.labelResponse(result),
+      );
       phase = GenerationPhase.applying;
       update();
-      await _store!.save(project.id, completed);
-      if (!isDisposed) _messages = completed;
+      await _saveCompletedResponse();
     } catch (e) {
       error = '$e';
     } finally {

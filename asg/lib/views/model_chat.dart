@@ -80,6 +80,32 @@ class _ModelChatState extends State<ModelChat> {
           ),
         ),
       ),
+      if (controller.unsavedResponse case final response?)
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('Response not saved yet'),
+                const SizedBox(height: 8),
+                SelectableText(response.content),
+                const SizedBox(height: 8),
+                const Text(
+                  'Keep this screen open to retain the response. Retry saves it without asking the model again.',
+                ),
+                const SizedBox(height: 8),
+                FilledButton.icon(
+                  onPressed: controller.busy
+                      ? null
+                      : controller.retrySavingResponse,
+                  icon: const Icon(Icons.save_outlined),
+                  label: const Text('Retry saving response'),
+                ),
+              ],
+            ),
+          ),
+        ),
       if (controller.busy)
         Card(
           child: Padding(
@@ -121,7 +147,7 @@ class _ModelChatState extends State<ModelChat> {
 
   @override
   Widget build(BuildContext context) => PopScope(
-    canPop: !controller.busy,
+    canPop: !controller.busy && !controller.hasUnsavedResponse,
     child: Scaffold(
       appBar: AppBar(
         title: Text('${controller.mode.label} · ${widget.project.name}'),
@@ -129,7 +155,7 @@ class _ModelChatState extends State<ModelChat> {
         leading: Navigator.of(context).canPop()
             ? IconButton(
                 tooltip: 'Back',
-                onPressed: controller.busy
+                onPressed: controller.busy || controller.hasUnsavedResponse
                     ? null
                     : () => Navigator.of(context).maybePop(),
                 icon: const BackButtonIcon(),
@@ -159,7 +185,8 @@ class _ModelChatState extends State<ModelChat> {
                     ),
                   ],
                   selected: {controller.mode},
-                  onSelectionChanged: controller.busy
+                  onSelectionChanged:
+                      controller.busy || controller.hasUnsavedResponse
                       ? null
                       : (selection) => controller.selectMode(selection.single),
                 ),
@@ -197,7 +224,10 @@ class _ModelChatState extends State<ModelChat> {
                         maxLength: 2000,
                         minLines: 1,
                         maxLines: 4,
-                        enabled: controller.ready && !controller.busy,
+                        enabled:
+                            controller.ready &&
+                            !controller.busy &&
+                            !controller.hasUnsavedResponse,
                         decoration: InputDecoration(
                           hintText: controller.mode == ConversationMode.plan
                               ? 'Ask Qwen for a draft plan'
@@ -209,7 +239,10 @@ class _ModelChatState extends State<ModelChat> {
                     const SizedBox(width: 12),
                     IconButton(
                       tooltip: 'Send',
-                      onPressed: controller.busy || !controller.ready
+                      onPressed:
+                          controller.busy ||
+                              controller.hasUnsavedResponse ||
+                              !controller.ready
                           ? null
                           : send,
                       icon: const Icon(Icons.send),
