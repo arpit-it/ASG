@@ -4,6 +4,7 @@ import '../models/chat_message.dart';
 import '../models/plan_approval.dart';
 import '../models/project.dart';
 import 'conversation_store.dart';
+import 'application_store.dart';
 import 'record_storage.dart';
 import 'requirements_store.dart';
 import 'studio_store.dart';
@@ -14,13 +15,13 @@ class PlanApprovalStore {
   static String context(StudioProject project) => jsonEncode(project.toJson());
   String contextFor(StudioProject project) {
     final board = RequirementsStore(records).load(project.id);
-    // Preserve legacy plan contexts until a structured board has been saved.
-    return board.revision == 0
-        ? context(project)
-        : jsonEncode({
-            'project': project.toJson(),
-            'requirementsRevision': board.revision,
-          });
+    final application = ApplicationStore(records).load(project);
+    return jsonEncode({
+      'project': project.toJson(),
+      'requirementsRevision': board.revision,
+      'prototypeRevision': application.revision,
+      'prototypeDefinition': application.definition.toJson(),
+    });
   }
 
   static int latestPlan(List<ChatMessage> messages) => messages.lastIndexWhere(
@@ -61,7 +62,7 @@ class PlanApprovalStore {
         approval.context != messages[index].planContext ||
         approval.context != contextFor(current)) {
       throw StateError(
-        'Build requires the latest saved Plan approved for the current requirements. Open Plan, review a current draft and approve it.',
+        'Build requires the latest saved Plan approved for the current requirements and prototype. Open Plan, review a current draft and approve it.',
       );
     }
     return approval;

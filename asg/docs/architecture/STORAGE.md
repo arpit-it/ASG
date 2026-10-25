@@ -49,3 +49,8 @@ Task status is derived from saved command exit results and generation phase. Dow
 ## Structured Plan contracts (F02, issue #42)
 
 The saved Plan message may contain one standalone fenced `asg-build` JSON object: version 1, adapter `flutter-starter`, and the canonical four-task graph documented above. It is validated from the exact durable approved content before either generation or verification retry. Maximum Plan content is 65,536 characters; unknown fields/versions/adapters, invalid graphs and ambiguous blocks are rejected before host work. The parsed graph is persisted in the existing outcome `tasks` field and bound to the existing exact approval snapshot; no storage migration/key changes. Legacy prose approvals and outcomes remain readable and previews available, but a fresh structured draft/approval is needed to start Build. The contract requests only fixed starter creation/verification and cannot authorize model source edits. General Plan conversion remains pending.
+
+
+## Prototype-bound Plan context — issue #50
+
+New `planContext` strings contain project metadata, requirements revision, validated prototype definition and prototype revision. An absent saved application uses the deterministic starter/revision fallback. Any later definition or revision change makes approval outdated, including an edit/revert; unreadable application evidence fails closed. Legacy contexts remain readable but cannot match the new execution boundary: request and approve a fresh Plan. No stored record keys or shapes change and no legacy backfill grants approval. Build also compares its captured definition with the current saved prototype before any host work and after asynchronous preparation. Discuss and advisory Review do not require a readable approval context.
