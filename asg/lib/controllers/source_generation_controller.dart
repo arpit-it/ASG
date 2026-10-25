@@ -57,7 +57,7 @@ class SourceGenerationController extends BaseController {
     try {
       final approval = _requirePlan();
       final plan = BuildPlan.parse(approval.content);
-      return 'Current saved plan approved. Build runs the fixed Flutter starter pipeline only.\nValidated tasks: ${plan.tasks.map((t) => t.id).join(' → ')}\n\n${approval.content}';
+      return 'Current saved plan approved. Build runs the fixed Flutter starter pipeline only.\nValidated tasks: ${plan.preview}\n\n${approval.content}';
     } catch (e) {
       return 'Build is locked. $e';
     }
@@ -217,8 +217,9 @@ class SourceGenerationController extends BaseController {
     var verificationStarted = false;
     try {
       final approval = _requirePlan();
-      BuildPlan.parse(approval.content);
-      if (current.approval == null ||
+      final plan = BuildPlan.parse(approval.content);
+      if (!plan.matchesTasks(current.tasks) ||
+          current.approval == null ||
           !current.approval!.matches(approval) ||
           _input?.compare(current) != GeneratedSnapshotStatus.current) {
         throw StateError(

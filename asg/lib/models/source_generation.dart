@@ -69,7 +69,11 @@ class GeneratedProject {
   final List<BuildTask>? tasks;
 
   BuildTaskStatus taskStatus(BuildTask task, {required bool active}) {
-    final index = task.operation.index;
+    final graph = tasks ?? BuildTask.starter;
+    final index = graph.indexWhere(
+      (t) => t.id == task.id && t.operation == task.operation,
+    );
+    if (index < 0) return BuildTaskStatus.blocked;
     if (index < steps.length) {
       final step = steps[index];
       return step.exitCode == 0 && !step.timedOut
@@ -176,7 +180,9 @@ class GeneratedProject {
         result.steps.length > 4) {
       throw const FormatException('Invalid generated project record.');
     }
-    const operations = ['resolve', 'analyze', 'test', 'build'];
+    final operations = (result.tasks ?? BuildTask.starter)
+        .map((t) => t.operation.name)
+        .toList();
     for (var i = 0; i < result.steps.length; i++) {
       if (result.steps[i].operation != operations[i] ||
           (i > 0 &&

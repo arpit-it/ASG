@@ -8,6 +8,11 @@ class BuildPlan {
   BuildPlan._(this.tasks);
   final List<BuildTask> tasks;
 
+  bool matchesTasks(List<BuildTask>? other) =>
+      other != null &&
+      jsonEncode(tasks.map((t) => t.toJson()).toList()) ==
+          jsonEncode(other.map((t) => t.toJson()).toList());
+
   String get preview => tasks
       .map((task) {
         final label = switch (task.operation) {
@@ -49,12 +54,18 @@ class BuildPlan {
       rejectDuplicateJsonMembers(json);
       if (value is! Map ||
           value.length != 3 ||
-          value['version'] != 1 ||
+          ![1, 2].contains(value['version']) ||
           value['version'] is! int ||
           value['adapter'] != 'flutter-starter') {
         throw const FormatException(message);
       }
-      return BuildPlan._(BuildTask.fromJson(value['tasks']));
+      final tasks = BuildTask.fromJson(value['tasks']);
+      if (value['version'] == 1 &&
+          jsonEncode(tasks.map((t) => t.toJson()).toList()) !=
+              jsonEncode(BuildTask.starter.map((t) => t.toJson()).toList())) {
+        throw const FormatException(message);
+      }
+      return BuildPlan._(tasks);
     } on FormatException {
       throw const FormatException(message);
     }

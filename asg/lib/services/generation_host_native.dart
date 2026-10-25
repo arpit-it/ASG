@@ -243,7 +243,8 @@ class NativeGenerationHost implements GenerationHost {
     );
     await progress(current);
     // Legacy snapshots retain the same trusted fixed adapter. New snapshots
-    // carry its validated graph alongside their exact authorizing approval.
+    // carry its validated named graph in sequential dependency order alongside
+    // their exact authorizing approval.
     for (final task in project.tasks ?? BuildTask.starter) {
       final operation = task.operation.name;
       late final GenerationStep result;
