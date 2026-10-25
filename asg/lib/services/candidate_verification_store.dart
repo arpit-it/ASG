@@ -31,11 +31,6 @@ class CandidateVerificationStore {
     _expectedJournal = records.getString(key);
     _expectedCandidate = records.getString(candidateKey);
     final journal = load();
-    if (journal.runs.length >= CandidateVerificationJournal.maximumRuns) {
-      throw StateError(
-        'Candidate check journal is full. Prior evidence retained.',
-      );
-    }
     final run = CandidateVerificationRun(
       number: journal.runs.length + 1,
       startedAt: DateTime.now().toUtc(),

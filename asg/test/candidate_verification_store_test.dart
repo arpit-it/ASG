@@ -61,35 +61,39 @@ void main() {
     },
   );
 
-  test('full and corrupt journals never discard prior evidence', () async {
-    final records = AtomicRecords();
-    final store = CandidateVerificationStore(records, 'p');
-    for (var i = 0; i < CandidateVerificationJournal.maximumRuns; i++) {
-      final writer = CandidateVerificationStore(records, 'p');
-      await writer.start(failure(), () {});
-      await writer.checkpoint(failure(), () {}, finished: true);
-    }
-    final before = records.values[store.key];
-    await expectLater(store.start(failure(), () {}), throwsStateError);
-    expect(records.values[store.key], before);
-    final raw = jsonDecode(before!) as Map<String, dynamic>;
-    for (final invalid in [
-      {...raw, 'version': 1.0},
-      {...raw, 'version': 2},
-      {...raw, 'extra': true},
-      {
-        ...raw,
-        'runs': [
-          {...((raw['runs'] as List).first as Map), 'number': 2},
-        ],
-      },
-    ]) {
-      expect(
-        () => CandidateVerificationJournal.fromJson(invalid),
-        throwsFormatException,
-      );
-    }
-  });
+  test(
+    'more than 32 runs retain evidence and malformed journals fail closed',
+    () async {
+      final records = AtomicRecords();
+      final store = CandidateVerificationStore(records, 'p');
+      for (var i = 0; i < 33; i++) {
+        final writer = CandidateVerificationStore(records, 'p');
+        await writer.start(failure(), () {});
+        await writer.checkpoint(failure(), () {}, finished: true);
+      }
+      expect(store.load().runs.length, 33);
+      await store.start(failure(), () {});
+      expect(store.load().runs.length, 34);
+      final before = records.values[store.key];
+      final raw = jsonDecode(before!) as Map<String, dynamic>;
+      for (final invalid in [
+        {...raw, 'version': 1.0},
+        {...raw, 'version': 2},
+        {...raw, 'extra': true},
+        {
+          ...raw,
+          'runs': [
+            {...((raw['runs'] as List).first as Map), 'number': 2},
+          ],
+        },
+      ]) {
+        expect(
+          () => CandidateVerificationJournal.fromJson(invalid),
+          throwsFormatException,
+        );
+      }
+    },
+  );
 
   test('native close/reopen retains stopped and uncertain runs; corruption is isolated', () async {
     SharedPreferences.setMockInitialValues({});

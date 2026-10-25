@@ -60,8 +60,6 @@ class CandidateVerificationRun {
 class CandidateVerificationJournal {
   CandidateVerificationJournal(Iterable<CandidateVerificationRun> runs)
     : runs = List.unmodifiable(runs);
-  // Refuse new work when full; never silently discard prior exit evidence.
-  static const maximumRuns = 32;
   final List<CandidateVerificationRun> runs;
   Map<String, Object> toJson() => {
     'version': 1,
@@ -72,8 +70,7 @@ class CandidateVerificationJournal {
     if (json.length != 2 ||
         json['version'] is! int ||
         json['version'] != 1 ||
-        json['runs'] is! List ||
-        (json['runs'] as List).length > maximumRuns) {
+        json['runs'] is! List) {
       throw const FormatException(
         'Unsupported candidate verification journal.',
       );

@@ -39,6 +39,7 @@ class SourceCandidateController extends BaseController {
   final CandidatePromotion publish;
   final void Function()? requireWorking;
   CandidateVerificationStore? _activeStore;
+  GeneratedProject? _unsavedObservation;
   List<CandidateVerificationRun> _history = const [];
   List<CandidateVerificationRun> get history => _history;
   String? _historyError;
@@ -117,7 +118,9 @@ class SourceCandidateController extends BaseController {
         value.steps.length > _result.steps.length ||
         value.phase == SourceGenerationPhase.failed;
     if (!observation) _authorize();
+    if (observation && !isDisposed) _unsavedObservation = value;
     await _activeStore!.checkpoint(value, observation ? () {} : _authorize);
+    _unsavedObservation = null;
     if (!isDisposed) {
       _result = value;
       _refreshHistory();
@@ -130,6 +133,7 @@ class SourceCandidateController extends BaseController {
     if (!approved || _busy || _transferred || isDisposed) return;
     _busy = true;
     _cancelled = false;
+    _unsavedObservation = null;
     _error = null;
     update();
     try {
@@ -158,7 +162,7 @@ class SourceCandidateController extends BaseController {
       if (!isDisposed) {
         _error =
             'Candidate verification stopped; working output retained. $error';
-        _result = _result.copy(
+        _result = (_unsavedObservation ?? _result).copy(
           phase: SourceGenerationPhase.failed,
           error: _error!,
         );

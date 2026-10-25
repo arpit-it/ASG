@@ -375,6 +375,46 @@ void main() {
     },
   );
 
+  test(
+    'transient exit checkpoint failure retains observed result in fallback',
+    () async {
+      final initial = candidate.result;
+      final evidence = candidate.evidence;
+      candidate.dispose();
+      final failedHost = FailedCheckHost();
+      candidateHost = failedHost;
+      candidate = SourceCandidateController(
+        project: project,
+        candidate: initial,
+        evidence: evidence,
+        records: records,
+        host: candidateHost,
+        publish: (value, host, guard) => working.promoteCandidate(
+          value,
+          host,
+          guard,
+          expectedWorking: saved,
+        ),
+      );
+      failedHost.beforeFailure = () {
+        records.beforeCommit = () async {
+          records.beforeCommit = null;
+          throw StateError('transient result write refusal');
+        };
+      };
+      await candidate.verify(approved: true);
+      final retained = candidate.history.single;
+      expect(retained.finished, isTrue);
+      expect(retained.snapshot.steps.last.operation, 'analyze');
+      expect(retained.snapshot.steps.last.exitCode, 65);
+      expect(retained.snapshot.steps.last.output, contains('Undefined name'));
+      expect(candidate.result.steps.last.exitCode, 65);
+      expect(candidateHost.operations, ['resolve', 'analyze']);
+      expect(candidate.canPromote, isFalse);
+      expect(workingHost.server, isTrue);
+    },
+  );
+
   test('retries preserve actual results in separate saved runs', () async {
     candidateHost.throwAnalyze = true;
     await candidate.verify(approved: true);
