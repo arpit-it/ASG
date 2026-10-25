@@ -5,6 +5,7 @@ import '../models/generation_event.dart';
 import '../services/application_store.dart';
 import '../services/application_editor.dart';
 import '../services/model_settings_store.dart';
+import '../services/record_storage.dart';
 import 'base_controller.dart';
 
 class AppWorkspaceController extends BaseController {
@@ -18,6 +19,7 @@ class AppWorkspaceController extends BaseController {
   final Future<ApplicationStore> Function() _openStore;
   final ApplicationEditor _editor;
   ApplicationStore? _store;
+  RecordStorage? get records => _store?.records;
   ApplicationSnapshot? _state;
   AppDefinition? _runtimeDefinition;
   Future<bool>? _interactionWrite;

@@ -72,3 +72,7 @@ Optimized runtime: MLX LM 0.32.2 / MLX 0.32.4 / MLX Metal 0.32.4, isolated in to
 ## Transactional storage — issue #4
 
 Added sembast 3.9.0 and sembast_web 2.4.6+1 (BSD-3-Clause), idb_shim 2.10.1+1 (BSD-2-Clause), synchronized 3.5.0 (MIT), and direct path 1.9.1 (BSD-3-Clause). Licenses reviewed in downloaded package sources. Native storage uses existing path_provider; browser uses IndexedDB. Lockfile committed; no model/runtime dependencies changed. Retain required notices in distributed artifacts.
+
+## Source generation — issue #3
+
+crypto 3.0.7 is now a direct dependency for SHA-256 source/resolution/output fingerprints (BSD-3-Clause; reviewed installed package license). It was already a transitive dependency. The command helper uses the selected installed Python standard library; generated apps depend only on Flutter/Flutter test from the selected SDK. No external package/model installation is added to generation.

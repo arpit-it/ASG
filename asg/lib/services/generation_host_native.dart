@@ -1,0 +1,500 @@
+import 'dart:convert';
+import 'dart:io';
+import 'dart:isolate';
+import 'dart:math';
+
+import 'package:crypto/crypto.dart';
+import 'package:flutter/services.dart';
+import 'package:path/path.dart' as path;
+
+import '../models/app_definition.dart';
+import '../models/project.dart';
+import '../models/source_generation.dart';
+import 'flutter_source_template.dart';
+import 'generation_host.dart';
+
+GenerationHost createGenerationHost() => NativeGenerationHost();
+
+class NativeGenerationHost implements GenerationHost {
+  NativeGenerationHost({
+    this.loadAsset = _loadAsset,
+    Future<GenerationStep> Function(GeneratedProject, String)? runOperation,
+  }) : _operationOverride = runOperation;
+  final Future<String> Function(String) loadAsset;
+  final Future<GenerationStep> Function(GeneratedProject, String)?
+  _operationOverride;
+  bool _closed = false;
+  Process? _activeProcess;
+  void checkOpen() {
+    if (_closed) throw StateError('Generation session closed.');
+  }
+
+  HttpServer? _server;
+  Uri? _preview;
+  @override
+  bool get supported => Platform.isMacOS;
+  static Future<String> _loadAsset(String name) => rootBundle.loadString(name);
+
+  @override
+  Future<GeneratedProject> generate({
+    required StudioProject project,
+    required AppDefinition definition,
+    required String parent,
+    required String name,
+    required String sdk,
+    required String python,
+  }) async {
+    checkOpen();
+    if (project.type != 'Flutter') {
+      throw UnsupportedError('Only the Flutter template is available.');
+    }
+    if (!RegExp(r'^[a-z][a-z0-9_]{2,50}$').hasMatch(name)) {
+      throw const FormatException(
+        'Use 3–51 lowercase letters, digits or underscores for a new folder.',
+      );
+    }
+    if (!path.isAbsolute(parent) ||
+        !path.isAbsolute(sdk) ||
+        python.trim().isEmpty) {
+      throw const FormatException(
+        'Choose absolute project parent and Flutter SDK directories and a Python executable.',
+      );
+    }
+    final canonicalParent = await Directory(parent).resolveSymbolicLinks();
+    final canonicalSdk = await Directory(sdk).resolveSymbolicLinks();
+    if (path.normalize(parent) != canonicalParent ||
+        path.normalize(sdk) != canonicalSdk) {
+      throw const FormatException(
+        'Choose real directories, not symbolic links.',
+      );
+    }
+    if (!await File(path.join(canonicalSdk, 'bin', 'flutter')).exists()) {
+      throw const FormatException(
+        'The selected SDK has no bin/flutter executable.',
+      );
+    }
+    final destination = path.join(canonicalParent, name);
+    if (!path.isWithin(canonicalParent, destination) ||
+        await FileSystemEntity.type(destination, followLinks: false) !=
+            FileSystemEntityType.notFound) {
+      throw StateError(
+        'Destination already exists. Choose a new folder; nothing was overwritten.',
+      );
+    }
+    // Exclusive single-directory creation prevents races with an existing file.
+    final created = await Process.run('/bin/mkdir', [
+      destination,
+    ], runInShell: false).timeout(const Duration(seconds: 5));
+    if (created.exitCode != 0) {
+      throw StateError(
+        'A new directory could not be created. Check parent permissions or choose a different new name; nothing was overwritten.',
+      );
+    }
+    if (await Directory(destination).resolveSymbolicLinks() != destination) {
+      throw StateError('Destination changed during creation.');
+    }
+    checkOpen();
+    final files = flutterSourceTemplate(
+      project,
+      definition,
+      await loadAsset('lib/models/app_definition.dart'),
+    );
+    checkOpen();
+    for (final entry in files.entries) {
+      checkOpen();
+      final file = File(path.join(destination, entry.key));
+      await file.parent.create(recursive: true);
+      await file.create(exclusive: true);
+      await file.writeAsString(entry.value, flush: true);
+    }
+    return GeneratedProject(
+      directory: destination,
+      sdk: canonicalSdk,
+      python: python,
+      sources: await fingerprints(destination, source: true),
+    );
+  }
+
+  static Future<Map<String, String>> fingerprints(
+    String directory, {
+    required bool source,
+  }) => Isolate.run(() async {
+    final root = Directory(directory);
+    if (await root.resolveSymbolicLinks() != directory) {
+      throw StateError('Generated project path changed.');
+    }
+    final values = <String, String>{};
+    Future<void> visit(Directory folder) async {
+      await for (final entity in folder.list(followLinks: false)) {
+        final relative = path
+            .relative(entity.path, from: directory)
+            .replaceAll(path.separator, '/');
+        if (source &&
+            (relative == 'build' ||
+                relative == '.dart_tool' ||
+                relative == 'pubspec.lock')) {
+          continue;
+        }
+        if (entity is Link) {
+          throw StateError(
+            'Symbolic links are not accepted in generated output.',
+          );
+        }
+        if (entity is Directory) {
+          await visit(entity);
+        } else if (entity is File) {
+          values[relative] = sha256
+              .convert(await entity.readAsBytes())
+              .toString();
+        } else {
+          throw StateError('Unsupported generated filesystem entry.');
+        }
+      }
+    }
+
+    await visit(root);
+    return values;
+  });
+
+  static bool sameFiles(Map<String, String> a, Map<String, String> b) =>
+      a.length == b.length && a.entries.every((e) => b[e.key] == e.value);
+  Future<void> checkSources(GeneratedProject project) async {
+    checkOpen();
+    if (!sameFiles(
+      project.sources,
+      await fingerprints(project.directory, source: true),
+    )) {
+      throw StateError(
+        'Generated source changed. Verification will not execute modified or unexpected source. Generate into a new folder instead.',
+      );
+    }
+    for (final folder in ['.dart_tool', 'build']) {
+      if (await FileSystemEntity.type(
+            path.join(project.directory, folder),
+            followLinks: false,
+          ) ==
+          FileSystemEntityType.link) {
+        throw StateError('Linked build/cache directories are not accepted.');
+      }
+    }
+  }
+
+  static Future<Map<String, String>> resolutionFiles(
+    GeneratedProject project,
+  ) async {
+    final values = <String, String>{};
+    for (final relative in [
+      'pubspec.lock',
+      '.dart_tool/package_config.json',
+      '.dart_tool/package_graph.json',
+    ]) {
+      final file = File(path.join(project.directory, relative));
+      if (await FileSystemEntity.type(file.path, followLinks: false) ==
+          FileSystemEntityType.link) {
+        throw StateError('Linked dependency metadata is not accepted.');
+      }
+      if (await file.exists()) {
+        values[relative] = sha256.convert(await file.readAsBytes()).toString();
+      }
+    }
+    return values;
+  }
+
+  Future<void> checkResolution(GeneratedProject project) async {
+    if (!sameFiles(project.resolution, await resolutionFiles(project))) {
+      throw StateError(
+        'Dependency resolution metadata changed or was interrupted. Generate a new folder instead of executing changed inputs.',
+      );
+    }
+  }
+
+  @override
+  Future<GeneratedProject> verify(
+    GeneratedProject project,
+    GenerationProgress progress,
+  ) async {
+    if (!path.isAbsolute(project.sdk) ||
+        project.python.trim().isEmpty ||
+        await Directory(project.sdk).resolveSymbolicLinks() !=
+            path.normalize(project.sdk) ||
+        !await File(path.join(project.sdk, 'bin', 'flutter')).exists()) {
+      throw const FormatException(
+        'Select a real, installed Flutter SDK and Python executable.',
+      );
+    }
+    await checkSources(project);
+    await checkResolution(project);
+    var current = project.copy(
+      sdk: path.normalize(project.sdk),
+      phase: SourceGenerationPhase.verifying,
+      steps: const [],
+      outputs: const {},
+    );
+    await progress(current);
+    for (final operation in ['resolve', 'analyze', 'test', 'build']) {
+      await checkSources(project);
+      if (operation != 'resolve') await checkResolution(current);
+      checkOpen();
+      final result = await (_operationOverride ?? runFlutterOperation)(
+        project,
+        operation,
+      );
+      checkOpen();
+      if (operation == 'resolve') {
+        current = current.copy(resolution: await resolutionFiles(project));
+      }
+      current = current.copy(steps: [...current.steps, result]);
+      if (result.exitCode != 0 || result.timedOut) {
+        current = current.copy(
+          phase: SourceGenerationPhase.failed,
+          error:
+              '$operation failed. Inspect its output and retry verification after fixing the installed toolchain.',
+        );
+        await progress(current);
+        return current;
+      }
+      await progress(current);
+    }
+    await checkSources(project);
+    final output = path.join(project.directory, 'build', 'web');
+    final outputs = await fingerprints(output, source: false);
+    if (!outputs.containsKey('index.html') ||
+        !outputs.containsKey('main.dart.js')) {
+      throw StateError('Flutter did not produce a complete web build.');
+    }
+    current = current.copy(
+      phase: SourceGenerationPhase.ready,
+      outputs: outputs,
+    );
+    await progress(current);
+    return current;
+  }
+
+  Future<GenerationStep> runFlutterOperation(
+    GeneratedProject project,
+    String operation,
+  ) async {
+    if (!['resolve', 'analyze', 'test', 'build'].contains(operation)) {
+      throw ArgumentError('Unapproved generation operation.');
+    }
+    for (final relative in [
+      'bin/cache/flutter_tools.snapshot',
+      'bin/cache/dart-sdk/bin/dart',
+      'packages/flutter_tools/.dart_tool/package_config.json',
+    ]) {
+      if (!await File(path.join(project.sdk, relative)).exists()) {
+        throw StateError(
+          'Use an already initialized Flutter SDK with cached tools and Dart. ASG will not bootstrap an SDK.',
+        );
+      }
+    }
+    final helperDirectory = await Directory.systemTemp.createTemp(
+      'asg-command-',
+    );
+    Process? process;
+    try {
+      final helper = File(
+        path.join(helperDirectory.path, 'generation_command.py'),
+      );
+      await helper.writeAsString(
+        await _loadAsset('tools/generation_command.py'),
+        flush: true,
+      );
+      checkOpen();
+      process = await Process.start(project.python, [
+        '-I',
+        '-B',
+        helper.path,
+        '--operation',
+        operation,
+        '--sdk',
+        project.sdk,
+        '--directory',
+        project.directory,
+        '--timeout',
+        '180',
+      ], runInShell: false);
+      _activeProcess = process;
+      if (_closed) process.kill(ProcessSignal.sigterm);
+      final stdout = process.stdout.transform(utf8.decoder).join();
+      final stderr = process.stderr
+          .transform(const Utf8Decoder(allowMalformed: true))
+          .join();
+      final code = await process.exitCode.timeout(
+        const Duration(seconds: 190),
+        onTimeout: () {
+          process?.kill(ProcessSignal.sigterm);
+          throw const FormatException(
+            'Generation helper exceeded its deadline.',
+          );
+        },
+      );
+      final out = await stdout;
+      final error = await stderr;
+      if (code != 0) {
+        return GenerationStep(
+          operation: operation,
+          exitCode: code,
+          output: error.substring(0, min(error.length, 65536)),
+        );
+      }
+      final data = jsonDecode(out) as Map<String, dynamic>;
+      return GenerationStep(
+        operation: operation,
+        exitCode: data['exitCode'] as int,
+        output: data['output'] as String,
+        timedOut: data['timedOut'] as bool,
+      );
+    } finally {
+      if (process != null) {
+        process.kill(ProcessSignal.sigterm);
+        await process.exitCode.timeout(
+          const Duration(seconds: 3),
+          onTimeout: () {
+            process?.kill(ProcessSignal.sigkill);
+            return -1;
+          },
+        );
+      }
+      _activeProcess = null;
+      await helperDirectory.delete(recursive: true);
+    }
+  }
+
+  static Future<List<int>?> verifiedBytes(String filename, String digest) =>
+      Isolate.run(() async {
+        final bytes = await File(filename).readAsBytes();
+        return sha256.convert(bytes).toString() == digest ? bytes : null;
+      });
+
+  @override
+  Future<Uri> startPreview(GeneratedProject project) async {
+    if (project.phase != SourceGenerationPhase.ready) {
+      throw StateError('A successful build is required.');
+    }
+    await checkSources(project);
+    final output = path.join(project.directory, 'build', 'web');
+    if (!sameFiles(
+      project.outputs,
+      await fingerprints(output, source: false),
+    )) {
+      throw StateError('Built output changed. Verify again before previewing.');
+    }
+    await stopPreview();
+    final token = List.generate(
+      24,
+      (_) => Random.secure().nextInt(256).toRadixString(16).padLeft(2, '0'),
+    ).join();
+    checkOpen();
+    final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+    if (_closed) {
+      await server.close(force: true);
+      throw StateError('Generation session closed.');
+    }
+    _server = server;
+    final origin = 'http://127.0.0.1:${server.port}';
+    _preview = Uri.parse('$origin/$token/');
+    server.listen((request) async {
+      try {
+        final segments = request.uri.pathSegments;
+        if (!['GET', 'HEAD'].contains(request.method) ||
+            segments.isEmpty ||
+            segments.first != token ||
+            (request.headers.value('sec-fetch-site') == 'cross-site' &&
+                !(request.headers.value('sec-fetch-mode') == 'navigate' &&
+                    request.headers.value('sec-fetch-dest') == 'document')) ||
+            (request.headers.value('origin') != null &&
+                request.headers.value('origin') != origin)) {
+          request.response.statusCode = HttpStatus.forbidden;
+          return;
+        }
+        final relative = segments.skip(1).where((s) => s.isNotEmpty).join('/');
+        if (segments.any(
+          (s) =>
+              s == '..' ||
+              s == '.' ||
+              s.contains('\\') ||
+              s.contains('/') ||
+              s.contains('\u0000'),
+        )) {
+          request.response.statusCode = 403;
+          return;
+        }
+        final fileName = relative.isEmpty ? 'index.html' : relative;
+        if (!project.outputs.containsKey(fileName)) {
+          request.response.statusCode = 404;
+          return;
+        }
+        final file = File(path.join(output, fileName));
+        if (!path.isWithin(output, await file.resolveSymbolicLinks())) {
+          request.response.statusCode = 403;
+          return;
+        }
+        final bytes = await verifiedBytes(
+          file.path,
+          project.outputs[fileName]!,
+        );
+        if (bytes == null) {
+          request.response.statusCode = 409;
+          return;
+        }
+        request.response.headers.set('Cache-Control', 'no-store');
+        request.response.headers.set('X-Content-Type-Options', 'nosniff');
+        request.response.headers.contentType = ContentType.parse(switch (path
+            .extension(fileName)) {
+          '.html' => 'text/html; charset=utf-8',
+          '.js' || '.mjs' => 'application/javascript',
+          '.json' => 'application/json',
+          '.wasm' => 'application/wasm',
+          '.css' => 'text/css',
+          '.ttf' => 'font/ttf',
+          '.woff2' => 'font/woff2',
+          '.png' => 'image/png',
+          _ => 'application/octet-stream',
+        });
+        if (request.method == 'GET') {
+          if (fileName == 'index.html') {
+            request.response.write(
+              utf8
+                  .decode(bytes)
+                  .replaceFirst('<base href="/">', '<base href="/$token/">'),
+            );
+          } else {
+            request.response.add(bytes);
+          }
+        }
+      } catch (_) {
+        request.response.statusCode = 500;
+      } finally {
+        await request.response.close().catchError((Object _) {});
+      }
+    });
+    return _preview!;
+  }
+
+  @override
+  Future<void> openPreview(Uri uri) async {
+    if (_server == null || uri != _preview || !Platform.isMacOS) {
+      throw StateError('Start a current local preview first.');
+    }
+    final result = await Process.run('/usr/bin/open', [
+      uri.toString(),
+    ]).timeout(const Duration(seconds: 10));
+    if (result.exitCode != 0) throw StateError('Browser could not be opened.');
+  }
+
+  @override
+  Future<void> dispose() async {
+    _closed = true;
+    _activeProcess?.kill(ProcessSignal.sigterm);
+    await stopPreview();
+  }
+
+  @override
+  Future<void> stopPreview() async {
+    final server = _server;
+    _server = null;
+    _preview = null;
+    await server?.close(force: true);
+  }
+}

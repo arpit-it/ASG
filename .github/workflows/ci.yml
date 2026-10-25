@@ -32,6 +32,8 @@ jobs:
       - run: flutter test --no-pub
       - run: flutter test --no-pub --platform chrome test/browser_storage_test.dart
       - run: flutter build web --no-pub
+      - name: Verify independent generated Flutter project
+        run: flutter test --no-pub test/source_generation_test.dart --dart-define=ASG_REAL_GENERATION=true --plain-name 'real independent generated Flutter project'
   runtime:
     name: Python runtime fixtures
     runs-on: ubuntu-latest
@@ -48,3 +50,4 @@ jobs:
           python-version: '3.12'
       - run: python -B tools/test_download_model.py
       - run: python -B tools/test_qwen_streaming_server.py
+      - run: python -B tools/test_generation_command.py

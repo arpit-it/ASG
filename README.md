@@ -2,7 +2,7 @@
 
 **Automated Software Generator (ASG)** is a local-first Flutter application for creating software through conversation. The intended experience is simple: describe what you want to build, choose from options proposed by the app, review the plan, and refine the result through chat while watching its preview.
 
-The long-term goal is to generate, build, test, run and maintain many types of software without requiring a code editor in the normal workflow. The current release implements guided project planning and a bounded interactive prototype; independent source generation and autonomous build/repair are upcoming work.
+The long-term goal is to generate, build, test, run and maintain many types of software without requiring a code editor in the normal workflow. The current release implements guided planning, a durable interactive prototype, and an approved Flutter web MVC source-generation/verification slice. Broader source synthesis and autonomous repair remain upcoming work.
 
 ## What works today
 
@@ -11,13 +11,14 @@ The long-term goal is to generate, build, test, run and maintain many types of s
 - Supported instructions update titles, themes and prototype elements such as tasks, counters, notes and buttons. Simple commands run locally; custom edits use the configured model. Edits validate and save before refreshing the preview, preserving the previous version on failure.
 - Chat streams response text and displays thinking, writing, checking and applying progress. Cancellation is available before an accepted revision is saved.
 - The upper-right runtime control supports downloaded model folders or explicit public repository downloads on macOS, runtime readiness checks and connection settings.
+- On macOS, **Generate Flutter source** exports a fixed MVC starter into a new folder, runs bounded offline analysis/tests/web build, and serves the actual compiled app through an explicit browser preview. See [source generation](asg/docs/GENERATION.md) for setup, approval, recovery and limits.
 - Qwen3.5-9B has been verified locally with a 4-bit MLX conversion on Apple Silicon. Model weights and Python environments are kept outside Git.
 
 ## Planned capabilities
 
-The [requirements](asg/docs/MASTER_REQUIREMENTS.md) describe approved requirements/plans, safe source generation, deterministic build/test execution, bounded repairs, actual generated-app previews, project history/resume, export and controlled self-development. Framework adapters should grow incrementally toward broad software support. These are product goals, not completed capabilities.
+The [requirements](asg/docs/MASTER_REQUIREMENTS.md) describe broader plan approval, multi-framework source synthesis, deterministic build/test execution, bounded repairs, project history/resume, portable export and controlled self-development beyond the initial Flutter generation slice. Framework adapters should grow incrementally toward broad software support. These are product goals, not completed capabilities.
 
-Current previews render a constrained application definition inside ASG; they do not compile an independent project. Transactional local storage and durable task/counter/note interactions are implemented; a complete source generator remains open work. Linking a project folder records its location; it does not import or modify its source. See the [roadmap](asg/docs/ROADMAP.md), [progress](asg/docs/PROGRESS.md) and [open issues](https://github.com/arpit-it/ASG/issues).
+The default workspace preview renders a constrained definition inside ASG. The separate generation flow compiles an independent Flutter web snapshot; arbitrary AI-written source, other framework adapters and autonomous repair remain open work. Transactional storage and durable prototype interactions are implemented. Linking a project folder records its location; it does not import or modify its source. See the [roadmap](asg/docs/ROADMAP.md), [progress](asg/docs/PROGRESS.md) and [open issues](https://github.com/arpit-it/ASG/issues).
 
 ## Run the app
 
