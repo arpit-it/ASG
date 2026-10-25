@@ -357,7 +357,7 @@ void main() {
     },
   );
 
-  testWidgets('workspace opens and returns from Discuss and plan', (
+  testWidgets('workspace opens and returns from Discuss, plan and review', (
     tester,
   ) async {
     final records = ControlledRecords();
@@ -371,7 +371,7 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    await tester.tap(find.byTooltip('Discuss and plan'));
+    await tester.tap(find.byTooltip('Discuss, plan and review'));
     await tester.pumpAndSettle();
     expect(find.byType(ModelChat), findsOneWidget);
     await tester.tap(find.text('Plan'));
