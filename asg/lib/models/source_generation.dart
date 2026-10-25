@@ -5,6 +5,19 @@ enum GeneratedSnapshotStatus { none, current, outdated, unknown }
 
 enum SourceGenerationPhase { generated, verifying, ready, failed }
 
+/// Verification evidence only; never a board completion or acceptance decision.
+class BoardTaskVerification {
+  const BoardTaskVerification({
+    required this.boardTaskId,
+    required this.passed,
+    required this.total,
+    required this.status,
+  });
+  final String boardTaskId;
+  final int passed, total;
+  final BuildTaskStatus status;
+}
+
 class GenerationStep {
   const GenerationStep({
     required this.operation,
@@ -67,6 +80,33 @@ class GeneratedProject {
   final String failedOperation;
   final PlanApproval? approval;
   final List<BuildTask>? tasks;
+
+  List<BoardTaskVerification> boardVerification({required bool active}) {
+    final groups = <String, List<BuildTaskStatus>>{};
+    for (final task in tasks ?? <BuildTask>[]) {
+      final reference = task.boardTaskId;
+      if (reference != null) {
+        (groups[reference] ??= []).add(taskStatus(task, active: active));
+      }
+    }
+    return List.unmodifiable([
+      for (final entry in groups.entries)
+        BoardTaskVerification(
+          boardTaskId: entry.key,
+          passed: entry.value.where((s) => s == BuildTaskStatus.passed).length,
+          total: entry.value.length,
+          status: entry.value.every((s) => s == BuildTaskStatus.passed)
+              ? BuildTaskStatus.passed
+              : [
+                  BuildTaskStatus.failed,
+                  BuildTaskStatus.running,
+                  BuildTaskStatus.interrupted,
+                  BuildTaskStatus.blocked,
+                  BuildTaskStatus.pending,
+                ].firstWhere(entry.value.contains),
+        ),
+    ]);
+  }
 
   BuildTaskStatus taskStatus(BuildTask task, {required bool active}) {
     final graph = tasks ?? BuildTask.starter;

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../controllers/source_generation_controller.dart';
 import '../models/source_generation.dart';
 import '../services/folder_picker.dart';
+import 'board_verification_progress.dart';
 
 class SourceGenerationScreen extends StatefulWidget {
   const SourceGenerationScreen({
@@ -217,6 +218,10 @@ class _SourceGenerationScreenState extends State<SourceGenerationScreen> {
                 ),
               if (result.error.isNotEmpty) Text(result.error),
               if (result.tasks != null) ...[
+                BoardVerificationProgress(
+                  result: result,
+                  active: controller.verifying,
+                ),
                 const Text('Approved starter task progress'),
                 if (result.tasks!.any((task) => task.boardTaskId != null))
                   const Text(
