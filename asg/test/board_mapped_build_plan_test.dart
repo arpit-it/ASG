@@ -36,7 +36,140 @@ RequirementsBoard mappedBoard({bool done = false}) => RequirementsBoard(
       ),
   ],
 );
+Map<String, Object> sharedContract() => {
+  ...mappedContract(),
+  'version': 4,
+  'tasks': [
+    for (final raw in mappedContract()['tasks'] as List)
+      {...raw as Map, 'boardTaskId': 'Tstarter'},
+  ],
+};
+RequirementsBoard sharedBoard({bool done = false}) => RequirementsBoard(
+  requirements: mappedBoard().requirements,
+  tasks: [
+    DevelopmentTask(
+      id: 'Tstarter',
+      requirementId: 'R1',
+      title: 'Starter workflow',
+      status: done ? TaskStatus.done : TaskStatus.queued,
+    ),
+  ],
+);
 void main() {
+  test('shared references require version 4 and preserve every operation', () {
+    for (final done in [false, true]) {
+      final plan = BuildPlan.parse(
+        boardContent(sharedContract()),
+        board: sharedBoard(done: done),
+      );
+      expect(plan.tasks.map((t) => t.boardTaskId), everyElement('Tstarter'));
+      expect(plan.tasks.length, 4);
+      expect(
+        plan.matchesTasks(
+          BuildTask.fromJson(
+            jsonDecode(jsonEncode(plan.tasks.map((t) => t.toJson()).toList())),
+          ),
+        ),
+        isTrue,
+      );
+    }
+    for (final version in [1, 2, 3]) {
+      expect(
+        () => BuildPlan.parse(
+          boardContent({...sharedContract(), 'version': version}),
+          board: sharedBoard(),
+        ),
+        throwsFormatException,
+      );
+    }
+    expect(
+      () => BuildPlan.parse(boardContent(sharedContract())),
+      throwsFormatException,
+    );
+    final tasks = sharedContract()['tasks'] as List;
+    for (final change in [
+      {'boardTaskId': 'missing'},
+      {'boardTaskId': null},
+    ]) {
+      expect(
+        () => BuildPlan.parse(
+          boardContent({
+            ...sharedContract(),
+            'tasks': [
+              tasks.first,
+              {...tasks[1] as Map, ...change},
+              ...tasks.skip(2),
+            ],
+          }),
+          board: sharedBoard(),
+        ),
+        throwsFormatException,
+      );
+    }
+  });
+  test('all shared prerequisite operations must precede each dependent', () {
+    final board = RequirementsBoard(
+      requirements: mappedBoard().requirements,
+      tasks: [
+        DevelopmentTask(id: 'Tprepare', requirementId: 'R1', title: 'Prepare'),
+        DevelopmentTask(
+          id: 'Tfinish',
+          requirementId: 'R1',
+          title: 'Finish',
+          dependencies: ['Tprepare'],
+        ),
+      ],
+    );
+    Map<String, Object> contract({required bool complete}) => {
+      ...sharedContract(),
+      'tasks': [
+        for (final raw in mappedContract()['tasks'] as List)
+          {
+            ...raw as Map,
+            'boardTaskId': ['resolve', 'test'].contains(raw['operation'])
+                ? 'Tprepare'
+                : 'Tfinish',
+            if (complete && raw['operation'] == 'analyze')
+              'dependencies': ['unit'],
+          },
+      ],
+    };
+    expect(
+      () => BuildPlan.parse(
+        boardContent(contract(complete: false)),
+        board: board,
+      ),
+      throwsFormatException,
+    );
+    expect(
+      BuildPlan.parse(
+        boardContent(contract(complete: true)),
+        board: board,
+      ).tasks.length,
+      4,
+    );
+    final unmapped = RequirementsBoard(
+      requirements: board.requirements,
+      tasks: [
+        DevelopmentTask(
+          id: 'Texternal',
+          requirementId: 'R1',
+          title: 'External',
+          status: TaskStatus.done,
+        ),
+        DevelopmentTask(
+          id: 'Tstarter',
+          requirementId: 'R1',
+          title: 'Starter',
+          dependencies: ['Texternal'],
+        ),
+      ],
+    );
+    expect(
+      () => BuildPlan.parse(boardContent(sharedContract()), board: unmapped),
+      throwsFormatException,
+    );
+  });
   test(
     'board references survive round trip without manual status skipping checks',
     () {

@@ -56,15 +56,15 @@ class BuildPlan {
       rejectDuplicateJsonMembers(json);
       if (value is! Map ||
           value.length != 3 ||
-          ![1, 2, 3].contains(value['version']) ||
+          ![1, 2, 3, 4].contains(value['version']) ||
           value['version'] is! int ||
           value['adapter'] != 'flutter-starter') {
         throw const FormatException(message);
       }
       final tasks = BuildTask.fromJson(value['tasks']);
-      if (value['version'] == 3) {
+      if (value['version'] == 3 || value['version'] == 4) {
         if (board == null) throw const FormatException(message);
-        _validateBoardTasks(tasks, board);
+        _validateBoardTasks(tasks, board, distinct: value['version'] == 3);
       } else if (tasks.any((task) => task.boardTaskId != null)) {
         throw const FormatException(message);
       }
@@ -83,19 +83,20 @@ class BuildPlan {
   /// Every prerequisite must be mapped into this same approved execution graph.
   static void _validateBoardTasks(
     List<BuildTask> tasks,
-    RequirementsBoard board,
-  ) {
+    RequirementsBoard board, {
+    required bool distinct,
+  }) {
     board.validate();
     final boardTasks = {for (final task in board.tasks) task.id: task};
-    final mapped = <String, String>{};
+    final mapped = <String, Set<String>>{};
     for (final task in tasks) {
       final reference = task.boardTaskId;
       if (reference == null ||
           !boardTasks.containsKey(reference) ||
-          mapped.containsKey(reference)) {
+          (distinct && mapped.containsKey(reference))) {
         throw const FormatException('Invalid board task mapping.');
       }
-      mapped[reference] = task.id;
+      (mapped[reference] ??= <String>{}).add(task.id);
     }
     final ancestors = <String, Set<String>>{};
     for (final task in tasks) {
@@ -104,7 +105,9 @@ class BuildPlan {
         for (final dependency in task.dependencies) ...ancestors[dependency]!,
       };
       if (boardTasks[task.boardTaskId]!.dependencies.any(
-        (dependency) => !prior.contains(mapped[dependency]),
+        (dependency) =>
+            mapped[dependency] == null ||
+            !prior.containsAll(mapped[dependency]!),
       )) {
         throw const FormatException(
           'Board prerequisite is not mapped before its dependent.',

@@ -4,7 +4,8 @@ library;
 import 'dart:async';
 import 'dart:convert';
 
-import 'board_mapped_build_plan_test.dart' show mappedBoard, boardContent;
+import 'board_mapped_build_plan_test.dart'
+    show mappedBoard, boardContent, sharedBoard, sharedContract;
 
 import 'dart:io';
 
@@ -401,14 +402,24 @@ void main() {
     });
   }
 
-  for (final linked in [false, true]) {
+  for (final variant in [0, 1, 2]) {
+    final linked = variant > 0;
+    final shared = variant == 2;
     test(
-      'mapped adapter order, failure status and retry survive reopen linked=$linked',
+      'mapped adapter order, failure status and retry survive reopen linked=$linked shared=$shared',
       () async {
-        final content = linked ? boardContent() : mappedContent();
+        final content = shared
+            ? boardContent(sharedContract())
+            : linked
+            ? boardContent()
+            : mappedContent();
         final plan = BuildPlan.parse(
           content,
-          board: linked ? mappedBoard() : null,
+          board: shared
+              ? sharedBoard()
+              : linked
+              ? mappedBoard()
+              : null,
         );
         final generated = (await generate()).copy(
           approval: PlanApproval(
@@ -437,7 +448,14 @@ void main() {
         final reopened = GeneratedProject.fromJson(
           jsonDecode(jsonEncode(failed.toJson())) as Map<String, dynamic>,
         );
-        expect(reopened.tasks!.last.boardTaskId, linked ? 'Tbuild' : null);
+        expect(
+          reopened.tasks!.last.boardTaskId,
+          shared
+              ? 'Tstarter'
+              : linked
+              ? 'Tbuild'
+              : null,
+        );
         expect(reopened.tasks!.map((t) => t.id), [
           'deps',
           'unit',

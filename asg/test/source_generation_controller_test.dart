@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'board_mapped_build_plan_test.dart'
-    show mappedBoard, boardContent, boardContract;
+    show mappedBoard, boardContent, boardContract, sharedBoard, sharedContract;
 
 import 'package:asg/models/requirements_board.dart';
 
@@ -191,18 +191,22 @@ void main() {
     if (!c.isDisposed) c.dispose();
   });
 
-  for (final manuallyDone in [false, true]) {
+  for (final variant in [0, 1, 2, 3]) {
+    final manuallyDone = variant.isOdd;
+    final shared = variant >= 2;
     test(
-      'board provenance persists and changed board refuses retry before host effects done=$manuallyDone',
+      'board provenance persists and changed board refuses retry before host effects done=$manuallyDone shared=$shared',
       () async {
         final boards = RequirementsStore(store.records);
         await boards.save(
           project.id,
           boards.load(project.id),
-          mappedBoard(done: manuallyDone),
+          shared
+              ? sharedBoard(done: manuallyDone)
+              : mappedBoard(done: manuallyDone),
         );
         // This fixture runs canonical order; approve the equivalent graph in that order.
-        final contract = boardContract();
+        final contract = shared ? sharedContract() : boardContract();
         final tasks = (contract['tasks'] as List).cast<Map>();
         contract['tasks'] = [tasks[0], tasks[2], tasks[1], tasks[3]];
         final plans = [
@@ -214,13 +218,20 @@ void main() {
         ];
         await ConversationStore(store.records).save(project.id, plans);
         await PlanApprovalStore(store.records).save(project, plans, true);
-        expect(c.planStatus, contains('board task: Tbuild'));
+        expect(
+          c.planStatus,
+          contains('board task: ${shared ? 'Tstarter' : 'Tbuild'}'),
+        );
         expect(await generate(true), isTrue);
         expect(store.load(project.id)!.tasks!.map((t) => t.boardTaskId), [
-          'Tresolve',
-          'Tanalyze',
-          'Ttest',
-          'Tbuild',
+          if (shared)
+            ...List.filled(4, 'Tstarter')
+          else ...[
+            'Tresolve',
+            'Tanalyze',
+            'Ttest',
+            'Tbuild',
+          ],
         ]);
         expect(
           boards
@@ -236,7 +247,10 @@ void main() {
           store: store,
           host: host,
         );
-        expect(c.result!.tasks!.last.boardTaskId, 'Tbuild');
+        expect(
+          c.result!.tasks!.last.boardTaskId,
+          shared ? 'Tstarter' : 'Tbuild',
+        );
         expect(await c.verifyAgain(approved: true), isTrue);
         final verifications = host.verifications;
         host.server = true;
