@@ -3,6 +3,7 @@ import 'dart:async';
 import '../models/approved_source_proposal.dart';
 import '../models/build_plan.dart';
 import '../models/project.dart';
+import '../models/repair_attempt.dart';
 import '../models/requirements_board.dart';
 import '../models/source_edit_proposal.dart';
 import '../models/source_generation.dart';
@@ -16,6 +17,7 @@ import 'source_candidate_controller.dart';
 import '../services/source_candidate.dart';
 import '../services/plan_approval_store.dart';
 import '../services/record_storage.dart';
+import '../services/repair_attempt_store.dart';
 import '../services/requirements_store.dart';
 import '../services/source_review_snapshot.dart';
 import 'base_controller.dart';
@@ -227,7 +229,47 @@ class SourceReviewController extends BaseController {
 
   bool get stale => !promoted && _proposal != null && proposal == null;
 
-  bool get canRequestRepair {
+  List<RepairAttempt> get repairHistory {
+    try {
+      return RepairAttemptStore(records, project.id).load().attempts;
+    } catch (_) {
+      return const [];
+    }
+  }
+
+  String? get repairHistoryError {
+    try {
+      RepairAttemptStore(records, project.id).load();
+      return null;
+    } catch (_) {
+      return 'Saved repair history is unreadable. Repair requests are blocked; '
+          'retained records have not been replaced.';
+    }
+  }
+
+  bool repairUsesCurrentApproval(RepairAttempt attempt) {
+    try {
+      return attempt.failure.snapshot.approval!.matches(
+        PlanApprovalStore(records).requireCurrentApproval(project),
+      );
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Map<String, int> get repairUsage => Map.unmodifiable({
+    for (final category in ['analyze', 'test', 'build'])
+      category: repairHistory
+          .where(
+            (attempt) =>
+                attempt.category == category &&
+                repairUsesCurrentApproval(attempt),
+          )
+          .length,
+  });
+
+  /// A saved source failure can remain inspectable after its budget is spent.
+  bool get hasRepairFailure {
     final session = _candidateSession;
     if (busy || promoted || isDisposed || session == null || proposal == null) {
       return false;
@@ -240,8 +282,28 @@ class SourceReviewController extends BaseController {
     }
   }
 
+  String? get repairBlockedReason {
+    final historyError = repairHistoryError;
+    if (historyError != null) return historyError;
+    if (!hasRepairFailure) return null;
+    final category = _candidateSession!.result.steps.last.operation;
+    if ((repairUsage[category] ?? 0) >= 3) {
+      return 'Repair budget exhausted: $category has used all 3 requests for '
+          'this approval. Inspect saved attempts; no further request will start.';
+    }
+    return null;
+  }
+
+  bool get canRequestRepair => hasRepairFailure && repairBlockedReason == null;
+
   Future<void> requestRepair(List<String> selected) async {
-    if (!canRequestRepair) return;
+    if (!canRequestRepair) {
+      if (!busy && !isDisposed && repairBlockedReason != null) {
+        _error = repairBlockedReason;
+        update();
+      }
+      return;
+    }
     await request(proposal!.boardTaskId, selected, repair: true);
   }
 

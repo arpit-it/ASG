@@ -5,6 +5,8 @@ import 'package:asg/controllers/source_review_controller.dart';
 import 'package:asg/controllers/source_candidate_controller.dart';
 import 'package:asg/models/build_plan.dart';
 import 'package:asg/services/application_store.dart';
+import 'package:asg/services/repair_attempt_store.dart';
+import 'package:asg/services/candidate_repair_evidence.dart';
 import 'package:asg/services/approved_source_proposer.dart';
 import 'package:asg/services/source_edit_proposer.dart';
 import 'package:asg/services/generation_host.dart';
@@ -189,6 +191,37 @@ void main() {
         ),
         findsOneWidget,
       );
+      final attempts = RepairAttemptStore(records, project.id);
+      final failure = requireRepairFailure(
+        records,
+        project.id,
+        controller.candidate!,
+      );
+      for (var i = 0; i < 3; i++) {
+        await tester.runAsync(() async {
+          await RepairAttemptStore(records, project.id).reserve(failure, () {});
+        });
+      }
+      expect(attempts.load().attempts.length, 3);
+      controller.refreshApproval();
+      await tester.pumpAndSettle();
+      await tester.scrollUntilVisible(
+        action,
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.ensureVisible(action);
+      await tester.pumpAndSettle();
+      final button = tester.widget<FilledButton>(
+        find.ancestor(of: action, matching: find.byType(FilledButton)),
+      );
+      expect(button.onPressed, isNull);
+      await tester.scrollUntilVisible(
+        find.textContaining('Repair budget exhausted:'),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(find.textContaining('Repair budget exhausted:'), findsOneWidget);
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox());
     },
@@ -289,6 +322,29 @@ void main() {
     expect(controller.error, contains('offline repair retry'));
     expect(controller.proposal, same(reviewed));
     expect(controller.candidate, same(failedCandidate));
+    final store = RepairAttemptStore(records, project.id);
+    await store.reserve(
+      requireRepairFailure(records, project.id, controller.candidate!),
+      () {},
+    );
+    expect(controller.hasRepairFailure, isTrue);
+    expect(controller.canRequestRepair, isFalse);
+    expect(controller.repairUsage['analyze'], 3);
+    final captureCount = captures.length;
+    provider = FakeProvider();
+    await controller.requestRepair(['lib/main.dart']);
+    expect(controller.error, contains('budget exhausted'));
+    expect(captures.length, captureCount);
+    expect(provider.prompt, isNull);
+    expect(controller.repairHistory.length, 3);
+    final retained = records.values[store.key]!;
+    records.values[store.key] = '{}';
+    expect(controller.canRequestRepair, isFalse);
+    await controller.requestRepair(['lib/main.dart']);
+    expect(controller.error, contains('unreadable'));
+    expect(captures.length, captureCount);
+    expect(records.values[store.key], '{}');
+    records.values[store.key] = retained;
     await controller.selectCandidateParent();
     await controller.prepareCandidate();
     expect(controller.error, isNull);
