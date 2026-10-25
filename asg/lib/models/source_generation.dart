@@ -18,6 +18,36 @@ class BoardTaskVerification {
   final BuildTaskStatus status;
 }
 
+/// The only supported fixed-adapter policy; saved values cannot expand authority.
+final class VerificationLimits {
+  const VerificationLimits._();
+  static const starter = VerificationLimits._();
+  int get version => 1;
+  int get commandTimeoutSeconds => 180;
+  int get outputLimitBytes => 65536;
+  int get maximumOperations => 4;
+
+  Map<String, int> toJson() => {
+    'version': version,
+    'commandTimeoutSeconds': commandTimeoutSeconds,
+    'outputLimitBytes': outputLimitBytes,
+    'maximumOperations': maximumOperations,
+  };
+
+  factory VerificationLimits.fromJson(Object? value) {
+    final expected = starter.toJson();
+    if (value is! Map ||
+        value.length != expected.length ||
+        expected.entries.any(
+          (entry) =>
+              value[entry.key] is! int || value[entry.key] != entry.value,
+        )) {
+      throw const FormatException('Unsupported verification limits.');
+    }
+    return starter;
+  }
+}
+
 class GenerationStep {
   const GenerationStep({
     required this.operation,
@@ -71,6 +101,7 @@ class GeneratedProject {
     this.failedOperation = '',
     this.pendingOperation = '',
     this.checkpointVersion = 0,
+    this.limits = VerificationLimits.starter,
     this.approval,
     List<BuildTask>? tasks,
   }) : sources = Map.unmodifiable(sources),
@@ -95,6 +126,8 @@ class GeneratedProject {
 
   /// Zero denotes legacy evidence without the resume protocol.
   final int checkpointVersion;
+
+  final VerificationLimits limits;
 
   String? get resumeRefusal {
     if (checkpointVersion != 1) {
@@ -198,8 +231,10 @@ class GeneratedProject {
     failedOperation: failedOperation ?? this.failedOperation,
     pendingOperation: pendingOperation ?? this.pendingOperation,
     checkpointVersion: checkpointVersion ?? this.checkpointVersion,
+    limits: limits,
   );
   Map<String, Object> toJson() => {
+    'limits': limits.toJson(),
     'directory': directory,
     'sdk': sdk,
     'python': python,
@@ -217,6 +252,10 @@ class GeneratedProject {
   };
   factory GeneratedProject.fromJson(Map<String, dynamic> json) {
     final result = GeneratedProject(
+      // Earlier records used exactly this fixed policy implicitly.
+      limits: json.containsKey('limits')
+          ? VerificationLimits.fromJson(json['limits'])
+          : VerificationLimits.starter,
       directory: json['directory'] as String,
       tasks: json.containsKey('tasks')
           ? BuildTask.fromJson(json['tasks'])
@@ -262,7 +301,7 @@ class GeneratedProject {
                 !RegExp(r'^[0-9a-f]{64}$').hasMatch(entry.value),
           ),
         ) ||
-        result.steps.length > 4) {
+        result.steps.length > result.limits.maximumOperations) {
       throw const FormatException('Invalid generated project record.');
     }
     final operations = (result.tasks ?? BuildTask.starter)
@@ -292,7 +331,7 @@ class GeneratedProject {
       throw const FormatException('Invalid failed operation identity.');
     }
     if (result.phase == SourceGenerationPhase.ready &&
-        (result.steps.length != 4 ||
+        (result.steps.length != result.limits.maximumOperations ||
             result.steps.any((step) => !step.succeeded) ||
             !result.outputs.containsKey('index.html') ||
             !result.outputs.containsKey('main.dart.js'))) {

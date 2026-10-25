@@ -90,6 +90,16 @@ class CommandTests(unittest.TestCase):
             self.assertNotEqual(result['exitCode'], 0)
             self.assertIn('stopped', result['output'])
 
+    def test_cli_rejects_policy_output_expansion_before_execution(self):
+        with tempfile.TemporaryDirectory() as directory:
+            for limit in ('0', '65535', '65537', '999999999'):
+                result = subprocess.run(
+                    [sys.executable, '-B', str(Path(__file__).with_name('generation_command.py')),
+                     '--operation', 'resolve', '--sdk', directory, '--directory', directory,
+                     '--output-limit', limit], capture_output=True, text=True, timeout=5)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn('invalid choice', result.stderr)
+
     def test_operations_are_fixed_and_no_remote_package_install(self):
         self.assertEqual(set(module.OPERATIONS), {'resolve', 'analyze', 'test', 'build'})
         self.assertIn('--offline', module.OPERATIONS['resolve'])

@@ -148,7 +148,7 @@ class _SourceGenerationScreenState extends State<SourceGenerationScreen> {
             ),
             const SizedBox(height: 12),
             const Text(
-              'Approved operations: offline dependency resolution, Flutter analysis, tests, web build, and an optional loopback preview. Each command has a 3-minute deadline and bounded output. Missing cached SDK packages cause a failure; no package/model installation is performed. These trusted tools run with your host permissions, not in a security sandbox.',
+              'Approved operations: offline dependency resolution, Flutter analysis, tests, web build, and an optional loopback preview. At most four commands run, each with a 3-minute deadline and a 64 KiB combined output limit. These fixed limits are saved with verification evidence. Missing cached SDK packages cause a failure; no package/model installation is performed. These trusted tools run with your host permissions, not in a security sandbox.',
             ),
             CheckboxListTile(
               contentPadding: EdgeInsets.zero,
