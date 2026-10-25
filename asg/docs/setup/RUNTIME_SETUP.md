@@ -1,6 +1,8 @@
 # Runtime setup
 
-**Current runtime update:** Qwen now uses the verified local 4-bit MLX streaming backend. The earlier Torch timeout/nonstreaming notes below are historical. See [QWEN_STREAMING.md](QWEN_STREAMING.md) for current setup, limits and successful real-edit verification.
+ASG is a Flutter application targeting Android, iOS, web, macOS, Windows and Linux. Included platform runners do not establish tested device support. Managed MLX setup and the current independent Flutter web generator host are macOS-specific; other platforms retain supported app features and runtime connection controls.
+
+Use the previously verified 4-bit MLX environment/checkpoint on Apple Silicon. The endpoint was unavailable during this audit; use [streaming setup](QWEN_STREAMING.md) for explicit startup and live checks. Torch/BF16 details below describe the legacy fallback.
 
 Open the **Set up runtime** chip/FAB in the landing screen's upper-right corner. Runtime setup follows MVC: RuntimeSetup/ModelCandidate → RuntimeSetupController → RuntimeHost, RuntimeConnection and stores → RuntimeSetupScreen.
 
@@ -8,7 +10,7 @@ Open the **Set up runtime** chip/FAB in the landing screen's upper-right corner.
 
 In the macOS app, select **Local files**, choose a model folder or a collection of model folders, then **Find local models**. A checkpoint needs config.json, tokenizer files and complete Safetensors weights; selecting a lone weight file is insufficient. Scanning includes the selected directory and up to three child levels, bounded to 200 folders.
 
-For this Mac, the existing checkpoint is `/Users/arpitsinha/ARG-model-downloads/qwen3.5-9b`. Initial managed inference supports architecture `Qwen3_5ForConditionalGeneration` through the bundled Transformers bridge on Apple Metal. Other architectures, GGUF, MLX-only checkpoints, missing shards and Git LFS pointer files are explicitly unsupported. Linked weights outside the checkpoint directory are rejected; select a self-contained downloaded copy.
+For this Mac, the existing checkpoint is `/Users/arpitsinha/ARG-model-downloads/qwen3.5-9b`. Initial managed inference supports architecture `Qwen3_5ForConditionalGeneration` through the bundled Transformers bridge on Apple Metal. The bundled bridge also supports the existing locally converted Qwen MLX checkpoint with a compatible MLX environment. Other architectures, GGUF, incomplete checkpoints and Git LFS pointer files remain unsupported; no arbitrary model compatibility is implied. Linked weights outside the checkpoint directory are rejected; select a self-contained downloaded copy.
 
 ## Download from a repository
 
@@ -22,7 +24,7 @@ Downloads can be many gigabytes. Check the repository's model license and disk n
 
 Choose an existing Python environment with compatible Torch and Transformers. On this machine, the previously verified interpreter is `/Users/arpitsinha/ComfyUI-Installs/mac_instance/ComfyUI/.venv/bin/python`; enter it or select it with the executable picker. The application has no hardcoded interpreter path.
 
-**Prepare runtime helper** verifies Torch/Transformers and Apple Metal, then installs only Accelerate 1.15.0 into the app-support runtime directory. It does not install or replace Torch/Transformers or modify the selected Python environment. Downloading from Hugging Face additionally requires huggingface_hub in that environment; other Git hosts require Git.
+**Prepare runtime helper** first recognizes an installed MLX runtime and verifies its imports without helper installation. For the legacy Torch path it verifies Torch/Transformers and Apple Metal, then installs only Accelerate 1.15.0 into the app-support runtime directory. It does not install or replace Torch/Transformers or modify the selected Python environment. Downloading from Hugging Face additionally requires huggingface_hub in that environment; other Git hosts require Git.
 
 Select a compatible checkpoint and press **Start selected model**. The bundled trusted bridge is extracted into application support and launched with argument arrays, not a shell. It binds only to localhost:8765. Chat settings are saved only after /health reports the expected model ID and path. The runtime model ID is derived from the selected folder name, and is passed explicitly to the bridge.
 
@@ -34,9 +36,11 @@ Local model scanning/download/process management is implemented for macOS. Andro
 
 The user explicitly approved disabling macOS App Sandbox for this desktop build on 25 October 2026 so it can invoke a selected host Python environment. This is an app-specific entitlement change, not a change to macOS system protections. The macOS app and its Python process run with host user permissions; no filesystem/process isolation is claimed. Existing sandboxed Studio preference keys are copied into missing standard preference keys before Flutter starts, without overwriting newer records or deleting the old container. Migration errors stop startup visibly rather than showing an empty project list.
 
-Future distribution should evaluate a signed managed helper or other narrower host integration. Generated repository Python code is never loaded by this flow (`trust_remote_code=False`), and source generation/execution tools remain unimplemented.
+Future distribution should evaluate a signed managed helper or other narrower host integration. Generated repository Python code is never loaded by this flow (`trust_remote_code=False`), and arbitrary source synthesis/execution remains unavailable. The separate approved fixed Flutter web generator uses trusted installed tools; see [generation](../architecture/GENERATION.md).
 
-## Verification
+## Historical setup validation
+
+These results apply to the original runtime-setup increment. Current default checks and exact revision evidence are in [progress](../history/PROGRESS.md); current endpoint availability must be checked separately.
 
 - Flutter analysis passed; 24 Flutter tests passed.
 - Tests cover local models versus explicit downloads, incomplete/unsupported model files, repository URL validation, readiness-before-save, connection mismatch, narrow-screen layout and actual owned-process start/stop using a lightweight fixture.

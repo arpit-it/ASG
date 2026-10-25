@@ -1,6 +1,8 @@
 # App-led creation and live workspace
 
-**Current runtime update:** Qwen now uses the verified local 4-bit MLX streaming backend. The earlier Torch timeout/nonstreaming notes below are historical. See [QWEN_STREAMING.md](../setup/QWEN_STREAMING.md) for current setup, limits and successful real-edit verification.
+ASG is a Flutter application targeting Android, iOS, web, macOS, Windows and Linux. Included platform runners do not establish tested device support. Managed MLX setup and the current independent Flutter web generator host are macOS-specific; other platforms retain supported app features and runtime connection controls.
+
+Qwen uses the previously verified local 4-bit MLX streaming backend. Live availability must be checked each run; this audit found the configured loopback endpoint unavailable. See [streaming setup](../setup/QWEN_STREAMING.md).
 
 The normal application window is now the current project's workspace. The desktop layout has chat on the left and a running interactive prototype on the right. On narrow screens, Chat and Preview tabs preserve both panes. Projects remains available in the header, alongside new-project and runtime controls.
 
@@ -27,22 +29,26 @@ Enter an instruction in chat and press **Apply instruction**. Fully recognized c
 
 Supported clauses can be combined with `and` (up to four). An unknown clause prevents the built-in path from partially applying a request. Other instructions go to the configured local model. Qwen returns bounded structured edits; unknown operations, invalid targets, unsupported controls and malformed responses are rejected.
 
-The renderer executes actual Flutter controls from a validated application definition. Current elements are heading, text, task list, counter, editable notes and buttons. Buttons can show a message, increment a counter, clear a list or add an item. Themes are indigo, green, orange and pink. This is a live interpreted prototype with functional controls, not an image or an external compiled project. Generating/exporting arbitrary application source, independent process previews, builds and deployment remain future work. Selected project platform targets remain metadata; a working prototype does not establish builds on those targets.
+The renderer executes actual Flutter controls from a validated application definition. Current elements are heading, text, task list, counter, editable notes and buttons. Buttons can show a message, increment a counter, clear a list or add an item. Themes are indigo, green, orange and pink. This is a live interpreted prototype with functional controls, not an image or an external compiled project. Arbitrary source synthesis and deployment remain future work. The separate macOS-hosted fixed Flutter web generator can export, verify and serve a compiled snapshot; see [generation](GENERATION.md). Selected project platform targets remain metadata; a working prototype does not establish builds on those targets.
 
-Current list/counter/note values are supplied with the next model instruction, and stable element IDs preserve local interaction state across compatible visual updates. Application definitions and successful edit conversations are saved together as `studio.application.v1.<projectId>`. The old Discuss history remains separately stored and is not deleted or silently reinterpreted as successful edits. Runtime interactions not yet included in a saved instruction revision are session state; a full data-storage engine for generated apps is future work.
+Current list/counter/note values are supplied with the next model instruction, and stable element IDs preserve local interaction state across compatible visual updates. Application definitions and successful edit conversations are saved together as `studio.application.v1.<projectId>`. The old Discuss history remains separately stored and is not deleted or silently reinterpreted as successful edits. Prototype interactions persist through serialized/coalesced writes with visible failure and retry state; navigation waits for pending saves. The generated independent app has session-only interaction state. See [storage](STORAGE.md).
 
 A successful update is validated and saved before the controller publishes it. The preview then rebuilds immediately and shows the new version number; chat scrolls to its response. A malformed result, timeout or failed write leaves the last working definition/revision unchanged and keeps the user's input for retry.
 
+## Planning and requirements
+
+The workspace exposes a persisted structured requirements/task board, editable project details, and separate Discuss/Plan/advisory Review conversations. Plans may propose additive queued tasks for explicit import; import invalidates prior approval. Exact current Plan approval and a supported structured contract gate Build. Prototype interactions/edits also invalidate approval through revision/definition context. Advisory Review reads bounded prototype and historical verification data; it does not execute checks or mark requirements verified.
+
+Desktop panes currently use a fixed constrained split; narrow screens use tabs. User resizing/collapse is queued as F14 in the sole [requirements queue](../REQUIREMENTS.md).
+
 ## Runtime constraints and verification
 
-Qwen uses the existing local provider, with compact edit requests and up to 2048 response tokens for application updates. The bridge now accepts that output budget; normal Discuss defaults stay at 256. The bridge has a 4096 input-token limit. Larger applications/instructions can exceed these limits and will fail visibly. Model generation max-time is checked between generation steps, so slow prefill can exceed it. Client timeout remains 120 seconds; disconnecting does not prove the server generation stopped.
+The client uses a 15-second connection/header deadline, 30-second inactive stream deadline and absolute 180-second total deadline across SSE, compatible JSON and rejection bodies. The bridge supports 4096 input tokens and at most 2048 output tokens, one request at a time, with bounded cancellation points. Larger requests fail visibly; closing transport does not prove immediate interruption of a native inference kernel.
 
-The initial full-definition real-model edit test timed out under current Mac memory pressure. The process started for that test was reset to restore runtime availability. Do not describe arbitrary Qwen edits as verified solely from deterministic or mocked tests. Common built-in instructions have an actual widget-level submit/save/refresh test, and the model path has fake-provider validation/error tests. The opt-in live test can be run alone with:
+Historical BF16 Torch attempts timed out safely. Later 4-bit MLX custom-edit, Plan and Review smoke runs succeeded, including streamed phases and durable prototype refresh. This run did not verify fresh inference because the endpoint refused connection. Default-skipped tests do not establish current model availability.
 
 ```sh
 flutter test test/application_loop_test.dart --dart-define=ASG_REAL_INFERENCE=true --plain-name 'real local Qwen instruction'
 ```
 
-See PROGRESS.md for final results of the current increment.
-
-Final runtime check for this increment: compact structured edits also timed out at the 120-second client limit. Two real edit attempts failed safely; 40 regular tests passed. Custom Qwen editing should be treated as performance-limited on this environment, while supported deterministic instruction updates are verified and available. No model was downloaded or converted as part of this change.
+See [streaming setup](../setup/QWEN_STREAMING.md), [test strategy](../development/TEST_STRATEGY.md) and [verified progress](../history/PROGRESS.md).

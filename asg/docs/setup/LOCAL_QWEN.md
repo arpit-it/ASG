@@ -1,4 +1,8 @@
-# Local Qwen3.5-9B
+# Historical BF16 Qwen setup
+
+ASG is a Flutter application targeting Android, iOS, web, macOS, Windows and Linux. Included platform runners do not establish tested device support. Managed MLX setup and the current independent Flutter web generator host are macOS-specific; other platforms retain supported app features and runtime connection controls.
+
+The commands and measurements below describe the earlier Torch/BF16 experiment. For the active MLX setup, use [Qwen streaming](QWEN_STREAMING.md). They are retained for reproducibility, not the recommended current startup path.
 
 **Current runtime update:** Qwen now uses the verified local 4-bit MLX streaming backend. The earlier Torch timeout/nonstreaming notes below are historical. See [QWEN_STREAMING.md](QWEN_STREAMING.md) for current setup, limits and successful real-edit verification.
 
@@ -34,7 +38,7 @@ Open dashboard Settings. Model ID: `Qwen3.5-9B`.
 - Web served on localhost: use `http://127.0.0.1:8765/v1`; local browser origins are supported. Hosted HTTPS pages are not configured to access this HTTP bridge.
 - Physical phones: access to the Mac's model is not configured. Do not use the Mac's loopback address from a phone.
 
-Save settings, then choose **Test model** for a real request. Open a project and choose **Discuss with Qwen 9B** for a saved per-project conversation. Chat and configuration are stored locally in preferences. The latest eight messages plus project description are sent as a textual transcript. Discuss has no filesystem or command tools; the other mode chips do not enable execution.
+Save settings, then choose **Test model** for a real request. Open a project and choose **Discuss with Qwen 9B** for a saved per-project conversation. Chat and configuration now use transactional native/IndexedDB storage with retained preference migration; the experiment originally used preferences. The latest eight messages plus project description are sent as a textual transcript. Discuss has no filesystem or command tools; the other mode chips do not enable execution.
 
 The debug-only Android network policy permits local HTTP to localhost and the Android Emulator host alias. This does not enable network model access in a release APK.
 

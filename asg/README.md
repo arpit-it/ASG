@@ -30,3 +30,9 @@ Platform runners cover Android, iOS, web, macOS, Windows and Linux. Managed mode
 Run formatting, analysis, tests and a relevant build before publishing implementation changes. New work uses an issue, a separate branch and an independently reviewed PR.
 
 Use **Edit project details** in the workspace toolbar to revise the current project's name and requirements. Saving preserves the current app and conversation across restart; chat changes the prototype. Future source exports include the revised requirements, and existing exports are labeled outdated. The editor waits for active work and preview saves to finish.
+
+## Platform and planning scope
+
+ASG is a Flutter application targeting Android, iOS, web, macOS, Windows and Linux. Included platform runners do not establish tested device support. Managed MLX setup and the current independent Flutter web generator host are macOS-specific; other platforms retain supported app features and runtime connection controls.
+
+The structured requirements/task board is implemented (F01). Discuss, Plan and advisory Review persist separately from prototype-edit chat. A saved Plan can propose additive queued tasks for explicit import; import changes the requirements revision and requires a fresh Plan before approval. The fixed starter contract has readable task/dependency preview, explicit durable approval/withdrawal, and saved per-task outcomes. Build requires the exact latest Plan, requirements and prototype context plus separate operation consent. Legacy drafts require a fresh Plan. General executable task mapping remains F02; resumable execution, model source edits and repairs remain F03–F05. See the [requirements and task queue](docs/REQUIREMENTS.md).

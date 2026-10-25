@@ -1,6 +1,8 @@
 # Technical Decisions
 
-Flutter replaces SwiftUI at the user’s explicit request. Use platform plugins for folder selection and small local records. Versioned JSON preferences keep the initial increment small; migrate to SQLite before execution history or large conversations. No model checkpoint or inference runtime is bundled or verified. Runtime licensing and memory benchmarks are gates for milestone 2.
+ASG is a Flutter application targeting Android, iOS, web, macOS, Windows and Linux. Included platform runners do not establish tested device support. Managed MLX setup and the current independent Flutter web generator host are macOS-specific; other platforms retain supported app features and runtime connection controls.
+
+Flutter supersedes the original SwiftUI/macOS-only product framework. Historical decisions below retain provenance; later Sembast and MLX decisions supersede preference-only storage and BF16 runtime choices. Model files/environments remain external; prior MLX benchmarks are recorded observations, not current runtime health.
 
 ## Runtime setup — 25 October 2026
 
@@ -24,3 +26,7 @@ Use Sembast 3.9.0 on native files and sembast_web 2.4.6+1 on IndexedDB behind Re
 ## Issue #3: trusted Flutter web template
 
 Generate one fixed MVC template with validated application/requirements JSON as data, then execute only approved offline Flutter operations through a bounded Python process-group helper. Preserve new-directory exclusivity and source/resolution/output fingerprints. Persist real outcomes and exceptions transactionally. Serve verified web output through an owned token-scoped loopback server, opened explicitly in the browser. This is a macOS-hosted export/verification slice, not arbitrary LLM code execution, native generation, continuous source editing, external deployment or a security sandbox. See GENERATION.md.
+
+## F01/F02 structured planning and approval — 25 October 2026
+
+Persist a typed requirements/task board with revision-based approval invalidation. Treat model-proposed general tasks as queued planning data requiring explicit additive import. Execute only the versioned allowlisted fixed Flutter starter graph, with saved task results and exact Plan approval provenance. Issue #50 extends context to prototype definition/revision and checks captured Build inputs before host work. Preserve legacy readability while requiring fresh drafts, without inventing consent or migrating old prose into executable tasks.

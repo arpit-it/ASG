@@ -39,6 +39,11 @@ Update this document with task selection and delivery evidence, alongside [agent
 - [ ] F09 Runtime diagnostics and resource controls — Queued
   - Show actual model connectivity, active request, cancellation scope, request limits and actionable setup failures.
   - Accept when offline, timeout and cancellation states are truthful, settings persist, and diagnostics omit secrets and private prompt content.
+- [ ] F14 Resizable and collapsible workspace panes — Queued; depends on F01
+  - Priority: after active F02 and existing higher-priority F03–F09 work; does not interrupt active delivery.
+  - Source/evidence: product specification §4.3 requires resizable/collapsible panels. `lib/views/project_workspace.dart` currently uses a clamped 40% width and a static VerticalDivider, with narrow-screen tabs; no resize/collapse controls exist. Existing F01–F13 do not cover pane layout controls. No second GitHub issue created in the #50 run.
+  - Scope/value: let users allocate desktop chat/preview space and collapse/restore a pane while keeping narrow-screen tabs and working state.
+  - Accept when pointer and keyboard controls resize within usable minimums, collapse/restore retains conversation/prototype state, and narrow/enlarged-text layouts remain accessible without overflow. Add controller/widget interaction and responsive regressions; run format/analyze/tests/web build. Create/reuse a scoped issue only when this task is selected.
 - [ ] F10 Deterministic requirements review — Queued; depends on F04 and F06
   - Map each requirement to concrete checks and saved evidence; distinguish automated verification from advisory model feedback.
   - Accept when failed, missing and stale evidence cannot yield a verified requirement, and reports link to exact revisions and test results.
@@ -50,7 +55,7 @@ Update this document with task selection and delivery evidence, alongside [agent
   - Accept when the installed stable application remains usable, failed candidates are recoverable, and merging requires independent approval and passing required checks.
 
 - [x] F13 Consolidate project documentation — Done
-  - Current active task from the user: keep one requirements and task document, organize supporting documents, remove redundant copies, and update the scheduled workflow.
+  - Delivered user request: keep one requirements and task document, organize supporting documents, remove redundant copies, and update the scheduled workflow.
   - Acceptance: one requirements file; unique original product scope and foundation history retained; maintained local documentation links resolve; the active 15 minute automation reads this file, deduplicates new tasks and checks Done only after verified merge.
   - Delivered 25 October 2026 via [issue #32](https://github.com/arpit-it/ASG/issues/32), branch `codex/32-documentation-queue`, [PR #33](https://github.com/arpit-it/ASG/pull/33). Independent review approved head `ec9b561f12d1edd9439d100dadae52afe3a90ab9`; required Flutter checks/web build (real Chrome storage and generated-project verification) and Python fixtures passed in CI run `40172035200`. Remote merge `3b4333286e0c3ef8c6543501c2bba6721e714035` at 2026-10-25 07:18:39 UTC and issue closure verified; local main synchronized before F01.
 
@@ -70,13 +75,15 @@ For each increment append: feature ID; status; scope; dependencies; issue; branc
 
 ## Current product decisions
 
+ASG is a Flutter application targeting Android, iOS, web, macOS, Windows and Linux. Included platform runners do not establish tested device support. Managed MLX setup and the current independent Flutter web generator host are macOS-specific; other platforms retain supported app features and runtime connection controls.
+
 Use Flutter across six platforms under the display name Automated Software Generator. The direct Flutter request supersedes the attached SwiftUI framework choice. Foundation scope: dashboard, creation wizard, saved planning records, native folder selection where supported, basic workspace navigation. Subsequent milestones cover actual software generation.
 
 ## Foundation acceptance context
 
 These criteria describe earlier increments; their presence does not mark the feature queue complete.
 
-Current increment: empty dashboard is honest; blank project name is rejected; target selection is required; project record saves before appearing; saved records load at startup; search filters names; unsupported automation displays explicit status. Remaining original milestone requirements include editable settings and full folder import. Generated applications, Git initialization, and successful builds must never be claimed based only on record creation.
+Historical foundation increment: empty dashboard is honest; blank project name is rejected; target selection is required; project record saves before appearing; saved records load at startup; search filters names; unsupported automation displays explicit status. Editable settings are now implemented; existing-source import remains F07. Generated applications, Git initialization, and successful builds must never be claimed based only on record creation.
 
 App-led workspace increment: user describes intent before technical configuration; recommendations can be changed and reviewed; selected platforms/features persist; creation opens the workspace; re-entry restores the current project; desktop chat is left of the live prototype; phone tabs preserve both panes; supported instructions apply and refresh visible version state; invalid edits/failed saves preserve the working version. Independent source generation/building is not part of this increment.
 
@@ -86,21 +93,25 @@ The user subsequently selected Flutter, the ASG repository, existing Qwen3.5-9B,
 
 # CODEX MASTER PROMPT — AI PROJECT STUDIO
 
+## Historical original brief (framework/platform choice superseded)
+
+The original brief proposed SwiftUI and a native macOS-first application; its framework/platform instructions below are now explicitly reconciled to Flutter, while preserving product scope. The current product is Flutter for Android, iOS, web, macOS, Windows and Linux; only specifically documented host integrations remain macOS-specific. Retain the original scope as provenance, not current framework/platform instructions.
+
 ## 1. Project Overview
 
 You are the Lead Software Architect, Senior macOS Engineer, AI Agent Engineer, QA Engineer, and Technical Project Manager responsible for building **AI Project Studio**.
 
-Build a production-oriented, native macOS application that allows users to create, develop, test, run, and maintain software projects through natural-language conversations without needing to view or manually edit source code.
+Build a production-oriented Flutter application for Android, iOS, web, macOS, Windows and Linux that allows users to create, develop, test, run, and maintain software projects through natural-language conversations without needing to view or manually edit source code.
 
 The application must also support **Self-Development Mode**, allowing its AI agent to implement, test, and propose changes to AI Project Studio's own source code.
 
 **Primary development environment:**
 - Hardware: Apple MacBook Pro M4 Max, 36 GB unified memory.
 - Operating system: macOS.
-- Primary application framework: Swift and SwiftUI.
+- Primary application framework: Flutter and Dart (supersedes the original SwiftUI choice).
 - Primary coding LLM candidate: Qwen3-Coder 30B-A3B, 4-bit quantization, subject to checkpoint and runtime verification.
 - Model runtime: MLX-compatible runtime or llama.cpp, selected after feasibility testing.
-- Initial deployment: Local-first macOS application.
+- Application targets: Android, iOS, web, macOS, Windows and Linux; local-first storage. Managed inference and the initial generator host are macOS-specific.
 - License requirement: Commercially usable dependencies and model checkpoints.
 - Development tools: Xcode, Swift Package Manager, Git, Flutter SDK, Python and Node.js where available.
 
@@ -157,9 +168,9 @@ Users should not need a code editor.
 
 Provide access to source files and technical logs through optional advanced views, but do not make them part of the normal user experience.
 
-## 4. macOS Application Interface
+## 4. Flutter Application Interface
 
-Implement the application using SwiftUI.
+Implement the application using Flutter with responsive layouts for Android, iOS, web, macOS, Windows and Linux.
 
 ### 4.1 Project Dashboard
 
@@ -183,7 +194,7 @@ Collect:
 - Project description.
 - Project type.
 - Target platforms.
-- Storage location using a native macOS folder picker.
+- Storage location using a platform-supported native folder picker, with explicit unsupported-platform behavior.
 - Optional Git repository initialization.
 - Optional starter template.
 
@@ -196,7 +207,7 @@ Initially support these project types in the architecture:
 - Python.
 - Kotlin / Spring Boot.
 
-Implement at least one complete project generator in the first milestone. Prefer SwiftUI macOS, because it allows the initial end-to-end workflow to be tested on the development machine.
+Implement at least one complete project generator in the first milestone. The implemented initial adapter generates Flutter web MVC projects using a macOS host; other adapters remain subject to F11 acceptance.
 
 Other project types may initially be registered as unsupported or experimental, but must not falsely report successful generation.
 
@@ -525,7 +536,7 @@ Provide:
 - Screenshot or preview capture where permitted.
 - Window activation.
 
-Do not assume arbitrary native macOS windows can be embedded directly into SwiftUI.
+Do not assume arbitrary native macOS windows can be embedded directly into the Flutter workspace; native-window preview adapters need an explicit supported integration.
 
 ### Mobile Applications
 
@@ -638,10 +649,10 @@ Verify model availability and runtime compatibility.
 
 Create the initial architecture and implementation plan.
 
-### Milestone 1 — Native Application Foundation
+### Milestone 1 — Flutter Application Foundation
 
 Implement:
-- SwiftUI macOS application.
+- Flutter application with Android, iOS, web, macOS, Windows and Linux runners.
 - Project dashboard.
 - Project creation wizard.
 - Native directory picker.
@@ -678,7 +689,7 @@ The application must:
 2. Generate a requirements specification.
 3. Produce a short implementation plan.
 4. Wait for user approval.
-5. Create a SwiftUI starter project.
+5. Create a Flutter starter project using the supported adapter (currently Flutter web on a macOS host).
 6. Generate or modify required source files.
 7. Build the project.
 8. Execute automated tests.
@@ -707,15 +718,15 @@ The system must:
 - Show the implementation summary and Git diff.
 - Request approval before merging.
 
-Do not merge automatically.
+Use the current independent-review workflow: an independent reviewer may merge only after final-revision approval and required passing checks; the implementer must not self-merge.
 
 ## 16. Coding Standards
 
 Use:
 
-- Swift concurrency where appropriate.
-- MVVM or another clearly documented SwiftUI architecture.
-- Protocol-based dependency injection.
+- Dart asynchronous work with explicit cancellation/disposal and platform integrations where required.
+- Flutter MVC with services, as specified in development/CODING_STANDARDS.md.
+- Constructor/factory dependency injection with typed Dart interfaces.
 - Modular services.
 - Structured error handling.
 - Structured logging.
@@ -739,7 +750,7 @@ Keep the application buildable after each milestone.
 
 Begin by inspecting the current repository and development environment.
 
-If the repository is empty, initialize a new SwiftUI macOS application structure.
+The existing repository already contains the Flutter application in `asg/`; preserve it and extend the active requirements task. A new empty repository would use Flutter runners for Android, iOS, web, macOS, Windows and Linux.
 
 Then:
 
@@ -774,15 +785,15 @@ At the end of each milestone, provide:
 - Risks.
 - Next milestone.
 
-## 18. First Task — START NOW
+## 18. Original foundation task — historical, already delivered in increments
 
-**Start Milestone 0 and Milestone 1.**
+The original foundation task below is retained as acceptance context; current work follows the ordered queue, with F02 active.
 
-Create the initial native macOS AI Project Studio application, including a working project dashboard, project creation wizard, persistent project records, native folder selection, and the foundational architecture for future local LLM integration.
+Create the Flutter Automated Software Generator application for Android, iOS, web, macOS, Windows and Linux, including a working project dashboard, project creation wizard, persistent project records, native folder selection, and the foundational architecture for future local LLM integration.
 
 Run the available build and tests.
 
-The deliverable must be a real, launchable macOS application foundation—not just a proposal, UI mockup, or architecture document.
+The deliverable is a real Flutter application foundation, with build/run evidence reported separately for each verified platform.
 
 Preserve all progress in the repository and report what was verified versus what remains unimplemented.
 
@@ -895,3 +906,8 @@ Post-merge evidence retained locally for the next normal reviewed F02 branch/PR;
 Awaiting merge; branch `codex/50-prototype-plan-context`, extends F02 / §4.4 after verified PR #49 merge `34da5bebf1728e969d9c43a661d30e4454e13f09`, issue #48 closed. No competing active ASG run/open task at selection. Evidence: current Plan context bound project and board only, so editing the saved prototype retained approval for changed generation inputs. Scope/acceptance: new Plan contexts capture exact validated prototype definition and revision (including unsaved starter fallback); changed, revision-only or corrupt evidence invalidates approval/executable preview. Generation/retry must reject stale screen inputs before stopping preview/host work, preserving history. Fresh Plan/approval and current screen work; native reopen retains identity. Legacy Plan/history stays readable; fresh draft required for legacy context. No new executor; F02 remains In progress, F03 not started.
 
 Validation: three added regressions cover prototype edits/revision-only changes/corruption, legacy context refusal, and stale Build input denial with preview/history preservation and fresh approval/reopen recovery; extended actual native database reopen and existing planning fixture. Final formatter/analyzer, full default suite and web build evidence recorded in linked PR. Initial invalid test fixtures corrected and suite retested. Existing model endpoint refused connection; no fresh inference claim or runtime replacement. Required CI, independent final-revision approval and verified merge are required before delivery. Prior PR #49 final delivery evidence retained; unrelated IDE edits preserved. Schedule and notification preferences unchanged.
+
+
+### Documentation audit requested during issue #50
+
+Audited both entry READMEs and every maintained document under docs, plus contribution/security guidance and repository instructions. Reconciled current Flutter six-platform scope, MVC/planning/storage/generator boundaries, approval/prototype provenance, CI/live-test distinction, dependency inventory and historical-versus-current evidence. Preserved original history and brief; removed stale current claims that storage/approval/generation or MLX verification were absent. Added only F14 for the concrete uncovered §4.3 pane resize/collapse requirement; existing tasks already cover other known gaps, so no duplicate queue or second issue. Documentation changes share PR #51 and require fresh final-head independent review.

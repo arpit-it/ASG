@@ -1,5 +1,11 @@
 # Progress — 25 October 2026
 
+## Current context — 25 October 2026
+
+ASG is a Flutter application targeting Android, iOS, web, macOS, Windows and Linux. Included platform runners do not establish tested device support. Managed MLX setup and the current independent Flutter web generator host are macOS-specific; other platforms retain supported app features and runtime connection controls.
+
+F01/F13 are Done; F02 remains In progress. PR #49 was independently reviewed and merged as `34da5bebf1728e969d9c43a661d30e4454e13f09`. Issue #50 / PR #51 adds prototype-bound approval and this documentation audit; it is Awaiting merge until final-head review and required CI pass. The [requirements ledger](../REQUIREMENTS.md) is the sole task queue. Older entries below are chronological evidence, not current instructions or an alternate backlog. Earlier SwiftUI/macOS-only, preference-only, BF16 timeout, test-count and pending-PR statements are superseded by later entries.
+
 ## Environment / milestone 0
 
 Empty starting repository. Flutter 3.47.6 / Dart 3.13.5, macOS 27.0.1, Xcode 27.0, Git 2.54.0, Python 3.12.8 available. Android SDK exists but command-line tools are missing and license status is unresolved. Windows/Linux host builds unavailable on macOS. Local model/runtime compatibility and memory benchmarks are deferred; no model has been downloaded or selected.
@@ -314,3 +320,8 @@ Post-merge evidence retained locally for the next normal reviewed F02 branch/PR;
 ## F02 prototype-bound Plan approval — issue #50 (25 October 2026)
 
 Awaiting merge; branch `codex/50-prototype-plan-context`. Gap: approval did not change when the saved prototype changed. New contexts bind validated definition/revision; stale Build-screen inputs fail before preview stop or host generation/retry. Changed/revision-only/corrupt and legacy contexts cannot authorize Build. Fresh Plan approval and current prototype work; previous history/preview remains available. Three new regressions plus native database reopen and existing fixture coverage. Initial invalid fixtures corrected and full checks retested; actual final checks/review/CI/merge are recorded in linked PR. Local model endpoint refused connection; no fresh inference/model download/stable-app replacement. F02 remains In progress for broader adapter mapping. Prior PR #49 final evidence retained; unrelated IDE edits preserved.
+
+
+### Documentation/platform audit in PR #51
+
+User requested a complete documentation update and explicit Flutter six-platform scope. Audited 27 maintained entry/guidance/docs files; 104 local Markdown links resolve. Updated both READMEs, index, architecture/storage/generation/workspace/decisions, development/test/security/CI/dependencies/workflow, setup and history current-context notices. Original brief framework instructions now explicitly use Flutter for Android, iOS, web, macOS, Windows and Linux; native host limits remain specific to managed MLX/generation. Preserved chronological delivery/benchmark history. Added only F14 for existing §4.3 resize/collapse gap after code and GitHub deduplication; no new issue beyond #50. This is user-requested upkeep within #51, not another F13 consolidation. Code checks remain formatter/analyzer,200 default tests4skips,web build; documentation link/queue checks and fresh final-head independent review required.
