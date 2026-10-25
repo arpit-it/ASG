@@ -256,6 +256,7 @@ class NativeGenerationHost implements GenerationHost {
       phase: SourceGenerationPhase.verifying,
       steps: const [],
       failedOperation: '',
+      pendingOperation: '',
       outputs: const {},
     );
     await progress(current);
@@ -285,13 +286,20 @@ class NativeGenerationHost implements GenerationHost {
       // Revalidate durable consent before starting each trusted command.
       await progress(current);
       checkVerification();
+      Future<void> checkpoint() async {
+        current = current.copy(pendingOperation: operation);
+        await progress(current);
+        checkVerification();
+      }
+
       try {
+        if (_operationOverride != null) await checkpoint();
         result = _operationOverride != null
             ? await _operationOverride(project, operation)
             : await runFlutterOperation(
                 project,
                 operation,
-                beforeStart: () => progress(current),
+                beforeStart: checkpoint,
               );
       } catch (error) {
         // A runner exception has no trustworthy exit result. Keep completed
@@ -315,7 +323,10 @@ class NativeGenerationHost implements GenerationHost {
           cancelled: true,
         );
       }
-      current = current.copy(steps: [...current.steps, result]);
+      current = current.copy(
+        steps: [...current.steps, result],
+        pendingOperation: '',
+      );
       if (!result.succeeded) {
         current = current.copy(
           phase: SourceGenerationPhase.failed,

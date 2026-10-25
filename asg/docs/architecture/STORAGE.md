@@ -63,3 +63,8 @@ A saved current Plan may carry one bounded version-1 `asg-tasks` proposal (up to
 ## Output-limit evidence — F03, issue #70
 
 Generation steps add optional `outputLimitExceeded` (legacy records default false). Success now requires zero exit, no timeout and no output exhaustion. Failed output-limit outcomes survive reopen, block downstream task/board verification, and cannot be saved as Ready or followed by fabricated downstream success. The fixed helper enforces 65,536 combined output bytes with process-group cleanup; the UI identifies the limit explicitly. No record keys change. This is the output-limit increment only; resumable action checkpoints and user stop/cancel remain F03 work.
+
+
+### Verification dispatch checkpoint (F03, issue #76)
+
+Generated snapshots optionally store `pendingOperation` (`resolve`, `analyze`, `test` or `build`). Missing fields retain the legacy empty default. The native host awaits persistence at the final dispatch boundary before starting a helper. A marker means the command may have started, never that it succeeded. A command result clears the marker in the same saved snapshot that adds its step; exceptions retain uncertainty and completed results. Readers reject markers inconsistent with phase or the next task in the saved graph. The checkpoint carries the snapshot's existing approval, graph and input fingerprints. It does not grant replay authority: explicit Retry still restarts all checks and automatic checkpoint resume remains unavailable.

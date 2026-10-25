@@ -108,6 +108,88 @@ void main() {
     await temp.delete(recursive: true);
   });
 
+  test('dispatch checkpoint must persist before a runner starts', () async {
+    final generated = await generate();
+    var calls = 0;
+    final guarded = NativeGenerationHost(
+      loadAsset: assets,
+      runOperation: (_, operation) async {
+        calls++;
+        throw StateError('runner should never start');
+      },
+    );
+    await expectLater(
+      guarded.verify(generated, (value) async {
+        if (value.pendingOperation.isNotEmpty) {
+          throw StateError('checkpoint storage failed');
+        }
+      }),
+      throwsStateError,
+    );
+    expect(calls, 0);
+    await guarded.dispose();
+  });
+
+  test('runner uncertainty survives reopen with completed evidence', () async {
+    final generated = await generate();
+    var calls = 0;
+    GeneratedProject? durable;
+    final guarded = NativeGenerationHost(
+      loadAsset: assets,
+      runOperation: (_, operation) async {
+        expect(durable!.pendingOperation, operation);
+        calls++;
+        if (operation == 'analyze') throw StateError('lost runner');
+        return GenerationStep(operation: operation, exitCode: 0, output: 'ok');
+      },
+    );
+    await expectLater(
+      guarded.verify(generated, (value) async {
+        durable = GeneratedProject.fromJson(
+          jsonDecode(jsonEncode(value.toJson())) as Map<String, dynamic>,
+        );
+      }),
+      throwsStateError,
+    );
+    expect(calls, 2);
+    expect(durable!.pendingOperation, 'analyze');
+    expect(durable!.steps.single.operation, 'resolve');
+    expect(durable!.failedOperation, 'analyze');
+    expect(durable!.phase, SourceGenerationPhase.failed);
+    await guarded.dispose();
+  });
+
+  test(
+    'results clear checkpoints and invalid checkpoint history is refused',
+    () async {
+      final events = <GeneratedProject>[];
+      final ready = await host.verify(await generate(), (value) async {
+        events.add(GeneratedProject.fromJson(value.toJson()));
+      });
+      expect(
+        events
+            .where((e) => e.pendingOperation.isNotEmpty)
+            .map((e) => e.pendingOperation),
+        ['resolve', 'analyze', 'test', 'build'],
+      );
+      expect(ready.pendingOperation, isEmpty);
+      expect(
+        GeneratedProject.fromJson(ready.toJson()).pendingOperation,
+        isEmpty,
+      );
+      final base = (await generate(name: 'another_app')).toJson();
+      for (final invalid in [
+        {...base, 'pendingOperation': 'shell', 'phase': 'verifying'},
+        {...base, 'pendingOperation': 'analyze', 'phase': 'verifying'},
+        {...base, 'pendingOperation': 'resolve'},
+        {...ready.toJson(), 'pendingOperation': 'build'},
+      ]) {
+        expect(() => GeneratedProject.fromJson(invalid), throwsFormatException);
+      }
+      expect(GeneratedProject.fromJson(base).pendingOperation, isEmpty);
+    },
+  );
+
   test('approval guard refuses creation after path preparation', () async {
     var checks = 0;
     await expectLater(

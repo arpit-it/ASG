@@ -232,6 +232,13 @@ class _SourceGenerationScreenState extends State<SourceGenerationScreen> {
                 const Text(
                   'The previous run was interrupted. Retry verification of unchanged source; no existing files will be regenerated.',
                 ),
+              if (result.pendingOperation.isNotEmpty && !controller.busy)
+                Text(
+                  '${result.pendingOperation} was marked for dispatch but has no saved result. '
+                  'It may have changed files. Retry restarts all checks; '
+                  'automatic resume is unavailable.',
+                  key: const ValueKey('pendingOperationCheckpoint'),
+                ),
               if (result.error.isNotEmpty) Text(result.error),
               if (result.tasks != null) ...[
                 BoardVerificationProgress(

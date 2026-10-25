@@ -69,6 +69,7 @@ class GeneratedProject {
     this.phase = SourceGenerationPhase.generated,
     this.error = '',
     this.failedOperation = '',
+    this.pendingOperation = '',
     this.approval,
     List<BuildTask>? tasks,
   }) : sources = Map.unmodifiable(sources),
@@ -86,6 +87,10 @@ class GeneratedProject {
 
   /// A task whose validation or runner threw; no command exit result is implied.
   final String failedOperation;
+
+  /// Dispatch was authorized and may have started; no durable result yet.
+  /// This marker never authorizes replay or implies successful execution.
+  final String pendingOperation;
   final PlanApproval? approval;
   final List<BuildTask>? tasks;
 
@@ -146,6 +151,7 @@ class GeneratedProject {
     String? sdk,
     String? python,
     String? failedOperation,
+    String? pendingOperation,
     List<GenerationStep>? steps,
     Map<String, String>? outputs,
     Map<String, String>? resolution,
@@ -164,6 +170,7 @@ class GeneratedProject {
     phase: phase ?? this.phase,
     error: error,
     failedOperation: failedOperation ?? this.failedOperation,
+    pendingOperation: pendingOperation ?? this.pendingOperation,
   );
   Map<String, Object> toJson() => {
     'directory': directory,
@@ -176,6 +183,7 @@ class GeneratedProject {
     'phase': phase.name,
     'error': error,
     if (failedOperation.isNotEmpty) 'failedOperation': failedOperation,
+    if (pendingOperation.isNotEmpty) 'pendingOperation': pendingOperation,
     if (approval != null) 'approval': approval!.toJson(),
     if (tasks != null) 'tasks': tasks!.map((t) => t.toJson()).toList(),
   };
@@ -205,6 +213,7 @@ class GeneratedProject {
       phase: SourceGenerationPhase.values.byName(json['phase'] as String),
       error: json['error'] as String,
       failedOperation: json['failedOperation'] as String? ?? '',
+      pendingOperation: json['pendingOperation'] as String? ?? '',
     );
     if ((result.approval != null && !result.approval!.approved) ||
         result.directory.isEmpty ||
@@ -234,6 +243,16 @@ class GeneratedProject {
           (i > 0 && !result.steps[i - 1].succeeded)) {
         throw const FormatException('Invalid verification history order.');
       }
+    }
+    if (result.pendingOperation.isNotEmpty &&
+        ((result.phase != SourceGenerationPhase.verifying &&
+                result.phase != SourceGenerationPhase.failed) ||
+            result.steps.length >= operations.length ||
+            operations[result.steps.length] != result.pendingOperation ||
+            result.steps.any((step) => !step.succeeded) ||
+            (result.failedOperation.isNotEmpty &&
+                result.failedOperation != result.pendingOperation))) {
+      throw const FormatException('Invalid pending operation checkpoint.');
     }
     if (result.failedOperation.isNotEmpty &&
         (result.phase != SourceGenerationPhase.failed ||

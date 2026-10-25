@@ -197,6 +197,43 @@ void main() {
     if (!c.isDisposed) c.dispose();
   });
 
+  testWidgets(
+    'reopened uncertain dispatch explains retry without host effects',
+    (tester) async {
+      c.dispose();
+      await store.save(
+        'p',
+        generated.copy(
+          phase: SourceGenerationPhase.failed,
+          pendingOperation: 'resolve',
+          failedOperation: 'resolve',
+          error: 'Runner outcome unknown',
+        ),
+      );
+      c = SourceGenerationController(
+        project: project,
+        definition: definition,
+        store: store,
+        host: host,
+      );
+      expect(c.result!.pendingOperation, 'resolve');
+      await tester.pumpWidget(
+        MaterialApp(home: SourceGenerationScreen(controller: c)),
+      );
+      final marker = find.byKey(const ValueKey('pendingOperationCheckpoint'));
+      await tester.scrollUntilVisible(
+        marker,
+        250,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(marker, findsOneWidget);
+      expect(find.textContaining('Retry restarts all checks'), findsOneWidget);
+      expect(host.verifications, 0);
+      expect(host.writes, 0);
+      await tester.pumpWidget(const SizedBox.shrink());
+    },
+  );
+
   test('Stop retains completed evidence, blocks downstream and allows explicit retry', () async {
     final reached = Completer<void>(), release = Completer<void>();
     host.afterResolve = () async {
