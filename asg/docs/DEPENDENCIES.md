@@ -68,3 +68,7 @@ ASG local runtime: existing Torch 2.12.1 and Transformers 5.16.1, plus project-l
 
 
 Optimized runtime: MLX LM 0.32.2 / MLX 0.32.4 / MLX Metal 0.32.4, isolated in tools/.mlx-venv and pinned in tools/requirements-mlx.txt. MLX and MLX LM use MIT licenses; Qwen model licensing remains Apache-2.0 as recorded above. No model weights or runtime environment are committed.
+
+## Transactional storage — issue #4
+
+Added sembast 3.9.0 and sembast_web 2.4.6+1 (BSD-3-Clause), idb_shim 2.10.1+1 (BSD-2-Clause), synchronized 3.5.0 (MIT), and direct path 1.9.1 (BSD-3-Clause). Licenses reviewed in downloaded package sources. Native storage uses existing path_provider; browser uses IndexedDB. Lockfile committed; no model/runtime dependencies changed. Retain required notices in distributed artifacts.

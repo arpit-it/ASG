@@ -64,7 +64,8 @@ class _DashboardState extends State<Dashboard> {
     if (saved && mounted) {
       await Navigator.of(context).push(
         MaterialPageRoute<void>(
-          builder: (_) => ProjectWorkspace(project: project),
+          builder: (_) =>
+              ProjectWorkspace(records: widget.store.records, project: project),
         ),
       );
       return;
@@ -88,7 +89,7 @@ class _DashboardState extends State<Dashboard> {
             onPressed: () => showDialog<void>(
               context: context,
               builder: (_) => ModelSettings(
-                store: ModelSettingsStore(widget.store.preferences),
+                store: ModelSettingsStore(widget.store.records),
               ),
             ),
           ),
@@ -102,8 +103,8 @@ class _DashboardState extends State<Dashboard> {
           MaterialPageRoute<void>(
             builder: (_) => RuntimeSetupScreen(
               controller: RuntimeSetupController(
-                store: RuntimeSetupStore(widget.store.preferences),
-                modelStore: ModelSettingsStore(widget.store.preferences),
+                store: RuntimeSetupStore(widget.store.records),
+                modelStore: ModelSettingsStore(widget.store.records),
                 host: createRuntimeHost(),
               ),
             ),
@@ -244,7 +245,10 @@ class _DashboardState extends State<Dashboard> {
                       }
                       Navigator.of(context).push(
                         MaterialPageRoute<void>(
-                          builder: (_) => ProjectWorkspace(project: p),
+                          builder: (_) => ProjectWorkspace(
+                            records: widget.store.records,
+                            project: p,
+                          ),
                         ),
                       );
                     },

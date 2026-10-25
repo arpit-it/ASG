@@ -12,6 +12,7 @@ void main() {
         final source = file.readAsStringSync();
         for (final forbidden in [
           'package:shared_preferences/',
+          'package:sembast',
           'package:http/',
           "import 'dart:io'",
           "import 'dart:convert'",

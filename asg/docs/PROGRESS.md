@@ -71,3 +71,10 @@ Published the independently reviewed baseline to main as 3dc6142 (issue #1). Add
 ## README alignment — issue #6
 
 PR #5 was independently reviewed and merged as 2bad70a after both CI jobs passed. Updated the root/application READMEs to explain the app-led product goal, working prototype and streamed local runtime, future generation/build features, platform limits, MVC, setup, validation and contribution workflow. Verified relative documentation links and diff formatting. No production code changed.
+
+## Transactional storage — issue #4
+
+Implemented cross-platform transactional repositories and atomic legacy migration without deleting preferences. Durable prototype interactions preserve tasks/completion, counters and notes across restart. Save failures keep committed records and expose retry; rapid saves serialize and chat waits for persistence. Fixed review-discovered kind-change note loss and focused-input loss during generation. Navigation guards prevent switching projects during unsaved changes. Added migration/rollback/corruption/restart/write-failure, interaction/concurrency/navigation and actual Chrome IndexedDB tests. Final PR records validation and independent review.
+
+Validation: formatter/analyzer passed; 63 regular Flutter tests passed (live inference skipped by default); actual Chrome IndexedDB test passed; Python download fixtures 2/2 and HTTP/SSE fixtures 4/4 passed. macOS debug, Android debug and web builds passed. Strict corruption and all review-discovered interaction races have regression coverage.
+The opt-in real local Qwen custom-edit test also passed after the storage changes. It used the already running MLX runtime; no model download or runtime replacement occurred.

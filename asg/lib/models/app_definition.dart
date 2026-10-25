@@ -8,6 +8,7 @@ class AppElement {
     required this.kind,
     required this.label,
     this.items = const [],
+    this.completed = const [],
     this.action = AppAction.message,
     this.target = '',
     this.value = '',
@@ -15,12 +16,14 @@ class AppElement {
   final String id, label, target, value;
   final ElementKind kind;
   final List<String> items;
+  final List<int> completed;
   final AppAction action;
   Map<String, dynamic> toJson() => {
     'id': id,
     'type': kind.name,
     'label': label,
     'items': items,
+    'completed': completed,
     'action': action.name,
     'target': target,
     'value': value,
@@ -41,6 +44,12 @@ class AppElement {
         rawItems.any((e) => e is! String || e.length > 200)) {
       throw const FormatException('Invalid application items.');
     }
+    final completed = json['completed'] ?? <int>[];
+    if (completed is! List ||
+        completed.any((i) => i is! int || i < 0 || i >= rawItems.length) ||
+        completed.toSet().length != completed.length) {
+      throw const FormatException('Invalid completed task indexes.');
+    }
     final target = json['target'] ?? '', value = json['value'] ?? '';
     if (target is! String ||
         target.length > 64 ||
@@ -53,6 +62,7 @@ class AppElement {
       kind: kind,
       label: label,
       items: List.unmodifiable(rawItems.cast<String>()),
+      completed: List.unmodifiable(completed.cast<int>()),
       action: AppAction.values.byName(json['action'] as String? ?? 'message'),
       target: target,
       value: value,

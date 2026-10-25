@@ -17,7 +17,7 @@ The long-term goal is to generate, build, test, run and maintain many types of s
 
 The [requirements](asg/docs/MASTER_REQUIREMENTS.md) describe approved requirements/plans, safe source generation, deterministic build/test execution, bounded repairs, actual generated-app previews, project history/resume, export and controlled self-development. Framework adapters should grow incrementally toward broad software support. These are product goals, not completed capabilities.
 
-Current previews render a constrained application definition inside ASG; they do not compile an independent project. Transactional storage, durable prototype interaction state and a complete source generator remain open work. Linking a project folder records its location; it does not import or modify its source. See the [roadmap](asg/docs/ROADMAP.md), [progress](asg/docs/PROGRESS.md) and [open issues](https://github.com/arpit-it/ASG/issues).
+Current previews render a constrained application definition inside ASG; they do not compile an independent project. Transactional local storage and durable task/counter/note interactions are implemented; a complete source generator remains open work. Linking a project folder records its location; it does not import or modify its source. See the [roadmap](asg/docs/ROADMAP.md), [progress](asg/docs/PROGRESS.md) and [open issues](https://github.com/arpit-it/ASG/issues).
 
 ## Run the app
 
@@ -63,7 +63,7 @@ The Flutter root is **asg/** and follows MVC with integration services:
 | asg/docs/ | Requirements, architecture, setup, progress and durable memory |
 | .github/ | CI, issue forms and PR template |
 
-Projects, settings and revisions currently use versioned device preferences, not a transactional database or secrets store. Preserve stored schemas and last-working application state when extending the app.
+Projects, conversations, settings and application revisions use a transactional Sembast database (native app-support file; IndexedDB on web). Existing preference records migrate atomically and remain retained as the original backup. Prototype tasks/completion, counters and notes save across restarts, with visible failure/retry state. Storage is not a secrets store. See [storage and recovery](asg/docs/STORAGE.md); preserve stored schemas and last-working state when extending the app.
 
 ## Validate and contribute
 

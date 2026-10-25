@@ -89,8 +89,8 @@ Future<RuntimeSetupController> controller(
 }) async {
   final prefs = await SharedPreferences.getInstance();
   return RuntimeSetupController(
-    store: RuntimeSetupStore(prefs),
-    modelStore: ModelSettingsStore(prefs),
+    store: RuntimeSetupStore.fromPreferences(prefs),
+    modelStore: ModelSettingsStore.fromPreferences(prefs),
     host: host,
     connection: api ?? connection(ready: () => false),
   );
@@ -161,7 +161,9 @@ void main() {
       expect(c.error, isNull);
       expect(c.health.ready, true);
       expect(
-        ModelSettingsStore(await SharedPreferences.getInstance()).load().model,
+        ModelSettingsStore.fromPreferences(
+          await SharedPreferences.getInstance(),
+        ).load().model,
         'Qwen3.5-9B',
       );
       await c.stop();
@@ -178,7 +180,9 @@ void main() {
     await c.connect(const LocalModelConfig(model: 'Desired'));
     expect(c.error, contains('No ready runtime'));
     expect(
-      ModelSettingsStore(await SharedPreferences.getInstance()).load().model,
+      ModelSettingsStore.fromPreferences(await SharedPreferences.getInstance())
+          .load()
+          .model,
       'Qwen3.5-9B',
     );
     await c.stop();
@@ -213,7 +217,9 @@ void main() {
   );
   testWidgets('landing page has top-right runtime FAB', (tester) async {
     final prefs = await SharedPreferences.getInstance();
-    await tester.pumpWidget(StudioApp(store: StudioStore(prefs)));
+    await tester.pumpWidget(
+      StudioApp(store: StudioStore.fromPreferences(prefs)),
+    );
     expect(find.byTooltip('Set up runtime'), findsOneWidget);
     final scaffold = tester.widget<Scaffold>(find.byType(Scaffold).first);
     expect(scaffold.floatingActionButtonLocation, isA<RuntimeFabLocation>());

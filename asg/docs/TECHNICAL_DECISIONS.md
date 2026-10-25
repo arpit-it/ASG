@@ -16,3 +16,7 @@ Make the user supply intent/choices while Studio leads creation. Restore the cur
 ## Verified MLX streaming runtime — 25 October 2026
 
 Use the existing Qwen3.5-9B weights converted locally to 4-bit MLX for the active Apple Silicon runtime. The full BF16 Torch path previously timed out on structured edits; the MLX path passes the actual custom-edit integration test with streamed phases/summary chunks. Preserve the existing API endpoint/model ID and original weights. Keep Python dependencies isolated/pinned and model caches ignored. Use SSE with heartbeats, explicit completion/error semantics, inactivity/total limits and cancellation. Show processing state and human-readable summary text; never apply an incomplete or unvalidated edit. Details and measurements: QWEN_STREAMING.md.
+
+## Issue #4: transactional repositories
+
+Use Sembast 3.9.0 on native files and sembast_web 2.4.6+1 on IndexedDB behind RecordStorage. This provides transactions on all Flutter targets without a native SQLite/WASM provisioning step. Preserve v1 key payloads and migrate validated records plus completion marker atomically, retaining preferences. Use strict database open to surface corruption rather than reset. Session snapshots preserve synchronous repository reads; concurrent native processes and live multi-tab UI synchronization are outside this increment. See STORAGE.md.

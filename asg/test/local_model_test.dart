@@ -13,8 +13,11 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
     const config = LocalModelConfig(model: 'qwen-local');
-    await ModelSettingsStore(prefs).save(config);
-    expect(ModelSettingsStore(prefs).load().model, 'qwen-local');
+    await ModelSettingsStore.fromPreferences(prefs).save(config);
+    expect(
+      ModelSettingsStore.fromPreferences(prefs).load().model,
+      'qwen-local',
+    );
   });
   test('reject remote endpoints before sending prompts', () {
     expect(

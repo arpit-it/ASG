@@ -39,3 +39,7 @@ Latest schedule policy: prefer existing/in-progress issues, create at most one n
 Issue #2 adds CI and focused issue/PR templates on codex/2-ci-workflow. CI checks formatting, analysis, default Flutter tests, web build and lightweight Python fixtures. Real inference remains opt-in and must never be inferred from skipped CI tests. See CI.md.
 
 Issue #2 completed: independent reviewer merged PR #5 as 2bad70a31371e23715aff22333d1bb5d826a808f after both GitHub CI jobs passed; issue #2 closed. Issue #6 updates both READMEs to the requirements and current capabilities on codex/6-requirements-readme, replacing outdated preview/runtime claims.
+
+## Issue #4: transactional storage and interaction durability
+
+Branch codex/4-transactional-storage implements Sembast native-file/web-IndexedDB repositories, atomic validated v1 preference migration with originals retained, strict corruption errors, and durable task/completion/counter/note state. Chat waits for pending writes, generation disables preview input, save errors expose retry, and project navigation waits for committed changes. See STORAGE.md; do not migrate again or delete retained preferences. Real Chrome IndexedDB rollback/reopen test is added to CI. User additionally requested repository protection (#8), to follow this issue before source generation #3. Keep visibility unchanged pending an explicit user choice; reviewer-agent independence is not a separate GitHub account approval.

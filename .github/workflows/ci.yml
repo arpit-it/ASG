@@ -30,6 +30,7 @@ jobs:
       - run: dart format --output=none --set-exit-if-changed lib test
       - run: flutter analyze --no-pub
       - run: flutter test --no-pub
+      - run: flutter test --no-pub --platform chrome test/browser_storage_test.dart
       - run: flutter build web --no-pub
   runtime:
     name: Python runtime fixtures

@@ -65,9 +65,7 @@ class ChatController extends BaseController {
       _messages = updated;
       accepted = true;
       update();
-      _provider = _createProvider(
-        ModelSettingsStore(_store!.preferences).load(),
-      );
+      _provider = _createProvider(ModelSettingsStore(_store!.records).load());
       final recent = _messages
           .skip(_messages.length > 8 ? _messages.length - 8 : 0)
           .map((m) => '${m.role}: ${m.content}')

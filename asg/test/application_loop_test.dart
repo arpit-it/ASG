@@ -43,7 +43,7 @@ class ReplyProvider implements ModelProvider {
 }
 
 class FailingApplicationStore extends ApplicationStore {
-  FailingApplicationStore(super.preferences);
+  FailingApplicationStore(super.preferences) : super.fromPreferences();
   @override
   Future<void> save(String id, ApplicationSnapshot state) async =>
       throw StateError('Disk unavailable');
@@ -58,7 +58,9 @@ void main() {
   test(
     'chat update persists revision before publishing the new preview',
     () async {
-      final store = ApplicationStore(await SharedPreferences.getInstance());
+      final store = ApplicationStore.fromPreferences(
+        await SharedPreferences.getInstance(),
+      );
       final c = AppWorkspaceController(
         project,
         openStore: () async => store,
@@ -78,7 +80,9 @@ void main() {
   test(
     'malformed response leaves the working preview and history unchanged',
     () async {
-      final store = ApplicationStore(await SharedPreferences.getInstance());
+      final store = ApplicationStore.fromPreferences(
+        await SharedPreferences.getInstance(),
+      );
       final c = AppWorkspaceController(
         project,
         openStore: () async => store,
@@ -132,7 +136,9 @@ void main() {
   test(
     'startup restores selected project rather than returning to dashboard',
     () async {
-      final store = StudioStore(await SharedPreferences.getInstance());
+      final store = StudioStore.fromPreferences(
+        await SharedPreferences.getInstance(),
+      );
       const second = StudioProject(
         id: 'second',
         name: 'Second',
@@ -155,7 +161,9 @@ void main() {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
-    final store = StudioStore(await SharedPreferences.getInstance());
+    final store = StudioStore.fromPreferences(
+      await SharedPreferences.getInstance(),
+    );
     await tester.pumpWidget(
       StudioApp(store: store, initialProjects: const [project]),
     );
@@ -198,7 +206,9 @@ void main() {
   testWidgets('applying a chat instruction refreshes the visible application', (
     tester,
   ) async {
-    final store = ApplicationStore(await SharedPreferences.getInstance());
+    final store = ApplicationStore.fromPreferences(
+      await SharedPreferences.getInstance(),
+    );
     final c = AppWorkspaceController(
       project,
       openStore: () async => store,
@@ -239,7 +249,9 @@ void main() {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
-    final store = StudioStore(await SharedPreferences.getInstance());
+    final store = StudioStore.fromPreferences(
+      await SharedPreferences.getInstance(),
+    );
     await tester.pumpWidget(
       StudioApp(store: store, initialProjects: const [project]),
     );
@@ -270,7 +282,9 @@ void main() {
   testWidgets(
     'supported chat instructions update the app without an inference request',
     (tester) async {
-      final store = ApplicationStore(await SharedPreferences.getInstance());
+      final store = ApplicationStore.fromPreferences(
+        await SharedPreferences.getInstance(),
+      );
       final c = AppWorkspaceController(project, openStore: () async => store);
       await tester.pumpWidget(
         MaterialApp(
@@ -300,7 +314,9 @@ void main() {
       final previousOverrides = HttpOverrides.current;
       HttpOverrides.global = null;
       addTearDown(() => HttpOverrides.global = previousOverrides);
-      final store = ApplicationStore(await SharedPreferences.getInstance());
+      final store = ApplicationStore.fromPreferences(
+        await SharedPreferences.getInstance(),
+      );
       final c = AppWorkspaceController(
         project,
         openStore: () async => store,
