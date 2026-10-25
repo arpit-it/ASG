@@ -19,11 +19,13 @@ Validate with `flutter analyze`, `flutter test`, and a relevant platform build. 
 
 ## GitHub issues, branches and pull requests
 
+Use direct issue-based branch names such as `<issue-number>-<short-description>` without `codex/`, `chatgpt/`, or any assistant/provider identification. Do not add Codex, ChatGPT, OpenAI, or similar identification to branch names or PR titles/bodies. If a working identity is needed, use exactly "ASG is working". Do not announce routine branch creation. This user preference applies to all future and scheduled runs; historical branch names remain unchanged.
+
 Repository: `https://github.com/arpit-it/ASG.git` (`origin`). The user authorized publishing the reviewed existing baseline directly to `main` once, tracked by issue #1. After that initial publication, use the following workflow for every new implementation, bug fix or scheduled development increment:
 
 1. Read or create a GitHub issue before implementation. Record the problem, scope, acceptance criteria and validation plan. Reuse an existing issue instead of creating duplicates.
 2. Inspect `git status`, staged changes, branch and remote state. Run `git fetch origin` and inspect divergence before integrating updates. Preserve unrelated edits; do not discard, reset, auto-stash or stage someone else's work.
-3. Create one focused branch per issue, named `codex/<issue-number>-<short-description>`, from current `origin/main`. Use an isolated worktree if the current checkout cannot safely accommodate the change. Do not implement subsequent work directly on `main`.
+3. Create one focused branch per issue, named `<issue-number>-<short-description>`, from current `origin/main`. Use an isolated worktree if the current checkout cannot safely accommodate the change. Do not implement subsequent work directly on `main`.
 4. Implement a coherent increment following MVC and CODING_STANDARDS.md. Add relevant regression tests and update project memory/progress. Keep model weights, virtual environments, credentials, build output and local IDE caches out of commits.
 5. Review `git diff` and `git diff --cached`, run format/analyze/tests and appropriate builds, then commit only related paths with a descriptive conventional commit message. Link the issue in the commit or PR.
 6. Push the feature branch with an upstream (`git push -u origin <branch>`). Open a PR targeting `main`, with a concrete behavior summary, linked issue (`Closes #<number>` when complete), tests and material limitations. Use a draft PR if incomplete. Attach created PRs to the Codex task when the app's PR attachment tool is available.

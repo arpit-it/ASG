@@ -4,11 +4,15 @@ Repository: https://github.com/arpit-it/ASG
 
 The owner authorized a one-time reviewed baseline push to main for issue #1. All later implementations use issue-linked branches and pull requests. Preserve unrelated changes and stage explicit implementation paths.
 
+## Naming and communication
+
+Use direct issue-based branch names such as `<issue-number>-<short-description>` without `codex/`, `chatgpt/`, or any assistant/provider identification. Do not add Codex, ChatGPT, OpenAI, or similar identification to branch names or PR titles/bodies. If a working identity is needed, use exactly "ASG is working". Do not announce routine branch creation. This user preference applies to all future and scheduled runs; historical branch names remain unchanged.
+
 ## Work cycle
 
 1. Create/reuse an issue with scope and acceptance criteria before coding.
 2. Inspect the checkout and fetch origin; do not overwrite local work.
-3. Start `codex/<issue>-<slug>` from current origin/main, using a worktree when needed.
+3. Start `<issue>-<slug>` from current origin/main, using a worktree when needed.
 4. Implement, test and review the relevant diff.
 5. Commit related changes and push the feature branch with an upstream.
 6. Open a PR against main, link the issue and include validation/limitations.
@@ -20,13 +24,13 @@ Typical commands (substitute the actual issue/branch):
 ```sh
 git status --short --branch
 git fetch origin
-git switch -c codex/<issue>-<slug> origin/main
+git switch -c <issue>-<slug> origin/main
 git diff --check
 git diff --stat
 git add <related-paths>
 git diff --cached
 git commit -m "feat: describe the verified change"
-git push -u origin codex/<issue>-<slug>
+git push -u origin <issue>-<slug>
 ```
 
 Do not run checkout commands blindly with unrelated changes. Never reset/discard user edits, force-push main, include model caches/environments/secrets, or claim skipped inference tests verify the model. Prefer CLI or connected GitHub tools; a signed-in browser/IDE is a valid fallback. Keep credentials out of logs and files.

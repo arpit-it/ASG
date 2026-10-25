@@ -105,7 +105,7 @@ Current enforcement: Flutter lints, formatter, architecture boundary tests, cont
 
 ## Git delivery
 
-Follow root AGENTS.md and GIT_WORKFLOW.md: issue first, a separate codex/<issue>-<slug> branch per new implementation, focused commits, verified checks, feature-branch push and a linked PR to main. The initial baseline has a one-time owner-authorized direct-main publication exception; subsequent work does not.
+Follow root AGENTS.md and GIT_WORKFLOW.md: issue first, a separate <issue>-<slug> branch per new implementation, focused commits, verified checks, feature-branch push and a linked PR to main. The initial baseline has a one-time owner-authorized direct-main publication exception; subsequent work does not.
 
 ## Product/platform terminology
 
