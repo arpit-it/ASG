@@ -669,6 +669,103 @@ void main() {
     },
   );
 
+  for (final duringPreparation in [true, false]) {
+    test(
+      'Stop prevents helper launch or terminates running process preparation=$duringPreparation',
+      () async {
+        final marker = File('${temp.path}/command-started');
+        await File('$sdk/bin/flutter').writeAsString(
+          '#!/bin/sh\necho started > "${marker.path}"\nsleep 30\n',
+        );
+        await Process.run('/bin/chmod', ['700', '$sdk/bin/flutter']);
+        for (final relative in [
+          'bin/cache/flutter_tools.snapshot',
+          'bin/cache/dart-sdk/bin/dart',
+          'packages/flutter_tools/.dart_tool/package_config.json',
+        ]) {
+          final file = File('$sdk/$relative');
+          await file.parent.create(recursive: true);
+          await file.writeAsString('fixture');
+        }
+        final generated = await generate();
+        host = NativeGenerationHost(
+          loadAsset: (name) async {
+            final value = await assets(name);
+            if (duringPreparation && name.endsWith('generation_command.py')) {
+              host.cancelVerification();
+            }
+            return value;
+          },
+        );
+        final saved = <GeneratedProject>[];
+        final running = host.verify(generated, (value) async {
+          saved.add(value);
+        });
+        if (duringPreparation) {
+          await expectLater(running, throwsStateError);
+          expect(await marker.exists(), isFalse);
+        } else {
+          final deadline = DateTime.now().add(const Duration(seconds: 5));
+          while (!await marker.exists() && DateTime.now().isBefore(deadline)) {
+            await Future<void>.delayed(const Duration(milliseconds: 20));
+          }
+          expect(await marker.exists(), isTrue);
+          host.cancelVerification();
+          final result = await running.timeout(const Duration(seconds: 8));
+          expect(result.phase, SourceGenerationPhase.failed);
+          expect(result.steps.single.cancelled, isTrue);
+          expect(saved.last.steps.single.cancelled, isTrue);
+        }
+      },
+    );
+  }
+
+  test(
+    'user Stop during a command fails closed even if it returns zero',
+    () async {
+      final operations = <String>[];
+      host = NativeGenerationHost(
+        loadAsset: assets,
+        runOperation: (_, operation) async {
+          operations.add(operation);
+          host.cancelVerification();
+          return GenerationStep(
+            operation: operation,
+            exitCode: 0,
+            output: 'completed during Stop',
+          );
+        },
+      );
+      final generated = await generate();
+      final saved = <GeneratedProject>[];
+      final result = await host.verify(generated, (value) async {
+        saved.add(GeneratedProject.fromJson(value.toJson()));
+      });
+      expect(operations, ['resolve']);
+      expect(result.phase, SourceGenerationPhase.failed);
+      expect(saved.last.steps.single.cancelled, isTrue);
+    },
+  );
+
+  test('Stop at pre-command persistence boundary prevents dispatch', () async {
+    var dispatched = false;
+    host = NativeGenerationHost(
+      loadAsset: assets,
+      runOperation: (_, operation) async {
+        dispatched = true;
+        return GenerationStep(operation: operation, exitCode: 0, output: '');
+      },
+    );
+    final generated = await generate();
+    await expectLater(
+      host.verify(generated, (_) async {
+        host.cancelVerification();
+      }),
+      throwsStateError,
+    );
+    expect(dispatched, isFalse);
+  });
+
   test('output exhausted operation stops downstream verification and persists evidence', () async {
     host = NativeGenerationHost(
       loadAsset: assets,

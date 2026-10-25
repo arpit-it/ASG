@@ -27,6 +27,8 @@ class UnsupportedGenerationHost implements GenerationHost {
     GenerationProgress progress,
   ) async => unavailable();
   @override
+  void cancelVerification() {}
+  @override
   Future<Uri> startPreview(GeneratedProject project) async => unavailable();
   @override
   Future<void> openPreview(Uri uri) async => unavailable();

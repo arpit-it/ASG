@@ -60,6 +60,12 @@ class FixtureHost implements GenerationHost {
   Completer<Uri>? previewGate;
   Future<void> Function()? afterResolve;
   Future<void> Function()? beforeGenerationWrite;
+  int cancellations = 0;
+  @override
+  void cancelVerification() {
+    cancellations++;
+  }
+
   int writes = 0;
   bool failAfterResolveEvidence = false;
   bool throwAnalyze = false;
@@ -189,6 +195,91 @@ void main() {
   });
   tearDown(() {
     if (!c.isDisposed) c.dispose();
+  });
+
+  test('Stop retains completed evidence, blocks downstream and allows explicit retry', () async {
+    final reached = Completer<void>(), release = Completer<void>();
+    host.afterResolve = () async {
+      reached.complete();
+      await release.future;
+    };
+    final running = generate(true);
+    await reached.future;
+    c.stopVerification();
+    c.stopVerification();
+    expect(c.stopRequested, isTrue);
+    expect(c.busy, isTrue);
+    expect(host.cancellations, 1);
+    release.complete();
+    expect(await running, isFalse);
+    expect(host.operations, ['resolve']);
+    expect(store.load('p')!.phase, SourceGenerationPhase.failed);
+    expect(store.load('p')!.steps.single.operation, 'resolve');
+    expect(store.load('p')!.error, contains('stopped by user'));
+    expect(c.busy, isFalse);
+    host.afterResolve = null;
+    expect(await c.verifyAgain(approved: true), isTrue);
+    expect(c.stopRequested, isFalse);
+  });
+
+  test(
+    'Stop during final durable Ready write cannot publish success',
+    () async {
+      c.dispose();
+      host = FixtureHost();
+      final gated = StopDuringReadyStore(store.records);
+      c = SourceGenerationController(
+        project: project,
+        definition: definition,
+        store: gated,
+        host: host,
+      );
+      gated.onReady = c.stopVerification;
+      c.stopVerification();
+      expect(host.cancellations, 0);
+      expect(await generate(true), isFalse);
+      expect(store.load('p')!.phase, SourceGenerationPhase.failed);
+      expect(store.load('p')!.steps.length, 4);
+      expect(store.load('p')!.error, contains('stopped by user'));
+      expect(c.preview, isNull);
+    },
+  );
+
+  testWidgets('Stop button disables while waiting for verification to stop', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1200, 2400);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(() async => tester.pumpWidget(const SizedBox.shrink()));
+    final reached = Completer<void>(), release = Completer<void>();
+    host.afterResolve = () async {
+      reached.complete();
+      await release.future;
+    };
+    await tester.pumpWidget(
+      MaterialApp(home: SourceGenerationScreen(controller: c)),
+    );
+    final running = generate(true);
+    await tester.pump();
+    await tester.runAsync(() => reached.future);
+    await tester.pump();
+    final stop = find.text('Stop verification');
+    await tester.scrollUntilVisible(
+      stop,
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.tap(stop);
+    await tester.pump();
+    expect(find.text('Stopping verification…'), findsOneWidget);
+    expect(host.cancellations, 1);
+    release.complete();
+    await tester.pumpAndSettle();
+    expect(await running, isFalse);
+    expect(find.text('Stopping verification…'), findsNothing);
+    await tester.pumpWidget(const SizedBox.shrink());
   });
 
   for (final variant in [0, 1, 2, 3]) {
@@ -976,4 +1067,14 @@ class FailingHistory extends SourceGenerationStore {
   @override
   Future<void> save(String id, GeneratedProject project) async =>
       throw StateError('History disk unavailable');
+}
+
+class StopDuringReadyStore extends SourceGenerationStore {
+  StopDuringReadyStore(super.records);
+  void Function()? onReady;
+  @override
+  Future<void> save(String id, GeneratedProject project) async {
+    if (project.phase == SourceGenerationPhase.ready) onReady?.call();
+    await super.save(id, project);
+  }
 }
