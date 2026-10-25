@@ -1,6 +1,9 @@
 @TestOn('browser')
 library;
 
+import 'package:asg/models/requirements_board.dart';
+import 'package:asg/services/requirements_store.dart';
+
 import 'package:asg/services/studio_database.dart';
 import 'package:asg/models/plan_approval.dart';
 
@@ -46,6 +49,27 @@ void main() {
           ).toJson(),
         );
         await records.setString('studio.planApproval.v1.p', approval);
+        final requirements = RequirementsStore(records);
+        await requirements.save(
+          'p',
+          requirements.load('p'),
+          RequirementsBoard(
+            requirements: [
+              const ProjectRequirement(
+                id: 'R1',
+                title: 'Saved requirement',
+                acceptance: 'Reopen in Chrome',
+              ),
+            ],
+            tasks: [
+              DevelopmentTask(
+                id: 'T1',
+                requirementId: 'R1',
+                title: 'Verify persistence',
+              ),
+            ],
+          ),
+        );
         await db.close();
         db = await databaseFactoryWeb.openDatabase(
           name,
@@ -54,6 +78,7 @@ void main() {
         final restored = await StudioDatabase.migrate(db, prefs);
         expect(restored.getString('studio.lastProject.v1'), 'updated');
         expect(restored.getString('studio.planApproval.v1.p'), approval);
+        expect(RequirementsStore(restored).load('p').tasks.single.id, 'T1');
         expect(prefs.getString('studio.lastProject.v1'), 'legacy');
         final raw = StoreRef<String, String>('records');
         const appKey = 'studio.application.v1.damaged';
@@ -62,6 +87,8 @@ void main() {
         await raw.record(generationKey).put(db, 'broken generation');
         const approvalKey = 'studio.planApproval.v1.damaged';
         await raw.record(approvalKey).put(db, 'broken approval');
+        final requirementsKey = RequirementsStore.key('damaged');
+        await raw.record(requirementsKey).put(db, 'broken requirements');
         await db.close();
         db = await databaseFactoryWeb.openDatabase(
           name,
@@ -70,6 +97,15 @@ void main() {
         final isolated = await StudioDatabase.migrate(db, prefs);
         expect(isolated.getString('studio.lastProject.v1'), 'updated');
         expect(() => isolated.getString(appKey), throwsFormatException);
+        expect(
+          () => RequirementsStore(isolated).load('damaged'),
+          throwsFormatException,
+        );
+        expect(
+          await raw.record(requirementsKey).get(db),
+          'broken requirements',
+        );
+        expect(RequirementsStore(isolated).load('p').revision, 1);
         expect(() => isolated.getString(approvalKey), throwsFormatException);
         expect(await raw.record(approvalKey).get(db), 'broken approval');
         expect(isolated.getString('studio.planApproval.v1.p'), approval);

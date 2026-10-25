@@ -12,7 +12,7 @@ Update this document with task selection and delivery evidence, alongside [agent
 
 ## Ordered feature queue
 
-- [ ] F01 Structured requirements and task board — Queued
+- [ ] F01 Structured requirements and task board — Awaiting merge
   - Persist requirement IDs, acceptance criteria, task dependencies and task status per project; expose them in the workspace with edit and reopen support.
   - Accept when edits survive restart, invalid dependencies are rejected, and requirements changes invalidate affected approvals. Include a readable project requirements document with task progress.
 - [ ] F02 Executable approved plans — Queued; depends on F01
@@ -49,10 +49,10 @@ Update this document with task selection and delivery evidence, alongside [agent
   - Propose changes to ASG in an isolated checkout with independent review and protected PR delivery.
   - Accept when the installed stable application remains usable, failed candidates are recoverable, and merging requires independent approval and passing required checks.
 
-- [ ] F13 Consolidate project documentation — Awaiting merge
+- [x] F13 Consolidate project documentation — Done
   - Current active task from the user: keep one requirements and task document, organize supporting documents, remove redundant copies, and update the scheduled workflow.
   - Acceptance: one requirements file; unique original product scope and foundation history retained; maintained local documentation links resolve; the active 15 minute automation reads this file, deduplicates new tasks and checks Done only after verified merge.
-  - Local documentation and automation changes are complete and validated on 25 October 2026. Tracked by [issue #32](https://github.com/arpit-it/ASG/issues/32), branch `codex/32-documentation-queue`. PR, independent review and merge evidence remain pending. Deliver this consolidation before selecting F01. Do not check this box until the remote merge is verified.
+  - Delivered 25 October 2026 via [issue #32](https://github.com/arpit-it/ASG/issues/32), branch `codex/32-documentation-queue`, [PR #33](https://github.com/arpit-it/ASG/pull/33). Independent review approved head `ec9b561f12d1edd9439d100dadae52afe3a90ab9`; required Flutter checks/web build (real Chrome storage and generated-project verification) and Python fixtures passed in CI run `40172035200`. Remote merge `3b4333286e0c3ef8c6543501c2bba6721e714035` at 2026-10-25 07:18:39 UTC and issue closure verified; local main synchronized before F01.
 
 ## Adding new tasks
 
@@ -64,7 +64,7 @@ A task moves Queued → In progress → Awaiting merge → Done; use Blocked wit
 
 ## Active task and delivery ledger
 
-Active: F13 documentation consolidation, Awaiting merge. Preserve all pending documentation moves and deletions and deliver through the normal issue/branch/PR workflow. Inspect open issues/PRs and finish any already-active implementation before starting another implementation. Reconcile previously delivered capabilities before selecting F01; do not duplicate them.
+Active: F01 structured requirements and task board, Awaiting merge; [issue #34](https://github.com/arpit-it/ASG/issues/34), branch `codex/34-requirements-board`. No dependencies. Acceptance and validation scope are recorded in the issue. F13 delivery is verified above; no other task is selected.
 
 For each increment append: feature ID; status; scope; dependencies; issue; branch; PR; tested revision; checks and limitations; reviewer verdict; merge SHA; completion date; blocker or next step. Keep completed entries as history.
 
@@ -785,3 +785,8 @@ Run the available build and tests.
 The deliverable must be a real, launchable macOS application foundation—not just a proposal, UI mockup, or architecture document.
 
 Preserve all progress in the repository and report what was verified versus what remains unimplemented.
+
+
+### F01 increment — 25 October 2026
+
+Awaiting merge, issue #34, branch `codex/34-requirements-board`. Scope: typed per-project requirement IDs/criteria, task IDs/dependencies/status, workspace edit/reopen, readable requirements document and revision-bound Plan approval. Additive `studio.requirements.v1.<projectId>` record, bounded content, dependency cycle/missing-reference rejection, prerequisite completion guards, transitive reopen, atomic writes, stale-editor exclusion, preserved corrupt records. Manual task progress is explicitly not deterministic test evidence. Existing prototype creation/chat/preview remains supported; executable plans remain F02. Validated: nine new regressions; formatter/analyzer; 167 default tests passed (four opt-in skips); actual Chrome storage reopen/corruption test; web/macOS debug builds; live existing Qwen Review streaming/persistence smoke (35s). Linked PR records exact tested head, independent final-revision review, required CI and merge evidence. Do not mark Done or select F02 until remote merge is verified.
