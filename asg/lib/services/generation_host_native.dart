@@ -251,9 +251,6 @@ class NativeGenerationHost implements GenerationHost {
               beforeStart: () => progress(current),
             );
       checkOpen();
-      if (operation == 'resolve') {
-        current = current.copy(resolution: await resolutionFiles(project));
-      }
       current = current.copy(steps: [...current.steps, result]);
       if (result.exitCode != 0 || result.timedOut) {
         current = current.copy(
@@ -263,6 +260,16 @@ class NativeGenerationHost implements GenerationHost {
         );
         await progress(current);
         return current;
+      }
+      if (operation == 'resolve') {
+        try {
+          current = current.copy(resolution: await resolutionFiles(project));
+        } catch (_) {
+          // Metadata rejection must retain the command's actual result. Keep
+          // the prior fingerprint so a retry cannot trust the rejected input.
+          await progress(current);
+          rethrow;
+        }
       }
       await progress(current);
     }
