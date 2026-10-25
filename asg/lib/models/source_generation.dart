@@ -1,4 +1,5 @@
 import 'plan_approval.dart';
+import 'build_task.dart';
 
 enum GeneratedSnapshotStatus { none, current, outdated, unknown }
 
@@ -47,17 +48,46 @@ class GeneratedProject {
     this.phase = SourceGenerationPhase.generated,
     this.error = '',
     this.approval,
+    List<BuildTask>? tasks,
   }) : sources = Map.unmodifiable(sources),
        outputs = Map.unmodifiable(outputs),
        resolution = Map.unmodifiable(resolution),
-       steps = List.unmodifiable(steps);
+       steps = List.unmodifiable(steps),
+       tasks = tasks == null
+           ? null
+           : BuildTask.fromJson(tasks.map((t) => t.toJson()).toList()) {
+    if (this.tasks != null && (approval == null || !approval!.approved)) {
+      throw const FormatException('Structured tasks require an approved Plan.');
+    }
+  }
   final String directory, sdk, python, error;
   final PlanApproval? approval;
+  final List<BuildTask>? tasks;
+
+  BuildTaskStatus taskStatus(BuildTask task, {required bool active}) {
+    final index = task.operation.index;
+    if (index < steps.length) {
+      final step = steps[index];
+      return step.exitCode == 0 && !step.timedOut
+          ? BuildTaskStatus.passed
+          : BuildTaskStatus.failed;
+    }
+    if (steps.any((s) => s.exitCode != 0 || s.timedOut) ||
+        phase == SourceGenerationPhase.failed) {
+      return BuildTaskStatus.blocked;
+    }
+    if (index == steps.length && phase == SourceGenerationPhase.verifying) {
+      return active ? BuildTaskStatus.running : BuildTaskStatus.interrupted;
+    }
+    return BuildTaskStatus.pending;
+  }
+
   final Map<String, String> sources, outputs, resolution;
   final List<GenerationStep> steps;
   final SourceGenerationPhase phase;
   GeneratedProject copy({
     PlanApproval? approval,
+    List<BuildTask>? tasks,
     String? sdk,
     String? python,
     List<GenerationStep>? steps,
@@ -68,6 +98,7 @@ class GeneratedProject {
   }) => GeneratedProject(
     directory: directory,
     approval: approval ?? this.approval,
+    tasks: tasks ?? this.tasks,
     sdk: sdk ?? this.sdk,
     python: python ?? this.python,
     sources: sources,
@@ -88,10 +119,14 @@ class GeneratedProject {
     'phase': phase.name,
     'error': error,
     if (approval != null) 'approval': approval!.toJson(),
+    if (tasks != null) 'tasks': tasks!.map((t) => t.toJson()).toList(),
   };
   factory GeneratedProject.fromJson(Map<String, dynamic> json) {
     final result = GeneratedProject(
       directory: json['directory'] as String,
+      tasks: json.containsKey('tasks')
+          ? BuildTask.fromJson(json['tasks'])
+          : null,
       approval: json.containsKey('approval')
           ? PlanApproval.fromJson(
               Map<String, dynamic>.from(json['approval'] as Map),
@@ -134,7 +169,10 @@ class GeneratedProject {
     }
     const operations = ['resolve', 'analyze', 'test', 'build'];
     for (var i = 0; i < result.steps.length; i++) {
-      if (result.steps[i].operation != operations[i]) {
+      if (result.steps[i].operation != operations[i] ||
+          (i > 0 &&
+              (result.steps[i - 1].exitCode != 0 ||
+                  result.steps[i - 1].timedOut))) {
         throw const FormatException('Invalid verification history order.');
       }
     }

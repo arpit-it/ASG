@@ -37,3 +37,10 @@ Every successful board save invalidates earlier Plan approval conservatively, in
 
 
 Generated outcomes optionally retain an `approval` snapshot containing the exact Plan message index/content/context and approval timestamp. New app-led generation captures this identity before host generation and preserves it through verification progress and failures. Older records without the field still load and their verified previews remain available, but verification retry requires a new generated folder. Retry requires the exact current approval (including its timestamp) and matching exported input fingerprints; approving a replacement or reapproving the same draft cannot relabel an earlier source snapshot. Malformed or withdrawn provenance is rejected and retained as corruption. This additive field does not convert prose plans into executable tasks or verify requirements implementation.
+
+
+## Fixed starter task graph (F02, issue #40)
+
+New generated outcomes add `tasks`, a canonical four-task graph (`starter-resolve`, `starter-analyze`, `starter-test`, `starter-build`) with allowlisted operation names and linear prerequisite IDs. The containing outcome's exact approved Plan snapshot binds the graph to its requirements context. Malformed IDs, order, operations, dependencies or missing/withdrawn approval fail closed. Legacy outcomes without tasks remain readable; they are not assigned invented structured provenance. No storage key or existing field changes.
+
+Task status is derived from saved command exit results and generation phase. Downstream results after a failed/timed-out prerequisite are rejected. A verifying record reopened without active verification displays interrupted, not running. A host/preparation failure blocks pending tasks and retains the outcome error. This adapter verifies the fixed starter; it does not translate arbitrary Plan prose or establish requirements implementation. Retry reruns verification under existing consent and provenance checks; resumable action checkpoints remain F03.

@@ -4,6 +4,9 @@ library;
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:asg/models/build_task.dart';
+import 'package:asg/models/plan_approval.dart';
+
 import 'package:asg/models/app_definition.dart';
 import 'package:asg/models/project.dart';
 import 'package:asg/models/source_generation.dart';
@@ -213,7 +216,16 @@ void main() {
   test(
     'partial verification records failure and can retry unchanged source',
     () async {
-      final generated = await generate();
+      final generated = (await generate()).copy(
+        approval: PlanApproval(
+          messageIndex: 0,
+          content: 'Fixed starter',
+          context: 'revision 1',
+          approved: true,
+          recordedAt: DateTime.utc(2026),
+        ),
+        tasks: BuildTask.starter,
+      );
       final events = <GeneratedProject>[];
       final failing = NativeGenerationHost(
         loadAsset: assets,
@@ -228,6 +240,20 @@ void main() {
         (event) async => events.add(event),
       );
       expect(failed.phase, SourceGenerationPhase.failed);
+      expect(
+        failed.taskStatus(failed.tasks![2], active: false),
+        BuildTaskStatus.failed,
+      );
+      expect(
+        failed.taskStatus(failed.tasks![3], active: false),
+        BuildTaskStatus.blocked,
+      );
+      expect(
+        events.every(
+          (e) => e.tasks != null && e.approval!.matches(generated.approval!),
+        ),
+        isTrue,
+      );
       expect(failed.steps.map((s) => s.operation), [
         'resolve',
         'analyze',
