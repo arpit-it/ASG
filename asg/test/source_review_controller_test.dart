@@ -67,6 +67,27 @@ class ReviewCandidateHost extends FixtureHost {
   }
 }
 
+class DelayedRepairHost extends ReviewCandidateHost {
+  final gate = Completer<void>();
+  var stops = 0;
+  @override
+  Future<GeneratedProject> verify(
+    GeneratedProject project,
+    GenerationProgress progress, {
+    bool resume = false,
+  }) async {
+    await progress(project.copy(phase: SourceGenerationPhase.verifying));
+    await gate.future;
+    return super.verify(project, progress);
+  }
+
+  @override
+  void cancelVerification() {
+    stops++;
+    if (!gate.isCompleted) gate.complete();
+  }
+}
+
 void main() {
   late AtomicRecords records;
   late FakeProvider provider;
@@ -640,13 +661,13 @@ void main() {
   }
 
   testWidgets(
-    'reviewed repair rerun requires visible consent at narrow enlarged text',
+    'reviewed repair rerun shows consent, progress and Stop at narrow enlarged text',
     (tester) async {
       controller.dispose();
       var copies = 0;
+      final delayed = DelayedRepairHost();
       controller = create(
-        createHost: () =>
-            copies == 1 ? FailedCheckHost() : ReviewCandidateHost(),
+        createHost: () => copies == 1 ? FailedCheckHost() : delayed,
         publish: (_, host, guard) async =>
             throw StateError('Unexpected promotion'),
         prepare:
@@ -735,13 +756,32 @@ void main() {
       await reveal(action, 200);
       expect(button().onPressed, isNotNull);
       await tester.tap(find.text(action));
-      await tester.pumpAndSettle();
-      expect(controller.candidate!.phase, SourceGenerationPhase.ready);
-      expect(controller.promoted, isFalse);
-      expect(
-        CandidateVerificationStore(records, project.id).load().runs.length,
-        2,
+      await tester.pump();
+      await tester.pump();
+      await tester.pump();
+      expect(controller.busy, isTrue);
+      expect(controller.candidateSession!.busy, isTrue);
+      const stop = 'Stop candidate verification';
+      await tester.scrollUntilVisible(
+        find.text(stop),
+        -300,
+        maxScrolls: 150,
+        scrollable: find.byType(Scrollable).first,
       );
+      await tester.ensureVisible(find.text(stop));
+      await tester.pump();
+      expect(find.text(stop), findsOneWidget);
+      expect(find.byType(LinearProgressIndicator), findsWidgets);
+      await tester.tap(find.text(stop));
+      await tester.pumpAndSettle();
+      expect(delayed.stops, greaterThan(0));
+      expect(controller.busy, isFalse);
+      expect(controller.candidate!.phase, SourceGenerationPhase.failed);
+      expect(controller.promoted, isFalse);
+      final runs = CandidateVerificationStore(records, project.id).load().runs;
+      expect(runs.length, 2);
+      expect(runs.last.snapshot.steps, isEmpty);
+      expect(runs.last.snapshot.phase, SourceGenerationPhase.failed);
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox());
     },

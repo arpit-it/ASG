@@ -1655,3 +1655,8 @@ Validation: formatter152 unchanged, analyzer clean, full379Flutter tests passed/
 
 
 Delivery [PR #100](https://github.com/arpit-it/ASG/pull/100), reopened issue #94, branch `94-repair-check-rerun`: bounded increment Awaiting merge; F05 remains In progress/unchecked. Tested local `2baec3a`, equivalent published `5083f04eb62998e5acba5ab423687ec719613348`, exact tree `8f2ecd792b03c6a69ed010c314ccaf52eae731fe`; fetched diff empty. Formatter152 unchanged/analyzer/full379Flutter tests with six opt-in skips/web build and Wasm dry run passed. Independent reviewer inspecting diff, acceptance and actual required CI. Final exact-revision review/check/merge evidence follows in the PR and subsequent ledger reconciliation. No later task selected.
+
+
+Independent review `5645209229` at initial head `5083f04e` identified a blocker: parent review busy state hid the candidate verification panel during automatic checks, removing visible progress/Stop while navigation was blocked. Render candidate controls while the session is busy, retaining the parent copy/dispatch exclusion. Added delayed-host320px/200% regression proving visible progress/Stop, cancellation, durable stopped run without fabricated exits and no promotion. Independent initial42focused tests passed. Fresh final-revision review and required CI must pass after this correction.
+
+After the Stop UI correction, final formatter152 unchanged/analyzer/full379Flutter tests with six opt-in skips/web build and Wasm dry run all passed. Fresh exact-final-revision independent review and required CI remain the merge gate.

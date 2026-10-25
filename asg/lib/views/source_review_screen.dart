@@ -120,7 +120,8 @@ class _SourceReviewScreenState extends State<SourceReviewScreen>
               ),
               SelectableText(controller.candidate!.directory),
             ],
-            if (controller.candidateSession != null && !controller.reviewBusy)
+            if (controller.candidateSession != null &&
+                (!controller.reviewBusy || controller.candidateSession!.busy))
               SourceCandidateView(
                 key: ObjectKey(controller.candidateSession),
                 controller: controller.candidateSession!,
