@@ -92,9 +92,7 @@ class BuildTask {
       );
     }
     final references = tasks.map((t) => t.boardTaskId).toList();
-    if (references.any((r) => r != null) &&
-        (references.any((r) => r == null) ||
-            references.toSet().length != tasks.length)) {
+    if (references.any((r) => r != null) && references.any((r) => r == null)) {
       throw invalid;
     }
     return List.unmodifiable(tasks);
