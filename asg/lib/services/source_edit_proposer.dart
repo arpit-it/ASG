@@ -46,7 +46,11 @@ class SourceEditProposer {
           'Propose Flutter Dart replacements for review. Return JSON only '
           'with exactly summary (short string) and changes (1-8 entries). Each '
           'change has exactly path, before (exact original text), after (full '
-          'replacement text). Only change supplied files. No commands or new files. '
+          'replacement text). One entry per path. Both before and after MUST be COMPLETE FILES, '
+          'not snippets, search/replace fragments, diffs or individual lines. '
+          'Copy before verbatim from Originals including every import, blank line, space '
+          'and final newline. after must contain the entire compiling file. '
+          'Preserve unrelated code and imports. Only change supplied files. No commands or new files. '
           'Instruction: ${jsonEncode(instruction)}. Originals: ${jsonEncode(snapshot)}';
       final buffer = StringBuffer();
       await for (final chunk in provider.generate(prompt)) {

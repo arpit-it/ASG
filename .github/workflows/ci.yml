@@ -51,3 +51,4 @@ jobs:
       - run: python -B tools/test_download_model.py
       - run: python -B tools/test_qwen_streaming_server.py
       - run: python -B tools/test_generation_command.py
+      - run: python -B tools/test_candidate_confinement.py

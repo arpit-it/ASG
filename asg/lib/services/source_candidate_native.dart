@@ -17,7 +17,7 @@ Future<GeneratedProject> prepareCandidateFiles({
   required void Function() authorizeWrite,
 }) async {
   authorizeWrite();
-  final files = await Isolate.run(() => _capture(generated, proposal));
+  final files = await _captureIsolated(generated, proposal);
   authorizeWrite();
   final root = generated.directory;
   if (!path.isAbsolute(parent) ||
@@ -88,6 +88,13 @@ Future<GeneratedProject> prepareCandidateFiles({
     );
   }
 }
+
+// Separate closure context: never capture the caller's authorization callback,
+// controller, or database handles in the message sent to the worker isolate.
+Future<Map<String, List<int>>> _captureIsolated(
+  GeneratedProject generated,
+  SourceEditProposal proposal,
+) => Isolate.run(() => _capture(generated, proposal));
 
 Map<String, List<int>> _capture(
   GeneratedProject generated,

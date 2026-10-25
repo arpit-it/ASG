@@ -16,7 +16,7 @@ import 'runtime_setup_store.dart';
 import 'studio_store.dart';
 
 /// One database/session per application isolate. Original preferences are retained.
-class StudioDatabase implements RecordStorage {
+class StudioDatabase implements ConditionalRecordStorage {
   StudioDatabase._(this.database, this._values, this._recordErrors);
   final Database database;
   final Map<String, String> _values;
@@ -79,6 +79,8 @@ class StudioDatabase implements RecordStorage {
       } catch (_) {
         if (!record.key.startsWith('studio.application.v1.') &&
             !record.key.startsWith('studio.generation.v1.') &&
+            !record.key.startsWith('studio.sourceCandidate.v1.') &&
+            !record.key.startsWith('studio.generationPrevious.v1.') &&
             !record.key.startsWith('studio.requirements.v1.') &&
             !record.key.startsWith('studio.planApproval.v1.')) {
           rethrow;
@@ -138,10 +140,40 @@ class StudioDatabase implements RecordStorage {
       RequirementsBoard.fromJson(decoded as Map<String, dynamic>);
     } else if (key.startsWith('studio.planApproval.v1.')) {
       PlanApproval.fromJson(decoded as Map<String, dynamic>);
-    } else if (key.startsWith('studio.generation.v1.')) {
+    } else if (key.startsWith('studio.generation.v1.') ||
+        key.startsWith('studio.sourceCandidate.v1.') ||
+        key.startsWith('studio.generationPrevious.v1.')) {
       GeneratedProject.fromJson(decoded as Map<String, dynamic>);
     } else {
       throw FormatException('Unsupported database record: $key');
+    }
+  }
+
+  @override
+  Future<void> commitRecords({
+    required Map<String, String?> expected,
+    required Map<String, String> updates,
+    required void Function() authorize,
+  }) async {
+    for (final entry in updates.entries) {
+      validate(entry.key, entry.value);
+    }
+    await database.transaction((txn) async {
+      for (final entry in expected.entries) {
+        if (await _records.record(entry.key).get(txn) != entry.value) {
+          throw StateError(
+            'Saved project changed before promotion. Reopen review.',
+          );
+        }
+      }
+      authorize();
+      for (final entry in updates.entries) {
+        await _records.record(entry.key).put(txn, entry.value);
+      }
+    });
+    _values.addAll(updates);
+    for (final key in updates.keys) {
+      _recordErrors.remove(key);
     }
   }
 

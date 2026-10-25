@@ -427,6 +427,7 @@ class NativeGenerationHost implements GenerationHost {
         '${project.limits.commandTimeoutSeconds}',
         '--output-limit',
         '${project.limits.outputLimitBytes}',
+        if (project.confined) '--confined',
       ], runInShell: false);
       _activeProcess = process;
       if (_closed || _verificationCancelled) {
@@ -557,6 +558,15 @@ class NativeGenerationHost implements GenerationHost {
           return;
         }
         request.response.headers.set('Cache-Control', 'no-store');
+        if (project.confined) {
+          request.response.headers.set(
+            'Content-Security-Policy',
+            "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; "
+                "style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; "
+                "font-src 'self' data:; connect-src 'self'; worker-src 'self' blob:; "
+                "base-uri 'self'; frame-ancestors 'none'; form-action 'none'",
+          );
+        }
         request.response.headers.set('X-Content-Type-Options', 'nosniff');
         request.response.headers.contentType = ContentType.parse(switch (path
             .extension(fileName)) {

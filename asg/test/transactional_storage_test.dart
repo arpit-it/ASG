@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'source_generation_controller_test.dart' show generated;
+
 import 'package:asg/controllers/app_workspace_controller.dart';
 import 'package:asg/models/app_definition.dart';
 import 'package:asg/models/project.dart';
@@ -59,6 +61,63 @@ void main() {
     path = '${temp.path}/test.db';
   });
   tearDown(() async => temp.delete(recursive: true));
+
+  test('conditional promotion commits both pointers atomically and refuses stale inputs', () async {
+    final db = await databaseFactoryIo.openDatabase(path);
+    final prefs = await SharedPreferences.getInstance();
+    var records = await StudioDatabase.migrate(db, prefs);
+    final old = jsonEncode(generated.toJson());
+    final next = jsonEncode({
+      ...generated.toJson(),
+      'directory': '/candidate',
+      'confinementVersion': 1,
+    });
+    await records.setString('studio.generation.v1.p', old);
+    await records.setString('studio.lastProject.v1', 'approval-context');
+    final expected = {
+      'studio.generation.v1.p': old,
+      'studio.lastProject.v1': 'approval-context',
+    };
+    final updates = {
+      'studio.generation.v1.p': next,
+      'studio.generationPrevious.v1.p': old,
+    };
+    await expectLater(
+      records.commitRecords(
+        expected: expected,
+        updates: updates,
+        authorize: () => throw StateError('cancelled'),
+      ),
+      throwsStateError,
+    );
+    expect(records.getString('studio.generation.v1.p'), old);
+    expect(records.getString('studio.generationPrevious.v1.p'), isNull);
+    await records.setString('studio.lastProject.v1', 'withdrawn');
+    await expectLater(
+      records.commitRecords(
+        expected: expected,
+        updates: updates,
+        authorize: () {},
+      ),
+      throwsStateError,
+    );
+    expect(records.getString('studio.generation.v1.p'), old);
+    await records.setString('studio.lastProject.v1', 'approval-context');
+    await records.commitRecords(
+      expected: expected,
+      updates: updates,
+      authorize: () {},
+    );
+    await db.close();
+    final reopened = await databaseFactoryIo.openDatabase(path);
+    try {
+      records = await StudioDatabase.migrate(reopened, prefs);
+      expect(records.getString('studio.generation.v1.p'), next);
+      expect(records.getString('studio.generationPrevious.v1.p'), old);
+    } finally {
+      await reopened.close();
+    }
+  });
 
   test(
     'migrates all namespaces and retains originals across restart',

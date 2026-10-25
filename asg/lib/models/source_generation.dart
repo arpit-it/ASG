@@ -103,6 +103,7 @@ class GeneratedProject {
     this.checkpointVersion = 0,
     this.limits = VerificationLimits.starter,
     this.approval,
+    this.confined = false,
     List<BuildTask>? tasks,
   }) : sources = Map.unmodifiable(sources),
        outputs = Map.unmodifiable(outputs),
@@ -116,6 +117,9 @@ class GeneratedProject {
     }
   }
   final String directory, sdk, python, error;
+
+  /// Model-written source always executes through the confined native runner.
+  final bool confined;
 
   /// A task whose validation or runner threw; no command exit result is implied.
   final String failedOperation;
@@ -218,6 +222,7 @@ class GeneratedProject {
     String error = '',
   }) => GeneratedProject(
     directory: directory,
+    confined: confined,
     approval: approval ?? this.approval,
     tasks: tasks ?? this.tasks,
     sdk: sdk ?? this.sdk,
@@ -235,6 +240,7 @@ class GeneratedProject {
   );
   Map<String, Object> toJson() => {
     'limits': limits.toJson(),
+    if (confined) 'confinementVersion': 1,
     'directory': directory,
     'sdk': sdk,
     'python': python,
@@ -256,6 +262,7 @@ class GeneratedProject {
       limits: json.containsKey('limits')
           ? VerificationLimits.fromJson(json['limits'])
           : VerificationLimits.starter,
+      confined: json.containsKey('confinementVersion'),
       directory: json['directory'] as String,
       tasks: json.containsKey('tasks')
           ? BuildTask.fromJson(json['tasks'])
@@ -283,7 +290,10 @@ class GeneratedProject {
       pendingOperation: json['pendingOperation'] as String? ?? '',
       checkpointVersion: json['checkpointVersion'] as int? ?? 0,
     );
-    if ((result.checkpointVersion != 0 && result.checkpointVersion != 1) ||
+    if ((json.containsKey('confinementVersion') &&
+            (json['confinementVersion'] is! int ||
+                json['confinementVersion'] != 1)) ||
+        (result.checkpointVersion != 0 && result.checkpointVersion != 1) ||
         (result.approval != null && !result.approval!.approved) ||
         result.directory.isEmpty ||
         result.sdk.isEmpty ||

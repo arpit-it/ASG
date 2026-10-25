@@ -30,3 +30,8 @@ Generate one fixed MVC template with validated application/requirements JSON as 
 ## F01/F02 structured planning and approval — 25 October 2026
 
 Persist a typed requirements/task board with revision-based approval invalidation. Treat model-proposed general tasks as queued planning data requiring explicit additive import. Execute only the versioned allowlisted fixed Flutter starter graph, with saved task results and exact Plan approval provenance. Issue #50 extends context to prototype definition/revision and checks captured Build inputs before host work. Preserve legacy readability while requiring fresh drafts, without inventing consent or migrating old prose into executable tasks.
+
+
+## 26 October 2026 — confined candidates and pointer promotion (F04)
+
+Keep initial creation as a trusted fixed Flutter web starter. Apply approved-task Dart proposals only into separate new candidates after full-file diff review. Run candidate tools through macOS Seatbelt with fixed operations, bounded process groups, isolated environment and candidate/temp writes; keep shared SDK/packages read-only. Never fall back to host-permission execution when confinement is unavailable. Retain exact approval/task/source/input evidence and distinct durable candidate checkpoints. Avoid filesystem swaps: validate a second preview first, then atomically compare expected records and switch the saved working pointer with a previous-working backup. Transfer preview-host ownership only after commit. This preserves the working source/server on preparation, command, preview or storage failure. The publication commit is noncancellable; general sandboxing, rollback/history, repairs and other adapters keep their own requirements.

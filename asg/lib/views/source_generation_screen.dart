@@ -300,6 +300,7 @@ class _SourceGenerationScreenState extends State<SourceGenerationScreen> {
               OutlinedButton(
                 onPressed:
                     controller.busy ||
+                        result.confined ||
                         !controller.available ||
                         !approved ||
                         result.resumeRefusal != null
@@ -311,7 +312,11 @@ class _SourceGenerationScreenState extends State<SourceGenerationScreen> {
                 child: const Text('Resume remaining checks'),
               ),
               OutlinedButton(
-                onPressed: controller.busy || !controller.available || !approved
+                onPressed:
+                    controller.busy ||
+                        result.confined ||
+                        !controller.available ||
+                        !approved
                     ? null
                     : () => controller.verifyAgain(
                         approved: approved,
@@ -320,6 +325,10 @@ class _SourceGenerationScreenState extends State<SourceGenerationScreen> {
                       ),
                 child: const Text('Retry verification (unchanged source only)'),
               ),
+              if (result.confined)
+                const Text(
+                  'For further model-source verification, prepare a separate reviewed candidate. The working source and preview are preserved.',
+                ),
               if (result.phase == SourceGenerationPhase.ready)
                 OutlinedButton(
                   onPressed: controller.busy || !controller.available
