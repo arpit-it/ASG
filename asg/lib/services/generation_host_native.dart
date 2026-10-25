@@ -289,11 +289,12 @@ class NativeGenerationHost implements GenerationHost {
       }
       checkOpen();
       current = current.copy(steps: [...current.steps, result]);
-      if (result.exitCode != 0 || result.timedOut) {
+      if (!result.succeeded) {
         current = current.copy(
           phase: SourceGenerationPhase.failed,
-          error:
-              '$operation failed. Inspect its output and retry verification after fixing the installed toolchain.',
+          error: result.outputLimitExceeded
+              ? '$operation exceeded the 64 KiB output limit. Verification stopped.'
+              : '$operation failed. Inspect its output and retry verification after fixing the installed toolchain.',
         );
         await progress(current);
         return current;
@@ -403,6 +404,7 @@ class NativeGenerationHost implements GenerationHost {
         exitCode: data['exitCode'] as int,
         output: data['output'] as String,
         timedOut: data['timedOut'] as bool,
+        outputLimitExceeded: data['outputLimitExceeded'] as bool,
       );
     } finally {
       if (process != null) {

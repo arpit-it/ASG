@@ -58,3 +58,8 @@ New `planContext` strings contain project metadata, requirements revision, valid
 ## General task proposals — issue #46
 
 A saved current Plan may carry one bounded version-1 `asg-tasks` proposal (up to 200 queued tasks). Explicit additive import validates requirement references, IDs and acyclic dependencies, rejects unknown fields/status/commands and duplicate JSON members, and rereads exact current durable Plan/project/board evidence. Atomic board save preserves existing tasks, increments revision and invalidates prior approval. This creates planning records, never executable commands or verified completion.
+
+
+## Output-limit evidence — F03, issue #70
+
+Generation steps add optional `outputLimitExceeded` (legacy records default false). Success now requires zero exit, no timeout and no output exhaustion. Failed output-limit outcomes survive reopen, block downstream task/board verification, and cannot be saved as Ready or followed by fabricated downstream success. The fixed helper enforces 65,536 combined output bytes with process-group cleanup; the UI identifies the limit explicitly. No record keys change. This is the output-limit increment only; resumable action checkpoints and user stop/cancel remain F03 work.

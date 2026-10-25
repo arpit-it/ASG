@@ -142,6 +142,54 @@ void main() {
     }
   });
 
+  test('output exhaustion persists as failure even with a zero exit code', () {
+    const exhausted = GenerationStep(
+      operation: 'resolve',
+      exitCode: 0,
+      output: 'bounded output',
+      outputLimitExceeded: true,
+    );
+    final failed = snapshot().copy(
+      phase: SourceGenerationPhase.failed,
+      steps: [exhausted],
+    );
+    final restored = GeneratedProject.fromJson(failed.toJson());
+    expect(restored.steps.single.outputLimitExceeded, isTrue);
+    expect(
+      restored.taskStatus(restored.tasks![0], active: false),
+      BuildTaskStatus.failed,
+    );
+    expect(
+      restored.taskStatus(restored.tasks![1], active: false),
+      BuildTaskStatus.blocked,
+    );
+    expect(
+      () => GeneratedProject.fromJson(
+        failed.copy(steps: [exhausted, step('analyze', 0)]).toJson(),
+      ),
+      throwsFormatException,
+    );
+    expect(
+      () => GeneratedProject.fromJson(
+        failed
+            .copy(
+              phase: SourceGenerationPhase.ready,
+              steps: [
+                exhausted,
+                step('analyze', 0),
+                step('test', 0),
+                step('build', 0),
+              ],
+              outputs: {'index.html': '0' * 64, 'main.dart.js': '0' * 64},
+            )
+            .toJson(),
+      ),
+      throwsFormatException,
+    );
+    final legacy = step('resolve', 0).toJson()..remove('outputLimitExceeded');
+    expect(GenerationStep.fromJson(legacy).succeeded, isTrue);
+  });
+
   test('downstream results after failed dependency are rejected', () {
     final invalid = snapshot().copy(
       phase: SourceGenerationPhase.failed,
