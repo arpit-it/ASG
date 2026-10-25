@@ -28,7 +28,16 @@ extension ConversationAssistance on ConversationMode {
           'Explain these tasks and their dependencies in the draft. If the requested '
           'work needs custom source edits, repairs, other frameworks or other commands, '
           'omit the contract and explain that execution is unsupported; do not quietly '
-          'substitute the starter workflow. The contract is a proposal, never approval.',
+          'substitute the starter workflow. The contract is a proposal, never approval. '
+          'For general task planning, when existing structured requirement IDs are supplied, '
+          'you may also propose new tasks in exactly one standalone asg-tasks JSON fence. '
+          'Shape: {"version":1,"tasks":[{"id":"T1","requirementId":"R1",'
+          '"title":"Implement the requirement","dependencies":[]}]}. '
+          'Use actual existing requirement IDs, unique new task IDs and acyclic dependencies '
+          'on existing or proposed tasks. Do not include status, commands or extra fields. '
+          'Omit asg-tasks when no requirement IDs exist. Adding tasks requires an explicit '
+          'user action and makes this draft outdated; a new Plan must be drafted before approval. '
+          'Task import never executes work or establishes verification.',
     ConversationMode.review =>
       'Review the bounded application prototype against the project requirements and user request. '
           'Use sections: Evidence and limits, Requirement coverage, Gaps and risks, '
