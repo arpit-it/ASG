@@ -118,11 +118,24 @@ class _SourceReviewScreenState extends State<SourceReviewScreen>
               ),
               SelectableText(controller.candidate!.directory),
             ],
-            if (controller.candidateSession != null)
+            if (controller.candidateSession != null && !controller.reviewBusy)
               SourceCandidateView(
                 key: ObjectKey(controller.candidateSession),
                 controller: controller.candidateSession!,
               ),
+            if (controller.canRequestRepair) ...[
+              const Text(
+                'Request a correction using this saved failure and selected Dart files. '
+                'Review the new diff before preparing a separate candidate. '
+                'This does not apply edits or rerun checks automatically.',
+              ),
+              FilledButton(
+                onPressed: selected.isEmpty || selected.length > 8
+                    ? null
+                    : () => controller.requestRepair(selected.toList()),
+                child: const Text('Request repair proposal from saved failure'),
+              ),
+            ],
             if (controller.stale)
               const Text(
                 'Approval or working build changed. Return to Build and reopen source review.',

@@ -5,6 +5,10 @@ import '../models/build_plan.dart';
 import '../models/local_model_config.dart';
 import '../models/project.dart';
 import '../models/requirements_board.dart';
+import '../models/source_generation.dart';
+import 'application_store.dart';
+import 'candidate_repair_evidence.dart';
+import 'generation_input.dart';
 import 'plan_approval_store.dart';
 import 'record_storage.dart';
 import 'requirements_store.dart';
@@ -43,6 +47,31 @@ class ApprovedSourceProposer {
       );
     }
     _task(project, evidence.boardTaskId);
+    final run = evidence.repairRun;
+    if (run != null) {
+      requireRepairFailure(records, project.id, run.snapshot, expected: run);
+      _requireRepairApproval(project, run.snapshot);
+    }
+  }
+
+  void _requireRepairApproval(
+    StudioProject project,
+    GeneratedProject candidate,
+  ) {
+    final approval = PlanApprovalStore(records).requireCurrentApproval(project);
+    if (candidate.approval == null ||
+        !candidate.approval!.matches(approval) ||
+        !BuildPlan.parse(
+          approval.content,
+          board: RequirementsStore(records).load(project.id),
+        ).matchesTasks(candidate.tasks) ||
+        GenerationInput(
+              project,
+              ApplicationStore(records).load(project).definition,
+            ).compare(candidate) !=
+            GeneratedSnapshotStatus.current) {
+      throw StateError('Failed candidate approval or project inputs changed.');
+    }
   }
 
   Future<ApprovedSourceProposal> propose({
@@ -50,6 +79,7 @@ class ApprovedSourceProposer {
     required String boardTaskId,
     required LocalModelConfig config,
     required Map<String, String> originals,
+    GeneratedProject? repairCandidate,
   }) async {
     if (_active) {
       throw StateError('An approved source proposal is already active.');
@@ -60,6 +90,12 @@ class ApprovedSourceProposer {
     final requirement = board.requirements.singleWhere(
       (r) => r.id == task.requirementId,
     );
+    final repairRun = repairCandidate == null
+        ? null
+        : requireRepairFailure(records, project.id, repairCandidate);
+    if (repairCandidate != null) {
+      _requireRepairApproval(project, repairCandidate);
+    }
     _active = true;
     _cancelled = false;
     try {
@@ -70,6 +106,7 @@ class ApprovedSourceProposer {
           'task': task.toJson(),
           'requirement': requirement.toJson(),
           'requirementsRevision': board.revision,
+          if (repairRun != null) 'failedCheck': repairDiagnostics(repairRun),
         }),
         originals: originals,
       );
@@ -79,6 +116,7 @@ class ApprovedSourceProposer {
         boardTaskId: task.id,
         approval: approval,
         proposal: proposal,
+        repairRun: repairRun,
       );
       // Includes changes while the provider was finishing transport cleanup.
       requireCurrent(project, evidence);

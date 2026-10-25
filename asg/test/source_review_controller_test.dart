@@ -1,9 +1,12 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:asg/controllers/source_review_controller.dart';
 import 'package:asg/controllers/source_candidate_controller.dart';
 import 'package:asg/models/build_plan.dart';
 import 'package:asg/services/application_store.dart';
+import 'package:asg/services/approved_source_proposer.dart';
+import 'package:asg/services/source_edit_proposer.dart';
 import 'package:asg/services/generation_host.dart';
 import 'package:asg/services/generation_input.dart';
 import 'package:asg/services/requirements_store.dart';
@@ -16,10 +19,10 @@ import 'package:asg/views/source_review_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'approved_source_proposer_test.dart'
-    show seed, serviceFor, originals, response;
+import 'approved_source_proposer_test.dart' show seed, originals, response;
 import 'planning_conversation_test.dart' show project, tick;
-import 'source_candidate_controller_test.dart' show AtomicRecords;
+import 'source_candidate_controller_test.dart'
+    show AtomicRecords, FailedCheckHost;
 import 'source_edit_proposer_test.dart' show FakeProvider;
 import 'source_generation_controller_test.dart' show FixtureHost;
 
@@ -70,6 +73,8 @@ void main() {
     Completer<Map<String, String>>? capture,
     SourceCandidatePreparer? prepare,
     CandidatePromotion? publish,
+    GenerationHost Function()? createHost,
+    SourceSnapshotReader? read,
   }) => SourceReviewController(
     project: project,
     generated: GeneratedProject(
@@ -81,14 +86,19 @@ void main() {
     records: records,
     prepareCandidate: prepare,
     publishCandidate: publish,
-    createCandidateHost: () => ReviewCandidateHost(),
+    createCandidateHost: createHost ?? () => ReviewCandidateHost(),
     folderPicker: CandidateFolderPicker(),
-    proposer: serviceFor(records, provider),
-    readSnapshot: (_, paths) async {
-      reads++;
-      expect(paths, ['lib/main.dart']);
-      return capture == null ? originals : capture.future;
-    },
+    proposer: ApprovedSourceProposer(
+      records,
+      proposer: SourceEditProposer(createProvider: (_) => provider),
+    ),
+    readSnapshot:
+        read ??
+        (_, paths) async {
+          reads++;
+          expect(paths, ['lib/main.dart']);
+          return capture == null ? originals : capture.future;
+        },
   );
   setUp(() async {
     records = AtomicRecords();
@@ -99,6 +109,204 @@ void main() {
   });
   tearDown(() {
     if (!controller.isDisposed) controller.dispose();
+  });
+
+  testWidgets(
+    'saved failure repair action is readable at 320px and 200 percent text',
+    (tester) async {
+      controller.dispose();
+      controller = create(
+        createHost: () => FailedCheckHost(),
+        publish: (_, host, guard) async => Uri.parse('http://127.0.0.1:1/'),
+        prepare:
+            ({
+              required project,
+              required generated,
+              required evidence,
+              required records,
+              required parent,
+              required checkActive,
+            }) async => GeneratedProject(
+              directory: '/candidates/failure',
+              sdk: '/sdk',
+              python: 'python3',
+              confined: true,
+              sources: GenerationInput(
+                project,
+                ApplicationStore(records).load(project).definition,
+              ).fingerprints,
+              approval: evidence.approval,
+              tasks: BuildPlan.parse(
+                evidence.approval.content,
+                board: RequirementsStore(records).load(project.id),
+              ).tasks,
+            ),
+      );
+      await tester.runAsync(() async {
+        final pending = controller.request('Tanalyze', ['lib/main.dart']);
+        await tick();
+        provider.stream.add(response());
+        await provider.stream.close();
+        await pending;
+        await controller.selectCandidateParent();
+        await controller.prepareCandidate();
+        await controller.candidateSession!.verify(approved: true);
+      });
+      expect(controller.canRequestRepair, isTrue);
+      tester.view.physicalSize = const Size(320, 900);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      await tester.pumpWidget(
+        MaterialApp(
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(context)
+                .copyWith(textScaler: const TextScaler.linear(2)),
+            child: child!,
+          ),
+          home: SourceReviewScreen(controller: controller),
+        ),
+      );
+      final action = find.text('Request repair proposal from saved failure');
+      await tester.scrollUntilVisible(
+        action,
+        300,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.ensureVisible(action);
+      await tester.pumpAndSettle();
+      expect(action, findsOneWidget);
+      await tester.scrollUntilVisible(
+        find.textContaining(
+          'This does not apply edits or rerun checks automatically.',
+        ),
+        -200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(
+        find.textContaining(
+          'This does not apply edits or rerun checks automatically.',
+        ),
+        findsOneWidget,
+      );
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox());
+    },
+  );
+
+  test('repair reads failed candidate and prepares a new reviewed copy while retaining working output', () async {
+    controller.dispose();
+    final bases = <String>[];
+    final captures = <String>[];
+    controller = create(
+      createHost: () => FailedCheckHost(),
+      publish: (_, host, guard) async => Uri.parse('http://127.0.0.1:1/'),
+      read: (source, paths) async {
+        captures.add(source.directory);
+        return source.directory == '/saved'
+            ? originals
+            : {'lib/main.dart': 'void main() { broken; }'};
+      },
+      prepare:
+          ({
+            required project,
+            required generated,
+            required evidence,
+            required records,
+            required parent,
+            required checkActive,
+          }) async {
+            checkActive();
+            bases.add(generated.directory);
+            return GeneratedProject(
+              directory: '/candidates/copy-${bases.length}',
+              sdk: '/sdk',
+              python: 'python3',
+              confined: true,
+              sources: {
+                ...GenerationInput(
+                  project,
+                  ApplicationStore(records).load(project).definition,
+                ).fingerprints,
+                'lib/main.dart': 'a' * 64,
+              },
+              approval: evidence.approval,
+              tasks: BuildPlan.parse(
+                evidence.approval.content,
+                board: RequirementsStore(records).load(project.id),
+              ).tasks,
+            );
+          },
+    );
+    final first = controller.request('Tanalyze', ['lib/main.dart']);
+    await tick();
+    provider.stream.add(response());
+    await provider.stream.close();
+    await first;
+    await controller.selectCandidateParent();
+    await controller.prepareCandidate();
+    await controller.candidateSession!.verify(approved: true);
+    expect(controller.canRequestRepair, isTrue);
+    final workingRecord = records.getString(
+      'studio.generation.v1.${project.id}',
+    );
+    final checks = records.getString('studio.candidateChecks.v1.${project.id}');
+    provider = FakeProvider();
+    final pending = controller.requestRepair(['lib/main.dart']);
+    await tick();
+    expect(controller.busy, isTrue);
+    expect(controller.status, contains('local model'));
+    expect(provider.prompt, contains('Undefined name at lib/main.dart:7'));
+    expect(provider.prompt, contains('broken;'));
+    provider.stream.add(
+      jsonEncode({
+        'summary': 'Fix name',
+        'changes': [
+          {
+            'path': 'lib/main.dart',
+            'before': 'void main() { broken; }',
+            'after': 'void main() {}',
+          },
+        ],
+      }),
+    );
+    await provider.stream.close();
+    await pending;
+    expect(controller.proposal!.repairRun, isNotNull);
+    expect(captures, ['/saved', '/candidates/copy-1']);
+    final reviewed = controller.proposal;
+    final failedCandidate = controller.candidate;
+    provider = FakeProvider();
+    final failedRetry = controller.requestRepair(['lib/main.dart']);
+    await tick();
+    expect(controller.status, contains('Requesting local model'));
+    provider.stream.addError(StateError('offline repair retry'));
+    await provider.stream.close();
+    await failedRetry;
+    expect(controller.busy, isFalse);
+    expect(controller.status, contains('Source proposal failed'));
+    expect(controller.status, isNot(contains('Requesting')));
+    expect(controller.error, contains('offline repair retry'));
+    expect(controller.proposal, same(reviewed));
+    expect(controller.candidate, same(failedCandidate));
+    await controller.selectCandidateParent();
+    await controller.prepareCandidate();
+    expect(controller.error, isNull);
+    expect(bases, ['/saved', '/candidates/copy-1']);
+    expect(controller.candidate!.directory, '/candidates/copy-2');
+    expect(controller.proposal!.repairRun, isNull);
+    // New candidate verification must not depend on the previous latest journal.
+    await controller.candidateSession!.verify(approved: true);
+    expect(controller.candidateSession!.error, isNull);
+    expect(controller.candidateSession!.history.length, 2);
+    expect(
+      checks,
+      isNot(records.getString('studio.candidateChecks.v1.${project.id}')),
+    );
+    expect(
+      records.getString('studio.generation.v1.${project.id}'),
+      workingRecord,
+    );
   });
 
   test(
