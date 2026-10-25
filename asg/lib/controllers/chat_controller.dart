@@ -1,3 +1,4 @@
+import '../services/plan_task_import.dart';
 import '../services/requirements_store.dart';
 import '../models/chat_message.dart';
 import '../models/plan_approval.dart';
@@ -124,6 +125,44 @@ class ChatController extends BaseController {
       final store = PlanApprovalStore(_store!.records);
       await store.save(project, _messages, approved);
       if (!isDisposed) _approval = store.load(project.id);
+    } catch (e) {
+      if (!isDisposed) error = '$e';
+    } finally {
+      busy = false;
+      phase = GenerationPhase.idle;
+      update();
+    }
+  }
+
+  String get taskProposalPreview {
+    if (!ready || busy || hasUnsavedResponse || isDisposed) return '';
+    try {
+      return PlanTaskImport(_store!.records)
+          .preview(project, _messages)
+          .preview;
+    } catch (e) {
+      return 'Task import unavailable: $e';
+    }
+  }
+
+  bool get canAddPlanTasks {
+    if (!ready || busy || hasUnsavedResponse || isDisposed) return false;
+    try {
+      PlanTaskImport(_store!.records).preview(project, _messages);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<void> addPlanTasks() async {
+    if (!canAddPlanTasks) return;
+    busy = true;
+    phase = GenerationPhase.applying;
+    error = null;
+    update();
+    try {
+      await PlanTaskImport(_store!.records).add(project, _messages);
     } catch (e) {
       if (!isDisposed) error = '$e';
     } finally {

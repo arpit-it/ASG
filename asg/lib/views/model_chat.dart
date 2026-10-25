@@ -86,6 +86,23 @@ class _ModelChatState extends State<ModelChat> {
                         ? 'Earlier approval is outdated. Review a current draft.'
                         : 'No current plan approval. Only newly saved Plan drafts can be approved.'),
               ),
+              if (controller.latestPlan?.content.contains('```asg-tasks') ==
+                  true) ...[
+                const SizedBox(height: 12),
+                const Text('Proposed tasks — review before adding'),
+                SelectableText(controller.taskProposalPreview),
+                const Text(
+                  'Additive planning data only. Existing tasks are preserved. Adding tasks '
+                  'changes the requirements revision and invalidates approval. '
+                  'Open Requirements and tasks to track them; draft a new Plan before Build.',
+                ),
+                TextButton(
+                  onPressed: controller.canAddPlanTasks
+                      ? controller.addPlanTasks
+                      : null,
+                  child: const Text('Add proposed tasks to board'),
+                ),
+              ],
               Wrap(
                 spacing: 12,
                 children: [
