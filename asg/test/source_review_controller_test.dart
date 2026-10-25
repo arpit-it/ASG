@@ -18,7 +18,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'approved_source_proposer_test.dart'
     show seed, serviceFor, originals, response;
-import 'planning_conversation_test.dart' show ControlledRecords, project, tick;
+import 'planning_conversation_test.dart' show project, tick;
+import 'source_candidate_controller_test.dart' show AtomicRecords;
 import 'source_edit_proposer_test.dart' show FakeProvider;
 import 'source_generation_controller_test.dart' show FixtureHost;
 
@@ -61,7 +62,7 @@ class ReviewCandidateHost extends FixtureHost {
 }
 
 void main() {
-  late ControlledRecords records;
+  late AtomicRecords records;
   late FakeProvider provider;
   late SourceReviewController controller;
   var reads = 0;
@@ -90,7 +91,7 @@ void main() {
     },
   );
   setUp(() async {
-    records = ControlledRecords();
+    records = AtomicRecords();
     await seed(records);
     provider = FakeProvider();
     reads = 0;
@@ -159,7 +160,7 @@ void main() {
     () async {
       for (final outcome in ['success', 'failure', 'withdraw', 'dispose']) {
         controller.dispose();
-        records = ControlledRecords();
+        records = AtomicRecords();
         await seed(records);
         provider = FakeProvider();
         final done = Completer<GeneratedProject>();

@@ -68,6 +68,45 @@ class _SourceCandidateViewState extends State<SourceCandidateView> {
             'This diagnosis starts no model request or command and changes no files.',
           ),
         ],
+        if (controller.historyError != null)
+          SelectableText(controller.historyError!),
+        if (controller.history.isNotEmpty)
+          ExpansionTile(
+            title: const Text('Saved candidate check runs'),
+            subtitle: const Text(
+              'Manual verification history; these are not automatic repair attempts. '
+              'Unfinished runs may be interrupted. No saved run authorizes replay.',
+            ),
+            children: [
+              for (final run in controller.history.reversed)
+                ExpansionTile(
+                  title: Text('Run ${run.number}: ${run.status}'),
+                  subtitle: Text(
+                    '${run.startedAt.toLocal()}\n${run.snapshot.directory}',
+                  ),
+                  children: [
+                    if (run.snapshot.pendingOperation.isNotEmpty)
+                      Text(
+                        '${run.snapshot.pendingOperation}: dispatched without a saved exit',
+                      ),
+                    for (final step in run.snapshot.steps)
+                      ExpansionTile(
+                        title: Text(
+                          '${step.operation}: exit ${step.exitCode}'
+                          '${step.cancelled ? ' (cancelled)' : ''}'
+                          '${step.timedOut ? ' (timeout)' : ''}'
+                          '${step.outputLimitExceeded ? ' (output limit)' : ''}',
+                        ),
+                        children: [SelectableText(step.output)],
+                      ),
+                    if (run.snapshot.error.isNotEmpty)
+                      SelectableText(run.snapshot.error),
+                    if (run.snapshot.steps.isEmpty)
+                      const Text('No command exit result was saved.'),
+                  ],
+                ),
+            ],
+          ),
         const Text(
           'Promotion validates a new preview, then atomically switches the saved '
           'working build. The previous folder is retained. Once the commit starts, '
