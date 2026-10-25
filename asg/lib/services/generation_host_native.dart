@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:path/path.dart' as path;
 
 import '../models/app_definition.dart';
+import '../models/build_task.dart';
 import '../models/project.dart';
 import '../models/source_generation.dart';
 import 'flutter_source_template.dart';
@@ -231,7 +232,10 @@ class NativeGenerationHost implements GenerationHost {
       outputs: const {},
     );
     await progress(current);
-    for (final operation in ['resolve', 'analyze', 'test', 'build']) {
+    // Legacy snapshots retain the same trusted fixed adapter. New snapshots
+    // carry its validated graph alongside their exact authorizing approval.
+    for (final task in project.tasks ?? BuildTask.starter) {
+      final operation = task.operation.name;
       await checkSources(project);
       if (operation != 'resolve') await checkResolution(current);
       checkOpen();

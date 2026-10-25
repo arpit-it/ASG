@@ -3,6 +3,7 @@ library;
 
 import 'package:asg/models/requirements_board.dart';
 import 'package:asg/models/source_generation.dart';
+import 'package:asg/models/build_task.dart';
 import 'package:asg/services/source_generation_store.dart';
 import 'package:asg/services/requirements_store.dart';
 
@@ -54,6 +55,7 @@ void main() {
         await SourceGenerationStore(records).save(
           'p',
           GeneratedProject(
+            tasks: BuildTask.starter,
             directory: '/generated',
             sdk: '/sdk',
             python: 'python3',
@@ -105,6 +107,10 @@ void main() {
         const generationKey = 'studio.generation.v1.damaged';
         await raw.record(appKey).put(db, 'broken app');
         await raw.record(generationKey).put(db, 'broken generation');
+        expect(
+          SourceGenerationStore(restored).load('p')!.tasks!.map((t) => t.id),
+          BuildTask.starter.map((t) => t.id),
+        );
         const approvalKey = 'studio.planApproval.v1.damaged';
         await raw.record(approvalKey).put(db, 'broken approval');
         final requirementsKey = RequirementsStore.key('damaged');

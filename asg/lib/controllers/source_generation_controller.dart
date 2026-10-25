@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import '../models/app_definition.dart';
+import '../models/build_task.dart';
 import '../models/plan_approval.dart';
 import '../models/project.dart';
 import '../models/source_generation.dart';
@@ -44,6 +45,8 @@ class SourceGenerationController extends BaseController {
   String? get error => _error;
   bool _busy = false, _historyInvalid = false;
   bool get busy => _busy;
+  bool _verifying = false;
+  bool get verifying => _verifying;
   bool get available =>
       host.supported && !_historyInvalid && project.type == 'Flutter';
   Uri? _preview;
@@ -135,17 +138,19 @@ class SourceGenerationController extends BaseController {
         name: name,
         sdk: sdk,
         python: python,
-      )).copy(approval: approval);
+      )).copy(approval: approval, tasks: BuildTask.starter);
       if (isDisposed) return false;
       await _save(active);
       if (isDisposed) return false;
       _recheckPlan(approval);
+      _verifying = true;
       final verified = await host.verify(active, _save);
       return !isDisposed && verified.phase == SourceGenerationPhase.ready;
     } catch (e) {
       await _failure(active, e);
       return false;
     } finally {
+      _verifying = false;
       _busy = false;
       update();
     }
@@ -181,6 +186,7 @@ class SourceGenerationController extends BaseController {
       if (isDisposed) return false;
       _preview = null;
       verificationStarted = true;
+      _verifying = true;
       final verified = await host.verify(current, _save);
       return !isDisposed && verified.phase == SourceGenerationPhase.ready;
     } catch (e) {
@@ -191,6 +197,7 @@ class SourceGenerationController extends BaseController {
       }
       return false;
     } finally {
+      _verifying = false;
       _busy = false;
       update();
     }

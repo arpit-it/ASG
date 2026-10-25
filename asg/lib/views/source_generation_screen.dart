@@ -126,6 +126,9 @@ class _SourceGenerationScreenState extends State<SourceGenerationScreen> {
             const Text(
               'Build requires a current saved Plan approval in addition to the operation consent below. Return to the workspace and open Plan to draft, review or withdraw approval. Withdrawal prevents subsequent starts; it does not cancel a command already running.',
             ),
+            const Text(
+              'Fixed starter tasks: resolve → analyze → test → build. Each task depends on the previous task passing. These tasks verify the starter; they do not implement arbitrary Plan prose.',
+            ),
             directory(parent, 'Existing parent directory'),
             TextField(
               controller: name,
@@ -213,6 +216,21 @@ class _SourceGenerationScreenState extends State<SourceGenerationScreen> {
                   'The previous run was interrupted. Retry verification of unchanged source; no existing files will be regenerated.',
                 ),
               if (result.error.isNotEmpty) Text(result.error),
+              if (result.tasks != null) ...[
+                const Text('Approved starter task progress'),
+                for (final task in result.tasks!)
+                  ListTile(
+                    title: Text(
+                      '${task.id}: ${result.taskStatus(task, active: controller.verifying).name}',
+                    ),
+                    subtitle: Text(
+                      task.dependencies.isEmpty
+                          ? 'First verification task'
+                          : 'Requires ${task.dependencies.join(', ')}',
+                    ),
+                  ),
+              ] else
+                const Text('Legacy outcome: no saved structured task graph.'),
               for (final step in result.steps)
                 ExpansionTile(
                   title: Text(

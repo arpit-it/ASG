@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:asg/models/build_task.dart';
+
 import 'package:asg/models/chat_message.dart';
 import 'package:asg/services/generation_input.dart';
 import 'package:asg/services/conversation_store.dart';
@@ -159,6 +161,11 @@ void main() {
       expect(await generate(true), isFalse);
       final saved = store.load('p')!;
       expect(saved.approval!.matches(approval), isTrue);
+      expect(saved.tasks!.map((t) => t.id), BuildTask.starter.map((t) => t.id));
+      expect(
+        saved.taskStatus(saved.tasks!.first, active: false),
+        BuildTaskStatus.blocked,
+      );
       expect(saved.phase, SourceGenerationPhase.failed);
       expect(saved.copy().approval!.matches(approval), isTrue);
       host.failVerification = false;
@@ -451,6 +458,11 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(home: SourceGenerationScreen(controller: c)),
       );
+      await tester.scrollUntilVisible(
+        find.byTooltip('Choose Existing parent directory'),
+        180,
+        scrollable: find.byType(Scrollable).first,
+      );
       expect(
         tester
             .widget<IconButton>(
@@ -504,6 +516,12 @@ void main() {
       await tester.tap(find.text('Plan that authorized this build'));
       await tester.pumpAndSettle();
       expect(find.text('Build the fixed Flutter starter.'), findsOneWidget);
+      await tester.scrollUntilVisible(
+        find.text('starter-build: passed'),
+        180,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(find.text('starter-build: passed'), findsOneWidget);
       await tester.scrollUntilVisible(
         find.text('Start actual built preview'),
         250,
