@@ -196,6 +196,15 @@ void main() {
       unawaited(provider.stream.close());
       await tester.pumpAndSettle();
       await tester.scrollUntilVisible(
+        find.text('Line changes'),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(
+        find.text(controller.proposal!.proposal.changes.single.diff.display),
+        findsOneWidget,
+      );
+      await tester.scrollUntilVisible(
         find.text('Original (full file)'),
         300,
         scrollable: find.byType(Scrollable).first,
@@ -208,6 +217,12 @@ void main() {
       );
       expect(find.text('void main() { print("Hi"); }'), findsOneWidget);
       expect(tester.takeException(), isNull);
+      await PlanApprovalStore(records)
+          .save(project, ConversationStore(records).load(project.id), false);
+      controller.refreshApproval();
+      await tester.pumpAndSettle();
+      expect(find.text('Line changes'), findsNothing);
+      expect(find.text('void main() { print("Hi"); }'), findsNothing);
       await tester.pumpWidget(const SizedBox());
     },
   );

@@ -1,3 +1,5 @@
+import 'source_line_diff.dart';
+
 /// A review artifact only. Constructing it grants no write or execution access.
 class SourceEditProposal {
   SourceEditProposal._(this.summary, List<SourceReplacement> changes)
@@ -69,6 +71,8 @@ class SourceEditProposal {
 
 /// Complete original/replacement text lets a view render an unambiguous diff.
 class SourceReplacement {
-  const SourceReplacement._(this.path, this.before, this.after);
+  SourceReplacement._(this.path, this.before, this.after);
   final String path, before, after;
+  // Cache the bounded comparison so view rebuilds never repeat its work.
+  late final SourceLineDiff diff = SourceLineDiff.compare(before, after);
 }

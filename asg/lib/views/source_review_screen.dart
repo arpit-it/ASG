@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../controllers/source_review_controller.dart';
+import 'source_diff_view.dart';
 
 class SourceReviewScreen extends StatefulWidget {
   const SourceReviewScreen({super.key, required this.controller});
@@ -122,6 +123,7 @@ class _SourceReviewScreenState extends State<SourceReviewScreen>
                 change.path,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
+              SourceDiffView(diff: change.diff),
               const Text('Original (full file)'),
               SelectableText(change.before),
               const SizedBox(height: 12),
