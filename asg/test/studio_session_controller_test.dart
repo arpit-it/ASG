@@ -35,6 +35,19 @@ class DelayedRecords implements RecordStorage {
   }
 }
 
+class CreationRecords extends DelayedRecords {
+  bool failProjects = false;
+  @override
+  Future<bool> setString(String key, String value) async {
+    writes.add(key);
+    final success = key == 'studio.projects.v1'
+        ? !failProjects
+        : await pending!.future;
+    if (success) values[key] = value;
+    return success;
+  }
+}
+
 void main() {
   late DelayedRecords records;
   late StudioSessionController controller;
@@ -128,6 +141,188 @@ void main() {
     expect(controller.error, isNull);
     expect(controller.current, same(first));
   });
+  test(
+    'partial creation retries only selection and preserves canonical metadata',
+    () async {
+      final data = CreationRecords();
+      data.values['studio.projects.v1'] = jsonEncode([first.toJson()]);
+      final c = StudioSessionController(StudioSessionStore(StudioStore(data)), [
+        first,
+      ]);
+      addTearDown(c.dispose);
+      data.pending = Completer<bool>()..complete(false);
+      expect(await c.create(second), isFalse);
+      expect(c.current, same(first));
+      expect(c.savedCreation, same(second));
+      expect(c.error, contains('was saved but could not be opened'));
+      expect(StudioStore(data).load().map((p) => p.id), ['first', 'second']);
+      expect(await c.create(project('third')), isFalse);
+      await c.retrySavedCreation();
+      expect(c.savedCreation, same(second));
+      final changed = StudioProject(
+        id: second.id,
+        name: 'Revised',
+        description: 'New requirements',
+        type: second.type,
+        platforms: second.platforms,
+        location: second.location,
+      );
+      data.values['studio.projects.v1'] = jsonEncode([
+        first.toJson(),
+        changed.toJson(),
+      ]);
+      final savedBytes = data.values['studio.projects.v1'];
+      data.pending = Completer<bool>();
+      final retry = c.retrySavedCreation();
+      expect(c.busy, isTrue);
+      expect(c.current, same(first));
+      await c.retrySavedCreation();
+      await c.select(first);
+      data.pending!.complete(true);
+      await retry;
+      expect(c.current!.name, 'Revised');
+      expect(c.current!.description, 'New requirements');
+      expect(c.savedCreation, isNull);
+      expect(c.error, isNull);
+      expect(data.values['studio.projects.v1'], savedBytes);
+      expect(
+        data.writes.where((key) => key == 'studio.projects.v1'),
+        hasLength(1),
+      );
+      expect(
+        data.writes.where((key) => key == 'studio.lastProject.v1'),
+        hasLength(3),
+      );
+    },
+  );
+  test(
+    'project save failure and duplicate identity do not select or overwrite',
+    () async {
+      final data = CreationRecords()..failProjects = true;
+      data.values['studio.projects.v1'] = jsonEncode([first.toJson()]);
+      final original = data.values['studio.projects.v1'];
+      final c = StudioSessionController(StudioSessionStore(StudioStore(data)), [
+        first,
+      ]);
+      addTearDown(c.dispose);
+      expect(await c.create(second), isFalse);
+      expect(c.savedCreation, isNull);
+      expect(c.error, contains('could not be created'));
+      expect(data.values['studio.projects.v1'], original);
+      data.failProjects = false;
+      expect(await c.create(first), isFalse);
+      expect(c.error, contains('identity already exists'));
+      expect(data.writes, ['studio.projects.v1']);
+      expect(c.current, same(first));
+    },
+  );
+  test('missing or duplicate saved identity cannot be retried', () async {
+    for (final saved in [
+      <StudioProject>[],
+      [second, second],
+    ]) {
+      final data = CreationRecords();
+      final c = StudioSessionController(StudioSessionStore(StudioStore(data)), [
+        first,
+      ]);
+      data.pending = Completer<bool>()..complete(false);
+      await c.create(second);
+      data.values['studio.projects.v1'] = jsonEncode(
+        saved.map((p) => p.toJson()).toList(),
+      );
+      final writes = data.writes.length;
+      await c.retrySavedCreation();
+      expect(c.current, same(first));
+      expect(c.savedCreation, isNotNull);
+      expect(c.error, contains('Check Projects'));
+      expect(data.writes, hasLength(writes));
+      c.dispose();
+    }
+  });
+  test('disposed creation retry cannot publish or start more writes', () async {
+    final data = CreationRecords();
+    final c = StudioSessionController(StudioSessionStore(StudioStore(data)), [
+      first,
+    ]);
+    data.pending = Completer<bool>()..complete(false);
+    await c.create(second);
+    data.pending = Completer<bool>();
+    final retry = c.retrySavedCreation();
+    c.dispose();
+    data.pending!.complete(true);
+    await retry;
+    await c.retrySavedCreation();
+    expect(c.current, same(first));
+    expect(data.writes, hasLength(3));
+  });
+  test('opening another saved project dismisses creation recovery', () async {
+    final data = CreationRecords();
+    final c = StudioSessionController(StudioSessionStore(StudioStore(data)), [
+      first,
+    ]);
+    addTearDown(c.dispose);
+    data.pending = Completer<bool>()..complete(false);
+    await c.create(second);
+    data.pending = Completer<bool>()..complete(true);
+    await c.select(first);
+    expect(c.savedCreation, isNull);
+    expect(c.current, same(first));
+    expect(StudioStore(data).load().single.id, second.id);
+  });
+  testWidgets(
+    'home explains saved creation and retries opening without recreating',
+    (tester) async {
+      final data = CreationRecords();
+      await tester.binding.setSurfaceSize(const Size(1200, 900));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      data.pending = Completer<bool>()..complete(false);
+      await tester.pumpWidget(
+        MaterialApp(
+          home: StudioHome(store: StudioStore(data), projects: const []),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.byTooltip('New project'));
+      await tester.pumpAndSettle();
+      await tester.enterText(
+        find.byType(TextField).first,
+        'A daily task planner',
+      );
+      await tester.tap(find.text('Show my options'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Review project'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Create project'));
+      await tester.pumpAndSettle();
+      expect(
+        find.textContaining('was saved but could not be opened'),
+        findsOneWidget,
+      );
+      expect(StudioStore(data).load(), hasLength(1));
+      data.pending = Completer<bool>();
+      await tester.tap(find.text('Retry opening saved project'));
+      await tester.pump();
+      expect(
+        tester
+            .widget<TextButton>(
+              find.widgetWithText(TextButton, 'Retry opening saved project'),
+            )
+            .onPressed,
+        isNull,
+      );
+      data.pending!.complete(true);
+      await tester.pumpAndSettle();
+      expect(find.text('Retry opening saved project'), findsNothing);
+      expect(find.text('Application preview'), findsOneWidget);
+      expect(StudioStore(data).load(), hasLength(1));
+      expect(
+        data.writes.where((key) => key == 'studio.projects.v1'),
+        hasLength(1),
+      );
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox());
+    },
+  );
   testWidgets('home locks navigation and workspace until selection commits', (
     tester,
   ) async {
