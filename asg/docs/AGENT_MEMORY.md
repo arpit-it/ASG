@@ -59,3 +59,5 @@ Confirmed source-generation PR #11 merged as 979dc4f2447888a454aef90ffaf0e751c90
 Issue #12 delivery is tracked by [PR #13](https://github.com/arpit-it/ASG/pull/13), branch codex/12-generated-snapshot-status. Its final exact-revision review, required CI and merge record are the authoritative completion evidence; inspect the PR before starting the next increment.
 
 Issue #14 (`codex/14-session-selection`) addresses an actual session-save concurrency/lifecycle gap after confirming no open issues or PRs. Shared create/select busy guards and home interaction/focus exclusion protect pending selection. Seven regression tests cover delayed writes, failures/retry, overlap, disposal and toolbar/workspace locking. Storage formats and project content are unchanged; inspect the linked PR for final exact-revision review, CI and merge evidence before starting another increment.
+
+Issue #14 delivery: [PR #15](https://github.com/arpit-it/ASG/pull/15), branch `codex/14-session-selection`. Local formatter/analyzer, 93 default tests (two opt-in tests skipped) and web build passed. Final exact-head independent review, required CI results and merge SHA are authoritative in that PR.
