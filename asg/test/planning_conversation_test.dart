@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:asg/controllers/app_workspace_controller.dart';
 import 'package:asg/controllers/chat_controller.dart';
 import 'package:asg/models/chat_message.dart';
+import 'package:asg/models/build_plan.dart';
 import 'package:asg/models/generation_event.dart';
 import 'package:asg/models/project.dart';
 import 'package:asg/services/application_store.dart';
@@ -76,7 +77,7 @@ void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
 
   test(
-    'real local Qwen planning streams and saves a draft',
+    'real local Qwen planning streams and saves a valid starter task contract',
     () async {
       // Run this opt-in test alone to bypass widget-test HTTP mocking.
       final previousOverrides = HttpOverrides.current;
@@ -98,7 +99,7 @@ void main() {
       });
       expect(
         await controller.send(
-          'Make a concise plan for adding a weekly task view. Keep each of the requested sections to one brief line.',
+          'Explicitly plan only generating and verifying the fixed Flutter web MVC starter from the saved prototype. Include the exact asg-build contract supplied in your instructions. Do not plan custom source edits or a weekly view. Keep prose concise.',
         ),
         true,
       );
@@ -115,6 +116,10 @@ void main() {
       expect(
         ConversationStore(records).load(project.id).last.content,
         controller.messages.last.content,
+      );
+      expect(
+        BuildPlan.parse(controller.messages.last.content).tasks,
+        hasLength(4),
       );
       expect(records.values.keys, ['studio.chat.v1.planning']);
     },

@@ -140,7 +140,12 @@ void main() {
     await tester.scrollUntilVisible(
       find.text('[Plan draft — not approved]\nRecovered plan'),
       100,
-      scrollable: find.byType(Scrollable).last,
+      scrollable: find
+          .descendant(
+            of: find.byType(ListView),
+            matching: find.byType(Scrollable),
+          )
+          .first,
     );
     expect(
       find.text('[Plan draft — not approved]\nRecovered plan'),

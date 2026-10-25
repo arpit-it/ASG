@@ -1,4 +1,5 @@
 import 'project.dart';
+import 'build_plan.dart';
 
 /// Prompts and labels for conversational assistance; grants no tool permissions.
 extension ConversationAssistance on ConversationMode {
@@ -18,7 +19,16 @@ extension ConversationAssistance on ConversationMode {
           'Separate supported behavior from proposed capabilities; ask for missing information. '
           'End with an explicit reminder that this draft needs user review and approval '
           'and that no implementation, builds or tests have been executed. '
-          'Do not interpret a request to approve or build as permission to execute anything.',
+          'Do not interpret a request to approve or build as permission to execute anything. '
+          'The only executable adapter creates the fixed Flutter web MVC starter from '
+          'the saved prototype and runs resolve, analyze, test and build in order. '
+          'Only if the user explicitly requests that bounded starter workflow, include '
+          'exactly this structured contract on separate lines, without changing it:\n'
+          '${BuildPlan.starterContract}\n'
+          'Explain these tasks and their dependencies in the draft. If the requested '
+          'work needs custom source edits, repairs, other frameworks or other commands, '
+          'omit the contract and explain that execution is unsupported; do not quietly '
+          'substitute the starter workflow. The contract is a proposal, never approval.',
     ConversationMode.review =>
       'Review the bounded application prototype against the project requirements and user request. '
           'Use sections: Evidence and limits, Requirement coverage, Gaps and risks, '
