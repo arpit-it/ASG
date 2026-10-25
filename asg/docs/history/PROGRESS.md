@@ -923,3 +923,7 @@ Acceptance/validation: fourth request refuses before transport; failed/cancelled
 F05 remains In progress/unchecked. This bounded increment does not implement automatic application/check reruns, complete automatic-loop cancellation/exhaustion UI or live-model repair acceptance. Independent final-revision review and required CI must pass before this increment merges; no later task selected.
 
 Local validation: formatter150 files, analyzer clean, full367Flutter tests/six opt-in skips passed; web build and Wasm dry run passed. Independent review and required CI pending.
+
+Delivery [PR #98](https://github.com/arpit-it/ASG/pull/98), reopened issue #94, branch `94-repair-attempt-budget`: bounded increment Awaiting merge. Tested local `e5763b7`, published `2ff8d98da9abb64d67b34097fa9a80fa161447b1`, exact tree `b86666418ae0ac4c6fde0ebb71e2b796be142ef3`; fetched diff empty. Independent reviewer inspecting implementation and actual required CI. Final revision/review/check/merge evidence follows in the PR. F05 remains In progress and unchecked.
+
+Independent implementation review passed40focused tests, formatter150 unchanged and analyzer, with no blocking finding. Optional schema hardening identified a missing proposal key being replaceable by an unknown fifth field for non-proposed states; tightened exact shape and added corruption-retention regression. Final formatter150/analyzer/full368Flutter tests/six opt-in skips/web build and Wasm dry run all passed after the correction. Fresh exact-final-head review and required CI are required before merge.

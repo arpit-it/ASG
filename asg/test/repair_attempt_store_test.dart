@@ -211,6 +211,29 @@ void main() {
     );
   });
 
+  test(
+    'unknown or missing attempt fields fail closed without replacing evidence',
+    () async {
+      final records = AtomicRecords();
+      await seed(records);
+      final store = RepairAttemptStore(records, project.id);
+      await store.reserve(run(records), () {});
+      final raw =
+          jsonDecode(records.values[store.key]!) as Map<String, dynamic>;
+      final attempt = (raw['attempts'] as List).single as Map<String, dynamic>;
+      attempt.remove('proposal');
+      attempt['unexpected'] = null;
+      records.values[store.key] = jsonEncode(raw);
+      final retained = records.values[store.key];
+      expect(store.load, throwsFormatException);
+      await expectLater(
+        RepairAttemptStore(records, project.id).reserve(run(records), () {}),
+        throwsFormatException,
+      );
+      expect(records.values[store.key], retained);
+    },
+  );
+
   test('native reopen retains budget; corrupt journal isolated without replacement', () async {
     SharedPreferences.setMockInitialValues({});
     final preferences = await SharedPreferences.getInstance();

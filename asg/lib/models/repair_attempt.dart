@@ -42,6 +42,7 @@ class RepairAttempt {
 
   factory RepairAttempt.fromJson(Map<String, dynamic> json) {
     if (json.length != 5 ||
+        !json.containsKey('proposal') ||
         json['number'] is! int ||
         (json['number'] as int) < 1 ||
         json['startedAt'] is! String ||
