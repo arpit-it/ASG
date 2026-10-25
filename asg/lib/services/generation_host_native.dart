@@ -238,6 +238,7 @@ class NativeGenerationHost implements GenerationHost {
       sdk: path.normalize(project.sdk),
       phase: SourceGenerationPhase.verifying,
       steps: const [],
+      failedOperation: '',
       outputs: const {},
     );
     await progress(current);
@@ -252,13 +253,26 @@ class NativeGenerationHost implements GenerationHost {
       // starting each trusted command. A rejected callback stops the sequence.
       await progress(current);
       checkOpen();
-      final result = _operationOverride != null
-          ? await _operationOverride(project, operation)
-          : await runFlutterOperation(
-              project,
-              operation,
-              beforeStart: () => progress(current),
-            );
+      late final GenerationStep result;
+      try {
+        result = _operationOverride != null
+            ? await _operationOverride(project, operation)
+            : await runFlutterOperation(
+                project,
+                operation,
+                beforeStart: () => progress(current),
+              );
+      } catch (error) {
+        // A runner exception has no trustworthy exit result. Keep completed
+        // evidence and identify the task separately from GenerationStep.
+        current = current.copy(
+          phase: SourceGenerationPhase.failed,
+          failedOperation: operation,
+          error: '$operation could not complete. $error',
+        );
+        await progress(current);
+        rethrow;
+      }
       checkOpen();
       current = current.copy(steps: [...current.steps, result]);
       if (result.exitCode != 0 || result.timedOut) {

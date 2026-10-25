@@ -56,6 +56,7 @@ class FixtureHost implements GenerationHost {
   Future<void> Function()? beforeGenerationWrite;
   int writes = 0;
   bool failAfterResolveEvidence = false;
+  bool throwAnalyze = false;
   final operations = <String>[];
   int generations = 0, verifications = 0;
   bool failVerification = false, disposed = false, server = false;
@@ -86,10 +87,20 @@ class FixtureHost implements GenerationHost {
     verifications++;
     await progress(project.copy(phase: SourceGenerationPhase.verifying));
     if (failVerification) throw StateError('Missing interpreter');
-    var current = project.copy(steps: const []);
+    var current = project.copy(steps: const [], failedOperation: '');
     for (final operation in ['resolve', 'analyze', 'test', 'build']) {
       await progress(current.copy(phase: SourceGenerationPhase.verifying));
       operations.add(operation);
+      if (throwAnalyze && operation == 'analyze') {
+        await progress(
+          current.copy(
+            phase: SourceGenerationPhase.failed,
+            failedOperation: operation,
+            error: 'Interpreter unavailable',
+          ),
+        );
+        throw StateError('Interpreter unavailable');
+      }
       current = current.copy(
         steps: [
           ...current.steps,
@@ -172,6 +183,31 @@ void main() {
   });
   tearDown(() {
     if (!c.isDisposed) c.dispose();
+  });
+
+  test('runner failure survives controller failure save and reopen', () async {
+    host.throwAnalyze = true;
+    expect(await generate(true), isFalse);
+    expect(c.result!.failedOperation, 'analyze');
+    expect(c.result!.steps.length, 1);
+    c.dispose();
+    host = FixtureHost();
+    c = SourceGenerationController(
+      project: project,
+      definition: definition,
+      store: store,
+      host: host,
+    );
+    expect(
+      c.result!.taskStatus(c.result!.tasks![1], active: false),
+      BuildTaskStatus.failed,
+    );
+    expect(
+      c.result!.taskStatus(c.result!.tasks![2], active: false),
+      BuildTaskStatus.blocked,
+    );
+    expect(await c.verifyAgain(approved: true), isTrue);
+    expect(store.load(project.id)!.failedOperation, isEmpty);
   });
 
   for (final change in ['withdraw', 'prototype', 'dispose']) {
