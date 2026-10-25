@@ -178,7 +178,26 @@ class SourceReviewController extends BaseController {
   bool _busy = false, _cancelled = false;
   bool get busy => _busy || (_candidateSession?.busy ?? false);
   String _status = '';
-  String get status => _status;
+  String get status {
+    final session = _candidateSession;
+    if (session == null) return _status;
+    if (session.promoted) {
+      return 'Candidate promoted. Working source and preview now use the verified candidate.';
+    }
+    if (session.promoting) {
+      return 'Validating preview and publishing the verified candidate…';
+    }
+    if (session.busy) {
+      return 'Verifying isolated candidate. Working source and preview retained.';
+    }
+    if (session.result.phase == SourceGenerationPhase.ready) {
+      return 'Candidate verified. Explicit promotion is required to change working output.';
+    }
+    if (session.result.phase == SourceGenerationPhase.failed) {
+      return 'Candidate checks stopped. Working source and preview retained.';
+    }
+    return _status;
+  }
 
   /// Retained proposals are hidden when their durable approval is no longer current.
   ApprovedSourceProposal? get proposal {

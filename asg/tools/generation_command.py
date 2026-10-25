@@ -100,6 +100,7 @@ def candidate_profile(directory, sdk, pub_cache, temporary):
     return '\n'.join([
         '(version 1)', '(deny default)',
         '(allow process-exec process-fork sysctl-read)',
+        '(deny syscall-unix (syscall-number SYS_setsid SYS_setpgid SYS_posix_spawn))',
         '(allow signal (target same-sandbox))',
         '(allow mach-lookup (global-name "com.apple.cfprefsd.daemon") '
         '(global-name "com.apple.system.logger") (global-name "com.apple.logd") '

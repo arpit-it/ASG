@@ -1,6 +1,13 @@
 import 'dart:async';
 
 import 'package:asg/controllers/source_review_controller.dart';
+import 'package:asg/controllers/source_candidate_controller.dart';
+import 'package:asg/models/build_plan.dart';
+import 'package:asg/services/application_store.dart';
+import 'package:asg/services/generation_host.dart';
+import 'package:asg/services/generation_input.dart';
+import 'package:asg/services/requirements_store.dart';
+import 'package:asg/services/source_generation_store.dart';
 import 'package:asg/models/source_generation.dart';
 import 'package:asg/services/plan_approval_store.dart';
 import 'package:asg/services/folder_picker.dart';
@@ -13,12 +20,44 @@ import 'approved_source_proposer_test.dart'
     show seed, serviceFor, originals, response;
 import 'planning_conversation_test.dart' show ControlledRecords, project, tick;
 import 'source_edit_proposer_test.dart' show FakeProvider;
+import 'source_generation_controller_test.dart' show FixtureHost;
 
 class CandidateFolderPicker extends FolderPicker {
   @override
   bool get supported => true;
   @override
   Future<String?> pick() async => '/candidates';
+}
+
+class ReviewCandidateHost extends FixtureHost {
+  @override
+  Future<GeneratedProject> verify(
+    GeneratedProject project,
+    GenerationProgress progress, {
+    bool resume = false,
+  }) async {
+    var value = project.copy(phase: SourceGenerationPhase.verifying);
+    await progress(value);
+    for (final task in project.tasks!) {
+      value = value.copy(
+        steps: [
+          ...value.steps,
+          GenerationStep(
+            operation: task.operation.name,
+            exitCode: 0,
+            output: 'fixture',
+          ),
+        ],
+      );
+      await progress(value);
+    }
+    value = value.copy(
+      phase: SourceGenerationPhase.ready,
+      outputs: {'index.html': '0' * 64, 'main.dart.js': '0' * 64},
+    );
+    await progress(value);
+    return value;
+  }
 }
 
 void main() {
@@ -29,6 +68,7 @@ void main() {
   SourceReviewController create({
     Completer<Map<String, String>>? capture,
     SourceCandidatePreparer? prepare,
+    CandidatePromotion? publish,
   }) => SourceReviewController(
     project: project,
     generated: GeneratedProject(
@@ -39,6 +79,8 @@ void main() {
     ),
     records: records,
     prepareCandidate: prepare,
+    publishCandidate: publish,
+    createCandidateHost: () => ReviewCandidateHost(),
     folderPicker: CandidateFolderPicker(),
     proposer: serviceFor(records, provider),
     readSnapshot: (_, paths) async {
@@ -414,6 +456,126 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Line changes'), findsNothing);
       expect(find.text('void main() { print("Hi"); }'), findsNothing);
+      await tester.pumpWidget(const SizedBox());
+    },
+  );
+  testWidgets(
+    'integrated review shows verified then promoted folder and truthful status',
+    (tester) async {
+      controller.dispose();
+      controller = create(
+        prepare:
+            ({
+              required project,
+              required generated,
+              required evidence,
+              required records,
+              required parent,
+              required checkActive,
+            }) async {
+              checkActive();
+              return GeneratedProject(
+                directory: '/candidates/promoted',
+                sdk: '/sdk',
+                python: 'python3',
+                confined: true,
+                sources: GenerationInput(
+                  project,
+                  ApplicationStore(records).load(project).definition,
+                ).fingerprints,
+                approval: evidence.approval,
+                tasks: BuildPlan.parse(
+                  evidence.approval.content,
+                  board: RequirementsStore(records).load(project.id),
+                ).tasks,
+              );
+            },
+        publish: (value, host, guard) async {
+          guard();
+          await SourceGenerationStore(records).save(project.id, value);
+          return Uri.parse('http://127.0.0.1:1234/promoted/');
+        },
+      );
+      tester.view.physicalSize = const Size(320, 900);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      await tester.pumpWidget(
+        MaterialApp(
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(context)
+                .copyWith(textScaler: const TextScaler.linear(2)),
+            child: child!,
+          ),
+          home: SourceReviewScreen(controller: controller),
+        ),
+      );
+      final request = controller.request('Tanalyze', ['lib/main.dart']);
+      await tester.pump();
+      await tester.pump();
+      provider.stream.add(response());
+      unawaited(provider.stream.close());
+      await tester.pumpAndSettle();
+      await request;
+      Future<void> tapText(String text, {double delta = 200}) async {
+        await tester.scrollUntilVisible(
+          find.text(text),
+          delta,
+          scrollable: find.byType(Scrollable).first,
+        );
+        await tester.ensureVisible(find.text(text));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(text));
+        await tester.pumpAndSettle();
+      }
+
+      await tapText('Select candidate parent folder');
+      await tapText('Prepare unverified candidate');
+      expect(controller.error, isNull);
+      expect(controller.candidateSession, isNotNull);
+      await tapText('I approve confined candidate verification', delta: -200);
+      await tapText('Verify candidate in sandbox');
+      expect(controller.status, contains('Candidate verified'));
+      await tester.scrollUntilVisible(
+        find.text('Verified candidate folder (awaiting promotion)'),
+        -200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(
+        find.text('Verified candidate folder (awaiting promotion)'),
+        findsOneWidget,
+      );
+      expect(
+        find.text(
+          'Unverified candidate prepared. Working source and preview retained.',
+        ),
+        findsNothing,
+      );
+      await tapText('Promote verified candidate and refresh preview');
+      expect(controller.promoted, isTrue);
+      expect(controller.status, contains('Candidate promoted'));
+      await tester.scrollUntilVisible(
+        find.text('Working source folder (promoted candidate)'),
+        -200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(
+        find.text('Working source folder (promoted candidate)'),
+        findsOneWidget,
+      );
+      expect(
+        find.text(
+          'Retained unverified candidate (not saved as working output)',
+        ),
+        findsNothing,
+      );
+      expect(
+        find.text(
+          'Unverified candidate prepared. Working source and preview retained.',
+        ),
+        findsNothing,
+      );
+      expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox());
     },
   );

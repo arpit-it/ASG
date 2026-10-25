@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../controllers/source_review_controller.dart';
+import '../models/source_generation.dart';
 import 'source_diff_view.dart';
 import 'source_candidate_view.dart';
 
@@ -108,8 +109,12 @@ class _SourceReviewScreenState extends State<SourceReviewScreen>
             Text(controller.status),
             if (controller.error != null) SelectableText(controller.error!),
             if (controller.candidate != null) ...[
-              const Text(
-                'Retained unverified candidate (not saved as working output)',
+              Text(
+                controller.promoted
+                    ? 'Working source folder (promoted candidate)'
+                    : controller.candidate!.phase == SourceGenerationPhase.ready
+                    ? 'Verified candidate folder (awaiting promotion)'
+                    : 'Retained candidate folder (separate from working output)',
               ),
               SelectableText(controller.candidate!.directory),
             ],
