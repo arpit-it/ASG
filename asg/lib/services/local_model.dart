@@ -29,9 +29,60 @@ class LocalModelProvider implements StreamingModelProvider {
   }
 
   @override
-  Stream<GenerationEvent> generateEvents(String prompt) async* {
+  Stream<GenerationEvent> generateEvents(String prompt) {
+    late final StreamController<GenerationEvent> output;
+    Timer? deadline;
+    var finished = false;
+
+    void stopListening() {
+      if (!finished) {
+        _cancelled = true;
+        _client.close();
+      }
+      finished = true;
+      deadline?.cancel();
+      // Keep the upstream error handler until pending reads unwind after client
+      // closure. Cancelling its async generator during an awaited read can leave
+      // late transport errors unhandled. Caller completion does not wait for it.
+    }
+
+    output = StreamController<GenerationEvent>(
+      onListen: () {
+        deadline = Timer(totalTimeout, () {
+          if (finished) return;
+          finished = true;
+          _cancelled = true;
+          _client.close();
+          output.addError(
+            TimeoutException(
+              'Local model exceeded the total generation limit.',
+            ),
+          );
+          unawaited(output.close());
+        });
+        _generateEvents(prompt).listen(
+          (event) {
+            if (!finished) output.add(event);
+          },
+          onError: (Object error, StackTrace stack) {
+            if (finished) return;
+            output.addError(error, stack);
+          },
+          onDone: () {
+            if (finished) return;
+            finished = true;
+            deadline?.cancel();
+            unawaited(output.close());
+          },
+        );
+      },
+      onCancel: stopListening,
+    );
+    return output.stream;
+  }
+
+  Stream<GenerationEvent> _generateEvents(String prompt) async* {
     if (_cancelled) throw StateError('Provider has been cancelled.');
-    final watch = Stopwatch()..start();
     yield const GenerationEvent.phase(GenerationPhase.thinking);
     final request =
         http.Request('POST', config.endpoint.resolve('chat/completions'))
@@ -86,11 +137,6 @@ class LocalModelProvider implements StreamingModelProvider {
             .transform(utf8.decoder)
             .transform(const LineSplitter())) {
       if (_cancelled) return;
-      if (watch.elapsed > totalTimeout) {
-        throw TimeoutException(
-          'Local model exceeded the total generation limit.',
-        );
-      }
       if (line.startsWith('event:')) {
         eventName = line.substring(6).trim();
         continue;
