@@ -118,3 +118,11 @@ Fourteen new editor/controller/service/widget tests cover restart preservation, 
 Issue #16 local validation: formatter/analyzer passed; 107 default Flutter tests passed, with live Qwen and real generation skipped by default. Web and macOS debug builds passed. Existing Qwen /health was ready/idle; no fresh live inference is claimed for this metadata-only workflow.
 
 Issue #16 delivery: [PR #17](https://github.com/arpit-it/ASG/pull/17), branch `codex/16-edit-project-details`. Local formatter/analyzer, 107 default tests and web/macOS debug builds passed. Final exact-head independent review, required CI and merge SHA are authoritative in that PR.
+
+## Dashboard generation outcomes — issue #18
+
+Branch `codex/18-dashboard-build-status` replaces unconditional “No builds yet” and disconnected-generation placeholders with typed summaries of actual saved generation records. Cards distinguish absent, generated/unverified, unfinished, saved successful verification, failed and unreadable outcomes; input fingerprints show current/earlier/unknown app and requirements. Strict existing record validation gates saved success. Corrupt history is isolated per project; corrupt application data preserves build evidence with unknown input match. No records, files, commands or live processes are changed by summary reads. Returning from a standalone project refreshes status.
+
+Eight regressions cover all saved phases/reopening, no writes, requirements/interaction staleness, unknown/corrupt/invalid success records, mixed-project search/open, return-navigation refresh and narrow layout with enlarged text. Only latest saved evidence is available; no current artifact integrity, live preview or full last-successful-build history is claimed. Final linked PR records tests, independent review, CI and merge evidence.
+
+Issue #18 local validation: formatter/analyzer passed, 115 default Flutter tests passed (live Qwen and real generation skipped by default), and web build passed. Existing Qwen health reported ready/idle; no fresh inference is claimed for dashboard status reads.

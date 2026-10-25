@@ -12,6 +12,7 @@ import '../services/runtime_setup_store.dart';
 import '../services/runtime_host_factory.dart';
 import 'project_wizard.dart';
 import 'project_workspace.dart';
+import 'project_build_status_view.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({
@@ -74,6 +75,20 @@ class _DashboardState extends State<Dashboard> {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(controller.error!)));
     }
+  }
+
+  Future<void> openProject(StudioProject project) async {
+    if (widget.onSelect != null) {
+      widget.onSelect!(project);
+      return;
+    }
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) =>
+            ProjectWorkspace(records: widget.store.records, project: project),
+      ),
+    );
+    if (mounted) controller.refreshBuildStatus();
   }
 
   @override
@@ -233,31 +248,25 @@ class _DashboardState extends State<Dashboard> {
                     contentPadding: const EdgeInsets.all(18),
                     leading: const Icon(Icons.widgets_outlined),
                     title: Text(p.name),
-                    subtitle: Text(
-                      '${p.type} · ${p.platforms.join(', ')}\nDiscovery · No builds yet',
-                    ),
-                    isThreeLine: true,
-                    trailing: const Icon(Icons.arrow_forward),
-                    onTap: () {
-                      if (widget.onSelect != null) {
-                        widget.onSelect!(p);
-                        return;
-                      }
-                      Navigator.of(context).push(
-                        MaterialPageRoute<void>(
-                          builder: (_) => ProjectWorkspace(
-                            records: widget.store.records,
-                            project: p,
-                          ),
+                    subtitle: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('${p.type} · ${p.platforms.join(', ')}'),
+                        const SizedBox(height: 6),
+                        ProjectBuildStatusView(
+                          summary: controller.buildSummary(p),
                         ),
-                      );
-                    },
+                      ],
+                    ),
+                    trailing: const Icon(Icons.arrow_forward),
+                    onTap: () => openProject(p),
                   ),
                 ),
               ),
               const SizedBox(height: 24),
               const Text(
-                'Foundation milestone · AI generation and execution are not connected.',
+                'Chat updates the in-app prototype. Approved Flutter web exports are available on macOS. Status reflects saved verification; opening a generated preview rechecks its artifacts.',
                 style: TextStyle(color: Colors.white54),
               ),
             ],

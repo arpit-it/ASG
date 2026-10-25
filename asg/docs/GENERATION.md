@@ -49,3 +49,7 @@ CI runs the real generation test after warming the SDK/cache with the main app's
 ## Editing project requirements
 
 The workspace's **Edit project details** action updates the saved name and requirements for future exports. It preserves project identity, platform/type/location and the current prototype/chat/revision. A starter that has never been saved is persisted before metadata changes, so restarting does not regenerate it from revised requirements. Failed writes retain input for retry; stale, missing or duplicated project records require reopening details. Existing exports remain immutable and compare as outdated when their requirements fingerprint differs. Change the actual prototype through chat, then export into a new folder.
+
+## Dashboard outcomes
+
+Project cards read the latest saved generation record and show no snapshot, unverified source, unfinished verification, saved verification success, failure or unreadable history. Input fingerprints distinguish current/earlier/unknown snapshots. Corrupt application data leaves saved build evidence visible with unknown input match; one unreadable history record does not break other cards. Returning from a standalone project refreshes the summaries. These are read-only saved outcomes, not live process status or filesystem verification. Only the latest outcome is stored; this is not a complete build history or a claim of a prior successful build after a later failure. Opening the generated preview still checks artifacts through the existing guarded workflow.
