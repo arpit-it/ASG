@@ -422,3 +422,29 @@ Two real filesystem regressions cover source and resolution changes after resolv
 ## 25 October 2026 — User branch and PR naming preference
 
 Issue #62 records the owner request: use direct issue-based branch names, omit assistant/provider branding from branches and PRs, skip routine branch-creation announcements, and use "ASG is working" when an identity is needed. Updated AGENTS.md, GIT_WORKFLOW.md, CODING_STANDARDS.md and durable AGENT_MEMORY.md. Historical delivery records remain intact. The development automation prompt has the same preference. Documentation-only validation: reviewed diff and git diff --check; no runtime changes or builds required.
+
+Updated AGENTS.md, GIT_WORKFLOW.md and AGENT_MEMORY.md to require direct issue-based branch names without assistant/provider branding, no routine branch-creation announcements, and "ASG is working" when an identity is needed. Existing historical branch and delivery evidence is preserved. Applied the same preference to the development automation.
+
+
+### F02 per-task validation identity verified delivery
+
+Reopened issue #40 completed via [PR #61](https://github.com/arpit-it/ASG/pull/61), branch `codex/40-task-validation-failure`; original PR #41 and #60 deliveries retained. Exact published/tested head `f1f3a8fd14fcc9dfee14a17cf597f302efbcd30f` (local equivalent `8c6d1beb7e3c3c0216b7d5a16bd8c2e7f4ed94b3`), tested/merged tree `9ae69ddd89c6bb97695ba7589cc999c39cf7d36f`. Independent exact-revision approval reviews `5643082920` and final `5643102916`, no blockers; independent 69 focused tests passed (one live opt-in skip). Required CI `40190544123` succeeded: Flutter job `121160409585` (231 Linux tests, six skips; actual Chrome storage; formatter/analyzer/web; real independent generated-project resolve/analyze/test/build/serve) and Python job `121160409849` (2+4+4 fixtures). Reviewer merged normally through protection as `b68f715c8ce9cfa1a46c6c87a2ab423504d9f8f8` at 2026-10-25 11:55:18 UTC; issue #40 closed/completed. Parent independently verified merge and closure, safely synchronized local main (0/0 divergence) and confirmed exact tested tree, preserving concurrent instruction/history edits and unrelated IDE edits.
+
+Local formatter/analyzer, 233 default tests (four opt-in skips), web/macOS debug builds passed. Two actual filesystem regressions prove per-task source/dependency refusal identifies analyze as failed without launching it, preserves successful resolve and downstream blocked status after serialization, and clears identity on fresh verification after original inputs are restored. Endpoint unavailable; no fresh inference/model download/stable-app replacement. F02 remains In progress for broader executable adapter mapping; F03 not started, no new issue created. Schedule/notification preferences unchanged. Post-merge evidence retained locally for the next reviewed increment; no direct-main publication.
+
+
+## Naming preference merge verification — 25 October 2026
+
+PR #63 naming preference verified merged into origin/main as `6dc5accb66d6106bc45653162429cc4f49118c7b` on 25 October 2026. Final head `0c19a23b1587fe4c532cab201b5f15ed58c18e2c` independently approved (review `5643127823`); required CI run `40191088092` passed both Flutter checks/web/generated-project verification and Python runtime fixtures. Issue #62 closed completed. Remote fetched and verified; local main deliberately left at its existing revision because overlapping uncommitted documentation and unrelated IDE edits are preserved. Reconcile these edits safely before advancing the local checkout; do not recreate this completed naming task.
+
+
+## Local main synchronization — 25 October 2026
+
+Local main safely fast-forwarded to `6dc5accb66d6106bc45653162429cc4f49118c7b` after PR #63. All uncommitted work was backed up and reconciled, retaining both local delivery notes and the published naming entry. IDE edits and the requirements ledger were preserved byte-for-byte. The earlier instruction to reconcile before advancing is now satisfied. Future runs should use the updated naming instructions already on main.
+
+
+## F02 approved adapter task mapping — reopened issue #42 (25 October 2026)
+
+Awaiting merge; branch `42-approved-task-mapping`. Prior PR #63 verified merged as `6dc5accb66d6106bc45653162429cc4f49118c7b`; no competing active ASG run or open issue/PR at selection. Reused #42, retaining original PR #43 delivery. Evidence: canonical task IDs and one hardcoded chain prevented named task mapping/test-before-analyze dependencies. Version-2 `asg-build` validates exactly one of each existing operation, bounded unique IDs, topological dependencies and mandatory transitive prerequisites. Version 1 remains canonical. Native execution and reopened history/status follow saved task order; retry rejects a graph changed independently of approval before preview/host side effects. No skipped checks, custom source, new commands or adapters. General mapping remains unmet; F02 In progress, F03 not started.
+
+Acceptance/validation: adversarial parser/graph compatibility; native-host reordered execution/failure/reopen/retry to Ready and mismatched history rejection; controller tampered-graph refusal preserves preview/history. Final formatter/analyzer and 238 default tests passed (four opt-in skips); web/macOS debug builds passed. An outdated widget label assertion was corrected and the full suite rerun. Exact published head, independent final-revision review, required CI and merge evidence follow in linked PR. Runtime endpoint refused connection; no fresh inference/model download/stable-app replacement. Prior local delivery notes and unrelated IDE edits preserved; schedule/notifications unchanged.

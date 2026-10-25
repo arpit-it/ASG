@@ -127,7 +127,7 @@ class _SourceGenerationScreenState extends State<SourceGenerationScreen> {
               'Build requires a current saved Plan approval in addition to the operation consent below. Return to the workspace and open Plan to draft, review or withdraw approval. Withdrawal prevents subsequent starts; it does not cancel a command already running.',
             ),
             const Text(
-              'Fixed starter tasks: resolve → analyze → test → build. Each task depends on the previous task passing. These tasks verify the starter; they do not implement arbitrary Plan prose.',
+              'Starter verification always includes resolve, analyze, test and build. The validated saved Plan sets task IDs, dependencies and sequential order. These tasks verify the starter; they do not implement arbitrary Plan prose.',
             ),
             directory(parent, 'Existing parent directory'),
             TextField(
@@ -221,7 +221,7 @@ class _SourceGenerationScreenState extends State<SourceGenerationScreen> {
                 for (final task in result.tasks!)
                   ListTile(
                     title: Text(
-                      '${task.id}: ${result.taskStatus(task, active: controller.verifying).name}',
+                      '${task.id} (${task.operation.name}): ${result.taskStatus(task, active: controller.verifying).name}',
                     ),
                     subtitle: Text(
                       task.dependencies.isEmpty

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:asg/models/build_plan.dart';
 
@@ -321,6 +322,74 @@ void main() {
       expect(c.error, contains('structured starter Plan'));
     }
   });
+
+  test('current approved named graph drives generation and retry after reopen', () async {
+    final tasks = [
+      for (final task in BuildTask.starter)
+        {
+          'id': 'task-${task.operation.name}',
+          'operation': task.operation.name,
+          'dependencies': [
+            for (final dep in task.dependencies)
+              dep.replaceFirst('starter-', 'task-'),
+          ],
+        },
+    ];
+    final content =
+        '```asg-build\n${jsonEncode({'version': 2, 'adapter': 'flutter-starter', 'tasks': tasks})}\n```';
+    final plans = [
+      ChatMessage(
+        role: 'assistant',
+        content: content,
+        planContext: PlanApprovalStore(store.records).contextFor(project),
+      ),
+    ];
+    await ConversationStore(store.records).save('p', plans);
+    await PlanApprovalStore(store.records).save(project, plans, true);
+    expect(
+      c.planStatus,
+      contains('task-test: Run tests; depends on: task-analyze'),
+    );
+    expect(await generate(true), isTrue);
+    expect(store.load('p')!.tasks!.map((t) => t.id), tasks.map((t) => t['id']));
+    c.dispose();
+    c = SourceGenerationController(
+      project: project,
+      definition: definition,
+      store: store,
+      host: host,
+    );
+    expect(await c.verifyAgain(approved: true), isTrue);
+    expect(store.load('p')!.approval!.content, content);
+  });
+
+  test(
+    'retry refuses a stored task graph changed independently of approval',
+    () async {
+      expect(await generate(true), isTrue);
+      final saved = store.load('p')!;
+      final tasks = saved.tasks!.map((t) => t.toJson()).toList();
+      tasks[3] = {
+        ...tasks[3],
+        'dependencies': ['starter-test', 'starter-resolve'],
+      };
+      await store.save('p', saved.copy(tasks: BuildTask.fromJson(tasks)));
+      c.dispose();
+      c = SourceGenerationController(
+        project: project,
+        definition: definition,
+        store: store,
+        host: host,
+      );
+      final history = store.records.getString('studio.generation.v1.p');
+      await c.startPreview();
+      expect(await c.verifyAgain(approved: true), isFalse);
+      expect(host.verifications, 1);
+      expect(host.server, isTrue);
+      expect(store.records.getString('studio.generation.v1.p'), history);
+      expect(c.error, contains('does not match'));
+    },
+  );
 
   test(
     'outcomes retain exact approval across progress failure and reopen',
@@ -788,11 +857,11 @@ void main() {
         findsWidgets,
       );
       await tester.scrollUntilVisible(
-        find.text('starter-build: passed'),
+        find.text('starter-build (build): passed'),
         180,
         scrollable: find.byType(Scrollable).first,
       );
-      expect(find.text('starter-build: passed'), findsOneWidget);
+      expect(find.text('starter-build (build): passed'), findsOneWidget);
       await tester.scrollUntilVisible(
         find.text('Start actual built preview'),
         250,

@@ -38,7 +38,7 @@ void main() {
         '${BuildPlan.starterContract}\n${BuildPlan.starterContract}',
         '${BuildPlan.starterContract}\n```asg-build extra',
         '${'x' * 65536}\n${BuildPlan.starterContract}',
-        fence({...graph(), 'version': 2}),
+        fence({...graph(), 'version': 3}),
         fence({...graph(), 'version': 1.0}),
         fence({...graph(), 'adapter': 'shell'}),
         fence({...graph(), 'command': 'arbitrary'}),
