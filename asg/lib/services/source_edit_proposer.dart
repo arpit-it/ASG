@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import '../models/local_model_config.dart';
 import '../models/source_edit_proposal.dart';
+import '../models/structured_proposal_json.dart';
 import 'local_model.dart';
 import 'model_provider.dart';
 
@@ -56,10 +57,12 @@ class SourceEditProposer {
         buffer.write(chunk);
       }
       if (_cancelled) throw StateError('Source proposal cancelled.');
-      result = SourceEditProposal.parse(
-        jsonDecode(buffer.toString()),
-        originals: snapshot,
-      );
+      final json = buffer.toString();
+      final decoded = jsonDecode(json);
+      // Decode first so the member scanner only receives valid JSON. Reject
+      // ambiguous keys before the decoder's last value can become a proposal.
+      rejectDuplicateJsonMembers(json);
+      result = SourceEditProposal.parse(decoded, originals: snapshot);
     } finally {
       try {
         await _provider?.cancel();
