@@ -14,3 +14,5 @@ Issue #3 implementation is tracked by [PR #11](https://github.com/arpit-it/ASG/p
 Source generation #3 merged as 979dc4f2 in PR #11. Issue #12 makes saved-export input staleness visible without rewriting existing projects. Continue selecting one necessary increment from actual application gaps; no speculative issue backlog is added.
 
 Issue #12 delivery is tracked by [PR #13](https://github.com/arpit-it/ASG/pull/13), branch codex/12-generated-snapshot-status. Its final exact-revision review, required CI and merge record are the authoritative completion evidence; inspect the PR before starting the next increment.
+
+Snapshot-status PR #13 merged as add0d358. Issue #14 fixes observed asynchronous project-selection races on `codex/14-session-selection`; its linked PR carries final review/check/merge evidence. Continue choosing a single necessary increment from observed gaps rather than adding speculative backlog.

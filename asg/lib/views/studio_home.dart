@@ -72,7 +72,7 @@ class _StudioHomeState extends State<StudioHome> {
       actions: [
         IconButton(
           tooltip: 'Projects',
-          onPressed: workspacePending ? null : projects,
+          onPressed: controller.busy || workspacePending ? null : projects,
           icon: const Icon(Icons.folder_open),
         ),
         IconButton(
@@ -98,92 +98,101 @@ class _StudioHomeState extends State<StudioHome> {
       ),
       child: const Icon(Icons.memory),
     ),
-    body: Column(
-      children: [
-        if (controller.error != null)
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: Text(
-              controller.error!,
-              style: TextStyle(color: Theme.of(context).colorScheme.error),
-            ),
-          ),
-        if (controller.busy) const LinearProgressIndicator(),
-        Expanded(
-          child: controller.current != null
-              ? Padding(
-                  padding: const EdgeInsets.only(top: 56),
-                  child: ProjectWorkspace(
-                    records: widget.store.records,
-                    onPendingChanged: (value) {
-                      if (mounted && workspacePending != value) {
-                        setState(() => workspacePending = value);
-                      }
-                    },
-                    key: ValueKey(controller.current!.id),
-                    project: controller.current!,
-                    embedded: true,
-                  ),
-                )
-              : LayoutBuilder(
-                  builder: (context, size) {
-                    final welcome = Padding(
-                      padding: const EdgeInsets.all(24),
-                      child: ListView(
-                        children: [
-                          const Text(
-                            'What would you like to create?',
-                            style: TextStyle(
-                              fontSize: 28,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          const Text(
-                            'Describe your idea. I’ll suggest options and guide the project setup, then your instructions can update its live prototype.',
-                          ),
-                          const SizedBox(height: 20),
-                          FilledButton.icon(
-                            onPressed: create,
-                            icon: const Icon(Icons.chat_bubble_outline),
-                            label: const Text('Let’s create something'),
-                          ),
-                        ],
-                      ),
-                    );
-                    const emptyPreview = Center(
-                      child: Padding(
-                        padding: EdgeInsets.all(32),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.preview_outlined, size: 48),
-                            SizedBox(height: 16),
-                            Text(
-                              'Application preview',
-                              style: TextStyle(fontSize: 22),
-                            ),
-                            SizedBox(height: 8),
-                            Text(
-                              'Create a project to start its live application. Your current project will reopen here next time.',
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                    if (size.maxWidth < 800) return welcome;
-                    return Row(
-                      children: [
-                        SizedBox(width: size.maxWidth * 0.4, child: welcome),
-                        const VerticalDivider(width: 1),
-                        const Expanded(child: emptyPreview),
-                      ],
-                    );
-                  },
+    body: AbsorbPointer(
+      absorbing: controller.busy,
+      child: ExcludeFocus(
+        excluding: controller.busy,
+        child: Column(
+          children: [
+            if (controller.error != null)
+              Padding(
+                padding: const EdgeInsets.all(12),
+                child: Text(
+                  controller.error!,
+                  style: TextStyle(color: Theme.of(context).colorScheme.error),
                 ),
+              ),
+            if (controller.busy) const LinearProgressIndicator(),
+            Expanded(
+              child: controller.current != null
+                  ? Padding(
+                      padding: const EdgeInsets.only(top: 56),
+                      child: ProjectWorkspace(
+                        records: widget.store.records,
+                        onPendingChanged: (value) {
+                          if (mounted && workspacePending != value) {
+                            setState(() => workspacePending = value);
+                          }
+                        },
+                        key: ValueKey(controller.current!.id),
+                        project: controller.current!,
+                        embedded: true,
+                      ),
+                    )
+                  : LayoutBuilder(
+                      builder: (context, size) {
+                        final welcome = Padding(
+                          padding: const EdgeInsets.all(24),
+                          child: ListView(
+                            children: [
+                              const Text(
+                                'What would you like to create?',
+                                style: TextStyle(
+                                  fontSize: 28,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              const Text(
+                                'Describe your idea. I’ll suggest options and guide the project setup, then your instructions can update its live prototype.',
+                              ),
+                              const SizedBox(height: 20),
+                              FilledButton.icon(
+                                onPressed: create,
+                                icon: const Icon(Icons.chat_bubble_outline),
+                                label: const Text('Let’s create something'),
+                              ),
+                            ],
+                          ),
+                        );
+                        const emptyPreview = Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(32),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.preview_outlined, size: 48),
+                                SizedBox(height: 16),
+                                Text(
+                                  'Application preview',
+                                  style: TextStyle(fontSize: 22),
+                                ),
+                                SizedBox(height: 8),
+                                Text(
+                                  'Create a project to start its live application. Your current project will reopen here next time.',
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                        if (size.maxWidth < 800) return welcome;
+                        return Row(
+                          children: [
+                            SizedBox(
+                              width: size.maxWidth * 0.4,
+                              child: welcome,
+                            ),
+                            const VerticalDivider(width: 1),
+                            const Expanded(child: emptyPreview),
+                          ],
+                        );
+                      },
+                    ),
+            ),
+          ],
         ),
-      ],
+      ),
     ),
   );
 }
