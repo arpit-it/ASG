@@ -1,6 +1,88 @@
-# Original product brief
+# Automated Software Generator Requirements
 
-The user subsequently selected Flutter, the ASG repository, existing Qwen3.5-9B, an app-led creation flow, and chat-left/live-preview-right. These direct requirements supersede conflicting SwiftUI-first details below. This brief defines the broader product vision, not a claim of completed functionality.
+Created 25 October 2026. This is the ordered feature queue for the 15 minute development schedule. The product specification below supplies the broader scope. Existing work takes precedence over starting a new item.
+
+## Completion and selection rules
+
+Read this document on every scheduled run. First reconcile any active issue or PR against GitHub and current origin/main. Finish that work before selecting another feature. Select the first queued feature whose dependencies are satisfied; split large features into one coherent issue at a time. Do not mark a whole feature done when only an increment is delivered.
+
+Statuses: Queued, In progress, Blocked, Awaiting merge, Done. A checked box means Done only. Before marking Done, verify acceptance criteria, actual relevant tests, independent final-revision review, required CI, and the PR merge into main. Record issue, PR, merge SHA, validation and completion date. Implementation or an open PR alone is not completion. Do not start the next task until the previous task is completed and merged into main. If blocked, record the blocker and resume it on the next run rather than silently advancing. If another run owns active work, avoid overlapping changes.
+
+Update this document with task selection and delivery evidence, alongside [agent memory](history/AGENT_MEMORY.md) and [progress](history/PROGRESS.md). Preserve unrelated edits. Include status updates in the relevant branch/PR where possible; reconcile the verified merge on the next run. Never overwrite this document from an older branch.
+
+## Ordered feature queue
+
+- [ ] F01 Structured requirements and task board — Queued
+  - Persist requirement IDs, acceptance criteria, task dependencies and task status per project; expose them in the workspace with edit and reopen support.
+  - Accept when edits survive restart, invalid dependencies are rejected, and requirements changes invalidate affected approvals. Include a readable project requirements document with task progress.
+- [ ] F02 Executable approved plans — Queued; depends on F01
+  - Convert saved plans into validated, structured tasks bound to the exact requirements and approval revision.
+  - Accept when only the current explicitly approved plan can start Build; withdrawn, stale and unapproved plans cannot execute. Show task progress and failures.
+- [ ] F03 Resumable bounded execution — Queued; depends on F02
+  - Persist tool actions, results, limits and checkpoints; support stop, cancel and safe resume after interruption.
+  - Accept when duplicate side effects are prevented on resume, out-of-project paths and unauthorized commands are rejected, and time/output/tool-call limits are enforced.
+- [ ] F04 Model assisted Flutter source edits — Queued; depends on F03
+  - Extend the fixed generator with reviewed, scoped source changes driven by approved tasks and a visible diff.
+  - Accept when a real local-model request changes an independent Flutter project, passes analysis/tests/build and refreshes its actual preview; preserve the last working output on failure.
+- [ ] F05 Bounded automatic build repairs — Queued; depends on F04
+  - Diagnose actual build/test errors and repair within a maximum of three attempts per failure category.
+  - Accept when every attempt and exit result is saved, cancellation works, exhausted repairs stop honestly, and success requires rerunning the failing checks.
+- [ ] F06 Build history and last working version — Queued; depends on F01
+  - Keep timestamped build/test outcomes linked to input revisions and preview artifacts, with a last-successful-version entry.
+  - Accept when history survives restart, stale or missing artifacts are explicit, and rollback requires a visible selection and preserves current work.
+- [ ] F07 Existing project import — Queued; depends on F01
+  - Inspect an existing Flutter repository without overwriting it; identify toolchains, project metadata and unsupported capabilities.
+  - Accept when users can select and reopen an imported project, inspect findings and approve a plan before any source modification; invalid folders fail without writes.
+- [ ] F08 Portable project backup and restore — Queued; depends on F01
+  - Export and restore requirements, conversations, decisions, tasks and revision metadata with versioned manifests.
+  - Accept when round trips preserve records, corrupt/incompatible archives fail safely, secrets are excluded and existing projects are never silently replaced.
+- [ ] F09 Runtime diagnostics and resource controls — Queued
+  - Show actual model connectivity, active request, cancellation scope, request limits and actionable setup failures.
+  - Accept when offline, timeout and cancellation states are truthful, settings persist, and diagnostics omit secrets and private prompt content.
+- [ ] F10 Deterministic requirements review — Queued; depends on F04 and F06
+  - Map each requirement to concrete checks and saved evidence; distinguish automated verification from advisory model feedback.
+  - Accept when failed, missing and stale evidence cannot yield a verified requirement, and reports link to exact revisions and test results.
+- [ ] F11 Additional project adapters — Queued; depends on F04 and F05
+  - Add one complete adapter at a time, beginning with Python, then React/Next.js, then native targets when their toolchains are available.
+  - Accept each adapter only after real creation, analysis/tests, execution and preview or runnable output; label other types unsupported until verified. Track each adapter as its own increment.
+- [ ] F12 Isolated self development — Queued; depends on F03, F05, F06 and F10
+  - Propose changes to ASG in an isolated checkout with independent review and protected PR delivery.
+  - Accept when the installed stable application remains usable, failed candidates are recoverable, and merging requires independent approval and passing required checks.
+
+- [ ] F13 Consolidate project documentation — Awaiting merge
+  - Current active task from the user: keep one requirements and task document, organize supporting documents, remove redundant copies, and update the scheduled workflow.
+  - Acceptance: one requirements file; unique original product scope and foundation history retained; maintained local documentation links resolve; the active 15 minute automation reads this file, deduplicates new tasks and checks Done only after verified merge.
+  - Local documentation and automation changes are complete and validated on 25 October 2026. Tracked by [issue #32](https://github.com/arpit-it/ASG/issues/32), branch `codex/32-documentation-queue`. PR, independent review and merge evidence remain pending. Deliver this consolidation before selecting F01. Do not check this box until the remote merge is verified.
+
+## Adding new tasks
+
+On every scheduled run compare the current implementation, user requests, open issues and review findings with this queue. Add a task only for a user-requested capability, an unmet product specification or a reproducible defect. First search all queued, active and completed entries plus GitHub issues/PRs; extend or reopen an existing task when it covers the same work. Do not add speculative features or duplicate issues.
+
+Use the next unused F number, never renumber or reuse IDs. Record the problem and supporting evidence, user value, priority, dependencies, bounded scope, testable acceptance criteria and validation plan. Link a supporting specification section or reproduction and the matching issue when created. Add at most one justified new task per run. If no justified gap exists, add nothing. Insert the task by dependency and priority, retaining its stable ID. A new task does not interrupt active work: finish and verify its merge first.
+
+A task moves Queued → In progress → Awaiting merge → Done; use Blocked with evidence and the required next action when progress cannot continue. Keep completed entries and merge evidence permanently. Code generation, local test success, issue closure alone or an unmerged PR never checks the Done box. If a delivered feature regresses, add a linked repair task or reopen the affected entry with the reason; preserve prior delivery history.
+
+## Active task and delivery ledger
+
+Active: F13 documentation consolidation, Awaiting merge. Preserve all pending documentation moves and deletions and deliver through the normal issue/branch/PR workflow. Inspect open issues/PRs and finish any already-active implementation before starting another implementation. Reconcile previously delivered capabilities before selecting F01; do not duplicate them.
+
+For each increment append: feature ID; status; scope; dependencies; issue; branch; PR; tested revision; checks and limitations; reviewer verdict; merge SHA; completion date; blocker or next step. Keep completed entries as history.
+
+## Current product decisions
+
+Use Flutter across six platforms under the display name Automated Software Generator. The direct Flutter request supersedes the attached SwiftUI framework choice. Foundation scope: dashboard, creation wizard, saved planning records, native folder selection where supported, basic workspace navigation. Subsequent milestones cover actual software generation.
+
+## Foundation acceptance context
+
+These criteria describe earlier increments; their presence does not mark the feature queue complete.
+
+Current increment: empty dashboard is honest; blank project name is rejected; target selection is required; project record saves before appearing; saved records load at startup; search filters names; unsupported automation displays explicit status. Remaining original milestone requirements include editable settings and full folder import. Generated applications, Git initialization, and successful builds must never be claimed based only on record creation.
+
+App-led workspace increment: user describes intent before technical configuration; recommendations can be changed and reviewed; selected platforms/features persist; creation opens the workspace; re-entry restores the current project; desktop chat is left of the live prototype; phone tabs preserve both panes; supported instructions apply and refresh visible version state; invalid edits/failed saves preserve the working version. Independent source generation/building is not part of this increment.
+
+# Product specification and original brief
+
+The user subsequently selected Flutter, the ASG repository, existing Qwen3.5-9B, an app-led creation flow, and chat-left/live-preview-right. These direct requirements supersede conflicting SwiftUI-first details below. The original brief is retained for product scope and provenance, not as a command to restart old milestones. Current MVC standards, the 15 minute task-selection rules above and the repository independent-review/merge workflow govern execution; the original manual-only merge language is superseded by the user-authorized independent reviewer merge process. This brief defines the broader product vision, not a claim of completed functionality.
 
 # CODEX MASTER PROMPT — AI PROJECT STUDIO
 
@@ -43,15 +125,14 @@ Each iteration must produce a working, verifiable increment.
 
 Maintain the following documents:
 
-- `docs/PRODUCT_REQUIREMENTS.md`
-- `docs/ARCHITECTURE.md`
-- `docs/SDLC.md`
-- `docs/TECHNICAL_DECISIONS.md`
-- `docs/SECURITY.md`
-- `docs/ROADMAP.md`
-- `docs/TEST_STRATEGY.md`
-- `docs/PROGRESS.md`
-- `docs/ACCEPTANCE_CRITERIA.md`
+- `docs/REQUIREMENTS.md`
+- `docs/architecture/ARCHITECTURE.md`
+- `docs/development/SDLC.md`
+- `docs/architecture/TECHNICAL_DECISIONS.md`
+- `docs/development/SECURITY.md`
+- `docs/history/ROADMAP.md`
+- `docs/development/TEST_STRATEGY.md`
+- `docs/history/PROGRESS.md`
 
 Do not treat documentation as a substitute for implementing working software.
 
@@ -679,7 +760,7 @@ Do not attempt to implement every milestone in one uncontrolled change.
 
 Do not install system-wide software, download large models, execute destructive commands, or modify files outside the selected workspace without approval.
 
-Maintain `docs/PROGRESS.md` after every completed milestone.
+Maintain `docs/history/PROGRESS.md` after every completed milestone.
 
 If the environment does not support a required operation, report the limitation and continue with independently testable work.
 

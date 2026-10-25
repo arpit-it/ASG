@@ -38,6 +38,6 @@ Do not run checkout commands blindly with unrelated changes. Never reset/discard
 - #3: independently generated, built/tested Flutter source projects.
 - #4: transactional storage and durable interaction state.
 
-The hourly schedule follows AGENTS.md and the issue-first workflow; it must not repeatedly publish directly to main.
+The 15 minute schedule follows AGENTS.md and the issue-first workflow; it must not repeatedly publish directly to main.
 
-Hourly runs must finish active work first and create at most one necessary new issue only if existing issues do not cover the current gap. Reviewer-agent delegation and conditional reviewer merges are explicitly authorized by the user.
+Scheduled runs must finish active work first and create at most one necessary new issue only if existing issues do not cover the current gap. Reviewer-agent delegation and conditional reviewer merges are explicitly authorized by the user.

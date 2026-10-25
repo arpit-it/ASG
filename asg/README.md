@@ -2,7 +2,7 @@
 
 This directory contains the cross-platform Flutter app. The [repository README](../README.md) is the primary overview of the product requirements, implemented capabilities, planned work, runtime limitations and contribution workflow.
 
-ASG guides users from an idea through proposed options to an interactive prototype. The current project reopens with chat and live preview; validated chat instructions save a new revision before refreshing it. Qwen3.5-9B chat streams text with visible progress. An approved macOS-hosted Flutter web MVC generation flow can create, verify and serve an independent snapshot; broader source synthesis and autonomous repair remain planned. See [generation setup and limits](docs/GENERATION.md).
+ASG guides users from an idea through proposed options to an interactive prototype. The current project reopens with chat and live preview; validated chat instructions save a new revision before refreshing it. Qwen3.5-9B chat streams text with visible progress. An approved macOS-hosted Flutter web MVC generation flow can create, verify and serve an independent snapshot; broader source synthesis and autonomous repair remain planned. See [generation setup and limits](docs/architecture/GENERATION.md).
 
 ## Run from this directory
 
@@ -16,16 +16,16 @@ flutter run -d macos
 flutter run -d chrome
 ```
 
-Android Studio should open this folder and use the shared **Automated Software Generator** run/debug configuration. See [Android Studio setup](docs/ANDROID_STUDIO.md).
+Android Studio should open this folder and use the shared **Automated Software Generator** run/debug configuration. See [Android Studio setup](docs/setup/ANDROID_STUDIO.md).
 
-Platform runners cover Android, iOS, web, macOS, Windows and Linux. Managed model scanning/download/startup currently targets macOS; other platforms connect to an accessible runtime. Model weights and Python environments are not bundled. Use the upper-right runtime control and follow [current Qwen streaming setup](docs/QWEN_STREAMING.md) and [runtime setup](docs/RUNTIME_SETUP.md).
+Platform runners cover Android, iOS, web, macOS, Windows and Linux. Managed model scanning/download/startup currently targets macOS; other platforms connect to an accessible runtime. Model weights and Python environments are not bundled. Use the upper-right runtime control and follow [current Qwen streaming setup](docs/setup/QWEN_STREAMING.md) and [runtime setup](docs/setup/RUNTIME_SETUP.md).
 
 ## Development references
 
-- [Requirements](docs/MASTER_REQUIREMENTS.md), [roadmap](docs/ROADMAP.md) and [verified progress](docs/PROGRESS.md)
-- [MVC architecture](docs/ARCHITECTURE.md), [coding standards](docs/CODING_STANDARDS.md) and [repository instructions](../AGENTS.md)
-- [Validation and CI](docs/CI.md), [test strategy](docs/TEST_STRATEGY.md) and [live prototype limits](docs/LIVE_WORKSPACE.md)
-- [Git workflow](docs/GIT_WORKFLOW.md), [security](docs/SECURITY.md) and [durable project memory](docs/AGENT_MEMORY.md)
+- [Requirements](docs/REQUIREMENTS.md), [roadmap](docs/history/ROADMAP.md) and [verified progress](docs/history/PROGRESS.md)
+- [MVC architecture](docs/architecture/ARCHITECTURE.md), [coding standards](docs/development/CODING_STANDARDS.md) and [repository instructions](../AGENTS.md)
+- [Validation and CI](docs/development/CI.md), [test strategy](docs/development/TEST_STRATEGY.md) and [live prototype limits](docs/architecture/LIVE_WORKSPACE.md)
+- [Git workflow](docs/development/GIT_WORKFLOW.md), [security](docs/development/SECURITY.md) and [durable project memory](docs/history/AGENT_MEMORY.md)
 
 Run formatting, analysis, tests and a relevant build before publishing implementation changes. New work uses an issue, a separate branch and an independently reviewed PR.
 

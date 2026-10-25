@@ -2,7 +2,7 @@
 
 Report suspected vulnerabilities through [GitHub private vulnerability reporting](https://github.com/arpit-it/ASG/security/advisories/new). Private reporting is enabled for this repository. Do not include live credentials or personal data in public issues, PRs, logs or screenshots. If a credential was exposed, revoke/rotate it at its provider; removing a file does not remove published history or invalidate the credential.
 
-This project is under active development. The maintained branch is main; experimental generated-code execution is not a complete isolation boundary. Read [application security](asg/docs/SECURITY.md), [runtime setup](asg/docs/RUNTIME_SETUP.md) and [storage limits](asg/docs/STORAGE.md) before using local runtime or storage features.
+This project is under active development. The maintained branch is main; experimental generated-code execution is not a complete isolation boundary. Read [application security](asg/docs/development/SECURITY.md), [runtime setup](asg/docs/setup/RUNTIME_SETUP.md) and [storage limits](asg/docs/architecture/STORAGE.md) before using local runtime or storage features.
 
 ## Repository controls
 

@@ -1,6 +1,6 @@
 # App-led creation and live workspace
 
-**Current runtime update:** Qwen now uses the verified local 4-bit MLX streaming backend. The earlier Torch timeout/nonstreaming notes below are historical. See [QWEN_STREAMING.md](QWEN_STREAMING.md) for current setup, limits and successful real-edit verification.
+**Current runtime update:** Qwen now uses the verified local 4-bit MLX streaming backend. The earlier Torch timeout/nonstreaming notes below are historical. See [QWEN_STREAMING.md](../setup/QWEN_STREAMING.md) for current setup, limits and successful real-edit verification.
 
 The normal application window is now the current project's workspace. The desktop layout has chat on the left and a running interactive prototype on the right. On narrow screens, Chat and Preview tabs preserve both panes. Projects remains available in the header, alongside new-project and runtime controls.
 
