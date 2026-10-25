@@ -46,6 +46,27 @@ class PlanApprovalStore {
     return matches.single;
   }
 
+  /// Re-read durable evidence at the execution boundary; never trust UI state.
+  PlanApproval requireCurrentApproval(StudioProject project) {
+    final current = currentProject(project.id);
+    final messages = ConversationStore(records).load(project.id);
+    final index = latestPlan(messages);
+    final approval = load(project.id);
+    if (context(current) != context(project) ||
+        approval == null ||
+        !approval.approved ||
+        index < 0 ||
+        approval.messageIndex != index ||
+        approval.content != messages[index].content ||
+        approval.context != messages[index].planContext ||
+        approval.context != contextFor(current)) {
+      throw StateError(
+        'Build requires the latest saved Plan approved for the current requirements. Open Plan, review a current draft and approve it.',
+      );
+    }
+    return approval;
+  }
+
   Future<void> save(
     StudioProject project,
     List<ChatMessage> messages,

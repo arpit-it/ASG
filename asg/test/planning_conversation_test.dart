@@ -331,7 +331,7 @@ void main() {
       await tester.tap(find.text('Plan'));
       await tester.pumpAndSettle();
       expect(
-        find.textContaining('does not start implementation'),
+        find.textContaining('requires separate operation consent'),
         findsOneWidget,
       );
       await tester.enterText(find.byType(TextField), 'Plan a weekly view');
