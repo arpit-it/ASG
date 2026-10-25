@@ -1,5 +1,6 @@
 import '../models/approved_source_proposal.dart';
 import '../models/build_plan.dart';
+import '../models/candidate_failure.dart';
 import '../services/requirements_store.dart';
 import '../models/project.dart';
 import '../models/source_generation.dart';
@@ -50,6 +51,8 @@ class SourceCandidateController extends BaseController {
   bool get promoted => _transferred;
   String? _error;
   String? get error => _error;
+  CandidateFailure? get failureDiagnosis =>
+      CandidateFailure.inspect(_result, active: _busy || _transferred);
   Uri? _preview;
   Uri? get preview => _preview;
 
