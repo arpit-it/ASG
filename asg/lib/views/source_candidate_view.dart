@@ -74,7 +74,7 @@ class _SourceCandidateViewState extends State<SourceCandidateView> {
           ExpansionTile(
             title: const Text('Saved candidate check runs'),
             subtitle: const Text(
-              'Manual verification history; these are not automatic repair attempts. '
+              'Candidate check history, including consented repair reruns. '
               'Unfinished runs may be interrupted. No saved run authorizes replay.',
             ),
             children: [
