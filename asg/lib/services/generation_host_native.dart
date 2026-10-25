@@ -239,10 +239,17 @@ class NativeGenerationHost implements GenerationHost {
       await checkSources(project);
       if (operation != 'resolve') await checkResolution(current);
       checkOpen();
-      final result = await (_operationOverride ?? runFlutterOperation)(
-        project,
-        operation,
-      );
+      // Revalidate durable consent after asynchronous source checks and before
+      // starting each trusted command. A rejected callback stops the sequence.
+      await progress(current);
+      checkOpen();
+      final result = _operationOverride != null
+          ? await _operationOverride(project, operation)
+          : await runFlutterOperation(
+              project,
+              operation,
+              beforeStart: () => progress(current),
+            );
       checkOpen();
       if (operation == 'resolve') {
         current = current.copy(resolution: await resolutionFiles(project));
@@ -276,8 +283,9 @@ class NativeGenerationHost implements GenerationHost {
 
   Future<GenerationStep> runFlutterOperation(
     GeneratedProject project,
-    String operation,
-  ) async {
+    String operation, {
+    Future<void> Function()? beforeStart,
+  }) async {
     if (!['resolve', 'analyze', 'test', 'build'].contains(operation)) {
       throw ArgumentError('Unapproved generation operation.');
     }
@@ -304,6 +312,9 @@ class NativeGenerationHost implements GenerationHost {
         await _loadAsset('tools/generation_command.py'),
         flush: true,
       );
+      // Helper preparation has async gaps. Check consent again at the actual
+      // launch boundary; no further awaits occur before starting the process.
+      await beforeStart?.call();
       checkOpen();
       process = await Process.start(project.python, [
         '-I',

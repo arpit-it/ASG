@@ -86,6 +86,28 @@ class SourceGenerationController extends BaseController {
     }
   }
 
+  Future<void> _verificationProgress(
+    GeneratedProject value,
+    PlanApproval approval,
+  ) async {
+    try {
+      _recheckPlan(approval);
+    } catch (error) {
+      // Keep actual completed command evidence, but never publish Ready after
+      // consent changed. Throwing stops the host before its next operation.
+      await _save(
+        value.copy(
+          phase: SourceGenerationPhase.failed,
+          error: 'Plan approval changed during verification. $error',
+        ),
+      );
+      rethrow;
+    }
+    await _save(value);
+    // A durable write is an async boundary; consent can change while it waits.
+    _recheckPlan(approval);
+  }
+
   Future<String?> chooseDirectory(FolderPicker picker) async {
     if (_busy || !available || !picker.supported || isDisposed) return null;
     _busy = true;
@@ -158,7 +180,10 @@ class SourceGenerationController extends BaseController {
       if (isDisposed) return false;
       _recheckPlan(approval);
       _verifying = true;
-      final verified = await host.verify(active, _save);
+      final verified = await host.verify(
+        active,
+        (value) => _verificationProgress(value, approval),
+      );
       return !isDisposed && verified.phase == SourceGenerationPhase.ready;
     } catch (e) {
       await _failure(active, e);
@@ -202,7 +227,10 @@ class SourceGenerationController extends BaseController {
       _preview = null;
       verificationStarted = true;
       _verifying = true;
-      final verified = await host.verify(current, _save);
+      final verified = await host.verify(
+        current,
+        (value) => _verificationProgress(value, approval),
+      );
       return !isDisposed && verified.phase == SourceGenerationPhase.ready;
     } catch (e) {
       if (verificationStarted) {

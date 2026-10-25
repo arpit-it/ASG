@@ -1,6 +1,7 @@
 @TestOn('mac-os || linux')
 library;
 
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -268,6 +269,75 @@ void main() {
           .writeAsString('modified');
       await expectLater(host.verify(ready, (_) async {}), throwsStateError);
       await expectLater(host.startPreview(ready), throwsStateError);
+    },
+  );
+
+  test(
+    'progress refusal before an operation prevents command execution',
+    () async {
+      final generated = await generate();
+      final operations = <String>[];
+      final guarded = NativeGenerationHost(
+        loadAsset: assets,
+        runOperation: (_, operation) async {
+          operations.add(operation);
+          return GenerationStep(
+            operation: operation,
+            exitCode: 0,
+            output: 'fixture',
+          );
+        },
+      );
+      var boundaries = 0;
+      await expectLater(
+        guarded.verify(generated, (event) async {
+          boundaries++;
+          if (boundaries == 2) throw StateError('Approval withdrawn');
+        }),
+        throwsStateError,
+      );
+      expect(boundaries, 2);
+      expect(operations, isEmpty);
+      await guarded.dispose();
+    },
+  );
+
+  test(
+    'approval is checked after helper preparation before process launch',
+    () async {
+      final marker = File('${temp.path}/command-started');
+      await File('$sdk/bin/flutter')
+          .writeAsString('#!/bin/sh\ntouch "${marker.path}"\nexit 0\n');
+      await Process.run('/bin/chmod', ['700', '$sdk/bin/flutter']);
+      for (final relative in [
+        'bin/cache/flutter_tools.snapshot',
+        'bin/cache/dart-sdk/bin/dart',
+        'packages/flutter_tools/.dart_tool/package_config.json',
+      ]) {
+        final file = File('$sdk/$relative');
+        await file.parent.create(recursive: true);
+        await file.writeAsString('fixture');
+      }
+      final generated = await generate();
+      final guarded = NativeGenerationHost(loadAsset: assets);
+      var approved = true;
+      var boundaries = 0;
+      await expectLater(
+        guarded.verify(generated, (_) async {
+          boundaries++;
+          if (!approved) {
+            throw StateError('Approval withdrawn during preparation');
+          }
+          if (boundaries == 2) scheduleMicrotask(() => approved = false);
+        }),
+        throwsStateError,
+      );
+      expect(
+        await marker.exists(),
+        isFalse,
+        reason: 'Withdrawal before process launch must deny the command',
+      );
+      await guarded.dispose();
     },
   );
 
