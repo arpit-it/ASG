@@ -63,7 +63,7 @@ class GeneratedProject {
   }
   final String directory, sdk, python, error;
 
-  /// A task whose runner threw; no command exit result is implied.
+  /// A task whose validation or runner threw; no command exit result is implied.
   final String failedOperation;
   final PlanApproval? approval;
   final List<BuildTask>? tasks;

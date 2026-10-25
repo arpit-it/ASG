@@ -246,14 +246,27 @@ class NativeGenerationHost implements GenerationHost {
     // carry its validated graph alongside their exact authorizing approval.
     for (final task in project.tasks ?? BuildTask.starter) {
       final operation = task.operation.name;
-      await checkSources(project);
-      if (operation != 'resolve') await checkResolution(current);
-      checkOpen();
-      // Revalidate durable consent after asynchronous source checks and before
-      // starting each trusted command. A rejected callback stops the sequence.
+      late final GenerationStep result;
+      try {
+        // Validation refusal belongs to this task even when no command starts.
+        // Preserve completed steps and never fabricate an exit result.
+        await checkSources(project);
+        if (operation != 'resolve') await checkResolution(current);
+        checkOpen();
+      } catch (error) {
+        await progress(
+          current.copy(
+            phase: SourceGenerationPhase.failed,
+            failedOperation: operation,
+            error: '$operation validation failed before execution. $error',
+          ),
+        );
+        rethrow;
+      }
+      // Approval/persistence refusal must remain outside the validation catch.
+      // Revalidate durable consent before starting each trusted command.
       await progress(current);
       checkOpen();
-      late final GenerationStep result;
       try {
         result = _operationOverride != null
             ? await _operationOverride(project, operation)
