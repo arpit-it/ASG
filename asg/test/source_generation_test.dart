@@ -335,6 +335,65 @@ void main() {
     },
   );
 
+  for (final changed in ['source', 'resolution']) {
+    test('$changed validation failure identifies task before runner starts', () async {
+      final generated = await generate();
+      final events = <GeneratedProject>[];
+      var mutated = false;
+      final operations = <String>[];
+      final validating = NativeGenerationHost(
+        loadAsset: assets,
+        runOperation: (_, operation) async {
+          operations.add(operation);
+          return GenerationStep(
+            operation: operation,
+            exitCode: 0,
+            output: 'actual',
+          );
+        },
+      );
+      addTearDown(validating.dispose);
+      final file = File(
+        '${generated.directory}/${changed == 'source' ? 'lib/main.dart' : 'pubspec.lock'}',
+      );
+      final original = await file.exists() ? await file.readAsString() : null;
+      await expectLater(
+        validating.verify(generated, (event) async {
+          events.add(event);
+          if (!mutated && event.steps.length == 1) {
+            mutated = true;
+            await file.writeAsString('changed input');
+          }
+        }),
+        throwsStateError,
+      );
+      final failed = GeneratedProject.fromJson(events.last.toJson());
+      expect(operations, ['resolve']);
+      expect(failed.phase, SourceGenerationPhase.failed);
+      expect(failed.failedOperation, 'analyze');
+      expect(failed.error, contains('validation failed before execution'));
+      expect(failed.steps.map((s) => s.operation), ['resolve']);
+      expect(
+        BuildTask.starter.map((t) => failed.taskStatus(t, active: false)),
+        [
+          BuildTaskStatus.passed,
+          BuildTaskStatus.failed,
+          BuildTaskStatus.blocked,
+          BuildTaskStatus.blocked,
+        ],
+      );
+      if (original == null) {
+        await file.delete();
+      } else {
+        await file.writeAsString(original);
+      }
+      final ready = await host.verify(failed, (event) async {
+        expect(event.failedOperation, isEmpty);
+      });
+      expect(ready.phase, SourceGenerationPhase.ready);
+    });
+  }
+
   test(
     'partial verification records failure and can retry unchanged source',
     () async {
