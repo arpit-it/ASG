@@ -271,11 +271,11 @@ void main() {
       );
       expect(find.text('Saved outcome: ready'), findsOneWidget);
       await tester.scrollUntilVisible(
-        find.text('Start actual built preview'),
+        find.text('Preview saved build (inputs unknown)'),
         250,
         scrollable: find.byType(Scrollable).first,
       );
-      expect(find.text('Start actual built preview'), findsOneWidget);
+      expect(find.text('Preview saved build (inputs unknown)'), findsOneWidget);
     },
   );
 }

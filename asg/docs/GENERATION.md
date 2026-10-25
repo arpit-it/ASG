@@ -6,6 +6,8 @@ On macOS, open a saved project's preview and choose **Generate Flutter source** 
 
 The generator writes a fixed, portable Flutter web MVC starter: typed model, observable controller, view, bootstrap, independent tests, JSON application data and requirements metadata. User/model text is serialized only into JSON data, never executable Dart/HTML or dependency declarations. It supports the existing headings, text, tasks/completion, counters, notes and bounded button actions. It does not synthesize arbitrary model-written code or generate other frameworks/native runners yet.
 
+Saved generation outcomes now identify whether their recorded application/project inputs match the current screen, represent an earlier snapshot, or cannot be identified. Earlier/unknown builds have explicit preview/open labels. This compares recorded input fingerprints; source/output integrity is still checked separately before preview. Later chat or interaction edits require a new folder to export, while an earlier verified build remains available for explicit preview. Existing v1 history stays readable without migration.
+
 The default chat/right-hand preview remains ASG's interpreted prototype. Generated source is a separate snapshot; later chat edits require generation into another new folder. Existing projects are never regenerated in place or overwritten. Generated-app interactions are session-only; ASG's own prototype remains durable.
 
 ## Verification and preview

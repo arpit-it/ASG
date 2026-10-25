@@ -86,3 +86,5 @@ Read [AGENTS.md](AGENTS.md), [coding standards](asg/docs/CODING_STANDARDS.md) an
 For implementation context, see [architecture](asg/docs/ARCHITECTURE.md), [live workspace](asg/docs/LIVE_WORKSPACE.md), [security](asg/docs/SECURITY.md) and [project memory](asg/docs/AGENT_MEMORY.md).
 
 Repository contributions follow [CONTRIBUTING.md](CONTRIBUTING.md) and the [security policy](SECURITY.md). Main is protected by required PRs and passing CI; external workflow runs require maintainer approval.
+
+Saved generated builds are labeled against the current app/project inputs. After chat or interaction changes, earlier builds remain explicitly previewable; generating a new folder captures the updated state.
