@@ -9,6 +9,7 @@ import sys
 import threading
 import time
 
+COMMAND_TIMEOUT_SECONDS = 180
 OUTPUT_LIMIT_BYTES = 65536
 
 OPERATIONS = {
@@ -91,11 +92,9 @@ def main():
     parser.add_argument('--operation', choices=OPERATIONS, required=True)
     parser.add_argument('--sdk', required=True)
     parser.add_argument('--directory', required=True)
-    parser.add_argument('--timeout', type=int, default=180)
+    parser.add_argument('--timeout', type=int, choices=[COMMAND_TIMEOUT_SECONDS], default=COMMAND_TIMEOUT_SECONDS)
     parser.add_argument('--output-limit', type=int, choices=[OUTPUT_LIMIT_BYTES], default=OUTPUT_LIMIT_BYTES)
     args = parser.parse_args()
-    if not 1 <= args.timeout <= 300:
-        raise ValueError('Invalid deadline')
     directory = Path(args.directory)
     if not directory.is_absolute() or directory.resolve() != directory or not directory.is_dir():
         raise ValueError('Expected a canonical generated project directory')

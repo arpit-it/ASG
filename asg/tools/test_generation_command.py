@@ -1,3 +1,5 @@
+import contextlib
+import io
 import importlib.util
 import os
 import json
@@ -99,6 +101,24 @@ class CommandTests(unittest.TestCase):
                      '--output-limit', limit], capture_output=True, text=True, timeout=5)
                 self.assertNotEqual(result.returncode, 0)
                 self.assertIn('invalid choice', result.stderr)
+
+    def test_cli_deadline_matches_saved_policy_before_dispatch(self):
+        with tempfile.TemporaryDirectory() as directory:
+            directory = str(Path(directory).resolve())
+            arguments = ['generation_command.py', '--operation', 'resolve',
+                         '--sdk', directory, '--directory', directory]
+            for value in ('0', '1', '179', '181', '300', '301', '999999999', '1.5', 'invalid'):
+                with self.subTest(timeout=value), mock.patch.object(sys, 'argv', arguments + ['--timeout', value]), mock.patch.object(module, 'run') as run, contextlib.redirect_stderr(io.StringIO()):
+                    with self.assertRaises(SystemExit) as error:
+                        module.main()
+                    self.assertEqual(error.exception.code, 2)
+                    run.assert_not_called()
+            for explicit in ([], ['--timeout', '180']):
+                with self.subTest(arguments=explicit), mock.patch.object(sys, 'argv', arguments + explicit), mock.patch.object(module, 'run', return_value={'exitCode': 0}) as run, contextlib.redirect_stdout(io.StringIO()):
+                    module.main()
+                    run.assert_called_once_with(str(Path(directory) / 'bin/flutter'),
+                                                ['--no-version-check', *module.OPERATIONS['resolve']],
+                                                directory, 180, os.getppid())
 
     def test_operations_are_fixed_and_no_remote_package_install(self):
         self.assertEqual(set(module.OPERATIONS), {'resolve', 'analyze', 'test', 'build'})
