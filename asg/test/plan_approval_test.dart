@@ -281,4 +281,43 @@ void main() {
     expect(find.textContaining('No current plan approval.'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
+  testWidgets('approval failure and retry scroll on narrow screens', (
+    tester,
+  ) async {
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    tester.view.devicePixelRatio = 1;
+    for (final width in [280.0, 320.0, 400.0]) {
+      tester.view.physicalSize = Size(width, 600);
+      final records = ControlledRecords();
+      final controller = (await tester.runAsync(() => planned(records)))!;
+      await controller.setPlanApproval(true);
+      records.failWrite = records.writes + 1;
+      await controller.setPlanApproval(false);
+      expect(controller.error, contains('could not be saved'));
+      await tester.pumpWidget(
+        MaterialApp(
+          home: ModelChat(project: project, controller: controller),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull, reason: 'width $width');
+      final withdrawal = find.text('Withdraw approval').hitTestable();
+      for (
+        var scroll = 0;
+        scroll < 20 && withdrawal.evaluate().isEmpty;
+        scroll++
+      ) {
+        await tester.drag(find.byType(ListView), const Offset(0, -80));
+        await tester.pumpAndSettle();
+      }
+      expect(withdrawal, findsOneWidget);
+      await tester.tap(withdrawal);
+      await tester.pumpAndSettle();
+      expect(controller.hasApproval, false);
+      expect(controller.error, isNull);
+      expect(tester.takeException(), isNull, reason: 'retry width $width');
+      await tester.pumpWidget(const SizedBox());
+    }
+  });
 }
