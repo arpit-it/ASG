@@ -336,7 +336,10 @@ class SourceReviewController extends BaseController {
       _proposalSource = source;
       _status = 'Proposal ready for review. No files changed.';
     } catch (error) {
-      if (!isDisposed && !_cancelled) _error = 'Source proposal failed. $error';
+      if (!isDisposed && !_cancelled) {
+        _error = 'Source proposal failed. $error';
+        _status = 'Source proposal failed. Previous candidate and working output retained.';
+      }
     } finally {
       _busy = false;
       if (_cancelled) _status = 'Review cancelled. No files changed.';

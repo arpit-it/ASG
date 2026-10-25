@@ -1576,3 +1576,8 @@ Local validation: formatter147 unchanged, analyzer clean, final360Flutter tests/
 Final full360Flutter tests/six opt-in skips passed after the responsive test correction. Schedule drift from10minutes was corrected to the requested15minutes using the automation tool; existing failed-runs-only notification preference preserved.
 
 Delivery [PR #97](https://github.com/arpit-it/ASG/pull/97), reopened issue #94, branch `94-failure-repair-proposals`: bounded increment Awaiting merge; F05 remains In progress/unchecked. Tested local `8dd9bb4`, equivalent published `9298d5f62e39e933395e6dd5e46ee52000b1b0d5`, exact tree `3f7d6de5f89241259bd99c21206c0440c2319219`; fetched diff empty. Independent reviewer is inspecting final diff and required CI; final documentation-link revision, review/check/merge evidence follow in the PR. No later task selected.
+
+
+### PR #97 independent review fix
+
+Independent review `5644977146` at docs head `910be7da81b11abfe152774d199f916c7d70cafb` found that a failed repair retry after a successful proposal retained stale Requesting progress. Added an explicit terminal failure status; regression keeps the previous reviewed proposal/candidate while proving busy clears and inference is no longer reported active. Reviewer independently passed37focused tests/formatter147/analyzer before this correction. Parent reran formatter147 unchanged, analyzer, full360Flutter tests/six opt-in skips and web build/Wasm dry run after the fix; all passed. Fresh exact-final-revision independent review and required CI are required before merge. F05 remains In progress/unchecked.
