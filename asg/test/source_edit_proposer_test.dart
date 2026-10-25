@@ -228,6 +228,68 @@ void main() {
     },
   );
 
+  test('duplicate JSON members reject without leaking busy state', () async {
+    final valid = jsonEncode(response());
+    final change = jsonEncode((response()['changes'] as List).single);
+    const escapedPath = r'"pa\u0074h":"hidden",';
+    final ambiguous = [
+      '{"summary":"hidden",${valid.substring(1)}',
+      '{"changes":[],${valid.substring(1)}',
+      r'{"su\u006dmary":"hidden",' + valid.substring(1),
+      for (final key in ['path', 'before', 'after'])
+        '{"summary":"Review","changes":[{"$key":"hidden",'
+            '${change.substring(1)}]}',
+      '{"summary":"Review","changes":[{$escapedPath${change.substring(1)}]}',
+    ];
+    for (final raw in ambiguous) {
+      final failed = FakeProvider();
+      final retry = FakeProvider();
+      var calls = 0;
+      final proposer = SourceEditProposer(
+        createProvider: (_) => calls++ == 0 ? failed : retry,
+      );
+      Future<SourceEditProposal> start() => proposer.propose(
+        config: const LocalModelConfig(),
+        instruction: 'Change',
+        originals: originals,
+      );
+      final future = start();
+      final rejected = expectLater(future, throwsFormatException);
+      // Split even escaped key spellings across transport chunks.
+      for (var i = 0; i < raw.length; i += 3) {
+        failed.stream.add(raw.substring(i, (i + 3).clamp(0, raw.length)));
+      }
+      await failed.stream.close();
+      await rejected;
+      expect(failed.cancellations, 1);
+      final retried = start();
+      retry.stream.add(valid);
+      await retry.stream.close();
+      expect((await retried).changes.single.after, replacement);
+      expect(retry.cancellations, 1);
+    }
+  });
+
+  test('JSON-looking Dart strings and escaped keys remain valid', () async {
+    const before = r'final text = "{\"path\": \"before\"}";';
+    const after = r'final text = "{\"path\": \"after\"}";';
+    final provider = FakeProvider();
+    final proposer = SourceEditProposer(createProvider: (_) => provider);
+    final future = proposer.propose(
+      config: const LocalModelConfig(),
+      instruction: 'Change text',
+      originals: {'lib/main.dart': before},
+    );
+    provider.stream.add(
+      jsonEncode(response(before: before, after: after))
+          .replaceFirst('"summary"', r'"su\u006dmary"'),
+    );
+    await provider.stream.close();
+    final result = await future;
+    expect(result.changes.single.before, before);
+    expect(result.changes.single.after, after);
+  });
+
   test('invalid inputs do not create a provider', () async {
     final proposer = SourceEditProposer(
       createProvider: (_) => throw StateError('Must not create transport'),

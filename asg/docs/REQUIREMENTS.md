@@ -69,7 +69,7 @@ A task moves Queued → In progress → Awaiting merge → Done; use Blocked wit
 
 ## Active task and delivery ledger
 
-Active: F04 first bounded source-proposal increment, issue #84, branch `84-source-edit-proposals`. F03 verified Done through PR #83 merge `4344656f3655b5ec620a566666afb2aca37a5144`. No competing active run/open work at selection. F04 remains incomplete until approved-task review/application, last-working-output recovery and actual local-model analyze/test/build/preview acceptance are delivered.
+Active: F04 In progress; strict-JSON repair on reopened #84, branch `84-reject-ambiguous-source-json`, pending review/merge. First bounded proposal increment issue #84 delivered through independently approved PR #85, verified merge `38cf1c9c4121e898560d1495a48a1abf9c67b16a`. Approved-task/UI/source-application and actual local-model verification remain pending. F03 remains verified Done through PR #83.
 
 ### F03 acceptance boundary and evidence
 
@@ -1344,3 +1344,21 @@ Branch `84-source-edit-proposals`; scope: immutable full original/replacement re
 Acceptance for this increment: adversarial model/service tests cover scoped paths, stale originals, unknown fields, duplicate paths, malformed/oversized JSON, input mutation, cancellation, concurrent calls and retries. Full F04 remains In progress: no UI diff, approved task binding, disk writes or actual inference acceptance is claimed. Existing generator/last working output stays untouched. Formatter/analyzer and 290 default tests (four opt-in skips) passed; web build, required CI and independent exact-revision review/merge evidence recorded below when available. No new F ID or later task.
 
 Issue #84 validation follow-up: final formatter checked 119 files; analyzer clean; full suite passed 290 tests/four skips before one additional new-file rejection test, then all 11 focused proposal tests passed. Web build passed (including Wasm dry run). Required CI independently validates the final revision. No fresh inference claimed.
+
+
+### F04 bounded source proposals — verified increment delivery
+
+Issue #84 completed through [PR #85](https://github.com/arpit-it/ASG/pull/85), branch `84-source-edit-proposals`. Exact published head `ce4b26326ea968565f61c453935ae41c50b94386` (local equivalent `694ac3a`), tested/merged tree `abdbf618d1b77e72019dfdf94a4e47d7acdbbaf9`. Independent initial review `6400140552` and final approval `6400179157` found no blockers/unresolved threads. Reviewer independently passed formatter (119 files unchanged), analyzer, 291 Flutter tests/four skips and 12 focused proposal/architecture tests.
+
+Required CI `40211532716` passed: Flutter `121223602990` actual logs confirm 119 formatted files unchanged, clean analyzer, 289 Linux tests/six skips, real Chrome storage, web build and actual interrupted/resumed generated-project pipeline; Python `121223603337` confirms 2+4+10 fixtures. Reviewer merged normally through protection as `38cf1c9c4121e898560d1495a48a1abf9c67b16a` at 2026-10-25 16:29:11 UTC. Issue #84 closed/completed at 16:29:12 UTC. Parent independently retrieved merge/closure, verified exact tested tree, fetched and safely fast-forwarded local main (0/0 divergence), preserving unrelated IDE edits.
+
+This delivers bounded immutable model source-proposal artifacts and a streaming service only. F04 remains In progress and unchecked: approved-task binding, review UI, safe source application, last-working-output preservation during verification and actual local-model analyze/test/build/refreshed-preview acceptance remain pending. Actual permitted loopback health check refused connection; no fresh inference, model download, installed-app replacement or deployment. No later task/new F ID selected. Schedule/notification preferences unchanged. Post-merge evidence retained locally for the next normal reviewed increment; no direct-main publication.
+
+
+## F04 ambiguous JSON rejection — reopened issue #84 (25 October 2026)
+
+Branch `84-reject-ambiguous-source-json`, baseline verified PR #85 merge `38cf1c9c4121e898560d1495a48a1abf9c67b16a`. No competing active run/open issue/PR at selection. Reopened matching #84 rather than creating an issue or F ID: streaming source proposals decoded duplicate JSON members with last-value precedence, violating the strict proposal acceptance boundary. A new regression reproduced acceptance of ambiguous input before the fix. The service now uses the existing validated-JSON duplicate-member guard before typed parsing. Tests cover duplicate summary/changes/path/before/after and escaped equivalent keys across chunk boundaries, cleanup/retry, and legitimate escaped source text. No source writes/execution or full F04 completion claim. Prior PR #85 merge evidence and unrelated IDE edits preserved.
+
+Validation, exact-revision independent review, required CI and merge evidence follow below. F04 remains In progress and unchecked; this bounded defect repair must merge before continuing integration. Local model health endpoint refused connection; no fresh inference, model download, stable-app replacement or deployment. Schedule/notification preferences unchanged.
+
+Issue #84 repair validation: formatter 119 files unchanged, analyzer clean, 293 default Flutter tests passed (four opt-in skips), web build/Wasm dry run passed. Initial regression failed before the fix as expected; test-only lint corrections were followed by full successful validation. Awaiting linked PR, independent final-head review and required CI. F04 remains In progress.
