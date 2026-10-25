@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:asg/models/build_plan.dart';
+
 import 'package:asg/models/build_task.dart';
 
 import 'package:asg/models/chat_message.dart';
@@ -135,7 +137,8 @@ void main() {
     final plans = [
       ChatMessage(
         role: 'assistant',
-        content: 'Build the fixed Flutter starter.',
+        content:
+            'Build the fixed Flutter starter.\n${BuildPlan.starterContract}',
         planContext: PlanApprovalStore(store.records).contextFor(project),
       ),
     ];
@@ -150,6 +153,36 @@ void main() {
   });
   tearDown(() {
     if (!c.isDisposed) c.dispose();
+  });
+
+  test('approved prose or invalid contracts cannot stop preview or overwrite history', () async {
+    expect(await generate(true), isTrue);
+    await c.startPreview();
+    final history = store.records.getString('studio.generation.v1.p');
+    for (final text in [
+      'Build anything',
+      '```asg-build\n{}\n```',
+      '${BuildPlan.starterContract}\n${BuildPlan.starterContract}',
+    ]) {
+      final plans = [
+        ChatMessage(
+          role: 'assistant',
+          content: text,
+          planContext: PlanApprovalStore(store.records).contextFor(project),
+        ),
+      ];
+      await ConversationStore(store.records).save('p', plans);
+      await PlanApprovalStore(store.records).save(project, plans, true);
+      expect(c.planStatus, contains('Build is locked'));
+      expect(await generate(true), isFalse);
+      expect(await c.verifyAgain(approved: true), isFalse);
+      expect(host.generations, 1);
+      expect(host.verifications, 1);
+      expect(host.server, isTrue);
+      expect(c.preview, isNotNull);
+      expect(store.records.getString('studio.generation.v1.p'), history);
+      expect(c.error, contains('structured starter Plan'));
+    }
   });
 
   test(
@@ -196,7 +229,7 @@ void main() {
       final replacement = [
         ChatMessage(
           role: 'assistant',
-          content: 'A different plan',
+          content: 'A different plan\n${BuildPlan.starterContract}',
           planContext: PlanApprovalStore(store.records).contextFor(project),
         ),
       ];
@@ -206,7 +239,10 @@ void main() {
       expect(host.verifications, 1);
       expect(store.records.getString('studio.generation.v1.p'), previous);
       expect(await generate(true), isTrue);
-      expect(store.load('p')!.approval!.content, 'A different plan');
+      expect(
+        store.load('p')!.approval!.content,
+        startsWith('A different plan'),
+      );
     },
   );
 
@@ -515,7 +551,10 @@ void main() {
       );
       await tester.tap(find.text('Plan that authorized this build'));
       await tester.pumpAndSettle();
-      expect(find.text('Build the fixed Flutter starter.'), findsOneWidget);
+      expect(
+        find.textContaining('Build the fixed Flutter starter.'),
+        findsWidgets,
+      );
       await tester.scrollUntilVisible(
         find.text('starter-build: passed'),
         180,

@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import '../models/app_definition.dart';
-import '../models/build_task.dart';
+import '../models/build_plan.dart';
 import '../models/plan_approval.dart';
 import '../models/project.dart';
 import '../models/source_generation.dart';
@@ -55,7 +55,8 @@ class SourceGenerationController extends BaseController {
   String get planStatus {
     try {
       final approval = _requirePlan();
-      return 'Current saved plan approved. Build runs the fixed Flutter starter pipeline only.\n\n${approval.content}';
+      final plan = BuildPlan.parse(approval.content);
+      return 'Current saved plan approved. Build runs the fixed Flutter starter pipeline only.\nValidated tasks: ${plan.tasks.map((t) => t.id).join(' → ')}\n\n${approval.content}';
     } catch (e) {
       return 'Build is locked. $e';
     }
@@ -127,6 +128,7 @@ class SourceGenerationController extends BaseController {
     GeneratedProject? active;
     try {
       final approval = _requirePlan();
+      final plan = BuildPlan.parse(approval.content);
       await host.stopPreview();
       _recheckPlan(approval);
       if (isDisposed) return false;
@@ -138,7 +140,7 @@ class SourceGenerationController extends BaseController {
         name: name,
         sdk: sdk,
         python: python,
-      )).copy(approval: approval, tasks: BuildTask.starter);
+      )).copy(approval: approval, tasks: plan.tasks);
       if (isDisposed) return false;
       await _save(active);
       if (isDisposed) return false;
@@ -174,6 +176,7 @@ class SourceGenerationController extends BaseController {
     var verificationStarted = false;
     try {
       final approval = _requirePlan();
+      BuildPlan.parse(approval.content);
       if (current.approval == null ||
           !current.approval!.matches(approval) ||
           _input?.compare(current) != GeneratedSnapshotStatus.current) {
