@@ -2,7 +2,7 @@
 
 ASG is a Flutter application targeting Android, iOS, web, macOS, Windows and Linux. Included platform runners do not establish tested device support. Managed MLX setup and the current independent Flutter web generator host are macOS-specific; other platforms retain supported app features and runtime connection controls.
 
-Current delivery: F01 and F13 are Done; F02 is In progress. Prototype-bound approval and this documentation audit are under [PR #51](https://github.com/arpit-it/ASG/pull/51), pending final review/merge. Use the requirements ledger for authoritative status.
+Current delivery: F01 and F13 are Done; F02 acceptance audit is Awaiting merge under issue #42. The requirements ledger records delivered plan contracts, approval boundaries, board mapping and actual progress evidence. Use it for authoritative status and final review/merge evidence.
 
 [Requirements and task queue](REQUIREMENTS.md) is the single source for product scope, new tasks, dependencies, acceptance criteria and completion status. Its [current application architecture](REQUIREMENTS.md#current-application-architecture-and-implemented-behavior) describes the implemented MVC layers, workflows, storage namespaces, platform matrix, model limits and remaining boundaries.
 
