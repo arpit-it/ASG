@@ -61,6 +61,39 @@ void main() {
       expect(() => BuildPlan.parse(fence(value)), throwsFormatException);
     }
   });
+  test('rejects duplicate members including escaped equivalent names', () {
+    final valid = BuildPlan.starterContract;
+    for (final duplicate in [
+      valid.replaceFirst('"version":1', '"version":2,"version":1'),
+      valid.replaceFirst('"adapter":', '"adapter":"shell","adapter":'),
+      valid.replaceFirst('"version":1', '"version":1,"version":1'),
+      valid.replaceFirst('"version":1', r'"ver\u0073ion":1,"version":1'),
+      valid.replaceFirst('"id":', '"id":"untrusted","id":'),
+      valid.replaceFirst('"operation":', '"operation":"shell","operation":'),
+      valid.replaceFirst(
+        '"dependencies":[]',
+        '"dependencies":[],"dependencies":[]',
+      ),
+    ]) {
+      expect(() => BuildPlan.parse(duplicate), throwsFormatException);
+    }
+  });
+
+  test('escaped unique keys preserve valid JSON semantics', () {
+    final valid = BuildPlan.starterContract.replaceFirst(
+      '"version":',
+      r'"ver\u0073ion":',
+    );
+    expect(BuildPlan.parse(valid).tasks.length, 4);
+    final value = graph()..['adapter'] = r'brace } { "version":1, \"';
+    expect(() => BuildPlan.parse(fence(value)), throwsFormatException);
+    for (final invalid in ['{"version":', '{"version":1,}']) {
+      expect(
+        () => BuildPlan.parse('```asg-build\n$invalid\n```'),
+        throwsFormatException,
+      );
+    }
+  });
   test('Plan prompt scopes contract to explicit supported requests only', () {
     final instructions = ConversationMode.plan.instructions;
     expect(instructions, contains(BuildPlan.starterContract));

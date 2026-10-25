@@ -162,6 +162,10 @@ void main() {
     for (final text in [
       'Build anything',
       '```asg-build\n{}\n```',
+      BuildPlan.starterContract.replaceFirst(
+        '"version":1',
+        '"version":2,"version":1',
+      ),
       '${BuildPlan.starterContract}\n${BuildPlan.starterContract}',
     ]) {
       final plans = [
