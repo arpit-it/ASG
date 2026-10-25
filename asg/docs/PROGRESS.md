@@ -116,3 +116,5 @@ Branch `codex/16-edit-project-details` adds a workspace dialog for editing a pro
 Fourteen new editor/controller/service/widget tests cover restart preservation, durable write ordering/failures/retry, validation, stale/missing/duplicate/corrupt records, unrelated records, concurrent/disposed saves, session refresh and entry guards. Existing session navigation test now also checks editor gating. No schema changes, generated-folder overwrites or automatic app regeneration. Final PR records validation, independent exact-head review, CI and merge evidence.
 
 Issue #16 local validation: formatter/analyzer passed; 107 default Flutter tests passed, with live Qwen and real generation skipped by default. Web and macOS debug builds passed. Existing Qwen /health was ready/idle; no fresh live inference is claimed for this metadata-only workflow.
+
+Issue #16 delivery: [PR #17](https://github.com/arpit-it/ASG/pull/17), branch `codex/16-edit-project-details`. Local formatter/analyzer, 107 default tests and web/macOS debug builds passed. Final exact-head independent review, required CI and merge SHA are authoritative in that PR.

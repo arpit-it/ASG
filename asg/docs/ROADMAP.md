@@ -20,3 +20,5 @@ Snapshot-status PR #13 merged as add0d358. Issue #14 fixes observed asynchronous
 Issue #14 delivery: [PR #15](https://github.com/arpit-it/ASG/pull/15), branch `codex/14-session-selection`. Local formatter/analyzer, 93 default tests (two opt-in tests skipped) and web build passed. Final exact-head independent review, required CI results and merge SHA are authoritative in that PR.
 
 Project selection #14 completed in PR #15 (18637ace). Issue #16 on `codex/16-edit-project-details` adds editable current-project name/requirements while preserving the working app and chat, with future-export metadata and stale-export status. Richer structured requirements/approval, existing-source import and other framework adapters remain future increments; select from observed gaps rather than speculative backlog.
+
+Issue #16 delivery: [PR #17](https://github.com/arpit-it/ASG/pull/17), branch `codex/16-edit-project-details`. Local formatter/analyzer, 107 default tests and web/macOS debug builds passed. Final exact-head independent review, required CI and merge SHA are authoritative in that PR.
