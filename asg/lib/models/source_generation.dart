@@ -1,3 +1,5 @@
+import 'plan_approval.dart';
+
 enum GeneratedSnapshotStatus { none, current, outdated, unknown }
 
 enum SourceGenerationPhase { generated, verifying, ready, failed }
@@ -44,15 +46,18 @@ class GeneratedProject {
     List<GenerationStep> steps = const [],
     this.phase = SourceGenerationPhase.generated,
     this.error = '',
+    this.approval,
   }) : sources = Map.unmodifiable(sources),
        outputs = Map.unmodifiable(outputs),
        resolution = Map.unmodifiable(resolution),
        steps = List.unmodifiable(steps);
   final String directory, sdk, python, error;
+  final PlanApproval? approval;
   final Map<String, String> sources, outputs, resolution;
   final List<GenerationStep> steps;
   final SourceGenerationPhase phase;
   GeneratedProject copy({
+    PlanApproval? approval,
     String? sdk,
     String? python,
     List<GenerationStep>? steps,
@@ -62,6 +67,7 @@ class GeneratedProject {
     String error = '',
   }) => GeneratedProject(
     directory: directory,
+    approval: approval ?? this.approval,
     sdk: sdk ?? this.sdk,
     python: python ?? this.python,
     sources: sources,
@@ -81,10 +87,16 @@ class GeneratedProject {
     'steps': steps.map((s) => s.toJson()).toList(),
     'phase': phase.name,
     'error': error,
+    if (approval != null) 'approval': approval!.toJson(),
   };
   factory GeneratedProject.fromJson(Map<String, dynamic> json) {
     final result = GeneratedProject(
       directory: json['directory'] as String,
+      approval: json.containsKey('approval')
+          ? PlanApproval.fromJson(
+              Map<String, dynamic>.from(json['approval'] as Map),
+            )
+          : null,
       sdk: json['sdk'] as String,
       python: json['python'] as String,
       sources: Map<String, String>.from(json['sources'] as Map),
@@ -100,7 +112,8 @@ class GeneratedProject {
       phase: SourceGenerationPhase.values.byName(json['phase'] as String),
       error: json['error'] as String,
     );
-    if (result.directory.isEmpty ||
+    if ((result.approval != null && !result.approval!.approved) ||
+        result.directory.isEmpty ||
         result.sdk.isEmpty ||
         result.python.isEmpty ||
         result.sources.isEmpty ||
