@@ -9,6 +9,16 @@ class StudioProject {
     required this.platforms,
     required this.location,
   });
+  static String? validateName(String? name) {
+    if (name == null || name.trim().isEmpty) return 'Enter a project name';
+    if (name.contains('/') ||
+        name.contains('\\') ||
+        name.runes.any((r) => r < 32)) {
+      return 'Use a name without path separators';
+    }
+    return null;
+  }
+
   final String id, name, description, type, location;
   final List<String> platforms;
   Map<String, dynamic> toJson() => {

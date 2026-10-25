@@ -8,6 +8,9 @@ import '../services/studio_session_store.dart';
 import '../services/runtime_setup_store.dart';
 import '../services/model_settings_store.dart';
 import '../services/runtime_host_factory.dart';
+import '../controllers/project_details_controller.dart';
+import '../services/project_details_store.dart';
+import 'project_details_dialog.dart';
 import 'dashboard.dart';
 import 'project_wizard.dart';
 import 'project_workspace.dart';
@@ -52,6 +55,21 @@ class _StudioHomeState extends State<StudioHome> {
     if (project != null) await controller.create(project);
   }
 
+  Future<void> editDetails() async {
+    final project = controller.current;
+    if (project == null || controller.busy || workspacePending) return;
+    final detailsController = ProjectDetailsController(
+      project,
+      ProjectDetailsStore(widget.store),
+    );
+    final saved = await showDialog<StudioProject>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => ProjectDetailsDialog(controller: detailsController),
+    );
+    if (saved != null && mounted) controller.refreshCurrent();
+  }
+
   Future<void> projects() async {
     final selected = await Navigator.of(context).push<StudioProject>(
       MaterialPageRoute(
@@ -70,6 +88,12 @@ class _StudioHomeState extends State<StudioHome> {
     appBar: AppBar(
       title: Text(controller.current?.name ?? 'Automated Software Generator'),
       actions: [
+        if (controller.current != null)
+          IconButton(
+            tooltip: 'Edit project details',
+            onPressed: controller.busy || workspacePending ? null : editDetails,
+            icon: const Icon(Icons.edit_note),
+          ),
         IconButton(
           tooltip: 'Projects',
           onPressed: controller.busy || workspacePending ? null : projects,

@@ -108,3 +108,13 @@ Branch `codex/14-session-selection` fixes an observed race: project selection pr
 Added six deterministic delayed-write controller tests and a navigation/interaction-lock widget regression. Final local checks and independent review/CI evidence are recorded in the issue-linked PR. Existing Qwen MLX health reported ready/idle; this is a health check, not a new live inference verification. Unrelated tracked IDE changes are preserved.
 
 Issue #14 delivery: [PR #15](https://github.com/arpit-it/ASG/pull/15), branch `codex/14-session-selection`. Local formatter/analyzer, 93 default tests (two opt-in tests skipped) and web build passed. Final exact-head independent review, required CI results and merge SHA are authoritative in that PR.
+
+## Editable project details — issue #16
+
+Branch `codex/16-edit-project-details` adds a workspace dialog for editing a project's name and requirements. Pure shared name validation, a dedicated controller and metadata service preserve MVC. The service checks missing/duplicate/stale records, freezes a never-saved starter before changing its metadata inputs, then rereads current records and saves metadata before the controller publishes success. Existing application records, chat, revision, interactions, identity, type/platforms/location and unrelated projects are preserved. The view retains input on failure and disables save/close while writing; workspace pending/busy state gates entry. The header refreshes without remounting the running app. Source generation already fingerprints requirements, so earlier exports become outdated and future exports use the updated metadata.
+
+Fourteen new editor/controller/service/widget tests cover restart preservation, durable write ordering/failures/retry, validation, stale/missing/duplicate/corrupt records, unrelated records, concurrent/disposed saves, session refresh and entry guards. Existing session navigation test now also checks editor gating. No schema changes, generated-folder overwrites or automatic app regeneration. Final PR records validation, independent exact-head review, CI and merge evidence.
+
+Issue #16 local validation: formatter/analyzer passed; 107 default Flutter tests passed, with live Qwen and real generation skipped by default. Web and macOS debug builds passed. Existing Qwen /health was ready/idle; no fresh live inference is claimed for this metadata-only workflow.
+
+Issue #16 delivery: [PR #17](https://github.com/arpit-it/ASG/pull/17), branch `codex/16-edit-project-details`. Local formatter/analyzer, 107 default tests and web/macOS debug builds passed. Final exact-head independent review, required CI and merge SHA are authoritative in that PR.
