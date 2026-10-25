@@ -63,10 +63,7 @@ class SourceGenerationController extends BaseController {
 
   void _recheckPlan(PlanApproval started) {
     final current = _requirePlan();
-    if (current.recordedAt != started.recordedAt ||
-        current.messageIndex != started.messageIndex ||
-        current.content != started.content ||
-        current.context != started.context) {
+    if (!current.matches(started)) {
       throw StateError(
         'Plan approval changed during preparation. Review it before restarting Build.',
       );
@@ -131,14 +128,14 @@ class SourceGenerationController extends BaseController {
       _recheckPlan(approval);
       if (isDisposed) return false;
       _preview = null;
-      active = await host.generate(
+      active = (await host.generate(
         project: project,
         definition: definition,
         parent: parent,
         name: name,
         sdk: sdk,
         python: python,
-      );
+      )).copy(approval: approval);
       if (isDisposed) return false;
       await _save(active);
       if (isDisposed) return false;
@@ -172,6 +169,13 @@ class SourceGenerationController extends BaseController {
     var verificationStarted = false;
     try {
       final approval = _requirePlan();
+      if (current.approval == null ||
+          !current.approval!.matches(approval) ||
+          _input?.compare(current) != GeneratedSnapshotStatus.current) {
+        throw StateError(
+          'This saved build does not match the current approved plan and inputs. Generate a new folder after reviewing the current Plan. Legacy builds remain available for preview.',
+        );
+      }
       await host.stopPreview();
       _recheckPlan(approval);
       if (isDisposed) return false;

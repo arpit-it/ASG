@@ -188,6 +188,16 @@ class _SourceGenerationScreenState extends State<SourceGenerationScreen> {
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               SelectableText(result.directory),
+              Text(
+                result.approval == null
+                    ? 'Legacy outcome: authorizing plan is unknown. Generate a new folder to bind a current approval before retrying verification.'
+                    : 'Authorizing Plan: message ${result.approval!.messageIndex + 1}, approved ${result.approval!.recordedAt.toUtc().toIso8601String()}. Retry requires this exact approval and matching inputs.',
+              ),
+              if (result.approval != null)
+                ExpansionTile(
+                  title: const Text('Plan that authorized this build'),
+                  children: [SelectableText(result.approval!.content)],
+                ),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 child: Text(switch (snapshotStatus) {

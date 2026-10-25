@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:asg/models/chat_message.dart';
+import 'package:asg/services/generation_input.dart';
 import 'package:asg/services/conversation_store.dart';
 import 'package:asg/services/plan_approval_store.dart';
 import 'package:asg/services/studio_store.dart';
@@ -37,6 +38,7 @@ final generated = GeneratedProject(
   sdk: '/sdk',
   python: 'python3',
   sources: {
+    ...GenerationInput(project, definition).fingerprints,
     'lib/main.dart':
         '0000000000000000000000000000000000000000000000000000000000000000',
   },
@@ -147,6 +149,131 @@ void main() {
   tearDown(() {
     if (!c.isDisposed) c.dispose();
   });
+
+  test(
+    'outcomes retain exact approval across progress failure and reopen',
+    () async {
+      final approval = PlanApprovalStore(store.records)
+          .requireCurrentApproval(project);
+      host.failVerification = true;
+      expect(await generate(true), isFalse);
+      final saved = store.load('p')!;
+      expect(saved.approval!.matches(approval), isTrue);
+      expect(saved.phase, SourceGenerationPhase.failed);
+      expect(saved.copy().approval!.matches(approval), isTrue);
+      host.failVerification = false;
+      c.dispose();
+      c = SourceGenerationController(
+        project: project,
+        definition: definition,
+        store: store,
+        host: host,
+      );
+      expect(await c.verifyAgain(approved: true), isTrue);
+      expect(store.load('p')!.approval!.matches(approval), isTrue);
+    },
+  );
+
+  test(
+    'replacement and reapproval cannot verify an older source snapshot',
+    () async {
+      expect(await generate(true), isTrue);
+      final previous = store.records.getString('studio.generation.v1.p');
+      final plans = ConversationStore(store.records).load('p');
+      await PlanApprovalStore(store.records).save(project, plans, false);
+      await PlanApprovalStore(store.records).save(project, plans, true);
+      expect(await c.verifyAgain(approved: true), isFalse);
+      expect(host.verifications, 1);
+      expect(c.error, contains('Generate a new folder'));
+      expect(store.records.getString('studio.generation.v1.p'), previous);
+      final replacement = [
+        ChatMessage(
+          role: 'assistant',
+          content: 'A different plan',
+          planContext: PlanApprovalStore(store.records).contextFor(project),
+        ),
+      ];
+      await ConversationStore(store.records).save('p', replacement);
+      await PlanApprovalStore(store.records).save(project, replacement, true);
+      expect(await c.verifyAgain(approved: true), isFalse);
+      expect(host.verifications, 1);
+      expect(store.records.getString('studio.generation.v1.p'), previous);
+      expect(await generate(true), isTrue);
+      expect(store.load('p')!.approval!.content, 'A different plan');
+    },
+  );
+
+  test(
+    'legacy and changed-input outcomes preserve history on denied retry',
+    () async {
+      await store.save('p', generated);
+      c.dispose();
+      c = SourceGenerationController(
+        project: project,
+        definition: definition,
+        store: store,
+        host: host,
+      );
+      expect(c.result!.approval, isNull);
+      expect(await c.verifyAgain(approved: true), isFalse);
+      expect(host.verifications, 0);
+      expect(await generate(true), isTrue);
+      final previous = store.records.getString('studio.generation.v1.p');
+      c.dispose();
+      c = SourceGenerationController(
+        project: project,
+        definition: const AppDefinition(
+          title: 'Changed',
+          theme: 'green',
+          elements: [],
+        ),
+        store: store,
+        host: host,
+      );
+      expect(await c.verifyAgain(approved: true), isFalse);
+      expect(host.verifications, 1);
+      expect(store.records.getString('studio.generation.v1.p'), previous);
+    },
+  );
+
+  test(
+    'malformed or withdrawn provenance fails closed without replacement',
+    () async {
+      final approval = PlanApprovalStore(store.records)
+          .requireCurrentApproval(project);
+      for (final value in [
+        null,
+        {},
+        {...approval.toJson(), 'approved': false},
+      ]) {
+        expect(
+          () => GeneratedProject.fromJson({
+            ...generated.toJson(),
+            'approval': value,
+          }),
+          throwsA(anything),
+        );
+      }
+      // Corrupt stored provenance must disable generation as well as retry.
+      await store.records.setString(
+        'studio.generation.v1.p',
+        '{"approval":{}}',
+      );
+      c.dispose();
+      c = SourceGenerationController(
+        project: project,
+        definition: definition,
+        store: store,
+        host: host,
+      );
+      expect(c.available, isFalse);
+      expect(await generate(true), isFalse);
+      expect(
+        store.records.getString('studio.generation.v1.p'),
+        '{"approval":{}}',
+      );
+    },
+  );
 
   test(
     'missing, withdrawn, stale and corrupt plans reject both Build entries',
@@ -370,11 +497,19 @@ void main() {
       );
       expect(find.text('Saved outcome: ready'), findsOneWidget);
       await tester.scrollUntilVisible(
-        find.text('Preview saved build (inputs unknown)'),
+        find.text('Plan that authorized this build'),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.tap(find.text('Plan that authorized this build'));
+      await tester.pumpAndSettle();
+      expect(find.text('Build the fixed Flutter starter.'), findsOneWidget);
+      await tester.scrollUntilVisible(
+        find.text('Start actual built preview'),
         250,
         scrollable: find.byType(Scrollable).first,
       );
-      expect(find.text('Preview saved build (inputs unknown)'), findsOneWidget);
+      expect(find.text('Start actual built preview'), findsOneWidget);
     },
   );
 }

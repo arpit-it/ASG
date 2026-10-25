@@ -10,6 +10,13 @@ class PlanApproval {
   final String content, context;
   final bool approved;
   final DateTime recordedAt;
+  bool matches(PlanApproval other) =>
+      approved == other.approved &&
+      messageIndex == other.messageIndex &&
+      content == other.content &&
+      context == other.context &&
+      recordedAt.isAtSameMomentAs(other.recordedAt);
+
   factory PlanApproval.fromJson(Map<String, dynamic> json) {
     if (json['messageIndex'] is! int ||
         (json['messageIndex'] as int) < 0 ||

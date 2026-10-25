@@ -2,6 +2,8 @@
 library;
 
 import 'package:asg/models/requirements_board.dart';
+import 'package:asg/models/source_generation.dart';
+import 'package:asg/services/source_generation_store.dart';
 import 'package:asg/services/requirements_store.dart';
 
 import 'package:asg/services/studio_database.dart';
@@ -49,6 +51,18 @@ void main() {
           ).toJson(),
         );
         await records.setString('studio.planApproval.v1.p', approval);
+        await SourceGenerationStore(records).save(
+          'p',
+          GeneratedProject(
+            directory: '/generated',
+            sdk: '/sdk',
+            python: 'python3',
+            sources: {'lib/main.dart': '0' * 64},
+            approval: PlanApproval.fromJson(
+              jsonDecode(approval) as Map<String, dynamic>,
+            ),
+          ),
+        );
         final requirements = RequirementsStore(records);
         await requirements.save(
           'p',
@@ -78,6 +92,12 @@ void main() {
         final restored = await StudioDatabase.migrate(db, prefs);
         expect(restored.getString('studio.lastProject.v1'), 'updated');
         expect(restored.getString('studio.planApproval.v1.p'), approval);
+        expect(
+          jsonEncode(
+            SourceGenerationStore(restored).load('p')!.approval!.toJson(),
+          ),
+          approval,
+        );
         expect(RequirementsStore(restored).load('p').tasks.single.id, 'T1');
         expect(prefs.getString('studio.lastProject.v1'), 'legacy');
         final raw = StoreRef<String, String>('records');
