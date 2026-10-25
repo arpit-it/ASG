@@ -199,7 +199,7 @@ void main() {
   );
 
   test(
-    'corrupt database record surfaces an error and is not replaced',
+    'corrupt project record surfaces on access and is not replaced',
     () async {
       var db = await databaseFactoryIo.openDatabase(
         path,
@@ -214,8 +214,12 @@ void main() {
         path,
         mode: DatabaseMode.create,
       );
-      await expectLater(
-        StudioDatabase.migrate(db, await SharedPreferences.getInstance()),
+      final records = await StudioDatabase.migrate(
+        db,
+        await SharedPreferences.getInstance(),
+      );
+      expect(
+        () => records.getString('studio.application.v1.p'),
         throwsFormatException,
       );
       expect(
@@ -225,6 +229,35 @@ void main() {
         'broken',
       );
       await db.close();
+    },
+  );
+
+  test(
+    'corrupt global records still stop startup without replacement',
+    () async {
+      var db = await databaseFactoryIo.openDatabase(
+        path,
+        mode: DatabaseMode.create,
+      );
+      final prefs = await SharedPreferences.getInstance();
+      await StudioDatabase.migrate(db, prefs);
+      final raw = StoreRef<String, String>('records')
+          .record('studio.projects.v1');
+      await raw.put(db, 'broken global project list');
+      await db.close();
+      db = await databaseFactoryIo.openDatabase(
+        path,
+        mode: DatabaseMode.create,
+      );
+      try {
+        await expectLater(
+          StudioDatabase.migrate(db, prefs),
+          throwsFormatException,
+        );
+        expect(await raw.get(db), 'broken global project list');
+      } finally {
+        await db.close();
+      }
     },
   );
 

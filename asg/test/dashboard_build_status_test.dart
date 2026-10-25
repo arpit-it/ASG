@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:asg/controllers/dashboard_controller.dart';
 import 'package:asg/models/app_definition.dart';
 import 'package:asg/models/project.dart';
@@ -9,6 +11,9 @@ import 'package:asg/services/project_build_summary_store.dart';
 import 'package:asg/services/record_storage.dart';
 import 'package:asg/services/source_generation_store.dart';
 import 'package:asg/services/studio_store.dart';
+import 'package:asg/services/studio_database.dart';
+import 'package:sembast/sembast_io.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:asg/views/dashboard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -282,4 +287,108 @@ void main() {
     expect(find.textContaining('not connected.'), findsNothing);
     await tester.pumpWidget(const SizedBox());
   });
+  testWidgets(
+    'real database reopen isolates damaged project records without replacing bytes',
+    (tester) async {
+      late Directory directory;
+      late Database db;
+      late StudioDatabase restored;
+      late Map<String, String> before;
+      final raw = StoreRef<String, String>('records');
+      await tester.runAsync(() async {
+        directory = await Directory.systemTemp.createTemp('asg-dashboard-');
+        final path = '${directory.path}/studio.db';
+        SharedPreferences.setMockInitialValues({});
+        final prefs = await SharedPreferences.getInstance();
+        db = await databaseFactoryIo.openDatabase(
+          path,
+          mode: DatabaseMode.create,
+        );
+
+        final native = await StudioDatabase.migrate(db, prefs);
+        final badHistory = project('Bad history');
+        final badApp = project('Bad app');
+        await StudioStore(native).save([p, badHistory, badApp]);
+        for (final item in [p, badApp]) {
+          await ApplicationStore(native)
+              .save(item.id, const ApplicationSnapshot(definition, [], 2));
+          await SourceGenerationStore(native)
+              .save(item.id, outcome(item, SourceGenerationPhase.ready));
+        }
+        final badGenerationKey = 'studio.generation.v1.${badHistory.id}';
+        final badAppKey = 'studio.application.v1.${badApp.id}';
+        await raw.record(badGenerationKey).put(db, 'broken generation bytes');
+        await raw.record(badAppKey).put(db, 'broken application bytes');
+        before = {for (final r in await raw.find(db)) r.key: r.value};
+        await db.close();
+        db = await databaseFactoryIo.openDatabase(
+          path,
+          mode: DatabaseMode.create,
+        );
+        restored = await StudioDatabase.migrate(db, prefs);
+        final service = ProjectBuildSummaryStore(restored);
+        expect(service.load(p).state, ProjectBuildState.passed);
+        expect(service.load(p).snapshot, GeneratedSnapshotStatus.current);
+        expect(service.load(badHistory).state, ProjectBuildState.unavailable);
+        expect(service.load(badApp).state, ProjectBuildState.passed);
+        expect(service.load(badApp).snapshot, GeneratedSnapshotStatus.unknown);
+        expect(
+          () => ApplicationStore(restored).load(badApp),
+          throwsFormatException,
+        );
+        await expectLater(
+          restored.setString(badAppKey, 'still invalid'),
+          throwsFormatException,
+        );
+        expect(ApplicationStore(restored).load(p).revision, 2);
+      });
+      try {
+        StudioProject? selected;
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Dashboard(
+              store: StudioStore(restored),
+              initialProjects: StudioStore(restored).load(),
+              onSelect: (value) => selected = value,
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        final scrollable = find
+            .descendant(
+              of: find.byType(Dashboard),
+              matching: find.byType(Scrollable),
+            )
+            .first;
+        await tester.scrollUntilVisible(
+          find.text(p.name),
+          200,
+          scrollable: scrollable,
+        );
+        await tester.tap(find.text(p.name));
+        expect(selected!.id, p.id);
+        await tester.scrollUntilVisible(
+          find.text('Saved build history unreadable'),
+          200,
+          scrollable: scrollable,
+        );
+        expect(find.text('Saved build history unreadable'), findsOneWidget);
+        await tester.scrollUntilVisible(
+          find.text('Input match unavailable'),
+          200,
+          scrollable: scrollable,
+        );
+        expect(tester.takeException(), isNull);
+        await tester.pumpWidget(const SizedBox());
+        await tester.runAsync(() async {
+          expect({for (final r in await raw.find(db)) r.key: r.value}, before);
+        });
+      } finally {
+        await tester.runAsync(() async {
+          await db.close();
+          await directory.delete(recursive: true);
+        });
+      }
+    },
+  );
 }
