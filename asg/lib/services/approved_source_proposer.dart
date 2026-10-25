@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import '../models/repair_attempt.dart';
+import 'repair_attempt_store.dart';
 import '../models/approved_source_proposal.dart';
 import '../models/build_plan.dart';
 import '../models/local_model_config.dart';
@@ -98,7 +100,33 @@ class ApprovedSourceProposer {
     }
     _active = true;
     _cancelled = false;
+    final attempts = repairRun == null
+        ? null
+        : RepairAttemptStore(records, project.id);
+    void authorizeRequest() {
+      if (_cancelled) throw StateError('Source proposal cancelled.');
+      final current = PlanApprovalStore(records)
+          .requireCurrentApproval(project);
+      if (!approval.matches(current)) {
+        throw StateError('Source approval changed.');
+      }
+      _task(project, boardTaskId);
+      if (repairRun != null) {
+        requireRepairFailure(
+          records,
+          project.id,
+          repairRun.snapshot,
+          expected: repairRun,
+        );
+        _requireRepairApproval(project, repairRun.snapshot);
+      }
+    }
+
     try {
+      if (repairRun != null) {
+        await attempts!.reserve(repairRun, authorizeRequest);
+      }
+      authorizeRequest();
       // Saved task/acceptance text is the instruction, not caller-supplied prose.
       final proposal = await _proposer.propose(
         config: config,
@@ -120,7 +148,15 @@ class ApprovedSourceProposer {
       );
       // Includes changes while the provider was finishing transport cleanup.
       requireCurrent(project, evidence);
+      await attempts?.finish(RepairAttemptStatus.proposed, proposal: proposal);
+      if (_cancelled) throw StateError('Source proposal cancelled.');
+      requireCurrent(project, evidence);
       return evidence;
+    } catch (error) {
+      await attempts?.finish(
+        _cancelled ? RepairAttemptStatus.cancelled : RepairAttemptStatus.failed,
+      );
+      rethrow;
     } finally {
       _active = false;
     }

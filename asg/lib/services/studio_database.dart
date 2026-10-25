@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import '../models/repair_attempt.dart';
+
 import 'package:sembast/sembast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -82,6 +84,7 @@ class StudioDatabase implements ConditionalRecordStorage {
             !record.key.startsWith('studio.generation.v1.') &&
             !record.key.startsWith('studio.sourceCandidate.v1.') &&
             !record.key.startsWith('studio.candidateChecks.v1.') &&
+            !record.key.startsWith('studio.repairAttempts.v1.') &&
             !record.key.startsWith('studio.generationPrevious.v1.') &&
             !record.key.startsWith('studio.requirements.v1.') &&
             !record.key.startsWith('studio.planApproval.v1.')) {
@@ -142,6 +145,8 @@ class StudioDatabase implements ConditionalRecordStorage {
       RequirementsBoard.fromJson(decoded as Map<String, dynamic>);
     } else if (key.startsWith('studio.planApproval.v1.')) {
       PlanApproval.fromJson(decoded as Map<String, dynamic>);
+    } else if (key.startsWith('studio.repairAttempts.v1.')) {
+      RepairAttemptJournal.fromJson(decoded as Map<String, dynamic>);
     } else if (key.startsWith('studio.candidateChecks.v1.')) {
       CandidateVerificationJournal.fromJson(decoded as Map<String, dynamic>);
     } else if (key.startsWith('studio.generation.v1.') ||

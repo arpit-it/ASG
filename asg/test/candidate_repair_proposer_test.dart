@@ -6,6 +6,10 @@ import 'package:asg/models/candidate_verification_run.dart';
 import 'package:asg/models/local_model_config.dart';
 import 'package:asg/models/source_generation.dart';
 import 'package:asg/services/application_store.dart';
+import 'package:asg/services/repair_attempt_store.dart';
+
+import 'source_candidate_controller_test.dart' show AtomicRecords;
+
 import 'package:asg/services/candidate_repair_evidence.dart';
 import 'package:asg/services/generation_input.dart';
 import 'package:asg/services/plan_approval_store.dart';
@@ -85,7 +89,7 @@ void main() {
   test(
     'cancelled repair request retains saved failure and suppresses publication',
     () async {
-      final records = ControlledRecords();
+      final records = AtomicRecords();
       await seed(records);
       final candidate = boundFailure(records);
       await saveFailure(records, candidate);
@@ -100,16 +104,28 @@ void main() {
         repairCandidate: candidate,
       );
       final rejection = expectLater(pending, throwsStateError);
+      await tick();
       await service.cancel();
       provider.stream.add(response());
       await provider.stream.close();
       await rejection;
-      expect(records.values, before);
+      expect(
+        {...records.values}
+          ..remove(RepairAttemptStore(records, project.id).key),
+        before,
+      );
+      expect(
+        RepairAttemptStore(
+          records,
+          project.id,
+        ).load().attempts.single.status.name,
+        'cancelled',
+      );
       expect(provider.cancellations, greaterThan(0));
     },
   );
-  test('repair request uses actual saved exit and bounded untrusted output without writes', () async {
-    final records = ControlledRecords();
+  test('repair request retains actual saved exit, bounded diagnostics and model outcome', () async {
+    final records = AtomicRecords();
     await seed(records);
     final candidate = boundFailure(records, output: '${'\u0001' * 6000} END');
     await saveFailure(records, candidate);
@@ -123,6 +139,7 @@ void main() {
       originals: originals,
       repairCandidate: candidate,
     );
+    await tick();
     expect(provider.prompt, contains('failedCheck'));
     expect(provider.prompt, contains('exitCode'));
     expect(provider.prompt, contains('65'));
@@ -146,12 +163,22 @@ void main() {
     expect(evidence.repairRun!.snapshot.toJson(), candidate.toJson());
     service.requireCurrent(project, evidence);
     expect(records.writes, writes);
+    final attempt = RepairAttemptStore(
+      records,
+      project.id,
+    ).load().attempts.single;
+    expect(attempt.status.name, 'proposed');
+    expect(
+      attempt.proposal!.changes.single.after,
+      evidence.proposal.changes.single.after,
+    );
+    expect(attempt.failure.snapshot.steps.last.exitCode, 65);
   });
 
   test(
     'non-source, uncertain, unsaved and mismatched failures refuse inference',
     () async {
-      final records = ControlledRecords();
+      final records = AtomicRecords();
       await seed(records);
       final valid = boundFailure(records);
       for (final candidate in [
@@ -203,7 +230,7 @@ void main() {
 
   test('superseded failure during inference or cleanup rejects late repair evidence', () async {
     for (final cleanup in [false, true]) {
-      final records = ControlledRecords();
+      final records = AtomicRecords();
       await seed(records);
       final candidate = boundFailure(records);
       await saveFailure(records, candidate);
@@ -217,6 +244,7 @@ void main() {
         repairCandidate: candidate,
       );
       final rejection = expectLater(pending, throwsStateError);
+      await tick();
       if (cleanup) {
         provider.cleanup = Completer<void>();
         provider.stream.add(response());
@@ -224,6 +252,7 @@ void main() {
         await tick();
       }
       await records.setString('studio.sourceCandidate.v1.${project.id}', '{}');
+      await tick();
       if (cleanup) {
         provider.cleanup!.complete();
       } else {
