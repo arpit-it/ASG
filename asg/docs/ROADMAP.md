@@ -24,3 +24,5 @@ Project selection #14 completed in PR #15 (18637ace). Issue #16 on `codex/16-edi
 Issue #16 delivery: [PR #17](https://github.com/arpit-it/ASG/pull/17), branch `codex/16-edit-project-details`. Local formatter/analyzer, 107 default tests and web/macOS debug builds passed. Final exact-head independent review, required CI and merge SHA are authoritative in that PR.
 
 Editable details #16 completed in PR #17 (621c70d2). Issue #18 on `codex/18-dashboard-build-status` exposes actual latest saved generation outcomes and input staleness on the dashboard, replacing stale placeholders. Full build history/timestamps and live process reporting are not implied; continue choosing one real gap at a time.
+
+Issue #18 delivery: [PR #19](https://github.com/arpit-it/ASG/pull/19), branch `codex/18-dashboard-build-status`. Local formatter/analyzer, 115 default tests and web build passed. Final exact-head independent review, required CI results and merge SHA are authoritative in that PR.

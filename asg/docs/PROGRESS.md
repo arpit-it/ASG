@@ -126,3 +126,5 @@ Branch `codex/18-dashboard-build-status` replaces unconditional “No builds yet
 Eight regressions cover all saved phases/reopening, no writes, requirements/interaction staleness, unknown/corrupt/invalid success records, mixed-project search/open, return-navigation refresh and narrow layout with enlarged text. Only latest saved evidence is available; no current artifact integrity, live preview or full last-successful-build history is claimed. Final linked PR records tests, independent review, CI and merge evidence.
 
 Issue #18 local validation: formatter/analyzer passed, 115 default Flutter tests passed (live Qwen and real generation skipped by default), and web build passed. Existing Qwen health reported ready/idle; no fresh inference is claimed for dashboard status reads.
+
+Issue #18 delivery: [PR #19](https://github.com/arpit-it/ASG/pull/19), branch `codex/18-dashboard-build-status`. Local formatter/analyzer, 115 default tests and web build passed. Final exact-head independent review, required CI results and merge SHA are authoritative in that PR.
