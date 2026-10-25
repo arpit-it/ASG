@@ -69,7 +69,7 @@ A task moves Queued → In progress → Awaiting merge → Done; use Blocked wit
 
 ## Active task and delivery ledger
 
-Active: F04 In progress; reopened #84 approved-task proposal provenance on `84-approved-source-proposals`, Awaiting merge after local validation; independent review/CI pending. Prior strict-JSON repair PR #86 verified merged `3a2bb1f578bd18291c29862b09abd50a37ed08a7`. Review UI, safe source application and actual local-model verification remain pending. F03 remains verified Done through PR #83.
+Active: F04 In progress; reopened #84 read-only source snapshots on `84-source-review-snapshots` Awaiting merge after local validation; independent review and required CI pending. Approved-task proposal provenance delivered through independently approved PR #87, verified merge `adca80bf396d078042e42a81c7cd394504417c1d`. Prior strict-JSON repair PR #86 verified merged `3a2bb1f578bd18291c29862b09abd50a37ed08a7`. Review UI, safe source application, working-output preservation and actual local-model verification remain pending. F03 remains verified Done through PR #83.
 
 ### F03 acceptance boundary and evidence
 
@@ -1380,3 +1380,21 @@ Branch `84-approved-source-proposals`, baseline verified PR #86 merge `3a2bb1f57
 Acceptance: invalid/missing/stale approval, advisory/unmapped Plan or unknown task reject before transport; valid prompt/evidence retain saved task/acceptance; async approval/requirements changes reject and retry succeeds; concurrency/cancellation guarded. Formatter/analyzer/full Flutter suite/web build, required CI and independent exact-revision review/merge evidence follow. No fresh inference (loopback endpoint refused connection), downloads, installed-app replacement or deployment. Prior PR #86 merge evidence and unrelated IDE edits retained. F04 remains In progress and unchecked.
 
 Issue #84 provenance validation: formatter 122 files unchanged, analyzer clean, 297 default Flutter tests passed/four opt-in skips, web build/Wasm dry run passed. Initial test matcher and two lint findings corrected before full successful rerun. Awaiting linked PR, independent final-revision review and required CI; F04 remains In progress.
+
+
+### F04 approved-task proposal provenance — verified delivery
+
+Reopened issue #84 completed through [PR #87](https://github.com/arpit-it/ASG/pull/87), branch `84-approved-source-proposals`. Exact published head `077c9c514679cbb6d169bb76c5689a5df63b8baf` (local equivalent `9d97c99`), tested/merged tree `100c281444e4aff9309f0d7a7eea6d424b666bee`. Independent initial review `6400360252` and final approval `6400408294` found no blockers/unresolved threads. Reviewer independently passed 35 focused proposal/approval/board mapping/MVC tests, formatter (122 files unchanged) and analyzer.
+
+Required CI `40213160823` passed: Flutter `121228556805` actual logs confirm formatting/analyzer, 295 Linux tests/six skips, real Chrome storage, web build and explicit real generated-project checkpoint/resumed analysis/tests/build/served preview; Python `121228557071` confirms 2+4+10 fixtures. Reviewer merged normally through protection as `adca80bf396d078042e42a81c7cd394504417c1d` on 25 October 2026; issue #84 closed/completed at 16:50:35 UTC. Parent independently retrieved merge/closure, verified exact tested tree and safely fast-forwarded local main (0/0 divergence), preserving unrelated IDE edits.
+
+Local formatter/analyzer, 297 Flutter tests/four opt-in skips and web build/Wasm dry run passed; all local documentation links resolve. This delivers approved-task review provenance only. F04 remains In progress and unchecked pending visible diff UI, safe source application, last-working-output preservation and real local-model analyze/test/build/refreshed-preview acceptance. Actual default endpoint `127.0.0.1:8765/health` refused connection; no fresh inference, downloads, installed-app replacement or deployment. No new issue/F ID or later task selected. Schedule/notification preferences unchanged. Post-merge bookkeeping retained locally for the next normal reviewed increment.
+
+
+## F04 read-only generated-source snapshots — reopened issue #84 (25 October 2026)
+
+Branch `84-source-review-snapshots`, baseline verified PR #87 merge `adca80bf396d078042e42a81c7cd394504417c1d`. No competing active ASG run/open issue/PR at selection. Reopened matching #84; no new issue/F ID. Source proposals previously required caller-supplied originals. Added a native read-only source snapshot service for selected recorded lib/test Dart files: canonical root and component checks reject links/missing/nonregular files, saved SHA-256 validates captured bytes, strict UTF-8 and per-file/count/encoded aggregate bounds prevent oversized input. Reads run off the UI isolate and return immutable text. Unsupported web fallback fails explicitly. This is a preparation service; no user-facing integration, source application or execution is delivered. Path checks do not lock against concurrent hostile filesystem mutation; captured hashes do not authorize later writes.
+
+Acceptance/validation: five actual-filesystem regressions cover exact Unicode contents, immutability/no writes, invalid/duplicate/unrecorded selections, changed/missing/non-file paths, linked root/parent/file, invalid UTF-8 and byte/text/aggregate limits. Analyzer clean; 302 Flutter tests passed/four opt-in skips. Web build/formatter, independent final-revision review, required CI and verified merge evidence follow. Prior verified PR #87 evidence retained in this normal reviewed increment; unrelated IDE edits excluded. F04 stays In progress and unchecked pending visible review UI, safe application, working-output preservation and real local-model analyze/test/build/refreshed-preview acceptance. Default local endpoint refused connection; no fresh inference, download, stable-app replacement or deployment. Schedule/notification preferences unchanged.
+
+Issue #84 snapshot validation complete: formatter 126 files unchanged, analyzer clean, 302 Flutter tests passed/four opt-in skips, web build and Wasm dry run passed. Awaiting linked PR, independent exact-revision review and required CI.
