@@ -330,7 +330,10 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('Plan'));
       await tester.pumpAndSettle();
-      expect(find.textContaining('this screen cannot approve'), findsOneWidget);
+      expect(
+        find.textContaining('does not start implementation'),
+        findsOneWidget,
+      );
       await tester.enterText(find.byType(TextField), 'Plan a weekly view');
       await tester.tap(find.byTooltip('Send'));
       await tester.pump();

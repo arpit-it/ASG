@@ -2,6 +2,10 @@
 library;
 
 import 'package:asg/services/studio_database.dart';
+import 'package:asg/models/plan_approval.dart';
+
+import 'dart:convert';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sembast_web/sembast_web.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -32,6 +36,16 @@ void main() {
         final records = await StudioDatabase.migrate(db, prefs);
         expect(records.getString('studio.lastProject.v1'), 'legacy');
         await records.setString('studio.lastProject.v1', 'updated');
+        final approval = jsonEncode(
+          PlanApproval(
+            messageIndex: 1,
+            content: 'Exact plan',
+            context: 'Exact requirements',
+            approved: true,
+            recordedAt: DateTime.utc(2026, 10, 25),
+          ).toJson(),
+        );
+        await records.setString('studio.planApproval.v1.p', approval);
         await db.close();
         db = await databaseFactoryWeb.openDatabase(
           name,
@@ -39,12 +53,15 @@ void main() {
         );
         final restored = await StudioDatabase.migrate(db, prefs);
         expect(restored.getString('studio.lastProject.v1'), 'updated');
+        expect(restored.getString('studio.planApproval.v1.p'), approval);
         expect(prefs.getString('studio.lastProject.v1'), 'legacy');
         final raw = StoreRef<String, String>('records');
         const appKey = 'studio.application.v1.damaged';
         const generationKey = 'studio.generation.v1.damaged';
         await raw.record(appKey).put(db, 'broken app');
         await raw.record(generationKey).put(db, 'broken generation');
+        const approvalKey = 'studio.planApproval.v1.damaged';
+        await raw.record(approvalKey).put(db, 'broken approval');
         await db.close();
         db = await databaseFactoryWeb.openDatabase(
           name,
@@ -53,6 +70,9 @@ void main() {
         final isolated = await StudioDatabase.migrate(db, prefs);
         expect(isolated.getString('studio.lastProject.v1'), 'updated');
         expect(() => isolated.getString(appKey), throwsFormatException);
+        expect(() => isolated.getString(approvalKey), throwsFormatException);
+        expect(await raw.record(approvalKey).get(db), 'broken approval');
+        expect(isolated.getString('studio.planApproval.v1.p'), approval);
         expect(() => isolated.getString(generationKey), throwsFormatException);
         expect(await raw.record(appKey).get(db), 'broken app');
         expect(await raw.record(generationKey).get(db), 'broken generation');

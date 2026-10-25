@@ -1,4 +1,6 @@
 import '../models/chat_message.dart';
+import '../models/plan_approval.dart';
+import '../services/plan_approval_store.dart';
 import '../models/conversation_mode.dart';
 import '../models/project.dart';
 import '../models/generation_event.dart';
@@ -73,6 +75,53 @@ class ChatController extends BaseController {
     _unsavedResponse = null;
   }
 
+  PlanApproval? _approval;
+  String? approvalError;
+  int get latestPlanIndex => PlanApprovalStore.latestPlan(_messages);
+  ChatMessage? get latestPlan =>
+      latestPlanIndex < 0 ? null : _messages[latestPlanIndex];
+  bool get planApproved =>
+      _approval?.approved == true &&
+      _approval!.messageIndex == latestPlanIndex &&
+      _approval!.content == latestPlan?.content &&
+      _approval!.context == latestPlan?.planContext &&
+      latestPlan?.planContext == PlanApprovalStore.context(project);
+  bool get outdatedApproval => _approval?.approved == true && !planApproved;
+  bool get canApprovePlan =>
+      ready &&
+      !busy &&
+      !hasUnsavedResponse &&
+      approvalError == null &&
+      latestPlan != null &&
+      !planApproved &&
+      latestPlan!.planContext == PlanApprovalStore.context(project);
+  bool get hasApproval => _approval?.approved == true;
+  Future<void> setPlanApproval(bool approved) async {
+    if (isDisposed ||
+        busy ||
+        hasUnsavedResponse ||
+        !ready ||
+        approvalError != null ||
+        (approved ? !canApprovePlan : !hasApproval)) {
+      return;
+    }
+    busy = true;
+    phase = GenerationPhase.applying;
+    error = null;
+    update();
+    try {
+      final store = PlanApprovalStore(_store!.records);
+      await store.save(project, _messages, approved);
+      if (!isDisposed) _approval = store.load(project.id);
+    } catch (e) {
+      if (!isDisposed) error = '$e';
+    } finally {
+      busy = false;
+      phase = GenerationPhase.idle;
+      update();
+    }
+  }
+
   bool cancelled = false;
   void cancelGeneration() {
     if (!busy || isDisposed || phase == GenerationPhase.applying) return;
@@ -93,6 +142,12 @@ class ChatController extends BaseController {
       if (isDisposed) return;
       _store = store;
       _messages = saved;
+      try {
+        _approval = PlanApprovalStore(store.records).load(project.id);
+        approvalError = null;
+      } catch (_) {
+        approvalError = 'Plan approval could not be loaded. Saved evidence has not been overwritten.';
+      }
     } catch (_) {
       error = 'Conversation could not be loaded. Saved data has not been overwritten.';
     }
@@ -163,6 +218,9 @@ class ChatController extends BaseController {
       _unsavedResponse = ChatMessage(
         role: 'assistant',
         content: requestMode.labelResponse(result),
+        planContext: requestMode == ConversationMode.plan
+            ? PlanApprovalStore.context(project)
+            : null,
       );
       phase = GenerationPhase.applying;
       update();
