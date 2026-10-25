@@ -1,5 +1,9 @@
 # Durable project memory
 
+## User naming preference — 25 October 2026
+
+Use direct issue-based branch names such as `<issue-number>-<short-description>` without `codex/`, `chatgpt/`, or any assistant/provider identification. Do not add Codex, ChatGPT, OpenAI, or similar identification to branch names or PR titles/bodies. If a working identity is needed, use exactly "ASG is working". Do not announce routine branch creation. This user preference applies to all future and scheduled runs; historical branch names remain unchanged.
+
 ## Current context — 25 October 2026
 
 ASG is a Flutter application targeting Android, iOS, web, macOS, Windows and Linux. Included platform runners do not establish tested device support. Managed MLX setup and the current independent Flutter web generator host are macOS-specific; other platforms retain supported app features and runtime connection controls.
@@ -28,7 +32,7 @@ The local bridge supports MLX and legacy Torch, SSE phases/tokens/heartbeats/DON
 
 Latest completed checks: analysis passed, 48 regular Flutter tests passed (one live test skipped by default), the real opt-in custom Qwen edit test passed with built-in handling disabled and assertions for multiple streamed text chunks, and 4 Python HTTP/SSE tests passed. macOS, Android debug and web builds all passed. Do not rerun large conversions or reimplement streaming if already verified.
 
-Public repository: https://github.com/arpit-it/ASG.git. Local origin already matches and remote main matched the local initial commit when checked. The user now explicitly authorized a one-time reviewed baseline push to main (#1). Every subsequent implementation must start with a GitHub issue, use a separate codex/<issue>-<slug> branch, and open a PR targeting main. Issue/branch/commit/feature-push/PR actions are authorized; the user explicitly authorizes an independent reviewer agent to merge after approving the final revision and confirming required checks pass. Preserve unrelated changes and never force-push main. See AGENTS.md and GIT_WORKFLOW.md.
+Public repository: https://github.com/arpit-it/ASG.git. Local origin already matches and remote main matched the local initial commit when checked. The user now explicitly authorized a one-time reviewed baseline push to main (#1). Every subsequent implementation must start with a GitHub issue, use a separate <issue>-<slug> branch, and open a PR targeting main. Issue/branch/commit/feature-push/PR actions are authorized; the user explicitly authorizes an independent reviewer agent to merge after approving the final revision and confirming required checks pass. Preserve unrelated changes and never force-push main. See AGENTS.md and GIT_WORKFLOW.md.
 
 Next priority: maintain the working streaming/runtime and data safety, then advance the documented roadmap toward transactional storage, safe source/template generation, deterministic builds/tests and actual independent application previews. Current interpreter prototypes remain a bounded first slice, not arbitrary source-code generation. Pick one coherent verified increment per scheduled run.
 
