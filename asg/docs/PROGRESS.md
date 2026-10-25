@@ -67,3 +67,7 @@ Checks passed: analysis, 48 regular Flutter tests, one opt-in live local-Qwen in
 ## CI and GitHub delivery — issue #2
 
 Published the independently reviewed baseline to main as 3dc6142 (issue #1). Added least-privilege CI for formatting, analysis, Flutter tests/web build and Python HTTP/download fixtures, with pinned actions and bounded job timeouts. Added focused bug/feature issue forms and a PR template. Real local Qwen tests remain opt-in. Review and remote CI results are tracked by the issue #2 PR.
+
+## README alignment — issue #6
+
+PR #5 was independently reviewed and merged as 2bad70a after both CI jobs passed. Updated the root/application READMEs to explain the app-led product goal, working prototype and streamed local runtime, future generation/build features, platform limits, MVC, setup, validation and contribution workflow. Verified relative documentation links and diff formatting. No production code changed.
