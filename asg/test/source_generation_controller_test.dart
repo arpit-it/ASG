@@ -1,5 +1,10 @@
 import 'dart:async';
 
+import 'package:asg/models/chat_message.dart';
+import 'package:asg/services/conversation_store.dart';
+import 'package:asg/services/plan_approval_store.dart';
+import 'package:asg/services/studio_store.dart';
+import 'package:asg/services/requirements_store.dart';
 import 'package:asg/controllers/source_generation_controller.dart';
 import 'package:asg/models/app_definition.dart';
 import 'package:asg/models/project.dart';
@@ -122,6 +127,16 @@ void main() {
     store = SourceGenerationStore(
       PreferenceRecords(await SharedPreferences.getInstance()),
     );
+    await StudioStore(store.records).save([project]);
+    final plans = [
+      ChatMessage(
+        role: 'assistant',
+        content: 'Build the fixed Flutter starter.',
+        planContext: PlanApprovalStore(store.records).contextFor(project),
+      ),
+    ];
+    await ConversationStore(store.records).save('p', plans);
+    await PlanApprovalStore(store.records).save(project, plans, true);
     c = SourceGenerationController(
       project: project,
       definition: definition,
@@ -132,6 +147,90 @@ void main() {
   tearDown(() {
     if (!c.isDisposed) c.dispose();
   });
+
+  test(
+    'missing, withdrawn, stale and corrupt plans reject both Build entries',
+    () async {
+      expect(await generate(true), isTrue);
+      final previous = store.load('p');
+      final key = 'studio.planApproval.v1.p';
+      final valid = store.records.getString(key)!;
+      await (store.records as PreferenceRecords).preferences.remove(key);
+      expect(await generate(true), isFalse);
+      expect(await c.verifyAgain(approved: true), isFalse);
+      expect(host.generations, 1);
+      expect(host.verifications, 1);
+      expect(store.load('p')!.toJson(), previous!.toJson());
+      for (final raw in [
+        'null',
+        valid.replaceFirst('"approved":true', '"approved":false'),
+        '{}',
+      ]) {
+        await store.records.setString(key, raw);
+        final generations = host.generations,
+            verifications = host.verifications;
+        expect(await generate(true), isFalse);
+        expect(await c.verifyAgain(approved: true), isFalse);
+        expect(host.generations, generations);
+        expect(host.verifications, verifications);
+        expect(store.load('p')!.toJson(), previous.toJson());
+      }
+      await store.records.setString(key, valid);
+      await ConversationStore(store.records).save('p', [
+        ChatMessage(
+          role: 'assistant',
+          content: 'Replacement plan',
+          planContext: PlanApprovalStore(store.records).contextFor(project),
+        ),
+      ]);
+      expect(await generate(true), isFalse);
+      expect(await c.verifyAgain(approved: true), isFalse);
+    },
+  );
+
+  test(
+    'requirements revision invalidates Build and retry after screen open',
+    () async {
+      expect(await generate(true), isTrue);
+      final previous = store.load('p')!.toJson();
+      await store.records.setString(
+        'studio.requirements.v1.p',
+        '{"version":1,"revision":1,"requirements":[],"tasks":[]}',
+      );
+      expect(RequirementsStore(store.records).load('p').revision, 1);
+      expect(await generate(true), isFalse);
+      expect(await c.verifyAgain(approved: true), isFalse);
+      expect(host.generations, 1);
+      expect(host.verifications, 1);
+      expect(store.load('p')!.toJson(), previous);
+    },
+  );
+
+  test(
+    'project changes after screen open reject a previously approved plan',
+    () async {
+      await StudioStore(store.records).save([]);
+      expect(await generate(true), isFalse);
+      expect(host.generations, 0);
+      expect(c.error, contains('missing or ambiguous'));
+    },
+  );
+
+  test(
+    'withdrawal during generation prevents subsequent verification',
+    () async {
+      host.generationGate = Completer();
+      final running = generate(true);
+      await Future<void>.delayed(Duration.zero);
+      final messages = ConversationStore(store.records).load('p');
+      await PlanApprovalStore(store.records).save(project, messages, false);
+      host.generationGate!.complete(generated);
+      expect(await running, isFalse);
+      expect(host.verifications, 0);
+      expect(store.load('p')!.phase, SourceGenerationPhase.failed);
+      expect(c.error, contains('Build requires'));
+    },
+  );
 
   test('corrupt ready records cannot claim verification and snapshots are immutable', () {
     expect(

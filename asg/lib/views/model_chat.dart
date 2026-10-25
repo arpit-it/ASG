@@ -60,7 +60,7 @@ class _ModelChatState extends State<ModelChat> {
         padding: const EdgeInsets.all(16),
         child: Text(
           controller.mode == ConversationMode.plan
-              ? 'Review the saved draft before approving. Approval records your agreement only; it does not start implementation or authorize commands. Messages are saved on this device.'
+              ? 'Review the saved draft before approving. Approval unlocks fixed Flutter Build; starting it requires separate operation consent. Messages are saved on this device.'
               : controller.mode == ConversationMode.review
               ? 'Advisory review of the current prototype and saved build evidence. No source inspection or new checks. Reports are saved on this device.'
               : 'Local Qwen discussion · Messages are saved on this device. No file changes or commands are executed.',

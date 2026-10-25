@@ -119,6 +119,13 @@ class _SourceGenerationScreenState extends State<SourceGenerationScreen> {
               const Text(
                 'Generation currently requires the macOS app, Flutter project type and readable history. Other platforms retain the in-app prototype.',
               ),
+            ExpansionTile(
+              title: const Text('Saved plan and Build authorization'),
+              children: [SelectableText(controller.planStatus)],
+            ),
+            const Text(
+              'Build requires a current saved Plan approval in addition to the operation consent below. Return to the workspace and open Plan to draft, review or withdraw approval. Withdrawal prevents subsequent starts; it does not cancel a command already running.',
+            ),
             directory(parent, 'Existing parent directory'),
             TextField(
               controller: name,

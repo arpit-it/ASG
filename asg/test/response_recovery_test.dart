@@ -137,6 +137,11 @@ void main() {
     provider.events.add(const GenerationEvent.text('Recovered plan'));
     await provider.events.close();
     await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.text('[Plan draft — not approved]\nRecovered plan'),
+      100,
+      scrollable: find.byType(Scrollable).last,
+    );
     expect(
       find.text('[Plan draft — not approved]\nRecovered plan'),
       findsOneWidget,

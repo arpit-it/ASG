@@ -1,9 +1,11 @@
 import 'dart:async';
 
 import '../models/app_definition.dart';
+import '../models/plan_approval.dart';
 import '../models/project.dart';
 import '../models/source_generation.dart';
 import '../services/generation_host.dart';
+import '../services/plan_approval_store.dart';
 import '../services/generation_input.dart';
 import '../services/folder_picker.dart';
 import '../services/source_generation_store.dart';
@@ -46,6 +48,30 @@ class SourceGenerationController extends BaseController {
       host.supported && !_historyInvalid && project.type == 'Flutter';
   Uri? _preview;
   Uri? get preview => _preview;
+
+  String get planStatus {
+    try {
+      final approval = _requirePlan();
+      return 'Current saved plan approved. Build runs the fixed Flutter starter pipeline only.\n\n${approval.content}';
+    } catch (e) {
+      return 'Build is locked. $e';
+    }
+  }
+
+  PlanApproval _requirePlan() =>
+      PlanApprovalStore(store.records).requireCurrentApproval(project);
+
+  void _recheckPlan(PlanApproval started) {
+    final current = _requirePlan();
+    if (current.recordedAt != started.recordedAt ||
+        current.messageIndex != started.messageIndex ||
+        current.content != started.content ||
+        current.context != started.context) {
+      throw StateError(
+        'Plan approval changed during preparation. Review it before restarting Build.',
+      );
+    }
+  }
 
   Future<String?> chooseDirectory(FolderPicker picker) async {
     if (_busy || !available || !picker.supported || isDisposed) return null;
@@ -100,7 +126,9 @@ class SourceGenerationController extends BaseController {
     update();
     GeneratedProject? active;
     try {
+      final approval = _requirePlan();
       await host.stopPreview();
+      _recheckPlan(approval);
       if (isDisposed) return false;
       _preview = null;
       active = await host.generate(
@@ -114,6 +142,7 @@ class SourceGenerationController extends BaseController {
       if (isDisposed) return false;
       await _save(active);
       if (isDisposed) return false;
+      _recheckPlan(approval);
       final verified = await host.verify(active, _save);
       return !isDisposed && verified.phase == SourceGenerationPhase.ready;
     } catch (e) {
@@ -140,14 +169,22 @@ class SourceGenerationController extends BaseController {
     _busy = true;
     _error = null;
     update();
+    var verificationStarted = false;
     try {
+      final approval = _requirePlan();
       await host.stopPreview();
+      _recheckPlan(approval);
       if (isDisposed) return false;
       _preview = null;
+      verificationStarted = true;
       final verified = await host.verify(current, _save);
       return !isDisposed && verified.phase == SourceGenerationPhase.ready;
     } catch (e) {
-      await _failure(current, e);
+      if (verificationStarted) {
+        await _failure(current, e);
+      } else if (!isDisposed) {
+        _error = 'Build did not start. $e';
+      }
       return false;
     } finally {
       _busy = false;
