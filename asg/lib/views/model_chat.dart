@@ -205,12 +205,50 @@ class _ModelChatState extends State<ModelChat> {
                 padding: const EdgeInsets.all(16),
                 child: Text(
                   controller.mode == ConversationMode.plan
-                      ? 'Draft a plan with requirements, tasks and acceptance criteria. Plans need review; this screen cannot approve or execute them. Messages are saved on this device.'
+                      ? 'Review the saved draft before approving. Approval records your agreement only; it does not start implementation or authorize commands. Messages are saved on this device.'
                       : controller.mode == ConversationMode.review
                       ? 'Advisory review of the current prototype and saved build evidence. No source inspection or new checks. Reports are saved on this device.'
                       : 'Local Qwen discussion · Messages are saved on this device. No file changes or commands are executed.',
                 ),
               ),
+              if (controller.mode == ConversationMode.plan)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        controller.approvalError ??
+                            (controller.planApproved
+                                ? 'Latest saved plan approved for these requirements.'
+                                : controller.outdatedApproval
+                                ? 'Earlier approval is outdated. Review a current draft.'
+                                : 'No current plan approval. Only newly saved Plan drafts can be approved.'),
+                      ),
+                      Wrap(
+                        spacing: 12,
+                        children: [
+                          FilledButton(
+                            onPressed: controller.canApprovePlan
+                                ? () => controller.setPlanApproval(true)
+                                : null,
+                            child: const Text('Approve latest saved plan'),
+                          ),
+                          if (controller.hasApproval)
+                            TextButton(
+                              onPressed:
+                                  controller.busy ||
+                                      controller.hasUnsavedResponse ||
+                                      controller.approvalError != null
+                                  ? null
+                                  : () => controller.setPlanApproval(false),
+                              child: const Text('Withdraw approval'),
+                            ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
               if (compact) history(true) else Expanded(child: history(false)),
               if (controller.error != null)
                 Padding(

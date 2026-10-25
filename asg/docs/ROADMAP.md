@@ -66,3 +66,12 @@ Existing busy, cancellation, navigation and save-only retry guards apply. New re
 Issue #26 local validation: formatter/analyzer, 144 default Flutter tests (four opt-in skips), web build and the explicit real Qwen Review smoke passed. The live review streamed multiple chunks and persisted its labeled report without changing the supplied application. Final UI-label verification and macOS debug build are recorded in the linked PR. The stable installed app is unchanged.
 
 Issue #26 final revision: formatter/analyzer and all 144 default tests passed again after the workspace entry-label change; web and macOS debug builds passed. Independent review and required CI remain pending until verified in the linked PR.
+
+
+## Explicit saved-plan approval — issue #28
+
+Branch `codex/28-plan-approval` implements the missing MASTER_REQUIREMENTS.md §4.4 / Milestone 2 approval action for the latest newly saved Plan response. Approval/withdrawal persist exact draft and requirements identity; reopening restores consent, later plans/requirements make it outdated. Optional app-written `planContext` metadata preserves legacy chat compatibility and prevents label text from granting eligibility. Approval records agreement only: Build execution, structured executable plans, source tools and automatic implementation remain unavailable.
+
+Service rereads durable chat/current project before writing; missing/ambiguous/stale data are rejected. Save failures preserve previous consent and allow retry. Busy/unsaved/disposal guards apply; corrupt approval data remain preserved and visible, isolated from healthy records after migration. New controller/widget/native/Chrome regressions cover exact identity, retries, overlap, legacy text, stale screens, requirements changes, actual reopen and corruption. See STORAGE.md for additive schema/migration details. Final linked PR supplies exact-head independent review, required CI and merge evidence.
+
+Issue #28 local validation: formatter/analyzer, 152 default Flutter tests (four opt-in skips), actual Chrome IndexedDB storage test, web and macOS debug builds passed. Existing Qwen MLX health ready/idle; no fresh inference claim. Stable installed app unchanged. Final linked PR supplies independent exact-head review, required CI and merge evidence.

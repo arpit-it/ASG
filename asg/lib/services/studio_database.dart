@@ -4,6 +4,7 @@ import 'package:sembast/sembast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/project.dart';
+import '../models/plan_approval.dart';
 import '../models/source_generation.dart';
 import 'application_store.dart';
 import 'conversation_store.dart';
@@ -76,7 +77,8 @@ class StudioDatabase implements RecordStorage {
         validate(record.key, record.value);
       } catch (_) {
         if (!record.key.startsWith('studio.application.v1.') &&
-            !record.key.startsWith('studio.generation.v1.')) {
+            !record.key.startsWith('studio.generation.v1.') &&
+            !record.key.startsWith('studio.planApproval.v1.')) {
           rethrow;
         }
         // Preserve unreadable project content verbatim. Its repository will
@@ -98,6 +100,7 @@ class StudioDatabase implements RecordStorage {
         'studio.lastProject.v1',
       ].contains(key) ||
       key.startsWith('studio.chat.v1.') ||
+      key.startsWith('studio.planApproval.v1.') ||
       key.startsWith('studio.application.v1.');
 
   static void validate(String key, String value) {
@@ -128,6 +131,8 @@ class StudioDatabase implements RecordStorage {
           (decoded['revision'] as int) < 1) {
         throw const FormatException('Invalid saved application revision.');
       }
+    } else if (key.startsWith('studio.planApproval.v1.')) {
+      PlanApproval.fromJson(decoded as Map<String, dynamic>);
     } else if (key.startsWith('studio.generation.v1.')) {
       GeneratedProject.fromJson(decoded as Map<String, dynamic>);
     } else {
