@@ -5,12 +5,24 @@ import '../models/plan_approval.dart';
 import '../models/project.dart';
 import 'conversation_store.dart';
 import 'record_storage.dart';
+import 'requirements_store.dart';
 import 'studio_store.dart';
 
 class PlanApprovalStore {
   PlanApprovalStore(this.records);
   final RecordStorage records;
   static String context(StudioProject project) => jsonEncode(project.toJson());
+  String contextFor(StudioProject project) {
+    final board = RequirementsStore(records).load(project.id);
+    // Preserve legacy plan contexts until a structured board has been saved.
+    return board.revision == 0
+        ? context(project)
+        : jsonEncode({
+            'project': project.toJson(),
+            'requirementsRevision': board.revision,
+          });
+  }
+
   static int latestPlan(List<ChatMessage> messages) => messages.lastIndexWhere(
     (m) => m.role == 'assistant' && m.planContext != null,
   );
@@ -50,7 +62,7 @@ class PlanApprovalStore {
         saved[index].content != messages[index].content ||
         saved[index].planContext != messages[index].planContext ||
         context(current) != context(project) ||
-        (approved && saved[index].planContext != context(current))) {
+        (approved && saved[index].planContext != contextFor(current))) {
       throw StateError(
         'Plan or requirements changed. Reopen the project and draft a current plan.',
       );

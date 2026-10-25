@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../controllers/requirements_controller.dart';
+import '../services/requirements_store.dart';
+import 'requirements_screen.dart';
 import '../models/project.dart';
 import '../models/generation_event.dart';
 import '../controllers/app_workspace_controller.dart';
@@ -91,6 +94,27 @@ class _ProjectWorkspaceState extends State<ProjectWorkspace> {
     if (await controller.apply(input.text) && mounted) input.clear();
   }
 
+  Future<void> requirements() async {
+    final records = controller.records;
+    if (records == null ||
+        controller.busy ||
+        controller.savingInteractions ||
+        controller.hasUnsavedInteractions) {
+      return;
+    }
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => RequirementsScreen(
+          controller: RequirementsController(
+            widget.project.id,
+            RequirementsStore(records),
+          ),
+          projectName: widget.project.name,
+        ),
+      ),
+    );
+  }
+
   Future<void> discussAndPlan() async {
     final records = controller.records;
     if (records == null ||
@@ -153,6 +177,17 @@ class _ProjectWorkspaceState extends State<ProjectWorkspace> {
                 'Chat',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
               ),
+            ),
+            IconButton(
+              tooltip: 'Requirements and tasks',
+              onPressed:
+                  controller.records == null ||
+                      controller.busy ||
+                      controller.savingInteractions ||
+                      controller.hasUnsavedInteractions
+                  ? null
+                  : requirements,
+              icon: const Icon(Icons.checklist),
             ),
             IconButton(
               tooltip: 'Discuss, plan and review',
