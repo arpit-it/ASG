@@ -100,3 +100,11 @@ Source generation #3 is complete via reviewer-merged PR #11 (979dc4f2). Added a 
 Local validation: formatter/analyzer passed, 86 default Flutter tests passed (live Qwen/generation skipped by default), and the explicit real independent-project resolve/analyze/test/web-build/HTTP-preview test passed. macOS debug, Android debug and web builds passed. Existing Qwen runtime remained ready/idle. Frozen v1 fingerprints confirm no history migration is required.
 
 Issue #12 delivery is tracked by [PR #13](https://github.com/arpit-it/ASG/pull/13), branch codex/12-generated-snapshot-status. Its final exact-revision review, required CI and merge record are the authoritative completion evidence; inspect the PR before starting the next increment.
+
+## Project selection ordering — issue #14
+
+Branch `codex/14-session-selection` fixes an observed race: project selection previously left the session idle while its selection record was saving, allowing overlapping selection/creation. Both actions now share a busy guard; successful UI selection waits for persistence, failures preserve the current project and allow retry. Disposed sessions reject new work and ignore delayed results; creation stops before a follow-up selection write if disposed. Home navigation, pointer interaction and keyboard focus are blocked during session writes to avoid editing a workspace being replaced. Existing storage records are unchanged.
+
+Added six deterministic delayed-write controller tests and a navigation/interaction-lock widget regression. Final local checks and independent review/CI evidence are recorded in the issue-linked PR. Existing Qwen MLX health reported ready/idle; this is a health check, not a new live inference verification. Unrelated tracked IDE changes are preserved.
+
+Issue #14 delivery: [PR #15](https://github.com/arpit-it/ASG/pull/15), branch `codex/14-session-selection`. Local formatter/analyzer, 93 default tests (two opt-in tests skipped) and web build passed. Final exact-head independent review, required CI results and merge SHA are authoritative in that PR.

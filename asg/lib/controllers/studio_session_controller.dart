@@ -17,17 +17,19 @@ class StudioSessionController extends BaseController {
   String? _error;
   String? get error => _error;
   Future<bool> create(StudioProject project) async {
-    if (_busy) return false;
+    if (_busy || isDisposed) return false;
     _busy = true;
     _error = null;
     update();
     try {
       await store.projects.save([...store.load(), project]);
+      if (isDisposed) return false;
       await store.select(project.id);
+      if (isDisposed) return false;
       _current = project;
       return true;
     } catch (e) {
-      _error = 'Project could not be opened: $e';
+      if (!isDisposed) _error = 'Project could not be opened: $e';
       return false;
     } finally {
       _busy = false;
@@ -36,13 +38,18 @@ class StudioSessionController extends BaseController {
   }
 
   Future<void> select(StudioProject project) async {
+    if (_busy || isDisposed) return;
+    _busy = true;
+    _error = null;
+    update();
     try {
       await store.select(project.id);
-      _current = project;
-      _error = null;
+      if (!isDisposed) _current = project;
     } catch (e) {
-      _error = '$e';
+      if (!isDisposed) _error = 'Project could not be opened: $e';
+    } finally {
+      _busy = false;
+      update();
     }
-    update();
   }
 }
