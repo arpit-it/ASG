@@ -5,6 +5,8 @@ import 'package:asg/controllers/source_review_controller.dart';
 import 'package:asg/controllers/source_candidate_controller.dart';
 import 'package:asg/models/build_plan.dart';
 import 'package:asg/services/application_store.dart';
+import 'package:asg/services/repair_attempt_store.dart';
+import 'package:asg/services/candidate_repair_evidence.dart';
 import 'package:asg/services/approved_source_proposer.dart';
 import 'package:asg/services/source_edit_proposer.dart';
 import 'package:asg/services/generation_host.dart';
@@ -289,6 +291,29 @@ void main() {
     expect(controller.error, contains('offline repair retry'));
     expect(controller.proposal, same(reviewed));
     expect(controller.candidate, same(failedCandidate));
+    final store = RepairAttemptStore(records, project.id);
+    await store.reserve(
+      requireRepairFailure(records, project.id, controller.candidate!),
+      () {},
+    );
+    expect(controller.hasRepairFailure, isTrue);
+    expect(controller.canRequestRepair, isFalse);
+    expect(controller.repairUsage['analyze'], 3);
+    final captureCount = captures.length;
+    provider = FakeProvider();
+    await controller.requestRepair(['lib/main.dart']);
+    expect(controller.error, contains('budget exhausted'));
+    expect(captures.length, captureCount);
+    expect(provider.prompt, isNull);
+    expect(controller.repairHistory.length, 3);
+    final retained = records.values[store.key]!;
+    records.values[store.key] = '{}';
+    expect(controller.canRequestRepair, isFalse);
+    await controller.requestRepair(['lib/main.dart']);
+    expect(controller.error, contains('unreadable'));
+    expect(captures.length, captureCount);
+    expect(records.values[store.key], '{}');
+    records.values[store.key] = retained;
     await controller.selectCandidateParent();
     await controller.prepareCandidate();
     expect(controller.error, isNull);

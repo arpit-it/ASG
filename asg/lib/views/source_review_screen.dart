@@ -4,6 +4,7 @@ import '../controllers/source_review_controller.dart';
 import '../models/source_generation.dart';
 import 'source_diff_view.dart';
 import 'source_candidate_view.dart';
+import 'repair_history_view.dart';
 
 class SourceReviewScreen extends StatefulWidget {
   const SourceReviewScreen({super.key, required this.controller});
@@ -123,19 +124,30 @@ class _SourceReviewScreenState extends State<SourceReviewScreen>
                 key: ObjectKey(controller.candidateSession),
                 controller: controller.candidateSession!,
               ),
-            if (controller.canRequestRepair) ...[
+            if (controller.hasRepairFailure) ...[
               const Text(
                 'Request a correction using this saved failure and selected Dart files. '
                 'Review the new diff before preparing a separate candidate. '
                 'This does not apply edits or rerun checks automatically.',
               ),
               FilledButton(
-                onPressed: selected.isEmpty || selected.length > 8
+                onPressed:
+                    !controller.canRequestRepair ||
+                        selected.isEmpty ||
+                        selected.length > 8
                     ? null
                     : () => controller.requestRepair(selected.toList()),
                 child: const Text('Request repair proposal from saved failure'),
               ),
             ],
+            if (controller.repairBlockedReason != null)
+              Text(controller.repairBlockedReason!),
+            RepairHistoryView(
+              attempts: controller.repairHistory,
+              error: controller.repairHistoryError,
+              usage: controller.repairUsage,
+              usesCurrentApproval: controller.repairUsesCurrentApproval,
+            ),
             if (controller.stale)
               const Text(
                 'Approval or working build changed. Return to Build and reopen source review.',
