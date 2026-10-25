@@ -236,7 +236,7 @@ class SourceReviewController extends BaseController {
   String _status = '';
   String get status {
     final session = _candidateSession;
-    if (session == null || _busy) return _status;
+    if (session == null || _busy || _cancelled) return _status;
     if (proposal?.repairRun != null && !session.busy) return _status;
     if (session.promoted) {
       return 'Candidate promoted. Working source and preview now use the verified candidate.';
@@ -409,23 +409,33 @@ class SourceReviewController extends BaseController {
     _status = 'Reading recorded source…';
     update();
     try {
+      void authorizeRequest() {
+        if (_cancelled || isDisposed) {
+          throw StateError('Source proposal cancelled.');
+        }
+        _requireWorking();
+        final current = PlanApprovalStore(records)
+            .requireCurrentApproval(project);
+        if (!started.matches(current)) {
+          throw StateError('Plan approval changed while reading source.');
+        }
+      }
+
+      // Progress listeners can Stop, dispose or change durable inputs. Check
+      // again after notifying them, before starting capture or inference.
+      authorizeRequest();
       final failure = repairCandidate == null
           ? null
           : requireRepairFailure(records, project.id, repairCandidate);
       final source = repairCandidate ?? generated;
       final originals = await _readSnapshot(source, selection);
-      if (_cancelled || isDisposed) return;
-      _requireWorking();
+      authorizeRequest();
       if (failure != null) {
         requireRepairFailure(records, project.id, source, expected: failure);
       }
-      final current = PlanApprovalStore(records)
-          .requireCurrentApproval(project);
-      if (!started.matches(current)) {
-        throw StateError('Plan approval changed while reading source.');
-      }
       _status = 'Requesting local model proposal…';
       update();
+      authorizeRequest();
       final value = await _proposer.propose(
         project: project,
         boardTaskId: taskId,
