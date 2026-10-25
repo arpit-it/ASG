@@ -83,3 +83,5 @@ CI runs formatting, analysis, default tests, a web build and Python fixtures on 
 Read [AGENTS.md](AGENTS.md), [coding standards](asg/docs/CODING_STANDARDS.md) and [Git workflow](asg/docs/GIT_WORKFLOW.md). Start with a necessary issue, use a focused codex/<issue>-<slug> branch, test/fix/retest and open a linked PR. An independent reviewer checks the final revision and passing checks before merging. Keep credentials, model weights, virtual environments and build output out of commits.
 
 For implementation context, see [architecture](asg/docs/ARCHITECTURE.md), [live workspace](asg/docs/LIVE_WORKSPACE.md), [security](asg/docs/SECURITY.md) and [project memory](asg/docs/AGENT_MEMORY.md).
+
+Repository contributions follow [CONTRIBUTING.md](CONTRIBUTING.md) and the [security policy](SECURITY.md). Main is protected by required PRs and passing CI; external workflow runs require maintainer approval.

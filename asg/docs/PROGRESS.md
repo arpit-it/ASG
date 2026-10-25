@@ -78,3 +78,7 @@ Implemented cross-platform transactional repositories and atomic legacy migratio
 
 Validation: formatter/analyzer passed; 63 regular Flutter tests passed (live inference skipped by default); actual Chrome IndexedDB test passed; Python download fixtures 2/2 and HTTP/SSE fixtures 4/4 passed. macOS debug, Android debug and web builds passed. Strict corruption and all review-discovered interaction races have regression coverage.
 The opt-in real local Qwen custom-edit test also passed after the storage changes. It used the already running MLX runtime; no model download or runtime replacement occurred.
+
+## Repository safeguards — issue #8
+
+Storage PR #9 independently reviewed/merged as 2b6602a with all checks passing. Configured and re-opened GitHub main protection: required PRs, both CI jobs from GitHub Actions, current branch and resolved conversations, including admins; blocked force pushes/deletion. Saved approval for every external fork workflow and scoped allowed Actions to owner/GitHub plus pinned Flutter action. Verified read-only token default, disabled Actions approvals, no invited collaborators and unchanged public visibility. Enabled private vulnerability reporting. Added CODEOWNERS, contributing/security policies and agent instructions. Formal GitHub second-account approvals remain unavailable with the sole owner identity; agent review remains independently required by workflow.
