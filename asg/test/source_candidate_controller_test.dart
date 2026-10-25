@@ -5,11 +5,13 @@ import 'package:asg/controllers/source_candidate_controller.dart';
 import 'package:asg/controllers/source_generation_controller.dart';
 import 'package:asg/models/approved_source_proposal.dart';
 import 'package:asg/models/build_plan.dart';
+import 'package:asg/models/candidate_failure.dart';
 import 'package:asg/models/source_edit_proposal.dart';
 import 'package:asg/models/source_generation.dart';
 import 'package:asg/services/application_store.dart';
 import 'package:asg/services/conversation_store.dart';
 import 'package:asg/services/generation_input.dart';
+import 'package:asg/services/generation_host.dart';
 import 'package:asg/services/plan_approval_store.dart';
 import 'package:asg/services/record_storage.dart';
 import 'package:asg/services/requirements_store.dart';
@@ -43,6 +45,44 @@ class AtomicRecords extends ControlledRecords
       StudioDatabase.validate(e.key, e.value);
     }
     values.addAll(updates);
+  }
+}
+
+class FailedCheckHost extends FixtureHost {
+  @override
+  Future<GeneratedProject> verify(
+    GeneratedProject project,
+    GenerationProgress progress, {
+    bool resume = false,
+  }) async {
+    verifications++;
+    var current = project.copy(
+      phase: SourceGenerationPhase.verifying,
+      checkpointVersion: 1,
+      steps: [],
+    );
+    await progress(current);
+    // Use the actual approved graph, which may run test before analyze.
+    for (final task in project.tasks!) {
+      operations.add(task.operation.name);
+      final failed = task.operation.name == 'analyze';
+      current = current.copy(
+        phase: failed
+            ? SourceGenerationPhase.failed
+            : SourceGenerationPhase.verifying,
+        steps: [
+          ...current.steps,
+          GenerationStep(
+            operation: task.operation.name,
+            exitCode: failed ? 65 : 0,
+            output: failed ? 'Undefined name at lib/main.dart:7' : 'passed',
+          ),
+        ],
+      );
+      await progress(current);
+      if (failed) return current;
+    }
+    throw StateError('Fixture must stop at analyze');
   }
 }
 
@@ -208,6 +248,80 @@ void main() {
         SourceGenerationStore(records).load(project.id)!.directory,
         '/working',
       );
+    },
+  );
+
+  testWidgets(
+    'actual failed callback shows conservative diagnosis at 320px and 200%',
+    (tester) async {
+      final initial = candidate.result;
+      final evidence = candidate.evidence;
+      candidate.dispose();
+      candidateHost = FailedCheckHost();
+      candidate = SourceCandidateController(
+        project: project,
+        candidate: initial,
+        evidence: evidence,
+        records: records,
+        host: candidateHost,
+        publish: (value, host, guard) => working.promoteCandidate(
+          value,
+          host,
+          guard,
+          expectedWorking: saved,
+        ),
+      );
+      tester.view.physicalSize = const Size(320, 900);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      await tester.pumpWidget(
+        MaterialApp(
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(context)
+                .copyWith(textScaler: const TextScaler.linear(2)),
+            child: child!,
+          ),
+          home: Scaffold(
+            body: ListenableBuilder(
+              listenable: candidate,
+              builder: (_, _) => SingleChildScrollView(
+                child: SourceCandidateView(controller: candidate),
+              ),
+            ),
+          ),
+        ),
+      );
+      expect(find.text('Candidate failure diagnosis'), findsNothing);
+      await candidate.verify(approved: true);
+      await tester.pumpAndSettle();
+      expect(
+        candidate.failureDiagnosis!.kind,
+        CandidateFailureKind.sourceCheckFailure,
+      );
+      expect(candidate.failureDiagnosis!.step!.exitCode, 65);
+      final persisted = SourceGenerationStore(
+        records,
+        prefix: 'studio.sourceCandidate.v1.',
+      ).load(project.id)!;
+      expect(
+        CandidateFailure.inspect(persisted, active: false)!.message,
+        candidate.failureDiagnosis!.message,
+      );
+      final diagnosis = find.text(candidate.failureDiagnosis!.message);
+      await tester.ensureVisible(diagnosis);
+      await tester.pumpAndSettle();
+      expect(diagnosis, findsOneWidget);
+      expect(
+        find.textContaining('Automatic source repairs are not available yet.'),
+        findsOneWidget,
+      );
+      expect(candidate.canPromote, isFalse);
+      expect(workingHost.server, isTrue);
+      expect(working.result!.directory, '/working');
+      expect(candidateHost.operations, ['resolve', 'analyze']);
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox());
     },
   );
 

@@ -113,3 +113,10 @@ flutter test test/candidate_real_test.dart --dart-define=ASG_REAL_GENERATION=tru
 flutter test test/candidate_real_test.dart --dart-define=ASG_REAL_INFERENCE=true --plain-name 'real local Qwen source candidate'
 python3 -B tools/test_candidate_confinement.py
 ```
+
+
+## Candidate failure diagnosis (F05 first increment, issue #94)
+
+Candidate verification displays read-only triage derived from the existing generated-project evidence. A normal nonzero analyze/test/build exit supplies a possible source-diagnosis input, with the exact operation/result/output retained; it does not prove source causation. Cancellation, deadline/output exhaustion, offline dependency resolution, signal termination, validation/runner refusal, pending unknown commands, interruption and unsupported/inconsistent history have separate intervention messages. Running progress, prepared candidates and successful verification do not display a failure diagnosis. No record schema/key changes or new execution permission.
+
+Automatic source repair is still unavailable. The remaining F05 scope includes durable per-category attempt budgets (maximum three), model repairs, cancellation, honest exhaustion and rerunning failed checks before success. The diagnosis itself starts no model request, command or source modification and cannot promote a candidate.

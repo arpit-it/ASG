@@ -15,6 +15,7 @@ class _SourceCandidateViewState extends State<SourceCandidateView> {
   Widget build(BuildContext context) {
     final controller = widget.controller;
     final result = controller.result;
+    final diagnosis = controller.failureDiagnosis;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -56,6 +57,17 @@ class _SourceCandidateViewState extends State<SourceCandidateView> {
           ),
         if (result.error.isNotEmpty) SelectableText(result.error),
         if (controller.error != null) SelectableText(controller.error!),
+        if (diagnosis != null) ...[
+          Text(
+            'Candidate failure diagnosis',
+            style: Theme.of(context).textTheme.titleSmall,
+          ),
+          SelectableText(diagnosis.message),
+          const Text(
+            'Automatic source repairs are not available yet. '
+            'This diagnosis starts no model request or command and changes no files.',
+          ),
+        ],
         const Text(
           'Promotion validates a new preview, then atomically switches the saved '
           'working build. The previous folder is retained. Once the commit starts, '
