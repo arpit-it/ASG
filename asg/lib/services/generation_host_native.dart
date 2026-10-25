@@ -239,6 +239,10 @@ class NativeGenerationHost implements GenerationHost {
       await checkSources(project);
       if (operation != 'resolve') await checkResolution(current);
       checkOpen();
+      // Revalidate durable consent after asynchronous source checks and before
+      // starting each trusted command. A rejected callback stops the sequence.
+      await progress(current);
+      checkOpen();
       final result = await (_operationOverride ?? runFlutterOperation)(
         project,
         operation,

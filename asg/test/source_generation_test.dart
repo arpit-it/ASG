@@ -272,6 +272,36 @@ void main() {
   );
 
   test(
+    'progress refusal before an operation prevents command execution',
+    () async {
+      final generated = await generate();
+      final operations = <String>[];
+      final guarded = NativeGenerationHost(
+        loadAsset: assets,
+        runOperation: (_, operation) async {
+          operations.add(operation);
+          return GenerationStep(
+            operation: operation,
+            exitCode: 0,
+            output: 'fixture',
+          );
+        },
+      );
+      var boundaries = 0;
+      await expectLater(
+        guarded.verify(generated, (event) async {
+          boundaries++;
+          if (boundaries == 2) throw StateError('Approval withdrawn');
+        }),
+        throwsStateError,
+      );
+      expect(boundaries, 2);
+      expect(operations, isEmpty);
+      await guarded.dispose();
+    },
+  );
+
+  test(
     'actual preview serves only fingerprinted output behind an ephemeral path',
     () async {
       final ready = await host.verify(await generate(), (_) async {});

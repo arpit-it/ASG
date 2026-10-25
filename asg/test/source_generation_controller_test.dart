@@ -52,6 +52,8 @@ final generated = GeneratedProject(
 class FixtureHost implements GenerationHost {
   Completer<GeneratedProject>? generationGate;
   Completer<Uri>? previewGate;
+  Future<void> Function()? afterResolve;
+  final operations = <String>[];
   int generations = 0, verifications = 0;
   bool failVerification = false, disposed = false, server = false;
   @override
@@ -77,17 +79,21 @@ class FixtureHost implements GenerationHost {
     verifications++;
     await progress(project.copy(phase: SourceGenerationPhase.verifying));
     if (failVerification) throw StateError('Missing interpreter');
-    final ready = project.copy(
+    var current = project.copy(steps: const []);
+    for (final operation in ['resolve', 'analyze', 'test', 'build']) {
+      await progress(current.copy(phase: SourceGenerationPhase.verifying));
+      operations.add(operation);
+      current = current.copy(
+        steps: [
+          ...current.steps,
+          GenerationStep(operation: operation, exitCode: 0, output: 'fixture'),
+        ],
+      );
+      if (operation == 'resolve') await afterResolve?.call();
+      await progress(current.copy(phase: SourceGenerationPhase.verifying));
+    }
+    final ready = current.copy(
       phase: SourceGenerationPhase.ready,
-      steps: ['resolve', 'analyze', 'test', 'build']
-          .map(
-            (operation) => GenerationStep(
-              operation: operation,
-              exitCode: 0,
-              output: 'fixture',
-            ),
-          )
-          .toList(),
       outputs: {'index.html': '0' * 64, 'main.dart.js': '0' * 64},
     );
     await progress(ready);
@@ -466,6 +472,65 @@ void main() {
       expect(c.error, contains('Build requires'));
     },
   );
+
+  for (final retry in [false, true]) {
+    for (final change in [
+      'withdraw',
+      'reapprove',
+      'requirements',
+      'prototype',
+      'corrupt',
+    ]) {
+      test(
+        'verification stops after $change during resolve (retry=$retry)',
+        () async {
+          if (retry) expect(await generate(true), isTrue);
+          host.operations.clear();
+          host.afterResolve = () async {
+            final approvals = PlanApprovalStore(store.records);
+            final messages = ConversationStore(store.records).load('p');
+            switch (change) {
+              case 'withdraw':
+                await approvals.save(project, messages, false);
+              case 'reapprove':
+                await approvals.save(project, messages, false);
+                await approvals.save(project, messages, true);
+              case 'requirements':
+                await store.records.setString(
+                  'studio.requirements.v1.p',
+                  '{"version":1,"revision":1,"requirements":[],"tasks":[]}',
+                );
+              case 'prototype':
+                await ApplicationStore(store.records)
+                    .save('p', const ApplicationSnapshot(definition, [], 2));
+              case 'corrupt':
+                await store.records.setString('studio.planApproval.v1.p', '{}');
+            }
+          };
+          expect(
+            await (retry ? c.verifyAgain(approved: true) : generate(true)),
+            isFalse,
+          );
+          expect(host.operations, ['resolve']);
+          final saved = store.load('p')!;
+          expect(saved.phase, SourceGenerationPhase.failed);
+          expect(saved.steps.map((s) => s.operation), ['resolve']);
+          expect(
+            saved.taskStatus(saved.tasks![1], active: false),
+            BuildTaskStatus.blocked,
+          );
+          final reopened = SourceGenerationController(
+            project: project,
+            definition: definition,
+            store: store,
+            host: FixtureHost(),
+          );
+          expect(reopened.result!.toJson(), saved.toJson());
+          reopened.dispose();
+        },
+      );
+    }
+  }
 
   test('corrupt ready records cannot claim verification and snapshots are immutable', () {
     expect(
