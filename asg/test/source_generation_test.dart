@@ -391,6 +391,48 @@ void main() {
     },
   );
 
+  for (final (exitCode, timedOut) in [(0, false), (1, false), (0, true)]) {
+    test(
+      'retains resolve evidence before unsafe metadata (exit=$exitCode timeout=$timedOut)',
+      () async {
+        final prepared = await generate();
+        var calls = 0;
+        GeneratedProject? recorded;
+        host = NativeGenerationHost(
+          loadAsset: assets,
+          runOperation: (project, operation) async {
+            calls++;
+            final target = File('${temp.path}/metadata-target');
+            await target.writeAsString('untrusted');
+            await Link('${project.directory}/pubspec.lock').create(target.path);
+            return GenerationStep(
+              operation: operation,
+              exitCode: exitCode,
+              output: 'actual resolve evidence',
+              timedOut: timedOut,
+            );
+          },
+        );
+        Future<void> progress(GeneratedProject value) async => recorded = value;
+        if (exitCode == 0 && !timedOut) {
+          await expectLater(host.verify(prepared, progress), throwsStateError);
+        } else {
+          expect(
+            (await host.verify(prepared, progress)).phase,
+            SourceGenerationPhase.failed,
+          );
+        }
+        expect(calls, 1);
+        expect(recorded!.steps.single.operation, 'resolve');
+        expect(recorded!.steps.single.exitCode, exitCode);
+        expect(recorded!.steps.single.timedOut, timedOut);
+        expect(recorded!.steps.single.output, 'actual resolve evidence');
+        await expectLater(host.verify(recorded!, progress), throwsStateError);
+        expect(calls, 1);
+      },
+    );
+  }
+
   test('changed dependency metadata blocks later commands and retry', () async {
     final prepared = await generate();
     var calls = 0;

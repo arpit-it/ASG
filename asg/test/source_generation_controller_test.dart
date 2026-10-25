@@ -53,6 +53,7 @@ class FixtureHost implements GenerationHost {
   Completer<GeneratedProject>? generationGate;
   Completer<Uri>? previewGate;
   Future<void> Function()? afterResolve;
+  bool failAfterResolveEvidence = false;
   final operations = <String>[];
   int generations = 0, verifications = 0;
   bool failVerification = false, disposed = false, server = false;
@@ -91,6 +92,9 @@ class FixtureHost implements GenerationHost {
       );
       if (operation == 'resolve') await afterResolve?.call();
       await progress(current.copy(phase: SourceGenerationPhase.verifying));
+      if (operation == 'resolve' && failAfterResolveEvidence) {
+        throw StateError('Linked dependency metadata is not accepted.');
+      }
     }
     final ready = current.copy(
       phase: SourceGenerationPhase.ready,
@@ -531,6 +535,36 @@ void main() {
       );
     }
   }
+
+  test(
+    'post-resolve validation failure retains evidence across reopen',
+    () async {
+      host.failAfterResolveEvidence = true;
+      expect(await generate(true), isFalse);
+      expect(host.operations, ['resolve']);
+      final saved = store.load('p')!;
+      expect(saved.phase, SourceGenerationPhase.failed);
+      expect(saved.steps.single.operation, 'resolve');
+      expect(saved.steps.single.output, 'fixture');
+      expect(
+        saved.taskStatus(saved.tasks!.first, active: false),
+        BuildTaskStatus.passed,
+      );
+      expect(
+        saved.taskStatus(saved.tasks![1], active: false),
+        BuildTaskStatus.blocked,
+      );
+      c.dispose();
+      c = SourceGenerationController(
+        project: project,
+        definition: definition,
+        store: store,
+        host: FixtureHost(),
+      );
+      expect(c.result!.toJson(), saved.toJson());
+      expect(c.result!.error, contains('Linked dependency metadata'));
+    },
+  );
 
   test('corrupt ready records cannot claim verification and snapshots are immutable', () {
     expect(
