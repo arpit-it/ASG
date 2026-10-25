@@ -15,6 +15,7 @@ class PlanApprovalStore {
   static String context(StudioProject project) => jsonEncode(project.toJson());
   String contextFor(StudioProject project) {
     final board = RequirementsStore(records).load(project.id);
+    board.planDocument(project.name);
     final application = ApplicationStore(records).load(project);
     return jsonEncode({
       'project': project.toJson(),

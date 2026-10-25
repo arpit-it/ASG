@@ -171,6 +171,22 @@ class RequirementsBoard {
     return board;
   }
 
+  static const planContextLimit = 12000;
+
+  /// Approval must never bind a draft made from a partial requirements board.
+  String planDocument(String projectName) {
+    final complete = document(projectName);
+    if (complete.length > planContextLimit) {
+      throw StateError(
+        'Plan needs the complete requirements and task board. Its readable '
+        'document is ${complete.length} characters; the current limit '
+        'is $planContextLimit. Shorten requirement descriptions, acceptance '
+        'criteria or task titles in the requirements board, then draft a new Plan.',
+      );
+    }
+    return complete;
+  }
+
   String document(String projectName) {
     final out = StringBuffer(
       '# $projectName — Requirements\n\nRevision $revision\n\n',
