@@ -230,13 +230,13 @@ class _SourceGenerationScreenState extends State<SourceGenerationScreen> {
               if (result.phase == SourceGenerationPhase.verifying &&
                   !controller.busy)
                 const Text(
-                  'The previous run was interrupted. Retry verification of unchanged source; no existing files will be regenerated.',
+                  'The previous run was interrupted. Resume is available only at a confirmed safe boundary; Retry restarts all checks.',
                 ),
               if (result.pendingOperation.isNotEmpty && !controller.busy)
                 Text(
                   '${result.pendingOperation} was marked for dispatch but has no saved result. '
                   'It may have changed files. Retry restarts all checks; '
-                  'automatic resume is unavailable.',
+                  'resume is blocked.',
                   key: const ValueKey('pendingOperationCheckpoint'),
                 ),
               if (result.error.isNotEmpty) Text(result.error),
@@ -277,6 +277,23 @@ class _SourceGenerationScreenState extends State<SourceGenerationScreen> {
                   ),
                   children: [SelectableText(step.output)],
                 ),
+              Text(
+                result.resumeRefusal ?? 'Resume keeps completed results and runs only remaining checks with the saved toolchain. Inputs and approval must still match.',
+                key: const ValueKey('resumeExplanation'),
+              ),
+              OutlinedButton(
+                onPressed:
+                    controller.busy ||
+                        !controller.available ||
+                        !approved ||
+                        result.resumeRefusal != null
+                    ? null
+                    : () => controller.verifyAgain(
+                        approved: approved,
+                        resume: true,
+                      ),
+                child: const Text('Resume remaining checks'),
+              ),
               OutlinedButton(
                 onPressed: controller.busy || !controller.available || !approved
                     ? null

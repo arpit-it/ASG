@@ -244,6 +244,7 @@ class SourceGenerationController extends BaseController {
     required bool approved,
     String? sdk,
     String? python,
+    bool resume = false,
   }) async {
     final current = _result?.copy(
       sdk: sdk == null || sdk.trim().isEmpty ? null : sdk.trim(),
@@ -257,6 +258,14 @@ class SourceGenerationController extends BaseController {
     update();
     var verificationStarted = false;
     try {
+      if (resume &&
+          (current.resumeRefusal != null ||
+              current.sdk != _result?.sdk ||
+              current.python != _result?.python)) {
+        throw StateError(
+          'Resume refused. ${current.resumeRefusal ?? 'Use the saved toolchain unchanged.'}',
+        );
+      }
       final approval = _requirePlan();
       final plan = BuildPlan.parse(
         approval.content,
@@ -280,6 +289,7 @@ class SourceGenerationController extends BaseController {
       final verified = await host.verify(
         current,
         (value) => _verificationProgress(value, approval),
+        resume: resume,
       );
       return !isDisposed &&
           !_stopRequested &&

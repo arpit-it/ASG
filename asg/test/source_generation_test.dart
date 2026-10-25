@@ -108,6 +108,150 @@ void main() {
     await temp.delete(recursive: true);
   });
 
+  for (final prefix in [0, 1, 2, 3]) {
+    test(
+      'reopened safe checkpoint skips successful operations exactly once prefix=$prefix',
+      () async {
+        final generated = await generate();
+        GeneratedProject? saved;
+        final operations = <String>[];
+        final initial = NativeGenerationHost(
+          loadAsset: assets,
+          runOperation: (_, operation) async {
+            operations.add(operation);
+            return GenerationStep(
+              operation: operation,
+              exitCode: 0,
+              output: 'retained',
+            );
+          },
+        );
+        await expectLater(
+          initial.verify(generated, (value) async {
+            saved = GeneratedProject.fromJson(value.toJson());
+            if (value.steps.length == prefix &&
+                value.pendingOperation.isEmpty) {
+              throw StateError('screen closed');
+            }
+          }),
+          throwsStateError,
+        );
+        await initial.dispose();
+        expect(operations, ['resolve', 'analyze', 'test'].take(prefix));
+        expect(saved!.resumeRefusal, isNull);
+        final ready = await host.verify(
+          GeneratedProject.fromJson(saved!.toJson()),
+          (_) async {},
+          resume: true,
+        );
+        expect(ready.phase, SourceGenerationPhase.ready);
+        expect(ready.steps.map((s) => s.operation), [
+          'resolve',
+          'analyze',
+          'test',
+          'build',
+        ]);
+        expect(
+          ready.steps.take(prefix).every((step) => step.output == 'retained'),
+          isTrue,
+        );
+        await expectLater(
+          host.verify(ready, (_) async {}, resume: true),
+          throwsStateError,
+        );
+      },
+    );
+  }
+
+  test(
+    'resume refuses unsafe evidence and changed files before dispatch',
+    () async {
+      final safe = (await generate()).copy(
+        checkpointVersion: 1,
+        phase: SourceGenerationPhase.verifying,
+        steps: const [
+          GenerationStep(operation: 'resolve', exitCode: 0, output: 'saved'),
+        ],
+      );
+      var calls = 0;
+      final guarded = NativeGenerationHost(
+        loadAsset: assets,
+        runOperation: (_, operation) async {
+          calls++;
+          throw StateError('must not dispatch');
+        },
+      );
+      for (final value in [
+        safe.copy(checkpointVersion: 0),
+        safe.copy(checkpointVersion: 2),
+        safe.copy(pendingOperation: 'analyze'),
+        safe.copy(
+          steps: const [
+            GenerationStep(operation: 'resolve', exitCode: 1, output: 'failed'),
+          ],
+        ),
+        safe.copy(
+          steps: const [
+            GenerationStep(operation: 'test', exitCode: 0, output: 'invalid'),
+          ],
+        ),
+      ]) {
+        await expectLater(
+          guarded.verify(value, (_) async {}, resume: true),
+          throwsA(anyOf(isA<StateError>(), isA<FormatException>())),
+        );
+      }
+      final metadata = File('${safe.directory}/pubspec.lock');
+      await metadata.writeAsString('changed');
+      await expectLater(
+        guarded.verify(safe, (_) async {}, resume: true),
+        throwsStateError,
+      );
+      await metadata.delete();
+      await File('${safe.directory}/lib/main.dart').writeAsString('changed');
+      await expectLater(
+        guarded.verify(safe, (_) async {}, resume: true),
+        throwsStateError,
+      );
+      expect(calls, 0);
+      await guarded.dispose();
+    },
+  );
+
+  test('resume still awaits checkpoint persistence and honors Stop before dispatch', () async {
+    final safe = (await generate()).copy(
+      checkpointVersion: 1,
+      phase: SourceGenerationPhase.verifying,
+      steps: const [
+        GenerationStep(operation: 'resolve', exitCode: 0, output: 'saved'),
+      ],
+    );
+    var calls = 0;
+    final guarded = NativeGenerationHost(
+      loadAsset: assets,
+      runOperation: (_, operation) async {
+        calls++;
+        throw StateError('must not dispatch');
+      },
+    );
+    await expectLater(
+      guarded.verify(safe, (value) async {
+        if (value.pendingOperation.isNotEmpty) {
+          throw StateError('storage unavailable');
+        }
+      }, resume: true),
+      throwsStateError,
+    );
+    await expectLater(
+      guarded.verify(safe, (value) async {
+        if (value.pendingOperation.isNotEmpty) guarded.cancelVerification();
+      }, resume: true),
+      throwsStateError,
+    );
+    expect(calls, 0);
+    await guarded.dispose();
+  });
+
   test('dispatch checkpoint must persist before a runner starts', () async {
     final generated = await generate();
     var calls = 0;
@@ -1003,13 +1147,26 @@ void main() {
         sdk: realSdk,
         python: 'python3',
       );
-      final ready = await host.verify(generated, (event) async {
+      GeneratedProject? checkpoint;
+      await expectLater(
+        host.verify(generated, (event) async {
+          checkpoint = GeneratedProject.fromJson(event.toJson());
+          if (event.steps.length == 1 && event.pendingOperation.isEmpty) {
+            throw StateError('simulated close after durable resolve');
+          }
+        }),
+        throwsStateError,
+      );
+      await host.dispose();
+      host = NativeGenerationHost(loadAsset: assets);
+      expect(checkpoint!.steps.single.operation, 'resolve');
+      final ready = await host.verify(checkpoint!, (event) async {
         if (event.steps.isNotEmpty) {
           debugPrint(
             '${event.steps.last.operation}: ${event.steps.last.exitCode}\n${event.steps.last.output}',
           );
         }
-      });
+      }, resume: true);
       expect(ready.phase, SourceGenerationPhase.ready, reason: ready.error);
       final uri = await host.startPreview(ready);
       final client = HttpClient();
