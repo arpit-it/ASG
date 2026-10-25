@@ -25,17 +25,20 @@ class GenerationStep {
     required this.output,
     this.timedOut = false,
     this.outputLimitExceeded = false,
+    this.cancelled = false,
   });
   final String operation, output;
   final int exitCode;
-  final bool timedOut, outputLimitExceeded;
-  bool get succeeded => exitCode == 0 && !timedOut && !outputLimitExceeded;
+  final bool timedOut, outputLimitExceeded, cancelled;
+  bool get succeeded =>
+      exitCode == 0 && !timedOut && !outputLimitExceeded && !cancelled;
   Map<String, Object> toJson() => {
     'operation': operation,
     'exitCode': exitCode,
     'output': output,
     'timedOut': timedOut,
     'outputLimitExceeded': outputLimitExceeded,
+    'cancelled': cancelled,
   };
   factory GenerationStep.fromJson(Map<String, dynamic> json) {
     final step = GenerationStep(
@@ -44,6 +47,7 @@ class GenerationStep {
       output: json['output'] as String,
       timedOut: json['timedOut'] as bool,
       outputLimitExceeded: json['outputLimitExceeded'] as bool? ?? false,
+      cancelled: json['cancelled'] as bool? ?? false,
     );
     if (!['resolve', 'analyze', 'test', 'build'].contains(step.operation) ||
         step.output.length > 65536) {
