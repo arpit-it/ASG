@@ -16,6 +16,7 @@ class SourceReviewScreen extends StatefulWidget {
 class _SourceReviewScreenState extends State<SourceReviewScreen>
     with WidgetsBindingObserver {
   String? taskId;
+  Object? repairConsentProposal;
   final selected = <String>{};
   SourceReviewController get controller => widget.controller;
 
@@ -57,7 +58,7 @@ class _SourceReviewScreenState extends State<SourceReviewScreen>
               'Request a local-model replacement for selected recorded Dart files. '
               'Prepare reviewed replacements in a separate folder with explicit consent. '
               'Candidates are unverified; the working source and preview remain unchanged. '
-              'Verification and promotion require separate explicit actions.',
+              'Verification requires explicit consent; promotion is a separate action.',
             ),
             SelectableText(controller.generated.directory),
             const SizedBox(height: 16),
@@ -190,6 +191,46 @@ class _SourceReviewScreenState extends State<SourceReviewScreen>
                         : controller.prepareCandidate,
                     child: const Text('Prepare unverified candidate'),
                   ),
+                  if (evidence.repairRun != null &&
+                      controller.publishCandidate != null) ...[
+                    const Text(
+                      'Apply repair creates a separate copy of this reviewed diff, '
+                      'then automatically runs offline resolve, analysis, tests and '
+                      'web build in the macOS sandbox. Each command has a 3-minute '
+                      'deadline and 64 KiB output limit. Only the candidate and '
+                      'temporary files may be written; SDK and cached packages '
+                      'are read-only, with loopback networking only. '
+                      'Working output stays active until explicit promotion. '
+                      'This action makes no further model requests.',
+                    ),
+                    CheckboxListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: const Text(
+                        'I approve applying this repair and confined checks',
+                      ),
+                      value: identical(repairConsentProposal, evidence),
+                      onChanged: controller.busy || controller.promoted
+                          ? null
+                          : (value) => setState(() {
+                              repairConsentProposal = value == true
+                                  ? evidence
+                                  : null;
+                            }),
+                    ),
+                    FilledButton(
+                      onPressed:
+                          controller.canApplyRepair &&
+                              identical(repairConsentProposal, evidence)
+                          ? () {
+                              setState(() => repairConsentProposal = null);
+                              controller.applyReviewedRepair(approved: true);
+                            }
+                          : null,
+                      child: const Text(
+                        'Apply reviewed repair and rerun checks',
+                      ),
+                    ),
+                  ],
                 ],
               ],
               for (final change in evidence.proposal.changes) ...[

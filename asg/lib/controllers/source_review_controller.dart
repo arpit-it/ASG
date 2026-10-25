@@ -105,7 +105,24 @@ class SourceReviewController extends BaseController {
     }
   }
 
-  Future<void> prepareCandidate() async {
+  Future<void> prepareCandidate() => _prepareReviewedCandidate();
+
+  bool get canApplyRepair =>
+      !busy &&
+      !promoted &&
+      !isDisposed &&
+      publishCandidate != null &&
+      candidateSupported &&
+      _candidateParent != null &&
+      proposal?.repairRun != null;
+
+  /// Consent covers this reviewed diff and one confined check-graph rerun only.
+  Future<void> applyReviewedRepair({required bool approved}) async {
+    if (!approved || !canApplyRepair) return;
+    await _prepareReviewedCandidate(verifyRepair: true);
+  }
+
+  Future<void> _prepareReviewedCandidate({bool verifyRepair = false}) async {
     if (busy || isDisposed) return;
     final evidence = proposal;
     final parent = _candidateParent;
@@ -165,6 +182,31 @@ class SourceReviewController extends BaseController {
       _candidateParent = null;
       _status =
           'Unverified candidate prepared. Working source and preview retained.';
+      if (verifyRepair) {
+        // Keep the parent operation busy across the copy/dispatch boundary.
+        // Preparation consumed the failure binding; the session now guards the
+        // copied approval, inputs and working record before each actual check.
+        void checkActiveAfterCopy() {
+          if (_cancelled || isDisposed) {
+            throw StateError('Repair verification cancelled.');
+          }
+          _requireWorking();
+          _proposer.requireCurrent(project, candidateEvidence);
+        }
+
+        checkActiveAfterCopy();
+        _status = 'Verifying repaired candidate; working output retained.';
+        update();
+        // Listeners may cancel, withdraw approval or dispose during progress.
+        checkActiveAfterCopy();
+        await _candidateSession!.verify(approved: true);
+        if (!isDisposed) {
+          _status =
+              _candidateSession!.result.phase == SourceGenerationPhase.ready
+              ? 'Repaired candidate checks passed. Explicit promotion is required.'
+              : 'Repaired candidate checks stopped; inspect saved exits. Working output retained.';
+        }
+      }
     } catch (error) {
       if (!isDisposed) {
         _error = 'Candidate preparation did not complete. $error';
