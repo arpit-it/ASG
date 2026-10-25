@@ -8,6 +8,19 @@ class BuildPlan {
   BuildPlan._(this.tasks);
   final List<BuildTask> tasks;
 
+  String get preview => tasks
+      .map((task) {
+        final label = switch (task.operation) {
+          BuildOperation.resolve => 'Resolve dependencies',
+          BuildOperation.analyze => 'Analyze source',
+          BuildOperation.test => 'Run tests',
+          BuildOperation.build => 'Build Flutter web output',
+        };
+        return '${task.id}: $label; depends on: '
+            '${task.dependencies.isEmpty ? 'none' : task.dependencies.join(', ')}';
+      })
+      .join('\n');
+
   static String get starterContract =>
       '```asg-build\n${jsonEncode({'version': 1, 'adapter': 'flutter-starter', 'tasks': BuildTask.starter.map((t) => t.toJson()).toList()})}\n```';
 
