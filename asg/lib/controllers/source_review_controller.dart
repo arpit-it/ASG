@@ -8,6 +8,8 @@ import '../models/source_edit_proposal.dart';
 import '../models/source_generation.dart';
 import '../services/approved_source_proposer.dart';
 import '../services/model_settings_store.dart';
+import '../services/folder_picker.dart';
+import '../services/source_candidate.dart';
 import '../services/plan_approval_store.dart';
 import '../services/record_storage.dart';
 import '../services/requirements_store.dart';
@@ -19,7 +21,16 @@ typedef SourceSnapshotReader = Future<Map<String, String>> Function(
   List<String> paths,
 );
 
-/// Owns a read-only review session. No source writes or execution are exposed.
+typedef SourceCandidatePreparer = Future<GeneratedProject> Function({
+  required StudioProject project,
+  required GeneratedProject generated,
+  required ApprovedSourceProposal evidence,
+  required RecordStorage records,
+  required String parent,
+  required void Function() checkActive,
+});
+
+/// Owns proposal review and explicitly consented, unverified candidate copies.
 class SourceReviewController extends BaseController {
   SourceReviewController({
     required this.project,
@@ -27,8 +38,12 @@ class SourceReviewController extends BaseController {
     required this.records,
     ApprovedSourceProposer? proposer,
     SourceSnapshotReader? readSnapshot,
+    SourceCandidatePreparer? prepareCandidate,
+    FolderPicker? folderPicker,
   }) : _proposer = proposer ?? ApprovedSourceProposer(records),
-       _readSnapshot = readSnapshot ?? readSourceReviewSnapshot {
+       _readSnapshot = readSnapshot ?? readSourceReviewSnapshot,
+       _prepareCandidate = prepareCandidate ?? prepareSourceCandidate,
+       _folderPicker = folderPicker ?? FolderPicker() {
     refreshApproval();
   }
 
@@ -37,6 +52,82 @@ class SourceReviewController extends BaseController {
   final RecordStorage records;
   final ApprovedSourceProposer _proposer;
   final SourceSnapshotReader _readSnapshot;
+  final SourceCandidatePreparer _prepareCandidate;
+  final FolderPicker _folderPicker;
+  bool get candidateSupported => _folderPicker.supported;
+  String? _candidateParent;
+  String? get candidateParent => _candidateParent;
+  GeneratedProject? _candidate;
+  GeneratedProject? get candidate => _candidate;
+
+  Future<void> selectCandidateParent() async {
+    if (_busy || isDisposed || !candidateSupported || proposal == null) return;
+    _busy = true;
+    _error = null;
+    update();
+    try {
+      final parent = await _folderPicker.pick();
+      if (!isDisposed && proposal != null && parent != null) {
+        _candidateParent = parent;
+      }
+    } catch (error) {
+      if (!isDisposed) _error = 'Folder selection failed. $error';
+    } finally {
+      _busy = false;
+      update();
+    }
+  }
+
+  Future<void> prepareCandidate() async {
+    if (_busy || isDisposed) return;
+    final evidence = proposal;
+    final parent = _candidateParent;
+    if (evidence == null || parent == null) {
+      _error = 'Review a current proposal and select a candidate folder first.';
+      update();
+      return;
+    }
+    _busy = true;
+    _cancelled = false;
+    _error = null;
+    _status = 'Preparing separate unverified source candidate…';
+    update();
+    try {
+      void checkActive() {
+        if (_cancelled || isDisposed) {
+          throw StateError('Candidate preparation cancelled.');
+        }
+        _proposer.requireCurrent(project, evidence);
+      }
+
+      final value = await _prepareCandidate(
+        project: project,
+        generated: generated,
+        evidence: evidence,
+        records: records,
+        parent: parent,
+        checkActive: checkActive,
+      );
+      // Retain the path even if cancellation/withdrawal follows the last write.
+      if (!isDisposed) _candidate = value;
+      checkActive();
+      _candidateParent = null;
+      _status =
+          'Unverified candidate prepared. Working source and preview retained.';
+    } catch (error) {
+      if (!isDisposed) {
+        _error = 'Candidate preparation did not complete. $error';
+        _status = 'Candidate preparation failed; working output retained.';
+      }
+    } finally {
+      _busy = false;
+      if (_cancelled) {
+        _status = 'Preparation cancelled; inspect any retained candidate path.';
+      }
+      update();
+    }
+  }
+
   List<DevelopmentTask> _tasks = const [];
   List<DevelopmentTask> get tasks => _tasks;
   List<String> get paths => List.unmodifiable(
@@ -109,6 +200,7 @@ class SourceReviewController extends BaseController {
     _busy = true;
     _cancelled = false;
     _proposal = null;
+    _candidateParent = null;
     _error = null;
     _status = 'Reading recorded source…';
     update();
