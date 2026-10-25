@@ -424,7 +424,9 @@ class NativeGenerationHost implements GenerationHost {
         '--directory',
         project.directory,
         '--timeout',
-        '180',
+        '${project.limits.commandTimeoutSeconds}',
+        '--output-limit',
+        '${project.limits.outputLimitBytes}',
       ], runInShell: false);
       _activeProcess = process;
       if (_closed || _verificationCancelled) {
@@ -435,7 +437,7 @@ class NativeGenerationHost implements GenerationHost {
           .transform(const Utf8Decoder(allowMalformed: true))
           .join();
       final code = await process.exitCode.timeout(
-        const Duration(seconds: 190),
+        Duration(seconds: project.limits.commandTimeoutSeconds + 10),
         onTimeout: () {
           process?.kill(ProcessSignal.sigterm);
           throw const FormatException(

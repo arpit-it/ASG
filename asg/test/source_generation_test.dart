@@ -129,6 +129,10 @@ void main() {
         await expectLater(
           initial.verify(generated, (value) async {
             saved = GeneratedProject.fromJson(value.toJson());
+            expect(
+              value.toJson()['limits'],
+              VerificationLimits.starter.toJson(),
+            );
             if (value.steps.length == prefix &&
                 value.pendingOperation.isEmpty) {
               throw StateError('screen closed');
@@ -145,6 +149,8 @@ void main() {
           resume: true,
         );
         expect(ready.phase, SourceGenerationPhase.ready);
+        expect(ready.steps.length, ready.limits.maximumOperations);
+        expect(ready.limits.toJson(), saved!.limits.toJson());
         expect(ready.steps.map((s) => s.operation), [
           'resolve',
           'analyze',

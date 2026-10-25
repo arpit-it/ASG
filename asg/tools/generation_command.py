@@ -92,6 +92,7 @@ def main():
     parser.add_argument('--sdk', required=True)
     parser.add_argument('--directory', required=True)
     parser.add_argument('--timeout', type=int, default=180)
+    parser.add_argument('--output-limit', type=int, choices=[OUTPUT_LIMIT_BYTES], default=OUTPUT_LIMIT_BYTES)
     args = parser.parse_args()
     if not 1 <= args.timeout <= 300:
         raise ValueError('Invalid deadline')
