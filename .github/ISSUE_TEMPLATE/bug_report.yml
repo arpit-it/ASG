@@ -1,0 +1,18 @@
+name: Bug report
+description: Report a reproducible problem in the current app.
+title: "fix: "
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem and expected behavior
+      description: Include platform, app revision, reproduction steps and actual result. Remove private prompts, paths and credentials.
+    validations:
+      required: true
+  - type: textarea
+    id: validation
+    attributes:
+      label: Acceptance and regression checks
+      description: Describe how the fix can be verified.
+    validations:
+      required: true

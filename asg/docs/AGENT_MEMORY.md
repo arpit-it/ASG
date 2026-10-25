@@ -32,6 +32,8 @@ The user requested hourly feature development based on the requirements. Each ru
 
 ## GitHub workflow update — 25 October 2026
 
-Created publication issue #1, CI/template issue #2, source-generation issue #3 and storage/state issue #4 through the signed-in GitHub session. Baseline review/publication is in progress. GitHub plugin installation was confirmed after the user approved access. Do not assume terminal credentials or gh are configured; verify available tools/auth safely. Do not expose credentials. First post-baseline implementation should address #2 on codex/2-ci-workflow and open a PR. Update this section with final pushed commit/PR evidence.
+Created publication issue #1, CI/template issue #2, source-generation issue #3 and storage/state issue #4 through the signed-in GitHub session. Baseline published to main as 3dc6142174e7d282a40ce70bab8eb8b2ba4c2705; exact tree independently reviewed. Issue #1 is complete. GitHub plugin installation was confirmed after the user approved access. Do not assume terminal credentials or gh are configured; verify available tools/auth safely. Do not expose credentials. First post-baseline implementation should address #2 on codex/2-ci-workflow and open a PR. Update this section with final pushed commit/PR evidence.
 
 Latest schedule policy: prefer existing/in-progress issues, create at most one necessary new issue per run, implement/test/fix/retest to completion, then independent reviewer-agent review and conditional merge. Do not expand the backlog speculatively or bypass failing checks.
+
+Issue #2 adds CI and focused issue/PR templates on codex/2-ci-workflow. CI checks formatting, analysis, default Flutter tests, web build and lightweight Python fixtures. Real inference remains opt-in and must never be inferred from skipped CI tests. See CI.md.

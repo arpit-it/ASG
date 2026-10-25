@@ -63,3 +63,7 @@ Replaced the active 19 GB Torch BF16 runtime with a locally converted 4-bit MLX 
 Added SSE status/token/heartbeat/completion/error transport, bounded inactivity and total time, stream cancellation and single-worker inference. Chat shows persistent thinking/writing/checking/applying loaders and incremental response text, and applies only a complete validated saved update. The normal Discuss screen also streams. Runtime preparation recognizes MLX.
 
 Checks passed: analysis, 48 regular Flutter tests, one opt-in live local-Qwen integration test and 4 actual HTTP/SSE handler tests with a lightweight backend. macOS, Android debug APK and web builds all passed. The real streamed custom-edit test also passed again against the restarted final bridge. See QWEN_STREAMING.md for current runtime instructions and limits.
+
+## CI and GitHub delivery — issue #2
+
+Published the independently reviewed baseline to main as 3dc6142 (issue #1). Added least-privilege CI for formatting, analysis, Flutter tests/web build and Python HTTP/download fixtures, with pinned actions and bounded job timeouts. Added focused bug/feature issue forms and a PR template. Real local Qwen tests remain opt-in. Review and remote CI results are tracked by the issue #2 PR.
