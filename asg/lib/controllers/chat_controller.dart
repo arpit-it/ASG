@@ -160,10 +160,14 @@ class ChatController extends BaseController {
       if (!plan.content.contains('```asg-build')) {
         return 'Advisory Plan only: no executable task contract. Approval does not make this work executable.';
       }
-      final parsed = BuildPlan.parse(plan.content);
+      final parsed = BuildPlan.parse(
+        plan.content,
+        board: RequirementsStore(_store!.records).load(project.id),
+      );
       return 'Validated fixed Flutter starter tasks (not execution results):\n'
           '${parsed.preview}\n'
           'Creates a separate starter from the saved prototype; no custom source edits. '
+          'Board links do not mark tasks complete or verify requirement acceptance. '
           'Build rechecks the current saved Plan approval and requires separate operation consent.';
     } catch (e) {
       return 'Executable tasks unavailable: $e';

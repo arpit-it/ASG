@@ -1,6 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'board_mapped_build_plan_test.dart'
+    show mappedBoard, boardContent, boardContract;
+
+import 'package:asg/models/requirements_board.dart';
+
 import 'package:asg/models/build_plan.dart';
 
 import 'package:asg/models/build_task.dart';
@@ -185,6 +190,86 @@ void main() {
   tearDown(() {
     if (!c.isDisposed) c.dispose();
   });
+
+  for (final manuallyDone in [false, true]) {
+    test(
+      'board provenance persists and changed board refuses retry before host effects done=$manuallyDone',
+      () async {
+        final boards = RequirementsStore(store.records);
+        await boards.save(
+          project.id,
+          boards.load(project.id),
+          mappedBoard(done: manuallyDone),
+        );
+        // This fixture runs canonical order; approve the equivalent graph in that order.
+        final contract = boardContract();
+        final tasks = (contract['tasks'] as List).cast<Map>();
+        contract['tasks'] = [tasks[0], tasks[2], tasks[1], tasks[3]];
+        final plans = [
+          ChatMessage(
+            role: 'assistant',
+            content: boardContent(contract),
+            planContext: PlanApprovalStore(store.records).contextFor(project),
+          ),
+        ];
+        await ConversationStore(store.records).save(project.id, plans);
+        await PlanApprovalStore(store.records).save(project, plans, true);
+        expect(c.planStatus, contains('board task: Tbuild'));
+        expect(await generate(true), isTrue);
+        expect(store.load(project.id)!.tasks!.map((t) => t.boardTaskId), [
+          'Tresolve',
+          'Tanalyze',
+          'Ttest',
+          'Tbuild',
+        ]);
+        expect(
+          boards
+              .load(project.id)
+              .tasks
+              .every((t) => (t.status == TaskStatus.done) == manuallyDone),
+          isTrue,
+        );
+        c.dispose();
+        c = SourceGenerationController(
+          project: project,
+          definition: definition,
+          store: store,
+          host: host,
+        );
+        expect(c.result!.tasks!.last.boardTaskId, 'Tbuild');
+        expect(await c.verifyAgain(approved: true), isTrue);
+        final verifications = host.verifications;
+        host.server = true;
+        final original = boards.load(project.id);
+        await boards.save(
+          project.id,
+          original,
+          RequirementsBoard(requirements: original.requirements),
+        );
+        final durable = store.records.getString('studio.generation.v1.p');
+        expect(await c.verifyAgain(approved: true), isFalse);
+        expect(host.verifications, verifications);
+        expect(host.server, isTrue);
+        expect(store.records.getString('studio.generation.v1.p'), durable);
+        expect(await generate(true), isFalse);
+        expect(host.generations, 1);
+        final invalidPlans = [
+          ChatMessage(
+            role: 'assistant',
+            content: boardContent(contract),
+            planContext: PlanApprovalStore(store.records).contextFor(project),
+          ),
+        ];
+        await ConversationStore(store.records).save(project.id, invalidPlans);
+        await PlanApprovalStore(store.records)
+            .save(project, invalidPlans, true);
+        expect(await generate(true), isFalse);
+        expect(host.generations, 1);
+        expect(host.server, isTrue);
+        expect(store.records.getString('studio.generation.v1.p'), durable);
+      },
+    );
+  }
 
   test('runner failure survives controller failure save and reopen', () async {
     host.throwAnalyze = true;

@@ -3,6 +3,9 @@ library;
 
 import 'dart:async';
 import 'dart:convert';
+
+import 'board_mapped_build_plan_test.dart' show mappedBoard, boardContent;
+
 import 'dart:io';
 
 import 'package:asg/models/build_task.dart';
@@ -398,72 +401,78 @@ void main() {
     });
   }
 
-  test(
-    'mapped adapter order, failure status and retry survive reopen',
-    () async {
-      final content = mappedContent();
-      final plan = BuildPlan.parse(content);
-      final generated = (await generate()).copy(
-        approval: PlanApproval(
-          messageIndex: 0,
-          content: content,
-          context: 'revision 1',
-          approved: true,
-          recordedAt: DateTime.utc(2026),
-        ),
-        tasks: plan.tasks,
-      );
-      final calls = <String>[];
-      final failing = NativeGenerationHost(
-        loadAsset: assets,
-        runOperation: (_, operation) async {
-          calls.add(operation);
-          return GenerationStep(
-            operation: operation,
-            exitCode: operation == 'analyze' ? 1 : 0,
-            output: 'actual fixture',
-          );
-        },
-      );
-      final failed = await failing.verify(generated, (_) async {});
-      expect(calls, ['resolve', 'test', 'analyze']);
-      final reopened = GeneratedProject.fromJson(
-        jsonDecode(jsonEncode(failed.toJson())) as Map<String, dynamic>,
-      );
-      expect(reopened.tasks!.map((t) => t.id), [
-        'deps',
-        'unit',
-        'lint',
-        'release',
-      ]);
-      expect(
-        reopened.tasks!.map((t) => reopened.taskStatus(t, active: false)),
-        [
-          BuildTaskStatus.passed,
-          BuildTaskStatus.passed,
-          BuildTaskStatus.failed,
-          BuildTaskStatus.blocked,
-        ],
-      );
-      final ready = await host.verify(reopened, (_) async {});
-      expect(ready.steps.map((s) => s.operation), [
-        'resolve',
-        'test',
-        'analyze',
-        'build',
-      ]);
-      expect(
-        GeneratedProject.fromJson(
-          jsonDecode(jsonEncode(ready.toJson())) as Map<String, dynamic>,
-        ).phase,
-        SourceGenerationPhase.ready,
-      );
-      final corrupt =
-          jsonDecode(jsonEncode(ready.toJson())) as Map<String, dynamic>;
-      (corrupt['steps'] as List)[1]['operation'] = 'analyze';
-      expect(() => GeneratedProject.fromJson(corrupt), throwsFormatException);
-    },
-  );
+  for (final linked in [false, true]) {
+    test(
+      'mapped adapter order, failure status and retry survive reopen linked=$linked',
+      () async {
+        final content = linked ? boardContent() : mappedContent();
+        final plan = BuildPlan.parse(
+          content,
+          board: linked ? mappedBoard() : null,
+        );
+        final generated = (await generate()).copy(
+          approval: PlanApproval(
+            messageIndex: 0,
+            content: content,
+            context: 'revision 1',
+            approved: true,
+            recordedAt: DateTime.utc(2026),
+          ),
+          tasks: plan.tasks,
+        );
+        final calls = <String>[];
+        final failing = NativeGenerationHost(
+          loadAsset: assets,
+          runOperation: (_, operation) async {
+            calls.add(operation);
+            return GenerationStep(
+              operation: operation,
+              exitCode: operation == 'analyze' ? 1 : 0,
+              output: 'actual fixture',
+            );
+          },
+        );
+        final failed = await failing.verify(generated, (_) async {});
+        expect(calls, ['resolve', 'test', 'analyze']);
+        final reopened = GeneratedProject.fromJson(
+          jsonDecode(jsonEncode(failed.toJson())) as Map<String, dynamic>,
+        );
+        expect(reopened.tasks!.last.boardTaskId, linked ? 'Tbuild' : null);
+        expect(reopened.tasks!.map((t) => t.id), [
+          'deps',
+          'unit',
+          'lint',
+          'release',
+        ]);
+        expect(
+          reopened.tasks!.map((t) => reopened.taskStatus(t, active: false)),
+          [
+            BuildTaskStatus.passed,
+            BuildTaskStatus.passed,
+            BuildTaskStatus.failed,
+            BuildTaskStatus.blocked,
+          ],
+        );
+        final ready = await host.verify(reopened, (_) async {});
+        expect(ready.steps.map((s) => s.operation), [
+          'resolve',
+          'test',
+          'analyze',
+          'build',
+        ]);
+        expect(
+          GeneratedProject.fromJson(
+            jsonDecode(jsonEncode(ready.toJson())) as Map<String, dynamic>,
+          ).phase,
+          SourceGenerationPhase.ready,
+        );
+        final corrupt =
+            jsonDecode(jsonEncode(ready.toJson())) as Map<String, dynamic>;
+        (corrupt['steps'] as List)[1]['operation'] = 'analyze';
+        expect(() => GeneratedProject.fromJson(corrupt), throwsFormatException);
+      },
+    );
+  }
 
   test(
     'partial verification records failure and can retry unchanged source',

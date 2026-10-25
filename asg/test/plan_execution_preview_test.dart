@@ -1,3 +1,5 @@
+import 'board_mapped_build_plan_test.dart' show mappedBoard, boardContent;
+
 import 'package:asg/models/build_plan.dart';
 import 'package:asg/models/chat_message.dart';
 import 'package:asg/models/project.dart';
@@ -25,6 +27,38 @@ Future<void> seed(ControlledRecords records, String content) async {
 }
 
 void main() {
+  test('board mapping preview rereads durable references without marking completion', () async {
+    final records = ControlledRecords();
+    final boards = RequirementsStore(records);
+    await boards.save(project.id, boards.load(project.id), mappedBoard());
+    await seed(records, boardContent());
+    final controller = chat(records, PlanningProvider());
+    addTearDown(controller.dispose);
+    await controller.load();
+    final writes = records.writes;
+    expect(controller.executionPlanPreview, contains('board task: Ttest'));
+    expect(records.writes, writes);
+    expect(
+      boards.load(project.id).tasks.every((t) => t.status == TaskStatus.queued),
+      isTrue,
+    );
+    final original = boards.load(project.id);
+    await boards.save(
+      project.id,
+      original,
+      RequirementsBoard(requirements: original.requirements),
+    );
+    expect(controller.executionPlanPreview, contains('outdated'));
+    await seed(records, boardContent());
+    final fresh = chat(records, PlanningProvider());
+    addTearDown(fresh.dispose);
+    await fresh.load();
+    expect(
+      fresh.executionPlanPreview,
+      contains('Executable tasks unavailable'),
+    );
+  });
+
   test('preview validates saved tasks without approving or writing', () async {
     final records = ControlledRecords();
     await seed(records, BuildPlan.starterContract);

@@ -218,15 +218,18 @@ class _SourceGenerationScreenState extends State<SourceGenerationScreen> {
               if (result.error.isNotEmpty) Text(result.error),
               if (result.tasks != null) ...[
                 const Text('Approved starter task progress'),
+                if (result.tasks!.any((task) => task.boardTaskId != null))
+                  const Text(
+                    'Board links identify planned work. These results do not mark board tasks complete or verify requirement acceptance.',
+                  ),
                 for (final task in result.tasks!)
                   ListTile(
                     title: Text(
                       '${task.id} (${task.operation.name}): ${result.taskStatus(task, active: controller.verifying).name}',
                     ),
                     subtitle: Text(
-                      task.dependencies.isEmpty
-                          ? 'First verification task'
-                          : 'Requires ${task.dependencies.join(', ')}',
+                      '${task.boardTaskId == null ? '' : 'Board task: ${task.boardTaskId}. '}'
+                      '${task.dependencies.isEmpty ? 'First verification task' : 'Requires ${task.dependencies.join(', ')}'}',
                     ),
                   ),
               ] else
