@@ -50,6 +50,8 @@ class BuildPlan {
     if (markers.length != 1 || blocks.length != 1) {
       throw const FormatException(message);
     }
+    late final List<BuildTask> tasks;
+    late final int version;
     try {
       final json = blocks.single.group(1)!;
       final value = jsonDecode(json);
@@ -61,11 +63,9 @@ class BuildPlan {
           value['adapter'] != 'flutter-starter') {
         throw const FormatException(message);
       }
-      final tasks = BuildTask.fromJson(value['tasks']);
-      if (value['version'] == 3 || value['version'] == 4) {
-        if (board == null) throw const FormatException(message);
-        _validateBoardTasks(tasks, board, distinct: value['version'] == 3);
-      } else if (tasks.any((task) => task.boardTaskId != null)) {
+      tasks = BuildTask.fromJson(value['tasks']);
+      version = value['version'] as int;
+      if (version < 3 && tasks.any((task) => task.boardTaskId != null)) {
         throw const FormatException(message);
       }
       if (value['version'] == 1 &&
@@ -73,10 +73,20 @@ class BuildPlan {
               jsonEncode(BuildTask.starter.map((t) => t.toJson()).toList())) {
         throw const FormatException(message);
       }
-      return BuildPlan._(tasks);
     } on FormatException {
       throw const FormatException(message);
     }
+    // Report fixed mapping diagnostics without echoing JSON or project text.
+    if (version >= 3) {
+      if (board == null) {
+        throw const FormatException(
+          'Board task mapping needs the current requirements board. '
+          'Reopen the project and draft a current Plan.',
+        );
+      }
+      _validateBoardTasks(tasks, board, distinct: version == 3);
+    }
+    return BuildPlan._(tasks);
   }
 
   /// Board completion is manual evidence, never permission to skip a command.
@@ -86,15 +96,29 @@ class BuildPlan {
     RequirementsBoard board, {
     required bool distinct,
   }) {
-    board.validate();
+    try {
+      board.validate();
+    } on FormatException {
+      throw const FormatException(
+        'The requirements board is invalid. Correct its tasks and dependencies '
+        'before drafting a new Plan.',
+      );
+    }
     final boardTasks = {for (final task in board.tasks) task.id: task};
     final mapped = <String, Set<String>>{};
     for (final task in tasks) {
       final reference = task.boardTaskId;
-      if (reference == null ||
-          !boardTasks.containsKey(reference) ||
-          (distinct && mapped.containsKey(reference))) {
-        throw const FormatException('Invalid board task mapping.');
+      if (reference == null || !boardTasks.containsKey(reference)) {
+        throw const FormatException(
+          'A mapped board task is missing. Use existing board task IDs for '
+          'every operation in a new Plan.',
+        );
+      }
+      if (distinct && mapped.containsKey(reference)) {
+        throw const FormatException(
+          'Version 3 needs distinct board tasks. Use version 4 when several '
+          'operations belong to the same board task.',
+        );
       }
       (mapped[reference] ??= <String>{}).add(task.id);
     }
@@ -110,7 +134,9 @@ class BuildPlan {
             !prior.containsAll(mapped[dependency]!),
       )) {
         throw const FormatException(
-          'Board prerequisite is not mapped before its dependent.',
+          'A board prerequisite is missing or incomplete in the execution graph. '
+          'Map every prerequisite operation before each dependent operation, '
+          'then review and approve a new Plan.',
         );
       }
       ancestors[task.id] = prior;

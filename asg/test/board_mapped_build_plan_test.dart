@@ -56,6 +56,69 @@ RequirementsBoard sharedBoard({bool done = false}) => RequirementsBoard(
   ],
 );
 void main() {
+  test('mapping refusals explain correction without echoing proposal data', () {
+    String refusal(String content, {RequirementsBoard? board}) {
+      try {
+        BuildPlan.parse(content, board: board);
+        fail('Invalid mapping was accepted');
+      } on FormatException catch (error) {
+        return error.message;
+      }
+    }
+
+    expect(refusal(boardContent()), contains('current requirements board'));
+    final unknown = boardContent().replaceFirst('Ttest', 'PRIVATE_UNKNOWN');
+    final missing = refusal(unknown, board: mappedBoard());
+    expect(missing, contains('A mapped board task is missing'));
+    expect(missing, isNot(contains('PRIVATE_UNKNOWN')));
+    expect(
+      refusal(
+        boardContent({...sharedContract(), 'version': 3}),
+        board: sharedBoard(),
+      ),
+      contains('Use version 4'),
+    );
+    final board = RequirementsBoard(
+      requirements: sharedBoard().requirements,
+      tasks: [
+        DevelopmentTask(
+          id: 'Tprior',
+          requirementId: 'R1',
+          title: 'PRIVATE_TITLE',
+        ),
+        DevelopmentTask(
+          id: 'Tstarter',
+          requirementId: 'R1',
+          title: 'Starter',
+          dependencies: ['Tprior'],
+        ),
+      ],
+    );
+    final prerequisite = refusal(boardContent(sharedContract()), board: board);
+    expect(prerequisite, contains('Map every prerequisite operation'));
+    expect(prerequisite, isNot(contains('PRIVATE_TITLE')));
+    expect(
+      refusal(boardContent(), board: RequirementsBoard(tasks: board.tasks)),
+      contains('requirements board is invalid'),
+    );
+    expect(
+      refusal(
+        boardContent().replaceFirst('flutter-starter', 'PRIVATE_ADAPTER'),
+      ),
+      isNot(contains('PRIVATE_ADAPTER')),
+    );
+    expect(
+      BuildPlan.parse(boardContent(), board: mappedBoard()).tasks.length,
+      4,
+    );
+    expect(
+      BuildPlan.parse(
+        boardContent(sharedContract()),
+        board: sharedBoard(),
+      ).tasks.length,
+      4,
+    );
+  });
   test('shared references require version 4 and preserve every operation', () {
     for (final done in [false, true]) {
       final plan = BuildPlan.parse(

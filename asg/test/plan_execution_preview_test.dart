@@ -55,7 +55,7 @@ void main() {
     await fresh.load();
     expect(
       fresh.executionPlanPreview,
-      contains('Executable tasks unavailable'),
+      contains('A mapped board task is missing.'),
     );
   });
 
