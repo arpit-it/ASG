@@ -292,7 +292,9 @@ class NativeGenerationHost implements GenerationHost {
       if (!result.succeeded) {
         current = current.copy(
           phase: SourceGenerationPhase.failed,
-          error: result.outputLimitExceeded
+          error: result.cancelled
+              ? '$operation was cancelled. Verification stopped.'
+              : result.outputLimitExceeded
               ? '$operation exceeded the 64 KiB output limit. Verification stopped.'
               : '$operation failed. Inspect its output and retry verification after fixing the installed toolchain.',
         );
@@ -405,6 +407,7 @@ class NativeGenerationHost implements GenerationHost {
         output: data['output'] as String,
         timedOut: data['timedOut'] as bool,
         outputLimitExceeded: data['outputLimitExceeded'] as bool,
+        cancelled: data['cancelled'] as bool,
       );
     } finally {
       if (process != null) {

@@ -694,6 +694,34 @@ void main() {
     );
   });
 
+  test(
+    'cancelled operation stops downstream verification and persists evidence',
+    () async {
+      host = NativeGenerationHost(
+        loadAsset: assets,
+        runOperation: (_, operation) async => GenerationStep(
+          operation: operation,
+          exitCode: 0,
+          output: 'bounded',
+          cancelled: true,
+        ),
+      );
+      final generated = await generate();
+      final saved = <GeneratedProject>[];
+      final result = await host.verify(generated, (value) async {
+        saved.add(GeneratedProject.fromJson(value.toJson()));
+      });
+      expect(result.phase, SourceGenerationPhase.failed);
+      expect(result.steps.length, 1);
+      expect(result.error, contains('cancelled'));
+      expect(saved.last.steps.single.cancelled, isTrue);
+      expect(
+        saved.last.taskStatus(BuildTask.starter[1], active: false),
+        BuildTaskStatus.blocked,
+      );
+    },
+  );
+
   for (final (exitCode, timedOut) in [(0, false), (1, false), (0, true)]) {
     test(
       'retains resolve evidence before unsafe metadata (exit=$exitCode timeout=$timedOut)',

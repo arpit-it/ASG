@@ -1,5 +1,7 @@
 import importlib.util
 import os
+import json
+import subprocess
 from pathlib import Path
 import sys
 import tempfile
@@ -20,6 +22,7 @@ class CommandTests(unittest.TestCase):
             self.assertEqual(len(result['output']), 65536)
             self.assertFalse(result['timedOut'])
             self.assertFalse(result['outputLimitExceeded'])
+            self.assertFalse(result['cancelled'])
             result = module.run(sys.executable, ['-c', 'raise SystemExit(7)'], directory, 5)
             self.assertEqual(result['exitCode'], 7)
     def test_output_exhaustion_kills_descendants_and_stops_before_deadline(self):
@@ -60,6 +63,33 @@ class CommandTests(unittest.TestCase):
                 result = module.run(sys.executable, ['-c', 'print("finished")'], directory, 5)
             self.assertEqual(result['exitCode'], 0)
             self.assertIn('finished', result['output'])
+    def test_signal_cancellation_is_explicit_and_kills_descendants(self):
+        with tempfile.TemporaryDirectory() as directory:
+            marker = str(Path(directory) / 'unexpected')
+            descendant = 'import time; from pathlib import Path; time.sleep(1); Path(' + repr(marker) + ').write_text("bad")'
+            child = 'import subprocess,sys,os,signal,time; subprocess.Popen([sys.executable,"-c",' + repr(descendant) + ']); print("started",flush=True); os.kill(os.getppid(),signal.SIGTERM); time.sleep(10)'
+            runner = 'import sys; sys.path.insert(0,' + repr(str(Path(__file__).parent)) + '); import generation_command as g; import json; print(json.dumps(g.run(sys.executable,["-c",' + repr(child) + '],' + repr(directory) + ',5)))'
+            completed = subprocess.run([sys.executable, '-c', runner], capture_output=True, text=True, timeout=8)
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            result = json.loads(completed.stdout)
+            self.assertTrue(result['cancelled'])
+            self.assertFalse(result['timedOut'])
+            self.assertNotEqual(result['exitCode'], 0)
+            self.assertIn('started', result['output'])
+            time.sleep(1.1)
+            self.assertFalse(Path(marker).exists())
+
+    def test_parent_loss_is_cancellation_even_when_child_exits_zero(self):
+        with tempfile.TemporaryDirectory() as directory:
+            ready = Path(directory) / 'ready'
+            child = 'import signal,time,sys; from pathlib import Path; signal.signal(signal.SIGTERM,lambda *_: (print("stopped",flush=True),sys.exit(0))); Path(' + repr(str(ready)) + ').touch(); time.sleep(10)'
+            with mock.patch.object(module.os, 'getppid', side_effect=lambda: 999 if ready.exists() else 123):
+                result = module.run(sys.executable, ['-c', child], directory, 5, parent_pid=123)
+            self.assertTrue(result['cancelled'])
+            self.assertFalse(result['timedOut'])
+            self.assertNotEqual(result['exitCode'], 0)
+            self.assertIn('stopped', result['output'])
+
     def test_operations_are_fixed_and_no_remote_package_install(self):
         self.assertEqual(set(module.OPERATIONS), {'resolve', 'analyze', 'test', 'build'})
         self.assertIn('--offline', module.OPERATIONS['resolve'])
