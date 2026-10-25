@@ -20,3 +20,7 @@ Use the existing Qwen3.5-9B weights converted locally to 4-bit MLX for the activ
 ## Issue #4: transactional repositories
 
 Use Sembast 3.9.0 on native files and sembast_web 2.4.6+1 on IndexedDB behind RecordStorage. This provides transactions on all Flutter targets without a native SQLite/WASM provisioning step. Preserve v1 key payloads and migrate validated records plus completion marker atomically, retaining preferences. Use strict database open to surface corruption rather than reset. Session snapshots preserve synchronous repository reads; concurrent native processes and live multi-tab UI synchronization are outside this increment. See STORAGE.md.
+
+## Issue #3: trusted Flutter web template
+
+Generate one fixed MVC template with validated application/requirements JSON as data, then execute only approved offline Flutter operations through a bounded Python process-group helper. Preserve new-directory exclusivity and source/resolution/output fingerprints. Persist real outcomes and exceptions transactionally. Serve verified web output through an owned token-scoped loopback server, opened explicitly in the browser. This is a macOS-hosted export/verification slice, not arbitrary LLM code execution, native generation, continuous source editing, external deployment or a security sandbox. See GENERATION.md.

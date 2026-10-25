@@ -13,7 +13,7 @@ Use MVC for new application features and files:
 
 Use one controller per feature and split screens into focused view files. Avoid recreating a single large UI file. Keep business rules out of widget callbacks. Preserve existing preference keys and JSON formats unless an explicit migration is implemented.
 
-Future generated Flutter application templates should use the same MVC separation. The source generator is not implemented yet; do not claim that this convention alone generates structured projects. Other framework templates should map these responsibilities to their idiomatic architecture.
+The fixed Flutter web generator uses the same MVC separation; see asg/docs/GENERATION.md for actual supported behavior and safety limits. Do not describe this initial template slice as arbitrary model source synthesis. Other future framework adapters should map these responsibilities idiomatically.
 
 Validate with `flutter analyze`, `flutter test`, and a relevant platform build. Architecture tests in `test/architecture_test.dart` guard core import boundaries. Add controller tests for error handling, persistence ordering, and async disposal when changing workflows.
 

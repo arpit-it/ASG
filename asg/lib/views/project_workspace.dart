@@ -5,6 +5,10 @@ import '../models/generation_event.dart';
 import '../controllers/app_workspace_controller.dart';
 import 'live_application_view.dart';
 import 'generation_status_view.dart';
+import 'source_generation_screen.dart';
+import '../controllers/source_generation_controller.dart';
+import '../services/source_generation_store.dart';
+import '../services/generation_host_factory.dart';
 import '../services/record_storage.dart';
 import '../services/application_store.dart';
 
@@ -83,6 +87,29 @@ class _ProjectWorkspaceState extends State<ProjectWorkspace> {
 
   Future<void> send() async {
     if (await controller.apply(input.text) && mounted) input.clear();
+  }
+
+  Future<void> generateSource() async {
+    if (controller.busy ||
+        controller.savingInteractions ||
+        controller.hasUnsavedInteractions) {
+      return;
+    }
+    final records = controller.records;
+    final definition = controller.definition;
+    if (records == null || definition == null) return;
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => SourceGenerationScreen(
+          controller: SourceGenerationController(
+            project: widget.project,
+            definition: definition,
+            store: SourceGenerationStore(records),
+            host: createGenerationHost(),
+          ),
+        ),
+      ),
+    );
   }
 
   String get phaseLabel => switch (controller.phase) {
@@ -252,6 +279,17 @@ class _ProjectWorkspaceState extends State<ProjectWorkspace> {
                 'Application preview',
                 style: TextStyle(fontSize: 18),
               ),
+            ),
+            IconButton(
+              tooltip: 'Generate Flutter source',
+              onPressed:
+                  controller.busy ||
+                      controller.savingInteractions ||
+                      controller.hasUnsavedInteractions ||
+                      controller.definition == null
+                  ? null
+                  : generateSource,
+              icon: const Icon(Icons.code),
             ),
             Text(
               controller.definition == null

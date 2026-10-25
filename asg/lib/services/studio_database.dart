@@ -4,6 +4,7 @@ import 'package:sembast/sembast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/project.dart';
+import '../models/source_generation.dart';
 import 'application_store.dart';
 import 'conversation_store.dart';
 import 'database_factory.dart';
@@ -113,6 +114,8 @@ class StudioDatabase implements RecordStorage {
           (decoded['revision'] as int) < 1) {
         throw const FormatException('Invalid saved application revision.');
       }
+    } else if (key.startsWith('studio.generation.v1.')) {
+      GeneratedProject.fromJson(decoded as Map<String, dynamic>);
     } else {
       throw FormatException('Unsupported database record: $key');
     }
