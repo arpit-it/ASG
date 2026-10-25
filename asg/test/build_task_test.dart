@@ -108,6 +108,40 @@ void main() {
     );
   });
 
+  test('runner failure identity persists without invented exit evidence', () {
+    final failed = snapshot().copy(
+      phase: SourceGenerationPhase.failed,
+      steps: [step('resolve', 0)],
+      failedOperation: 'analyze',
+      error: 'Unavailable',
+    );
+    final restored = GeneratedProject.fromJson(failed.toJson());
+    expect(restored.steps.length, 1);
+    expect(
+      restored.taskStatus(restored.tasks![0], active: false),
+      BuildTaskStatus.passed,
+    );
+    expect(
+      restored.taskStatus(restored.tasks![1], active: false),
+      BuildTaskStatus.failed,
+    );
+    expect(
+      restored.taskStatus(restored.tasks![2], active: false),
+      BuildTaskStatus.blocked,
+    );
+    for (final invalid in [
+      {...failed.toJson(), 'failedOperation': 'shell'},
+      {...failed.toJson(), 'failedOperation': 'test'},
+      {...failed.toJson(), 'phase': 'verifying'},
+      {
+        ...failed.toJson(),
+        'steps': [step('resolve', 1).toJson()],
+      },
+    ]) {
+      expect(() => GeneratedProject.fromJson(invalid), throwsFormatException);
+    }
+  });
+
   test('downstream results after failed dependency are rejected', () {
     final invalid = snapshot().copy(
       phase: SourceGenerationPhase.failed,

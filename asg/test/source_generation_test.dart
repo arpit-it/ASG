@@ -279,6 +279,63 @@ void main() {
   });
 
   test(
+    'real runner preparation failure records task without an exit',
+    () async {
+      final generated = await generate();
+      final events = <GeneratedProject>[];
+      final native = NativeGenerationHost(loadAsset: assets);
+      await expectLater(
+        native.verify(generated, (event) async => events.add(event)),
+        throwsStateError,
+      );
+      final failed = GeneratedProject.fromJson(events.last.toJson());
+      expect(failed.failedOperation, 'resolve');
+      expect(failed.phase, SourceGenerationPhase.failed);
+      expect(failed.steps, isEmpty);
+      expect(failed.error, contains('already initialized Flutter SDK'));
+      await native.dispose();
+    },
+  );
+
+  test(
+    'runner exceptions identify failed task and retry clears identity',
+    () async {
+      final generated = await generate();
+      final events = <GeneratedProject>[];
+      final operations = <String>[];
+      final failing = NativeGenerationHost(
+        loadAsset: assets,
+        runOperation: (_, operation) async {
+          operations.add(operation);
+          if (operation == 'analyze') {
+            throw StateError('Interpreter unavailable');
+          }
+          return GenerationStep(
+            operation: operation,
+            exitCode: 0,
+            output: 'actual',
+          );
+        },
+      );
+      await expectLater(
+        failing.verify(generated, (event) async => events.add(event)),
+        throwsStateError,
+      );
+      final failed = GeneratedProject.fromJson(events.last.toJson());
+      expect(operations, ['resolve', 'analyze']);
+      expect(failed.phase, SourceGenerationPhase.failed);
+      expect(failed.failedOperation, 'analyze');
+      expect(failed.steps.map((step) => step.operation), ['resolve']);
+      expect(failed.error, contains('Interpreter unavailable'));
+      final ready = await host.verify(failed, (event) async {
+        expect(event.failedOperation, isEmpty);
+      });
+      expect(ready.phase, SourceGenerationPhase.ready);
+      await failing.dispose();
+    },
+  );
+
+  test(
     'partial verification records failure and can retry unchanged source',
     () async {
       final generated = (await generate()).copy(

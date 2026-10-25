@@ -47,6 +47,7 @@ class GeneratedProject {
     List<GenerationStep> steps = const [],
     this.phase = SourceGenerationPhase.generated,
     this.error = '',
+    this.failedOperation = '',
     this.approval,
     List<BuildTask>? tasks,
   }) : sources = Map.unmodifiable(sources),
@@ -61,6 +62,9 @@ class GeneratedProject {
     }
   }
   final String directory, sdk, python, error;
+
+  /// A task whose runner threw; no command exit result is implied.
+  final String failedOperation;
   final PlanApproval? approval;
   final List<BuildTask>? tasks;
 
@@ -72,6 +76,7 @@ class GeneratedProject {
           ? BuildTaskStatus.passed
           : BuildTaskStatus.failed;
     }
+    if (task.operation.name == failedOperation) return BuildTaskStatus.failed;
     if (steps.any((s) => s.exitCode != 0 || s.timedOut) ||
         phase == SourceGenerationPhase.failed) {
       return BuildTaskStatus.blocked;
@@ -90,6 +95,7 @@ class GeneratedProject {
     List<BuildTask>? tasks,
     String? sdk,
     String? python,
+    String? failedOperation,
     List<GenerationStep>? steps,
     Map<String, String>? outputs,
     Map<String, String>? resolution,
@@ -107,6 +113,7 @@ class GeneratedProject {
     steps: steps ?? this.steps,
     phase: phase ?? this.phase,
     error: error,
+    failedOperation: failedOperation ?? this.failedOperation,
   );
   Map<String, Object> toJson() => {
     'directory': directory,
@@ -118,6 +125,7 @@ class GeneratedProject {
     'steps': steps.map((s) => s.toJson()).toList(),
     'phase': phase.name,
     'error': error,
+    if (failedOperation.isNotEmpty) 'failedOperation': failedOperation,
     if (approval != null) 'approval': approval!.toJson(),
     if (tasks != null) 'tasks': tasks!.map((t) => t.toJson()).toList(),
   };
@@ -146,6 +154,7 @@ class GeneratedProject {
           .toList(),
       phase: SourceGenerationPhase.values.byName(json['phase'] as String),
       error: json['error'] as String,
+      failedOperation: json['failedOperation'] as String? ?? '',
     );
     if ((result.approval != null && !result.approval!.approved) ||
         result.directory.isEmpty ||
@@ -175,6 +184,13 @@ class GeneratedProject {
                   result.steps[i - 1].timedOut))) {
         throw const FormatException('Invalid verification history order.');
       }
+    }
+    if (result.failedOperation.isNotEmpty &&
+        (result.phase != SourceGenerationPhase.failed ||
+            result.steps.length >= operations.length ||
+            operations[result.steps.length] != result.failedOperation ||
+            result.steps.any((step) => step.exitCode != 0 || step.timedOut))) {
+      throw const FormatException('Invalid failed operation identity.');
     }
     if (result.phase == SourceGenerationPhase.ready &&
         (result.steps.length != 4 ||
