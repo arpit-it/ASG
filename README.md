@@ -11,6 +11,7 @@ The long-term goal is to generate, build, test, run and maintain many types of s
 - Supported instructions update titles, themes and prototype elements such as tasks, counters, notes and buttons. Simple commands run locally; custom edits use the configured model. Edits validate and save before refreshing the preview, preserving the previous version on failure.
 - Chat streams response text and displays thinking, writing, checking and applying progress. Cancellation is available before an accepted revision is saved.
 - The upper-right runtime control supports downloaded model folders or explicit public repository downloads on macOS, runtime readiness checks and connection settings.
+- **Edit project details** revises a saved project's name and requirements. The running app and chat stay intact; future exports use the revised requirements and earlier exports show as outdated. Change the app itself through chat.
 - On macOS, **Generate Flutter source** exports a fixed MVC starter into a new folder, runs bounded offline analysis/tests/web build, and serves the actual compiled app through an explicit browser preview. See [source generation](asg/docs/GENERATION.md) for setup, approval, recovery and limits.
 - Qwen3.5-9B has been verified locally with a 4-bit MLX conversion on Apple Silicon. Model weights and Python environments are kept outside Git.
 

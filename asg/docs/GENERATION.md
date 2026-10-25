@@ -45,3 +45,7 @@ python3 -B tools/test_generation_command.py
 ```
 
 CI runs the real generation test after warming the SDK/cache with the main app's checks/web build. The Qwen inference test remains separately opt-in; generation uses the current validated definition and does not invoke the model.
+
+## Editing project requirements
+
+The workspace's **Edit project details** action updates the saved name and requirements for future exports. It preserves project identity, platform/type/location and the current prototype/chat/revision. A starter that has never been saved is persisted before metadata changes, so restarting does not regenerate it from revised requirements. Failed writes retain input for retry; stale, missing or duplicated project records require reopening details. Existing exports remain immutable and compare as outdated when their requirements fingerprint differs. Change the actual prototype through chat, then export into a new folder.

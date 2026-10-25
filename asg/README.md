@@ -28,3 +28,5 @@ Platform runners cover Android, iOS, web, macOS, Windows and Linux. Managed mode
 - [Git workflow](docs/GIT_WORKFLOW.md), [security](docs/SECURITY.md) and [durable project memory](docs/AGENT_MEMORY.md)
 
 Run formatting, analysis, tests and a relevant build before publishing implementation changes. New work uses an issue, a separate branch and an independently reviewed PR.
+
+Use **Edit project details** in the workspace toolbar to revise the current project's name and requirements. Saving preserves the current app and conversation across restart; chat changes the prototype. Future source exports include the revised requirements, and existing exports are labeled outdated. The editor waits for active work and preview saves to finish.

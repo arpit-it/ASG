@@ -105,15 +105,7 @@ class ProjectWizardController extends BaseController {
     );
   }
 
-  static String? validateName(String? name) {
-    if (name == null || name.trim().isEmpty) return 'Enter a project name';
-    if (name.contains('/') ||
-        name.contains('\\') ||
-        name.runes.any((r) => r < 32)) {
-      return 'Use a name without path separators';
-    }
-    return null;
-  }
+  static String? validateName(String? name) => StudioProject.validateName(name);
 
   void selectType(String value) {
     type = value;

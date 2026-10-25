@@ -178,6 +178,16 @@ void main() {
       isNull,
     );
     expect(
+      tester
+          .widget<IconButton>(
+            find.byWidgetPredicate(
+              (w) => w is IconButton && w.tooltip == 'Edit project details',
+            ),
+          )
+          .onPressed,
+      isNull,
+    );
+    expect(
       find.byWidgetPredicate((w) => w is AbsorbPointer && w.absorbing),
       findsWidgets,
     );

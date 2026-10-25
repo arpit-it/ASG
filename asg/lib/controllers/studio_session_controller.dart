@@ -37,6 +37,17 @@ class StudioSessionController extends BaseController {
     }
   }
 
+  void refreshCurrent() {
+    if (_busy || isDisposed || _current == null) return;
+    try {
+      _current = store.load().where((p) => p.id == _current!.id).single;
+      _error = null;
+    } catch (e) {
+      _error = 'Project details could not be refreshed: $e';
+    }
+    update();
+  }
+
   Future<void> select(StudioProject project) async {
     if (_busy || isDisposed) return;
     _busy = true;
