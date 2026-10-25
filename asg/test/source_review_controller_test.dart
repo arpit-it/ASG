@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:asg/controllers/source_review_controller.dart';
 import 'package:asg/models/source_generation.dart';
 import 'package:asg/services/plan_approval_store.dart';
+import 'package:asg/services/folder_picker.dart';
 import 'package:asg/services/conversation_store.dart';
 import 'package:asg/views/source_review_screen.dart';
 import 'package:flutter/material.dart';
@@ -13,28 +14,39 @@ import 'approved_source_proposer_test.dart'
 import 'planning_conversation_test.dart' show ControlledRecords, project, tick;
 import 'source_edit_proposer_test.dart' show FakeProvider;
 
+class CandidateFolderPicker extends FolderPicker {
+  @override
+  bool get supported => true;
+  @override
+  Future<String?> pick() async => '/candidates';
+}
+
 void main() {
   late ControlledRecords records;
   late FakeProvider provider;
   late SourceReviewController controller;
   var reads = 0;
-  SourceReviewController create({Completer<Map<String, String>>? capture}) =>
-      SourceReviewController(
-        project: project,
-        generated: GeneratedProject(
-          directory: '/saved',
-          sdk: '',
-          python: '',
-          sources: {'lib/main.dart': 'hash'},
-        ),
-        records: records,
-        proposer: serviceFor(records, provider),
-        readSnapshot: (_, paths) async {
-          reads++;
-          expect(paths, ['lib/main.dart']);
-          return capture == null ? originals : capture.future;
-        },
-      );
+  SourceReviewController create({
+    Completer<Map<String, String>>? capture,
+    SourceCandidatePreparer? prepare,
+  }) => SourceReviewController(
+    project: project,
+    generated: GeneratedProject(
+      directory: '/saved',
+      sdk: '',
+      python: '',
+      sources: {'lib/main.dart': 'hash'},
+    ),
+    records: records,
+    prepareCandidate: prepare,
+    folderPicker: CandidateFolderPicker(),
+    proposer: serviceFor(records, provider),
+    readSnapshot: (_, paths) async {
+      reads++;
+      expect(paths, ['lib/main.dart']);
+      return capture == null ? originals : capture.future;
+    },
+  );
   setUp(() async {
     records = ControlledRecords();
     await seed(records);
@@ -45,6 +57,133 @@ void main() {
   tearDown(() {
     if (!controller.isDisposed) controller.dispose();
   });
+
+  test(
+    'candidate consent, duplicate guard, cancellation and retained output',
+    () async {
+      controller.dispose();
+      final done = Completer<GeneratedProject>();
+      var calls = 0;
+      controller = create(
+        prepare:
+            ({
+              required project,
+              required generated,
+              required evidence,
+              required records,
+              required parent,
+              required checkActive,
+            }) async {
+              calls++;
+              expect(parent, '/candidates');
+              checkActive();
+              return done.future;
+            },
+      );
+      await controller.prepareCandidate();
+      expect(calls, 0);
+      final request = controller.request('Tanalyze', ['lib/main.dart']);
+      await tick();
+      provider.stream.add(response());
+      await provider.stream.close();
+      await request;
+      await controller.prepareCandidate();
+      expect(calls, 0);
+      await controller.selectCandidateParent();
+      final saved = controller.generated;
+      final writes = records.writes;
+      final pending = controller.prepareCandidate();
+      await controller.prepareCandidate();
+      expect(calls, 1);
+      await controller.cancel();
+      final candidate = GeneratedProject(
+        directory: '/candidates/new',
+        sdk: '',
+        python: '',
+        sources: {},
+      );
+      done.complete(candidate);
+      await pending;
+      expect(controller.candidate, same(candidate));
+      expect(controller.generated, same(saved));
+      expect(records.writes, writes);
+      expect(controller.error, contains('did not complete'));
+      expect(controller.status, contains('cancelled'));
+    },
+  );
+
+  test(
+    'candidate success, failure, withdrawal and disposal are truthful',
+    () async {
+      for (final outcome in ['success', 'failure', 'withdraw', 'dispose']) {
+        controller.dispose();
+        records = ControlledRecords();
+        await seed(records);
+        provider = FakeProvider();
+        final done = Completer<GeneratedProject>();
+        controller = create(
+          prepare: ({
+            required project,
+            required generated,
+            required evidence,
+            required records,
+            required parent,
+            required checkActive,
+          }) => done.future,
+        );
+        final request = controller.request('Tanalyze', ['lib/main.dart']);
+        await tick();
+        provider.stream.add(response());
+        await provider.stream.close();
+        await request;
+        await controller.selectCandidateParent();
+        final pending = controller.prepareCandidate();
+        var updates = 0;
+        controller.addListener(() => updates++);
+        if (outcome == 'withdraw') {
+          await PlanApprovalStore(
+            records,
+          ).save(project, ConversationStore(records).load(project.id), false);
+        }
+        if (outcome == 'dispose') controller.dispose();
+        if (outcome == 'failure') {
+          done.completeError(
+            StateError('Retained partial candidate: /partial'),
+          );
+        } else {
+          done.complete(
+            GeneratedProject(
+              directory: '/new',
+              sdk: '',
+              python: '',
+              sources: {},
+            ),
+          );
+        }
+        await pending;
+        expect(controller.busy, isFalse);
+        if (outcome == 'success') {
+          expect(controller.candidateParent, isNull);
+          expect(controller.status, contains('Unverified candidate prepared'));
+        } else if (outcome == 'failure') {
+          expect(controller.error, contains('/partial'));
+          expect(controller.status, contains('failed'));
+        } else if (outcome == 'withdraw') {
+          expect(controller.error, contains('did not complete'));
+          expect(controller.candidate!.directory, '/new');
+          expect(controller.proposal, isNull);
+        } else {
+          expect(updates, 0);
+          expect(controller.candidate, isNull);
+        }
+        if (outcome == 'withdraw') {
+          final error = controller.error;
+          await controller.prepareCandidate();
+          expect(controller.error, isNot(error));
+        }
+      }
+    },
+  );
 
   test('request binds selected files and task without durable writes; stale evidence hides', () async {
     final writes = records.writes;
@@ -154,6 +293,26 @@ void main() {
   testWidgets(
     'narrow enlarged-text review shows full originals and replacement',
     (tester) async {
+      controller.dispose();
+      controller = create(
+        prepare:
+            ({
+              required project,
+              required generated,
+              required evidence,
+              required records,
+              required parent,
+              required checkActive,
+            }) async {
+              checkActive();
+              return GeneratedProject(
+                directory: '/candidates/widget',
+                sdk: '',
+                python: '',
+                sources: {},
+              );
+            },
+      );
       tester.view.resetPhysicalSize();
       tester.view.physicalSize = const Size(320, 900);
       tester.view.devicePixelRatio = 1;
@@ -174,6 +333,8 @@ void main() {
         200,
         scrollable: find.byType(Scrollable).first,
       );
+      await tester.ensureVisible(find.text('Tanalyze: analyze'));
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Tanalyze: analyze'));
       await tester.pump();
       await tester.scrollUntilVisible(
@@ -181,6 +342,8 @@ void main() {
         200,
         scrollable: find.byType(Scrollable).first,
       );
+      await tester.ensureVisible(find.text('lib/main.dart'));
+      await tester.pumpAndSettle();
       await tester.tap(find.text('lib/main.dart'));
       await tester.pump();
       await tester.scrollUntilVisible(
@@ -188,6 +351,8 @@ void main() {
         200,
         scrollable: find.byType(Scrollable).first,
       );
+      await tester.ensureVisible(find.text('Request source proposal'));
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Request source proposal'));
       await tester.pump();
       await tester.pump();
@@ -195,6 +360,32 @@ void main() {
       provider.stream.add(response());
       unawaited(provider.stream.close());
       await tester.pumpAndSettle();
+      expect(find.text('Prepare unverified candidate'), findsNothing);
+      await tester.scrollUntilVisible(
+        find.text('Select candidate parent folder'),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.ensureVisible(find.text('Select candidate parent folder'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Select candidate parent folder'));
+      await tester.pumpAndSettle();
+      await tester.scrollUntilVisible(
+        find.text('Prepare unverified candidate'),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.ensureVisible(find.text('Prepare unverified candidate'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Prepare unverified candidate'));
+      await tester.pumpAndSettle();
+      expect(controller.candidate!.directory, '/candidates/widget');
+      await tester.scrollUntilVisible(
+        find.text('/candidates/widget'),
+        -200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(find.text('/candidates/widget'), findsOneWidget);
       await tester.scrollUntilVisible(
         find.text('Line changes'),
         200,

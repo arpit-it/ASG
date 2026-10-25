@@ -50,8 +50,9 @@ class _SourceReviewScreenState extends State<SourceReviewScreen>
         children: [
           const Text(
             'Request a local-model replacement for selected recorded Dart files. '
-            'Review only: source and the saved build remain unchanged. '
-            'Applying and verifying proposed source is not available yet.',
+            'Prepare reviewed replacements in a separate folder with explicit consent. '
+            'Candidates are unverified; the working source and preview remain unchanged. '
+            'Candidate execution and promotion are not available yet.',
           ),
           SelectableText(controller.generated.directory),
           const SizedBox(height: 16),
@@ -101,6 +102,12 @@ class _SourceReviewScreenState extends State<SourceReviewScreen>
           ],
           Text(controller.status),
           if (controller.error != null) SelectableText(controller.error!),
+          if (controller.candidate != null) ...[
+            const Text(
+              'Retained unverified candidate (not saved as working output)',
+            ),
+            SelectableText(controller.candidate!.directory),
+          ],
           if (controller.stale)
             const Text('Approval changed. Request a new proposal.'),
           if (!controller.busy)
@@ -117,6 +124,30 @@ class _SourceReviewScreenState extends State<SourceReviewScreen>
               'Approved ${evidence.approval.recordedAt.toUtc().toIso8601String()}',
             ),
             SelectableText(evidence.proposal.summary),
+            if (!controller.candidateSupported)
+              const Text('Candidate preparation requires a native filesystem.')
+            else ...[
+              TextButton(
+                onPressed: controller.busy
+                    ? null
+                    : controller.selectCandidateParent,
+                child: const Text('Select candidate parent folder'),
+              ),
+              if (controller.candidateParent != null) ...[
+                SelectableText(controller.candidateParent!),
+                const Text(
+                  'Prepare creates a new subfolder here containing the reviewed '
+                  'replacements and recorded source. It does not run code. '
+                  'Failed or cancelled copies may remain for inspection.',
+                ),
+                FilledButton(
+                  onPressed: controller.busy
+                      ? null
+                      : controller.prepareCandidate,
+                  child: const Text('Prepare unverified candidate'),
+                ),
+              ],
+            ],
             for (final change in evidence.proposal.changes) ...[
               const Divider(),
               SelectableText(
