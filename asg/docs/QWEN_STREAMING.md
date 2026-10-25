@@ -58,3 +58,13 @@ python3 -B tools/test_qwen_streaming_server.py
 Tests cover partial UTF-8/SSE packets, token arrival before completion, timeouts, truncation/EOF, escaped summary text, visible phases, cancellation and validation-before-preview-refresh. See PROGRESS.md for build results.
 
 References: [MLX LM](https://github.com/ml-explore/mlx-lm) and the model's local Apache-2.0 licensing records described in LOCAL_QWEN.md.
+
+## Discuss and Plan drafts
+
+From the workspace Chat header, choose **Discuss and plan**, then **Discuss** or **Plan**. This conversation is saved separately from application-edit chat. Plan asks for requirements, feasibility, tasks, acceptance criteria and risks; saved requests and replies carry Plan labels and replies remain explicitly unapproved. Switching back to Discuss changes the next prompt; reopening defaults to Discuss and retains history. Mode selection is locked while a request is active. Neither conversational mode has application, filesystem or command tools, and typing an approval cannot execute a plan. Plans are model-written prose, not a validated task schema or a working approval/build engine. The conversation uses up to 1536 output tokens within the existing runtime's limits; truncated replies remain errors.
+
+Opt-in real planning verification (run alone, with the existing local runtime):
+
+```sh
+flutter test test/planning_conversation_test.dart --dart-define=ASG_REAL_INFERENCE=true --plain-name 'real local Qwen planning'
+```

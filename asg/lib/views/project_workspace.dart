@@ -4,6 +4,8 @@ import '../models/project.dart';
 import '../models/generation_event.dart';
 import '../controllers/app_workspace_controller.dart';
 import 'live_application_view.dart';
+import 'model_chat.dart';
+import '../services/conversation_store.dart';
 import 'generation_status_view.dart';
 import 'source_generation_screen.dart';
 import '../controllers/source_generation_controller.dart';
@@ -89,6 +91,24 @@ class _ProjectWorkspaceState extends State<ProjectWorkspace> {
     if (await controller.apply(input.text) && mounted) input.clear();
   }
 
+  Future<void> discussAndPlan() async {
+    final records = controller.records;
+    if (records == null ||
+        controller.busy ||
+        controller.savingInteractions ||
+        controller.hasUnsavedInteractions) {
+      return;
+    }
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => ModelChat(
+          project: widget.project,
+          openStore: () async => ConversationStore(records),
+        ),
+      ),
+    );
+  }
+
   Future<void> generateSource() async {
     if (controller.busy ||
         controller.savingInteractions ||
@@ -124,11 +144,28 @@ class _ProjectWorkspaceState extends State<ProjectWorkspace> {
   Widget chat() => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      const Padding(
-        padding: EdgeInsets.all(16),
-        child: Text(
-          'Chat',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+      Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            const Expanded(
+              child: Text(
+                'Chat',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+              ),
+            ),
+            IconButton(
+              tooltip: 'Discuss and plan',
+              onPressed:
+                  controller.records == null ||
+                      controller.busy ||
+                      controller.savingInteractions ||
+                      controller.hasUnsavedInteractions
+                  ? null
+                  : discussAndPlan,
+              icon: const Icon(Icons.forum_outlined),
+            ),
+          ],
         ),
       ),
       Expanded(
