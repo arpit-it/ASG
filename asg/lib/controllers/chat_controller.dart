@@ -40,7 +40,7 @@ class ChatController extends BaseController {
 
   bool cancelled = false;
   void cancelGeneration() {
-    if (!busy || isDisposed) return;
+    if (!busy || isDisposed || phase == GenerationPhase.applying) return;
     cancelled = true;
     phase = GenerationPhase.cancelling;
     _provider?.cancel();
@@ -126,6 +126,8 @@ class ChatController extends BaseController {
           content: requestMode.labelResponse(result),
         ),
       ];
+      phase = GenerationPhase.applying;
+      update();
       await _store!.save(project.id, completed);
       if (!isDisposed) _messages = completed;
     } catch (e) {

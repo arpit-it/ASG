@@ -17,8 +17,10 @@ class GenerationStatusView extends StatelessWidget {
     super.key,
     required this.phase,
     required this.onStop,
+    this.label,
   });
   final GenerationPhase phase;
+  final String? label;
   final VoidCallback onStop;
   @override
   Widget build(BuildContext context) => Padding(
@@ -33,7 +35,7 @@ class GenerationStatusView extends StatelessWidget {
         const SizedBox(width: 12),
         Expanded(
           child: Text(
-            generationPhaseLabel(phase),
+            label ?? generationPhaseLabel(phase),
             style: const TextStyle(color: Colors.white70),
           ),
         ),

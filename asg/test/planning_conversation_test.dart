@@ -383,4 +383,117 @@ void main() {
     expect(records.writes, 0);
     expect(tester.takeException(), isNull);
   });
+  for (final finalSave in [false, true]) {
+    testWidgets(
+      'Back waits for ${finalSave ? 'final response' : 'initial request'} commit and reopen retains it',
+      (tester) async {
+        final records = ControlledRecords();
+        final provider = PlanningProvider();
+        ChatController? active;
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Builder(
+              builder: (context) => TextButton(
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) {
+                      active = chat(records, provider);
+                      return ModelChat(project: project, controller: active);
+                    },
+                  ),
+                ),
+                child: const Text('Open conversation'),
+              ),
+            ),
+          ),
+        );
+        await tester.tap(find.text('Open conversation'));
+        await tester.pumpAndSettle();
+        active!.selectMode(ConversationMode.plan);
+        if (!finalSave) records.gate = Completer<void>();
+        final sending = active!.send('Keep this plan');
+        await tester.pump();
+        if (finalSave) {
+          records.gate = Completer<void>();
+          provider.events.add(
+            const GenerationEvent.text('Requirements: preserved'),
+          );
+          unawaited(provider.events.close());
+          await tester.pump();
+          expect(active!.phase, GenerationPhase.applying);
+          expect(find.text('Saving response…'), findsWidgets);
+          active!.cancelGeneration();
+          expect(active!.cancelled, false);
+        }
+        final back = tester.widget<IconButton>(
+          find.byWidgetPredicate(
+            (widget) => widget is IconButton && widget.tooltip == 'Back',
+          ),
+        );
+        expect(back.onPressed, isNull);
+        await Navigator.of(tester.element(find.byType(ModelChat))).maybePop();
+        await tester.pump();
+        expect(find.byType(ModelChat), findsOneWidget);
+        records.gate!.complete();
+        await tester.pump();
+        if (!finalSave) {
+          provider.events.add(
+            const GenerationEvent.text('Requirements: preserved'),
+          );
+          unawaited(provider.events.close());
+        }
+        await tester.pumpAndSettle();
+        expect(await sending, true);
+        expect(active!.messages, hasLength(2));
+        await tester.pageBack();
+        await tester.pumpAndSettle();
+        expect(find.text('Open conversation'), findsOneWidget);
+        await tester.tap(find.text('Open conversation'));
+        await tester.pumpAndSettle();
+        expect(active!.messages, hasLength(2));
+        expect(
+          active!.messages.last.content,
+          contains('Requirements: preserved'),
+        );
+        expect(active!.mode, ConversationMode.discuss);
+        expect(records.writes, 2);
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
+
+  testWidgets(
+    'Plan scrolls on a small screen with enlarged text and keyboard',
+    (tester) async {
+      tester.view.physicalSize = const Size(320, 640);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final controller = chat(ControlledRecords(), PlanningProvider());
+      await tester.pumpWidget(
+        MaterialApp(
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(context).copyWith(
+              textScaler: TextScaler.linear(1.5),
+              viewInsets: const EdgeInsets.only(bottom: 250),
+            ),
+            child: child!,
+          ),
+          home: ModelChat(project: project, controller: controller),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Plan'));
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+      await tester.ensureVisible(find.byType(TextField));
+      await tester.enterText(find.byType(TextField), 'A short plan');
+      await tester.pump();
+      expect(
+        tester.widget<TextField>(find.byType(TextField)).controller!.text,
+        'A short plan',
+      );
+      expect(tester.takeException(), isNull);
+    },
+  );
 }
