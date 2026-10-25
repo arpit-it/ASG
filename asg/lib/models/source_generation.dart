@@ -1,3 +1,5 @@
+enum GeneratedSnapshotStatus { none, current, outdated, unknown }
+
 enum SourceGenerationPhase { generated, verifying, ready, failed }
 
 class GenerationStep {

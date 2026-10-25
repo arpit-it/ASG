@@ -4,6 +4,7 @@ import '../models/app_definition.dart';
 import '../models/project.dart';
 import '../models/source_generation.dart';
 import '../services/generation_host.dart';
+import '../services/generation_input.dart';
 import '../services/folder_picker.dart';
 import '../services/source_generation_store.dart';
 import '../services/runtime_setup_store.dart';
@@ -17,11 +18,12 @@ class SourceGenerationController extends BaseController {
     required this.host,
   }) {
     try {
+      _input = GenerationInput(project, definition);
       _result = store.load(project.id);
       _initialPython = RuntimeSetupStore(store.records).load().python;
     } catch (e) {
       _error =
-          'Generation settings or history could not be read. It has not been overwritten. $e';
+          'Generation inputs, settings or history could not be read. It has not been overwritten. $e';
       _historyInvalid = true;
     }
   }
@@ -29,6 +31,9 @@ class SourceGenerationController extends BaseController {
   final AppDefinition definition;
   final SourceGenerationStore store;
   final GenerationHost host;
+  GenerationInput? _input;
+  GeneratedSnapshotStatus get snapshotStatus =>
+      _input?.compare(_result) ?? GeneratedSnapshotStatus.unknown;
   GeneratedProject? _result;
   GeneratedProject? get result => _result;
   String _initialPython = 'python3';

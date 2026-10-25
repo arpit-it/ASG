@@ -71,6 +71,17 @@ class _SourceGenerationScreenState extends State<SourceGenerationScreen> {
   @override
   Widget build(BuildContext context) {
     final result = controller.result;
+    final snapshotStatus = controller.snapshotStatus;
+    final previewLabel = switch (snapshotStatus) {
+      GeneratedSnapshotStatus.outdated => 'Preview earlier generated build',
+      GeneratedSnapshotStatus.unknown => 'Preview saved build (inputs unknown)',
+      _ => 'Start actual built preview',
+    };
+    final openLabel = switch (snapshotStatus) {
+      GeneratedSnapshotStatus.outdated => 'Open earlier build in browser',
+      GeneratedSnapshotStatus.unknown => 'Open saved build in browser',
+      _ => 'Open generated app in browser',
+    };
     return PopScope(
       canPop: !controller.busy,
       child: Scaffold(
@@ -170,6 +181,15 @@ class _SourceGenerationScreenState extends State<SourceGenerationScreen> {
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               SelectableText(result.directory),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: Text(switch (snapshotStatus) {
+                  GeneratedSnapshotStatus.current => 'This snapshot matches the current application and project details.',
+                  GeneratedSnapshotStatus.outdated => 'Earlier snapshot: current application or project details have changed. Generate a new folder to include those changes.',
+                  GeneratedSnapshotStatus.unknown => 'Snapshot inputs cannot be identified from this saved record. Generate a new folder to capture the current inputs.',
+                  GeneratedSnapshotStatus.none => '',
+                }, key: const ValueKey('generatedSnapshotStatus')),
+              ),
               if (result.phase == SourceGenerationPhase.verifying &&
                   !controller.busy)
                 const Text(
@@ -202,7 +222,7 @@ class _SourceGenerationScreenState extends State<SourceGenerationScreen> {
                   onPressed: controller.busy || !controller.available
                       ? null
                       : controller.startPreview,
-                  child: const Text('Start actual built preview'),
+                  child: Text(previewLabel),
                 ),
             ],
             if (controller.preview != null) ...[
@@ -214,7 +234,7 @@ class _SourceGenerationScreenState extends State<SourceGenerationScreen> {
                 onPressed: controller.busy || !controller.available
                     ? null
                     : controller.openPreview,
-                child: const Text('Open generated app in browser'),
+                child: Text(openLabel),
               ),
               TextButton(
                 onPressed: controller.busy || !controller.available

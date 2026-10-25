@@ -8,6 +8,7 @@ import 'package:asg/models/app_definition.dart';
 import 'package:asg/models/project.dart';
 import 'package:asg/models/source_generation.dart';
 import 'package:asg/services/generation_host_native.dart';
+import 'package:asg/services/generation_input.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/foundation.dart';
 
@@ -98,6 +99,10 @@ void main() {
     () async {
       final generated = await generate();
       expect(
+        GenerationInput(project, definition).compare(generated),
+        GeneratedSnapshotStatus.current,
+      );
+      expect(
         generated.sources.keys,
         containsAll([
           'lib/models/app_definition.dart',
@@ -113,7 +118,7 @@ void main() {
         definition.toJson(),
       );
       final hostile = AppDefinition(
-        title: '\${danger()} <script> & "quote"',
+        title: '\${danger()} <script> 😀 & "quote"',
         theme: 'pink',
         elements: definition.elements,
       );
@@ -124,6 +129,10 @@ void main() {
         name: 'hostile_data',
         sdk: sdk,
         python: 'python3',
+      );
+      expect(
+        GenerationInput(project, hostile).compare(second),
+        GeneratedSnapshotStatus.current,
       );
       expect(
         await File('${second.directory}/lib/main.dart').readAsString(),
