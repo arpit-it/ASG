@@ -37,3 +37,5 @@ Created publication issue #1, CI/template issue #2, source-generation issue #3 a
 Latest schedule policy: prefer existing/in-progress issues, create at most one necessary new issue per run, implement/test/fix/retest to completion, then independent reviewer-agent review and conditional merge. Do not expand the backlog speculatively or bypass failing checks.
 
 Issue #2 adds CI and focused issue/PR templates on codex/2-ci-workflow. CI checks formatting, analysis, default Flutter tests, web build and lightweight Python fixtures. Real inference remains opt-in and must never be inferred from skipped CI tests. See CI.md.
+
+Issue #2 completed: independent reviewer merged PR #5 as 2bad70a31371e23715aff22333d1bb5d826a808f after both GitHub CI jobs passed; issue #2 closed. Issue #6 updates both READMEs to the requirements and current capabilities on codex/6-requirements-readme, replacing outdated preview/runtime claims.
