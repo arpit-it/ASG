@@ -15,9 +15,10 @@ import 'studio_store.dart';
 
 /// One database/session per application isolate. Original preferences are retained.
 class StudioDatabase implements RecordStorage {
-  StudioDatabase._(this.database, this._values);
+  StudioDatabase._(this.database, this._values, this._recordErrors);
   final Database database;
   final Map<String, String> _values;
+  final Map<String, FormatException> _recordErrors;
   static final _records = StoreRef<String, String>('records');
   static final _metadata = StoreRef<String, int>('metadata');
   static Future<StudioDatabase>? _opening;
@@ -69,11 +70,24 @@ class StudioDatabase implements RecordStorage {
       }
     });
     final values = <String, String>{};
+    final errors = <String, FormatException>{};
     for (final record in await _records.find(db)) {
-      validate(record.key, record.value);
+      try {
+        validate(record.key, record.value);
+      } catch (_) {
+        if (!record.key.startsWith('studio.application.v1.') &&
+            !record.key.startsWith('studio.generation.v1.')) {
+          rethrow;
+        }
+        // Preserve unreadable project content verbatim. Its repository will
+        // surface this error on access, without blocking unrelated projects.
+        errors[record.key] = FormatException(
+          'Saved project record is unreadable: ${record.key}',
+        );
+      }
       values[record.key] = record.value;
     }
-    return StudioDatabase._(db, values);
+    return StudioDatabase._(db, values, errors);
   }
 
   static bool _isStudioKey(String key) =>
@@ -122,12 +136,18 @@ class StudioDatabase implements RecordStorage {
   }
 
   @override
-  String? getString(String key) => _values[key];
+  String? getString(String key) {
+    final error = _recordErrors[key];
+    if (error != null) throw error;
+    return _values[key];
+  }
+
   @override
   Future<bool> setString(String key, String value) async {
     validate(key, value);
     await database.transaction((txn) => _records.record(key).put(txn, value));
     _values[key] = value;
+    _recordErrors.remove(key);
     return true;
   }
 }
