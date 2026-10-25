@@ -15,7 +15,11 @@ import 'planning_conversation_test.dart'
 
 void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
-  for (final mode in [ConversationMode.discuss, ConversationMode.plan]) {
+  for (final mode in [
+    ConversationMode.discuss,
+    ConversationMode.plan,
+    ConversationMode.review,
+  ]) {
     test('${mode.label} save retry retains output without inference', () async {
       final records = ControlledRecords()..failWrite = 2;
       final provider = PlanningProvider();

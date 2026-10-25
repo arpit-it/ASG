@@ -60,6 +60,8 @@ class _ModelChatState extends State<ModelChat> {
         Text(
           controller.mode == ConversationMode.plan
               ? 'Describe what you want to plan. Qwen will propose a draft for your review.'
+              : controller.mode == ConversationMode.review
+              ? 'Ask Qwen to compare your prototype with its requirements.'
               : 'Describe your idea or ask Qwen to clarify the requirements.',
         ),
       ...controller.messages.map(
@@ -173,22 +175,30 @@ class _ModelChatState extends State<ModelChat> {
             children: [
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-                child: SegmentedButton<ConversationMode>(
-                  segments: const [
-                    ButtonSegment(
-                      value: ConversationMode.discuss,
-                      label: Text('Discuss'),
-                    ),
-                    ButtonSegment(
-                      value: ConversationMode.plan,
-                      label: Text('Plan'),
-                    ),
-                  ],
-                  selected: {controller.mode},
-                  onSelectionChanged:
-                      controller.busy || controller.hasUnsavedResponse
-                      ? null
-                      : (selection) => controller.selectMode(selection.single),
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: SegmentedButton<ConversationMode>(
+                    segments: const [
+                      ButtonSegment(
+                        value: ConversationMode.discuss,
+                        label: Text('Discuss'),
+                      ),
+                      ButtonSegment(
+                        value: ConversationMode.plan,
+                        label: Text('Plan'),
+                      ),
+                      ButtonSegment(
+                        value: ConversationMode.review,
+                        label: Text('Review'),
+                      ),
+                    ],
+                    selected: {controller.mode},
+                    onSelectionChanged:
+                        controller.busy || controller.hasUnsavedResponse
+                        ? null
+                        : (selection) =>
+                              controller.selectMode(selection.single),
+                  ),
                 ),
               ),
               Padding(
@@ -196,6 +206,8 @@ class _ModelChatState extends State<ModelChat> {
                 child: Text(
                   controller.mode == ConversationMode.plan
                       ? 'Draft a plan with requirements, tasks and acceptance criteria. Plans need review; this screen cannot approve or execute them. Messages are saved on this device.'
+                      : controller.mode == ConversationMode.review
+                      ? 'Advisory review of the current prototype and saved build evidence. No source inspection or new checks. Reports are saved on this device.'
                       : 'Local Qwen discussion · Messages are saved on this device. No file changes or commands are executed.',
                 ),
               ),
@@ -231,6 +243,8 @@ class _ModelChatState extends State<ModelChat> {
                         decoration: InputDecoration(
                           hintText: controller.mode == ConversationMode.plan
                               ? 'Ask Qwen for a draft plan'
+                              : controller.mode == ConversationMode.review
+                              ? 'Ask Qwen to review your prototype'
                               : 'Discuss your project with Qwen',
                           border: OutlineInputBorder(),
                         ),

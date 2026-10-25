@@ -155,7 +155,7 @@ class _ProjectWorkspaceState extends State<ProjectWorkspace> {
               ),
             ),
             IconButton(
-              tooltip: 'Discuss and plan',
+              tooltip: 'Discuss, plan and review',
               onPressed:
                   controller.records == null ||
                       controller.busy ||
