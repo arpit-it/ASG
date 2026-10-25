@@ -263,3 +263,8 @@ Awaiting merge; branch `codex/50-prototype-plan-context`. Gap: approval did not 
 ### Documentation/platform audit in PR #51
 
 User requested a complete documentation update and explicit Flutter six-platform scope. Audited 27 maintained entry/guidance/docs files; 104 local Markdown links resolve. Updated both READMEs, index, architecture/storage/generation/workspace/decisions, development/test/security/CI/dependencies/workflow, setup and history current-context notices. Original brief framework instructions now explicitly use Flutter for Android, iOS, web, macOS, Windows and Linux; native host limits remain specific to managed MLX/generation. Preserved chronological delivery/benchmark history. Added only F14 for existing §4.3 resize/collapse gap after code and GitHub deduplication; no new issue beyond #50. This is user-requested upkeep within #51, not another F13 consolidation. Code checks remain formatter/analyzer,200 default tests4skips,web build; documentation link/queue checks and fresh final-head independent review required.
+
+
+### Canonical requirements architecture clarification — PR #51
+
+User specifically requested REQUIREMENTS.md reflect the current app architecture and details. Added current Flutter six-platform capability/evidence matrix, MVC components/data flow, eight implemented workflows, exact approval/Build boundaries, durable namespace/compatibility table, Qwen3.5-9B MLX transport limits and validation/remaining-task mapping. Updated obsolete current model/framework instructions while retaining original product scope and chronological evidence. This remains in PR #51 with fresh final-head review/CI; no additional task or issue.
