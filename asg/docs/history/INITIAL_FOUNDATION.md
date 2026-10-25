@@ -1,5 +1,11 @@
 # Initial foundation history
 
+## Current context — 25 October 2026
+
+ASG is a Flutter application targeting Android, iOS, web, macOS, Windows and Linux. Included platform runners do not establish tested device support. Managed MLX setup and the current independent Flutter web generator host are macOS-specific; other platforms retain supported app features and runtime connection controls.
+
+F01/F13 are Done; F02 remains In progress. PR #49 was independently reviewed and merged as `34da5bebf1728e969d9c43a661d30e4454e13f09`. Issue #50 / PR #51 adds prototype-bound approval and this documentation audit; it is Awaiting merge until final-head review and required CI pass. The [requirements ledger](../REQUIREMENTS.md) is the sole task queue. Older entries below are chronological evidence, not current instructions or an alternate backlog. Earlier SwiftUI/macOS-only, preference-only, BF16 timeout, test-count and pending-PR statements are superseded by later entries.
+
 Historical notes from the original planning-only Flutter foundation, retained for provenance. Current behavior is documented separately.
 
 

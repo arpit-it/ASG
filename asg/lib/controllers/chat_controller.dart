@@ -254,8 +254,9 @@ class ChatController extends BaseController {
     bool accepted = false;
     try {
       final requirements = RequirementsStore(_store!.records).load(project.id);
-      final requestPlanContext = PlanApprovalStore(_store!.records)
-          .contextFor(project);
+      final requestPlanContext = requestMode == ConversationMode.plan
+          ? PlanApprovalStore(_store!.records).contextFor(project)
+          : null;
       final updated = [
         ..._messages,
         ChatMessage(role: 'user', content: requestMode.labelRequest(text)),

@@ -7,6 +7,8 @@ import 'package:asg/models/chat_message.dart';
 import 'package:asg/models/generation_event.dart';
 import 'package:asg/models/project.dart';
 import 'package:asg/services/conversation_store.dart';
+import 'package:asg/services/application_store.dart';
+import 'package:asg/models/app_definition.dart';
 import 'package:asg/services/plan_approval_store.dart';
 import 'package:asg/services/studio_database.dart';
 import 'package:asg/services/studio_store.dart';
@@ -40,6 +42,80 @@ Future<ChatController> planned(ControlledRecords records) async {
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   setUp(() => SharedPreferences.setMockInitialValues({}));
+
+  test(
+    'prototype edits and revision-only changes invalidate exact approval',
+    () async {
+      final records = ControlledRecords();
+      final controller = await planned(records);
+      addTearDown(controller.dispose);
+      final approvals = PlanApprovalStore(records);
+      final applications = ApplicationStore(records);
+      final original = applications.load(project);
+      await controller.setPlanApproval(true);
+      expect(controller.planApproved, isTrue);
+      final context = approvals.contextFor(project);
+      expect(PlanApprovalStore(records).contextFor(project), context);
+      await applications.save(
+        project.id,
+        ApplicationSnapshot(
+          original.definition,
+          original.messages,
+          original.revision + 1,
+        ),
+      );
+      expect(controller.planApproved, isFalse);
+      expect(controller.canApprovePlan, isFalse);
+      expect(() => approvals.requireCurrentApproval(project), throwsStateError);
+      await applications.save(
+        project.id,
+        ApplicationSnapshot(
+          const AppDefinition(
+            title: 'Changed',
+            theme: 'green',
+            elements: [
+              AppElement(
+                id: 'heading',
+                kind: ElementKind.heading,
+                label: 'Changed',
+              ),
+            ],
+          ),
+          original.messages,
+          original.revision,
+        ),
+      );
+      expect(controller.planApproved, isFalse);
+      expect(() => approvals.requireCurrentApproval(project), throwsStateError);
+      records.values['studio.application.v1.${project.id}'] = '{corrupt';
+      expect(controller.planApproved, isFalse);
+      expect(controller.canApprovePlan, isFalse);
+      expect(
+        () => approvals.requireCurrentApproval(project),
+        throwsFormatException,
+      );
+    },
+  );
+
+  test('legacy project-only context cannot authorize changed inputs', () async {
+    final records = ControlledRecords();
+    await StudioStore(records).save([project]);
+    final messages = [
+      ChatMessage(
+        role: 'assistant',
+        content: 'Old plan',
+        planContext: PlanApprovalStore.context(project),
+      ),
+    ];
+    await ConversationStore(records).save(project.id, messages);
+    final approvals = PlanApprovalStore(records);
+    expect(() => approvals.save(project, messages, true), throwsStateError);
+    expect(
+      ConversationStore(records).load(project.id).single.content,
+      'Old plan',
+    );
+    expect(approvals.load(project.id), isNull);
+  });
 
   test(
     'only app-marked saved Plan replies qualify; legacy JSON round trips',
@@ -104,6 +180,21 @@ void main() {
     final records = ControlledRecords();
     final controller = await planned(records);
     addTearDown(controller.dispose);
+    final applications = ApplicationStore(records);
+    await applications.save(
+      project.id,
+      ApplicationSnapshot(applications.starter(project), [], 7),
+    );
+    // Draft against the saved prototype before persisting approval.
+    final messages = ConversationStore(records).load(project.id);
+    final current = messages.last;
+    messages[messages.length - 1] = ChatMessage(
+      role: current.role,
+      content: current.content,
+      planContext: PlanApprovalStore(records).contextFor(project),
+    );
+    await ConversationStore(records).save(project.id, messages);
+    await controller.load();
     await controller.setPlanApproval(true);
     final prefs = await SharedPreferences.getInstance();
     var db = await databaseFactoryIo.openDatabase('${temp.path}/studio.db');

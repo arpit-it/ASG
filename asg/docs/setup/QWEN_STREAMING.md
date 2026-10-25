@@ -2,6 +2,10 @@
 
 ## Current runtime
 
+ASG is a Flutter application targeting Android, iOS, web, macOS, Windows and Linux. Included platform runners do not establish tested device support. Managed MLX setup and the current independent Flutter web generator host are macOS-specific; other platforms retain supported app features and runtime connection controls.
+
+The local endpoint refused connection during the issue #50 documentation audit. Prior successful benchmarks/tests below remain historical evidence; start/connect the existing runtime explicitly before claiming a new live check.
+
 The app's existing endpoint (`http://127.0.0.1:8765/v1`) and model ID (`Qwen3.5-9B`) now use a project-local MLX runtime and a 4-bit conversion of the already downloaded Qwen weights. Original files at `/Users/arpitsinha/ARG-model-downloads/qwen3.5-9b` were preserved. No replacement model was downloaded.
 
 The former PyTorch/MPS BF16 path loaded roughly 19 GB of weights and timed out on structured edits. A direct test of the optimized model loaded in 2.59 seconds, finished a short structured-edit response in 5.89 seconds total, reported 67.8 generation tokens/second and 5.29 GB peak memory. These are measurements on this Mac, not guaranteed performance on other hardware.
@@ -61,7 +65,7 @@ References: [MLX LM](https://github.com/ml-explore/mlx-lm) and the model's local
 
 ## Discuss and Plan drafts
 
-From the workspace Chat header, choose **Discuss and plan**, then **Discuss** or **Plan**. This conversation is saved separately from application-edit chat. Plan asks for requirements, feasibility, tasks, acceptance criteria and risks; saved requests and replies carry Plan labels and replies remain explicitly unapproved. Switching back to Discuss changes the next prompt; reopening defaults to Discuss and retains history. Mode selection is locked while a request is active. Neither conversational mode has application, filesystem or command tools, and typing an approval cannot execute a plan. Plans are model-written prose, not a validated task schema or a working approval/build engine. The conversation uses up to 1536 output tokens within the existing runtime's limits; truncated replies remain errors.
+From the workspace Chat header, choose **Discuss, plan and review**, then **Discuss**, **Plan** or **Review**. This conversation is saved separately from application-edit chat. Plan asks for requirements, feasibility, tasks, acceptance criteria and risks; saved requests and replies carry Plan labels and replies remain explicitly unapproved. Switching back to Discuss changes the next prompt; reopening defaults to Discuss and retains history. Mode selection is locked while a request is active. Neither conversational mode has application, filesystem or command tools, and typing an approval cannot execute a plan. Plans may include validated `asg-build` starter contracts or `asg-tasks` planning proposals. The UI previews tasks and records explicit approval/withdrawal for the exact saved Plan, project, requirements and prototype context. Task import requires a separate additive action and invalidates old approval. Only the fixed starter contract can reach Build, with separate operation consent; general planning prose and advisory Review cannot execute work. The conversation uses up to 1536 output tokens within the existing runtime's limits; truncated replies remain errors.
 
 Opt-in real planning verification (run alone, with the existing local runtime):
 

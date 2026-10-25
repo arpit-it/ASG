@@ -6,6 +6,7 @@ import '../models/plan_approval.dart';
 import '../models/project.dart';
 import '../models/source_generation.dart';
 import '../services/generation_host.dart';
+import '../services/application_store.dart';
 import '../services/plan_approval_store.dart';
 import '../services/generation_input.dart';
 import '../services/folder_picker.dart';
@@ -62,8 +63,19 @@ class SourceGenerationController extends BaseController {
     }
   }
 
-  PlanApproval _requirePlan() =>
-      PlanApprovalStore(store.records).requireCurrentApproval(project);
+  PlanApproval _requirePlan() {
+    final approval = PlanApprovalStore(store.records)
+        .requireCurrentApproval(project);
+    final saved = ApplicationStore(store.records).load(project);
+    final savedInput = GenerationInput(project, saved.definition);
+    if (savedInput.applicationJson != _input?.applicationJson) {
+      throw StateError(
+        'The saved prototype changed. Reopen Build with the current prototype '
+        'and review a fresh Plan before generating.',
+      );
+    }
+    return approval;
+  }
 
   void _recheckPlan(PlanApproval started) {
     final current = _requirePlan();

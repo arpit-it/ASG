@@ -39,6 +39,11 @@ Update this document with task selection and delivery evidence, alongside [agent
 - [ ] F09 Runtime diagnostics and resource controls — Queued
   - Show actual model connectivity, active request, cancellation scope, request limits and actionable setup failures.
   - Accept when offline, timeout and cancellation states are truthful, settings persist, and diagnostics omit secrets and private prompt content.
+- [ ] F14 Resizable and collapsible workspace panes — Queued; depends on F01
+  - Priority: after active F02 and existing higher-priority F03–F09 work; does not interrupt active delivery.
+  - Source/evidence: product specification §4.3 requires resizable/collapsible panels. `lib/views/project_workspace.dart` currently uses a clamped 40% width and a static VerticalDivider, with narrow-screen tabs; no resize/collapse controls exist. Existing F01–F13 do not cover pane layout controls. No second GitHub issue created in the #50 run.
+  - Scope/value: let users allocate desktop chat/preview space and collapse/restore a pane while keeping narrow-screen tabs and working state.
+  - Accept when pointer and keyboard controls resize within usable minimums, collapse/restore retains conversation/prototype state, and narrow/enlarged-text layouts remain accessible without overflow. Add controller/widget interaction and responsive regressions; run format/analyze/tests/web build. Create/reuse a scoped issue only when this task is selected.
 - [ ] F10 Deterministic requirements review — Queued; depends on F04 and F06
   - Map each requirement to concrete checks and saved evidence; distinguish automated verification from advisory model feedback.
   - Accept when failed, missing and stale evidence cannot yield a verified requirement, and reports link to exact revisions and test results.
@@ -50,7 +55,7 @@ Update this document with task selection and delivery evidence, alongside [agent
   - Accept when the installed stable application remains usable, failed candidates are recoverable, and merging requires independent approval and passing required checks.
 
 - [x] F13 Consolidate project documentation — Done
-  - Current active task from the user: keep one requirements and task document, organize supporting documents, remove redundant copies, and update the scheduled workflow.
+  - Delivered user request: keep one requirements and task document, organize supporting documents, remove redundant copies, and update the scheduled workflow.
   - Acceptance: one requirements file; unique original product scope and foundation history retained; maintained local documentation links resolve; the active 15 minute automation reads this file, deduplicates new tasks and checks Done only after verified merge.
   - Delivered 25 October 2026 via [issue #32](https://github.com/arpit-it/ASG/issues/32), branch `codex/32-documentation-queue`, [PR #33](https://github.com/arpit-it/ASG/pull/33). Independent review approved head `ec9b561f12d1edd9439d100dadae52afe3a90ab9`; required Flutter checks/web build (real Chrome storage and generated-project verification) and Python fixtures passed in CI run `40172035200`. Remote merge `3b4333286e0c3ef8c6543501c2bba6721e714035` at 2026-10-25 07:18:39 UTC and issue closure verified; local main synchronized before F01.
 
@@ -64,19 +69,106 @@ A task moves Queued → In progress → Awaiting merge → Done; use Blocked wit
 
 ## Active task and delivery ledger
 
-Active: F02 remains In progress. Current issue #48, branch `codex/48-plan-execution-preview`, adds validated executable task preview before approval; Awaiting merge. Prior issue #46, branch `codex/46-plan-task-proposals`, delivered via independently reviewed PR #47, verified merged as `938c0633f67fb544687822ef8b8ac29ebe9caac6`; issue closed. General executable adapter mapping remains unmet. Prior issue #44, branch `codex/44-unambiguous-build-contract`, delivered via independently reviewed PR #45, verified merged as `0d570585aad7dab7249536b9fef54adaab4bb846`; issue closed. Validated Plan task contract [issue #42](https://github.com/arpit-it/ASG/issues/42), branch `codex/42-plan-task-contract`, independently reviewed and merged via PR #43 as `b30d6bca269876be1ad8d925df347a253d73645f`; issue #42 closed. Prior #40 / PR #41 independently reviewed and verified merged as `88e7dbb7dfdf936361739f31ca5a15415e86762a`; issue #40 closed. General Plan conversion remains unmet; resume F02 before F03.
+Active: F02 remains In progress. Issue #50, branch `codex/50-prototype-plan-context`, Awaiting merge: bind Plan approval to saved prototype revision/definition and reject stale Build-screen inputs; acceptance and validation below. Issue #48, branch `codex/48-plan-execution-preview`, delivered via independently reviewed PR #49, verified merged as `34da5bebf1728e969d9c43a661d30e4454e13f09`; issue closed. Prior issue #46, branch `codex/46-plan-task-proposals`, delivered via independently reviewed PR #47, verified merged as `938c0633f67fb544687822ef8b8ac29ebe9caac6`; issue closed. General executable adapter mapping remains unmet. Prior issue #44, branch `codex/44-unambiguous-build-contract`, delivered via independently reviewed PR #45, verified merged as `0d570585aad7dab7249536b9fef54adaab4bb846`; issue closed. Validated Plan task contract [issue #42](https://github.com/arpit-it/ASG/issues/42), branch `codex/42-plan-task-contract`, independently reviewed and merged via PR #43 as `b30d6bca269876be1ad8d925df347a253d73645f`; issue #42 closed. Prior #40 / PR #41 independently reviewed and verified merged as `88e7dbb7dfdf936361739f31ca5a15415e86762a`; issue #40 closed. General Plan conversion remains unmet; resume F02 before F03.
 
 For each increment append: feature ID; status; scope; dependencies; issue; branch; PR; tested revision; checks and limitations; reviewer verdict; merge SHA; completion date; blocker or next step. Keep completed entries as history.
 
 ## Current product decisions
 
-Use Flutter across six platforms under the display name Automated Software Generator. The direct Flutter request supersedes the attached SwiftUI framework choice. Foundation scope: dashboard, creation wizard, saved planning records, native folder selection where supported, basic workspace navigation. Subsequent milestones cover actual software generation.
+ASG is a Flutter application targeting Android, iOS, web, macOS, Windows and Linux. Included platform runners do not establish tested device support. Managed MLX setup and the current independent Flutter web generator host are macOS-specific; other platforms retain supported app features and runtime connection controls.
+
+Use Flutter across six platforms under the display name Automated Software Generator. The direct Flutter request supersedes the attached SwiftUI framework choice. Implemented scope includes guided creation/session restore, durable interpreted prototypes, structured requirements/tasks, Discuss/Plan/advisory Review, explicit approval, and the fixed Flutter web source-generation/verification slice. General source synthesis and other queued capabilities remain future work.
+
+## Current application architecture and implemented behavior
+
+This section describes the implemented baseline and the issue #50 change under PR #51; it is the current architectural interpretation of the product specification. The ordered F queue above is the only development queue. A feature listed as a future goal in the original brief is not implemented merely because its architecture is described here. Until PR #51 is independently reviewed and verified merged, its prototype-bound approval change remains Awaiting merge.
+
+### Product and platform contract
+
+Automated Software Generator is a local-first **Flutter/Dart application targeting Android, iOS, web, macOS, Windows and Linux**. Flutter 3.47.6 / Dart 3.13.5 is the pinned development/CI baseline. The package is `asg`; its Flutter root is `asg/`. The development machine being a Mac does not make the product a macOS-only application. A project's selected target platforms are saved intent, not proof that the corresponding generated apps exist or build.
+
+| Capability | Current platform scope | Evidence and limits |
+| --- | --- | --- |
+| Flutter app shell, guided creation, project records, prototype UI and planning/requirements screens | Shared application code and six platform runners | Earlier Android debug/macOS debug and current web builds passed. iOS, Windows and Linux application builds and physical-device launches are not established. Responsive widget tests do not establish device acceptance. |
+| Durable local records | Native Sembast file; browser IndexedDB | Real native close/reopen and Chrome IndexedDB tests. Single application isolate/session contract; no cross-process or live multi-tab synchronization. |
+| Runtime connection controls | Shared UI, subject to reachable endpoint/platform network policy | macOS and localhost browser use host loopback; Android Emulator uses its host alias. Physical-phone connectivity is not configured. No phone-local 9B inference is claimed. |
+| Managed model scanning, explicit download, prepare/start/stop | macOS host integration | Existing Qwen3.5-9B 4-bit MLX setup on Apple Silicon; compatible selected Python/checkpoint required. Other targets show an explicit unsupported-managed-setup explanation and connection controls. |
+| Independent source generation and compiled preview | macOS-hosted fixed Flutter **web** adapter | Creates a separate new project, executes trusted offline Flutter verification and serves compiled web output. This does not generate macOS/native applications or execute arbitrary repositories. Linux CI fixtures do not change the product host gate. |
+
+### MVC boundaries and data flow
+
+Use Flutter MVC with integration services, `ChangeNotifier`/`BaseController` observable state and constructor/factory injection. Do not replace this with SwiftUI/MVVM or introduce a new state framework without a concrete requirement.
+
+| Layer | Current components | Required responsibility |
+| --- | --- | --- |
+| Models (`lib/models/`) | StudioProject, ProjectBlueprint, AppDefinition/AppElement, ChatMessage, RequirementsBoard/ProjectRequirement/DevelopmentTask, PlanApproval, PlanTaskProposal, BuildPlan/BuildTask, GeneratedProject, runtime/settings types | Immutable typed data, pure validation and versioned serialization. No widgets, HTTP or storage plugins. |
+| Views (`lib/views/`) | StudioHome, Dashboard, ProjectWizard, ProjectWorkspace, LiveApplicationView, ModelChat, RequirementsScreen, SourceGenerationScreen, RuntimeSetupScreen and focused status/dialog views | Render actual state, collect input, own widget/navigation/text/focus lifecycle and delegate actions. No persistence/network/business-rule implementation in callbacks. |
+| Controllers (`lib/controllers/`) | StudioSessionController, ProjectWizardController, AppWorkspaceController, ChatController, RequirementsController, SourceGenerationController, RuntimeSetupController, ProjectDetailsController | Coordinate validation/services, busy/error/progress state, commit ordering and cancellation/disposal. No widgets, BuildContext or navigation. |
+| Services (`lib/services/`) | RecordStorage/StudioDatabase and stores, ApplicationEditor/LocalApplicationActions, ModelProvider/LocalModel, PlanApprovalStore/PlanTaskImport, GenerationInput/GenerationHost, runtime/folder-picker adapters | Own transactional persistence, transport, platform processes/filesystem integrations and enforce execution-boundary checks. Conditional factories expose honest unsupported-host behavior. |
+
+```mermaid
+flowchart LR
+    UI[Flutter view event] --> Controller[Feature controller]
+    Controller --> Validation[Typed validation and current-input checks]
+    Validation --> Services[Storage or platform service]
+    Services --> Commit[Successful durable result]
+    Commit --> State[Observable controller state]
+    State --> UI
+```
+
+Success must publish only after validation and the required write succeed. Failed/partial/model-cancelled updates preserve the last committed prototype and history. Async work prevents duplicate submissions, respects disposal and keeps errors visible. Source generation and model transport are distinct workflows; no model prose grants a tool permission.
+
+### Implemented user workflows
+
+1. **Create and reopen:** describe intent, choose suggested experience/features, review project metadata/platforms/location, then save and open the workspace. Suggestions are deterministic. A saved-but-not-opened failure offers selection-only retry without duplicate creation. Session restore rereads the canonical project and preserves the prior workspace on failed selection.
+2. **Edit the prototype:** desktop chat appears left of the live interpreted prototype; narrow layouts use state-preserving Chat/Preview tabs. Common exact instructions use validated local actions; custom edits use streamed bounded model proposals. The definition supports headings, text, task lists/completion, counters, notes and bounded buttons, with indigo/green/orange/pink themes. Validated edits and conversations save before revision/preview refresh; interactions use serialized/coalesced durable writes with explicit retry.
+3. **Maintain requirements:** the F01 board stores stable requirement IDs, titles and acceptance criteria; development tasks have stable IDs, requirement references, dependency IDs and manual queued/in-progress/blocked/done status. Reject duplicate/missing IDs and dependency cycles; reopening/changing prerequisites invalidates dependent completion. A successful board write increments its revision and invalidates prior Plan approval. Manual Done is not automated verification.
+4. **Discuss, Plan and Review:** separate saved assistance history supports Discuss, Plan and advisory Review. These modes have no application/source/command tools. Review reads fresh bounded prototype and historical verification evidence, states limitations, and does not run tests or mark requirements verified. Completed replies whose final write fails remain visibly unsaved with save-only retry; mode/navigation/new requests wait until save finishes.
+5. **Import proposed tasks:** one bounded `asg-tasks` version-1 fence may propose up to 200 queued planning tasks against existing requirement IDs. Preview before explicit additive import. Re-read exact latest durable Plan/project/board context; reject collisions, unknown fields/status/commands, duplicate JSON members and invalid graphs. Atomic import preserves existing tasks, changes board revision and requires a fresh Plan before approval. Imported tasks do not become executable commands.
+6. **Approve a Plan:** only an app-marked completed saved Plan is eligible. Persist exact message index/content/context, explicit approve/withdraw decision and recording time. New drafts or changed project/board inputs invalidate consent. PR #51 also binds validated prototype definition/revision, including revision-only edits/reverts, and rejects stale captured Build-screen definitions. Unreadable evidence fails closed. Legacy history stays readable but requires a new draft under the current context.
+7. **Generate and verify:** explicitly request the fixed Flutter web MVC starter in Plan, inspect its validated task/dependency preview, approve that exact draft, then separately consent in the generation form. Build rechecks current durable approval/inputs before host work and after asynchronous preparation. It accepts exactly one bounded `asg-build` version-1 `flutter-starter` contract with the canonical resolve → analyze → test → build graph; malformed/ambiguous/unsupported contracts and duplicate JSON members cannot execute.
+8. **Inspect actual output:** generation writes a new folder exclusively, serializes user/model strings as JSON data and runs trusted Flutter operations via argument arrays. Each operation has a 180-second deadline and 64 KiB captured-output limit. Saved step results derive pending/running/passed/failed/blocked/interrupted task state. Saved outcomes carry exact approval provenance and source/dependency/output fingerprints. Only verified unchanged artifacts can be served by the owned loopback preview; the prototype pane is a different interpreted output. Retry needs unchanged inputs and the same approval identity; it is not checkpoint resume.
+
+The desktop chat width currently follows a clamped 40% split with a static divider. Resizing/collapse is the bounded queued F14 requirement, not an implemented control. Linking a folder only saves its location; existing-source import is F07.
+
+### Persistence and compatibility contract
+
+Production records use `RecordStorage` backed by Sembast (`studio-v2.db` in native app support; IndexedDB on web). Retained preferences migrate atomically; no fallback reset or silent corruption overwrite is permitted. Browser storage is origin/port-specific and can be cleared. Storage is unencrypted application data, not secret storage.
+
+| Record namespace | Stored state |
+| --- | --- |
+| `studio.projects.v1` | Project identity, name, description, type, platform intent and location |
+| `studio.lastProject.v1` | Selected project ID for session restore |
+| `studio.application.v1.<id>` | Validated prototype definition, edit messages and revision |
+| `studio.chat.v1.<id>` | Separate assistance conversation and optional app-written Plan context |
+| `studio.requirements.v1.<id>` | Schema/revision, structured requirements and dependency/status task board |
+| `studio.planApproval.v1.<id>` | Exact saved Plan consent/withdrawal identity and time |
+| `studio.generation.v1.<id>` | Latest generated outcome, provenance/task graph, actual step results, fingerprints and failure state |
+| `studio.localModel.v1` / `studio.runtimeSetup.v1` | Model connection and runtime setup configuration |
+
+Preserve existing keys/payload readability. New approval context does not backfill consent into legacy prose. Per-project damaged application/generation/approval/board evidence remains retained and isolated; invalid global migration data or physical database corruption can stop startup visibly. Only the latest generation outcome is retained; full timestamped history, rollback, portable backup and resumable action journals remain F06/F08/F03.
+
+### Local inference contract
+
+The current selected model is the existing Qwen3.5-9B, locally converted to 4-bit MLX; original weights and runtime environments remain outside Git. `ModelProvider` abstracts the configured endpoint/model. The bridge supports SSE status/token/heartbeat/completion/error events with one active worker. UI progress represents processing stages and human-readable streamed summaries, not private reasoning. Apply only complete validated edits after successful save.
+
+Current client limits are 15 seconds for connection/headers, 30 seconds for stream inactivity and an absolute 180-second total deadline across response modes. The bridge bounds input to 4096 tokens and output to at most 2048 tokens. Cancellation closes transport and is checked at bounded server generation/prefill points; a native kernel cannot be interrupted mid-execution. Explicit model downloads/setup require a selected destination/environment and never run just by opening setup. macOS host integration uses owner-approved host-user permissions, not an execution sandbox.
+
+Earlier real MLX custom-edit/Plan/Review streaming checks passed. In this issue #50 run, the endpoint refused connection; no fresh inference is verified. Larger contexts, arbitrary tool use and other model/framework support remain proposed capabilities until their own acceptance evidence exists.
+
+### Validation and remaining boundaries
+
+Issue #50 code validation passed formatter, analyzer, 200 default tests (four opt-in skips) and web build. Tests cover prototype/revision/corrupt/legacy approval inputs, stale Build screens with preview/history preservation, fresh approval recovery and actual native database reopen. Final PR checks must also include actual Chrome storage, real independent generated-project verification and Python runtime/process fixtures; independent final-head review precedes merge. CI fixtures or skipped live tests do not verify current model availability.
+
+Current architecture does not deliver general task-to-executable adapter mapping (remaining F02), action checkpoints/resume (F03), model source edits (F04), automatic repair (F05), full build-history rollback (F06), source import (F07), portable backup (F08), comprehensive diagnostics/resource controls (F09), deterministic requirement verification (F10), other adapters (F11), isolated self-development (F12) or user-resizable panes (F14). These stay in the existing queue; no duplicate task document is introduced.
+
+Detailed contracts: [MVC architecture](architecture/ARCHITECTURE.md), [storage](architecture/STORAGE.md), [generation](architecture/GENERATION.md), [workspace](architecture/LIVE_WORKSPACE.md), [runtime setup](setup/RUNTIME_SETUP.md), [streaming](setup/QWEN_STREAMING.md), [test strategy](development/TEST_STRATEGY.md) and [CI](development/CI.md).
 
 ## Foundation acceptance context
 
 These criteria describe earlier increments; their presence does not mark the feature queue complete.
 
-Current increment: empty dashboard is honest; blank project name is rejected; target selection is required; project record saves before appearing; saved records load at startup; search filters names; unsupported automation displays explicit status. Remaining original milestone requirements include editable settings and full folder import. Generated applications, Git initialization, and successful builds must never be claimed based only on record creation.
+Historical foundation increment: empty dashboard is honest; blank project name is rejected; target selection is required; project record saves before appearing; saved records load at startup; search filters names; unsupported automation displays explicit status. Editable settings are now implemented; existing-source import remains F07. Generated applications, Git initialization, and successful builds must never be claimed based only on record creation.
 
 App-led workspace increment: user describes intent before technical configuration; recommendations can be changed and reviewed; selected platforms/features persist; creation opens the workspace; re-entry restores the current project; desktop chat is left of the live prototype; phone tabs preserve both panes; supported instructions apply and refresh visible version state; invalid edits/failed saves preserve the working version. Independent source generation/building is not part of this increment.
 
@@ -86,21 +178,25 @@ The user subsequently selected Flutter, the ASG repository, existing Qwen3.5-9B,
 
 # CODEX MASTER PROMPT — AI PROJECT STUDIO
 
+## Historical original brief (framework/platform choice superseded)
+
+The original brief proposed SwiftUI and a native macOS-first application; its framework/platform instructions below are now explicitly reconciled to Flutter, while preserving product scope. The current product is Flutter for Android, iOS, web, macOS, Windows and Linux; only specifically documented host integrations remain macOS-specific. Retain the original scope as provenance, not current framework/platform instructions.
+
 ## 1. Project Overview
 
-You are the Lead Software Architect, Senior macOS Engineer, AI Agent Engineer, QA Engineer, and Technical Project Manager responsible for building **AI Project Studio**.
+You are the Lead Software Architect, Senior Flutter Engineer, AI Agent Engineer, QA Engineer, and Technical Project Manager responsible for building **AI Project Studio**.
 
-Build a production-oriented, native macOS application that allows users to create, develop, test, run, and maintain software projects through natural-language conversations without needing to view or manually edit source code.
+Build a production-oriented Flutter application for Android, iOS, web, macOS, Windows and Linux that allows users to create, develop, test, run, and maintain software projects through natural-language conversations without needing to view or manually edit source code.
 
 The application must also support **Self-Development Mode**, allowing its AI agent to implement, test, and propose changes to AI Project Studio's own source code.
 
 **Primary development environment:**
 - Hardware: Apple MacBook Pro M4 Max, 36 GB unified memory.
 - Operating system: macOS.
-- Primary application framework: Swift and SwiftUI.
-- Primary coding LLM candidate: Qwen3-Coder 30B-A3B, 4-bit quantization, subject to checkpoint and runtime verification.
-- Model runtime: MLX-compatible runtime or llama.cpp, selected after feasibility testing.
-- Initial deployment: Local-first macOS application.
+- Primary application framework: Flutter and Dart (supersedes the original SwiftUI choice).
+- Current coding/planning model: existing Qwen3.5-9B, locally converted to 4-bit MLX. The original Qwen3-Coder 30B-A3B proposal was superseded; other models require explicit compatibility evidence.
+- Current runtime: project-local MLX bridge with SSE streaming; legacy Torch fallback. Additional runtimes require compatibility testing.
+- Application targets: Android, iOS, web, macOS, Windows and Linux; local-first storage. Managed inference and the initial generator host are macOS-specific.
 - License requirement: Commercially usable dependencies and model checkpoints.
 - Development tools: Xcode, Swift Package Manager, Git, Flutter SDK, Python and Node.js where available.
 
@@ -157,9 +253,9 @@ Users should not need a code editor.
 
 Provide access to source files and technical logs through optional advanced views, but do not make them part of the normal user experience.
 
-## 4. macOS Application Interface
+## 4. Flutter Application Interface
 
-Implement the application using SwiftUI.
+Implement the application using Flutter with responsive layouts for Android, iOS, web, macOS, Windows and Linux.
 
 ### 4.1 Project Dashboard
 
@@ -183,7 +279,7 @@ Collect:
 - Project description.
 - Project type.
 - Target platforms.
-- Storage location using a native macOS folder picker.
+- Storage location using a platform-supported native folder picker, with explicit unsupported-platform behavior.
 - Optional Git repository initialization.
 - Optional starter template.
 
@@ -196,7 +292,7 @@ Initially support these project types in the architecture:
 - Python.
 - Kotlin / Spring Boot.
 
-Implement at least one complete project generator in the first milestone. Prefer SwiftUI macOS, because it allows the initial end-to-end workflow to be tested on the development machine.
+Implement at least one complete project generator in the first milestone. The implemented initial adapter generates Flutter web MVC projects using a macOS host; other adapters remain subject to F11 acceptance.
 
 Other project types may initially be registered as unsupported or experimental, but must not falsely report successful generation.
 
@@ -288,7 +384,7 @@ Use a typed model configuration.
 
 Do not hardcode a model name into the agent orchestration layer.
 
-The default model candidate is Qwen3-Coder 30B-A3B at 4-bit quantization.
+The current selected model is the existing Qwen3.5-9B 4-bit MLX conversion, through the configurable provider interface; the earlier 30B-A3B candidate is historical.
 
 Before integration:
 
@@ -525,7 +621,7 @@ Provide:
 - Screenshot or preview capture where permitted.
 - Window activation.
 
-Do not assume arbitrary native macOS windows can be embedded directly into SwiftUI.
+Do not assume arbitrary native macOS windows can be embedded directly into the Flutter workspace; native-window preview adapters need an explicit supported integration.
 
 ### Mobile Applications
 
@@ -638,10 +734,10 @@ Verify model availability and runtime compatibility.
 
 Create the initial architecture and implementation plan.
 
-### Milestone 1 — Native Application Foundation
+### Milestone 1 — Flutter Application Foundation
 
 Implement:
-- SwiftUI macOS application.
+- Flutter application with Android, iOS, web, macOS, Windows and Linux runners.
 - Project dashboard.
 - Project creation wizard.
 - Native directory picker.
@@ -678,7 +774,7 @@ The application must:
 2. Generate a requirements specification.
 3. Produce a short implementation plan.
 4. Wait for user approval.
-5. Create a SwiftUI starter project.
+5. Create a Flutter starter project using the supported adapter (currently Flutter web on a macOS host).
 6. Generate or modify required source files.
 7. Build the project.
 8. Execute automated tests.
@@ -707,15 +803,15 @@ The system must:
 - Show the implementation summary and Git diff.
 - Request approval before merging.
 
-Do not merge automatically.
+Use the current independent-review workflow: an independent reviewer may merge only after final-revision approval and required passing checks; the implementer must not self-merge.
 
 ## 16. Coding Standards
 
 Use:
 
-- Swift concurrency where appropriate.
-- MVVM or another clearly documented SwiftUI architecture.
-- Protocol-based dependency injection.
+- Dart asynchronous work with explicit cancellation/disposal and platform integrations where required.
+- Flutter MVC with services, as specified in development/CODING_STANDARDS.md.
+- Constructor/factory dependency injection with typed Dart interfaces.
 - Modular services.
 - Structured error handling.
 - Structured logging.
@@ -739,7 +835,7 @@ Keep the application buildable after each milestone.
 
 Begin by inspecting the current repository and development environment.
 
-If the repository is empty, initialize a new SwiftUI macOS application structure.
+The existing repository already contains the Flutter application in `asg/`; preserve it and extend the active requirements task. A new empty repository would use Flutter runners for Android, iOS, web, macOS, Windows and Linux.
 
 Then:
 
@@ -774,15 +870,15 @@ At the end of each milestone, provide:
 - Risks.
 - Next milestone.
 
-## 18. First Task — START NOW
+## 18. Original foundation task — historical, already delivered in increments
 
-**Start Milestone 0 and Milestone 1.**
+The original foundation task below is retained as acceptance context; current work follows the ordered queue, with F02 active.
 
-Create the initial native macOS AI Project Studio application, including a working project dashboard, project creation wizard, persistent project records, native folder selection, and the foundational architecture for future local LLM integration.
+Create the Flutter Automated Software Generator application for Android, iOS, web, macOS, Windows and Linux, including a working project dashboard, project creation wizard, persistent project records, native folder selection, and the foundational architecture for future local LLM integration.
 
 Run the available build and tests.
 
-The deliverable must be a real, launchable macOS application foundation—not just a proposal, UI mockup, or architecture document.
+The deliverable is a real Flutter application foundation, with build/run evidence reported separately for each verified platform.
 
 Preserve all progress in the repository and report what was verified versus what remains unimplemented.
 
@@ -881,3 +977,22 @@ Post-merge evidence retained locally for the next normal reviewed F02 branch/PR;
 Awaiting merge; branch `codex/48-plan-execution-preview`; extends F02 / §4.4 after verified PR #47 merge `938c0633f67fb544687822ef8b8ac29ebe9caac6`, issue #46 closed. No other active ASG run or open issue/PR at selection. Evidence: approval UI exposed raw saved Plan text while executable contract validation appeared only after opening Build. Scope/acceptance: readable four-task fixed-starter preview with operation labels/dependencies beside approval; missing/advisory, malformed/unsupported, stale/replaced/corrupt evidence cannot appear validated. Separate operation consent and existing Build gates retained; approval remains available for advisory plans. No added execution capability. F02 remains In progress for general executable adapter mapping; F03 not started.
 
 Validation: four new controller/widget regressions cover durable current context, invalid/advisory contract approval, missing/corrupt/replaced evidence, read-only preview and narrow enlarged-text approval. Final formatter/analyzer, 197 default tests (four opt-in skips), and web build passed. Initial missing test import and first-draft streaming visibility regression fixed and full suite retested; preview panel appears only for an existing saved Plan. Existing model endpoint refused connection; no fresh inference, runtime download or stable-app replacement. Prior PR #47 final review/CI/merge evidence retained. Exact tested head, independent final-revision review, required CI and remote merge will be recorded in linked PR before delivery. Schedule/notification preference unchanged.
+
+
+### F02 executable Plan preview verified delivery
+
+Issue #48 completed via [PR #49](https://github.com/arpit-it/ASG/pull/49), branch `codex/48-plan-execution-preview`. Tested published head `436f3267fd7a83b332c83c9e5d1bfd176c56318c` (local equivalent `b1c26af`), tested/merged tree `3c3bf2971db7eec37934438253a1ca6a94155542`. Independent final-revision approval review `5642524001` (detailed `5642503320`), no blockers; 54 focused tests passed (one live opt-in skip), formatter passed independently. Required CI run `40180984555`: Flutter job `121131800468` (actual Chrome storage, web build and independent generated-project verification included) and Python fixtures job `121131800593` passed. Reviewer merged through normal protection as `34da5bebf1728e969d9c43a661d30e4454e13f09` at 2026-10-25 09:36:01 UTC; issue #48 closed/completed. Parent independently verified remote merge and closure, safely fast-forwarded local main (0/0 divergence and exact tested tree), preserving unrelated IDE edits. Local formatter/analyzer, 197 default tests (four opt-in skips), web build passed. Model endpoint refused connection; no fresh inference claim. F02 remains In progress for general executable adapter mapping; no F03 or second issue started. Schedule/notification preference unchanged.
+
+Post-merge evidence retained locally for the next normal reviewed F02 branch/PR; no direct-main publication.
+
+
+## F02 prototype-bound Plan approval — issue #50 (25 October 2026)
+
+Awaiting merge; branch `codex/50-prototype-plan-context`, extends F02 / §4.4 after verified PR #49 merge `34da5bebf1728e969d9c43a661d30e4454e13f09`, issue #48 closed. No competing active ASG run/open task at selection. Evidence: current Plan context bound project and board only, so editing the saved prototype retained approval for changed generation inputs. Scope/acceptance: new Plan contexts capture exact validated prototype definition and revision (including unsaved starter fallback); changed, revision-only or corrupt evidence invalidates approval/executable preview. Generation/retry must reject stale screen inputs before stopping preview/host work, preserving history. Fresh Plan/approval and current screen work; native reopen retains identity. Legacy Plan/history stays readable; fresh draft required for legacy context. No new executor; F02 remains In progress, F03 not started.
+
+Validation: three added regressions cover prototype edits/revision-only changes/corruption, legacy context refusal, and stale Build input denial with preview/history preservation and fresh approval/reopen recovery; extended actual native database reopen and existing planning fixture. Final formatter/analyzer, full default suite and web build evidence recorded in linked PR. Initial invalid test fixtures corrected and suite retested. Existing model endpoint refused connection; no fresh inference claim or runtime replacement. Required CI, independent final-revision approval and verified merge are required before delivery. Prior PR #49 final delivery evidence retained; unrelated IDE edits preserved. Schedule and notification preferences unchanged.
+
+
+### Documentation audit requested during issue #50
+
+Audited both entry READMEs and every maintained document under docs, plus contribution/security guidance and repository instructions. Reconciled current Flutter six-platform scope, MVC/planning/storage/generator boundaries, approval/prototype provenance, CI/live-test distinction, dependency inventory and historical-versus-current evidence. Preserved original history and brief; removed stale current claims that storage/approval/generation or MLX verification were absent. Added only F14 for the concrete uncovered §4.3 pane resize/collapse requirement; existing tasks already cover other known gaps, so no duplicate queue or second issue. Documentation changes share PR #51 and require fresh final-head independent review.

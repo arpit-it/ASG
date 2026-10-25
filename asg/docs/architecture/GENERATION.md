@@ -2,6 +2,10 @@
 
 ## Current slice
 
+ASG is a Flutter application targeting Android, iOS, web, macOS, Windows and Linux. Included platform runners do not establish tested device support. Managed MLX setup and the current independent Flutter web generator host are macOS-specific; other platforms retain supported app features and runtime connection controls.
+
+Before opening generation, use Discuss, Plan and Review to save a current Plan explicitly scoped to the fixed starter. Inspect its validated four-task preview and approve it. Build rereads this exact approval against current project metadata, requirements-board revision and prototype revision/definition; stale, withdrawn, unapproved, legacy or malformed contracts cannot start. The generation form then requires separate operation consent. Approval does not authorize arbitrary source edits.
+
 On macOS, open a saved project's preview and choose **Generate Flutter source** (code icon). Review the current requirements/prototype, choose an existing parent directory, a new lowercase folder name, an initialized Flutter SDK directory and an installed Python 3 executable. Explicitly approve the listed operations, then choose **Generate, test and build**.
 
 The generator writes a fixed, portable Flutter web MVC starter: typed model, observable controller, view, bootstrap, independent tests, JSON application data and requirements metadata. User/model text is serialized only into JSON data, never executable Dart/HTML or dependency declarations. It supports the existing headings, text, tasks/completion, counters, notes and bounded button actions. It does not synthesize arbitrary model-written code or generate other frameworks/native runners yet.
@@ -55,3 +59,7 @@ The workspace's **Edit project details** action updates the saved name and requi
 Project cards read the latest saved generation record and show no snapshot, unverified source, unfinished verification, saved verification success, failure or unreadable history. Input fingerprints distinguish current/earlier/unknown snapshots. Corrupt application data leaves saved build evidence visible with unknown input match; one unreadable history record does not break other cards. Returning from a standalone project refreshes the summaries. These are read-only saved outcomes, not live process status or filesystem verification. Only the latest outcome is stored; this is not a complete build history or a claim of a prior successful build after a later failure. Opening the generated preview still checks artifacts through the existing guarded workflow.
 
 For already-migrated databases, unreadable application/generation records are retained verbatim and raise an explicit per-key error, so other projects remain accessible after restart. Invalid migration/global data and physically corrupt database files still fail startup. This does not provide automatic record repair or recovery of damaged bytes; see STORAGE.md.
+
+## Plan and task provenance
+
+The version-1 `asg-build` contract accepts only `flutter-starter` and its canonical resolve → analyze → test → build graph. Duplicate JSON members (including escaped equivalent names), unknown fields/operations and ambiguous fences fail closed. Saved outcomes retain exact approval identity and task graph; task states are pending, running, passed, failed, blocked or interrupted based on actual results. Retry requires the same approval identity and matching inputs, not a replacement approval for old source. General `asg-tasks` proposals are planning data only and cannot execute commands. Full action checkpoints/resume remain F03.

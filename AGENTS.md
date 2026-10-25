@@ -1,6 +1,6 @@
 # Automated Software Generator project conventions
 
-The Flutter application root is `asg/`. Run Flutter commands there.
+The Flutter application root is `asg/`. Run Flutter commands there. ASG targets Android, iOS, web, macOS, Windows and Linux; distinguish included runners from verified platform/device behavior. Managed MLX setup and the current independent Flutter web generator host are macOS-specific, not the overall product.
 
 Read and follow [the project coding standards](asg/docs/development/CODING_STANDARDS.md) before working on this repository. This is the canonical instruction document for Flutter style, MVC boundaries, async work, storage, UI, testing, and completion checks. Direct user instructions take precedence; preserve unrelated changes.
 

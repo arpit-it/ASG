@@ -135,8 +135,12 @@ void main() {
       await store.save(project.id, [
         const ChatMessage(role: 'user', content: 'Legacy question'),
       ]);
-      records.values['studio.application.v1.planning'] =
-          'untouched application';
+      await ApplicationStore(records).save(
+        project.id,
+        ApplicationSnapshot(ApplicationStore(records).starter(project), [], 3),
+      );
+      final applicationBefore =
+          records.values['studio.application.v1.planning'];
       final provider = PlanningProvider();
       final controller = chat(records, provider);
       await controller.load();
@@ -169,7 +173,7 @@ void main() {
       expect(provider.cancelled, true);
       expect(
         records.values['studio.application.v1.planning'],
-        'untouched application',
+        applicationBefore,
       );
       expect(
         records.values.keys,

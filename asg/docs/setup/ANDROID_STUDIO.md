@@ -1,4 +1,6 @@
-# Run and debug in Android Studio
+# Run and debug the Flutter app in Android Studio
+
+ASG is a Flutter application targeting Android, iOS, web, macOS, Windows and Linux. Included platform runners do not establish tested device support. Managed MLX setup and the current independent Flutter web generator host are macOS-specific; other platforms retain supported app features and runtime connection controls.
 
 1. In Android Studio, use **File → Open** and select the Flutter project root, the folder containing `pubspec.yaml`:
    `/Users/arpitsinha/AndroidStudioProjects/ASG/asg`

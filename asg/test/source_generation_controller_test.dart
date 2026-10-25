@@ -6,6 +6,7 @@ import 'package:asg/models/build_task.dart';
 
 import 'package:asg/models/chat_message.dart';
 import 'package:asg/services/generation_input.dart';
+import 'package:asg/services/application_store.dart';
 import 'package:asg/services/conversation_store.dart';
 import 'package:asg/services/plan_approval_store.dart';
 import 'package:asg/services/studio_store.dart';
@@ -134,6 +135,8 @@ void main() {
       PreferenceRecords(await SharedPreferences.getInstance()),
     );
     await StudioStore(store.records).save([project]);
+    await ApplicationStore(store.records)
+        .save(project.id, const ApplicationSnapshot(definition, [], 1));
     final plans = [
       ChatMessage(
         role: 'assistant',
@@ -154,6 +157,58 @@ void main() {
   tearDown(() {
     if (!c.isDisposed) c.dispose();
   });
+
+  test(
+    'changed prototype and stale Build inputs preserve preview and history',
+    () async {
+      expect(await generate(true), isTrue);
+      await c.startPreview();
+      final preview = c.preview;
+      final history = store.records.getString('studio.generation.v1.p');
+      final before = host.generations;
+      final verifications = host.verifications;
+      const changed = AppDefinition(
+        title: 'Changed',
+        theme: 'pink',
+        elements: [
+          AppElement(
+            id: 'heading',
+            kind: ElementKind.heading,
+            label: 'Changed',
+          ),
+        ],
+      );
+      await ApplicationStore(store.records)
+          .save(project.id, const ApplicationSnapshot(changed, [], 2));
+      expect(await generate(true), isFalse);
+      expect(await c.verifyAgain(approved: true), isFalse);
+      // Even a fresh approval cannot authorize an old screen's definition.
+      final plans = [
+        ChatMessage(
+          role: 'assistant',
+          content: BuildPlan.starterContract,
+          planContext: PlanApprovalStore(store.records).contextFor(project),
+        ),
+      ];
+      await ConversationStore(store.records).save(project.id, plans);
+      await PlanApprovalStore(store.records).save(project, plans, true);
+      expect(await generate(true), isFalse);
+      expect(c.error, contains('saved prototype changed'));
+      expect(c.preview, preview);
+      expect(host.server, isTrue);
+      expect(host.generations, before);
+      expect(host.verifications, verifications);
+      expect(store.records.getString('studio.generation.v1.p'), history);
+      c.dispose();
+      c = SourceGenerationController(
+        project: project,
+        definition: changed,
+        store: store,
+        host: host,
+      );
+      expect(await generate(true), isTrue);
+    },
+  );
 
   test('approved prose or invalid contracts cannot stop preview or overwrite history', () async {
     expect(await generate(true), isTrue);
@@ -272,7 +327,13 @@ void main() {
         definition: const AppDefinition(
           title: 'Changed',
           theme: 'green',
-          elements: [],
+          elements: [
+            AppElement(
+              id: 'heading',
+              kind: ElementKind.heading,
+              label: 'Changed',
+            ),
+          ],
         ),
         store: store,
         host: host,

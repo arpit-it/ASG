@@ -1,5 +1,11 @@
 # Progress — 25 October 2026
 
+## Current context — 25 October 2026
+
+ASG is a Flutter application targeting Android, iOS, web, macOS, Windows and Linux. Included platform runners do not establish tested device support. Managed MLX setup and the current independent Flutter web generator host are macOS-specific; other platforms retain supported app features and runtime connection controls.
+
+F01/F13 are Done; F02 remains In progress. PR #49 was independently reviewed and merged as `34da5bebf1728e969d9c43a661d30e4454e13f09`. Issue #50 / PR #51 adds prototype-bound approval and this documentation audit; it is Awaiting merge until final-head review and required CI pass. The [requirements ledger](../REQUIREMENTS.md) is the sole task queue. Older entries below are chronological evidence, not current instructions or an alternate backlog. Earlier SwiftUI/macOS-only, preference-only, BF16 timeout, test-count and pending-PR statements are superseded by later entries.
+
 ## Environment / milestone 0
 
 Empty starting repository. Flutter 3.47.6 / Dart 3.13.5, macOS 27.0.1, Xcode 27.0, Git 2.54.0, Python 3.12.8 available. Android SDK exists but command-line tools are missing and license status is unresolved. Windows/Linux host builds unavailable on macOS. Local model/runtime compatibility and memory benchmarks are deferred; no model has been downloaded or selected.
@@ -302,3 +308,25 @@ Post-merge evidence retained locally for the next normal reviewed F02 branch/PR;
 Awaiting merge; branch `codex/48-plan-execution-preview`; extends F02 / §4.4 after verified PR #47 merge `938c0633f67fb544687822ef8b8ac29ebe9caac6`, issue #46 closed. No other active ASG run or open issue/PR at selection. Evidence: approval UI exposed raw saved Plan text while executable contract validation appeared only after opening Build. Scope/acceptance: readable four-task fixed-starter preview with operation labels/dependencies beside approval; missing/advisory, malformed/unsupported, stale/replaced/corrupt evidence cannot appear validated. Separate operation consent and existing Build gates retained; approval remains available for advisory plans. No added execution capability. F02 remains In progress for general executable adapter mapping; F03 not started.
 
 Validation: four new controller/widget regressions cover durable current context, invalid/advisory contract approval, missing/corrupt/replaced evidence, read-only preview and narrow enlarged-text approval. Final formatter/analyzer, 197 default tests (four opt-in skips), and web build passed. Initial missing test import and first-draft streaming visibility regression fixed and full suite retested; preview panel appears only for an existing saved Plan. Existing model endpoint refused connection; no fresh inference, runtime download or stable-app replacement. Prior PR #47 final review/CI/merge evidence retained. Exact tested head, independent final-revision review, required CI and remote merge will be recorded in linked PR before delivery. Schedule/notification preference unchanged.
+
+
+### F02 executable Plan preview verified delivery
+
+Issue #48 completed via [PR #49](https://github.com/arpit-it/ASG/pull/49), branch `codex/48-plan-execution-preview`. Tested published head `436f3267fd7a83b332c83c9e5d1bfd176c56318c` (local equivalent `b1c26af`), tested/merged tree `3c3bf2971db7eec37934438253a1ca6a94155542`. Independent final-revision approval review `5642524001` (detailed `5642503320`), no blockers; 54 focused tests passed (one live opt-in skip), formatter passed independently. Required CI run `40180984555`: Flutter job `121131800468` (actual Chrome storage, web build and independent generated-project verification included) and Python fixtures job `121131800593` passed. Reviewer merged through normal protection as `34da5bebf1728e969d9c43a661d30e4454e13f09` at 2026-10-25 09:36:01 UTC; issue #48 closed/completed. Parent independently verified remote merge and closure, safely fast-forwarded local main (0/0 divergence and exact tested tree), preserving unrelated IDE edits. Local formatter/analyzer, 197 default tests (four opt-in skips), web build passed. Model endpoint refused connection; no fresh inference claim. F02 remains In progress for general executable adapter mapping; no F03 or second issue started. Schedule/notification preference unchanged.
+
+Post-merge evidence retained locally for the next normal reviewed F02 branch/PR; no direct-main publication.
+
+
+## F02 prototype-bound Plan approval — issue #50 (25 October 2026)
+
+Awaiting merge; branch `codex/50-prototype-plan-context`. Gap: approval did not change when the saved prototype changed. New contexts bind validated definition/revision; stale Build-screen inputs fail before preview stop or host generation/retry. Changed/revision-only/corrupt and legacy contexts cannot authorize Build. Fresh Plan approval and current prototype work; previous history/preview remains available. Three new regressions plus native database reopen and existing fixture coverage. Initial invalid fixtures corrected and full checks retested; actual final checks/review/CI/merge are recorded in linked PR. Local model endpoint refused connection; no fresh inference/model download/stable-app replacement. F02 remains In progress for broader adapter mapping. Prior PR #49 final evidence retained; unrelated IDE edits preserved.
+
+
+### Documentation/platform audit in PR #51
+
+User requested a complete documentation update and explicit Flutter six-platform scope. Audited 27 maintained entry/guidance/docs files; 104 local Markdown links resolve. Updated both READMEs, index, architecture/storage/generation/workspace/decisions, development/test/security/CI/dependencies/workflow, setup and history current-context notices. Original brief framework instructions now explicitly use Flutter for Android, iOS, web, macOS, Windows and Linux; native host limits remain specific to managed MLX/generation. Preserved chronological delivery/benchmark history. Added only F14 for existing §4.3 resize/collapse gap after code and GitHub deduplication; no new issue beyond #50. This is user-requested upkeep within #51, not another F13 consolidation. Code checks remain formatter/analyzer,200 default tests4skips,web build; documentation link/queue checks and fresh final-head independent review required.
+
+
+### Canonical requirements architecture clarification — PR #51
+
+User specifically requested REQUIREMENTS.md reflect the current app architecture and details. Added current Flutter six-platform capability/evidence matrix, MVC components/data flow, eight implemented workflows, exact approval/Build boundaries, durable namespace/compatibility table, Qwen3.5-9B MLX transport limits and validation/remaining-task mapping. Updated obsolete current model/framework instructions while retaining original product scope and chronological evidence. This remains in PR #51 with fresh final-head review/CI; no additional task or issue.

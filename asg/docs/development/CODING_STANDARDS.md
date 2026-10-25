@@ -94,7 +94,7 @@ A successful build does not establish a successful device launch. Report verifie
 
 ## Current enforcement and remaining work
 
-Current enforcement: Flutter lints, formatter, architecture boundary tests, controller/unit/widget tests. The MVC refactor passes 14 tests, static analysis, Android debug and web builds. The standards above govern future changes; they do not assert that accessibility, all device layouts, strict JSON validation, fully private controller state, transactional storage, or every platform has already been audited.
+Current enforcement: Flutter lints, formatter, architecture boundary tests, controller/unit/widget tests, native database reopen and actual Chrome storage coverage, Python runtime/process fixtures, web build and real independent generated-project verification in CI. Issue #50 locally passes 200 default tests (four opt-in skips), analysis and web build; older counts describe historical increments. The standards above govern future changes; they do not assert that accessibility, all device layouts, strict JSON validation, fully private controller state, transactional storage, or every platform has already been audited.
 
 ## References
 
@@ -106,3 +106,7 @@ Current enforcement: Flutter lints, formatter, architecture boundary tests, cont
 ## Git delivery
 
 Follow root AGENTS.md and GIT_WORKFLOW.md: issue first, a separate codex/<issue>-<slug> branch per new implementation, focused commits, verified checks, feature-branch push and a linked PR to main. The initial baseline has a one-time owner-authorized direct-main publication exception; subsequent work does not.
+
+## Product/platform terminology
+
+ASG is a Flutter application targeting Android, iOS, web, macOS, Windows and Linux. Included platform runners do not establish tested device support. Managed MLX setup and the current independent Flutter web generator host are macOS-specific; other platforms retain supported app features and runtime connection controls. Refer to the app as Flutter/cross-platform; reserve “macOS-only” for a specifically limited host integration. Preserve historical SwiftUI/macOS proposals as superseded provenance rather than current implementation guidance.
