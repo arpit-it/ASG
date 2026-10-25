@@ -47,13 +47,20 @@ Future<GeneratedProject> prepareSourceCandidate({
     parent: parent,
     authorizeWrite: authorize,
   );
-  authorize();
-  return GeneratedProject(
-    directory: candidate.directory,
-    sdk: generated.sdk,
-    python: generated.python,
-    sources: candidate.sources,
-    approval: evidence.approval,
-    tasks: tasks,
-  );
+  try {
+    authorize();
+    return GeneratedProject(
+      directory: candidate.directory,
+      sdk: generated.sdk,
+      python: generated.python,
+      sources: candidate.sources,
+      approval: evidence.approval,
+      tasks: tasks,
+    );
+  } catch (error) {
+    throw StateError(
+      'Candidate publication refused; original retained. '
+      'Unpublished candidate: ${candidate.directory}. $error',
+    );
+  }
 }

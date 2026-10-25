@@ -321,6 +321,52 @@ void main() {
   });
 
   test(
+    'final publication refusal reports the complete retained candidate path',
+    () async {
+      var successfulCalls = 0;
+      await prepare(
+        active: () {
+          successfulCalls++;
+        },
+      );
+      final existing = base.listSync().map((entry) => entry.path).toSet();
+      var calls = 0;
+      Object? failure;
+      try {
+        await prepare(
+          active: () {
+            if (++calls == successfulCalls) {
+              throw StateError('Publication cancelled');
+            }
+          },
+        );
+      } catch (error) {
+        failure = error;
+      }
+      final retained = base
+          .listSync()
+          .where((entry) => !existing.contains(entry.path))
+          .single;
+      expect(failure, isA<StateError>());
+      expect(failure.toString(), contains(retained.path));
+      expect(failure.toString(), contains('Publication cancelled'));
+      expect(
+        await File(path.join(retained.path, 'lib/main.dart')).readAsString(),
+        after,
+      );
+      expect(
+        await File(path.join(original.path, 'lib/main.dart')).readAsString(),
+        before,
+      );
+      expect(
+        await File(path.join(original.path, 'build/web/index.html'))
+            .readAsString(),
+        'WORKING',
+      );
+    },
+  );
+
+  test(
     'wrong generated project inputs and approval changes during writing refuse',
     () async {
       final correct = hashes['asg_project.json']!;
