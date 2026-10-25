@@ -1,0 +1,25 @@
+name: Focused feature
+description: Propose one necessary increment aligned with the requirements.
+title: "feat: "
+body:
+  - type: textarea
+    id: need
+    attributes:
+      label: User need and current gap
+      description: Link the requirement and related issues. Reuse an existing issue where possible.
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope and acceptance criteria
+      description: Define one bounded outcome and its limits.
+    validations:
+      required: true
+  - type: textarea
+    id: validation
+    attributes:
+      label: Validation plan
+      description: Include behavior, failure paths and relevant platform checks.
+    validations:
+      required: true
