@@ -135,6 +135,146 @@ void main() {
     if (!controller.isDisposed) controller.dispose();
   });
 
+  for (final repair in [false, true]) {
+    for (final stage in ['Reading recorded source', 'Requesting local model']) {
+      for (final action in [
+        'stop',
+        'dispose',
+        'working',
+        'approval',
+        if (repair) 'stop then verify',
+      ]) {
+        test('progress boundary $stage $action (repair: $repair)', () async {
+          controller.dispose();
+          controller = create(
+            createHost: () => FailedCheckHost(),
+            publish: (_, host, guard) async => throw StateError('No promotion'),
+            prepare:
+                ({
+                  required project,
+                  required generated,
+                  required evidence,
+                  required records,
+                  required parent,
+                  required checkActive,
+                }) async {
+                  checkActive();
+                  return GeneratedProject(
+                    directory: '/candidate/boundary',
+                    sdk: '/sdk',
+                    python: 'python3',
+                    confined: true,
+                    sources: GenerationInput(
+                      project,
+                      ApplicationStore(records).load(project).definition,
+                    ).fingerprints,
+                    approval: evidence.approval,
+                    tasks: BuildPlan.parse(
+                      evidence.approval.content,
+                      board: RequirementsStore(records).load(project.id),
+                    ).tasks,
+                  );
+                },
+          );
+          if (repair) {
+            final initial = controller.request('Tanalyze', ['lib/main.dart']);
+            await tick();
+            provider.stream.add(response());
+            await provider.stream.close();
+            await initial;
+            await controller.selectCandidateParent();
+            await controller.prepareCandidate();
+            await controller.candidateSession!.verify(approved: true);
+            expect(controller.canRequestRepair, isTrue);
+          }
+          final retained = controller.candidate;
+          final workingKey = 'studio.generation.v1.${project.id}';
+          final working = records.getString(workingKey);
+          final checks = records.getString(
+            'studio.candidateChecks.v1.${project.id}',
+          );
+          final attempts = records.getString(
+            'studio.repairAttempts.v1.${project.id}',
+          );
+          final beforeReads = reads;
+          provider = FakeProvider();
+          var triggered = false;
+          void listener() {
+            if (triggered || !controller.status.startsWith(stage)) return;
+            triggered = true;
+            switch (action) {
+              case 'stop' || 'stop then verify':
+                unawaited(controller.cancel());
+              case 'dispose':
+                controller.dispose();
+              case 'working':
+                records.values[workingKey] = 'changed';
+              case 'approval':
+                records.values['studio.planApproval.v1.${project.id}'] = '{}';
+            }
+          }
+
+          controller.addListener(listener);
+          final pending = repair
+              ? controller.requestRepair(['lib/main.dart'])
+              : controller.request('Tanalyze', ['lib/main.dart']);
+          await tick();
+          // Close even if broken code dispatches, so observations fail without
+          // hanging on a model response.
+          provider.stream.add(response());
+          unawaited(provider.stream.close());
+          await pending;
+          expect(triggered, isTrue);
+          expect(provider.prompt, isNull);
+          expect(
+            reads,
+            beforeReads + (stage == 'Reading recorded source' ? 0 : 1),
+          );
+          expect(controller.busy, isFalse);
+          expect(controller.candidate, same(retained));
+          expect(
+            records.getString('studio.candidateChecks.v1.${project.id}'),
+            checks,
+          );
+          expect(
+            records.getString('studio.repairAttempts.v1.${project.id}'),
+            attempts,
+          );
+          if (action != 'working') {
+            expect(records.getString(workingKey), working);
+          }
+          if (action == 'stop then verify') {
+            expect(controller.status, contains('cancelled'));
+            controller.removeListener(listener);
+            final statuses = <String>[];
+            controller.addListener(() => statuses.add(controller.status));
+            await controller.candidateSession!.verify(approved: true);
+            expect(
+              statuses,
+              contains(contains('Verifying isolated candidate')),
+            );
+            expect(controller.status, contains('Candidate checks stopped'));
+            expect(controller.status, isNot(contains('cancelled')));
+          }
+          if (action == 'stop') {
+            expect(controller.status, contains('cancelled'));
+            controller.removeListener(listener);
+            provider = FakeProvider();
+            final retry = repair
+                ? controller.requestRepair(['lib/main.dart'])
+                : controller.request('Tanalyze', ['lib/main.dart']);
+            await tick();
+            expect(provider.prompt, isNotNull);
+            provider.stream.add(response());
+            await provider.stream.close();
+            await retry;
+            expect(controller.proposal, isNotNull);
+          }
+        });
+      }
+    }
+  }
+
   testWidgets(
     'saved failure repair action is readable at 320px and 200 percent text',
     (tester) async {
@@ -706,7 +846,7 @@ void main() {
               : controller.request('Tanalyze', ['lib/main.dart']);
           await tick();
           provider.stream.add(response());
-          await provider.stream.close();
+          unawaited(provider.stream.close());
           await pending;
           await controller.selectCandidateParent();
           if (!repair) {
