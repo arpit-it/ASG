@@ -21,6 +21,9 @@ abstract interface class GenerationHost {
     GeneratedProject project,
     GenerationProgress progress,
   );
+
+  /// Requests termination of verification; completion is reported via progress.
+  void cancelVerification();
   Future<Uri> startPreview(GeneratedProject project);
   Future<void> openPreview(Uri uri);
   Future<void> stopPreview();

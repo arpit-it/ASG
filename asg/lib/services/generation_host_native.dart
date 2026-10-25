@@ -26,6 +26,22 @@ class NativeGenerationHost implements GenerationHost {
   _operationOverride;
   bool _closed = false;
   Process? _activeProcess;
+  bool _verificationCancelled = false;
+  @override
+  void cancelVerification() {
+    _verificationCancelled = true;
+    _activeProcess?.kill(ProcessSignal.sigterm);
+  }
+
+  void checkVerification() {
+    checkOpen();
+    if (_verificationCancelled) {
+      throw StateError(
+        'Verification stopped by user. Existing files are retained.',
+      );
+    }
+  }
+
   void checkOpen() {
     if (_closed) throw StateError('Generation session closed.');
   }
@@ -223,6 +239,7 @@ class NativeGenerationHost implements GenerationHost {
     GeneratedProject project,
     GenerationProgress progress,
   ) async {
+    _verificationCancelled = false;
     if (!path.isAbsolute(project.sdk) ||
         project.python.trim().isEmpty ||
         await Directory(project.sdk).resolveSymbolicLinks() !=
@@ -247,13 +264,13 @@ class NativeGenerationHost implements GenerationHost {
     // their exact authorizing approval.
     for (final task in project.tasks ?? BuildTask.starter) {
       final operation = task.operation.name;
-      late final GenerationStep result;
+      late GenerationStep result;
       try {
         // Validation refusal belongs to this task even when no command starts.
         // Preserve completed steps and never fabricate an exit result.
         await checkSources(project);
         if (operation != 'resolve') await checkResolution(current);
-        checkOpen();
+        checkVerification();
       } catch (error) {
         await progress(
           current.copy(
@@ -267,7 +284,7 @@ class NativeGenerationHost implements GenerationHost {
       // Approval/persistence refusal must remain outside the validation catch.
       // Revalidate durable consent before starting each trusted command.
       await progress(current);
-      checkOpen();
+      checkVerification();
       try {
         result = _operationOverride != null
             ? await _operationOverride(project, operation)
@@ -288,6 +305,16 @@ class NativeGenerationHost implements GenerationHost {
         rethrow;
       }
       checkOpen();
+      if (_verificationCancelled && !result.cancelled) {
+        result = GenerationStep(
+          operation: result.operation,
+          exitCode: result.exitCode,
+          output: result.output,
+          timedOut: result.timedOut,
+          outputLimitExceeded: result.outputLimitExceeded,
+          cancelled: true,
+        );
+      }
       current = current.copy(steps: [...current.steps, result]);
       if (!result.succeeded) {
         current = current.copy(
@@ -313,6 +340,7 @@ class NativeGenerationHost implements GenerationHost {
       }
       await progress(current);
     }
+    checkVerification();
     await checkSources(project);
     final output = path.join(project.directory, 'build', 'web');
     final outputs = await fingerprints(output, source: false);
@@ -320,6 +348,7 @@ class NativeGenerationHost implements GenerationHost {
         !outputs.containsKey('main.dart.js')) {
       throw StateError('Flutter did not produce a complete web build.');
     }
+    checkVerification();
     current = current.copy(
       phase: SourceGenerationPhase.ready,
       outputs: outputs,
@@ -356,13 +385,13 @@ class NativeGenerationHost implements GenerationHost {
         path.join(helperDirectory.path, 'generation_command.py'),
       );
       await helper.writeAsString(
-        await _loadAsset('tools/generation_command.py'),
+        await loadAsset('tools/generation_command.py'),
         flush: true,
       );
       // Helper preparation has async gaps. Check consent again at the actual
       // launch boundary; no further awaits occur before starting the process.
       await beforeStart?.call();
-      checkOpen();
+      checkVerification();
       process = await Process.start(project.python, [
         '-I',
         '-B',
@@ -377,7 +406,9 @@ class NativeGenerationHost implements GenerationHost {
         '180',
       ], runInShell: false);
       _activeProcess = process;
-      if (_closed) process.kill(ProcessSignal.sigterm);
+      if (_closed || _verificationCancelled) {
+        process.kill(ProcessSignal.sigterm);
+      }
       final stdout = process.stdout.transform(utf8.decoder).join();
       final stderr = process.stderr
           .transform(const Utf8Decoder(allowMalformed: true))

@@ -49,6 +49,15 @@ class SourceGenerationController extends BaseController {
   bool get busy => _busy;
   bool _verifying = false;
   bool get verifying => _verifying;
+  bool _stopRequested = false;
+  bool get stopRequested => _stopRequested;
+  void stopVerification() {
+    if (!_verifying || _stopRequested || isDisposed) return;
+    _stopRequested = true;
+    host.cancelVerification();
+    update();
+  }
+
   bool get available =>
       host.supported && !_historyInvalid && project.type == 'Flutter';
   Uri? _preview;
@@ -111,7 +120,25 @@ class SourceGenerationController extends BaseController {
       );
       rethrow;
     }
+    if (_stopRequested) {
+      await _save(
+        value.copy(
+          phase: SourceGenerationPhase.failed,
+          error: 'Verification stopped by user. Existing files and completed results are retained.',
+        ),
+      );
+      throw StateError('Verification stopped by user.');
+    }
     await _save(value);
+    if (_stopRequested) {
+      await _save(
+        value.copy(
+          phase: SourceGenerationPhase.failed,
+          error: 'Verification stopped by user. Existing files and completed results are retained.',
+        ),
+      );
+      throw StateError('Verification stopped by user.');
+    }
     // A durable write is an async boundary; consent can change while it waits.
     _recheckPlan(approval);
   }
@@ -194,12 +221,15 @@ class SourceGenerationController extends BaseController {
       await _save(active);
       if (isDisposed) return false;
       _recheckPlan(approval);
+      _stopRequested = false;
       _verifying = true;
       final verified = await host.verify(
         active,
         (value) => _verificationProgress(value, approval),
       );
-      return !isDisposed && verified.phase == SourceGenerationPhase.ready;
+      return !isDisposed &&
+          !_stopRequested &&
+          verified.phase == SourceGenerationPhase.ready;
     } catch (e) {
       await _failure(active, e);
       return false;
@@ -245,12 +275,15 @@ class SourceGenerationController extends BaseController {
       if (isDisposed) return false;
       _preview = null;
       verificationStarted = true;
+      _stopRequested = false;
       _verifying = true;
       final verified = await host.verify(
         current,
         (value) => _verificationProgress(value, approval),
       );
-      return !isDisposed && verified.phase == SourceGenerationPhase.ready;
+      return !isDisposed &&
+          !_stopRequested &&
+          verified.phase == SourceGenerationPhase.ready;
     } catch (e) {
       if (verificationStarted) {
         await _failure(current, e);

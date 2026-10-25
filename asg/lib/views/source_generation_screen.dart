@@ -180,6 +180,22 @@ class _SourceGenerationScreenState extends State<SourceGenerationScreen> {
                 'Working… saved outcomes appear below. Keep this screen open.',
               ),
             ],
+            if (controller.verifying) ...[
+              OutlinedButton.icon(
+                onPressed: controller.stopRequested
+                    ? null
+                    : controller.stopVerification,
+                icon: const Icon(Icons.stop),
+                label: Text(
+                  controller.stopRequested
+                      ? 'Stopping verification…'
+                      : 'Stop verification',
+                ),
+              ),
+              const Text(
+                'Stop requests termination of the current command and prevents later commands. Existing files and completed results are retained. Wait for the saved outcome before retrying.',
+              ),
+            ],
             if (controller.error != null)
               SelectableText(
                 controller.error!,
