@@ -1,0 +1,48 @@
+import '../models/project.dart';
+import '../services/studio_session_store.dart';
+import 'base_controller.dart';
+
+class StudioSessionController extends BaseController {
+  StudioSessionController(this.store, List<StudioProject> initial) {
+    for (final p in initial) {
+      if (p.id == store.lastProject) _current = p;
+    }
+    _current ??= initial.lastOrNull;
+  }
+  final StudioSessionStore store;
+  StudioProject? _current;
+  StudioProject? get current => _current;
+  bool _busy = false;
+  bool get busy => _busy;
+  String? _error;
+  String? get error => _error;
+  Future<bool> create(StudioProject project) async {
+    if (_busy) return false;
+    _busy = true;
+    _error = null;
+    update();
+    try {
+      await store.projects.save([...store.load(), project]);
+      await store.select(project.id);
+      _current = project;
+      return true;
+    } catch (e) {
+      _error = 'Project could not be opened: $e';
+      return false;
+    } finally {
+      _busy = false;
+      update();
+    }
+  }
+
+  Future<void> select(StudioProject project) async {
+    try {
+      await store.select(project.id);
+      _current = project;
+      _error = null;
+    } catch (e) {
+      _error = '$e';
+    }
+    update();
+  }
+}

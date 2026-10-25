@@ -46,3 +46,9 @@ app.*.map.json
 
 # Widget Preview related
 .widget_preview/
+
+# Project-local inference dependencies
+/tools/.runtime-deps/
+**/__pycache__/
+/tools/.mlx-venv/
+/.runtime-models/

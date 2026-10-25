@@ -1,0 +1,5 @@
+# Security
+
+No shell execution, source mutation, model downloads, or generated-code execution is exposed by the application. Picked paths are metadata, not trusted filesystem boundaries. Future tooling must canonicalize paths, prevent symlink escapes, enforce limits, redact secrets, audit actions, and request required approvals. macOS picker entitlement is enabled. Browser/device preferences are not encrypted secret storage. No sandbox claim applies to future child processes.
+
+Runtime-setup update (25 October 2026): user-approved macOS desktop host integration disables App Sandbox for this app so a selected Python runtime can read its dependencies/model files. The app and trusted bridge use host user permissions; they are not filesystem-isolated. Downloads use explicit HTTPS repository input and argument-array process calls, reject existing destinations, and never load repository Python. Only app-owned inference processes can be stopped. See RUNTIME_SETUP.md for limitations and future signed-helper work.

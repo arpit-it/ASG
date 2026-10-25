@@ -1,0 +1,48 @@
+# Runtime setup
+
+**Current runtime update:** Qwen now uses the verified local 4-bit MLX streaming backend. The earlier Torch timeout/nonstreaming notes below are historical. See [QWEN_STREAMING.md](QWEN_STREAMING.md) for current setup, limits and successful real-edit verification.
+
+Open the **Set up runtime** chip/FAB in the landing screen's upper-right corner. Runtime setup follows MVC: RuntimeSetup/ModelCandidate → RuntimeSetupController → RuntimeHost, RuntimeConnection and stores → RuntimeSetupScreen.
+
+## Already downloaded
+
+In the macOS app, select **Local files**, choose a model folder or a collection of model folders, then **Find local models**. A checkpoint needs config.json, tokenizer files and complete Safetensors weights; selecting a lone weight file is insufficient. Scanning includes the selected directory and up to three child levels, bounded to 200 folders.
+
+For this Mac, the existing checkpoint is `/Users/arpitsinha/ARG-model-downloads/qwen3.5-9b`. Initial managed inference supports architecture `Qwen3_5ForConditionalGeneration` through the bundled Transformers bridge on Apple Metal. Other architectures, GGUF, MLX-only checkpoints, missing shards and Git LFS pointer files are explicitly unsupported. Linked weights outside the checkpoint directory are rejected; select a self-contained downloaded copy.
+
+## Download from a repository
+
+Choose **Repository**, enter a public Hugging Face ID such as `Qwen/Qwen3.5-9B`, its HTTPS repository URL, or another public HTTPS Git repository URL. Select a revision/branch and an existing parent folder. Press **Download model & validate** explicitly to begin the transfer.
+
+A new repository-named directory is created. Existing directories are never overwritten. Hugging Face uses the selected Python environment's huggingface_hub package to download configuration/tokenizer/Safetensors artifacts without Python repository code. Other HTTPS Git hosts use Git with interactive prompts and global/system Git configuration disabled; actual committed weight files are required. Generic Git LFS pointer repos are rejected after cloning; use their Hugging Face equivalent or an already complete local checkout.
+
+Downloads can be many gigabytes. Check the repository's model license and disk needs before beginning. No model download runs automatically on page open or on local-file selection. Transfers continue while the app remains running, with bounded log output and a six-hour timeout. There is no pause/resume/cancel UI in this increment. Interrupted partial folders are retained; they are not silently overwritten on retry. Private/gated repository authentication and download-size previews are not implemented.
+
+## Prepare and launch
+
+Choose an existing Python environment with compatible Torch and Transformers. On this machine, the previously verified interpreter is `/Users/arpitsinha/ComfyUI-Installs/mac_instance/ComfyUI/.venv/bin/python`; enter it or select it with the executable picker. The application has no hardcoded interpreter path.
+
+**Prepare runtime helper** verifies Torch/Transformers and Apple Metal, then installs only Accelerate 1.15.0 into the app-support runtime directory. It does not install or replace Torch/Transformers or modify the selected Python environment. Downloading from Hugging Face additionally requires huggingface_hub in that environment; other Git hosts require Git.
+
+Select a compatible checkpoint and press **Start selected model**. The bundled trusted bridge is extracted into application support and launched with argument arrays, not a shell. It binds only to localhost:8765. Chat settings are saved only after /health reports the expected model ID and path. The runtime model ID is derived from the selected folder name, and is passed explicitly to the bridge.
+
+A running external runtime is shown as external: the app will not kill or replace it. **Connect & save** connects project chat to the model ID/URL you enter. **Test inference** requests a real model response. **Stop runtime** targets only a process launched and owned by this app. A bridge launched by the app watches the parent PID and exits when the app exits. Closing the setup page does not stop an already running managed runtime. If setup is closed during loading, reopen the page to inspect its status and connect after it is ready.
+
+## Platforms and security
+
+Local model scanning/download/process management is implemented for macOS. Android, iOS, Windows, Linux and web show connection controls and an explicit macOS setup explanation; they do not pretend to run Apple Metal inference. Android Emulator uses `http://10.0.2.2:8765/v1`; macOS and localhost web use `http://127.0.0.1:8765/v1`. Physical-phone connectivity remains unconfigured. Connection checks currently target this bridge's /health schema.
+
+The user explicitly approved disabling macOS App Sandbox for this desktop build on 25 October 2026 so it can invoke a selected host Python environment. This is an app-specific entitlement change, not a change to macOS system protections. The macOS app and its Python process run with host user permissions; no filesystem/process isolation is claimed. Existing sandboxed Studio preference keys are copied into missing standard preference keys before Flutter starts, without overwriting newer records or deleting the old container. Migration errors stop startup visibly rather than showing an empty project list.
+
+Future distribution should evaluate a signed managed helper or other narrower host integration. Generated repository Python code is never loaded by this flow (`trust_remote_code=False`), and source generation/execution tools remain unimplemented.
+
+## Verification
+
+- Flutter analysis passed; 24 Flutter tests passed.
+- Tests cover local models versus explicit downloads, incomplete/unsupported model files, repository URL validation, readiness-before-save, connection mismatch, narrow-screen layout and actual owned-process start/stop using a lightweight fixture.
+- Two Python downloader tests passed with mocked Hub transfers; no large model was downloaded during development.
+- The actual Swift preference migration function passed isolated checks for preserving newer values, selecting only Studio keys and rejecting corrupt input.
+- macOS, Android debug and web compilation passed. The macOS landing FAB/setup page and existing Qwen runtime readiness were inspected.
+- A full new multi-gigabyte remote model download and a new Qwen launch from the packaged UI have not been exercised end to end. Existing Qwen inference was previously verified; it remains available.
+
+See [Hugging Face download documentation](https://huggingface.co/docs/huggingface_hub/guides/download) for snapshot downloads and revisions.

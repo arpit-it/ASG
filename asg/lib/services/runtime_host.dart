@@ -1,0 +1,16 @@
+import '../models/runtime_setup.dart';
+
+abstract interface class RuntimeHost {
+  bool get supported;
+  bool get ownsProcess;
+  bool get loading;
+  bool get working;
+  Stream<String> get events;
+  Future<String?> chooseDirectory();
+  Future<String?> choosePython();
+  Future<List<ModelCandidate>> scan(String path);
+  Future<void> prepare(String python);
+  Future<String> download(RuntimeSetup setup);
+  Future<void> start(RuntimeSetup setup, String modelId);
+  Future<void> stop();
+}

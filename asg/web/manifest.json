@@ -1,6 +1,6 @@
 {
-    "name": "asg",
-    "short_name": "asg",
+    "name": "Automated Software Generator",
+    "short_name": "Automated Software Generator",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
