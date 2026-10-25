@@ -12,6 +12,7 @@ import '../services/generation_input.dart';
 import '../services/folder_picker.dart';
 import '../services/source_generation_store.dart';
 import '../services/runtime_setup_store.dart';
+import '../services/requirements_store.dart';
 import 'base_controller.dart';
 
 class SourceGenerationController extends BaseController {
@@ -56,7 +57,10 @@ class SourceGenerationController extends BaseController {
   String get planStatus {
     try {
       final approval = _requirePlan();
-      final plan = BuildPlan.parse(approval.content);
+      final plan = BuildPlan.parse(
+        approval.content,
+        board: RequirementsStore(store.records).load(project.id),
+      );
       return 'Current saved plan approved. Build runs the fixed Flutter starter pipeline only.\nValidated tasks: ${plan.preview}\n\n${approval.content}';
     } catch (e) {
       return 'Build is locked. $e';
@@ -79,6 +83,10 @@ class SourceGenerationController extends BaseController {
 
   void _recheckPlan(PlanApproval started) {
     final current = _requirePlan();
+    BuildPlan.parse(
+      current.content,
+      board: RequirementsStore(store.records).load(project.id),
+    );
     if (!current.matches(started)) {
       throw StateError(
         'Plan approval changed during preparation. Review it before restarting Build.',
@@ -162,7 +170,10 @@ class SourceGenerationController extends BaseController {
     GeneratedProject? active;
     try {
       final approval = _requirePlan();
-      final plan = BuildPlan.parse(approval.content);
+      final plan = BuildPlan.parse(
+        approval.content,
+        board: RequirementsStore(store.records).load(project.id),
+      );
       await host.stopPreview();
       _recheckPlan(approval);
       if (isDisposed) return false;
@@ -217,7 +228,10 @@ class SourceGenerationController extends BaseController {
     var verificationStarted = false;
     try {
       final approval = _requirePlan();
-      final plan = BuildPlan.parse(approval.content);
+      final plan = BuildPlan.parse(
+        approval.content,
+        board: RequirementsStore(store.records).load(project.id),
+      );
       if (!plan.matchesTasks(current.tasks) ||
           current.approval == null ||
           !current.approval!.matches(approval) ||

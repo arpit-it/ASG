@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'build_task.dart';
+import 'requirements_board.dart';
 import 'structured_proposal_json.dart';
 
 /// A model proposal is data. Only this versioned adapter graph is executable.
@@ -22,14 +23,15 @@ class BuildPlan {
           BuildOperation.build => 'Build Flutter web output',
         };
         return '${task.id}: $label; depends on: '
-            '${task.dependencies.isEmpty ? 'none' : task.dependencies.join(', ')}';
+            '${task.dependencies.isEmpty ? 'none' : task.dependencies.join(', ')}'
+            '${task.boardTaskId == null ? '' : '; board task: ${task.boardTaskId}'}';
       })
       .join('\n');
 
   static String get starterContract =>
       '```asg-build\n${jsonEncode({'version': 1, 'adapter': 'flutter-starter', 'tasks': BuildTask.starter.map((t) => t.toJson()).toList()})}\n```';
 
-  static BuildPlan parse(String content) {
+  static BuildPlan parse(String content, {RequirementsBoard? board}) {
     const message =
         'Build needs one valid structured starter Plan. Request a new '
         'Plan explicitly scoped to generating and verifying the fixed Flutter '
@@ -54,12 +56,18 @@ class BuildPlan {
       rejectDuplicateJsonMembers(json);
       if (value is! Map ||
           value.length != 3 ||
-          ![1, 2].contains(value['version']) ||
+          ![1, 2, 3].contains(value['version']) ||
           value['version'] is! int ||
           value['adapter'] != 'flutter-starter') {
         throw const FormatException(message);
       }
       final tasks = BuildTask.fromJson(value['tasks']);
+      if (value['version'] == 3) {
+        if (board == null) throw const FormatException(message);
+        _validateBoardTasks(tasks, board);
+      } else if (tasks.any((task) => task.boardTaskId != null)) {
+        throw const FormatException(message);
+      }
       if (value['version'] == 1 &&
           jsonEncode(tasks.map((t) => t.toJson()).toList()) !=
               jsonEncode(BuildTask.starter.map((t) => t.toJson()).toList())) {
@@ -68,6 +76,41 @@ class BuildPlan {
       return BuildPlan._(tasks);
     } on FormatException {
       throw const FormatException(message);
+    }
+  }
+
+  /// Board completion is manual evidence, never permission to skip a command.
+  /// Every prerequisite must be mapped into this same approved execution graph.
+  static void _validateBoardTasks(
+    List<BuildTask> tasks,
+    RequirementsBoard board,
+  ) {
+    board.validate();
+    final boardTasks = {for (final task in board.tasks) task.id: task};
+    final mapped = <String, String>{};
+    for (final task in tasks) {
+      final reference = task.boardTaskId;
+      if (reference == null ||
+          !boardTasks.containsKey(reference) ||
+          mapped.containsKey(reference)) {
+        throw const FormatException('Invalid board task mapping.');
+      }
+      mapped[reference] = task.id;
+    }
+    final ancestors = <String, Set<String>>{};
+    for (final task in tasks) {
+      final prior = <String>{
+        for (final dependency in task.dependencies) dependency,
+        for (final dependency in task.dependencies) ...ancestors[dependency]!,
+      };
+      if (boardTasks[task.boardTaskId]!.dependencies.any(
+        (dependency) => !prior.contains(mapped[dependency]),
+      )) {
+        throw const FormatException(
+          'Board prerequisite is not mapped before its dependent.',
+        );
+      }
+      ancestors[task.id] = prior;
     }
   }
 }

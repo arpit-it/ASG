@@ -1,0 +1,179 @@
+import 'dart:convert';
+
+import 'package:asg/models/build_plan.dart';
+import 'package:asg/models/build_task.dart';
+import 'package:asg/models/requirements_board.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+import 'mapped_build_plan_test.dart' show mappedContract, mappedContent;
+
+Map<String, Object> boardContract() => {
+  ...mappedContract(),
+  'version': 3,
+  'tasks': [
+    for (final raw in mappedContract()['tasks'] as List)
+      {...raw as Map, 'boardTaskId': 'T${raw['operation']}'},
+  ],
+};
+String boardContent([Map<String, Object>? contract]) =>
+    mappedContent(contract ?? boardContract());
+RequirementsBoard mappedBoard({bool done = false}) => RequirementsBoard(
+  requirements: const [
+    ProjectRequirement(id: 'R1', title: 'Starter', acceptance: 'Verify output'),
+  ],
+  tasks: [
+    for (final raw in mappedContract()['tasks'] as List)
+      DevelopmentTask(
+        id: 'T${raw['operation']}',
+        requirementId: 'R1',
+        title: '${raw['operation']}',
+        dependencies: [
+          for (final dep in raw['dependencies'] as List)
+            for (final prior in mappedContract()['tasks'] as List)
+              if (prior['id'] == dep) 'T${prior['operation']}',
+        ],
+        status: done ? TaskStatus.done : TaskStatus.queued,
+      ),
+  ],
+);
+void main() {
+  test(
+    'board references survive round trip without manual status skipping checks',
+    () {
+      for (final done in [false, true]) {
+        final plan = BuildPlan.parse(
+          boardContent(),
+          board: mappedBoard(done: done),
+        );
+        expect(plan.tasks.map((t) => t.boardTaskId), [
+          'Tresolve',
+          'Ttest',
+          'Tanalyze',
+          'Tbuild',
+        ]);
+        expect(plan.tasks.length, 4);
+        expect(plan.preview, contains('board task: Ttest'));
+        expect(
+          plan.matchesTasks(
+            BuildTask.fromJson(
+              jsonDecode(
+                jsonEncode(plan.tasks.map((t) => t.toJson()).toList()),
+              ),
+            ),
+          ),
+          isTrue,
+        );
+        expect(
+          plan.matchesTasks(BuildPlan.parse(mappedContent()).tasks),
+          isFalse,
+        );
+      }
+      expect(() => BuildPlan.parse(boardContent()), throwsFormatException);
+    },
+  );
+  test('rejects absent duplicate mixed invalid and legacy references', () {
+    final original = boardContract()['tasks'] as List;
+    for (final change in [
+      {'boardTaskId': 'missing'},
+      {'boardTaskId': 'Tresolve'},
+      {'boardTaskId': null},
+      {'boardTaskId': '../Ttest'},
+      {'boardTaskId': 1},
+      {'command': 'arbitrary'},
+    ]) {
+      final value = {
+        ...boardContract(),
+        'tasks': [
+          for (final raw in original)
+            if (raw['id'] == 'unit') {...raw as Map, ...change} else raw,
+        ],
+      };
+      expect(
+        () => BuildPlan.parse(boardContent(value), board: mappedBoard()),
+        throwsFormatException,
+        reason: '$change',
+      );
+    }
+    for (final version in [1, 2]) {
+      expect(
+        () => BuildPlan.parse(
+          boardContent({...boardContract(), 'version': version}),
+          board: mappedBoard(),
+        ),
+        throwsFormatException,
+      );
+    }
+    expect(
+      () => BuildPlan.parse(
+        boardContent({
+          ...boardContract(),
+          'tasks': [
+            for (final raw in original)
+              if (raw['id'] == 'unit')
+                {...raw as Map}..remove('boardTaskId')
+              else
+                raw,
+          ],
+        }),
+        board: mappedBoard(),
+      ),
+      throwsFormatException,
+    );
+  });
+  test('board prerequisites must be mapped transitively including manual completion', () {
+    final board = mappedBoard();
+    RequirementsBoard withDependencies(String id, List<String> dependencies) =>
+        RequirementsBoard(
+          requirements: board.requirements,
+          tasks: [
+            for (final t in board.tasks)
+              if (t.id == id)
+                DevelopmentTask(
+                  id: t.id,
+                  requirementId: t.requirementId,
+                  title: t.title,
+                  dependencies: dependencies,
+                )
+              else
+                t,
+          ],
+        );
+    expect(
+      () => BuildPlan.parse(
+        boardContent(),
+        board: withDependencies('Tanalyze', ['Ttest']),
+      ),
+      throwsFormatException,
+    );
+    final external = RequirementsBoard(
+      requirements: board.requirements,
+      tasks: [
+        ...withDependencies('Tresolve', ['Texternal']).tasks,
+        DevelopmentTask(
+          id: 'Texternal',
+          requirementId: 'R1',
+          title: 'Prerequisite',
+          status: TaskStatus.done,
+        ),
+      ],
+    );
+    expect(
+      () => BuildPlan.parse(boardContent(), board: external),
+      throwsFormatException,
+    );
+    expect(
+      BuildPlan.parse(
+        boardContent(),
+        board: withDependencies('Tbuild', ['Tresolve']),
+      ).tasks.length,
+      4,
+    );
+    expect(
+      () => BuildPlan.parse(
+        boardContent(),
+        board: RequirementsBoard(tasks: board.tasks),
+      ),
+      throwsFormatException,
+    );
+  });
+}

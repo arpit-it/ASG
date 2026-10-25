@@ -4,11 +4,16 @@ enum BuildOperation { resolve, analyze, test, build }
 enum BuildTaskStatus { pending, running, passed, failed, blocked, interrupted }
 
 class BuildTask {
-  BuildTask._(this.id, this.operation, List<String> dependencies)
-    : dependencies = List.unmodifiable(dependencies);
+  BuildTask._(
+    this.id,
+    this.operation,
+    List<String> dependencies, [
+    this.boardTaskId,
+  ]) : dependencies = List.unmodifiable(dependencies);
   final String id;
   final BuildOperation operation;
   final List<String> dependencies;
+  final String? boardTaskId;
   static List<BuildTask> get starter => List.unmodifiable(
     BuildOperation.values.map(
       (operation) => BuildTask._(
@@ -24,6 +29,7 @@ class BuildTask {
     'id': id,
     'operation': operation.name,
     'dependencies': dependencies,
+    'boardTaskId': ?boardTaskId,
   };
 
   /// One of every allowlisted operation in explicit topological order. Required
@@ -38,7 +44,11 @@ class BuildTask {
     final operations = <BuildOperation>{};
     for (final raw in value) {
       if (raw is! Map ||
-          raw.length != 3 ||
+          raw.length != (raw.containsKey('boardTaskId') ? 4 : 3) ||
+          (raw.containsKey('boardTaskId') &&
+              (raw['boardTaskId'] is! String ||
+                  !RegExp(r'^[A-Za-z][A-Za-z0-9_-]{0,39}$')
+                      .hasMatch(raw['boardTaskId'] as String))) ||
           raw['id'] is! String ||
           !RegExp(r'^[A-Za-z][A-Za-z0-9_-]{0,63}$')
               .hasMatch(raw['id'] as String) ||
@@ -72,7 +82,20 @@ class BuildTask {
         throw invalid;
       }
       ancestors[id] = {...prior, operation};
-      tasks.add(BuildTask._(id, operation, dependencies.cast<String>()));
+      tasks.add(
+        BuildTask._(
+          id,
+          operation,
+          dependencies.cast<String>(),
+          raw['boardTaskId'] as String?,
+        ),
+      );
+    }
+    final references = tasks.map((t) => t.boardTaskId).toList();
+    if (references.any((r) => r != null) &&
+        (references.any((r) => r == null) ||
+            references.toSet().length != tasks.length)) {
+      throw invalid;
     }
     return List.unmodifiable(tasks);
   }
