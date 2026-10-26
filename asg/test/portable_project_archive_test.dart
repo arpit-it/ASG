@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
+
 import 'package:asg/models/app_definition.dart';
 
 import 'package:asg/models/chat_message.dart';
@@ -41,6 +43,37 @@ PortableProjectArchive archive() => PortableProjectArchive(
 );
 
 void main() {
+  test(
+    'portable requirements revisions stay within exact browser integer range',
+    () {
+      for (final revision in [0, 1, 9007199254740991]) {
+        final value = PortableProjectArchive(
+          requirements: RequirementsBoard(revision: revision),
+          messages: [],
+        );
+        expect(
+          PortableProjectArchive.decode(value.encode()).requirements.revision,
+          revision,
+        );
+      }
+      for (final revision in [9007199254740992, 9007199254740994]) {
+        expect(
+          () => PortableProjectArchive(
+            requirements: RequirementsBoard(revision: revision),
+            messages: [],
+          ),
+          throwsFormatException,
+        );
+        final raw = jsonDecode(archive().encode()) as Map<String, dynamic>;
+        raw['requirements']['revision'] = revision;
+        expect(
+          () => PortableProjectArchive.decode(jsonEncode(raw)),
+          throwsFormatException,
+        );
+      }
+    },
+  );
+
   test('v6 prototype text round trip excludes context and refuses malformed conversations', () {
     final messages = [
       const ChatMessage(
@@ -154,7 +187,9 @@ void main() {
     for (final mutate in <void Function(Map<String, dynamic>)>[
       (j) => j['prototype'] = null,
       (j) => j['prototype']['revision'] = 0,
-      (j) => j['prototype']['revision'] = 1.0,
+      // JavaScript JSON serialization erases the integral-double distinction.
+      if (!kIsWeb) (j) => j['prototype']['revision'] = 1.0,
+      (j) => j['prototype']['revision'] = 1.5,
       (j) => j['prototype']['revision'] = 9007199254740992,
       (j) => j['prototype']['messages'] = [],
       (j) => j['prototype']['definition']['path'] = '/private',
@@ -214,7 +249,9 @@ void main() {
       (j) => j['revisions'][0]['requirementsRevision'] = -1,
       (j) => j['revisions'][0]['prototypeRevision'] = 0,
       (j) => j['revisions'][0]['prototypeRevision'] = null,
-      (j) => j['revisions'][0]['requirementsRevision'] = 1.0,
+      // JavaScript JSON serialization erases the integral-double distinction.
+      if (!kIsWeb) (j) => j['revisions'][0]['requirementsRevision'] = 1.0,
+      (j) => j['revisions'][0]['requirementsRevision'] = 1.5,
       (j) => j['revisions'][0]['prototypeRevision'] = 9007199254740992,
       (j) => j['revisions'][0].remove('prototypeRevision'),
       (j) => j['version'] = 3,
@@ -274,7 +311,9 @@ void main() {
         (j) => j['revisions'][0]['outcome'] = 'verifying',
         (j) => j['revisions'][0]['passedChecks'] = 3,
         (j) => j['revisions'][0]['totalChecks'] = 5,
-        (j) => j['revisions'][0]['passedChecks'] = 4.0,
+        // JavaScript JSON serialization erases the integral-double distinction.
+        if (!kIsWeb) (j) => j['revisions'][0]['passedChecks'] = 4.0,
+        (j) => j['revisions'][0]['passedChecks'] = 3.5,
         (j) => j['revisions'][0]['recordedAt'] = '2026-02-31T00:00:00.000Z',
         (j) => j['revisions'][0]['recordedAt'] = true,
         (j) => j['revisions'][0]['directory'] = '/private',
@@ -432,9 +471,15 @@ void main() {
       }
       final mutations = <void Function(Map<String, dynamic>)>[
         (j) => j['version'] = 2,
-        (j) => j['version'] = 1.0,
-        (j) => j['requirements']['revision'] = 0.0,
-        (j) => j['requirements']['version'] = 1.0,
+        // JavaScript JSON serialization erases the integral-double distinction.
+        if (!kIsWeb) (j) => j['version'] = 1.0,
+        (j) => j['version'] = 1.5,
+        // JavaScript JSON serialization erases the integral-double distinction.
+        if (!kIsWeb) (j) => j['requirements']['revision'] = 0.0,
+        (j) => j['requirements']['revision'] = 0.5,
+        // JavaScript JSON serialization erases the integral-double distinction.
+        if (!kIsWeb) (j) => j['requirements']['version'] = 1.0,
+        (j) => j['requirements']['version'] = 1.5,
         (j) => j['format'] = 'other',
         (j) => j.remove('messages'),
         (j) => j['messages'] = {},

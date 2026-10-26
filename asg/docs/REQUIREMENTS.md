@@ -69,7 +69,7 @@ A task moves Queued → In progress → Awaiting merge → Done; use Blocked wit
 
 ## Active task and delivery ledger
 
-Active: F08 In progress/unchecked; reopened #114 on `114-percent-encoded-export` for encoded credential refusal. Prior PR #149 verified merged. Complete backup/general secret exclusion pending; no later task selected.
+Active: F08 In progress/unchecked; reopened #114 on `114-portable-revision-precision`. PR #150 verified merged. Portable requirements revision preservation in progress; complete backup/general secret exclusion pending.
 
 ### F03 acceptance boundary and evidence
 
@@ -2464,3 +2464,21 @@ Owner complete; local main synchronized. Run completed 2026-10-26T18:45:10.73000
 ### F08 percent-encoded credential export guard — issue #114
 
 Reopened matching #114 on `114-percent-encoded-export` after connected GitHub verified PR #149 merge def7e6511832645854da411b40784b6e5b858f84 and no competing active owner/open issues. Saved `https://example.test?api%5Fkey=fixture-value` bypassed the literal credential guard; controller regression failed before fix. Inspect exactly one layer of percent-encoded ASCII alongside original text, without rewriting records or exported content. Individually decoded ASCII escapes prevent malformed percent sequences/encoded Unicode from masking adjacent recognizable patterns. Acceptance: encoded assignments, headers and HTTP user-info refuse safely for saved projects and copies; stale previews clear, no writes/download/disclosure, clean retry succeeds; clean encoded URLs/Unicode/empty values remain exact. Local validation: before-fix controller regression failed; focused46 tests, formatter191 unchanged, analyzer clean, full520 Flutter tests/seven opt-in skips and web build/Wasm dry run passed. F08 remains In progress/unchecked for complete backup/general secret exclusion. Independent exact-head review and required CI/protected merge remain gates. Runtime8765 offline, no live inference claimed. Recorded 2026-10-26T19:00:12.209683+00:00.
+
+
+### F08 percent-encoded export guard — verified PR #150 delivery (26 October 2026)
+
+Issue #114 / branch `114-percent-encoded-export` delivered through https://github.com/arpit-it/ASG/pull/150. Independent exact-head COMMENT5657498065 and final-CI5657544909 approved5e77562cce535dcb96a173bf423eb2066481b89b. Normal protected squash merge63762c085388d9adc603c5bc575f34071eb5867a at2026-10-26T19:07:07Z; issue114closed/completed19:07:09Z independently plugin verified. Tested local736bf8b703da49c1b091d1e917cc97d2b0f70fc3, published head and merged main share tree4fa3603c7c0eb0c0be3db5686ac905eaf47186b6.
+
+Before-fix controller regression failed. Local formatter191/analyzer/full520Flutter tests-seven skips/46focused/web build/Wasm passed. Reviewer independently76focused archive/persistence/MVC tests/formatter191/analyzer passed. Required CI40383032806 actual completed logs inspected before reviewer merge: Flutter121783984217 formatter191/analyzer/518Linux tests-six skips/twoChrome/webWasm/generated resolve-analyze-test-build all4exits0 and passing HTTP200/>1000-byte assertions; Python1217839835072download+4streaming+10process+4confinement fixtures-two skips. Parent independently plugin-verified PR merged/exact head/closed issue/current main. Imported signed merge only after byte-exact SHA validation, safely fast-forwarded local main with0/0divergence and empty tested-tree diff. Unrelated IDE/history edits retained; nothing staged. GitHub exclusively plugin.
+
+F08 remains In progress/unchecked for complete backup/general secret exclusion. Exactly one percent-encoded ASCII layer is inspected alongside original text; archives/records remain verbatim. Encoded credential assignments, headers and HTTP user-info refuse safely, clear stale previews and prevent writes/download/disclosure; clean retries and exact clean encodings pass. Existing8765endpoint offline; no live inference/download/stable-app replacement/deployment. No new issue/task/cadence/notification change. Prior history-publication exclusion and label rejection respected. Recorded 2026-10-26T19:07:55.360258+00:00.
+
+Owner complete; local main synchronized. Run completed 2026-10-26T19:07:55.360258+00:00.
+
+
+### F08 portable requirements revision precision — issue #114
+
+Prior PR #150 verified merged at63762c085388d9adc603c5bc575f34071eb5867a through connected GitHub; no competing active ASG owner/open issues or PRs. Reopened matching #114 on `114-portable-revision-precision`. Evidence: portable current requirements revisions lacked the browser-safe integer ceiling already used by prototype/historical revisions; before-fix codec regression failed. Scope/acceptance: permit exact0..9007199254740991 revisions, refuse larger revisions at the archive boundary before preview/download/copy/workspace writes, retain records/clean retry and legacy versions. Ordinary board editing and archive versions unchanged. Local formatter191/analyzer/522Flutter tests-seven opt-in skips/78focused tests/web build/Wasm passed. Real Chrome exposed integral-double fixtures whose JSON serialization erased their distinction; preserve native cases and add genuine fractional values for both runtimes. Final codec13native and13realChrome tests passed; formatter191/analyzer passed after fixture correction. Independent final-revision review/required CI/protected merge pending. F08 remains In progress/unchecked; no later feature selected. Existing8765runtime offline; no live inference claimed. Recorded 2026-10-26T19:19:38.269575+00:00.
+
+Active owner chat01a179a5-528f-70d1-807a-ba1029101650; avoid overlap until final synchronization.

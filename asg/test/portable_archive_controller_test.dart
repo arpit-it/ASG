@@ -12,6 +12,7 @@ import 'package:asg/services/archive_file_service.dart';
 import 'package:asg/services/conversation_store.dart';
 import 'package:asg/services/inspected_folder_store.dart';
 import 'package:asg/services/portable_archive_store.dart';
+import 'package:asg/services/portable_workspace_restore.dart';
 import 'package:asg/services/record_storage.dart';
 import 'package:asg/views/portable_archive_screen.dart';
 import 'package:flutter/material.dart';
@@ -136,6 +137,75 @@ String archive() => PortableProjectArchive(
   messages: const [ChatMessage(role: 'user', content: 'Exact private text 😀')],
 ).encode();
 void main() {
+  test(
+    'unsafe requirements revision refuses export and restore without writes',
+    () async {
+      final records = Records();
+      final files = Files();
+      final c = PortableArchiveController('p', records, files: files);
+      addTearDown(c.dispose);
+      final raw = jsonDecode(archive()) as Map<String, dynamic>;
+      raw['requirements']['revision'] = 9007199254740992;
+      final unsafe = jsonEncode(raw);
+      records.values['studio.requirements.v1.p'] = jsonEncode(
+        raw['requirements'],
+      );
+      records.values['studio.archive.v1.unsafe'] = unsafe;
+      final before = Map.of(records.values);
+      for (final prepare in [
+        c.prepareExport,
+        () => c.prepareCopyExport('unsafe'),
+      ]) {
+        // Establish a valid prior preview before each rejected replacement.
+        records.values['studio.archive.v1.clean'] = archive();
+        await c.prepareCopyExport('clean');
+        expect(c.exportContents, isNotNull);
+        await prepare();
+        expect(c.error, isNotNull);
+        expect(c.error, isNot(contains('PrivateRequirement')));
+        expect(c.exportContents, isNull);
+        await c.exportFile();
+        expect(files.written, isNull);
+      }
+      records.values.remove('studio.archive.v1.clean');
+      files.selected = unsafe;
+      await c.pickImport();
+      expect(c.importContents, isNull);
+      await c.saveCopy('new-copy');
+      await c.restoreWorkspace('new-project', 'Restored');
+      expect(records.values, before);
+      await expectLater(
+        PortableArchiveStore(records).restoreCopy('new-copy', unsafe),
+        throwsFormatException,
+      );
+      await expectLater(
+        PortableWorkspaceRestore(records)
+            .restore(id: 'new-project', name: 'Restored', encoded: unsafe),
+        throwsFormatException,
+      );
+      expect(records.values, before);
+      raw['requirements']['revision'] = 9007199254740991;
+      records.values['studio.requirements.v1.p'] = jsonEncode(
+        raw['requirements'],
+      );
+      await c.prepareExport();
+      expect(c.error, isNull);
+      expect(c.exportPreview!.requirements.revision, 9007199254740991);
+      await c.exportFile();
+      expect(files.written, isNotNull);
+      files.selected = jsonEncode(raw);
+      await c.pickImport();
+      await c.restoreWorkspace('new-project', 'Restored');
+      expect(c.error, isNull);
+      expect(
+        jsonDecode(
+          records.values['studio.requirements.v1.new-project']!,
+        )['revision'],
+        9007199254740991,
+      );
+    },
+  );
+
   test(
     'saved copy short Bearer refusal preserves records and permits retry',
     () async {
