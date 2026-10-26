@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:asg/controllers/dashboard_controller.dart';
@@ -168,22 +169,30 @@ void main() {
       expect(summaries.load(p).snapshot, GeneratedSnapshotStatus.unknown);
     },
   );
-  test('corrupt or forged successful history cannot claim successful verification', () async {
-    records.data['studio.generation.v1.${p.id}'] = 'broken';
-    expect(summaries.load(p).state, ProjectBuildState.unavailable);
-    // An unverified record relabeled ready lacks required successful steps/output.
-    records.data.remove('studio.generation.v1.${p.id}');
-    // Store accepts typed data; reader remains the strict validation boundary.
-    await SourceGenerationStore(records).save(
-      p.id,
-      outcome(
+  test(
+    'corrupt or forged successful history cannot claim successful verification',
+    () async {
+      records.data['studio.generation.v1.${p.id}'] = 'broken';
+      expect(summaries.load(p).state, ProjectBuildState.unavailable);
+      // An unverified record relabeled ready lacks required successful steps/output.
+      records.data.remove('studio.generation.v1.${p.id}');
+      // Invalid terminal records are refused before publication; a forged raw
+      // record still fails closed when read.
+      final forged = outcome(
         p,
         SourceGenerationPhase.generated,
-      ).copy(phase: SourceGenerationPhase.ready),
-    );
-    expect(summaries.load(p).state, ProjectBuildState.unavailable);
-    expect(summaries.load(project('Other')).state, ProjectBuildState.none);
-  });
+      ).copy(phase: SourceGenerationPhase.ready);
+      await expectLater(
+        SourceGenerationStore(records).save(p.id, forged),
+        throwsFormatException,
+      );
+      records.data['studio.generation.v1.${p.id}'] = jsonEncode(
+        forged.toJson(),
+      );
+      expect(summaries.load(p).state, ProjectBuildState.unavailable);
+      expect(summaries.load(project('Other')).state, ProjectBuildState.none);
+    },
+  );
   test(
     'controller keeps mixed projects searchable and refreshes saved outcomes',
     () async {

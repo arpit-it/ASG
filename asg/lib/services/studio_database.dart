@@ -11,6 +11,7 @@ import '../models/project.dart';
 import '../models/plan_approval.dart';
 import '../models/source_generation.dart';
 import 'application_store.dart';
+import 'source_generation_store.dart';
 import 'conversation_store.dart';
 import 'database_factory.dart';
 import 'model_settings_store.dart';
@@ -153,6 +154,7 @@ class StudioDatabase implements ConditionalRecordStorage {
         key.startsWith('studio.sourceCandidate.v1.') ||
         key.startsWith('studio.generationPrevious.v1.')) {
       GeneratedProject.fromJson(decoded as Map<String, dynamic>);
+      SourceGenerationStore.parseHistory(decoded);
     } else {
       throw FormatException('Unsupported database record: $key');
     }

@@ -100,7 +100,9 @@ class FixtureHost implements GenerationHost {
   }) async {
     verifications++;
     lastResume = resume;
-    await progress(project.copy(phase: SourceGenerationPhase.verifying));
+    await progress(
+      project.copy(phase: SourceGenerationPhase.verifying, failedOperation: ''),
+    );
     if (failVerification) throw StateError('Missing interpreter');
     var current = project.copy(
       steps: resume ? project.steps : const [],
@@ -1184,6 +1186,11 @@ void main() {
         200,
         scrollable: find.byType(Scrollable).first,
       );
+      await Scrollable.ensureVisible(
+        tester.element(find.text('Plan that authorized this build')),
+        alignment: 0.5,
+      );
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Plan that authorized this build'));
       await tester.pumpAndSettle();
       expect(
@@ -1202,6 +1209,22 @@ void main() {
         scrollable: find.byType(Scrollable).first,
       );
       expect(find.text('Start actual built preview'), findsOneWidget);
+      await tester.scrollUntilVisible(
+        find.text('Recorded build history'),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await Scrollable.ensureVisible(
+        tester.element(find.text('Recorded build history')),
+        alignment: 0.5,
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Recorded build history'));
+      await tester.pumpAndSettle();
+      expect(
+        find.textContaining('Artifact availability is unverified'),
+        findsOneWidget,
+      );
     },
   );
 }
