@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 
 import '../models/portable_project_archive.dart';
 import '../services/archive_file_service.dart';
+import '../services/portable_prototype_store.dart';
 import '../services/conversation_store.dart';
 import '../services/portable_archive_store.dart';
 import '../services/portable_decision_store.dart';
@@ -62,6 +63,7 @@ class PortableArchiveController extends ChangeNotifier {
     _exportPreview = null;
     final archive = PortableProjectArchive(
       requirements: RequirementsStore(records).load(projectId),
+      prototype: PortablePrototypeStore(records).load(projectId),
       decision: PortableDecisionStore(records).load(projectId),
       revisions: PortableRevisionStore(records).load(projectId),
       messages: ConversationStore(records).load(projectId),
@@ -113,7 +115,7 @@ class PortableArchiveController extends ChangeNotifier {
       _importPreview = null;
       _status =
           'Project "${project.name}" saved. Open it from Projects. '
-          'Its prototype starts fresh; create and approve a new Plan before building.';
+          '${preview.prototype == null ? 'Its prototype starts fresh' : 'Its saved prototype is restored'}; create and approve a new Plan before building.';
     }
   });
 

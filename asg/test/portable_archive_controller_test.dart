@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:asg/models/app_definition.dart';
+
 import 'package:asg/controllers/portable_archive_controller.dart';
 import 'package:asg/models/chat_message.dart';
 import 'package:asg/models/portable_project_archive.dart';
@@ -71,6 +73,20 @@ class Files extends ArchiveFileService {
 }
 
 String archive() => PortableProjectArchive(
+  prototype: PortablePrototype(
+    revision: 12,
+    definition: const AppDefinition(
+      title: 'Saved prototype',
+      theme: 'green',
+      elements: [
+        AppElement(
+          id: 'heading',
+          kind: ElementKind.heading,
+          label: 'Saved heading',
+        ),
+      ],
+    ),
+  ),
   requirements: RequirementsBoard(revision: 3),
   revisions: [
     PortableRevisionSummary(
@@ -90,6 +106,30 @@ String archive() => PortableProjectArchive(
   messages: const [ChatMessage(role: 'user', content: 'Exact private text 😀')],
 ).encode();
 void main() {
+  test(
+    'damaged saved prototype blocks export and malformed import writes nothing',
+    () async {
+      final records = Records();
+      records.values['studio.application.v1.p'] =
+          '{"definition":null,"messages":[],"revision":1}';
+      final c = PortableArchiveController(
+        'p',
+        records,
+        files: Files()
+          ..selected = archive().replaceFirst('"revision":12', '"revision":0'),
+      );
+      addTearDown(c.dispose);
+      await c.prepareExport();
+      expect(c.error, isNotNull);
+      expect(c.exportPreview, isNull);
+      final before = Map.of(records.values);
+      await c.pickImport();
+      expect(c.error, isNotNull);
+      expect(c.importPreview, isNull);
+      await c.restoreWorkspace('new', 'New');
+      expect(records.values, before);
+    },
+  );
   test('bounded bytes reject overflow and invalid UTF-8', () async {
     final encoded = archive();
     final bytes = utf8.encode(encoded);
@@ -350,6 +390,16 @@ void main() {
     await tester.tap(select);
     await tester.pumpAndSettle();
     expect(records.values, isEmpty);
+    final prototype = find.text(
+      'Saved prototype: Saved prototype · revision 12',
+    );
+    await tester.scrollUntilVisible(
+      prototype,
+      150,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+    expect(prototype, findsOneWidget);
     final revisionHistory = find.text(
       'Historical revision summaries only; artifacts and rollback are unavailable.',
     );
