@@ -828,6 +828,77 @@ void main() {
       expect(files.written, isNot(contains('private')));
     },
   );
+  test(
+    'unknown saved local decision fields refuse export and allow retry',
+    () async {
+      final records = Records();
+      final files = Files();
+      final c = PortableArchiveController('p', records, files: files);
+      addTearDown(c.dispose);
+      const key = 'studio.planApproval.v1.p';
+      for (final approved in [true, false]) {
+        final supported = <String, Object?>{
+          'messageIndex': 2,
+          'content': 'Exact decision 中文 😀\nKeep this text',
+          'context': 'deliberately-excluded-context',
+          'approved': approved,
+          'recordedAt': '2026-10-26T17:00:00.000Z',
+        };
+        for (final extra in <Object?>[
+          'private-future-value',
+          {'nested': 'private-future-value'},
+          null,
+        ]) {
+          records.values[key] = jsonEncode(supported);
+          await c.prepareExport();
+          expect(c.exportPreview, isNotNull);
+          files.written = null;
+          records.values[key] = jsonEncode({
+            ...supported,
+            'futureField': extra,
+          });
+          final before = Map.of(records.values);
+          await c.prepareExport();
+          expect(c.error, isNotNull);
+          expect(c.error, isNot(contains('private-future-value')));
+          expect(c.exportPreview, isNull);
+          await c.exportFile();
+          expect(files.written, isNull);
+          expect(records.values, before);
+          records.values[key] = jsonEncode(supported);
+          await c.prepareExport();
+          await c.exportFile();
+          expect(c.error, isNull);
+          final decision = PortableProjectArchive.decode(files.written!)
+              .decision!;
+          expect(decision.content, supported['content']);
+          expect(decision.approved, approved);
+          expect(decision.recordedAt, DateTime.utc(2026, 10, 26, 17));
+          expect(
+            files.written,
+            isNot(contains('deliberately-excluded-context')),
+          );
+          expect(files.written, isNot(contains('messageIndex')));
+        }
+        for (final missing in supported.keys) {
+          final malformed = Map.of(supported)..remove(missing);
+          records.values[key] = jsonEncode(malformed);
+          files.written = null;
+          await c.prepareExport();
+          expect(c.error, isNotNull, reason: missing);
+          expect(c.exportPreview, isNull);
+          await c.exportFile();
+          expect(files.written, isNull);
+          expect(records.values[key], jsonEncode(malformed));
+        }
+      }
+      records.values.clear();
+      await c.prepareExport();
+      expect(c.error, isNull);
+      expect(c.exportPreview!.decision, isNull);
+    },
+  );
+
   test('unknown saved board fields refuse export without data loss', () async {
     final records = Records();
     final files = Files();

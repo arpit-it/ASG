@@ -69,7 +69,7 @@ A task moves Queued → In progress → Awaiting merge → Done; use Blocked wit
 
 ## Active task and delivery ledger
 
-Active: F08 In progress/unchecked; reopened #114 on `114-strict-requirements-export` for lossless requirements-field validation. PR #144 merge verified. Complete backup/general secret exclusion pending; no later task selected.
+Active: F08 In progress/unchecked; reopened #114 on `114-strict-decision-export` for lossless local decision export. PR #145 merge verified. Complete backup/general secret exclusion pending; no later task selected.
 
 ### F03 acceptance boundary and evidence
 
@@ -2376,3 +2376,21 @@ Owner complete; local main synchronized. Run completed 2026-10-26T16:48:04.26438
 Reopened matching #114 on `114-strict-requirements-export` after plugin verification of PR #144 merge e71e284de060b310f03696e26047a9d12104daed, closed issue, no open PR/issues and no competing active ASG owner. Evidence: normal board/requirement/task decoders silently ignored unknown saved fields during export. Regression failed before fix. Export-only strict validation now refuses unknown scalar/nested/null fields at all three levels, missing fields and malformed shapes before conversion. No source writes/downloads or private field disclosure; stale previews clear and clean retry retains exact Unicode, revision, statuses and dependency edges. Absent boards remain supported. Normal editing and archive versions unchanged. F08 remains In progress/unchecked for complete backup/general secret exclusion. Independent final-revision review and actual required CI remain merge gates. Existing8765endpoint offline; no live inference/download/deployment. Unrelated IDE/history edits retained and prior history-publication exclusion respected. Recorded 2026-10-26T17:00:24.353862+00:00.
 
 Local validation: before-fix regression failed; formatter191/analyzer/all513Flutter tests-seven skips/web build and Wasm dry run passed. Final independent review, required CI and merge pending.
+
+
+### F08 strict saved requirements export — verified PR #145 delivery (26 October 2026)
+
+Issue #114 / branch `114-strict-requirements-export` delivered through https://github.com/arpit-it/ASG/pull/145. Independent exact-head COMMENT5655986294 and final-CI5656034579 approved f75f854053137ab403d266a55495ccb981bfd8a3. Normal protected squash merge e54538290ac9d34a3926a48e8753ff5f48c567bb at2026-10-26T17:09:21Z; issue114closed/completed17:09:23Z independently verified through connected GitHub. Tested local a9ad46d5bec4e28c79b8f6e207f566ce058a03b9, published head and merged main share tree451f741e409b138fb57d63058083fe61ad262f43.
+
+Before-fix regression failed. Local formatter191/analyzer/all513Flutter tests-seven skips/web build/Wasm pass. Reviewer independently57focused archive/requirements/MVC tests/formatter191/analyzer pass. Required CI40365196381 actual complete logs inspected before reviewer merge: Flutter121720883457 formatter191/analyzer/511Linux tests-six skips/twoChrome tests/webWasm/generated resolve-analyze-test-build0 and passed HTTP200/>1000byte serving assertions; Python1217208840542download+4streaming+10process+4confinement fixtures-two skips. Parent independently verified merged PR/exact head/closed issue/current main/exact tree through plugin; imported signed merge only after byte-exact SHA verification, safely fast-forwarded local main with0/0divergence and empty tested-tree diff. Unrelated IDE/history edits retained; nothing staged. GitHub exclusively plugin.
+
+F08 remains In progress/unchecked. Unsupported saved board, requirement and task fields refuse export rather than silently disappearing; exact supported records and clean retry remain intact. Complete backup/general secret exclusion pending. Existing8765endpoint offline; no live inference/model download/stable-app replacement/deployment. No new issue/task/cadence/notification change. Prior history publication exclusion and label rejection respected. Postmerge evidence retained locally for next normal reviewed increment. Recorded 2026-10-26T17:10:38.966777+00:00.
+
+Owner complete; local main synchronized. Run completed 2026-10-26T17:10:38.966777+00:00.
+
+
+### F08 strict saved local decision export — issue #114 (26 October 2026)
+
+Reopened matching #114 on `114-strict-decision-export` after connected GitHub verified PR #145 merged at e54538290ac9d34a3926a48e8753ff5f48c567bb and no open PR/issues or competing owner. Evidence: PlanApproval decoding ignored unknown saved decision fields during export; the new controller regression failed before the fix. Export-only validation now checks the complete supported field set before conversion, refusing unknown scalar/nested/null and missing fields without writes/downloads or disclosure. Supported approved/withdrawn Unicode decisions, timestamp, absent records, imported-history precedence and clean retry remain supported; context/execution identity stay deliberately excluded. Normal approval editing/execution decoding unchanged. Scope and acceptance recorded on issue #114. F08 remains In progress/unchecked for complete backup/general secret exclusion. Independent exact-revision review and actual required CI/protected merge remain gates. Existing8765 endpoint offline; no live inference/download/deployment. Unrelated IDE/history edits retained; prior history-publication exclusion respected. Recorded 2026-10-26T17:20:12.652860+00:00.
+
+Final local validation: formatter191 unchanged, analyzer clean, all514Flutter tests passed/seven opt-in skips; web build and Wasm dry run passed. Focused53archive/persistence tests pass; before-fix regression failed. Independent review/required CI/protected merge pending.

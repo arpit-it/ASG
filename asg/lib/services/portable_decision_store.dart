@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import '../models/portable_project_archive.dart';
 import '../models/structured_proposal_json.dart';
-import 'plan_approval_store.dart';
+import '../models/plan_approval.dart';
 import 'record_storage.dart';
 
 /// Imported history never writes or supplies execution consent.
@@ -17,7 +17,24 @@ class PortableDecisionStore {
 
   PortablePlanDecision? load(String id) {
     // A subsequent local decision supersedes imported history in new exports.
-    final local = PlanApprovalStore(records).load(id);
+    final localRaw = records.getString('studio.planApproval.v1.$id');
+    PlanApproval? local;
+    if (localRaw != null) {
+      final value = jsonDecode(localRaw);
+      const fields = [
+        'messageIndex',
+        'content',
+        'context',
+        'approved',
+        'recordedAt',
+      ];
+      if (value is! Map<String, dynamic> ||
+          value.length != fields.length ||
+          fields.any((key) => !value.containsKey(key))) {
+        throw const FormatException('Unsupported saved decision fields.');
+      }
+      local = PlanApproval.fromJson(value);
+    }
     if (local != null) {
       return PortablePlanDecision(
         content: local.content,
