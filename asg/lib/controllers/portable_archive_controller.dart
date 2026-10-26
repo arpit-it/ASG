@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 
 import '../models/portable_project_archive.dart';
@@ -38,6 +40,12 @@ class PortableArchiveController extends ChangeNotifier {
     notifyListeners();
     try {
       await action();
+    } on TimeoutException {
+      if (!_disposed) {
+        _error =
+            'Reading the archive timed out. Select the file again to retry. '
+            'Existing records have not been replaced.';
+      }
     } catch (_) {
       if (!_disposed) {
         _error = 'Operation failed. Check the file, supported format and backup ID, then retry. Existing records have not been replaced.';
