@@ -315,7 +315,9 @@ void main() {
       await tester.pumpAndSettle();
       expect(diagnosis, findsOneWidget);
       expect(
-        find.textContaining('Automatic source repairs are not available yet.'),
+        find.textContaining(
+          'Source repairs require separate consent in source review.',
+        ),
         findsOneWidget,
       );
       expect(candidate.canPromote, isFalse);

@@ -17,6 +17,7 @@ class _SourceReviewScreenState extends State<SourceReviewScreen>
     with WidgetsBindingObserver {
   String? taskId;
   Object? repairConsentProposal;
+  Object? automaticConsent;
   final selected = <String>{};
   SourceReviewController get controller => widget.controller;
 
@@ -47,6 +48,12 @@ class _SourceReviewScreenState extends State<SourceReviewScreen>
   @override
   Widget build(BuildContext context) {
     final evidence = controller.proposal;
+    final selectedPaths = selected.toList()..sort();
+    final automaticScope = (
+      evidence,
+      controller.candidateParent,
+      selectedPaths.join('\n'),
+    );
     return PopScope(
       canPop: !controller.busy,
       child: Scaffold(
@@ -97,12 +104,17 @@ class _SourceReviewScreenState extends State<SourceReviewScreen>
                   : () => controller.request(taskId!, selected.toList()),
               child: const Text('Request source proposal'),
             ),
-            if (controller.busy &&
-                !(controller.candidateSession?.busy ?? false)) ...[
+            if (controller.automaticRepairActive ||
+                (controller.busy &&
+                    !(controller.candidateSession?.busy ?? false))) ...[
               const LinearProgressIndicator(),
               TextButton(
                 onPressed: controller.cancel,
-                child: const Text('Cancel review'),
+                child: Text(
+                  controller.automaticRepairActive
+                      ? 'Stop automatic repairs'
+                      : 'Cancel review',
+                ),
               ),
               const Text(
                 'Cancellation closes the request; server-side inference may continue.',
@@ -125,6 +137,10 @@ class _SourceReviewScreenState extends State<SourceReviewScreen>
               SourceCandidateView(
                 key: ObjectKey(controller.candidateSession),
                 controller: controller.candidateSession!,
+                actionsEnabled: !controller.automaticRepairActive,
+                onStop: controller.automaticRepairActive
+                    ? controller.cancel
+                    : null,
               ),
             if (controller.hasRepairFailure) ...[
               const Text(
@@ -140,6 +156,50 @@ class _SourceReviewScreenState extends State<SourceReviewScreen>
                     ? null
                     : () => controller.requestRepair(selected.toList()),
                 child: const Text('Request repair proposal from saved failure'),
+              ),
+            ],
+            if (controller.hasRepairFailure &&
+                controller.candidateParent != null) ...[
+              const Text(
+                'Automatic repairs request model replacements for selected Dart files, '
+                'apply new diffs without another review in separate candidate folders '
+                'under the selected parent, and rerun offline resolve, analysis, tests '
+                'and web build in the macOS sandbox. Each check has a 3-minute and '
+                '64 KiB output limit; SDK/packages are read-only, writes stay in '
+                'candidate/temporary folders and networking is loopback only. '
+                'Up to 3 requests per failure category and approval (9 total) include '
+                'failed/interrupted requests. Stop ends this session. Working output '
+                'stays active; promotion always requires a separate action.',
+              ),
+              CheckboxListTile(
+                contentPadding: EdgeInsets.zero,
+                title: const Text(
+                  'I approve automatic repairs for these files and folder',
+                ),
+                value: automaticConsent == automaticScope,
+                onChanged: controller.busy
+                    ? null
+                    : (value) => setState(() {
+                        automaticConsent = value == true
+                            ? automaticScope
+                            : null;
+                      }),
+              ),
+              FilledButton(
+                onPressed:
+                    controller.canStartAutomaticRepair &&
+                        selected.isNotEmpty &&
+                        selected.length <= 8 &&
+                        automaticConsent == automaticScope
+                    ? () {
+                        setState(() => automaticConsent = null);
+                        controller.runAutomaticRepairs(
+                          selectedPaths,
+                          approved: true,
+                        );
+                      }
+                    : null,
+                child: const Text('Start bounded automatic repairs'),
               ),
             ],
             if (controller.repairBlockedReason != null)

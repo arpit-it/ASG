@@ -81,7 +81,9 @@ class SourceReviewController extends BaseController {
   SourceCandidateController? get candidateSession => _candidateSession;
   void _sessionChanged() {
     // A new candidate action supersedes the preceding review cancellation.
-    if (!_busy && (_candidateSession?.busy ?? false)) _cancelled = false;
+    if (!_repairLoopActive && !_busy && (_candidateSession?.busy ?? false)) {
+      _cancelled = false;
+    }
     update();
   }
 
@@ -127,8 +129,16 @@ class SourceReviewController extends BaseController {
     await _prepareReviewedCandidate(verifyRepair: true);
   }
 
-  Future<void> _prepareReviewedCandidate({bool verifyRepair = false}) async {
-    if (busy || isDisposed) return;
+  Future<void> _prepareReviewedCandidate({
+    bool verifyRepair = false,
+    bool automatic = false,
+  }) async {
+    if (_busy ||
+        (_candidateSession?.busy ?? false) ||
+        (_repairLoopActive && !automatic) ||
+        isDisposed) {
+      return;
+    }
     final evidence = proposal;
     final parent = _candidateParent;
     if (evidence == null || parent == null) {
@@ -143,7 +153,7 @@ class SourceReviewController extends BaseController {
     update();
     try {
       void checkActive() {
-        if (_cancelled || isDisposed) {
+        if (_cancelled || _loopCancelled || isDisposed) {
           throw StateError('Candidate preparation cancelled.');
         }
         _requireWorking();
@@ -180,7 +190,12 @@ class SourceReviewController extends BaseController {
           records: records,
           host: _createCandidateHost(),
           publish: publishCandidate!,
-          requireWorking: _requireWorking,
+          requireWorking: () {
+            if (_repairLoopActive && _loopCancelled) {
+              throw StateError('Automatic repair stopped.');
+            }
+            _requireWorking();
+          },
         );
         _candidateSession!.addListener(_sessionChanged);
       }
@@ -192,7 +207,7 @@ class SourceReviewController extends BaseController {
         // Preparation consumed the failure binding; the session now guards the
         // copied approval, inputs and working record before each actual check.
         void checkActiveAfterCopy() {
-          if (_cancelled || isDisposed) {
+          if (_cancelled || _loopCancelled || isDisposed) {
             throw StateError('Repair verification cancelled.');
           }
           _requireWorking();
@@ -237,11 +252,16 @@ class SourceReviewController extends BaseController {
   String? get error => _error;
   bool _busy = false, _cancelled = false;
   bool get reviewBusy => _busy;
-  bool get busy => _busy || (_candidateSession?.busy ?? false);
+  bool _repairLoopActive = false, _loopCancelled = false;
+  bool get automaticRepairActive => _repairLoopActive;
+  bool get busy =>
+      _repairLoopActive || _busy || (_candidateSession?.busy ?? false);
   String _status = '';
   String get status {
     final session = _candidateSession;
-    if (session == null || _busy || _cancelled) return _status;
+    if (session == null || _repairLoopActive || _busy || _cancelled) {
+      return _status;
+    }
     if (proposal?.repairRun != null && !session.busy) return _status;
     if (session.promoted) {
       return 'Candidate promoted. Working source and preview now use the verified candidate.';
@@ -316,9 +336,16 @@ class SourceReviewController extends BaseController {
   });
 
   /// A saved source failure can remain inspectable after its budget is spent.
-  bool get hasRepairFailure {
+  bool get hasRepairFailure => !busy && _hasRepairFailure;
+
+  bool get _hasRepairFailure {
     final session = _candidateSession;
-    if (busy || promoted || isDisposed || session == null || proposal == null) {
+    if (_busy ||
+        (session?.busy ?? false) ||
+        promoted ||
+        isDisposed ||
+        session == null ||
+        proposal == null) {
       return false;
     }
     try {
@@ -332,7 +359,7 @@ class SourceReviewController extends BaseController {
   String? get repairBlockedReason {
     final historyError = repairHistoryError;
     if (historyError != null) return historyError;
-    if (!hasRepairFailure) return null;
+    if (!_hasRepairFailure) return null;
     final category = _candidateSession!.result.steps.last.operation;
     if ((repairUsage[category] ?? 0) >= 3) {
       return 'Repair budget exhausted: $category has used all 3 requests for '
@@ -352,6 +379,89 @@ class SourceReviewController extends BaseController {
       return;
     }
     await request(proposal!.boardTaskId, selected, repair: true);
+  }
+
+  bool get canStartAutomaticRepair =>
+      canRequestRepair &&
+      candidateSupported &&
+      publishCandidate != null &&
+      _candidateParent != null;
+
+  /// Explicit consent covers selected paths, separate copies and confined checks.
+  /// Durable category budgets also bound restarted sessions; never auto-promotes.
+  Future<void> runAutomaticRepairs(
+    List<String> selected, {
+    required bool approved,
+  }) async {
+    if (!approved || !canStartAutomaticRepair) return;
+    final parent = _candidateParent!;
+    final selection = List<String>.unmodifiable(selected);
+    final approval = proposal!.approval;
+    final taskId = proposal!.boardTaskId;
+    _repairLoopActive = true;
+    _loopCancelled = false;
+    _cancelled = false;
+    _error = null;
+    void authorize() {
+      if (_loopCancelled || isDisposed) {
+        throw StateError('Automatic repair stopped.');
+      }
+      _requireWorking();
+      if (!approval.matches(
+        PlanApprovalStore(records).requireCurrentApproval(project),
+      )) {
+        throw StateError('Automatic repair approval changed.');
+      }
+    }
+
+    try {
+      // Three supported categories, each with at most three durable reservations.
+      // The extra bound prevents a non-progressing integration from looping.
+      for (var iteration = 0; iteration < 9; iteration++) {
+        authorize();
+        final blocked = repairBlockedReason;
+        if (blocked != null) throw StateError(blocked);
+        if (!_hasRepairFailure) {
+          throw StateError('No current repairable saved failure.');
+        }
+        final previousProposal = _proposal;
+        await _request(taskId, selection, repair: true, automatic: true);
+        authorize();
+        if (_error != null ||
+            identical(_proposal, previousProposal) ||
+            proposal?.repairRun == null) {
+          throw StateError(_error ?? 'Repair produced no current proposal.');
+        }
+        _candidateParent = parent;
+        await _prepareReviewedCandidate(verifyRepair: true, automatic: true);
+        authorize();
+        final session = _candidateSession;
+        if (_error != null || session == null || session.error != null) {
+          throw StateError(
+            _error ?? session?.error ?? 'Candidate verification unavailable.',
+          );
+        }
+        if (session.result.phase == SourceGenerationPhase.ready) {
+          _status =
+              'Automatic repair checks passed. Explicit promotion is required.';
+          return;
+        }
+      }
+      throw StateError(
+        'Automatic repair session limit reached. Inspect saved attempts.',
+      );
+    } catch (error) {
+      if (!isDisposed) {
+        _error = _loopCancelled ? null : 'Automatic repair stopped. $error';
+        _status = _loopCancelled
+            ? 'Automatic repair cancelled; working output retained.'
+            : 'Automatic repair stopped; inspect saved attempts and exits. Working output retained.';
+      }
+    } finally {
+      _repairLoopActive = false;
+      _loopCancelled = false;
+      update();
+    }
   }
 
   void refreshApproval() {
@@ -380,10 +490,23 @@ class SourceReviewController extends BaseController {
     String taskId,
     List<String> selected, {
     bool repair = false,
+  }) => _request(taskId, selected, repair: repair);
+
+  Future<void> _request(
+    String taskId,
+    List<String> selected, {
+    bool repair = false,
+    bool automatic = false,
   }) async {
-    if (busy || promoted || isDisposed) return;
+    if (_busy ||
+        (_candidateSession?.busy ?? false) ||
+        (_repairLoopActive && !automatic) ||
+        promoted ||
+        isDisposed) {
+      return;
+    }
     final repairCandidate = repair ? _candidateSession?.result : null;
-    if (repair && !canRequestRepair) return;
+    if (repair && (!_hasRepairFailure || repairBlockedReason != null)) return;
     refreshApproval();
     if (!_tasks.any((task) => task.id == taskId)) {
       _error = 'Select a task in the current approved Plan.';
@@ -415,7 +538,7 @@ class SourceReviewController extends BaseController {
     update();
     try {
       void authorizeRequest() {
-        if (_cancelled || isDisposed) {
+        if (_cancelled || _loopCancelled || isDisposed) {
           throw StateError('Source proposal cancelled.');
         }
         _requireWorking();
@@ -467,11 +590,18 @@ class SourceReviewController extends BaseController {
   }
 
   Future<void> cancel() async {
+    if (_repairLoopActive) {
+      _loopCancelled = true;
+    }
     if (_candidateSession?.busy ?? false) {
+      if (_repairLoopActive) _cancelled = true;
       _candidateSession!.cancel();
       return;
     }
-    if (!_busy || _cancelled || isDisposed) return;
+    if (!_busy || _cancelled || isDisposed) {
+      if (_repairLoopActive) _cancelled = true;
+      return;
+    }
     _cancelled = true;
     _status = 'Cancelling review…';
     update();
