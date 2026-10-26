@@ -69,7 +69,7 @@ A task moves Queued → In progress → Awaiting merge → Done; use Blocked wit
 
 ## Active task and delivery ledger
 
-Active: F08 In progress/unchecked; reopened #114 on `114-portable-revision-precision`. PR #150 verified merged. Portable requirements revision preservation in progress; complete backup/general secret exclusion pending.
+Active: F08 In progress/unchecked; reopened #114 on `114-putty-key-export`. PR #151 verified merged. PuTTY private-key export guard in progress; full backup/general secret exclusion pending. No later feature selected.
 
 ### F03 acceptance boundary and evidence
 
@@ -2482,3 +2482,19 @@ Owner complete; local main synchronized. Run completed 2026-10-26T19:07:55.36025
 Prior PR #150 verified merged at63762c085388d9adc603c5bc575f34071eb5867a through connected GitHub; no competing active ASG owner/open issues or PRs. Reopened matching #114 on `114-portable-revision-precision`. Evidence: portable current requirements revisions lacked the browser-safe integer ceiling already used by prototype/historical revisions; before-fix codec regression failed. Scope/acceptance: permit exact0..9007199254740991 revisions, refuse larger revisions at the archive boundary before preview/download/copy/workspace writes, retain records/clean retry and legacy versions. Ordinary board editing and archive versions unchanged. Local formatter191/analyzer/522Flutter tests-seven opt-in skips/78focused tests/web build/Wasm passed. Real Chrome exposed integral-double fixtures whose JSON serialization erased their distinction; preserve native cases and add genuine fractional values for both runtimes. Final codec13native and13realChrome tests passed; formatter191/analyzer passed after fixture correction. Independent final-revision review/required CI/protected merge pending. F08 remains In progress/unchecked; no later feature selected. Existing8765runtime offline; no live inference claimed. Recorded 2026-10-26T19:19:38.269575+00:00.
 
 Active owner chat01a179a5-528f-70d1-807a-ba1029101650; avoid overlap until final synchronization.
+
+
+### F08 portable requirements revision precision — verified PR #151 delivery (26 October 2026)
+
+Issue #114 / branch `114-portable-revision-precision` delivered through https://github.com/arpit-it/ASG/pull/151. Independent exact-head COMMENT5657787221 and final-CI5657833539 approved7fb5bdcfec5827447f228269a46a0161ab826b04. Normal protected squash merge71b29ef32afa91d0dcdbc13c1ce3e73bcb1b95be at2026-10-26T19:29:32Z; issue114closed/completed19:29:33Z independently plugin verified. Tested local06b15d393eb835246d7611934b7ea9e6c4475a2b, published head and merged main share treec9ac64d3fe06facffab0f4208b55de8e553e0bfa.
+
+Before-fix codec regression failed. Local522fullFlutter tests-seven opt-in skips/78focused/13final native codec+13actualChrome codec/formatter191/analyzer/webWasm passed. Initial Chrome failed older integral-double fixtures erased by browser JSON serialization; retained native strict cases, added genuine fractions on both runtimes, reran affected native/Chrome tests and analyzer/formatter. Reviewer independently78focused+13actualChrome/formatter191/analyzer passed. Actual required CI40386466397 complete logs inspected before reviewer merge: Flutter121795937339 formatter191/analyzer/520Linux-six skips/twoChrome/storage-download/webWasm/generated resolve-analyze-test-build all4exit0 and HTTP200/>1000byte assertions; Python1217959369842+4+10+4fixtures-two skips. Parent independently plugin verified merged PR/exact head/closed issue/current main; imported signed merge after exact SHA/tree validation, safely fast-forwarded local main with0/0divergence and empty tested-tree diff. Unrelated IDE/history edits retained; nothing staged. GitHub exclusively plugin.
+
+F08 remains In progress/unchecked for full backup/general secret exclusion. Portable requirements revisions now obey exact browser integer bound0..9007199254740991; unsupported revisions refuse before export/download/copy/workspace writes. Safe refusal clears stale preview, preserves records and permits clean retry at the boundary; normal board editing/archive versions unchanged. Existing8765runtime offline; no live inference/download/stable-app replacement/deployment. No new issue/task/cadence/notification changes. Prior history-publication exclusion/label rejection respected. Postmerge evidence retained locally for the next normal reviewed increment. Recorded 2026-10-26T19:30:21.224071+00:00.
+
+Owner complete; local main synchronized. Run completed 2026-10-26T19:30:21.224071+00:00.
+
+
+### F08 PuTTY private-key export guard — issue #114
+
+Prior PR #151 verified merged at71b29ef32afa91d0dcdbc13c1ce3e73bcb1b95be through connected GitHub; no competing active ASG owner/open issue or PR. Reopened matching #114 on `114-putty-key-export`. Evidence: PPK v2/v3 signatures bypassed the existing PEM guard; controller regression failed before fix. PuTTY format source: https://www.puttyssh.org/0.80/htmldoc/AppendixC.html . Refuse recognized PPK signatures alongside existing patterns, preserving records and data-only import. Acceptance: encrypted/unencrypted v2/v3, CRLF/embedded and one percent-encoded layer refuse saved-project/copy exports; stale preview clears, no writes/download/disclosure, clean retry succeeds; public keys and PPK prose remain exact. Focused79 tests, full523Flutter tests/seven opt-in skips, formatter191, analyzer and web build/Wasm dry run passed. Independent final-head review/actual required CI/protected merge remain gates. F08 stays In progress for full backup/general secret exclusion. Existing8765runtime offline; no live inference claimed. Prior history-publication exclusion respected. Recorded 2026-10-26T19:39:25.080446+00:00.

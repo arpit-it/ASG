@@ -7,6 +7,8 @@ import 'portable_project_archive.dart';
 class PortableExportPolicy {
   static final _patterns = <RegExp>[
     RegExp(r'-----BEGIN (?:[A-Z0-9]+ )*PRIVATE KEY-----'),
+    // PuTTY PPK keys use a versioned signature rather than PEM delimiters.
+    RegExp(r'\bPuTTY-User-Key-File-[23]:'),
     RegExp(
       r'\b(?:gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|sk-[A-Za-z0-9_-]{20,}|(?:AKIA|ASIA)[A-Z0-9]{16})\b',
     ),

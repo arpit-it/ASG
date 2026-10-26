@@ -12,6 +12,8 @@ PortableProjectArchive withText(String text) => PortableProjectArchive(
 void main() {
   test('recognized credential forms refuse without exposing text', () {
     final fixtures = [
+      'PuTTY-User-Key-File-2: ssh-rsa',
+      'PuTTY-User-Key-File-3: ssh-ed25519',
       '-----BEGIN PRIVATE KEY-----\nfixture',
       '-----BEGIN RSA PRIVATE KEY-----',
       '-----BEGIN ENCRYPTED PRIVATE KEY-----',
@@ -148,6 +150,10 @@ void main() {
 
   test('clean prose, Unicode and separate fields remain exact', () {
     for (final text in [
+      'Use PuTTY PPK version 2 or 3 for private key files',
+      'PuTTY-User-Key-File-3',
+      'ssh-ed25519 Zml4dHVyZQ== public-key@example.test',
+      '---- BEGIN SSH2 PUBLIC KEY ----',
       'Add a password input and API key settings',
       'https://example.test/docs and user@example.test',
       '-----BEGIN PUBLIC KEY-----',
