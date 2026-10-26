@@ -22,6 +22,9 @@ void main() {
       'AKIA${'D' * 16}',
       'Authorization: bEaReR abcdefgh.ijklmnop',
       'Authorization: Basic dXNlcjpwYXNz',
+      'Authorization: " Basic dXNlcjpwYXNz"',
+      "'Proxy-Authorization' = '\t bAsIc dTo='",
+      '"AUTHORIZATION": "\n\tBasic Og=="',
       'proxy-authorization: bAsIc dTo=',
       '"AUTHORIZATION": "Basic Og=="',
       "'Authorization' = 'Basic dXNlcjpwYXNz'",
@@ -67,6 +70,8 @@ void main() {
       'Bearer',
       'Basic application settings and basic authentication',
       'Authorization: Basic',
+      'Authorization: " Basic"',
+      "Proxy-Authorization: ' \t '",
       'Basic dXNlcjpwYXNz',
       'password:',
       'password: ""',
@@ -97,6 +102,12 @@ void main() {
     final watch = Stopwatch()..start();
     PortableExportPolicy.requireExportable(archive);
     PortableExportPolicy.requireExportable(withText('a.' * 49000));
+    PortableExportPolicy.requireExportable(
+      withText('Authorization:${' ' * 98000}incomplete'),
+    );
+    PortableExportPolicy.requireExportable(
+      withText('Authorization: "${' ' * 98000}incomplete"'),
+    );
     watch.stop();
     expect(watch.elapsed, lessThan(const Duration(seconds: 2)));
     expect(
