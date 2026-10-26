@@ -69,7 +69,7 @@ A task moves Queued → In progress → Awaiting merge → Done; use Blocked wit
 
 ## Active task and delivery ledger
 
-Active: F08 In progress/unchecked; reopened #114 on `114-prefixed-credential-export` for prefixed credential export refusal. PR #140 merge verified. Complete backup/general secret exclusion remain pending; no later task selected.
+Active: F08 In progress/unchecked; reopened #114 on `114-camelcase-credential-export` for camel-case credential assignment refusal. Complete backup/general secret exclusion pending; no later task selected.
 
 ### F03 acceptance boundary and evidence
 
@@ -2306,3 +2306,21 @@ F08 remains In progress/unchecked. Nonempty token/secret/credential/private_key 
 Reused/reopened #114 after connected GitHub verified PR #140 merged as 9a66257df0cc5c8fb4969db0cc1493a76718284d, no open issues/PRs and no competing ASG owner. Branch `114-prefixed-credential-export`. Evidence: underscore-prefixed DB_PASSWORD/SERVICE_API_KEY assignments bypassed the word-boundary guard. Policy/controller regressions failed before fix. Recognize underscore delimiters before existing credential names; preserve empty assignments, prose, lossless imports and records. Acceptance covers nested prefixes, case/quotes/whitespace/empty values, independent controller refusals, safe errors, stale-preview clearing, no writes and clean retry. Formatter188/analyzer/all509Flutter tests pass-seven opt-in skips; web build, independent final-revision review and actual required CI/protected merge remain delivery gates. F08 remains In progress/unchecked; complete backup/general secret exclusion pending. Existing8765offline; no inference/download/deployment. Unrelated IDE/history edits retained. Recorded 2026-10-26T15:49:47.755557+00:00.
 
 Local final validation: formatter188, analyzer clean, all509Flutter tests pass/seven opt-in skips; web build and Wasm dry run pass. Independent review/required CI/protected merge pending.
+
+
+### F08 prefixed credential export guard — verified PR #141 delivery (26 October 2026)
+
+Issue #114 / branch `114-prefixed-credential-export` delivered through https://github.com/arpit-it/ASG/pull/141. Independent exact-head COMMENT approval5654907303 and final complete-CI5654967584 approved217f77d62e3e46b41a31620d033eb9ae9f2ded8d. Normal protected squash merge5829c1e4a0180759073d0a5687cb801ff922a08b at2026-10-26T15:55:40Z; issue closed/completed15:55:41Z independently verified via plugin. Tested local3b10c3e90d8461fa33156ce1d700e6a4939ef157, published head and merged main share treeb17d1fd9bcb82bb66b4a297107b63ae1b5ea31d3.
+
+Before-fix policy/controller regressions failed. Formatter188/analyzer/all509Flutter tests-seven skips/webWasm pass. Reviewer independently65focused tests/formatter188/analyzer pass. Required CI40353288182 complete actual logs inspected before reviewer merge: Flutter121678865393 formatter188/analyzer/507Linux tests-six skips/realChromeIndexedDB/webWasm/generated resolve-analyze-test-build0 and HTTP200/>1000-byte serving assertions; Python1216788649022download+4streaming+10process+4confinement fixtures-two skips. Parent independently verified remote main/merge/closed issue/exact tree through plugin. Reconstructed signed merge only after byte-exact SHA verification; safely fast-forwarded local main with0/0divergence and empty tested-tree diff. Unrelated IDE/history edits retained; nothing staged. GitHub exclusively plugin.
+
+F08 remains In progress/unchecked. Underscore-prefixed existing credential assignments refuse export; empty values/prose/lossless imports and clean retry retained. Complete backup/general secret exclusion pending. Existing8765offline; no inference/download/stable-app replacement/deployment. No new issue/task/cadence/notification change. Prior history publication exclusion/label rejection respected. Postmerge evidence retained locally for next normal reviewed increment. Recorded 2026-10-26T15:56:50.569370+00:00.
+
+Owner complete; local main synchronized. Run completed 2026-10-26T15:56:50.569370+00:00.
+
+
+### F08 camel-case credential export guard — issue #114 (26 October 2026)
+
+Reused/reopened #114 after plugin verified PR #141 merged at5829c1e4a0180759073d0a5687cb801ff922a08b, no open issues/PRs and prior owner idle. Branch `114-camelcase-credential-export`. Evidence: dbPassword/serviceApiKey assignments bypassed word/underscore boundaries. Before-fix policy/controller regressions failed. Scope: recognize lower-case/digit-to-upper-case transitions before existing credential names; preserve empty assignments, ordinary prose, lossless imports and records. Policy covers nested prefixes/uppercase aliases/digits/quotes/whitespace and nested candidates; controller independently exercises six aliases, safe refusal, stale-preview clearing, no writes and clean retry. Formatter188/analyzer/full Flutter tests/web build and independent exact-revision review/actual required CI remain delivery gates. F08 remains In progress/unchecked; complete backup/general secret exclusion pending. Existing8765offline; no inference/download/deployment. Unrelated IDE/history edits retained. Recorded 2026-10-26T16:01:12.040907+00:00.
+
+Final local validation 2026-10-26T16:01:42.727999+00:00: formatter188/analyzer/all510Flutter tests-seven opt-in skips/web build/Wasm dry run pass. Independent review/actual required CI/protected merge pending.

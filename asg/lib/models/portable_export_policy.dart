@@ -21,6 +21,23 @@ class PortableExportPolicy {
     ),
   ];
 
+  // Camel-case prefixes have no word boundary. Require a lower-case/digit
+  // to upper-case transition in the original text, preserving ordinary words.
+  static final _camelAssignment = RegExp(
+    r'''[a-z0-9](?:aws[_ -]?(?:secret[_ -]?access[_ -]?key|session[_ -]?token)|password|passwd|pwd|passphrase|token|secret|credential|private[_ -]?key|api[_ -]?(?:key|token)|auth[_ -]?token|access[_ -]?token|id[_ -]?token|refresh[_ -]?token|client[_ -]?secret|secret[_ -]?key)["']?\s*[:=]\s*(?=(?:"[^"]|'[^']|[^\s"',;}{<>]+))''',
+    caseSensitive: false,
+  );
+
+  static bool _hasCamelAssignment(String text) =>
+      _camelAssignment.allMatches(text).any((match) {
+        final prefix = text.codeUnitAt(match.start);
+        final initial = text.codeUnitAt(match.start + 1);
+        return ((prefix >= 97 && prefix <= 122) ||
+                (prefix >= 48 && prefix <= 57)) &&
+            initial >= 65 &&
+            initial <= 90;
+      });
+
   static final _schemeCharacter = RegExp(r'[A-Za-z0-9+.-]');
   static final _schemeStart = RegExp(r'[A-Za-z]');
   static final _space = RegExp(r'\s');
@@ -61,7 +78,8 @@ class PortableExportPolicy {
   static void _inspect(Object? value) {
     if (value is String) {
       if (_patterns.any((pattern) => pattern.hasMatch(value)) ||
-          _hasPasswordUrl(value)) {
+          _hasPasswordUrl(value) ||
+          _hasCamelAssignment(value)) {
         throw const PortableExportRefused();
       }
     } else if (value is List) {
