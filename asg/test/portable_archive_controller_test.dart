@@ -40,6 +40,7 @@ class Records implements ConditionalRecordStorage {
 
 class Files extends ArchiveFileService {
   String? selected, written;
+  Stream<List<int>>? stream;
   Completer<String?>? pending;
   bool cancelled = false, fail = false;
   @override
@@ -48,6 +49,12 @@ class Files extends ArchiveFileService {
   Future<String?> pickImport() async {
     if (fail) {
       throw StateError('File error');
+    }
+    if (stream != null) {
+      return ArchiveFileService.readBounded(
+        stream!,
+        timeout: const Duration(milliseconds: 100),
+      );
     }
     return pending == null ? selected : await pending!.future;
   }
@@ -91,6 +98,94 @@ void main() {
       throwsFormatException,
     );
   });
+  test(
+    'stalled import times out despite stalled cleanup; retry is safe',
+    () async {
+      var cancelled = false;
+      final cleanup = Completer<void>();
+      final source = StreamController<List<int>>(
+        onCancel: () {
+          cancelled = true;
+          return cleanup.future;
+        },
+      );
+      final records = Records()..values['existing'] = 'retained';
+      final files = Files()..stream = source.stream;
+      final c = PortableArchiveController('p', records, files: files);
+      addTearDown(c.dispose);
+      final importing = c.pickImport();
+      source.add(utf8.encode('{"format":'));
+      await Future<void>.delayed(Duration.zero);
+      expect(c.busy, isTrue);
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+      await importing;
+      expect(cancelled, isTrue);
+      expect(c.busy, isFalse);
+      expect(c.importPreview, isNull);
+      expect(c.error, contains('timed out'));
+      expect(records.values, {'existing': 'retained'});
+      files.stream = null;
+      files.selected = archive();
+      await c.pickImport();
+      expect(c.error, isNull);
+      expect(c.importPreview!.encode(), archive());
+      expect(records.values, {'existing': 'retained'});
+      cleanup.complete();
+      await source.close();
+    },
+  );
+
+  test(
+    'whole-read deadline refuses continuously arriving partial bytes',
+    () async {
+      var cancelled = false;
+      final source = StreamController<List<int>>(
+        onCancel: () => cancelled = true,
+      );
+      final reading = ArchiveFileService.readBounded(
+        source.stream,
+        timeout: const Duration(milliseconds: 100),
+      );
+      final failure = expectLater(reading, throwsA(isA<TimeoutException>()));
+      for (var i = 0; i < 4; i++) {
+        source.add([32]);
+        await Future<void>.delayed(const Duration(milliseconds: 25));
+      }
+      await failure;
+      expect(cancelled, isTrue);
+      await source.close();
+    },
+  );
+
+  test('provider and byte-limit errors cancel subscriptions', () async {
+    for (final oversized in [false, true]) {
+      var cancelled = false;
+      final source = StreamController<List<int>>(
+        onCancel: () => cancelled = true,
+      );
+      final reading = ArchiveFileService.readBounded(source.stream);
+      final failure = expectLater(
+        reading,
+        oversized ? throwsFormatException : throwsStateError,
+      );
+      if (oversized) {
+        source.add(List.filled(PortableProjectArchive.maxBytes + 1, 32));
+      } else {
+        source.addError(StateError('Unavailable provider'));
+      }
+      await failure;
+      expect(cancelled, isTrue);
+      await source.close();
+    }
+    await expectLater(
+      ArchiveFileService.readBounded(
+        const Stream.empty(),
+        timeout: Duration.zero,
+      ),
+      throwsArgumentError,
+    );
+  });
+
   test('export snapshots saved text and strips consent; cancel/error preserve retry', () async {
     final records = Records();
     final files = Files();
