@@ -53,6 +53,41 @@ class _SourceGenerationScreenState extends State<SourceGenerationScreen> {
     if (mounted && selected != null) setState(() => target.text = selected);
   }
 
+  Future<void> selectRollback(BuildHistoryEntry entry) async {
+    final working = controller.result;
+    if (working == null || !controller.canRollback(entry)) return;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Restore selected working build?'),
+        content: SingleChildScrollView(
+          child: Text(
+            'Selected version: ${entry.recordedAt?.toLocal() ?? 'timestamp unknown'}\n'
+            '${entry.project.directory}\n\n'
+            'Current work retained: ${working.directory}\n\n'
+            'Switch the working build and preview to the selected existing files. '
+            'Files must still match their saved verification. No files, prototype, '
+            'requirements or approvals are overwritten; no build commands run. '
+            'The displaced working record and full history are retained. '
+            'An earlier build may differ from your current inputs.',
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Restore selected build'),
+          ),
+        ],
+      ),
+    );
+    if (!mounted || confirmed != true) return;
+    await controller.rollback(entry, expectedWorking: working, confirmed: true);
+  }
+
   Widget directory(TextEditingController input, String label) => Row(
     children: [
       Expanded(
@@ -364,6 +399,12 @@ class _SourceGenerationScreenState extends State<SourceGenerationScreen> {
                               ? null
                               : () => controller.inspectArtifacts(entry),
                           child: const Text('Inspect saved artifacts'),
+                        ),
+                        OutlinedButton(
+                          onPressed: controller.canRollback(entry)
+                              ? () => selectRollback(entry)
+                              : null,
+                          child: const Text('Select for rollback'),
                         ),
                         if (entry.project.phase ==
                                 SourceGenerationPhase.ready &&
