@@ -69,7 +69,7 @@ A task moves Queued → In progress → Awaiting merge → Done; use Blocked wit
 
 ## Active task and delivery ledger
 
-Active: F08 In progress/unchecked; reopened #114 on `114-id-token-export` for OAuth identity-token export refusal. PR #137 merge verified. Complete backup/general secret exclusion remain pending; no later task selected.
+Active: F08 In progress/unchecked; reopened #114 on `114-api-auth-token-export` for API/authentication token export refusal. PR #138 merge verified. Complete backup/general secret exclusion remain pending; no later task selected.
 
 ### F03 acceptance boundary and evidence
 
@@ -2258,3 +2258,19 @@ Reused #114 after connected GitHub confirmed PR #137 merged at `2fe74b47d2a451c2
 
 
 Run 2026-10-26T15:10:00.963767+00:00 — F08 #114 OAuth id_token export refusal on 114-id-token-export. Before-fix policy/controller regressions failed; fixed nonempty identity-token assignment detection with case/separator/quotes/whitespace coverage and empty values/prose preserved. Formatter188/analyzer/full506Flutter tests-seven skips/web build/Wasm pass. Independent review/required CI/merge pending. Existing8765offline; no inference/download/deployment. F08 remains In progress; unrelated IDE/history edits preserved.
+
+
+### F08 OAuth identity-token export guard — verified PR #138 delivery (26 October 2026)
+
+Issue #114 / branch `114-id-token-export` delivered through https://github.com/arpit-it/ASG/pull/138. Independent exact-head COMMENT approval `5654313130` and complete-CI gate `5654381254` approved `2f1bd73bf21af0c1467193b662ed576648169e01`. Protected squash merge `e962f90e33d60afa097b455f5840561d3a0c1959` at2026-10-26T15:16:32Z and issue closed/completed15:16:34Z independently verified via connected GitHub. Local tested `786c74a2662d5d7a19d75fde432af21133f28eed`, published head and merged main share tree `9e6366cd35e56716423dfc880924247ae122bde1`.
+
+Before-fix policy/controller regressions failed. Formatter188/analyzer/all506Flutter tests-seven skips/webWasm pass. Reviewer independently passed62focused tests/formatter/analyzer. Required CI40346769250 complete actual logs inspected before reviewer merge: Flutter121655654730 formatter188/analyzer,504Linux tests-six skips, ChromeIndexedDB/webWasm and generated resolve/analyze/test/build all0 with HTTP200/>1000-byte serving assertions; Python121655654450 passes2download+4streaming+10process+4confinement fixtures/two skips. Parent independently verified merge/issue closure/current remote main/exact tree through plugin. Reconstructed signed merge only after exact SHA verification; safely fast-forwarded local main with0/0divergence and empty tested-source/test diff. Unrelated IDE/history edits retained; nothing staged. GitHub exclusively plugin.
+
+F08 remains In progress/unchecked. Nonempty id_token assignments now refuse export; empty assignments/prose/lossless imports and clean retry preserved. Complete backup/general secret exclusion remain pending. Existing8765offline; no live inference/download/stable-app replacement/deployment. No new issue/task/cadence/notification change. Prior history publication exclusion/label rejection respected. Postmerge bookkeeping remains local for next normal reviewed increment. Recorded 2026-10-26T15:17:39.483792+00:00.
+
+
+### F08 API/authentication token export refusal — issue #114 (26 October 2026)
+
+Reused #114 after connected GitHub verified PR #138 merged, no open PR/issues and no competing active ASG run. Nonempty api_token/auth_token assignments bypassed named credential detection. Scope: existing case-insensitive underscore/hyphen/space/camel-case nonempty assignment semantics; preserve empty assignments, prose, lossless import and records. Policy/controller regressions failed before fix. Acceptance: policy quote/whitespace/case/separator/empty fixtures, safe controller refusal, stale-preview clearing, no writes and clean retry. Format/analyze/full Flutter tests/web build, independent final-revision review and actual required CI remain gates. F08 remains In progress/unchecked; complete backup/general secret exclusion pending.
+
+Local validation: formatter188, analyzer clean, all507Flutter tests pass/seven opt-in skips, web build and Wasm dry run pass. Independent review/required CI/merge pending.
