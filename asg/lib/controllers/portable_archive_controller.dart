@@ -13,7 +13,7 @@ import '../services/portable_decision_store.dart';
 import '../services/portable_revision_store.dart';
 import '../services/portable_workspace_restore.dart';
 import '../services/record_storage.dart';
-import '../services/studio_store.dart';
+import '../services/portable_project_store.dart';
 import '../services/portable_requirements_store.dart';
 
 class PortableArchiveController extends ChangeNotifier {
@@ -75,20 +75,8 @@ class PortableArchiveController extends ChangeNotifier {
   Future<void> prepareExport() => _run(() async {
     _exportPreview = null;
     final source = PortableExportRecords(records);
-    final projects = StudioStore(source)
-        .load()
-        .where((p) => p.id == projectId)
-        .toList();
-    if (projects.length > 1) throw StateError('Ambiguous project identity.');
-    final project = projects.singleOrNull;
     final archive = PortableProjectArchive(
-      project: project == null
-          ? null
-          : PortableProjectIntent(
-              description: project.description,
-              type: project.type,
-              platforms: project.platforms,
-            ),
+      project: PortableProjectStore(source).load(projectId),
       requirements: PortableRequirementsStore(source).load(projectId),
       prototype: PortablePrototypeStore(source).load(projectId),
       decision: PortableDecisionStore(source).load(projectId),

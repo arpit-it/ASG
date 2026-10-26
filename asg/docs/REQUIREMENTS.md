@@ -69,7 +69,7 @@ A task moves Queued → In progress → Awaiting merge → Done; use Blocked wit
 
 ## Active task and delivery ledger
 
-Active: F08 In progress/unchecked. Issue #114 portable project intent on `114-portable-project-intent`; prior PR #161 verified merged as 3a3fbbe8e307ada716281eeb1b00c1e1e858fbad. Full backup/general secret exclusion pending; no later feature selected.
+Active: F08 In progress/unchecked. Issue #114 selected project metadata validation on `114-project-metadata-validation` awaits final review/CI/merge. Prior PR #162 verified merged as 2cba6e0b169f936056c11fb7de6998c636ea7d87. Full backup/general secret exclusion pending; no later feature selected.
 
 ### F03 acceptance boundary and evidence
 
@@ -2666,3 +2666,23 @@ Prior PR #161 independently reviewed and verified merged as `3a3fbbe8e307ada7162
 
 Acceptance: exact Unicode description/type/platform round trip, no old ID/path, native close/reopen, malformed metadata no-write rejection, duplicate identity refusal, credential refusal without disclosure, legacy compatibility. 535 full Flutter tests passed (seven opt-in skips), analyzer/formatter191, web build/Wasm dry run and actual Chrome metadata round-trip regression passed. Independent exact-head review and required CI remain merge gates. F08 stays In progress/unchecked for full backup/general secret exclusion. Existing IDE/history edits retained; history publication exclusion retained. No inference/download/stable-app replacement/deployment or cadence/notification change.
 Recorded 2026-10-26T22:00:27.937323+00:00.
+
+
+### F08 portable project intent — verified PR #162 delivery
+
+Issue #114 / branch `114-portable-project-intent` delivered through https://github.com/arpit-it/ASG/pull/162. Independent exact-head COMMENT5659723125 and final-CI5659754865 approved `090ae57f66fa617b3cb7dcd5a22ca9b4716d192b`. Normal protected merge `2cba6e0b169f936056c11fb7de6998c636ea7d87` at 2026-10-26T22:07:06Z; issue114 closed/completed22:07:08Z. Parent independently plugin verified PR merge/approved head/closed issue/current main. Tested local6aac5a8, published head and merged main share tree912d40ff507403c1d0597938ef007235727ccce3. Exact signed merge SHA reproduced before importing; safely synchronized local main,0/0 divergence and empty tested source/test diff. Existing IDE/history edits retained; nothing staged.
+
+Local535fullFlutter/seven opt-in skips/formatter191/analyzer/webWasm/actualChrome metadata regression passed. Reviewer independently91focused/native-reopen/MVC/policy+Chrome/formatter/analyzer and21 additional v7/credential probes passed. RequiredCI40409279399 success; actual Flutter121875232312 logs formatter191/analyzer/533Linux-six skips/new metadata/native-reopen/twoChrome/webWasm/generated resolve-analyze-test-build all4exit0+serving acceptance; Python1218752326522+4+10+4fixtures-two confinement skips inspected before merge.
+
+Version7 preserves exact project description/software type/platform intent, exposes it in review and restores it under a new user-selected name/ID without original location. Strict malformed metadata and ambiguous identities fail before writes; credential policy scans new fields. Old versions retain fallback semantics. F08 remains In progress/unchecked for broader backup/general secret exclusion; no next feature selected. Runtime health unavailable; no live inference/download/stable-app replacement/deployment. No new task/issue/cadence/notification change. History-publication exclusion and prior label rejection retained. Postmerge evidence retained for next reviewed increment. Owner complete; local main synchronized.
+Recorded 2026-10-26T22:08:16.781861+00:00.
+
+
+### F08 selected project metadata validation — issue #114
+
+Prior PR #162 independently verified merged as `2cba6e0b169f936056c11fb7de6998c636ea7d87`; no competing active ASG owner or open issue/PR at selection. Reopened matching #114 on `114-project-metadata-validation`. A before-fix controller regression failed because the catalog decoder silently drops unknown selected-project fields, allowing a successful incomplete backup. PortableProjectStore now refuses unsupported selected record fields before projecting intent. Other project metadata remains outside the selected backup; original identity/name/location stay deliberately excluded. No archive schema change.
+
+Acceptance: unsupported selected metadata clears stale export preview, refuses without record writes/download or value disclosure; exact Unicode clean retry and unrelated project metadata remain supported. Duplicate identity/legacy compatibility remain covered. Validation and independent final-head review/CI/merge evidence follow. F08 remains In progress/unchecked for broader backup/general secret exclusion. Runtime 8765 unavailable; no live inference claimed. Existing IDE/history edits preserved; prior history-publication exclusion retained. No new issue/task or schedule/notification change.
+Recorded 2026-10-26T22:19:56.750354+00:00.
+
+Validation: 92 focused archive/controller/native-reopen/policy/MVC tests and 536 full Flutter tests passed (seven opt-in skips); analyzer, formatter192, actual Chrome selected-metadata regression and web build/Wasm dry run passed. Initial focused command named a nonexistent native test; corrected complete suite passed. Independent exact-head review and required CI remain merge gates.
