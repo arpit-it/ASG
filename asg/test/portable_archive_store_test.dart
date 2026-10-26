@@ -14,6 +14,7 @@ import 'package:asg/services/plan_approval_store.dart';
 import 'package:asg/controllers/portable_archive_controller.dart';
 
 import 'package:asg/services/portable_workspace_restore.dart';
+import 'package:asg/services/inspected_folder_store.dart';
 import 'package:asg/services/studio_store.dart';
 import 'package:asg/services/requirements_store.dart';
 import 'package:asg/services/conversation_store.dart';
@@ -431,6 +432,57 @@ void main() {
         expect(db.getString('studio.$namespace.v1.restored'), isNull);
       }
       expect(db.getString('studio.lastProject.v1'), isNull);
+    },
+  );
+  test(
+    'imported folder identity survives refused restore and native reopen',
+    () async {
+      const root = '/fixture/existing-flutter';
+      final id = InspectedFolderStore.workspaceId(root);
+      await InspectedFolderStore(db).save(root);
+      await expectLater(
+        PortableWorkspaceRestore(db)
+            .restore(id: id, name: 'Collision', encoded: encoded),
+        throwsStateError,
+      );
+      expect(db.getString('studio.projects.v1'), isNull);
+      expect(db.getString('studio.chat.v1.$id'), isNull);
+      await PortableWorkspaceRestore(db)
+          .restore(id: 'clean', name: 'Clean', encoded: encoded);
+      await db.database.close();
+      db = await open();
+      expect(InspectedFolderStore(db).load(), [root]);
+      expect(StudioStore(db).load().single.id, 'clean');
+      expect(
+        ConversationStore(db).load('clean').single.content,
+        'Keep exact 😀',
+      );
+      expect(db.getString('studio.application.v1.$id'), isNull);
+    },
+  );
+  test(
+    'corrupt imported identity records remain intact after refused restore',
+    () async {
+      final raw = StoreRef<String, String>('records');
+      for (final key in [
+        InspectedFolderStore.key,
+        'studio.importedPlan.v1.orphan',
+      ]) {
+        await raw.record(key).put(db.database, '{}');
+        await db.database.close();
+        db = await open();
+        await expectLater(
+          PortableWorkspaceRestore(db)
+              .restore(id: 'orphan', name: 'Refused', encoded: encoded),
+          throwsA(anything),
+        );
+        expect(await raw.record(key).get(db.database), '{}');
+        expect(db.getString('studio.projects.v1'), isNull);
+        expect(db.getString('studio.chat.v1.orphan'), isNull);
+        await raw.record(key).delete(db.database);
+        await db.database.close();
+        db = await open();
+      }
     },
   );
   test(
