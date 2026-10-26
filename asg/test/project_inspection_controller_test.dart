@@ -3,6 +3,9 @@ import 'dart:async';
 import 'package:asg/controllers/project_inspection_controller.dart';
 import 'package:asg/models/project_inspection.dart';
 import 'package:asg/services/folder_picker.dart';
+import 'package:asg/services/inspected_folder_store.dart';
+import 'package:asg/services/record_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:asg/views/project_inspection_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -109,6 +112,40 @@ void main() {
     pending.complete(result('/project'));
     await work;
     expect(c.findings, isNull);
+  });
+  testWidgets('saved folder can be reopened after screen recreation', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+    final store = InspectedFolderStore(
+      PreferenceRecords(await SharedPreferences.getInstance()),
+    );
+    Future<void> open() => tester.pumpWidget(
+      MaterialApp(
+        home: ProjectInspectionScreen(
+          key: UniqueKey(),
+          controller: ProjectInspectionController(
+            store: store,
+            picker: Picker(),
+            inspect: (root) async => result(root),
+          ),
+        ),
+      ),
+    );
+    await open();
+    await tester.tap(find.text('Choose Flutter folder'));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('Save folder reference'));
+    await tester.tap(find.text('Save folder reference'));
+    await tester.pumpAndSettle();
+    expect(find.text('Saved folders'), findsOneWidget);
+    await open();
+    await tester.pumpAndSettle();
+    expect(find.text('Package: sample'), findsNothing);
+    await tester.tap(find.text('/project'));
+    await tester.pumpAndSettle();
+    expect(find.text('Package: sample'), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
   testWidgets('narrow screen selects folder and displays limitations', (
     tester,

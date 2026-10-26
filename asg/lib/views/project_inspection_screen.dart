@@ -59,6 +59,26 @@ class _ProjectInspectionScreenState extends State<ProjectInspectionScreen> {
                 const Text(
                   'Folder inspection is unavailable on this platform.',
                 ),
+              if (controller.storageError != null)
+                Text(controller.storageError!),
+              if (controller.savedFolders.isNotEmpty) ...[
+                const SizedBox(height: 16),
+                Text(
+                  'Saved folders',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const Text(
+                  'Reopening reads current files. Saved references grant no write or execution approval.',
+                ),
+                for (final root in controller.savedFolders)
+                  ListTile(
+                    title: Text(root),
+                    trailing: const Icon(Icons.refresh),
+                    onTap: controller.busy || !controller.supported
+                        ? null
+                        : () => controller.reopen(root),
+                  ),
+              ],
               if (controller.busy) ...[
                 const SizedBox(height: 16),
                 const LinearProgressIndicator(),
@@ -92,10 +112,15 @@ class _ProjectInspectionScreenState extends State<ProjectInspectionScreen> {
                     padding: const EdgeInsets.only(bottom: 8),
                     child: Text(limitation),
                   ),
+                FilledButton.icon(
+                  onPressed: controller.canSave ? controller.saveFolder : null,
+                  icon: const Icon(Icons.bookmark_add_outlined),
+                  label: const Text('Save folder reference'),
+                ),
                 const Text(
-                  'These findings describe this inspection only. The folder has not '
-                  'been saved as an imported project. Reopen and approved-plan '
-                  'integration are not available yet.',
+                  'These findings describe this inspection only. Saving remembers '
+                  'the folder for fresh inspection; it does not create a workspace '
+                  'or approve a plan. Imported-project editing is not available yet.',
                 ),
               ],
             ],

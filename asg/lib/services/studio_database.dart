@@ -16,6 +16,7 @@ import 'conversation_store.dart';
 import 'database_factory.dart';
 import 'model_settings_store.dart';
 import 'record_storage.dart';
+import 'inspected_folder_store.dart';
 import 'runtime_setup_store.dart';
 import 'studio_store.dart';
 
@@ -81,7 +82,8 @@ class StudioDatabase implements ConditionalRecordStorage {
       try {
         validate(record.key, record.value);
       } catch (_) {
-        if (!record.key.startsWith('studio.application.v1.') &&
+        if (record.key != InspectedFolderStore.key &&
+            !record.key.startsWith('studio.application.v1.') &&
             !record.key.startsWith('studio.generation.v1.') &&
             !record.key.startsWith('studio.sourceCandidate.v1.') &&
             !record.key.startsWith('studio.candidateChecks.v1.') &&
@@ -118,7 +120,9 @@ class StudioDatabase implements ConditionalRecordStorage {
     if (key == 'studio.lastProject.v1') return;
     final decoded = jsonDecode(value);
     final source = _SingleRecord(key, value);
-    if (key == 'studio.projects.v1') {
+    if (key == InspectedFolderStore.key) {
+      InspectedFolderStore(source).load();
+    } else if (key == 'studio.projects.v1') {
       StudioStore(source).load();
     } else if (key == 'studio.localModel.v1') {
       ModelSettingsStore(source).load().endpoint;

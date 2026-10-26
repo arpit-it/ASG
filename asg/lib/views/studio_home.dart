@@ -1,4 +1,5 @@
 import '../controllers/project_inspection_controller.dart';
+import '../services/inspected_folder_store.dart';
 import 'project_inspection_screen.dart';
 
 import 'package:flutter/material.dart';
@@ -98,7 +99,9 @@ class _StudioHomeState extends State<StudioHome> {
               : () => Navigator.of(context).push(
                   MaterialPageRoute<void>(
                     builder: (_) => ProjectInspectionScreen(
-                      controller: ProjectInspectionController(),
+                      controller: ProjectInspectionController(
+                        store: InspectedFolderStore(widget.store.records),
+                      ),
                     ),
                   ),
                 ),
