@@ -9,6 +9,7 @@ import '../models/plan_approval.dart';
 import '../models/project.dart';
 import '../models/source_generation.dart';
 import '../services/generation_host.dart';
+import '../services/generation_host_factory.dart';
 import '../services/record_storage.dart';
 import '../services/application_store.dart';
 import '../services/plan_approval_store.dart';
@@ -26,6 +27,7 @@ class SourceGenerationController extends BaseController {
     required this.definition,
     required this.store,
     required GenerationHost host,
+    this.createRollbackHost = createGenerationHost,
     // Preserve the public injection name while allowing promoted-host ownership.
     // ignore: prefer_initializing_formals
   }) : _host = host {
@@ -42,6 +44,7 @@ class SourceGenerationController extends BaseController {
   final StudioProject project;
   final AppDefinition definition;
   final SourceGenerationStore store;
+  final GenerationHost Function() createRollbackHost;
   GenerationHost _host;
   GenerationHost get host => _host;
   GenerationInput? _input;
@@ -81,6 +84,90 @@ class SourceGenerationController extends BaseController {
         _inspections[_historyKey(entry)] = ArtifactInspection.unavailable;
       }
     } finally {
+      _busy = false;
+      update();
+    }
+  }
+
+  bool canRollback(BuildHistoryEntry entry) =>
+      available &&
+      !_busy &&
+      !isDisposed &&
+      entry.project.phase == SourceGenerationPhase.ready &&
+      entry.project.sources.isNotEmpty &&
+      entry.project.outputs.isNotEmpty &&
+      jsonEncode(entry.project.toJson()) != jsonEncode(_result?.toJson());
+
+  /// Switches the working pointer only; never restores or overwrites files.
+  Future<bool> rollback(
+    BuildHistoryEntry entry, {
+    required GeneratedProject expectedWorking,
+    required bool confirmed,
+  }) async {
+    if (!confirmed || !canRollback(entry)) return false;
+    _busy = true;
+    _error = null;
+    update();
+    GenerationHost? replacement;
+    var committed = false;
+    try {
+      final records = store.records;
+      if (records is! ConditionalRecordStorage) {
+        throw UnsupportedError('Atomic storage is required for rollback.');
+      }
+      final key = '${store.prefix}${project.id}';
+      final old = records.getString(key);
+      void check() {
+        if (isDisposed) throw StateError('Build session closed.');
+        if (jsonEncode(_result?.toJson()) !=
+            jsonEncode(expectedWorking.toJson())) {
+          throw StateError('Working build changed. Select the version again.');
+        }
+      }
+
+      check();
+      if (old == null ||
+          jsonEncode(store.load(project.id)?.toJson()) !=
+              jsonEncode(expectedWorking.toJson())) {
+        throw StateError('Saved working build changed. Reopen Build.');
+      }
+      final value = store.encodeRollback(project.id, entry);
+      replacement = createRollbackHost();
+      if (identical(replacement, _host)) {
+        replacement = null;
+        throw StateError('Rollback requires a separate preview host.');
+      }
+      // Native preview validates source/output fingerprints before serving.
+      // The existing host remains alive until the durable switch succeeds.
+      final uri = await replacement.startPreview(entry.project);
+      check();
+      await records.commitRecords(
+        expected: {key: old},
+        updates: {
+          key: value,
+          'studio.generationPrevious.v1.${project.id}': old,
+        },
+        authorize: check,
+      );
+      final previousHost = _host;
+      _host = replacement;
+      _result = entry.project;
+      _preview = uri;
+      committed = true;
+      if (isDisposed) {
+        unawaited(replacement.dispose().catchError((Object _) {}));
+      }
+      unawaited(previousHost.dispose().catchError((Object _) {}));
+      return true;
+    } catch (e) {
+      if (!isDisposed) {
+        _error = 'Rollback did not complete; current work is preserved. $e';
+      }
+      return false;
+    } finally {
+      if (!committed && replacement != null) {
+        await replacement.dispose().catchError((Object _) {});
+      }
       _busy = false;
       update();
     }

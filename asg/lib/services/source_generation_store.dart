@@ -80,6 +80,30 @@ class SourceGenerationStore {
     });
   }
 
+  /// Preserve the journal verbatim: selecting history is not a new test run.
+  String encodeRollback(String id, BuildHistoryEntry selected) {
+    final previous = _record(id);
+    if (previous == null) throw StateError('No saved working build.');
+    GeneratedProject.fromJson(previous);
+    final entries = parseHistory(previous);
+    if (selected.project.phase != SourceGenerationPhase.ready ||
+        selected.project.sources.isEmpty ||
+        selected.project.outputs.isEmpty ||
+        !entries.any(
+          (entry) =>
+              jsonEncode(entry.toJson()) == jsonEncode(selected.toJson()),
+        )) {
+      throw StateError(
+        'Select a saved successful version with artifact evidence.',
+      );
+    }
+    return jsonEncode({
+      ...selected.project.toJson(),
+      'buildHistoryVersion': 1,
+      'buildHistory': previous['buildHistory'],
+    });
+  }
+
   Future<void> save(String id, GeneratedProject project) async {
     final value = encodeUpdate(id, project);
     if (!await records.setString('$prefix$id', value)) {
