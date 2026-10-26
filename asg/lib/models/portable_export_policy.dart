@@ -117,9 +117,10 @@ class PortableExportPolicy {
 
   // Long command-line options can separate a credential name and its value
   // with whitespace. A following option and explicitly empty quotes are not
-  // supplied values. This inspects saved prose; it never parses or runs a shell.
+  // supplied values. Quoted prose and Markdown can start directly with an
+  // option. This inspects saved prose; it never parses or runs a shell.
   static final _commandLineValue = RegExp(
-    r'''(?:^|\s)--([A-Za-z][A-Za-z0-9_-]*)\s+(?:"[^"]|'[^']|(?!--)[^\s"'])''',
+    r'''(?:^|[\s"'`(\[{])--([A-Za-z][A-Za-z0-9_-]*)\s+(?:"[^"]|'[^']|(?!--)[^\s"'])''',
   );
 
   static bool _hasCommandLineCredential(String text) => _commandLineValue

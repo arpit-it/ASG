@@ -69,7 +69,7 @@ A task moves Queued → In progress → Awaiting merge → Done; use Blocked wit
 
 ## Active task and delivery ledger
 
-Active: F08 In progress/unchecked. Issue #114 command-line credential guard on `114-cli-credential-export` awaits final review/CI/merge. Prior PR #157 verified merged as 1b5d41495dbc1a455680b02b673edb8fb6caf7b6. Full backup/general secret exclusion pending; no later feature selected.
+Active: F08 In progress/unchecked. Issue #114 quoted command-line credential guard on `114-quoted-cli-export` awaits final review/CI/merge. Prior PR #158 verified merged as 3f76fa64126ac9f5cf7a40bbd500926a76f828da. Full backup/general secret exclusion pending; no later feature selected.
 
 ### F03 acceptance boundary and evidence
 
@@ -2594,3 +2594,19 @@ Owner complete;local main synchronized. Run completed 2026-10-26T21:06:07.990622
 Prior PR #157 plugin-verified merged as 1b5d41495dbc1a455680b02b673edb8fb6caf7b6; no competing active ASG run/open issue or PR at selection. Reopened matching #114 on `114-cli-credential-export`. Before-fix controller regression failed: whitespace-separated long options such as `--password fixture-value` bypassed assignment guards. Scope: recognize existing credential names in long options with supplied quoted/nonempty or unquoted values, including one percent-encoded ASCII layer; preserve missing/empty values, following long options and ordinary options. No shell parsing/execution, import changes or record rewriting.
 
 Both saved-project/copy exports clear stale preview, refuse without writes/download/disclosure and permit clean retry. 87 focused/531 full Flutter tests (seven opt-in skips), 9 actual Chrome policy tests, formatter (191 files), analyzer and web build/Wasm dry run passed. Independent exact-head review/required CI/protected merge remain gates. F08 remains In progress/unchecked for full backup/general secret exclusion. Runtime 8765 offline; no live inference claimed. Existing IDE/history edits preserved and prior history-publication exclusion respected. Recorded 2026-10-26T21:10:05.045721+00:00.
+
+
+### F08 command-line credential guard — verified PR #158 delivery
+
+Issue #114 / branch `114-cli-credential-export` delivered through https://github.com/arpit-it/ASG/pull/158. Independent exact-head COMMENT5659091047 and final-CI6427510722 approved c3178d4e9780e165b40b02ae3d223c6b0c9c30e6. Normal protected squash merge3f76fa64126ac9f5cf7a40bbd500926a76f828da at2026-10-26T21:16:03Z; issue114closed/completed21:16:04Z independently plugin verified. Tested local2f8a4db, published head and merged main share tree0b90acdc4caf4de2190fabcf01380ff4dc74dcae.
+
+Before-fix controller regression failed. Local87focused/531fullFlutter-seven opt-in skips/9actualChrome/formatter191/analyzer/webWasm passed. Reviewer independently87focused+9Chrome/formatter/analyzer passed. Required CI40402193447 completed successfully; reviewer inspected actual Flutter121850655482/Python121850655928 logs including browser storage/download and independent generated-project verification. Parent independently plugin verified merged PR/exact head/closed issue; imported signed merge after exact SHA/tree validation and safely fast-forwarded local main,0/0divergence and empty tested-tree diff. Unrelated IDE/history edits retained; nothing staged. GitHub exclusively plugin.
+
+F08 remains In progress/unchecked for full backup/general secret exclusion. Whitespace-separated long credential options now refuse saved-project/copy exports, including quoted values and one percent-encoded ASCII layer. Missing/empty values, following long options and ordinary options stay exact. Refusal clears stale preview, prevents writes/download/disclosure and permits clean retry. This bounded pattern guard does not prove arbitrary free text secret-free. Runtime8765offline; no live inference/download/stable-app replacement/deployment. No new issue/task/cadence/notification change. History-publication exclusion and prior label rejection respected. Postmerge evidence retained locally for the next normal reviewed increment. Recorded 2026-10-26T21:16:44.504127+00:00.
+
+
+### F08 quoted command-line credential export guard — issue #114
+
+Prior PR #158 independently plugin-verified merged as `3f76fa64126ac9f5cf7a40bbd500926a76f828da`; no competing active ASG run or open issue/PR at selection. Reopened matching #114 on `114-quoted-cli-export`. Before-fix controller regression failed: a credential option immediately after an opening quote or Markdown backtick bypassed the whitespace-only boundary. Scope: recognize quoted/Markdown/open-bracket boundaries; preserve embedded word/hyphen prefixes, missing/empty values and ordinary options. One percent-encoded ASCII layer remains inspected. No command execution, import changes or record rewriting.
+
+Both saved-project/copy exports clear stale preview, refuse without writes/download/matched-text disclosure and permit clean retry. 87 focused/531 full Flutter tests (seven opt-in skips), formatter (191 files) and analyzer passed. 9 actual Chrome policy tests and the web build/Wasm dry run passed. Initial focused invocation named a nonexistent native test; corrected suite passed. Independent exact-head review/required CI/protected merge remain gates. F08 remains In progress/unchecked for full backup/general secret exclusion. Runtime 8765 offline; no live inference/download/stable-app replacement/deployment. Existing IDE/history edits preserved; history-publication exclusion and prior label rejection retained. Recorded 2026-10-26T21:19:54.396437+00:00.

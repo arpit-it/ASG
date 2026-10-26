@@ -529,6 +529,13 @@ void main() {
     await store.restoreCopy('clean', archive());
     for (final text in [
       'tool --password fixture-value',
+      '`--password fixture-value`',
+      '"--api-key fixture-value"',
+      "'--token fixture-value'",
+      '(--password fixture-value)',
+      '[--client-secret fixture-value]',
+      '{--passphrase fixture-value}',
+      Uri.encodeComponent('`--password fixture-value`'),
       'tool --api-key "fixture-value"',
       "tool --client-secret 'fixture-value'",
       Uri.encodeComponent('tool --token fixture-value'),
