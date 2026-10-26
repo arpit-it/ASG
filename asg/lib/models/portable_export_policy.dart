@@ -115,6 +115,17 @@ class PortableExportPolicy {
     return close != null && close[1] == text.substring(start + 1, nameEnd);
   }
 
+  // Long command-line options can separate a credential name and its value
+  // with whitespace. A following option and explicitly empty quotes are not
+  // supplied values. This inspects saved prose; it never parses or runs a shell.
+  static final _commandLineValue = RegExp(
+    r'''(?:^|\s)--([A-Za-z][A-Za-z0-9_-]*)\s+(?:"[^"]|'[^']|(?!--)[^\s"'])''',
+  );
+
+  static bool _hasCommandLineCredential(String text) => _commandLineValue
+      .allMatches(text)
+      .any((match) => _credentialTag.hasMatch(match[1]!));
+
   static final _schemeCharacter = RegExp(r'[A-Za-z0-9+.-]');
   static final _schemeStart = RegExp(r'[A-Za-z]');
   static final _space = RegExp(r'\s');
@@ -161,7 +172,8 @@ class PortableExportPolicy {
       _patterns.any((pattern) => pattern.hasMatch(text)) ||
       _hasXmlCredential(text) ||
       _hasCredentialUrl(text) ||
-      _hasCamelAssignment(text);
+      _hasCamelAssignment(text) ||
+      _hasCommandLineCredential(text);
 
   static bool _hasEncodedCredential(String text) {
     // Inspect exactly one encoding layer; retain the original archive verbatim.

@@ -69,7 +69,7 @@ A task moves Queued → In progress → Awaiting merge → Done; use Blocked wit
 
 ## Active task and delivery ledger
 
-Active: F08 In progress/unchecked. Reopened issue #114 on `114-nested-xml-export` for nested/CDATA XML credential refusal; prior PR #156 verified merged. Final review/CI/merge pending; full backup/general secret exclusion pending. No later feature selected.
+Active: F08 In progress/unchecked. Issue #114 command-line credential guard on `114-cli-credential-export` awaits final review/CI/merge. Prior PR #157 verified merged as 1b5d41495dbc1a455680b02b673edb8fb6caf7b6. Full backup/general secret exclusion pending; no later feature selected.
 
 ### F03 acceptance boundary and evidence
 
@@ -2576,3 +2576,21 @@ F08 remains In progress/unchecked for full backup/general secret exclusion. Attr
 PR #156 independently plugin-verified merged as6e6d6fac1ff150ac071c274f0c3a2556e430c99b;issue114closed/completed. No competing active ASG owner or open issue/PR at selection. Reopened matching114 on `114-nested-xml-export`. Before-fix controller regression failed: CDATA/nested content began with < and bypassed export refusal. Credential elements now conservatively refuse anything except an immediate matching qualified closing tag; self-closing/empty tags and ordinary markup remain exact. Comments/nested markup/CDATA inside credential elements refuse without parsing; mismatched closing names cannot establish emptiness. One percent-encoded ASCII layer remains inspected. Imports and records stay unchanged.
 
 Acceptance validated: both saved-project/copy export paths clear stale preview and refuse without write/download/matched-text disclosure; clean retry succeeds.85focused/529fullFlutter tests-seven opt-in skips/8actualChrome policy tests/formatter191/analyzer/web build and Wasm dry run passed. Initial fixture command used a wrong relative path; corrected before the before-fix regression. SDK cache access used approved execution. Independent exact-head review, actual required CI and protected merge remain gates. F08 remains In progress/unchecked for full backup/general secret exclusion. Existing8765runtime offline;no live inference/download/stable-app replacement/deployment. History-publication exclusion and prior label rejection retained. Recorded 2026-10-26T20:59:46.523955+00:00.
+
+
+### F08 nested XML credential refusal — verified PR #157 delivery
+
+Issue #114 / branch `114-nested-xml-export` delivered through https://github.com/arpit-it/ASG/pull/157. Independent exact-head COMMENT5658942120 and final-CI6427296513 approved738f3202597c6f740d3b5369d8eb73c8db26b2f3. Normal protected squash merge1b5d41495dbc1a455680b02b673edb8fb6caf7b6 at2026-10-26T21:05:05Z;issue114closed/completed21:05:07Z independently plugin verified. Tested locala02c531d947189395a6f2f6774af7ab5e2c2e2cf,published head and merged main share tree72e49dda58f94d7a4f5afeab51fec644c7b9ee77.
+
+Before-fix controller regression failed. Local85focused/529fullFlutter tests-seven opt-in skips/8actualChrome/formatter191/analyzer/webWasm passed. Reviewer independently85focused+8Chrome/formatter/analyzer passed. Actual required CI40400652898 successful logs inspected before reviewer merge:Flutter121845291022 formatter191/analyzer/527Linux-six skips/twoChrome/storage-download/webWasm/generated resolve-analyze-test-build all4exit0 and HTTP200/>1000byte assertions;Python1218452905732+4+10+4fixtures-two confinement skips. Parent independently plugin verified merged PR/exact head/closed issue/current main. Signed merge imported after exact SHA/tree validation; local main safely fast-forwarded with0/0divergence and empty tested-tree diff. Unrelated IDE/history edits retained;nothing staged. GitHub exclusively plugin.
+
+F08 remains In progress/unchecked for full backup/general secret exclusion. Credential XML elements now conservatively refuse nested markup/comments/CDATA and mismatched closes, including one percent-encoded ASCII layer. Immediate matching empty closes and self-closing/ordinary tags remain exact. Both saved-project/copy exports clear stale preview, refuse without writes/download/disclosure and permit clean retry. This is not general XML parsing or proof of arbitrary free-text secret absence. Existing8765runtime offline;no live inference/download/stable-app replacement/deployment. No new issue/task/cadence/notification change. History-publication exclusion and prior label rejection respected. Postmerge evidence retained locally for next normal reviewed increment. Recorded 2026-10-26T21:06:07.990622+00:00.
+
+Owner complete;local main synchronized. Run completed 2026-10-26T21:06:07.990622+00:00.
+
+
+### F08 command-line credential export guard — issue #114
+
+Prior PR #157 plugin-verified merged as 1b5d41495dbc1a455680b02b673edb8fb6caf7b6; no competing active ASG run/open issue or PR at selection. Reopened matching #114 on `114-cli-credential-export`. Before-fix controller regression failed: whitespace-separated long options such as `--password fixture-value` bypassed assignment guards. Scope: recognize existing credential names in long options with supplied quoted/nonempty or unquoted values, including one percent-encoded ASCII layer; preserve missing/empty values, following long options and ordinary options. No shell parsing/execution, import changes or record rewriting.
+
+Both saved-project/copy exports clear stale preview, refuse without writes/download/disclosure and permit clean retry. 87 focused/531 full Flutter tests (seven opt-in skips), 9 actual Chrome policy tests, formatter (191 files), analyzer and web build/Wasm dry run passed. Independent exact-head review/required CI/protected merge remain gates. F08 remains In progress/unchecked for full backup/general secret exclusion. Runtime 8765 offline; no live inference claimed. Existing IDE/history edits preserved and prior history-publication exclusion respected. Recorded 2026-10-26T21:10:05.045721+00:00.
