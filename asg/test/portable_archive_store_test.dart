@@ -1,4 +1,9 @@
 import 'dart:io';
+import 'dart:convert';
+
+import 'package:asg/services/portable_decision_store.dart';
+import 'package:asg/services/plan_approval_store.dart';
+import 'package:asg/controllers/portable_archive_controller.dart';
 
 import 'package:asg/services/portable_workspace_restore.dart';
 import 'package:asg/services/studio_store.dart';
@@ -35,6 +40,95 @@ void main() {
   tearDown(() async {
     await db.database.close();
     await temp.delete(recursive: true);
+  });
+  test('historical decision persists through native restore and re-export without consent', () async {
+    final original = PortableProjectArchive(
+      requirements: RequirementsBoard(revision: 7),
+      messages: [],
+      decision: PortablePlanDecision(
+        content: 'Old decision 中文',
+        approved: true,
+        recordedAt: DateTime.utc(2026, 10, 26),
+      ),
+    );
+    await PortableArchiveStore(db).restoreCopy('copy', original.encode());
+    await PortableWorkspaceRestore(db)
+        .restore(id: 'history', name: 'History', encoded: original.encode());
+    await db.database.close();
+    db = await open();
+    expect(PortableArchiveStore(db).load('copy')!.encode(), original.encode());
+    final project = StudioStore(db).load().single;
+    expect(
+      PortableDecisionStore(db).load(project.id)!.toJson(),
+      original.decision!.toJson(),
+    );
+    expect(PlanApprovalStore(db).load(project.id), isNull);
+    expect(
+      () => PlanApprovalStore(db).requireCurrentApproval(project),
+      throwsStateError,
+    );
+    final controller = PortableArchiveController(project.id, db);
+    addTearDown(controller.dispose);
+    await controller.prepareExport();
+    expect(controller.exportPreview!.encode(), original.encode());
+    // A later local decision is exported instead of the imported historical one.
+    await db.setString(
+      'studio.planApproval.v1.history',
+      jsonEncode({
+        'messageIndex': 0,
+        'content': 'New local decision',
+        'context': '/private/context',
+        'approved': false,
+        'recordedAt': '2026-10-26T01:00:00.000Z',
+      }),
+    );
+    await controller.prepareExport();
+    expect(controller.exportPreview!.decision!.content, 'New local decision');
+    expect(controller.exportPreview!.decision!.approved, isFalse);
+    expect(
+      controller.exportPreview!.encode(),
+      isNot(contains('/private/context')),
+    );
+  });
+  test('historical orphan identity and corrupt decision cannot be replaced', () async {
+    final key = PortableDecisionStore.key('orphan');
+    await db.setString(
+      key,
+      jsonEncode(
+        PortablePlanDecision(
+          content: 'Retained',
+          approved: false,
+          recordedAt: DateTime.utc(2026),
+        ).toJson(),
+      ),
+    );
+    await expectLater(
+      PortableWorkspaceRestore(db)
+          .restore(id: 'orphan', name: 'Refused', encoded: encoded),
+      throwsStateError,
+    );
+    expect(db.getString('studio.projects.v1'), isNull);
+    // Inject damaged storage through the database to exercise reopen isolation.
+    final raw =
+        '{"content":"Lost","content":"Retained","approved":false,"recordedAt":"2026-01-01T00:00:00.000Z"}';
+    await StoreRef<String, String>('records').record(key).put(db.database, raw);
+    await db.database.close();
+    db = await open();
+    expect(
+      () => PortableDecisionStore(db).load('orphan'),
+      throwsFormatException,
+    );
+    await expectLater(
+      PortableWorkspaceRestore(db)
+          .restore(id: 'orphan', name: 'Refused', encoded: encoded),
+      throwsFormatException,
+    );
+    expect(
+      await StoreRef<String, String>('records').record(key).get(db.database),
+      raw,
+    );
+    expect(db.getString('studio.projects.v1'), isNull);
+    expect(PortableDecisionStore(db).load('other'), isNull);
   });
   test(
     'workspace reopen preserves records without consent or execution',

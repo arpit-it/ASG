@@ -44,6 +44,15 @@ class _PortableArchiveScreenState extends State<PortableArchiveScreen> {
         'board revision ${archive.requirements.revision} · '
         '${archive.messages.length} assistance messages',
       ),
+      if (archive.decision case final decision?) ...[
+        Text(
+          'Historical Plan decision: ${decision.approved ? 'approved' : 'withdrawn'} · ${decision.recordedAt.toIso8601String()}',
+        ),
+        const Text(
+          'Historical information only. This does not grant Build approval.',
+        ),
+        SelectableText(decision.content),
+      ],
       ExpansionTile(
         title: const Text('Review included text'),
         children: [
@@ -74,7 +83,7 @@ class _PortableArchiveScreenState extends State<PortableArchiveScreen> {
         padding: const EdgeInsets.all(16),
         children: [
           const Text(
-            'Version 1 includes saved requirements, tasks, board revision and Discuss/Plan/Review conversation text. Prototype edit chat, decisions, build history, source files, settings and approval credentials are excluded. Text is verbatim and may contain private information or secrets you typed; review it before sharing.',
+            'Archives include saved requirements, tasks, board revision and Discuss/Plan/Review conversation text. Version 2 also includes the latest saved Plan decision as historical information only; version 1 remains supported. Prototype edit chat, build history, source files, settings and approval credentials are excluded. Text is verbatim and may contain private information or secrets you typed; review it before sharing.',
           ),
           const SizedBox(height: 16),
           FilledButton(

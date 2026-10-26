@@ -72,6 +72,11 @@ class Files extends ArchiveFileService {
 
 String archive() => PortableProjectArchive(
   requirements: RequirementsBoard(revision: 3),
+  decision: PortablePlanDecision(
+    content: "Historical only",
+    approved: false,
+    recordedAt: DateTime.utc(2026),
+  ),
   messages: const [ChatMessage(role: 'user', content: 'Exact private text 😀')],
 ).encode();
 void main() {
@@ -335,6 +340,17 @@ void main() {
     await tester.tap(select);
     await tester.pumpAndSettle();
     expect(records.values, isEmpty);
+    final history = find.text(
+      'Historical information only. This does not grant Build approval.',
+    );
+    await tester.scrollUntilVisible(
+      history,
+      150,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+    expect(history, findsOneWidget);
+    expect(tester.takeException(), isNull);
     final id = find.byWidgetPredicate(
       (w) =>
           w is TextField &&
@@ -393,6 +409,17 @@ void main() {
     await tester.tap(select);
     await tester.pumpAndSettle();
     expect(records.values, isEmpty);
+    final history = find.text(
+      'Historical information only. This does not grant Build approval.',
+    );
+    await tester.scrollUntilVisible(
+      history,
+      150,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+    expect(history, findsOneWidget);
+    expect(tester.takeException(), isNull);
     final id = find.byWidgetPredicate(
       (w) =>
           w is TextField &&

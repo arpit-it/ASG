@@ -6,6 +6,7 @@ import '../models/portable_project_archive.dart';
 import '../services/archive_file_service.dart';
 import '../services/conversation_store.dart';
 import '../services/portable_archive_store.dart';
+import '../services/portable_decision_store.dart';
 import '../services/portable_workspace_restore.dart';
 import '../services/record_storage.dart';
 import '../services/requirements_store.dart';
@@ -60,6 +61,7 @@ class PortableArchiveController extends ChangeNotifier {
     _exportPreview = null;
     final archive = PortableProjectArchive(
       requirements: RequirementsStore(records).load(projectId),
+      decision: PortableDecisionStore(records).load(projectId),
       messages: ConversationStore(records).load(projectId),
     );
     archive.encode();
