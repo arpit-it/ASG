@@ -37,7 +37,13 @@ class PortableWorkspaceRestore {
       rejectDuplicateJsonMembers(catalog);
     }
     final projects = StudioStore(records).load(); // Corruption fails closed.
-    final rows = catalog == null ? <Object?>[] : jsonDecode(catalog) as List;
+    // Keep original number lexemes too: decoding unknown metadata can round
+    // large integers on native and JavaScript runtimes. The validated list
+    // ends at its final closing bracket; append only the new encoded row.
+    final prefix = catalog?.trimRight();
+    final catalogStart = prefix == null
+        ? '['
+        : prefix.substring(0, prefix.length - 1);
     final ids = <String>{};
     for (final project in projects) {
       if (!ids.add(project.id) || project.id == id) {
@@ -99,7 +105,8 @@ class PortableWorkspaceRestore {
         ),
       if (archive.decision case final decision?)
         PortableDecisionStore.key(id): jsonEncode(decision.toJson()),
-      catalogKey: jsonEncode([...rows, project.toJson()]),
+      catalogKey:
+          '$catalogStart${projects.isEmpty ? '' : ','}${jsonEncode(project.toJson())}]',
       'studio.chat.v1.$id': jsonEncode(
         archive.messages.map((m) => m.toJson()).toList(),
       ),

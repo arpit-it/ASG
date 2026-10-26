@@ -122,13 +122,21 @@ void main() {
           'nested': ['Exact 中文 😀', 7, null],
         },
       };
-      await db.setString('studio.projects.v1', jsonEncode([existing]));
+      final catalog = jsonEncode([existing]).replaceFirst(
+        '"futureMetadata":',
+        '"largeNumber":9223372036854775809,"futureMetadata":',
+      );
+      await db.setString('studio.projects.v1', catalog);
       await PortableWorkspaceRestore(db)
           .restore(id: 'new', name: 'New', encoded: encoded);
       await db.database.close();
       db = await open();
       final rows = jsonDecode(db.getString('studio.projects.v1')!) as List;
-      expect(rows.first, existing);
+      expect(
+        db.getString('studio.projects.v1'),
+        contains('"largeNumber":9223372036854775809'),
+      );
+      expect(rows.first, (jsonDecode(catalog) as List).first);
       expect(rows.last['id'], 'new');
       expect(StudioStore(db).load(), hasLength(2));
     },

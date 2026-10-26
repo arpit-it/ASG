@@ -149,6 +149,41 @@ String withoutProjectIntent(PortableProjectArchive value) =>
 
 void main() {
   test(
+    'workspace restore retains unknown catalog number lexemes exactly',
+    () async {
+      for (final number in [
+        '9223372036854775809',
+        '9007199254740993',
+        '1.234567890123456789',
+        '1e999',
+      ]) {
+        final records = Records();
+        final raw =
+            ' [ {"id":"existing","name":"Old","description":"",'
+            '"type":"Flutter","platforms":["Web"],"location":"",'
+            '"future":{"number":$number}} ] \n';
+        records.values['studio.projects.v1'] = raw;
+        await PortableWorkspaceRestore(records)
+            .restore(id: 'new', name: 'New', encoded: archive());
+        final saved = records.values['studio.projects.v1']!;
+        expect(
+          saved,
+          startsWith(raw.trimRight().substring(0, raw.trimRight().length - 1)),
+        );
+        expect(saved, contains('"number":$number'));
+        expect((jsonDecode(saved) as List).last['id'], 'new');
+      }
+      for (final raw in ['[]', ' [  ] \n']) {
+        final records = Records();
+        records.values['studio.projects.v1'] = raw;
+        await PortableWorkspaceRestore(records)
+            .restore(id: 'new', name: 'New', encoded: archive());
+        expect(jsonDecode(records.values['studio.projects.v1']!), hasLength(1));
+      }
+    },
+  );
+
+  test(
     'ambiguous existing catalog refuses workspace restore with clean retry',
     () async {
       final records = Records();
