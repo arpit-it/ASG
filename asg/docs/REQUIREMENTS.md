@@ -69,7 +69,7 @@ A task moves Queued → In progress → Awaiting merge → Done; use Blocked wit
 
 ## Active task and delivery ledger
 
-Active: F08 In progress/unchecked; issue #114 reopened on `114-quoted-credential-guard` for nonempty quoted whitespace credential refusal. PR #133 merge `9018a6909be45bbf594970dceb3a2cbb5b28ff30` verified through connected GitHub. Complete backup/general secret exclusion remain pending; no later task selected.
+Active: F08 In progress/unchecked; reopened #114 on `114-basic-leading-whitespace` for whitespace-prefixed Basic credential refusal. PR #134 merge `0558fce0f709e392ab1322a6b778be09d710b2b1` verified through connected GitHub. Complete backup/general secret exclusion remain pending; no later task selected.
 
 ### F03 acceptance boundary and evidence
 
@@ -2193,3 +2193,19 @@ F08 remains In progress/unchecked. Password-bearing URLs with empty usernames no
 Reopened matching #114 after plugin verification of PR #133 merge/current main and no competing active owner/open PR. Regression tests demonstrated that recognized named credential assignments with quoted leading whitespace exported silently. Scope: refuse nonempty single/double quoted values, including leading spaces/tabs/newlines, whitespace-only values and the other quote character; preserve empty quoted assignments, clean prose, saved records and lossless import. The detector inspects only the first quoted character, without scanning/backtracking across the value. Policy/controller regressions require safe refusal, stale-preview invalidation, no writes and clean retry. Formatter/analyzer/full tests/web build and independent final-revision review/actual required CI remain gates. F08 stays In progress/unchecked; complete backup/general secret exclusion pending.
 
 Local validation: initial new regressions failed before the fix; final formatter188 unchanged/analyzer clean/all502Flutter tests-seven opt-in skips/28focused tests/web build and Wasm dry run pass. Independent final-revision review and actual required CI remain merge gates.
+
+
+### F08 quoted whitespace credential export guard — verified PR #134 delivery (26 October 2026)
+
+Issue #114 / branch `114-quoted-credential-guard` delivered through [PR #134](https://github.com/arpit-it/ASG/pull/134). Independent final-revision COMMENT approval `5653051357` and final complete-CI gate `5653104844` approved exact head `fab667bbe745897baea2bf424642a7ada116eacf`. Normal protected squash merge `0558fce0f709e392ab1322a6b778be09d710b2b1` at 2026-10-26 13:57:49 UTC and issue closure/completed 13:57:51 independently verified through connected GitHub. Tested local `add392e2d5e276e8f1a147933780dcbfeceeea74`, published head and merged main share tree `0481b703e04cdb37b58dce5a1d45ace52e65fea1`.
+
+Independent57focused tests/nine Unicode/quote/97k failed-prefix/empty-value fixtures28ms pass. Required CI `40334406072` complete actual logs inspected before reviewer merge: Flutter `121612004551` passes500Linux tests/six skips, formatter188/analyzer, actualChromeIndexedDB/webWasm and generated resolve/analyze/test/build all0 with HTTP200/>1000-byte serving assertions; Python `121612004164` passes2download+4streaming+10process+4confinement fixtures/two skips. Local502Flutter tests/seven skips, formatter188/analyzer/28focused/webWasm pass; initial new regressions failed before fix. Parent independently verified merged PR, closed issue, current remote main and identical tree through plugin; reconstructed signed merge only after exact SHA reproduction and safely fast-forwarded local main with0/0divergence and empty tested-tree diff. Unrelated IDE/history edits retained; nothing staged. No terminal GitHub access.
+
+F08 remains In progress/unchecked. Nonempty quoted recognized credentials now refuse export even with leading/only whitespace or opposite quotes; empty assignments and clean retry remain supported. Complete backup/general secret exclusion remain pending. Existing8765 endpoint offline; no live inference/download/stable-app replacement/deployment. No new task/issue/cadence/notification change. Prior history publication exclusion and label rejection retained without repeat attempts. Postmerge evidence retained locally for the next normal reviewed increment.
+
+
+### F08 whitespace-prefixed Basic authorization refusal — issue #114 (26 October 2026)
+
+Reopened matching #114 on `114-basic-leading-whitespace` after connected-plugin verification of PR #134 merge/current local main and no competing active run/open PR. Regression tests demonstrate that quoted Authorization/Proxy-Authorization values with leading whitespace bypassed the Basic credential guard. Scope: inspect whitespace before Basic inside quoted values; retain empty/incomplete assignments, ordinary prose, lossless import and saved records. Policy fixtures cover both quotes, mixed case and tabs/newlines. Controller regression requires safe refusal, stale-preview clearing, no file/record writes and clean retry. Before-fix policy/controller regressions failed. Formatter/analyzer/full tests/web build, independent final-revision review and actual required CI remain gates. F08 stays In progress/unchecked; complete backup/general secret exclusion remain pending.
+
+Local final validation: formatter188 unchanged, analyzer clean, all503Flutter tests pass with seven opt-in skips; web build/Wasm dry run pass. Long 98k whitespace refusal/allowance fixtures remain bounded. Independent exact-revision review/actual required CI/protected merge remain gates.

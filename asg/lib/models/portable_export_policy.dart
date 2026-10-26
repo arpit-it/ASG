@@ -11,7 +11,7 @@ class PortableExportPolicy {
       r'\b(?:gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|sk-[A-Za-z0-9_-]{20,}|(?:AKIA|ASIA)[A-Z0-9]{16})\b',
     ),
     RegExp(
-      r'''\b(?:proxy-)?authorization["']?\s*[:=]\s*["']?basic\s+[A-Za-z0-9+/]{2,}={0,2}''',
+      r'''\b(?:proxy-)?authorization["']?\s*[:=]\s*(?:["']\s*)?basic\s+[A-Za-z0-9+/]{2,}={0,2}''',
       caseSensitive: false,
     ),
     RegExp(r'\bBearer\s+[A-Za-z0-9._~+/-]{8,}=*', caseSensitive: false),
