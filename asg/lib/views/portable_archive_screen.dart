@@ -106,6 +106,19 @@ class _PortableArchiveScreenState extends State<PortableArchiveScreen> {
     ],
   );
 
+  Widget completeContents(String contents) => ExpansionTile(
+    title: const Text('Review complete archive JSON'),
+    subtitle: const Text(
+      'Includes every exported field. Text may contain private information or secrets.',
+    ),
+    children: [
+      Padding(
+        padding: const EdgeInsets.all(16),
+        child: SelectableText(contents),
+      ),
+    ],
+  );
+
   @override
   Widget build(BuildContext context) => PopScope(
     canPop: !controller.busy,
@@ -124,6 +137,7 @@ class _PortableArchiveScreenState extends State<PortableArchiveScreen> {
           ),
           if (controller.exportPreview case final archive?) ...[
             summary(archive),
+            completeContents(controller.exportContents!),
             FilledButton(
               onPressed: controller.busy || !controller.files.canExport
                   ? null
@@ -146,6 +160,7 @@ class _PortableArchiveScreenState extends State<PortableArchiveScreen> {
           ),
           if (controller.importPreview case final archive?) ...[
             summary(archive),
+            completeContents(controller.importContents!),
             TextField(
               controller: backupId,
               enabled: !controller.busy,
