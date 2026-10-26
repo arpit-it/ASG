@@ -471,6 +471,13 @@ void main() {
       final store = PortableArchiveStore(records);
       await store.restoreCopy('clean', archive());
       for (final text in [
+        '<cfg:password>fixture-value</cfg:password>',
+        '<password type="text">fixture-value</password>',
+        '<cfg:API_KEY hint="a>b">fixture-value</cfg:API_KEY>',
+        "<cfg:token note='a>b'>fixture-value</cfg:token>",
+        Uri.encodeComponent(
+          '<cfg:password type="text">fixture-value</cfg:password>',
+        ),
         '<password>fixture-value</password>',
         '<API_KEY>fixture-value</API_KEY>',
         '<client-secret>\r\nfixture-value\r\n</client-secret>',

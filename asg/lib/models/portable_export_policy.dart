@@ -50,6 +50,56 @@ class PortableExportPolicy {
             initial <= 90;
       });
 
+  static final _xmlTagStart = RegExp(
+    r'<(?:[A-Za-z_][A-Za-z0-9_.-]*:)?([A-Za-z_][A-Za-z0-9_.-]*)(?=[\s/>])',
+  );
+  static final _credentialTag = RegExp(
+    r'^(?:aws[_ -]?(?:secret[_ -]?access[_ -]?key|session[_ -]?token)|password|passwd|pwd|passphrase|token|secret|credential|private[_ -]?key|api[_ -]?(?:key|token)|auth[_ -]?token|access[_ -]?token|id[_ -]?token|refresh[_ -]?token|client[_ -]?secret|secret[_ -]?key)$',
+    caseSensitive: false,
+  );
+
+  static bool _hasXmlCredential(String text) {
+    var offset = 0;
+    while (offset < text.length) {
+      final start = text.indexOf('<', offset);
+      if (start < 0) return false;
+      final tag = _xmlTagStart.matchAsPrefix(text, start);
+      if (tag == null) {
+        offset = start + 1;
+        continue;
+      }
+      // Scan each tag once; quoted angle brackets are data. An unquoted '<'
+      // abandons an incomplete tag without rescanning its contents.
+      var end = tag.end;
+      String? quote;
+      var last = '';
+      while (end < text.length) {
+        final char = text[end];
+        if (quote != null) {
+          if (char == quote) quote = null;
+        } else if (char == '"' || char == "'") {
+          quote = char;
+        } else if (char == '<' || char == '>') {
+          break;
+        }
+        if (!_space.hasMatch(char)) last = char;
+        end++;
+      }
+      if (end < text.length && text[end] == '>') {
+        if (last != '/' &&
+            _credentialTag.hasMatch(tag[1]!) &&
+            end + 1 < text.length &&
+            text[end + 1] != '<') {
+          return true;
+        }
+        offset = end + 1;
+      } else {
+        offset = end;
+      }
+    }
+    return false;
+  }
+
   static final _schemeCharacter = RegExp(r'[A-Za-z0-9+.-]');
   static final _schemeStart = RegExp(r'[A-Za-z]');
   static final _space = RegExp(r'\s');
@@ -94,6 +144,7 @@ class PortableExportPolicy {
 
   static bool _hasCredential(String text) =>
       _patterns.any((pattern) => pattern.hasMatch(text)) ||
+      _hasXmlCredential(text) ||
       _hasCredentialUrl(text) ||
       _hasCamelAssignment(text);
 

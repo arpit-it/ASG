@@ -176,6 +176,46 @@ void main() {
     },
   );
 
+  test('XML prefixes and quoted attributes cannot hide credential text', () {
+    for (final text in [
+      '<cfg:password>fixture-value</cfg:password>',
+      '<password type="text">fixture-value</password>',
+      '<cfg:API_KEY hint="a>b">fixture-value</cfg:API_KEY>',
+      "<cfg:token note='a>b'>fixture-value</cfg:token>",
+      '<ns:client-secret\n type="text" > fixture-value</ns:client-secret>',
+      Uri.encodeComponent(
+        '<cfg:password type="text">fixture-value</cfg:password>',
+      ),
+    ]) {
+      expect(
+        () => PortableExportPolicy.requireExportable(withText(text)),
+        throwsA(isA<PortableExportRefused>()),
+      );
+    }
+    for (final text in [
+      '<cfg:password></cfg:password>',
+      '<password type="text"></password>',
+      '<cfg:password hint="a>b" />',
+      '<password hint="a>b"/>',
+      '<cfg:passwordPolicy type="text">strong</cfg:passwordPolicy>',
+      '<cfg:username type="text">ordinary</cfg:username>',
+      '<cfg:password',
+      '<password hint="unterminated',
+    ]) {
+      final archive = withText(text);
+      final before = archive.encode();
+      PortableExportPolicy.requireExportable(archive);
+      expect(archive.encode(), before);
+    }
+    final watch = Stopwatch()..start();
+    PortableExportPolicy.requireExportable(withText('<password ' * 9000));
+    PortableExportPolicy.requireExportable(
+      withText('<cfg:password a="${'x' * 98000}'),
+    );
+    watch.stop();
+    expect(watch.elapsed, lessThan(const Duration(seconds: 2)));
+  });
+
   test('one percent-encoded ASCII layer cannot hide credentials', () {
     for (final text in [
       'https://example.test?api%5Fkey=fixture-value',
