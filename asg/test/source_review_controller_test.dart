@@ -37,6 +37,8 @@ class CandidateFolderPicker extends FolderPicker {
 }
 
 class ReviewCandidateHost extends FixtureHost {
+  ReviewCandidateHost({this.failure});
+  final String? failure;
   @override
   Future<GeneratedProject> verify(
     GeneratedProject project,
@@ -46,6 +48,21 @@ class ReviewCandidateHost extends FixtureHost {
     var value = project.copy(phase: SourceGenerationPhase.verifying);
     await progress(value);
     for (final task in project.tasks!) {
+      if (task.operation.name == failure) {
+        value = value.copy(
+          phase: SourceGenerationPhase.failed,
+          steps: [
+            ...value.steps,
+            GenerationStep(
+              operation: failure!,
+              exitCode: 1,
+              output: 'source failure fixture',
+            ),
+          ],
+        );
+        await progress(value);
+        return value;
+      }
       value = value.copy(
         steps: [
           ...value.steps,
@@ -134,6 +151,210 @@ void main() {
   tearDown(() {
     if (!controller.isDisposed) controller.dispose();
   });
+
+  for (final outcome in [
+    'success',
+    'exhausted',
+    'categories',
+    'dispose',
+    'working',
+    'stop request',
+    'stop copy',
+    'stop checks',
+    'withdraw',
+    'offline',
+  ]) {
+    test(
+      'automatic repair $outcome retains working output and durable evidence',
+      () async {
+        controller.dispose();
+        var copies = 0;
+        final delayed = DelayedRepairHost();
+        controller = create(
+          createHost: () => outcome == 'categories'
+              ? ReviewCandidateHost(
+                  failure: copies <= 3
+                      ? ['analyze', 'test', 'build'][copies - 1]
+                      : null,
+                )
+              : copies == 1 || outcome == 'exhausted'
+              ? FailedCheckHost()
+              : outcome == 'stop checks'
+              ? delayed
+              : ReviewCandidateHost(),
+          publish: (_, host, guard) async =>
+              throw StateError('Unexpected promotion'),
+          prepare:
+              ({
+                required project,
+                required generated,
+                required evidence,
+                required records,
+                required parent,
+                required checkActive,
+              }) async {
+                if (copies > 0 && outcome == 'stop copy') {
+                  unawaited(controller.cancel());
+                }
+                checkActive();
+                copies++;
+                expect(parent, '/candidates');
+                return GeneratedProject(
+                  directory: '/candidate/automatic-$copies',
+                  sdk: '/sdk',
+                  python: 'python3',
+                  confined: true,
+                  sources: GenerationInput(
+                    project,
+                    ApplicationStore(records).load(project).definition,
+                  ).fingerprints,
+                  approval: evidence.approval,
+                  tasks: BuildPlan.parse(
+                    evidence.approval.content,
+                    board: RequirementsStore(records).load(project.id),
+                  ).tasks,
+                );
+              },
+        );
+        Future<void> answer() async {
+          await tick();
+          final current = provider;
+          expect(current.prompt, isNotNull);
+          current.stream.add(response());
+          provider = FakeProvider();
+          await current.stream.close();
+          await tick();
+        }
+
+        final first = controller.request('Tanalyze', ['lib/main.dart']);
+        await answer();
+        await first;
+        await controller.selectCandidateParent();
+        await controller.prepareCandidate();
+        await controller.candidateSession!.verify(approved: true);
+        await controller.selectCandidateParent();
+        final working = records.getString('studio.generation.v1.${project.id}');
+        await controller.runAutomaticRepairs([
+          'lib/main.dart',
+        ], approved: false);
+        expect(provider.prompt, isNull);
+        expect(controller.repairHistory, isEmpty);
+        var stopped = false;
+        void listener() {
+          if (stopped || !controller.automaticRepairActive) return;
+          if (outcome == 'stop request' &&
+              controller.status.startsWith('Requesting local model')) {
+            stopped = true;
+            unawaited(controller.cancel());
+          }
+          if ((outcome == 'dispose' || outcome == 'working') &&
+              controller.status.startsWith('Requesting local model')) {
+            stopped = true;
+            if (outcome == 'dispose') {
+              controller.dispose();
+            } else {
+              records.values['studio.generation.v1.${project.id}'] = 'changed';
+            }
+          }
+          if (outcome == 'withdraw' &&
+              controller.status.startsWith('Requesting local model')) {
+            stopped = true;
+            records.values['studio.planApproval.v1.${project.id}'] = '{}';
+          }
+          if (outcome == 'stop checks' &&
+              (controller.candidateSession?.busy ?? false)) {
+            stopped = true;
+            unawaited(controller.cancel());
+          }
+        }
+
+        controller.addListener(listener);
+        final run = controller.runAutomaticRepairs([
+          'lib/main.dart',
+        ], approved: true);
+        if ([
+          'stop request',
+          'withdraw',
+          'dispose',
+          'working',
+        ].contains(outcome)) {
+          await run;
+          expect(provider.prompt, isNull);
+          expect(controller.repairHistory, isEmpty);
+        } else if (outcome == 'offline') {
+          await tick();
+          provider.stream.addError(StateError('offline'));
+          await provider.stream.close();
+          await run;
+          expect(controller.repairHistory.length, 1);
+          expect(copies, 1);
+        } else {
+          for (
+            var i = 0;
+            i < (['exhausted', 'categories'].contains(outcome) ? 3 : 1);
+            i++
+          ) {
+            await answer();
+          }
+          await run;
+          expect(
+            controller.repairHistory.length,
+            ['exhausted', 'categories'].contains(outcome) ? 3 : 1,
+          );
+          if (outcome == 'success' || outcome == 'categories') {
+            expect(controller.candidate!.phase, SourceGenerationPhase.ready);
+            expect(controller.candidateSession!.canPromote, isTrue);
+            expect(controller.error, isNull);
+          } else if (outcome == 'exhausted') {
+            expect(controller.error, contains('budget exhausted'));
+            expect(copies, 4);
+            expect(controller.repairUsage['analyze'], 3);
+            expect(provider.prompt, isNull);
+          } else {
+            expect(controller.status, contains('cancelled'));
+            expect(provider.prompt, isNull);
+          }
+        }
+        expect(controller.busy, isFalse);
+        expect(controller.promoted, isFalse);
+        expect(
+          records.getString('studio.generation.v1.${project.id}'),
+          outcome == 'working' ? 'changed' : working,
+        );
+        final runs = CandidateVerificationStore(
+          records,
+          project.id,
+        ).load().runs;
+        expect(
+          runs.first.snapshot.steps.last.exitCode,
+          outcome == 'categories' ? 1 : 65,
+        );
+        expect(
+          runs.first.snapshot.steps.last.output,
+          contains(
+            outcome == 'categories'
+                ? 'source failure fixture'
+                : 'Undefined name',
+          ),
+        );
+        if (outcome == 'exhausted') expect(runs.length, 4);
+        if (outcome == 'success' || outcome == 'categories') {
+          expect(runs.length, outcome == 'categories' ? 4 : 2);
+          if (outcome == 'categories') {
+            expect(controller.repairUsage, {
+              'analyze': 1,
+              'test': 1,
+              'build': 1,
+            });
+          }
+          expect(
+            runs.last.snapshot.steps.every((step) => step.succeeded),
+            isTrue,
+          );
+        }
+      },
+    );
+  }
 
   for (final repair in [false, true]) {
     for (final stage in ['Reading recorded source', 'Requesting local model']) {
@@ -912,6 +1133,142 @@ void main() {
       await tester.pump();
       expect(find.text(stop), findsOneWidget);
       expect(find.byType(LinearProgressIndicator), findsWidgets);
+      await tester.tap(find.text(stop));
+      await tester.pumpAndSettle();
+      expect(delayed.stops, greaterThan(0));
+      expect(controller.busy, isFalse);
+      expect(controller.candidate!.phase, SourceGenerationPhase.failed);
+      expect(controller.promoted, isFalse);
+      final runs = CandidateVerificationStore(records, project.id).load().runs;
+      expect(runs.length, 2);
+      expect(runs.last.snapshot.steps, isEmpty);
+      expect(runs.last.snapshot.phase, SourceGenerationPhase.failed);
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox());
+    },
+  );
+
+  testWidgets(
+    'automatic repair consent and Stop work at 320px and 200 percent text',
+    (tester) async {
+      controller.dispose();
+      var copies = 0;
+      final delayed = DelayedRepairHost();
+      controller = create(
+        createHost: () => copies == 1 ? FailedCheckHost() : delayed,
+        publish: (_, host, guard) async =>
+            throw StateError('Unexpected promotion'),
+        prepare:
+            ({
+              required project,
+              required generated,
+              required evidence,
+              required records,
+              required parent,
+              required checkActive,
+            }) async {
+              checkActive();
+              copies++;
+              return GeneratedProject(
+                directory: '/candidate/$copies',
+                sdk: '/sdk',
+                python: 'python3',
+                confined: true,
+                sources: GenerationInput(
+                  project,
+                  ApplicationStore(records).load(project).definition,
+                ).fingerprints,
+                approval: evidence.approval,
+                tasks: BuildPlan.parse(
+                  evidence.approval.content,
+                  board: RequirementsStore(records).load(project.id),
+                ).tasks,
+              );
+            },
+      );
+      await tester.runAsync(() async {
+        for (final repair in [false]) {
+          provider = FakeProvider();
+          final pending = repair
+              ? controller.requestRepair(['lib/main.dart'])
+              : controller.request('Tanalyze', ['lib/main.dart']);
+          await tick();
+          provider.stream.add(response());
+          unawaited(provider.stream.close());
+          await pending;
+          await controller.selectCandidateParent();
+          if (!repair) {
+            await controller.prepareCandidate();
+            await controller.candidateSession!.verify(approved: true);
+          }
+        }
+      });
+      await controller.selectCandidateParent();
+      provider = FakeProvider();
+      tester.view.physicalSize = const Size(320, 900);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      await tester.pumpWidget(
+        MaterialApp(
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(context)
+                .copyWith(textScaler: const TextScaler.linear(2)),
+            child: child!,
+          ),
+          home: SourceReviewScreen(controller: controller),
+        ),
+      );
+      const action = 'Start bounded automatic repairs';
+      const consent = 'I approve automatic repairs for these files and folder';
+      Future<void> reveal(String text, double delta) async {
+        await tester.scrollUntilVisible(
+          find.text(text),
+          delta,
+          maxScrolls: 150,
+          scrollable: find.byType(Scrollable).first,
+        );
+        await tester.ensureVisible(find.text(text));
+        await tester.pumpAndSettle();
+      }
+
+      await reveal('lib/main.dart', 200);
+      await tester.tap(find.text('lib/main.dart').first);
+      await tester.pumpAndSettle();
+      await reveal(action, 300);
+      FilledButton button() => tester.widget<FilledButton>(
+        find.ancestor(
+          of: find.text(action),
+          matching: find.byType(FilledButton),
+        ),
+      );
+      expect(button().onPressed, isNull);
+      await reveal(consent, -200);
+      await tester.tap(find.text(consent));
+      await tester.pumpAndSettle();
+      await reveal(action, 200);
+      expect(button().onPressed, isNotNull);
+      await tester.tap(find.text(action));
+      await tester.pump();
+      await tester.pump();
+      provider.stream.add(response());
+      unawaited(provider.stream.close());
+      await tester.pump();
+      await tester.pump();
+      await tester.pump();
+      expect(controller.busy, isTrue);
+      expect(controller.candidateSession!.busy, isTrue);
+      expect(controller.status, contains('Verifying repaired candidate'));
+      const stop = 'Stop automatic repairs';
+      await tester.scrollUntilVisible(
+        find.text(stop),
+        -300,
+        maxScrolls: 150,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.ensureVisible(find.text(stop));
+      await tester.pump();
+      expect(find.text(stop), findsOneWidget);
       await tester.tap(find.text(stop));
       await tester.pumpAndSettle();
       expect(delayed.stops, greaterThan(0));

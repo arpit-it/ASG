@@ -3,7 +3,14 @@ import 'package:flutter/material.dart';
 import '../controllers/source_candidate_controller.dart';
 
 class SourceCandidateView extends StatefulWidget {
-  const SourceCandidateView({super.key, required this.controller});
+  const SourceCandidateView({
+    super.key,
+    required this.controller,
+    this.actionsEnabled = true,
+    this.onStop,
+  });
+  final bool actionsEnabled;
+  final VoidCallback? onStop;
   final SourceCandidateController controller;
   @override
   State<SourceCandidateView> createState() => _SourceCandidateViewState();
@@ -33,19 +40,24 @@ class _SourceCandidateViewState extends State<SourceCandidateView> {
           contentPadding: EdgeInsets.zero,
           title: const Text('I approve confined candidate verification'),
           value: consent,
-          onChanged: controller.busy || controller.promoted
+          onChanged:
+              !widget.actionsEnabled || controller.busy || controller.promoted
               ? null
               : (value) => setState(() => consent = value ?? false),
         ),
         FilledButton(
-          onPressed: controller.busy || controller.promoted || !consent
+          onPressed:
+              !widget.actionsEnabled ||
+                  controller.busy ||
+                  controller.promoted ||
+                  !consent
               ? null
               : () => controller.verify(approved: consent),
           child: const Text('Verify candidate in sandbox'),
         ),
         if (controller.busy && !controller.promoting)
           TextButton(
-            onPressed: controller.cancel,
+            onPressed: widget.onStop ?? controller.cancel,
             child: const Text('Stop candidate verification'),
           ),
         for (final step in result.steps)
@@ -64,7 +76,7 @@ class _SourceCandidateViewState extends State<SourceCandidateView> {
           ),
           SelectableText(diagnosis.message),
           const Text(
-            'Automatic source repairs are not available yet. '
+            'Source repairs require separate consent in source review. '
             'This diagnosis starts no model request or command and changes no files.',
           ),
         ],
@@ -113,7 +125,7 @@ class _SourceCandidateViewState extends State<SourceCandidateView> {
           'promotion cannot be cancelled.',
         ),
         FilledButton(
-          onPressed: controller.canPromote
+          onPressed: widget.actionsEnabled && controller.canPromote
               ? () => controller.promote(approved: true)
               : null,
           child: const Text('Promote verified candidate and refresh preview'),
