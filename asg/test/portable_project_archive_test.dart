@@ -39,6 +39,83 @@ PortableProjectArchive archive() => PortableProjectArchive(
 );
 
 void main() {
+  test(
+    'revision summaries preserve bounded historical evidence and old versions',
+    () {
+      final original = PortableProjectArchive(
+        requirements: board(),
+        messages: archive().messages,
+        revisions: [
+          PortableRevisionSummary(
+            recordedAt: DateTime.utc(2026),
+            outcome: 'ready',
+            passedChecks: 4,
+            totalChecks: 4,
+          ),
+          PortableRevisionSummary(
+            recordedAt: null,
+            outcome: 'failed',
+            passedChecks: 1,
+            totalChecks: 2,
+          ),
+        ],
+      );
+      expect(
+        PortableProjectArchive.decode(original.encode()).encode(),
+        original.encode(),
+      );
+      expect(jsonDecode(original.encode())['version'], 3);
+      final withDecision = PortableProjectArchive(
+        requirements: board(),
+        messages: [],
+        revisions: original.revisions,
+        decision: PortablePlanDecision(
+          content: 'Historical only',
+          approved: false,
+          recordedAt: DateTime.utc(2026),
+        ),
+      );
+      expect(
+        PortableProjectArchive.decode(withDecision.encode()).encode(),
+        withDecision.encode(),
+      );
+
+      expect(() => original.revisions.clear(), throwsUnsupportedError);
+      for (final mutate in <void Function(Map<String, dynamic>)>[
+        (j) => j['revisions'][0]['outcome'] = 'verifying',
+        (j) => j['revisions'][0]['passedChecks'] = 3,
+        (j) => j['revisions'][0]['totalChecks'] = 5,
+        (j) => j['revisions'][0]['passedChecks'] = 4.0,
+        (j) => j['revisions'][0]['recordedAt'] = '2026-02-31T00:00:00.000Z',
+        (j) => j['revisions'][0]['recordedAt'] = true,
+        (j) => j['revisions'][0]['directory'] = '/private',
+        (j) => j['revisions'] = List.filled(1001, j['revisions'][0]),
+        (j) => j['revisions'] = null,
+        (j) => j['version'] = 2,
+      ]) {
+        final json = jsonDecode(original.encode()) as Map<String, dynamic>;
+        mutate(json);
+        expect(
+          () => PortableProjectArchive.decode(jsonEncode(json)),
+          throwsFormatException,
+        );
+      }
+      expect(
+        () => PortableProjectArchive.decode(
+          original.encode().replaceFirst(
+            '"outcome":',
+            '"outcome":"failed","outcome":',
+          ),
+        ),
+        throwsFormatException,
+      );
+      expect(
+        PortableProjectArchive.decode(archive().encode()).revisions,
+        isEmpty,
+      );
+    },
+  );
+
   test('historical decisions round trip without execution credentials', () {
     for (final approved in [false, true]) {
       final value = PortableProjectArchive(

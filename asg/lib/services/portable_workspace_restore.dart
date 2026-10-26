@@ -4,6 +4,7 @@ import '../models/portable_project_archive.dart';
 import '../models/project.dart';
 import 'portable_archive_store.dart';
 import 'portable_decision_store.dart';
+import 'portable_revision_store.dart';
 import 'record_storage.dart';
 import 'studio_store.dart';
 
@@ -43,6 +44,7 @@ class PortableWorkspaceRestore {
       'requirements',
       'planApproval',
       'historicalDecision',
+      'historicalRevisions',
       'generation',
       'generationPrevious',
       'sourceCandidate',
@@ -66,6 +68,10 @@ class PortableWorkspaceRestore {
       location: '',
     );
     final updates = <String, String>{
+      if (archive.revisions.isNotEmpty)
+        PortableRevisionStore.key(id): jsonEncode(
+          archive.revisions.map((r) => r.toJson()).toList(),
+        ),
       if (archive.decision case final decision?)
         PortableDecisionStore.key(id): jsonEncode(decision.toJson()),
       catalogKey: jsonEncode(
