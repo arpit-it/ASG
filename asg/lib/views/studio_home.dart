@@ -1,3 +1,6 @@
+import '../controllers/project_inspection_controller.dart';
+import 'project_inspection_screen.dart';
+
 import 'package:flutter/material.dart';
 
 import '../controllers/studio_session_controller.dart';
@@ -88,6 +91,19 @@ class _StudioHomeState extends State<StudioHome> {
     appBar: AppBar(
       title: Text(controller.current?.name ?? 'Automated Software Generator'),
       actions: [
+        IconButton(
+          tooltip: 'Inspect existing Flutter project',
+          onPressed: controller.busy || workspacePending
+              ? null
+              : () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => ProjectInspectionScreen(
+                      controller: ProjectInspectionController(),
+                    ),
+                  ),
+                ),
+          icon: const Icon(Icons.find_in_page_outlined),
+        ),
         if (controller.current != null)
           IconButton(
             tooltip: 'Edit project details',
