@@ -69,7 +69,7 @@ A task moves Queued → In progress → Awaiting merge → Done; use Blocked wit
 
 ## Active task and delivery ledger
 
-Active: F08 In progress/unchecked; reopened #114 on `114-aws-export-guard` for AWS configuration credential refusal. Prior PR #135 merge verified. Complete backup/general secret exclusion remain pending; no later task selected.
+Active: F08 In progress/unchecked; reopened #114 on `114-password-alias-export` for password-alias export refusal. PR #136 merge verified. Complete backup/general secret exclusion remain pending; no later task selected.
 
 ### F03 acceptance boundary and evidence
 
@@ -2225,3 +2225,19 @@ F08 remains In progress/unchecked. Quoted Basic authorization values with leadin
 Reopened matching #114 on `114-aws-export-guard` after connected GitHub verification of current main `eabfcfeaaaff5db26aac1be89e5778483c6ad3ed`, no open issues/PRs and no competing active ASG run. AWS secret-access-key/session-token assignments bypassed existing named credential recognition because of their field names. Scope: refuse nonempty AWS assignments with underscore/hyphen/space/camel-case names, mixed case and quoted whitespace. Empty assignments and prose remain exportable; import remains lossless. Controller regression requires safe refusal, stale-preview invalidation, no file/record writes and clean retry. Initial policy/controller regressions failed before fix.
 
 Local validation: formatter188, analyzer clean and all504Flutter tests pass (seven opt-in skips). Web build/Wasm result is recorded in PR validation. Independent final-revision review and actual required CI/protected merge remain gates. F08 remains In progress/unchecked; general secret exclusion and complete backup remain pending. Existing8765endpoint offline; no live inference/download/stable-app replacement/deployment. Unrelated IDE/history edits retained; prior history publication exclusion and label rejection respected. No new issue/task/cadence/notification change.
+
+
+### F08 AWS configuration export guard — verified PR #136 delivery (26 October 2026)
+
+Issue #114 / branch `114-aws-export-guard` delivered through [PR #136](https://github.com/arpit-it/ASG/pull/136). Independent exact-head COMMENT approval `5653711526` and final complete-CI gate `5653762665` approved `e0537edeb8ca82c45ffcc891a6e7702e86b4b146`. Normal protected squash merge `9dbe518141d0a3eba77f39c147b85524c44c5366` at2026-10-26T14:38:36Z and issue closure/completed14:38:37Z independently verified through connected GitHub. Local tested `001175ed7aa006075f30d0ae069684189ce59d4d`, published revision and merged main share tree `8ba6828f1b7b49ca9e5622d4e598870fad680f10`.
+
+Independent60focused archive/policy/controller/store/MVC tests, formatter188/analyzer pass. Required CI40340645148 complete actual logs inspected by reviewer before merge: Flutter121634096082 passes502Linux tests/six skips, formatter188/analyzer, actualChromeIndexedDB/webWasm and independent generated resolve/analyze/test/build all0 with HTTP200/>1000-byte serving assertions; Python121634095616 passes2download+4streaming+10process+4confinement fixtures/two skips. Local504Flutter tests/seven skips, formatter188/analyzer/webWasm pass; initial two regressions fail before fix. Parent independently verified merged PR/closed issue/current remote main/identical tree via plugin. Reconstructed signed merge only after exact SHA reproduction; safely fast-forwarded local main with0/0divergence and empty source/test diff. Unrelated IDE/history edits retained; nothing staged. GitHub exclusively plugin.
+
+F08 remains In progress/unchecked. AWS secret-access-key/session-token assignments now refuse export; empty assignments/prose and clean retry remain supported. General secret exclusion/complete backup remain pending. Existing8765offline; no live inference/download/stable-app replacement/deployment. No new issue/task/cadence/notification change. Prior history publication exclusion and label rejection respected without retry. Postmerge evidence retained locally for the next reviewed increment. Recorded 2026-10-26T14:40:24.121230+00:00.
+
+
+### F08 password-alias export refusal — issue #114 (26 October 2026)
+
+Reused #114 after connected GitHub verified PR #136 merged at 9dbe518141d0a3eba77f39c147b85524c44c5366, no open PR/issue and no competing active run. Connection-string PWD and passphrase assignments bypassed named credential recognition. Scope: recognize these aliases case-insensitively using existing nonempty assignment semantics; preserve empty assignments, prose, lossless imports and saved records. Before-fix policy/controller regressions both failed. Acceptance: policy fixtures cover connection strings/JSON/quotes/whitespace/empty values; controller clears stale preview, returns a safe error, writes no records/files and supports clean retry. Format/analyze/full tests/web build, independent final-revision review and required CI remain gates. F08 remains In progress.
+
+Local final validation: formatter188 unchanged; analyzer clean; all505Flutter tests pass with seven opt-in skips; web build and Wasm dry run pass. Existing8765endpoint offline; no live inference claimed. Independent review/required CI/merge pending.
