@@ -53,6 +53,9 @@ class PortableExportPolicy {
   static final _xmlTagStart = RegExp(
     r'<(?:[A-Za-z_][A-Za-z0-9_.-]*:)?([A-Za-z_][A-Za-z0-9_.-]*)(?=[\s/>])',
   );
+  static final _xmlClosingTag = RegExp(
+    r'</([A-Za-z_][A-Za-z0-9_.-]*(?::[A-Za-z_][A-Za-z0-9_.-]*)?)\s*>',
+  );
   static final _credentialTag = RegExp(
     r'^(?:aws[_ -]?(?:secret[_ -]?access[_ -]?key|session[_ -]?token)|password|passwd|pwd|passphrase|token|secret|credential|private[_ -]?key|api[_ -]?(?:key|token)|auth[_ -]?token|access[_ -]?token|id[_ -]?token|refresh[_ -]?token|client[_ -]?secret|secret[_ -]?key)$',
     caseSensitive: false,
@@ -89,7 +92,9 @@ class PortableExportPolicy {
         if (last != '/' &&
             _credentialTag.hasMatch(tag[1]!) &&
             end + 1 < text.length &&
-            text[end + 1] != '<') {
+            // Only an immediate matching close proves an empty element.
+            // Refuse nested markup/CDATA conservatively without parsing it.
+            !_isEmptyXmlElement(text, start, tag.end, end + 1)) {
           return true;
         }
         offset = end + 1;
@@ -98,6 +103,16 @@ class PortableExportPolicy {
       }
     }
     return false;
+  }
+
+  static bool _isEmptyXmlElement(
+    String text,
+    int start,
+    int nameEnd,
+    int contentStart,
+  ) {
+    final close = _xmlClosingTag.matchAsPrefix(text, contentStart);
+    return close != null && close[1] == text.substring(start + 1, nameEnd);
   }
 
   static final _schemeCharacter = RegExp(r'[A-Za-z0-9+.-]');

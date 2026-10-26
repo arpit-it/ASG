@@ -176,6 +176,40 @@ void main() {
     },
   );
 
+  test(
+    'nested XML credential content refuses while empty siblings stay exact',
+    () {
+      for (final text in [
+        '<password><![CDATA[fixture-value]]></password>',
+        '<cfg:token><value>fixture-value</value></cfg:token>',
+        '<password><!--comment-->fixture-value</password>',
+        '<password><value /></password>',
+        '<password></token>fixture-value',
+        '<cfg:password></other:password>fixture-value',
+        '<password></PASSWORD>fixture-value',
+        '<cfg:password hint="a>b"><![CDATA[fixture-value]]></cfg:password>',
+        Uri.encodeComponent('<password><![CDATA[fixture-value]]></password>'),
+      ]) {
+        expect(
+          () => PortableExportPolicy.requireExportable(withText(text)),
+          throwsA(isA<PortableExportRefused>()),
+        );
+      }
+      for (final text in [
+        '<password></password><value>ordinary</value>',
+        '<cfg:password hint="a>b"></cfg:password   >ordinary',
+        '<password/><value>ordinary</value>',
+        '<value><![CDATA[ordinary]]></value>',
+        '<password></password>' * 4000,
+      ]) {
+        final archive = withText(text);
+        final before = archive.encode();
+        PortableExportPolicy.requireExportable(archive);
+        expect(archive.encode(), before);
+      }
+    },
+  );
+
   test('XML prefixes and quoted attributes cannot hide credential text', () {
     for (final text in [
       '<cfg:password>fixture-value</cfg:password>',
