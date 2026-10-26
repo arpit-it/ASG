@@ -1,0 +1,133 @@
+import 'package:flutter/material.dart';
+
+import '../controllers/portable_archive_controller.dart';
+import '../models/portable_project_archive.dart';
+
+class PortableArchiveScreen extends StatefulWidget {
+  const PortableArchiveScreen({super.key, required this.controller});
+  final PortableArchiveController controller;
+
+  @override
+  State<PortableArchiveScreen> createState() => _PortableArchiveScreenState();
+}
+
+class _PortableArchiveScreenState extends State<PortableArchiveScreen> {
+  final backupId = TextEditingController();
+  PortableArchiveController get controller => widget.controller;
+
+  @override
+  void initState() {
+    super.initState();
+    controller.addListener(refresh);
+  }
+
+  void refresh() {
+    if (mounted) setState(() {});
+  }
+
+  @override
+  void dispose() {
+    controller.removeListener(refresh);
+    controller.dispose();
+    backupId.dispose();
+    super.dispose();
+  }
+
+  Widget summary(PortableProjectArchive archive) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(
+        '${archive.requirements.requirements.length} requirements · '
+        '${archive.requirements.tasks.length} tasks · '
+        'board revision ${archive.requirements.revision} · '
+        '${archive.messages.length} assistance messages',
+      ),
+      ExpansionTile(
+        title: const Text('Review included text'),
+        children: [
+          for (final requirement in archive.requirements.requirements)
+            ListTile(
+              title: SelectableText(
+                '${requirement.id}: ${requirement.title}\n${requirement.acceptance}',
+              ),
+            ),
+          for (final task in archive.requirements.tasks)
+            ListTile(title: SelectableText('${task.id}: ${task.title}')),
+          for (final message in archive.messages)
+            ListTile(
+              title: Text(message.role),
+              subtitle: SelectableText(message.content),
+            ),
+        ],
+      ),
+    ],
+  );
+
+  @override
+  Widget build(BuildContext context) => PopScope(
+    canPop: !controller.busy,
+    child: Scaffold(
+      appBar: AppBar(title: const Text('Portable records')),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          const Text(
+            'Version 1 includes saved requirements, tasks, board revision and Discuss/Plan/Review conversation text. Prototype edit chat, decisions, build history, source files, settings and approval credentials are excluded. Text is verbatim and may contain private information or secrets you typed; review it before sharing.',
+          ),
+          const SizedBox(height: 16),
+          FilledButton(
+            onPressed: controller.busy ? null : controller.prepareExport,
+            child: const Text('Load saved records for export'),
+          ),
+          if (controller.exportPreview case final archive?) ...[
+            summary(archive),
+            FilledButton(
+              onPressed: controller.busy || !controller.files.canExport
+                  ? null
+                  : controller.exportFile,
+              child: const Text('Choose export file'),
+            ),
+          ],
+          if (!controller.files.canExport)
+            const Text(
+              'File export is available in the desktop app. Import remains available here.',
+            ),
+          const Divider(height: 32),
+          const Text(
+            'Import creates a separate data-only backup copy in app storage. It never replaces a project, grants approval or runs code. Opening copies as project workspaces is not available yet.',
+          ),
+          const SizedBox(height: 12),
+          OutlinedButton(
+            onPressed: controller.busy ? null : controller.pickImport,
+            child: const Text('Select archive file (up to 1 MiB)'),
+          ),
+          if (controller.importPreview case final archive?) ...[
+            summary(archive),
+            TextField(
+              controller: backupId,
+              enabled: !controller.busy,
+              maxLength: 80,
+              decoration: const InputDecoration(
+                labelText: 'New backup ID',
+                helperText: 'Letters, digits, underscores and hyphens; existing IDs refuse replacement.',
+              ),
+            ),
+            FilledButton(
+              onPressed: controller.busy
+                  ? null
+                  : () => controller.saveCopy(backupId.text),
+              child: const Text('Save separate data copy'),
+            ),
+          ],
+          if (controller.busy) const LinearProgressIndicator(),
+          if (controller.status case final status?) SelectableText(status),
+          if (controller.error case final error?)
+            SelectableText(
+              error,
+              style: TextStyle(color: Theme.of(context).colorScheme.error),
+            ),
+        ],
+      ),
+    ),
+  );
+}
