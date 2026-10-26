@@ -12,9 +12,12 @@ class ImportedPlanScreen extends StatefulWidget {
 class _ImportedPlanScreenState extends State<ImportedPlanScreen> {
   final text = TextEditingController();
   ImportedPlanController get controller => widget.controller;
+  bool hydrated = false;
+  bool edited = false;
   Future<void> load() async {
     await controller.load();
-    if (mounted && controller.error == null) {
+    if (mounted && controller.error == null && !hydrated && !edited) {
+      hydrated = true;
       text.text = controller.plan?.text ?? '';
     }
   }
@@ -56,6 +59,7 @@ class _ImportedPlanScreenState extends State<ImportedPlanScreen> {
             ],
             TextField(
               controller: text,
+              onChanged: (_) => edited = true,
               enabled: !controller.busy,
               maxLength: 12000,
               minLines: 5,

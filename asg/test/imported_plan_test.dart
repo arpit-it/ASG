@@ -142,6 +142,83 @@ void main() {
     expect(missing.error, contains('missing'));
     missing.dispose();
   });
+  testWidgets('failed save retries the unchanged editor draft without reload', (
+    tester,
+  ) async {
+    final records = Records();
+    final c = await create(records);
+    await tester.pumpWidget(
+      MaterialApp(home: ImportedPlanScreen(controller: c)),
+    );
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'Keep this unsaved plan');
+    records.fail = true;
+    await tester.tap(find.text('Save draft'));
+    await tester.pumpAndSettle();
+    expect(c.plan, isNull);
+    expect(c.error, contains('could not be saved'));
+    expect(
+      tester.widget<TextField>(find.byType(TextField)).controller!.text,
+      'Keep this unsaved plan',
+    );
+    records.fail = false;
+    await tester.ensureVisible(find.text('Reload plan'));
+    await tester.tap(find.text('Reload plan'));
+    await tester.pumpAndSettle();
+    expect(
+      tester.widget<TextField>(find.byType(TextField)).controller!.text,
+      'Keep this unsaved plan',
+    );
+    await tester.ensureVisible(find.text('Save draft'));
+    await tester.tap(find.text('Save draft'));
+    await tester.pumpAndSettle();
+    expect(c.plan!.text, 'Keep this unsaved plan');
+    await tester.enterText(find.byType(TextField), 'Direct retry draft');
+    records.fail = true;
+    await tester.ensureVisible(find.text('Save draft'));
+    await tester.tap(find.text('Save draft'));
+    await tester.pumpAndSettle();
+    records.fail = false;
+    await tester.tap(find.text('Save draft'));
+    await tester.pumpAndSettle();
+    expect(c.plan!.text, 'Direct retry draft');
+    expect(c.error, isNull);
+  });
+  testWidgets('initial inspection recovery preserves a newly typed draft', (
+    tester,
+  ) async {
+    final records = Records();
+    await InspectedFolderStore(records).save('/project');
+    var missing = true;
+    final c = ImportedPlanController(
+      '/project',
+      ImportedPlanStore(records),
+      inspect: (_) async {
+        if (missing) throw StateError('missing folder');
+        return finding();
+      },
+    );
+    await tester.pumpWidget(
+      MaterialApp(home: ImportedPlanScreen(controller: c)),
+    );
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.byType(TextField),
+      'Typed during initial failure',
+    );
+    missing = false;
+    await tester.ensureVisible(find.text('Reload plan'));
+    await tester.tap(find.text('Reload plan'));
+    await tester.pumpAndSettle();
+    expect(
+      tester.widget<TextField>(find.byType(TextField)).controller!.text,
+      'Typed during initial failure',
+    );
+    await tester.ensureVisible(find.text('Save draft'));
+    await tester.tap(find.text('Save draft'));
+    await tester.pumpAndSettle();
+    expect(c.plan!.text, 'Typed during initial failure');
+  });
   testWidgets('visible draft, approval, reopen and withdrawal', (tester) async {
     final records = Records();
     var c = await create(records);

@@ -61,7 +61,7 @@ class ImportedPlanController extends BaseController {
   Future<void> saveDraft(String text) => _save(text, false);
   Future<void> decide(bool approved) => _save(plan?.text ?? '', approved);
   Future<void> _save(String text, bool approved) async {
-    if (isDisposed || busy || _context == null) return;
+    if (isDisposed || busy) return;
     busy = true;
     error = null;
     update();
