@@ -21,6 +21,13 @@ void main() {
       'sk-proj-${'c' * 30}',
       'AKIA${'D' * 16}',
       'Authorization: bEaReR abcdefgh.ijklmnop',
+      for (var length = 1; length < 8; length++)
+        'Authorization: Bearer ${'x' * length}',
+      'bEaReR\tx=',
+      'Bearer .',
+      'Bearer _',
+      'Bearer ~',
+      'Bearer +/==',
       'Authorization: Basic dXNlcjpwYXNz',
       'Authorization: " Basic dXNlcjpwYXNz"',
       "'Proxy-Authorization' = '\t bAsIc dTo='",

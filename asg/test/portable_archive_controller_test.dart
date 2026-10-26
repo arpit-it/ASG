@@ -137,6 +137,77 @@ String archive() => PortableProjectArchive(
 ).encode();
 void main() {
   test(
+    'saved copy short Bearer refusal preserves records and permits retry',
+    () async {
+      final records = Records();
+      final files = Files();
+      final c = PortableArchiveController('p', records, files: files);
+      addTearDown(c.dispose);
+      final store = PortableArchiveStore(records);
+      await store.restoreCopy('clean', archive());
+      await store.restoreCopy(
+        'short',
+        PortableProjectArchive(
+          requirements: RequirementsBoard(),
+          messages: const [ChatMessage(role: 'user', content: 'Bearer x')],
+        ).encode(),
+      );
+      final before = Map.of(records.values);
+      await c.prepareCopyExport('clean');
+      expect(c.exportPreview, isNotNull);
+      await c.prepareCopyExport('short');
+      expect(c.error, startsWith('Export blocked:'));
+      expect(c.error, isNot(contains('Bearer x')));
+      expect(c.exportContents, isNull);
+      await c.exportFile();
+      expect(files.written, isNull);
+      expect(records.values, before);
+      await c.prepareCopyExport('clean');
+      await c.exportFile();
+      expect(c.error, isNull);
+      expect(files.written, archive());
+      expect(records.values, before);
+    },
+  );
+
+  test(
+    'short Bearer export refuses without writes and clean retry succeeds',
+    () async {
+      final records = Records();
+      final files = Files();
+      final c = PortableArchiveController('p', records, files: files);
+      addTearDown(c.dispose);
+      for (final text in [
+        'Authorization: Bearer x',
+        'bEaReR\tx=',
+        'Bearer +/==',
+      ]) {
+        records.values.clear();
+        await c.prepareExport();
+        expect(c.exportPreview, isNotNull);
+        records.values['studio.chat.v1.p'] = jsonEncode([
+          {'role': 'user', 'content': text},
+        ]);
+        final before = Map.of(records.values);
+        files.written = null;
+        await c.prepareExport();
+        expect(c.error, startsWith('Export blocked:'));
+        expect(c.error, isNot(contains(text)));
+        expect(c.exportPreview, isNull);
+        expect(c.exportContents, isNull);
+        await c.exportFile();
+        expect(files.written, isNull);
+        expect(records.values, before);
+        records.values.clear();
+        await c.prepareExport();
+        await c.exportFile();
+        expect(c.error, isNull);
+        expect(files.written, c.exportContents);
+      }
+    },
+  );
+
+  test(
     'unknown saved build history fields refuse export and allow retry',
     () async {
       final records = Records();
