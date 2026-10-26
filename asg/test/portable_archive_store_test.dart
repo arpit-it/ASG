@@ -98,7 +98,7 @@ void main() {
     await db.database.close();
     await temp.delete(recursive: true);
   });
-  test('saved prototype survives native copy and new workspace reopen without consent or edit chat', () async {
+  test('saved prototype survives native copy and new workspace reopen with conversation text but without consent', () async {
     const definition = AppDefinition(
       title: 'Saved 中文',
       theme: 'pink',
@@ -115,7 +115,7 @@ void main() {
       const ApplicationSnapshot(definition, [
         ChatMessage(
           role: 'assistant',
-          content: 'Excluded edit chat',
+          content: 'Saved edit chat 😀',
           planContext: '/private/context',
         ),
       ], 12),
@@ -125,7 +125,7 @@ void main() {
     await c.prepareExport();
     expect(c.error, isNull);
     final encoded = c.exportPreview!.encode();
-    expect(encoded, isNot(contains('Excluded edit chat')));
+    expect(encoded, contains('Saved edit chat 😀'));
     expect(encoded, isNot(contains('/private/context')));
     await PortableArchiveStore(db).restoreCopy('copy', encoded);
     final project = await PortableWorkspaceRestore(db)
@@ -135,7 +135,10 @@ void main() {
     final snapshot = ApplicationStore(db).load(project);
     expect(snapshot.definition.toJson(), definition.toJson());
     expect(snapshot.revision, 12);
-    expect(snapshot.messages, isEmpty);
+    expect(snapshot.messages.single.toJson(), {
+      'role': 'assistant',
+      'content': 'Saved edit chat 😀',
+    });
     expect(PortableArchiveStore(db).load('copy')!.encode(), encoded);
     final restored = PortableArchiveController('restored', db);
     addTearDown(restored.dispose);

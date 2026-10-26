@@ -75,6 +75,9 @@ class Files extends ArchiveFileService {
 String archive() => PortableProjectArchive(
   prototype: PortablePrototype(
     revision: 12,
+    messages: const [
+      ChatMessage(role: 'user', content: 'Change the prototype 😀'),
+    ],
     definition: const AppDefinition(
       title: 'Saved prototype',
       theme: 'green',
@@ -128,6 +131,40 @@ void main() {
       expect(c.importPreview, isNull);
       await c.restoreWorkspace('new', 'New');
       expect(records.values, before);
+    },
+  );
+  test(
+    'malformed saved prototype chat blocks export without changing records',
+    () async {
+      final records = Records();
+      final prototype =
+          jsonDecode(archive())['prototype'] as Map<String, dynamic>;
+      for (final messages in <Object>[
+        [
+          {'role': 'system', 'content': 'hidden'},
+        ],
+        [
+          {'role': 'user', 'content': 7},
+        ],
+        [
+          {'role': 'user', 'content': 'text', 'unknown': 'secret'},
+        ],
+        [
+          {'role': 'assistant', 'content': 'x' * 100001},
+        ],
+      ]) {
+        records.values['studio.application.v1.p'] = jsonEncode({
+          ...prototype,
+          'messages': messages,
+        });
+        final before = Map.of(records.values);
+        final c = PortableArchiveController('p', records);
+        await c.prepareExport();
+        expect(c.error, isNotNull);
+        expect(c.exportPreview, isNull);
+        expect(records.values, before);
+        c.dispose();
+      }
     },
   );
   test('bounded bytes reject overflow and invalid UTF-8', () async {
@@ -400,6 +437,7 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(prototype, findsOneWidget);
+    expect(find.text('1 prototype messages'), findsOneWidget);
     final revisionHistory = find.text(
       'Historical revision summaries only; artifacts and rollback are unavailable.',
     );
@@ -421,6 +459,23 @@ void main() {
     await tester.pumpAndSettle();
     expect(history, findsOneWidget);
     expect(tester.takeException(), isNull);
+    final review = find.text('Review included text');
+    await tester.scrollUntilVisible(
+      review,
+      150,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.tap(review);
+    await tester.pumpAndSettle();
+    final editText = find.text('Change the prototype 😀');
+    await tester.scrollUntilVisible(
+      editText,
+      150,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+    expect(editText, findsOneWidget);
+    expect(records.values, isEmpty);
     final id = find.byWidgetPredicate(
       (w) =>
           w is TextField &&

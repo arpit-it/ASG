@@ -41,6 +41,85 @@ PortableProjectArchive archive() => PortableProjectArchive(
 );
 
 void main() {
+  test('v6 prototype text round trip excludes context and refuses malformed conversations', () {
+    final messages = [
+      const ChatMessage(
+        role: 'assistant',
+        content: 'Exact\nedit 😀',
+        planContext: 'private-context',
+      ),
+    ];
+    final value = PortableProjectArchive(
+      requirements: board(),
+      messages: [],
+      prototype: PortablePrototype(
+        revision: 3,
+        messages: messages,
+        definition: const AppDefinition(
+          title: 'Title',
+          theme: 'green',
+          elements: [
+            AppElement(id: 'title', kind: ElementKind.heading, label: 'Title'),
+          ],
+        ),
+      ),
+    );
+    messages.clear();
+    final encoded = value.encode();
+    expect(jsonDecode(encoded)['version'], 6);
+    expect(encoded, isNot(contains('private-context')));
+    expect(encoded, isNot(contains('planContext')));
+    final decoded = PortableProjectArchive.decode(encoded);
+    expect(decoded.encode(), encoded);
+    expect(decoded.prototype!.messages.single.content, 'Exact\nedit 😀');
+    expect(() => decoded.prototype!.messages.clear(), throwsUnsupportedError);
+    for (final mutate in <void Function(Map<String, dynamic>)>[
+      (j) => j['version'] = 5,
+      (j) => j['prototype'].remove('messages'),
+      (j) => j['prototype']['messages'] = null,
+      (j) => j['prototype']['messages'][0]['planContext'] = 'credential',
+      (j) => j['prototype']['messages'][0]['role'] = 'system',
+      (j) => j['prototype']['messages'][0]['content'] = 7,
+      (j) => j['prototype']['messages'][0]['content'] = 'x' * 100001,
+      (j) => j['prototype']['messages'] = List.filled(1001, {
+        'role': 'user',
+        'content': 'text',
+      }),
+    ]) {
+      final json = jsonDecode(encoded) as Map<String, dynamic>;
+      mutate(json);
+      expect(
+        () => PortableProjectArchive.decode(jsonEncode(json)),
+        throwsFormatException,
+      );
+    }
+    expect(
+      () => PortableProjectArchive.decode(
+        encoded.replaceFirst('"content":', '"content":"lost","content":'),
+      ),
+      throwsFormatException,
+    );
+    final oversized = PortableProjectArchive(
+      requirements: board(),
+      messages: [],
+      prototype: PortablePrototype(
+        definition: value.prototype!.definition,
+        revision: 3,
+        messages: List.filled(
+          4,
+          ChatMessage(role: 'user', content: '界' * 100000),
+        ),
+      ),
+    );
+    expect(oversized.encode, throwsFormatException);
+    final legacy = jsonDecode(encoded) as Map<String, dynamic>;
+    legacy['version'] = 5;
+    (legacy['prototype'] as Map).remove('messages');
+    expect(
+      PortableProjectArchive.decode(jsonEncode(legacy)).prototype!.messages,
+      isEmpty,
+    );
+  });
   test('v5 immutable prototype round trip and strict malformed rejection', () {
     final items = ['Résumé 😀'];
     final original = PortableProjectArchive(

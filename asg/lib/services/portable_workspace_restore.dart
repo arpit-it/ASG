@@ -71,7 +71,7 @@ class PortableWorkspaceRestore {
       if (archive.prototype case final prototype?)
         'studio.application.v1.$id': jsonEncode({
           ...prototype.toJson(),
-          'messages': <Object>[],
+          'messages': prototype.messages.map((m) => m.toJson()).toList(),
         }),
       if (archive.revisions.isNotEmpty)
         PortableRevisionStore.key(id): jsonEncode(
