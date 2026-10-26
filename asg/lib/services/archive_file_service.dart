@@ -48,7 +48,9 @@ class ArchiveFileService {
     }
     final iterator = StreamIterator(stream);
     Future<String> read() async {
-      final bytes = BytesBuilder(copy: false);
+      // Providers may reuse a Uint8List for later chunks. Own each chunk
+      // before requesting another event so earlier archive bytes stay exact.
+      final bytes = BytesBuilder();
       try {
         while (await iterator.moveNext()) {
           final chunk = iterator.current;

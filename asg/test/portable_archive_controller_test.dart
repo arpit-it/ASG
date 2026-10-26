@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:asg/models/app_definition.dart';
 import 'package:asg/models/source_generation.dart';
@@ -1698,6 +1699,28 @@ void main() {
       }
     },
   );
+  test('import owns bytes when a provider reuses its chunk buffer', () async {
+    final encoded = archive();
+    Stream<List<int>> reusedBuffer() async* {
+      final buffer = Uint8List(1);
+      for (final byte in utf8.encode(encoded)) {
+        buffer[0] = byte;
+        yield buffer;
+      }
+      buffer[0] = 0xff;
+    }
+
+    final records = Records()..values['existing'] = 'retained';
+    final files = Files()..stream = reusedBuffer();
+    final controller = PortableArchiveController('p', records, files: files);
+    addTearDown(controller.dispose);
+    await controller.pickImport();
+    expect(controller.error, isNull);
+    expect(controller.importContents, encoded);
+    expect(records.values, {'existing': 'retained'});
+    await controller.saveCopy('owned');
+    expect(PortableArchiveStore(records).load('owned')!.encode(), encoded);
+  });
   test('bounded bytes reject overflow and invalid UTF-8', () async {
     final encoded = archive();
     final bytes = utf8.encode(encoded);

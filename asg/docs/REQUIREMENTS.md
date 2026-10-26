@@ -69,7 +69,7 @@ A task moves Queued → In progress → Awaiting merge → Done; use Blocked wit
 
 ## Active task and delivery ledger
 
-Active: F08 In progress/unchecked. Issue #114 quoted command-line credential guard on `114-quoted-cli-export` awaits final review/CI/merge. Prior PR #158 verified merged as 3f76fa64126ac9f5cf7a40bbd500926a76f828da. Full backup/general secret exclusion pending; no later feature selected.
+Active: F08 In progress/unchecked. Issue #114 archive stream buffer ownership on `114-archive-buffer-ownership`; prior PR #159 verified merged as 198092bc7a31dc9e36c8adf88ddea32dd7f6a0bb. Full backup/general secret exclusion pending. No later feature selected.
 
 ### F03 acceptance boundary and evidence
 
@@ -2610,3 +2610,25 @@ F08 remains In progress/unchecked for full backup/general secret exclusion. Whit
 Prior PR #158 independently plugin-verified merged as `3f76fa64126ac9f5cf7a40bbd500926a76f828da`; no competing active ASG run or open issue/PR at selection. Reopened matching #114 on `114-quoted-cli-export`. Before-fix controller regression failed: a credential option immediately after an opening quote or Markdown backtick bypassed the whitespace-only boundary. Scope: recognize quoted/Markdown/open-bracket boundaries; preserve embedded word/hyphen prefixes, missing/empty values and ordinary options. One percent-encoded ASCII layer remains inspected. No command execution, import changes or record rewriting.
 
 Both saved-project/copy exports clear stale preview, refuse without writes/download/matched-text disclosure and permit clean retry. 87 focused/531 full Flutter tests (seven opt-in skips), formatter (191 files) and analyzer passed. 9 actual Chrome policy tests and the web build/Wasm dry run passed. Initial focused invocation named a nonexistent native test; corrected suite passed. Independent exact-head review/required CI/protected merge remain gates. F08 remains In progress/unchecked for full backup/general secret exclusion. Runtime 8765 offline; no live inference/download/stable-app replacement/deployment. Existing IDE/history edits preserved; history-publication exclusion and prior label rejection retained. Recorded 2026-10-26T21:19:54.396437+00:00.
+
+
+2026-10-26T21:21:57.447516+00:00 — PR159 https://github.com/arpit-it/ASG/pull/159 published exclusively through GitHub plugin at ec488608f66643e23a064f8d95a9b922410a7707/tree630658b358dbb27dd495469c7203381a0494766d, identical to tested local4934004.87focused/531full-seven skips/9Chrome/formatter191/analyzer/webWasm passed. Independent /root/review_159 owns exact-head review, actual required CI and conditional protected merge. Active owner chat01a17a13-2fe3-7043-adf5-882eb5f6402b; avoid overlap until final synchronization. No merge claimed.
+
+
+### F08 quoted command-line credential guard — verified PR #159 delivery
+
+Issue #114 / branch `114-quoted-cli-export` delivered through https://github.com/arpit-it/ASG/pull/159. Independent exact-head COMMENT5659238785 and final-CI6427714708 approved `ec488608f66643e23a064f8d95a9b922410a7707`. Normal protected squash merge `198092bc7a31dc9e36c8adf88ddea32dd7f6a0bb` at 2026-10-26T21:26:00Z; issue114 closed/completed21:26:01Z independently plugin verified. Tested local4934004, published head and merged main share tree630658b358dbb27dd495469c7203381a0494766d.
+
+Before-fix controller regression failed. Local87focused/531fullFlutter-seven opt-in skips/9actualChrome/formatter191/analyzer/webWasm passed. Reviewer independently87focused+9Chrome/formatter/analyzer passed. Required CI40403698899 completed successfully; reviewer inspected actual Flutter121855887206 logs (529Linux-six skips/twoChrome storage-download/webWasm/generated all4exit0 and serving assertions) and Python121855887610 logs (2+4+10+4fixtures-two confinement skips). Parent independently plugin verified merged PR/exact head/closed issue/current main, imported signed merge after exact SHA/tree validation and safely advanced local main with0/0divergence and empty tested-tree diff. Unrelated IDE/history edits retained; nothing staged. GitHub exclusively plugin.
+
+F08 remains In progress/unchecked for full backup/general secret exclusion. Credential options inside quotes, Markdown backticks and opening brackets now refuse exports; embedded word/hyphen prefixes, empty/missing values and ordinary options stay exact. Both saved-project/copy exports clear stale preview, refuse without writes/download/disclosure and permit clean retry. This bounded pattern guard does not prove arbitrary free text secret-free. Runtime8765offline; no live inference/download/stable-app replacement/deployment. No new issue/task/cadence/notification change. History-publication exclusion and prior label rejection respected. Postmerge evidence retained locally for the next reviewed increment. Recorded 2026-10-26T21:26:45.307682+00:00.
+
+Owner complete; local main synchronized. Run completed 2026-10-26T21:26:45.307682+00:00.
+
+
+### F08 archive stream buffer ownership — issue #114
+
+Prior PR #159 verified merged as 198092bc7a31dc9e36c8adf88ddea32dd7f6a0bb; no competing active ASG run/open issue or PR at selection. Reopened matching issue #114 on `114-archive-buffer-ownership`. A failing before-fix controller regression demonstrated that BytesBuilder(copy: false) retains provider-owned Uint8List chunks; a provider reusing its buffer corrupted an otherwise valid archive. Copy received chunks before requesting the next event, retaining byte limits, UTF-8 validation, deadlines and cleanup.
+
+Acceptance: exact Unicode archive import and saved-copy round trip with a reused typed buffer, no writes during preview, and existing malformed UTF-8/overflow/timeout regressions. Local 79 focused and 532 full Flutter tests passed (seven opt-in skips); formatter/analyzer and web build/Wasm dry run passed. Independent exact-head review and actual required CI remain merge gates. F08 stays In progress/unchecked for full backup/general secret exclusion. No inference/download/stable-app replacement/deployment or new task. Unrelated IDE/history edits retained; history-publication exclusion retained.
+Recorded 2026-10-26T21:29:57.285203+00:00.
