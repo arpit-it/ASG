@@ -69,7 +69,7 @@ A task moves Queued → In progress → Awaiting merge → Done; use Blocked wit
 
 ## Active task and delivery ledger
 
-Active: F08 In progress/unchecked; reopened #114 on `114-credential-export-guard` for bounded non-destructive credential export refusal. Prior PR #127 verified merged as `c7e8a1e8ca835eaa122fbd581061b339e451e54a`. Local formatter188/analyzer/491tests/web build pass; publication, independent final-revision review, actual CI and protected merge remain gates. Complete backup and general free-text secret exclusion remain pending. No later task selected.
+Active: F08 In progress/unchecked; reopened #114 on `114-reopen-portable-copies` for app-led reopening of saved data copies. Prior PR #128 verified merged as `e7a8a81a3106dada7440036e8494b161d9da740a`. Local focused33tests, formatter188/analyzer/full494tests/web build pass; publication, independent final-revision review, actual CI and protected merge remain gates. Complete backup/general secret exclusion remain pending. No later task selected.
 
 ### F03 acceptance boundary and evidence
 
@@ -2095,3 +2095,19 @@ Acceptance coverage: credential variants and innocent prose/Unicode/public-key/s
 ### F08 credential export guard — PR #128 review repair (26 October 2026)
 
 Resumed issue #114 after the prior owner stopped with a model-capacity error. Independent review 5651779565 at published head e03a555c13991480a945728dc71bc8b504dff9fd found quadratic URL-userinfo matching on long repeated-colon text. A fresh review also found repeated dotted scheme prefixes could backtrack. URL detection now locates literal separators then scans disjoint scheme/authority segments, avoiding regex retries while retaining password colons. A 98k-character nonmatching authority regression has a two-second ceiling and a long matching password still refuses export. Focused20tests, formatter188, analyzer, full492Flutter tests/seven opt-in skips and web build/Wasm dry run pass. Fresh independent final-revision review and required CI remain merge gates. F08 remains In progress/unchecked. Local history updates stay unpublished following the prior automatic publication rejection; unrelated IDE edits preserved.
+
+
+### F08 credential export guard — verified PR #128 delivery (26 October 2026)
+
+Issue #114 / branch114-credential-export-guard delivered through PR https://github.com/arpit-it/ASG/pull/128. Independent final-revision COMMENT approval5651905647 approved14acebd48eeb9f0d8df2b303f276205a8cbe90d1; old blocking thread resolved. Actual complete CI40322049901: Flutter121569163585 passes490Linux tests/six opt-in skips, realChrome storage, web/Wasm and independent generated resolve/analyze/test/build exits0 plus serving acceptance; Python121569163790 passes2download+4streaming+10process+4confinement fixtures/two skips. Independent48focused tests/analyzer and98k-input performance probes pass(approximately2–8ms). Local492Flutter tests/seven opt-in skips, analyzer and web/Wasm pass.
+
+Reviewer normal protected squash merge e7a8a81a3106dada7440036e8494b161d9da740a at2026-10-26T12:27:45Z independently verified through connected GitHub plugin; issue114closed/completed12:27:47Z and remote main matches. Tested local9a699ce, published head and merged main share tree337879df1bb84efb772dbf770acc8a4543cdc5fa. Imported plugin-fetched signed merge only after reproducing exact SHA; safely fast-forwarded local main,0/0divergence. Unrelated IDE/local history edits retained; nothing staged. No terminal GitHub access.
+
+F08 remains In progress/unchecked: bounded recognized-credential export refusal is delivered, complete backup/general secret exclusion remain pending. No new task/issue, inference/download/stable-app replacement/deployment or cadence/notification change. Full history publication remains excluded following earlier automatic review rejection for potentially sensitive history; updates retained locally. Carry postmerge evidence into next normal reviewed increment; no duplicate publication attempt.
+
+
+### F08 reopen saved data copies — issue #114 (26 October 2026)
+
+Reopened matching #114 on `114-reopen-portable-copies` from plugin-verified current main/PR #128 merge `e7a8a81a3106dada7440036e8494b161d9da740a`; no competing active owner/open issue/PR. Evidence: separate data copies were durable but the app had no action to reopen them after leaving the screen. A bounded saved-copy ID field now loads the strictly validated archive into the existing review/restore preview without a file picker or writes. Missing/corrupt/invalid copies clear earlier import previews and retain all records; clean retry works. Restore remains explicit, atomic and non-replacing, with no execution history or Plan consent transfer. No schema change.
+
+Validation: controller failure/retry/snapshot and no-write coverage, native database close/reopen/load-copy/explicit-workspace-restore/reopen/re-export equality, and narrow360px/1.8x-text UI action. Focused33tests pass. Formatter188 unchanged, analyzer clean, full494Flutter tests/seven opt-in skips and web build/Wasm dry run pass. Independent exact-head review/actual required CI/protected merge remain gates. F08 stays In progress/unchecked for complete backup/general secret exclusion. Existing8765 endpoint refused connection; no live inference/download/stable-app replacement/deployment. Prior postmerge evidence and unrelated IDE/local history changes retained; history publication remains excluded. No new issue/task/cadence change; GitHub access exclusively through connected plugin.

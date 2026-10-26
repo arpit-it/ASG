@@ -128,10 +128,18 @@ void main() {
     expect(encoded, contains('Saved edit chat 😀'));
     expect(encoded, isNot(contains('/private/context')));
     await PortableArchiveStore(db).restoreCopy('copy', encoded);
-    final project = await PortableWorkspaceRestore(db)
-        .restore(id: 'restored', name: 'Restored', encoded: encoded);
     await db.database.close();
     db = await open();
+    final reopened = PortableArchiveController('unused', db);
+    addTearDown(reopened.dispose);
+    await reopened.loadCopy('copy');
+    expect(reopened.importContents, encoded);
+    expect(StudioStore(db).load(), isEmpty);
+    await reopened.restoreWorkspace('restored', 'Restored');
+    expect(reopened.error, isNull);
+    await db.database.close();
+    db = await open();
+    final project = StudioStore(db).load().single;
     final snapshot = ApplicationStore(db).load(project);
     expect(snapshot.definition.toJson(), definition.toJson());
     expect(snapshot.revision, 12);

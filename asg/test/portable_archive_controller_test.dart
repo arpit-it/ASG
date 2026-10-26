@@ -132,6 +132,95 @@ String archive() => PortableProjectArchive(
   messages: const [ChatMessage(role: 'user', content: 'Exact private text 😀')],
 ).encode();
 void main() {
+  test('saved copies reopen read-only, clear stale previews and retry', () async {
+    final records = Records();
+    final encoded = archive();
+    await PortableArchiveStore(records).restoreCopy('copy', encoded);
+    records.values[PortableArchiveStore.key('broken')] = '{broken';
+    final before = Map.of(records.values);
+    final c = PortableArchiveController('p', records, files: Files());
+    addTearDown(c.dispose);
+    for (final invalid in ['missing', 'broken', '../copy', '']) {
+      await c.loadCopy('copy');
+      expect(c.importContents, encoded);
+      expect(c.error, isNull);
+      await c.loadCopy(invalid);
+      expect(c.importPreview, isNull);
+      expect(c.error, isNotNull);
+      await c.restoreWorkspace('forbidden', 'Forbidden');
+      expect(records.values, before);
+    }
+    await c.loadCopy('copy');
+    // The validated preview remains a snapshot if the saved copy later changes.
+    records.values[PortableArchiveStore.key('copy')] = '{damaged later';
+    expect(c.importContents, encoded);
+    await c.restoreWorkspace('new', 'Restored');
+    expect(c.error, isNull);
+    expect(c.importPreview, isNull);
+    expect(records.values['studio.planApproval.v1.new'], isNull);
+    expect(records.values['studio.generation.v1.new'], isNull);
+    final restored = PortableArchiveController('new', records, files: Files());
+    addTearDown(restored.dispose);
+    await restored.prepareExport();
+    expect(restored.exportContents, encoded);
+  });
+
+  testWidgets(
+    'saved copy can be reviewed and restored at narrow enlarged text',
+    (tester) async {
+      tester.view.physicalSize = const Size(360, 900);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final records = Records();
+      await PortableArchiveStore(records).restoreCopy('saved', archive());
+      final before = Map.of(records.values);
+      final c = PortableArchiveController('p', records, files: Files());
+      await tester.pumpWidget(
+        MaterialApp(
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(context)
+                .copyWith(textScaler: TextScaler.linear(1.8)),
+            child: child!,
+          ),
+          home: PortableArchiveScreen(controller: c),
+        ),
+      );
+      Future<void> reveal(Finder finder) async {
+        await tester.scrollUntilVisible(
+          finder,
+          300,
+          scrollable: find.byType(Scrollable).first,
+        );
+        await tester.pumpAndSettle();
+      }
+
+      final savedId = find.widgetWithText(TextField, 'Saved data copy ID');
+      await reveal(savedId);
+      await tester.enterText(savedId, 'saved');
+      final load = find.text('Load saved data copy');
+      await reveal(load);
+      await tester.tap(load);
+      await tester.pumpAndSettle();
+      expect(c.importContents, archive());
+      expect(records.values, before);
+      final id = find.widgetWithText(TextField, 'New backup or project ID');
+      await reveal(id);
+      await tester.enterText(id, 'new');
+      final name = find.widgetWithText(TextField, 'New project name');
+      await reveal(name);
+      await tester.enterText(name, 'Reopened');
+      final restore = find.text('Restore records into new project');
+      await reveal(restore);
+      await tester.tap(restore);
+      await tester.pumpAndSettle();
+      expect(c.error, isNull);
+      expect(records.values['studio.projects.v1'], contains('Reopened'));
+      expect(records.values['studio.planApproval.v1.new'], isNull);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
   test(
     'credential export refusal clears stale preview and permits clean retry',
     () async {
