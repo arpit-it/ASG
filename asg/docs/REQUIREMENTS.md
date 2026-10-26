@@ -69,7 +69,7 @@ A task moves Queued → In progress → Awaiting merge → Done; use Blocked wit
 
 ## Active task and delivery ledger
 
-Active: F08 In progress/unchecked; reopened #114 on `114-basic-leading-whitespace` for whitespace-prefixed Basic credential refusal. PR #134 merge `0558fce0f709e392ab1322a6b778be09d710b2b1` verified through connected GitHub. Complete backup/general secret exclusion remain pending; no later task selected.
+Active: F08 In progress/unchecked; reopened #114 on `114-aws-export-guard` for AWS configuration credential refusal. Prior PR #135 merge verified. Complete backup/general secret exclusion remain pending; no later task selected.
 
 ### F03 acceptance boundary and evidence
 
@@ -2209,3 +2209,19 @@ F08 remains In progress/unchecked. Nonempty quoted recognized credentials now re
 Reopened matching #114 on `114-basic-leading-whitespace` after connected-plugin verification of PR #134 merge/current local main and no competing active run/open PR. Regression tests demonstrate that quoted Authorization/Proxy-Authorization values with leading whitespace bypassed the Basic credential guard. Scope: inspect whitespace before Basic inside quoted values; retain empty/incomplete assignments, ordinary prose, lossless import and saved records. Policy fixtures cover both quotes, mixed case and tabs/newlines. Controller regression requires safe refusal, stale-preview clearing, no file/record writes and clean retry. Before-fix policy/controller regressions failed. Formatter/analyzer/full tests/web build, independent final-revision review and actual required CI remain gates. F08 stays In progress/unchecked; complete backup/general secret exclusion remain pending.
 
 Local final validation: formatter188 unchanged, analyzer clean, all503Flutter tests pass with seven opt-in skips; web build/Wasm dry run pass. Long 98k whitespace refusal/allowance fixtures remain bounded. Independent exact-revision review/actual required CI/protected merge remain gates.
+
+
+### F08 whitespace-prefixed Basic export guard — verified PR #135 delivery (26 October 2026)
+
+Issue #114 / branch `114-basic-leading-whitespace` delivered through [PR #135](https://github.com/arpit-it/ASG/pull/135). Independent final-revision COMMENT approval `5653344079` and complete-CI gate `5653435537` approved exact head `6d3c32ae7feee81977700de1bb07bc366e043e02`. Normal protected squash merge `eabfcfeaaaff5db26aac1be89e5778483c6ad3ed` at2026-10-26T14:19:01Z and issue closure/completed14:19:03Z independently verified through connected GitHub. Tested local `6016871fb4663f13dc78e9d4df218fd307c08b07`, published head and merged main share tree `b04c3813768e665880c61726794739087cb65f66`.
+
+Independent59focused archive/controller/store/model/MVC tests, formatter188/analyzer pass. Required CI `40337370743` actual complete logs inspected by reviewer before merge: Flutter `121623038437` passes501Linux tests/six skips, formatter188/analyzer, actualChromeIndexedDB/webWasm and independent generated resolve/analyze/test/build all0 with HTTP200/>1000-byte serving assertions; Python `121623038669` passes2download+4streaming+10process+4confinement fixtures/two skips. Local503Flutter tests/seven skips, formatter188/analyzer/webWasm pass; initial two regressions fail before fix. Parent independently verified merged PR/closed issue/current remote main/identical tree through plugin, reconstructed signed merge only after exact SHA reproduction and safely fast-forwarded local main with0/0divergence/empty tested-tree diff. Unrelated IDE/history edits retained; nothing staged. No terminal GitHub access.
+
+F08 remains In progress/unchecked. Quoted Basic authorization values with leading whitespace now refuse export; empty/incomplete values and clean retry remain supported. Complete backup/general secret exclusion remain pending. Existing8765offline; no inference/download/stable-app replacement/deployment/new task/cadence/notification change. Prior history publication exclusion and label rejection retained without retry. Postmerge evidence retained locally for next normal reviewed increment.
+
+
+### F08 AWS configuration credential export refusal — issue #114 (26 October 2026)
+
+Reopened matching #114 on `114-aws-export-guard` after connected GitHub verification of current main `eabfcfeaaaff5db26aac1be89e5778483c6ad3ed`, no open issues/PRs and no competing active ASG run. AWS secret-access-key/session-token assignments bypassed existing named credential recognition because of their field names. Scope: refuse nonempty AWS assignments with underscore/hyphen/space/camel-case names, mixed case and quoted whitespace. Empty assignments and prose remain exportable; import remains lossless. Controller regression requires safe refusal, stale-preview invalidation, no file/record writes and clean retry. Initial policy/controller regressions failed before fix.
+
+Local validation: formatter188, analyzer clean and all504Flutter tests pass (seven opt-in skips). Web build/Wasm result is recorded in PR validation. Independent final-revision review and actual required CI/protected merge remain gates. F08 remains In progress/unchecked; general secret exclusion and complete backup remain pending. Existing8765endpoint offline; no live inference/download/stable-app replacement/deployment. Unrelated IDE/history edits retained; prior history publication exclusion and label rejection respected. No new issue/task/cadence/notification change.
