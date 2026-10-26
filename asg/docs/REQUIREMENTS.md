@@ -69,7 +69,7 @@ A task moves Queued → In progress → Awaiting merge → Done; use Blocked wit
 
 ## Active task and delivery ledger
 
-Active: F08 In progress/unchecked; reopened #114 on `114-web-archive-download` for browser archive export. PR #142 merge verified. Complete backup/general secret exclusion pending; no later task selected.
+Active: F08 In progress/unchecked; reopened #114 on `114-strict-conversation-export` for lossless assistance-field validation. PR #143 merge verified. Complete backup/general secret exclusion pending; no later task selected.
 
 ### F03 acceptance boundary and evidence
 
@@ -2342,3 +2342,19 @@ Owner complete; local main synchronized. Run completed 2026-10-26T16:09:53.88319
 Reopened matching #114 after plugin verification of PR #142 merge 6081f54e2a5c86f83b30b9e37e045efc7ca908d0, closed issue and no open PR/competing active owner. Branch `114-web-archive-download`. Evidence: web export disabled despite working browser imports and existing XFile Blob download support. Enable explicit browser download without server/new dependency, retain desktop save/cancel and mobile unsupported behavior. Browser action/status says download requested and asks users to confirm in browser downloads; no disk-save completion claim. Existing validated snapshot/credential refusal remains enforced.
 
 Acceptance: real Chrome regression failed before fix (canExport false), then verifies exact Blob UTF-8 bytes/Unicode round trip, filename, invalid-file no download, controller truthful status, credential refusal/stale-preview clearing and no record writes. CI now runs the browser archive test alongside IndexedDB coverage. Formatter189/analyzer/full510Flutter tests-seven skips/web build/Wasm dry run pass; both realChrome tests pass. Existing8765 endpoint offline; no live inference/download/model setup/deployment. F08 remains In progress/unchecked; complete backup/general secret exclusion pending. Independent final-revision review, actual required CI and protected merge remain gates. Unrelated IDE/history edits preserved; prior history publication exclusion/label rejection respected. Recorded 2026-10-26T16:21:26.055948+00:00.
+
+
+### F08 browser archive downloads — verified PR #143 delivery (26 October 2026)
+
+Issue #114 / branch `114-web-archive-download` delivered through https://github.com/arpit-it/ASG/pull/143. Independent exact-head COMMENT5655379396 and final complete-CI5655438722 approvedc5683f22c78236d06d7f9803658e702408686a6b. Normal protected squash merge9e5a765d8fb5722641968284bbd3c786bd03795a at2026-10-26T16:28:29Z; issue closed/completed16:28:31Z independently verified through connected GitHub. Tested local4d87bd6fc9620d62f9d7037ff17d61cc3f2714ab, published head and merged main share tree d487991bb12eded94c7a0c7abcb4859a619b8b88.
+
+Before-fix Chrome regression failed (export disabled). Local formatter189/analyzer/all510Flutter tests-seven skips/webWasm and twoChrome tests pass. Reviewer independently66focused archive/MVC tests/formatter189/analyzer/twoChrome tests pass. Required CI40358584476 actual complete logs inspected before merge: Flutter121697591142 formatter189/analyzer/508Linux tests-six skips/twoChrome tests including real Blob filename/exact UTF-8/Unicode/controller-refusal coverage/webWasm/generated resolve-analyze-test-build0 plus HTTP200/>1000byte serving assertions; Python1216975907112download+4streaming+10process+4confinement fixtures-two skips. Parent independently verified merged PR/exact head/closed issue/current main via plugin, imported signed merge only after reproducing its exact SHA, then safely fast-forwarded local main with0/0divergence and empty tested-tree diff. Unrelated IDE/history edits retained; nothing staged. GitHub exclusively plugin.
+
+F08 remains In progress/unchecked. Web users can request downloads of validated portable records; the app truthfully asks them to confirm browser completion. Native desktop save/cancel and mobile unsupported handling retained. Complete backup/general secret exclusion pending. Existing8765endpoint offline; no live inference/model download/stable-app replacement/deployment. No new issue/task/cadence/notification change. Prior history publication exclusion and label rejection respected. Postmerge evidence retained locally for next normal reviewed increment. Recorded 2026-10-26T16:30:02.878758+00:00.
+
+Owner complete; local main synchronized. Run completed 2026-10-26T16:30:02.878758+00:00.
+
+
+### F08 strict saved assistance export — issue #114 (26 October 2026)
+
+Reopened matching #114 on `114-strict-conversation-export` after verifying PR #143 merged as `9e5a765d8fb5722641968284bbd3c786bd03795a`, no open PR/issues and no competing active ASG run. Evidence: normal conversation decoding silently ignored unknown saved message fields during export, unlike prototype export. Regression failed before fix. Export now validates assistance message field names before conversion; role/content and validated optional planContext remain supported, with context intentionally excluded. Unknown scalar/nested/null fields refuse export without writes or content disclosure, clear stale previews, preserve raw records and permit clean retry. Exact Unicode/legacy/contextual text remains supported. F08 remains In progress/unchecked for complete backup/general secret exclusion. Formatter190/analyzer passed; full tests/web build and independent exact-revision review/required CI remain gates. Existing8765endpoint offline; no live inference/download/deployment. Unrelated IDE/history edits retained. Recorded 2026-10-26T16:40:08.222883+00:00.

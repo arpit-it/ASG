@@ -829,6 +829,56 @@ void main() {
     },
   );
   test(
+    'unknown saved assistance fields refuse export without data loss',
+    () async {
+      final records = Records();
+      final files = Files();
+      final c = PortableArchiveController('p', records, files: files);
+      addTearDown(c.dispose);
+      for (final extra in <Map<String, Object?>>[
+        {'futureField': 'private-future-value'},
+        {
+          'attachments': [
+            {'name': 'private-future-value'},
+          ],
+        },
+        {'futureField': null},
+      ]) {
+        records.values.clear();
+        await c.prepareExport();
+        expect(c.exportPreview, isNotNull);
+        files.written = null;
+        records.values['studio.chat.v1.p'] = jsonEncode([
+          {'role': 'assistant', 'content': 'Exact 中文 😀', ...extra},
+        ]);
+        final before = Map.of(records.values);
+        await c.prepareExport();
+        expect(c.error, isNotNull);
+        expect(c.error, isNot(contains('private-future-value')));
+        expect(c.exportPreview, isNull);
+        await c.exportFile();
+        expect(files.written, isNull);
+        expect(records.values, before);
+        records.values['studio.chat.v1.p'] = jsonEncode([
+          {
+            'role': 'assistant',
+            'content': 'Exact 中文 😀',
+            'planContext': 'private-context',
+          },
+          {'role': 'user', 'content': 'Legacy text'},
+        ]);
+        await c.prepareExport();
+        expect(c.error, isNull);
+        await c.exportFile();
+        final restored = PortableProjectArchive.decode(files.written!);
+        expect(restored.messages.first.content, 'Exact 中文 😀');
+        expect(restored.messages.last.content, 'Legacy text');
+        expect(files.written, isNot(contains('private-context')));
+      }
+    },
+  );
+
+  test(
     'damaged saved prototype blocks export and malformed import writes nothing',
     () async {
       final records = Records();

@@ -7,7 +7,7 @@ import '../models/portable_export_policy.dart';
 import '../services/archive_file_service.dart';
 import '../services/portable_prototype_store.dart';
 import '../services/portable_export_records.dart';
-import '../services/conversation_store.dart';
+import '../services/portable_conversation_store.dart';
 import '../services/portable_archive_store.dart';
 import '../services/portable_decision_store.dart';
 import '../services/portable_revision_store.dart';
@@ -79,7 +79,7 @@ class PortableArchiveController extends ChangeNotifier {
       prototype: PortablePrototypeStore(source).load(projectId),
       decision: PortableDecisionStore(source).load(projectId),
       revisions: PortableRevisionStore(source).load(projectId),
-      messages: ConversationStore(source).load(projectId),
+      messages: PortableConversationStore(source).load(projectId),
     );
     PortableExportPolicy.requireExportable(archive);
     _exportPreview = archive;
