@@ -69,7 +69,7 @@ A task moves Queued → In progress → Awaiting merge → Done; use Blocked wit
 
 ## Active task and delivery ledger
 
-Active: F08 In progress/unchecked. Issue #114 SSH2 private-key export increment in progress on `114-ssh2-key-export`; full backup/general secret exclusion pending. Prior PR #153 merge verified. No later feature selected.
+Active: F08 In progress/unchecked. Issue #114 XML credential export increment awaiting publication/review on `114-xml-credential-export`; full backup/general secret exclusion pending. Prior PR #154 merge verified. No later feature selected.
 
 ### F03 acceptance boundary and evidence
 
@@ -2528,3 +2528,19 @@ F08 remains In progress/unchecked for full backup/general secret exclusion. Exac
 ### F08 SSH2 private-key export guard — issue #114
 
 Verified PR #153 merged at c2a0fa28c142ce1a15b733ed5cfe18b5127f3c6b through connected GitHub, with no open issue/PR or competing active ASG owner. Reopened matching #114 on `114-ssh2-key-export`. Evidence: four-dash spaced SSH2 private-key armor bypassed existing patterns; controller regression failed before fix. Source: https://github.com/openssh/openssh-portable/blob/master/ssh-keygen.c (SSH_COM_PRIVATE_BEGIN). Scope: refuse the exact SSH2 encrypted private-key delimiter, preserving stored records and data-only import. Acceptance: bare, multiline/CRLF, embedded and single percent-encoded forms refuse saved-project/copy export; stale preview clears, no writes/download/disclosure, clean retry succeeds. SSH2 public-key armor and prose remain exact. Focused81/full525Flutter tests-seven opt-in skips, formatter191 and analyzer passed. Web build/Wasm dry run passed. Independent final-head review, actual required CI and protected merge remain gates. F08 stays In progress/unchecked for full backup/general secret exclusion. Existing8765 runtime offline; no live inference/download/stable-app replacement/deployment. Prior history-publication exclusion respected. Recorded 2026-10-26T20:09:58.275333+00:00.
+
+
+### F08 SSH2 private-key export guard — verified PR #154 delivery (26 October 2026)
+
+Issue #114 / branch `114-ssh2-key-export` delivered through https://github.com/arpit-it/ASG/pull/154. Independent final-head review5658330500 and final-CI6426331430 approved c931ba6ad024a27ae9533c797262e6432693ece8. Normal protected squash merge4ca72f381036ce33b2039e951033bf0128423bd3 at2026-10-26T20:16:27Z;issue114closed/completed20:16:29Z plugin verified. Tested local091e0577e13ef14c2b7067a7b7b1f00e5ba59859, published head and merged main share tree80f5337bfff17f1e799d5eebfd56279ad7e3f704.
+
+Before-fix controller regression failed. Local81focused/full525Flutter tests-seven opt-in skips/formatter191/analyzer/webWasm passed. Reviewer independently81focused+5actualChrome policy tests/formatter/analyzer passed. Actual required CI40393326007 successful logs inspected before reviewer merge: Flutter121819719925 formatter191/analyzer/523Linux-six skips/twoChrome/storage-download/webWasm/generated resolve-analyze-test-build all4exits0; Python1218197195332+4+10+4fixtures-two skips. Parent independently plugin verified merged PR/exact head/closed issue/current main. Imported signed merge only after exact SHA/tree verification; local main safely fast-forwarded with0/0divergence and empty tested-tree diff. Unrelated IDE/history edits retained; nothing staged. GitHub exclusively plugin.
+
+F08 remains In progress/unchecked for full backup/general secret exclusion. Exact SSH2 encrypted private-key delimiter refuses saved-project/copy export, including embedded/CRLF and one percent-encoded layer; stale preview clears, no writes/download/disclosure, clean retry works. SSH2 public-key armor/prose remain exact. Existing8765runtime offline; no live inference/download/stable-app replacement/deployment. No new issue/task/cadence/notification change. History remains local and prior label rejection respected. Postmerge evidence retained locally for next normal reviewed increment. Recorded 2026-10-26T20:17:38.403652+00:00.
+
+Owner complete; local main synchronized. Run completed 2026-10-26T20:17:38.403652+00:00.
+
+
+### F08 XML credential export guard — issue #114
+
+Prior PR #154 plugin-verified merged at4ca72f381036ce33b2039e951033bf0128423bd3; no competing active ASG owner or open issue/PR. Reopened matching #114 on `114-xml-credential-export`. Evidence: XML credential element content bypassed assignment-only patterns; controller regression failed before fix. Scope: refuse nonempty text immediately after an unqualified credential opening tag using the existing field vocabulary, case-insensitive and including whitespace and one percent-encoded ASCII layer. This bounded guard is not an XML parser; attributes, namespaces, nested markup and entity decoding are outside this increment. Empty/self-closing tags, ordinary tags and prose remain exact. Acceptance: saved-project/copy exports clear stale preview and refuse before download without record writes or matched-text disclosure; clean retry succeeds. Local83focused/full527Flutter tests-seven opt-in skips/formatter191/analyzer/web build and Wasm dry run passed. Initial fixture edit used a wrong relative path; corrected before before-fix regression. SDK cache/telemetry sandbox access resolved through approved execution. Independent exact-head review and actual required CI/protected merge remain gates. F08 stays In progress/unchecked for full backup/general secret exclusion. Existing8765 runtime offline; no live inference/download/stable-app replacement/deployment. Prior history-publication exclusion retained. Recorded 2026-10-26T20:29:56.079805+00:00.

@@ -120,6 +120,62 @@ void main() {
     }
   });
 
+  test(
+    'XML credential values refuse while empty and ordinary tags stay exact',
+    () {
+      for (final name in [
+        'password',
+        'passwd',
+        'pwd',
+        'passphrase',
+        'token',
+        'secret',
+        'credential',
+        'privateKey',
+        'api_key',
+        'auth-token',
+        'accessToken',
+        'id_token',
+        'refreshToken',
+        'client-secret',
+        'secret_key',
+        'awsSecretAccessKey',
+        'aws_session_token',
+      ]) {
+        for (final tag in [name, name.toUpperCase()]) {
+          for (final text in [
+            '<$tag>fixture-value</$tag>',
+            '<$tag >\r\nfixture-value\r\n</$tag>',
+            '<$tag> </$tag>',
+            Uri.encodeComponent('<$tag>fixture-value</$tag>'),
+          ]) {
+            expect(
+              () => PortableExportPolicy.requireExportable(withText(text)),
+              throwsA(isA<PortableExportRefused>()),
+            );
+          }
+          for (final text in ['<$tag></$tag>', '<$tag />', '<$tag/>']) {
+            final archive = withText(text);
+            final before = archive.encode();
+            PortableExportPolicy.requireExportable(archive);
+            expect(archive.encode(), before);
+          }
+        }
+      }
+      for (final text in [
+        '<username>fixture-value</username>',
+        '<passwordPolicy>strong</passwordPolicy>',
+        'Use the password element for configuration',
+        '&lt;password&gt;example&lt;/password&gt;',
+      ]) {
+        final archive = withText(text);
+        final before = archive.encode();
+        PortableExportPolicy.requireExportable(archive);
+        expect(archive.encode(), before);
+      }
+    },
+  );
+
   test('one percent-encoded ASCII layer cannot hide credentials', () {
     for (final text in [
       'https://example.test?api%5Fkey=fixture-value',

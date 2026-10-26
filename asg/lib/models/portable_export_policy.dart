@@ -13,6 +13,12 @@ class PortableExportPolicy {
     RegExp(r'---- BEGIN SSH2 ENCRYPTED PRIVATE KEY ----'),
     // PuTTY PPK keys use a versioned signature rather than PEM delimiters.
     RegExp(r'\bPuTTY-User-Key-File-[23]:'),
+    // XML settings use element content rather than assignment delimiters.
+    // Inspect text after a credential tag; this is not a general XML parser.
+    RegExp(
+      r'<(?:aws[_ -]?(?:secret[_ -]?access[_ -]?key|session[_ -]?token)|password|passwd|pwd|passphrase|token|secret|credential|private[_ -]?key|api[_ -]?(?:key|token)|auth[_ -]?token|access[_ -]?token|id[_ -]?token|refresh[_ -]?token|client[_ -]?secret|secret[_ -]?key)\s*>[^<]',
+      caseSensitive: false,
+    ),
     RegExp(
       r'\b(?:gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|sk-[A-Za-z0-9_-]{20,}|(?:AKIA|ASIA)[A-Z0-9]{16})\b',
     ),
