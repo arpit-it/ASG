@@ -69,7 +69,7 @@ A task moves Queued → In progress → Awaiting merge → Done; use Blocked wit
 
 ## Active task and delivery ledger
 
-Active: F08 In progress/unchecked; reopened #114 on `114-short-bearer-export` for short Bearer credential refusal. PR #147 merge verified. Complete backup/general secret exclusion pending; no later task selected.
+Active: F08 In progress/unchecked; #114 HTTP user-info export guard on `114-http-userinfo-export`. Prior PR #148 verified merged as 8d582fc7586bd19719363126c18ee71d9f942a90. Complete backup/general secret exclusion pending; no later task selected.
 
 ### F03 acceptance boundary and evidence
 
@@ -2430,3 +2430,21 @@ Owner complete; local main synchronized. Run completed 2026-10-26T17:59:54.78953
 Reopened matching #114 after plugin verification of PR #147 merge bf7c125a31842b4f47a8c9a562294e004be756c9 and no open work or competing active ASG owner. Evidence: the existing eight-character minimum allowed `Authorization: Bearer x` into archives; the new controller regression failed before the fix. Scope: refuse every nonempty supported Bearer token without rewriting records; preserve incomplete/empty prose. Acceptance covers lengths 1–7, mixed case, whitespace, punctuation/padding, stale-preview clearance, no writes/downloads/disclosure and clean retry through both saved-record and saved-copy exports. F08 remains In progress/unchecked for complete backup/general secret exclusion. Independent final-revision review, actual required CI and protected merge remain gates. Existing runtime endpoint refused connection; no live inference claimed.
 
 Local validation: before-fix regression failed; formatter191 unchanged, analyzer clean, all517 Flutter tests passed (seven opt-in skips), focused73 archive/persistence/MVC tests passed. Web build and Wasm dry run passed. Independent final-revision review/required CI/protected merge remain pending.
+
+
+### F08 short Bearer export guard — verified PR #148 delivery (26 October 2026)
+
+Issue #114 / branch `114-short-bearer-export` delivered through https://github.com/arpit-it/ASG/pull/148. Independent exact-head review COMMENT5656903239 and final-CI5656949405 approved7f93ce5b2b6346c13cae0fc9ca4052c47cb1e2ac. Normal protected squash merge8d582fc7586bd19719363126c18ee71d9f942a90 at2026-10-26T18:20:36Z; issue114closed/completed18:20:37Z independently plugin verified. Tested local168ce04ae3845fe21fe68eab4d5525cf9730a935, published head and merged main share treec327e1ec7156c845e1579b410f13cde3ea720d4e.
+
+Before-fix controller regression failed. Local formatter191/analyzer/all517Flutter tests-seven skips/73focused archive-persistence-MVC tests/web build/Wasm passed. Reviewer independently82focused archive/transactional-storage/MVC tests/formatter191/analyzer passed. Required CI40376030024 actual completed logs inspected before reviewer merge: Flutter121759211543 formatter191/analyzer/515Linux tests-six skips/twoChrome/webWasm/generated resolve-analyze-test-build all4exits0 and passing HTTP200/>1000byte assertions; Python1217592110332download+4streaming+10process+4confinement fixtures-two skips. Parent independently verified merged PR/exact head/closed issue/current main via plugin; imported signed merge only after byte-exact SHA verification (including signature continuation whitespace), safely fast-forwarded main with0/0divergence and empty tested-tree diff. Unrelated IDE/history edits retained; nothing staged. GitHub exclusively plugin.
+
+F08 remains In progress/unchecked for complete backup/general secret exclusion. All nonempty supported Bearer values now refuse export, including lengths1–7; stale previews clear, no records/downloads/disclosure, and clean retry works for saved records/copies. Empty/incomplete prose stays supported. Existing8765endpoint offline; no live inference/download/stable-app replacement/deployment. No new issue/task/cadence/notification change. Prior history-publication exclusion and label rejection respected. Postmerge evidence retained locally for next normal reviewed increment. Recorded 2026-10-26T18:21:51.798688+00:00.
+
+Owner complete; local main synchronized. Run completed 2026-10-26T18:21:51.798688+00:00.
+
+
+### F08 HTTP user-info export guard — issue #114
+
+Prior PR #148 merge 8d582fc7586bd19719363126c18ee71d9f942a90 verified through connected GitHub; no open issue/PR or competing active ASG owner. Reopened matching #114 on `114-http-userinfo-export`. Evidence: token-only HTTP(S) URL user-info passed the password-only URL guard. Scope: reject nonempty HTTP(S) user-info, including token-only, encoded and empty-password forms; stop authority scans at path/query/fragment boundaries and retain other-scheme password protection. Acceptance: safe refusal, stale-preview clearance, no writes/download/disclosure and clean retry for saved records/copies; clean URLs, email and path/query/fragment examples remain exact. Before-fix controller regression failed. F08 remains In progress/unchecked for complete backup/general secret exclusion. Independent final-revision review and actual required CI/protected merge remain gates. Runtime health connection refused; no live inference/download/deployment. Unrelated IDE/history edits retained. Recorded 2026-10-26T18:34:21.246632+00:00.
+
+Local validation: before-fix controller regression failed; formatter191 unchanged, analyzer clean, all518 Flutter tests passed (seven opt-in skips), corrected focused74 archive/persistence/MVC tests passed. Web build and Wasm dry run passed. Independent final-revision review, actual required CI and protected merge pending.

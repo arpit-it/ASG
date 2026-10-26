@@ -94,6 +94,10 @@ void main() {
       'https://user:fixture-value@example.test/path',
       'postgres://user:fixture-value@localhost/db',
       'redis://:fixture-value@localhost/0',
+      'https://fixture-token@example.test/repository',
+      'HTTP://fixture-token@example.test',
+      'hTtPs://%66ixture-token@example.test',
+      'https://fixture-token:@example.test',
       'REDISS://:%70%61%73%73@localhost',
       'custom+scheme://:fixture-value@example.test',
     ];
@@ -163,6 +167,10 @@ void main() {
       'redis://user:@localhost/0',
       'redis://localhost:6379/0',
       'https://example.test/path/:fixture-value@host',
+      'https://@example.test',
+      'https://example.test?next=user:label@destination',
+      'https://example.test#user:label@destination',
+      'https://example.test/path/token@destination',
       '{"count":1,"count":2}',
     ]) {
       final archive = withText(text);

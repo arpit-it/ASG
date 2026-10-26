@@ -42,7 +42,7 @@ class PortableExportPolicy {
   static final _schemeStart = RegExp(r'[A-Za-z]');
   static final _space = RegExp(r'\s');
 
-  static bool _hasPasswordUrl(String text) {
+  static bool _hasCredentialUrl(String text) {
     // Locate separators first. Scheme and authority scans cannot cross another
     // separator, so dotted schemes and repeated colons are scanned only once.
     for (final separator in '://'.allMatches(text)) {
@@ -53,13 +53,22 @@ class PortableExportPolicy {
       if (start == separator.start || !_schemeStart.hasMatch(text[start])) {
         continue;
       }
+      final scheme = text.substring(start, separator.start).toLowerCase();
+      final http = scheme == 'http' || scheme == 'https';
       final authorityStart = separator.end;
       var colon = -1;
       for (var i = authorityStart; i < text.length; i++) {
         final char = text[i];
-        if (char == '/' || _space.hasMatch(char)) break;
+        if (char == '/' ||
+            char == '?' ||
+            char == '#' ||
+            _space.hasMatch(char)) {
+          break;
+        }
         if (char == '@') {
-          // Password-only URLs (for example Redis) have an empty username.
+          // HTTP user-info may itself be a Git access token, even without
+          // a password delimiter. Other schemes retain password-only support.
+          if (http && i > authorityStart) return true;
           if (colon >= authorityStart && i > colon + 1) return true;
           break;
         }
@@ -78,7 +87,7 @@ class PortableExportPolicy {
   static void _inspect(Object? value) {
     if (value is String) {
       if (_patterns.any((pattern) => pattern.hasMatch(value)) ||
-          _hasPasswordUrl(value) ||
+          _hasCredentialUrl(value) ||
           _hasCamelAssignment(value)) {
         throw const PortableExportRefused();
       }
