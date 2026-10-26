@@ -9,6 +9,8 @@ class PortableExportPolicy {
     RegExp(r'-----BEGIN (?:[A-Z0-9]+ )*PRIVATE KEY-----'),
     // OpenPGP secret-key armor includes BLOCK after PRIVATE KEY (RFC 9580).
     RegExp(r'-----BEGIN PGP PRIVATE KEY BLOCK-----'),
+    // ssh.com SSH2 private-key armor uses four dashes and separating spaces.
+    RegExp(r'---- BEGIN SSH2 ENCRYPTED PRIVATE KEY ----'),
     // PuTTY PPK keys use a versioned signature rather than PEM delimiters.
     RegExp(r'\bPuTTY-User-Key-File-[23]:'),
     RegExp(
