@@ -69,7 +69,7 @@ A task moves Queued → In progress → Awaiting merge → Done; use Blocked wit
 
 ## Active task and delivery ledger
 
-Active: F08 In progress/unchecked. Issue #114 archive stream buffer ownership on `114-archive-buffer-ownership`; prior PR #159 verified merged as 198092bc7a31dc9e36c8adf88ddea32dd7f6a0bb. Full backup/general secret exclusion pending. No later feature selected.
+Active: F08 In progress/unchecked. Issue #114 invalid archive byte rejection on `114-archive-byte-validation` awaits independent review/CI/merge. Prior PR #160 verified merged as 6c7bcadaedb599bc9b6d50a1f088546e1c68470a. Full backup/general secret exclusion pending; no later feature selected.
 
 ### F03 acceptance boundary and evidence
 
@@ -2632,3 +2632,20 @@ Prior PR #159 verified merged as 198092bc7a31dc9e36c8adf88ddea32dd7f6a0bb; no co
 
 Acceptance: exact Unicode archive import and saved-copy round trip with a reused typed buffer, no writes during preview, and existing malformed UTF-8/overflow/timeout regressions. Local 79 focused and 532 full Flutter tests passed (seven opt-in skips); formatter/analyzer and web build/Wasm dry run passed. Independent exact-head review and actual required CI remain merge gates. F08 stays In progress/unchecked for full backup/general secret exclusion. No inference/download/stable-app replacement/deployment or new task. Unrelated IDE/history edits retained; history-publication exclusion retained.
 Recorded 2026-10-26T21:29:57.285203+00:00.
+
+
+### F08 archive stream ownership — verified PR #160 delivery
+
+Issue #114 / branch `114-archive-buffer-ownership` delivered through https://github.com/arpit-it/ASG/pull/160. Independent exact-head COMMENT5659356678 and final-CI5659401668 approved66e80d1bec8b77928c345adcee7d0f3dc81433a7. Normal protected squash merge6c7bcadaedb599bc9b6d50a1f088546e1c68470a at2026-10-26T21:35:08Z; issue114closed/completed21:35:09Z independently plugin verified. Tested local4bbb3b8, published head and merged main share treee6f53c723de63e9245f746fb64bb564a895e0260.
+
+Before-fix reused Uint8List regression failed. Local79focused/532fullFlutter-seven opt-in skips/actualChrome reused-buffer import+copy regression/formatter191/analyzer/webWasm passed. Reviewer independently79focused+Chrome/formatter/analyzer passed. RequiredCI40404987638 success; actual logs inspected:Flutter121860310462 formatter191/analyzer/530Linux-six skips/twoChrome storage-download/webWasm/generated all4exit0+serving assertions;Python1218603099002+4+10+4fixtures-two confinement skips. Parent independently verified merged PR, exact approved head, closed issue and currentmain through plugin; imported signed merge after SHA/tree verification and safely fast-forwarded localmain,0/0divergence and empty tested-tree diff. Existing IDE/history edits retained; nothing staged.
+
+F08 remains In progress/unchecked for full backup/general secret exclusion. Archive file reader now owns received chunks before requesting another event, retaining limits/UTF8/deadlines/cleanup; exact Unicode data survives provider buffer reuse. Runtime8765offline;no live inference/download/stable-app replacement/deployment. No new issue/task/cadence/notification change. History-publication exclusion and prior label rejection retained. Postmerge evidence retained locally for next normal reviewed increment.
+Recorded 2026-10-26T21:35:46.731029+00:00. Owner complete; local main synchronized.
+
+
+### F08 invalid archive byte rejection — issue #114
+
+Prior PR #160 verified merged as `6c7bcadaedb599bc9b6d50a1f088546e1c68470a`; no competing active ASG run/open issue or PR at selection. Reopened matching #114 on `114-archive-byte-validation`. Before-fix controller regression demonstrated that BytesBuilder truncates negative and greater-than-255 provider integers into valid archive bytes. Validate byte values before accumulation so malformed provider data cannot normalize into a different archive. Owned buffers, size/UTF-8/deadline/cleanup behavior retained.
+
+Acceptance: both overflow directions refuse with no preview or record writes, cleanup requested and valid Unicode import/copy retry remains exact. 80 focused and 533 full Flutter tests passed (seven opt-in skips); formatter191/analyzer and web build/Wasm dry run passed. Actual Chrome regression and independent exact-head review/required CI remain merge gates. F08 remains In progress/unchecked for full backup/general secret exclusion. Runtime8765 offline; no inference/download/stable-app replacement/deployment. Existing IDE/history edits retained; history-publication exclusion retained. No new task/issue/cadence/notification change. Recorded 2026-10-26T21:40:15.544333+00:00.
