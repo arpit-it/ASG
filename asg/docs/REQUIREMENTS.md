@@ -69,7 +69,7 @@ A task moves Queued → In progress → Awaiting merge → Done; use Blocked wit
 
 ## Active task and delivery ledger
 
-Active: F08 In progress/unchecked; reopened #114 on `114-api-auth-token-export` for API/authentication token export refusal. PR #138 merge verified. Complete backup/general secret exclusion remain pending; no later task selected.
+Active: F08 In progress/unchecked; reopened #114 on `114-unqualified-credential-export` for unqualified credential assignment export refusal. PR #139 merge verified. Complete backup/general secret exclusion remain pending; no later task selected.
 
 ### F03 acceptance boundary and evidence
 
@@ -2274,3 +2274,19 @@ F08 remains In progress/unchecked. Nonempty id_token assignments now refuse expo
 Reused #114 after connected GitHub verified PR #138 merged, no open PR/issues and no competing active ASG run. Nonempty api_token/auth_token assignments bypassed named credential detection. Scope: existing case-insensitive underscore/hyphen/space/camel-case nonempty assignment semantics; preserve empty assignments, prose, lossless import and records. Policy/controller regressions failed before fix. Acceptance: policy quote/whitespace/case/separator/empty fixtures, safe controller refusal, stale-preview clearing, no writes and clean retry. Format/analyze/full Flutter tests/web build, independent final-revision review and actual required CI remain gates. F08 remains In progress/unchecked; complete backup/general secret exclusion pending.
 
 Local validation: formatter188, analyzer clean, all507Flutter tests pass/seven opt-in skips, web build and Wasm dry run pass. Independent review/required CI/merge pending.
+
+
+### F08 API/authentication token export guard — verified PR #139 delivery (26 October 2026)
+
+Issue #114 / branch `114-api-auth-token-export` delivered through https://github.com/arpit-it/ASG/pull/139. Independent exact-head COMMENT approval `5654615640` and final complete-CI gate `5654672303` approved `f60bf943a7ad51c88e173a67011f6867ec8eb4a4`. Normal protected squash merge `9e9beeed31393a06291b006cbcc2423fba7d6ea6` at2026-10-26T15:35:57Z and issue closed/completed15:35:58Z independently verified via connected GitHub. Tested local `61154d21d575642a01d30a697836cd68a9217346`, published head and merged main share tree `d0b88869f36cbe4c812a3e0cf1f42d116cf19aa0`.
+
+Before-fix policy/controller regressions failed. Formatter188/analyzer/all507Flutter tests-seven skips/webWasm pass. Reviewer independently63focused tests/formatter188/analyzer pass. Required CI40350075998 actual full completed logs inspected before reviewer merge: Flutter121667403193 formatter188/analyzer/505Linux tests-six skips/realChromeIndexedDB/webWasm/generated resolve-analyze-test-build0 plus HTTP200/>1000-byte assertions; Python1216674030022+4+10+4fixtures/two skips. Parent independently verified merged PR/closed issue/current main/exact tree through plugin. Reconstructed signed merge only after exact SHA verification; safely fast-forwarded local main with0/0divergence and empty tested-tree diff. Unrelated IDE/history edits retained; nothing staged. GitHub exclusively plugin.
+
+F08 remains In progress/unchecked. Nonempty API/authentication token assignments now refuse export; empty values/prose/lossless imports and clean retry retained. Complete backup/general secret exclusion pending. Existing8765offline; no live inference/download/stable-app replacement/deployment. No new issue/task/cadence/notification change. Prior history publication exclusion/label rejection respected without retry. Postmerge evidence retained locally for next normal reviewed increment. Recorded 2026-10-26T15:37:04.436014+00:00.
+
+
+### F08 unqualified credential assignment refusal — issue #114 (26 October 2026)
+
+Reused/reopened #114 after connected GitHub verified PR #139 merged as 9e9beeed31393a06291b006cbcc2423fba7d6ea6, no open issues/PRs and prior owner idle. Branch `114-unqualified-credential-export`. Evidence: explicit nonempty token, secret, credential and private_key assignments bypassed the export policy. Scope: refuse these assignments with existing case/quotes/whitespace/private-key separator semantics; preserve empty values, prose, lossless imports and records. Policy/controller regressions failed before fix. Acceptance: each alias independently refuses, stale previews clear, errors omit content, no file/record writes occur and clean retry works. Formatter188/analyzer/all508Flutter tests pass-seven opt-in skips; web build result and independent final-revision review/actual required CI remain delivery gates. F08 remains In progress/unchecked; complete backup/general secret exclusion pending. Existing8765offline; no inference/download/deployment. Unrelated IDE/history edits retained. Recorded 2026-10-26T15:39:38.510410+00:00.
+
+Local final validation: formatter188, analyzer clean, all508Flutter tests pass/seven opt-in skips; web build and Wasm dry run pass. Independent review and required CI/protected merge pending.
