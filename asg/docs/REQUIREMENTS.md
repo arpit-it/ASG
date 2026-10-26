@@ -69,7 +69,7 @@ A task moves Queued → In progress → Awaiting merge → Done; use Blocked wit
 
 ## Active task and delivery ledger
 
-Active: F08 In progress/unchecked. Issue #114 invalid archive byte rejection on `114-archive-byte-validation` awaits independent review/CI/merge. Prior PR #160 verified merged as 6c7bcadaedb599bc9b6d50a1f088546e1c68470a. Full backup/general secret exclusion pending; no later feature selected.
+Active: F08 In progress/unchecked. Issue #114 portable project intent on `114-portable-project-intent`; prior PR #161 verified merged as 3a3fbbe8e307ada716281eeb1b00c1e1e858fbad. Full backup/general secret exclusion pending; no later feature selected.
 
 ### F03 acceptance boundary and evidence
 
@@ -2649,3 +2649,20 @@ Recorded 2026-10-26T21:35:46.731029+00:00. Owner complete; local main synchroniz
 Prior PR #160 verified merged as `6c7bcadaedb599bc9b6d50a1f088546e1c68470a`; no competing active ASG run/open issue or PR at selection. Reopened matching #114 on `114-archive-byte-validation`. Before-fix controller regression demonstrated that BytesBuilder truncates negative and greater-than-255 provider integers into valid archive bytes. Validate byte values before accumulation so malformed provider data cannot normalize into a different archive. Owned buffers, size/UTF-8/deadline/cleanup behavior retained.
 
 Acceptance: both overflow directions refuse with no preview or record writes, cleanup requested and valid Unicode import/copy retry remains exact. 80 focused and 533 full Flutter tests passed (seven opt-in skips); formatter191/analyzer and web build/Wasm dry run passed. Actual Chrome regression and independent exact-head review/required CI remain merge gates. F08 remains In progress/unchecked for full backup/general secret exclusion. Runtime8765 offline; no inference/download/stable-app replacement/deployment. Existing IDE/history edits retained; history-publication exclusion retained. No new task/issue/cadence/notification change. Recorded 2026-10-26T21:40:15.544333+00:00.
+
+
+### F08 invalid archive byte rejection — verified PR #161 delivery
+
+Issue #114 / branch `114-archive-byte-validation` delivered through https://github.com/arpit-it/ASG/pull/161. Independent exact-head COMMENT5659499292 and final-CI5659555759 approved `cc31cec351cc186a195d44be23da85b63930003a`. Normal protected squash merge `3a3fbbe8e307ada716281eeb1b00c1e1e858fbad` at2026-10-26T21:46:26Z; issue114 closed/completed21:46:28Z. Parent independently verified merged PR, approved head, closed issue and current main exclusively through plugin. Tested local4251463, published head and merged main tree `cac0d4318dedfa42fc50c1bf147a2cf631d50e80` match. Exact signed commit SHA reproduced before importing; safely fast-forwarded local main,0/0 divergence and source/test diff empty. Existing IDE/history edits preserved; nothing staged.
+
+Before-fix controller regression failed; local80focused/533full-seven opt-in skips/actualChrome/formatter191/analyzer/webWasm passed. Reviewer independently80focused+Chrome/formatter/analyzer passed. Required CI40406426613 successful; actual Flutter121865248419 logs formatter191/analyzer/531Linux-six skips/new regression/twoChrome/webWasm/generated all4exit0+serving pass and Python121865247738 2+4+10+4fixtures-two confinement skips inspected before merge. Invalid negative/overflow provider integers now refuse before byte normalization; no preview/writes and clean Unicode retry remain verified.
+
+F08 remains In progress/unchecked for full backup/general secret exclusion. Runtime8765offline; no inference/download/stable-app replacement/deployment. No new task/issue/cadence/notification change. History-publication exclusion and previous label rejection retained. Postmerge evidence retained locally for next reviewed increment. Owner complete; local main synchronized. Recorded 2026-10-26T21:47:37.565928+00:00.
+
+
+### F08 portable project intent — issue #114
+
+Prior PR #161 independently reviewed and verified merged as `3a3fbbe8e307ada716281eeb1b00c1e1e858fbad`; issue closed and local main synchronized. No competing active ASG run or open PR/issue at selection. Reopened #114 on `114-portable-project-intent`: existing archives lost project description, software type and selected target platforms during restore. Version 7 adds bounded project intent with strict field/type validation, immutable platform lists, and no original identity/name/location. Old v1–v6 remain readable with existing restore fallback. Export rejects ambiguous catalog identity and scans all new metadata with the existing bounded credential policy. Target platforms remain saved intent, not verified support.
+
+Acceptance: exact Unicode description/type/platform round trip, no old ID/path, native close/reopen, malformed metadata no-write rejection, duplicate identity refusal, credential refusal without disclosure, legacy compatibility. 535 full Flutter tests passed (seven opt-in skips), analyzer/formatter191, web build/Wasm dry run and actual Chrome metadata round-trip regression passed. Independent exact-head review and required CI remain merge gates. F08 stays In progress/unchecked for full backup/general secret exclusion. Existing IDE/history edits retained; history publication exclusion retained. No inference/download/stable-app replacement/deployment or cadence/notification change.
+Recorded 2026-10-26T22:00:27.937323+00:00.

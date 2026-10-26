@@ -54,6 +54,12 @@ class _PortableArchiveScreenState extends State<PortableArchiveScreen> {
             : 'Saved prototype: ${archive.prototype!.definition.title} · revision ${archive.prototype!.revision}',
       ),
       Text('${archive.prototype?.messages.length ?? 0} prototype messages'),
+      if (archive.project case final project?) ...[
+        Text(
+          'Saved project intent: ${project.type} · ${project.platforms.join(', ')}',
+        ),
+        SelectableText(project.description),
+      ],
       if (archive.revisions.isNotEmpty) ...[
         const Text(
           'Historical revision summaries only; artifacts and rollback are unavailable.',
@@ -162,7 +168,7 @@ class _PortableArchiveScreenState extends State<PortableArchiveScreen> {
             ),
           const Divider(height: 32),
           const Text(
-            'Import can save a separate data copy or explicitly restore these records into a new Flutter web workspace. Existing projects are never replaced. A restored workspace uses the included saved prototype, or a fresh prototype for older archives, with no source files, executable build history or Plan approval. Open it from Projects after restoring; no code runs here.',
+            'Import can save a separate data copy or explicitly restore these records into a new workspace. Saved software type and target platforms are intent, not verified build support. Existing projects are never replaced. A restored workspace uses the included saved prototype, or a fresh prototype for older archives, with no source files, executable build history or Plan approval. Open it from Projects after restoring; no code runs here.',
           ),
           const SizedBox(height: 12),
           OutlinedButton(

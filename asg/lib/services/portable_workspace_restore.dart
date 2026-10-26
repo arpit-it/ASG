@@ -72,10 +72,11 @@ class PortableWorkspaceRestore {
       id: id,
       name: name.trim(),
       description:
+          archive.project?.description ??
           'Restored portable requirements and assistance conversation. '
-          '${archive.prototype == null ? 'Prototype starts fresh.' : 'Includes the saved interpreted prototype.'} Source files are excluded.',
-      type: 'Flutter',
-      platforms: const ['Web'],
+              '${archive.prototype == null ? 'Prototype starts fresh.' : 'Includes the saved interpreted prototype.'} Source files are excluded.',
+      type: archive.project?.type ?? 'Flutter',
+      platforms: archive.project?.platforms ?? const ['Web'],
       location: '',
     );
     final updates = <String, String>{
