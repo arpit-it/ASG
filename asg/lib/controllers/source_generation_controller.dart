@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import '../models/app_definition.dart';
 import '../models/build_history_entry.dart';
+import '../models/artifact_inspection.dart';
 import '../models/build_plan.dart';
 import '../models/plan_approval.dart';
 import '../models/project.dart';
@@ -49,6 +50,41 @@ class SourceGenerationController extends BaseController {
   GeneratedProject? _result;
   GeneratedProject? get result => _result;
   List<BuildHistoryEntry> get buildHistory => store.history(project.id);
+
+  final Map<String, ArtifactInspection> _inspections = {};
+  String _historyKey(BuildHistoryEntry entry) => jsonEncode(entry.toJson());
+  ArtifactInspection? artifactInspection(BuildHistoryEntry entry) =>
+      _inspections[_historyKey(entry)];
+
+  Future<void> inspectArtifacts(BuildHistoryEntry entry) async {
+    if (_busy ||
+        _historyInvalid ||
+        isDisposed ||
+        !buildHistory.any(
+          (saved) => _historyKey(saved) == _historyKey(entry),
+        )) {
+      return;
+    }
+    _busy = true;
+    update();
+    try {
+      if (isDisposed) return;
+      final inspector = host;
+      final outcome = inspector is ArtifactInspector
+          ? await (inspector as ArtifactInspector).inspectArtifacts(
+              entry.project,
+            )
+          : ArtifactInspection.unavailable;
+      if (!isDisposed) _inspections[_historyKey(entry)] = outcome;
+    } catch (_) {
+      if (!isDisposed) {
+        _inspections[_historyKey(entry)] = ArtifactInspection.unavailable;
+      }
+    } finally {
+      _busy = false;
+      update();
+    }
+  }
 
   String _initialPython = 'python3';
   String get initialPython => _result?.python ?? _initialPython;

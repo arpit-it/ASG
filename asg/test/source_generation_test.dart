@@ -18,6 +18,7 @@ import 'package:asg/models/plan_approval.dart';
 
 import 'package:asg/models/app_definition.dart';
 import 'package:asg/models/project.dart';
+import 'package:asg/models/artifact_inspection.dart';
 import 'package:asg/models/source_generation.dart';
 import 'package:asg/services/generation_host_native.dart';
 import 'package:asg/services/generation_input.dart';
@@ -106,6 +107,37 @@ void main() {
   tearDown(() async {
     await host.stopPreview();
     await temp.delete(recursive: true);
+  });
+
+  test('history inspection detects missing, changed and unsafe files without writes', () async {
+    final saved = await host.verify(await generate(), (_) async {});
+    final index = File('${saved.directory}/build/web/index.html');
+    final original = await index.readAsString();
+    expect(await host.inspectArtifacts(saved), ArtifactInspection.matching);
+    await index.writeAsString('changed');
+    expect(await host.inspectArtifacts(saved), ArtifactInspection.stale);
+    await index.delete();
+    expect(await host.inspectArtifacts(saved), ArtifactInspection.missing);
+    await index.writeAsString(original);
+    final source = File('${saved.directory}/lib/main.dart');
+    final originalSource = await source.readAsString();
+    await source.writeAsString('changed');
+    expect(await host.inspectArtifacts(saved), ArtifactInspection.stale);
+    await source.delete();
+    expect(await host.inspectArtifacts(saved), ArtifactInspection.missing);
+    await source.writeAsString(originalSource);
+    await Link('${saved.directory}/build/web/linked').create(index.path);
+    expect(await host.inspectArtifacts(saved), ArtifactInspection.unavailable);
+    await Link('${saved.directory}/build/web/linked').delete();
+    expect(await host.inspectArtifacts(saved), ArtifactInspection.matching);
+    expect(await index.readAsString(), original);
+    expect(await source.readAsString(), originalSource);
+    expect(
+      await host.inspectArtifacts(await generate(name: 'unbuilt')),
+      ArtifactInspection.unverified,
+    );
+    await Directory('${saved.directory}/build/web').delete(recursive: true);
+    expect(await host.inspectArtifacts(saved), ArtifactInspection.missing);
   });
 
   for (final prefix in [0, 1, 2, 3]) {

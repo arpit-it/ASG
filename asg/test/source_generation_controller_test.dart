@@ -20,6 +20,7 @@ import 'package:asg/services/requirements_store.dart';
 import 'package:asg/controllers/source_generation_controller.dart';
 import 'package:asg/models/app_definition.dart';
 import 'package:asg/models/project.dart';
+import 'package:asg/models/artifact_inspection.dart';
 import 'package:asg/models/source_generation.dart';
 import 'package:asg/services/generation_host.dart';
 import 'package:asg/services/record_storage.dart';
@@ -55,7 +56,15 @@ final generated = GeneratedProject(
   },
 );
 
-class FixtureHost implements GenerationHost {
+class FixtureHost implements GenerationHost, ArtifactInspector {
+  Completer<ArtifactInspection>? inspectionGate;
+  int inspections = 0;
+  @override
+  Future<ArtifactInspection> inspectArtifacts(GeneratedProject project) async {
+    inspections++;
+    return inspectionGate?.future ?? ArtifactInspection.matching;
+  }
+
   Completer<GeneratedProject>? generationGate;
   Completer<Uri>? previewGate;
   Future<void> Function()? afterResolve;
@@ -209,6 +218,31 @@ void main() {
   });
   tearDown(() {
     if (!c.isDisposed) c.dispose();
+  });
+
+  test('artifact inspection is read-only, excludes overlap and ignores disposed results', () async {
+    expect(await generate(true), isTrue);
+    final entry = c.buildHistory.single;
+    final stored = store.records.getString('studio.generation.v1.p');
+    await c.startPreview();
+    final preview = c.preview;
+    host.inspectionGate = Completer<ArtifactInspection>();
+    final inspecting = c.inspectArtifacts(entry);
+    expect(c.busy, isTrue);
+    await c.inspectArtifacts(entry);
+    expect(host.inspections, 1);
+    expect(await generate(true), isFalse);
+    host.inspectionGate!.complete(ArtifactInspection.stale);
+    await inspecting;
+    expect(c.artifactInspection(entry), ArtifactInspection.stale);
+    expect(c.preview, preview);
+    expect(store.records.getString('studio.generation.v1.p'), stored);
+    host.inspectionGate = Completer<ArtifactInspection>();
+    final delayed = c.inspectArtifacts(entry);
+    c.dispose();
+    host.inspectionGate!.complete(ArtifactInspection.matching);
+    await delayed;
+    expect(c.artifactInspection(entry), ArtifactInspection.stale);
   });
 
   Future<void> savedCheckpoint({int version = 1, String pending = ''}) async {
@@ -1225,6 +1259,26 @@ void main() {
         find.textContaining('Artifact availability is unverified'),
         findsOneWidget,
       );
+      await Scrollable.ensureVisible(
+        tester.element(find.textContaining(' · ready').last),
+        alignment: 0.5,
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.textContaining(' · ready').last);
+      await tester.pumpAndSettle();
+      await tester.scrollUntilVisible(
+        find.text('Inspect saved artifacts'),
+        100,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await Scrollable.ensureVisible(
+        tester.element(find.text('Inspect saved artifacts')),
+        alignment: 0.5,
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Inspect saved artifacts'));
+      await tester.pumpAndSettle();
+      expect(find.text(ArtifactInspection.matching.label), findsOneWidget);
     },
   );
 }

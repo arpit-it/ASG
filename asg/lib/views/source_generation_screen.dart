@@ -346,15 +346,25 @@ class _SourceGenerationScreenState extends State<SourceGenerationScreen> {
                 title: const Text('Recorded build history'),
                 children: [
                   const Text(
-                    'Saved evidence only. Artifact availability is unverified until preview opens. History does not restore files or grant execution approval.',
+                    'Saved evidence only. Artifact availability is unverified until inspected or preview opens. Inspections are point-in-time checks; files can change afterward. History does not restore files or grant execution approval.',
                   ),
                   for (final entry in history.reversed)
                     ExpansionTile(
+                      subtitle: Text(
+                        controller.artifactInspection(entry)?.label ??
+                            'Artifacts not inspected.',
+                      ),
                       title: Text(
                         '${entry.recordedAt?.toLocal() ?? 'Legacy outcome · timestamp unknown'} · ${entry.project.phase.name}',
                       ),
-                      subtitle: Text(entry.project.directory),
                       children: [
+                        SelectableText(entry.project.directory),
+                        TextButton(
+                          onPressed: controller.busy
+                              ? null
+                              : () => controller.inspectArtifacts(entry),
+                          child: const Text('Inspect saved artifacts'),
+                        ),
                         if (entry.project.phase ==
                                 SourceGenerationPhase.ready &&
                             identical(
