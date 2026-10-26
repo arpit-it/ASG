@@ -392,6 +392,39 @@ void main() {
   );
 
   test(
+    'unqualified credential exports refuse independently and retry',
+    () async {
+      final records = Records();
+      final files = Files();
+      final c = PortableArchiveController('p', records, files: files);
+      addTearDown(c.dispose);
+      for (final alias in ['token', 'secret', 'credential', 'private_key']) {
+        records.values.clear();
+        await c.prepareExport();
+        expect(c.exportPreview, isNotNull);
+        records.values['studio.chat.v1.p'] = jsonEncode([
+          {'role': 'user', 'content': '$alias=fixture-value'},
+        ]);
+        final before = Map.of(records.values);
+        files.written = null;
+        await c.prepareExport();
+        expect(c.error, startsWith('Export blocked:'), reason: alias);
+        expect(c.error, isNot(contains('fixture-value')));
+        expect(c.exportPreview, isNull);
+        expect(c.exportContents, isNull);
+        await c.exportFile();
+        expect(files.written, isNull);
+        expect(records.values, before);
+        records.values.clear();
+        await c.prepareExport();
+        expect(c.error, isNull);
+        await c.exportFile();
+        expect(files.written, c.exportContents);
+      }
+    },
+  );
+
+  test(
     'API authentication token export refuses without writes and retries',
     () async {
       final records = Records();
