@@ -109,6 +109,14 @@ class PortableArchiveController extends ChangeNotifier {
     _status = 'File validated. Nothing imported yet.';
   });
 
+  Future<void> loadCopy(String id) => _run(() async {
+    _importPreview = null;
+    final archive = PortableArchiveStore(records).load(id);
+    if (archive == null) throw StateError('Saved copy not found.');
+    _importPreview = archive;
+    _status = 'Saved copy loaded. Review before restoring; nothing changed.';
+  });
+
   Future<void> saveCopy(String id) => _run(() async {
     final preview = _importPreview;
     if (preview == null) throw StateError('Select a valid archive first.');

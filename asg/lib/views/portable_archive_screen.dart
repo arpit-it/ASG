@@ -15,6 +15,7 @@ class PortableArchiveScreen extends StatefulWidget {
 
 class _PortableArchiveScreenState extends State<PortableArchiveScreen> {
   final backupId = TextEditingController();
+  final savedCopyId = TextEditingController();
   final projectName = TextEditingController();
   PortableArchiveController get controller => widget.controller;
 
@@ -33,6 +34,7 @@ class _PortableArchiveScreenState extends State<PortableArchiveScreen> {
     controller.removeListener(refresh);
     controller.dispose();
     backupId.dispose();
+    savedCopyId.dispose();
     projectName.dispose();
     super.dispose();
   }
@@ -165,6 +167,22 @@ class _PortableArchiveScreenState extends State<PortableArchiveScreen> {
           OutlinedButton(
             onPressed: controller.busy ? null : controller.pickImport,
             child: const Text('Select archive file (up to 1 MiB)'),
+          ),
+          const SizedBox(height: 16),
+          TextField(
+            controller: savedCopyId,
+            enabled: !controller.busy,
+            maxLength: 80,
+            decoration: const InputDecoration(
+              labelText: 'Saved data copy ID',
+              helperText: 'Reopen a copy previously saved in this app. Loading changes no records.',
+            ),
+          ),
+          OutlinedButton(
+            onPressed: controller.busy
+                ? null
+                : () => controller.loadCopy(savedCopyId.text),
+            child: const Text('Load saved data copy'),
           ),
           if (controller.importPreview case final archive?) ...[
             summary(archive),
