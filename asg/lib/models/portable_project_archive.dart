@@ -33,6 +33,13 @@ class PortableProjectArchive {
 
   void _validate() {
     requirements.validate();
+    // Archives cross native and browser runtimes. JSON numbers above this
+    // ceiling cannot preserve revision identity in JavaScript.
+    if (requirements.revision > 9007199254740991) {
+      throw const FormatException(
+        'Unsupported portable requirements revision.',
+      );
+    }
     if (revisions.length > 1000) {
       throw const FormatException('Too many historical revision summaries.');
     }
