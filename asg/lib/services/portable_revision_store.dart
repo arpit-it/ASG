@@ -23,6 +23,8 @@ class PortableRevisionStore {
   List<PortableRevisionSummary> load(String id) {
     final raw = records.getString(key(id));
     final imported = raw == null ? <PortableRevisionSummary>[] : decode(raw);
+    final generation = records.getString('studio.generation.v1.$id');
+    if (generation != null) _validateGeneration(jsonDecode(generation));
     final store = SourceGenerationStore(records);
     // Validate even a journal-free legacy record.
     final current = store.load(id);
@@ -41,6 +43,52 @@ class PortableRevisionStore {
       throw const FormatException('Too many historical revision summaries.');
     }
     return List.unmodifiable(result);
+  }
+
+  // Validate fields before normal decoders deliberately select known data.
+  // This export-only check does not change normal history or execution decoding.
+  static void _validateGeneration(Object? value, {bool journal = true}) {
+    const fields = {
+      'limits',
+      'confinementVersion',
+      'directory',
+      'sdk',
+      'python',
+      'sources',
+      'outputs',
+      'resolution',
+      'steps',
+      'phase',
+      'error',
+      'failedOperation',
+      'pendingOperation',
+      'checkpointVersion',
+      'approval',
+      'tasks',
+    };
+    if (value is! Map<String, dynamic> ||
+        value.keys.any(
+          (key) =>
+              !fields.contains(key) &&
+              !(journal &&
+                  const {'buildHistoryVersion', 'buildHistory'}.contains(key)),
+        )) {
+      throw const FormatException('Unsupported saved generation fields.');
+    }
+    if (!value.containsKey('buildHistory')) return;
+    final entries = value['buildHistory'];
+    if (entries is! List) {
+      throw const FormatException('Malformed saved build history.');
+    }
+    for (final entry in entries) {
+      if (entry is! Map<String, dynamic> ||
+          entry.length != 2 ||
+          !entry.containsKey('recordedAt') ||
+          !entry.containsKey('project')) {
+        throw const FormatException('Unsupported saved build history fields.');
+      }
+      _validateGeneration(entry['project'], journal: false);
+    }
   }
 
   static PortableRevisionSummary summarize(
