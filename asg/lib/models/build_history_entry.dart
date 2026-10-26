@@ -1,6 +1,6 @@
 import 'source_generation.dart';
 
-/// Recorded evidence only; artifact existence is checked when opening a preview.
+/// Recorded evidence only; artifact existence requires a live inspection or preview check.
 class BuildHistoryEntry {
   const BuildHistoryEntry({required this.recordedAt, required this.project});
   final DateTime? recordedAt;

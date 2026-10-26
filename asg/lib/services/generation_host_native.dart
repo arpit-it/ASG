@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:path/path.dart' as path;
 
 import '../models/app_definition.dart';
+import '../models/artifact_inspection.dart';
 import '../models/build_task.dart';
 import '../models/project.dart';
 import '../models/source_generation.dart';
@@ -16,7 +17,7 @@ import 'generation_host.dart';
 
 GenerationHost createGenerationHost() => NativeGenerationHost();
 
-class NativeGenerationHost implements GenerationHost {
+class NativeGenerationHost implements GenerationHost, ArtifactInspector {
   NativeGenerationHost({
     this.loadAsset = _loadAsset,
     Future<GenerationStep> Function(GeneratedProject, String)? runOperation,
@@ -477,6 +478,39 @@ class NativeGenerationHost implements GenerationHost {
       }
       _activeProcess = null;
       await helperDirectory.delete(recursive: true);
+    }
+  }
+
+  @override
+  Future<ArtifactInspection> inspectArtifacts(GeneratedProject project) async {
+    if (project.phase != SourceGenerationPhase.ready ||
+        project.sources.isEmpty ||
+        project.outputs.isEmpty) {
+      return ArtifactInspection.unverified;
+    }
+    try {
+      checkOpen();
+      final sources = await fingerprints(project.directory, source: true);
+      final outputs = await fingerprints(
+        path.join(project.directory, 'build', 'web'),
+        source: false,
+      );
+      checkOpen();
+      if (project.sources.keys.any((key) => !sources.containsKey(key)) ||
+          project.outputs.keys.any((key) => !outputs.containsKey(key))) {
+        return ArtifactInspection.missing;
+      }
+      return sameFiles(project.sources, sources) &&
+              sameFiles(project.outputs, outputs)
+          ? ArtifactInspection.matching
+          : ArtifactInspection.stale;
+    } on FileSystemException catch (error) {
+      // ENOENT only: permissions and other I/O errors remain unavailable.
+      return error.osError?.errorCode == 2
+          ? ArtifactInspection.missing
+          : ArtifactInspection.unavailable;
+    } catch (_) {
+      return ArtifactInspection.unavailable;
     }
   }
 
