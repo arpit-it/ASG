@@ -828,6 +828,139 @@ void main() {
       expect(files.written, isNot(contains('private')));
     },
   );
+  test('unknown saved board fields refuse export without data loss', () async {
+    final records = Records();
+    final files = Files();
+    final c = PortableArchiveController('p', records, files: files);
+    addTearDown(c.dispose);
+    final board = RequirementsBoard(
+      revision: 7,
+      requirements: const [
+        ProjectRequirement(
+          id: 'R1',
+          title: 'Exact 中文 😀',
+          acceptance: 'Keep all text',
+        ),
+      ],
+      tasks: [
+        DevelopmentTask(
+          id: 'T1',
+          requirementId: 'R1',
+          title: 'First',
+          status: TaskStatus.done,
+        ),
+        DevelopmentTask(
+          id: 'T2',
+          requirementId: 'R1',
+          title: 'Next',
+          dependencies: ['T1'],
+          status: TaskStatus.inProgress,
+        ),
+      ],
+    );
+    for (final level in ['board', 'requirement', 'task']) {
+      for (final value in <Object?>[
+        'private-future-value',
+        {'nested': 'private-future-value'},
+        null,
+      ]) {
+        records.values.clear();
+        await c.prepareExport();
+        expect(c.exportPreview, isNotNull);
+        files.written = null;
+        final raw =
+            jsonDecode(jsonEncode(board.toJson())) as Map<String, dynamic>;
+        final target = switch (level) {
+          'requirement' =>
+            (raw['requirements'] as List).first as Map<String, dynamic>,
+          'task' => (raw['tasks'] as List).last as Map<String, dynamic>,
+          _ => raw,
+        };
+        target['futureField'] = value;
+        records.values['studio.requirements.v1.p'] = jsonEncode(raw);
+        final before = Map.of(records.values);
+        await c.prepareExport();
+        expect(c.error, isNotNull, reason: level);
+        expect(c.error, isNot(contains('private-future-value')));
+        expect(c.exportPreview, isNull);
+        await c.exportFile();
+        expect(files.written, isNull);
+        expect(records.values, before);
+        records.values['studio.requirements.v1.p'] = jsonEncode(board.toJson());
+        await c.prepareExport();
+        expect(c.error, isNull);
+        await c.exportFile();
+        expect(
+          PortableProjectArchive.decode(files.written!).requirements.toJson(),
+          board.toJson(),
+        );
+      }
+    }
+  });
+
+  test(
+    'malformed saved boards refuse export and absent boards stay valid',
+    () async {
+      final records = Records();
+      final files = Files();
+      final c = PortableArchiveController('p', records, files: files);
+      addTearDown(c.dispose);
+      for (final raw in <Object?>[
+        null,
+        [],
+        {},
+        {'version': 1, 'revision': 1, 'requirements': [], 'tasks': null},
+        {
+          'version': 1,
+          'revision': 1,
+          'requirements': [null],
+          'tasks': [],
+        },
+        {
+          'version': 1,
+          'revision': 1,
+          'requirements': [
+            {'id': 'R1', 'title': 'Missing acceptance'},
+          ],
+          'tasks': [],
+        },
+        {
+          'version': 1,
+          'revision': 1,
+          'requirements': [],
+          'tasks': [{}],
+        },
+        {
+          'version': 1,
+          'revision': 1,
+          'requirements': [],
+          'tasks': [],
+          'future': null,
+        },
+      ]) {
+        records.values.clear();
+        await c.prepareExport();
+        expect(c.exportPreview, isNotNull);
+        records.values['studio.requirements.v1.p'] = jsonEncode(raw);
+        final before = Map.of(records.values);
+        await c.prepareExport();
+        expect(c.error, isNotNull);
+        expect(c.exportPreview, isNull);
+        await c.exportFile();
+        expect(files.written, isNull);
+        expect(records.values, before);
+      }
+      records.values.clear();
+      await c.prepareExport();
+      await c.exportFile();
+      expect(c.error, isNull);
+      expect(
+        PortableProjectArchive.decode(files.written!).requirements.revision,
+        0,
+      );
+    },
+  );
+
   test(
     'unknown saved assistance fields refuse export without data loss',
     () async {

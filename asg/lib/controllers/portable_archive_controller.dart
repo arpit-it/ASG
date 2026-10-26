@@ -13,7 +13,7 @@ import '../services/portable_decision_store.dart';
 import '../services/portable_revision_store.dart';
 import '../services/portable_workspace_restore.dart';
 import '../services/record_storage.dart';
-import '../services/requirements_store.dart';
+import '../services/portable_requirements_store.dart';
 
 class PortableArchiveController extends ChangeNotifier {
   PortableArchiveController(
@@ -75,7 +75,7 @@ class PortableArchiveController extends ChangeNotifier {
     _exportPreview = null;
     final source = PortableExportRecords(records);
     final archive = PortableProjectArchive(
-      requirements: RequirementsStore(source).load(projectId),
+      requirements: PortableRequirementsStore(source).load(projectId),
       prototype: PortablePrototypeStore(source).load(projectId),
       decision: PortableDecisionStore(source).load(projectId),
       revisions: PortableRevisionStore(source).load(projectId),
