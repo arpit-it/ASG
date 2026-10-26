@@ -69,7 +69,7 @@ A task moves Queued → In progress → Awaiting merge → Done; use Blocked wit
 
 ## Active task and delivery ledger
 
-Active: F08 In progress/unchecked; reopened #114 on `114-empty-user-url-guard` for password-only URL export refusal. PR #132 merge `40a3b348c07cabaa730f0484ff70f136863b3f35` verified through connected GitHub. Complete backup/general secret exclusion remain pending; no later task selected.
+Active: F08 In progress/unchecked; issue #114 reopened on `114-quoted-credential-guard` for nonempty quoted whitespace credential refusal. PR #133 merge `9018a6909be45bbf594970dceb3a2cbb5b28ff30` verified through connected GitHub. Complete backup/general secret exclusion remain pending; no later task selected.
 
 ### F03 acceptance boundary and evidence
 
@@ -2177,3 +2177,19 @@ F08 remains In progress/unchecked. Bounded Basic authorization refusal is delive
 Reopened matching #114 on `114-empty-user-url-guard` after plugin verification of PR #132 merge and no competing owner/open PR. Evidence: the password URL guard required a nonempty username, allowing Redis-style password-only URLs through export. Scope: refuse nonempty passwords with empty usernames; retain lossless import, empty-password URLs, ordinary hosts and data integrity. Policy fixtures cover custom/mixed-case schemes and percent-encoded passwords; controller regression requires stale-preview invalidation, no writes, safe errors and clean retry. Formatter/analyzer/full Flutter tests/web build and independent final-revision review/required CI remain gates. F08 stays In progress/unchecked; general secret exclusion and complete backup remain pending.
 
 Local validation: formatter188 unchanged, analyzer clean, all501Flutter tests pass (seven opt-in skips); web build and Wasm dry run pass. Independent final-revision review and actual required CI remain merge gates.
+
+
+### F08 password-only URL export guard — verified PR #133 delivery (26 October 2026)
+
+Issue #114 / branch `114-empty-user-url-guard` delivered through [PR #133](https://github.com/arpit-it/ASG/pull/133). Independent final-revision COMMENT approval `5652870855` and final complete-CI gate `5652931321` approved exact head `4d3ad3e6f3f4614013534abd0f10ddd6e96f5731`. Normal protected squash merge `9018a6909be45bbf594970dceb3a2cbb5b28ff30` at 2026-10-26 13:45:44 UTC and issue closure/completed 13:45:45 independently verified through connected GitHub. Tested local `6be7d1490e1a60a4161c8c3da3e565cc39b9cf7e`, published head and merged main share tree `247720778567c766e322ad372d974136725af607`.
+
+Independent57focused tests/formatter188/analyzer and external96k authority probes26ms pass. Required CI `40332627420` complete actual logs inspected before reviewer merge: Flutter `121605722801` passes499Linux tests/six skips, formatter188/analyzer, actualChromeIndexedDB/webWasm and generated resolve/analyze/test/build all0 with HTTP200/>1000-byte serving assertions; Python `121605723105` passes2download+4streaming+10process+4confinement fixtures/two skips. Local501Flutter tests/seven skips, formatter188/analyzer/webWasm pass. Parent independently verified merged PR, closed issue, current remote main and identical tree through plugin; reconstructed signed merge only after reproducing exact SHA and safely fast-forwarded local main with0/0divergence and empty tested-tree diff. Unrelated IDE/history edits retained; nothing staged. No terminal GitHub access.
+
+F08 remains In progress/unchecked. Password-bearing URLs with empty usernames now refuse export; empty passwords/ordinary hosts and clean retry remain supported. Complete backup/general secret exclusion remain pending. Existing8765 endpoint offline; no live inference/download/stable-app replacement/deployment. No new task/issue/cadence/notification change. Prior history publication exclusion and label rejection retained without repeat attempts. Postmerge evidence retained locally for the next normal reviewed increment.
+
+
+### F08 quoted whitespace credential export refusal — issue #114 (26 October 2026)
+
+Reopened matching #114 after plugin verification of PR #133 merge/current main and no competing active owner/open PR. Regression tests demonstrated that recognized named credential assignments with quoted leading whitespace exported silently. Scope: refuse nonempty single/double quoted values, including leading spaces/tabs/newlines, whitespace-only values and the other quote character; preserve empty quoted assignments, clean prose, saved records and lossless import. The detector inspects only the first quoted character, without scanning/backtracking across the value. Policy/controller regressions require safe refusal, stale-preview invalidation, no writes and clean retry. Formatter/analyzer/full tests/web build and independent final-revision review/actual required CI remain gates. F08 stays In progress/unchecked; complete backup/general secret exclusion pending.
+
+Local validation: initial new regressions failed before the fix; final formatter188 unchanged/analyzer clean/all502Flutter tests-seven opt-in skips/28focused tests/web build and Wasm dry run pass. Independent final-revision review and actual required CI remain merge gates.
