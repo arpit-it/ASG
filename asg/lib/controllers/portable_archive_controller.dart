@@ -28,6 +28,11 @@ class PortableArchiveController extends ChangeNotifier {
   PortableProjectArchive? _importPreview;
   PortableProjectArchive? get exportPreview => _exportPreview;
   PortableProjectArchive? get importPreview => _importPreview;
+
+  /// The complete validated snapshot used by export and restore, for plain-text
+  /// review of fields that the readable summary does not display.
+  String? get exportContents => _exportPreview?.encode();
+  String? get importContents => _importPreview?.encode();
   bool _disposed = false;
   bool _busy = false;
   bool get busy => _busy;

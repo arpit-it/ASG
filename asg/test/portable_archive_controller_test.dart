@@ -86,11 +86,34 @@ String archive() => PortableProjectArchive(
           id: 'heading',
           kind: ElementKind.heading,
           label: 'Saved heading',
+          target: 'private-target',
         ),
       ],
     ),
   ),
-  requirements: RequirementsBoard(revision: 3),
+  requirements: RequirementsBoard(
+    revision: 3,
+    requirements: const [
+      ProjectRequirement(
+        id: 'PrivateRequirement',
+        title: 'Title',
+        acceptance: 'Accept',
+      ),
+    ],
+    tasks: [
+      DevelopmentTask(
+        id: 'PrivateTask',
+        requirementId: 'PrivateRequirement',
+        title: 'Task',
+      ),
+      DevelopmentTask(
+        id: 'Dependent',
+        requirementId: 'PrivateRequirement',
+        title: 'Depends',
+        dependencies: ['PrivateTask'],
+      ),
+    ],
+  ),
   revisions: [
     PortableRevisionSummary(
       recordedAt: null,
@@ -347,6 +370,7 @@ void main() {
     await ConversationStore(records)
         .save('p', const [ChatMessage(role: 'user', content: 'Later')]);
     await c.exportFile();
+    expect(files.written, c.exportContents);
     expect(files.written, contains('Plan'));
     expect(files.written, isNot(contains('Later')));
     expect(files.written, isNot(contains('private-context')));
@@ -360,6 +384,7 @@ void main() {
     records.values['studio.chat.v1.p'] = '{}';
     await c.prepareExport();
     expect(c.exportPreview, isNull);
+    expect(c.exportContents, isNull);
     expect(c.error, isNotNull);
   });
   test(
@@ -390,6 +415,7 @@ void main() {
       files.selected = '{}';
       await c.pickImport();
       expect(c.importPreview, isNull);
+      expect(c.importContents, isNull);
       expect(c.error, isNotNull);
       files.selected = null;
       await c.pickImport();
@@ -447,6 +473,74 @@ void main() {
     expect(records.values['studio.projects.v1'], contains('Restored'));
     expect(records.values['studio.planApproval.v1.new'], isNull);
   });
+  testWidgets(
+    'complete export review matches written snapshot without writes',
+    (tester) async {
+      tester.view.physicalSize = const Size(360, 900);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final records = Records();
+      final saved = jsonDecode(archive()) as Map<String, dynamic>;
+      records.values['studio.application.v1.p'] = jsonEncode(
+        saved['prototype'],
+      );
+      final before = Map.of(records.values);
+      final files = Files();
+      final c = PortableArchiveController('p', records, files: files);
+      await tester.pumpWidget(
+        MaterialApp(
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(context)
+                .copyWith(textScaler: TextScaler.linear(1.8)),
+            child: child!,
+          ),
+          home: PortableArchiveScreen(controller: c),
+        ),
+      );
+      final load = find.text('Load saved records for export');
+      await tester.scrollUntilVisible(
+        load,
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(load);
+      await tester.pumpAndSettle();
+      final complete = find.text('Review complete archive JSON');
+      await tester.scrollUntilVisible(
+        complete,
+        150,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(complete);
+      await tester.pumpAndSettle();
+      final payload = c.exportContents!;
+      expect(payload, contains('"target":"private-target"'));
+      expect(
+        find.byWidgetPredicate((w) => w is SelectableText && w.data == payload),
+        findsOneWidget,
+      );
+      expect(files.written, isNull);
+      expect(records.values, before);
+      expect(tester.takeException(), isNull);
+      await tester.tap(complete);
+      await tester.pumpAndSettle();
+      final export = find.text('Choose export file');
+      await tester.scrollUntilVisible(
+        export,
+        150,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(export);
+      await tester.pumpAndSettle();
+      expect(files.written, payload);
+      expect(records.values, before);
+      expect(tester.takeException(), isNull);
+    },
+  );
   testWidgets('narrow large text preview saves only on explicit action', (
     tester,
   ) async {
@@ -529,6 +623,26 @@ void main() {
     await tester.pumpAndSettle();
     expect(editText, findsOneWidget);
     expect(records.values, isEmpty);
+    final complete = find.text('Review complete archive JSON');
+    await tester.scrollUntilVisible(
+      complete,
+      150,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(complete);
+    await tester.pumpAndSettle();
+    final payload = c.importContents!;
+    expect(payload, contains('"target":"private-target"'));
+    expect(payload, contains('"dependencies":["PrivateTask"]'));
+    final exact = find.byWidgetPredicate(
+      (w) => w is SelectableText && w.data == payload,
+    );
+    expect(exact, findsOneWidget);
+    expect(records.values, isEmpty);
+    expect(tester.takeException(), isNull);
+    await tester.tap(complete);
+    await tester.pumpAndSettle();
     final id = find.byWidgetPredicate(
       (w) =>
           w is TextField &&
