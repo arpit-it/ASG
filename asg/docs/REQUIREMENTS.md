@@ -69,7 +69,7 @@ A task moves Queued → In progress → Awaiting merge → Done; use Blocked wit
 
 ## Active task and delivery ledger
 
-Active: F08 In progress/unchecked; reopened #114 on `114-camelcase-credential-export` for camel-case credential assignment refusal. Complete backup/general secret exclusion pending; no later task selected.
+Active: F08 In progress/unchecked; reopened #114 on `114-web-archive-download` for browser archive export. PR #142 merge verified. Complete backup/general secret exclusion pending; no later task selected.
 
 ### F03 acceptance boundary and evidence
 
@@ -2324,3 +2324,21 @@ Owner complete; local main synchronized. Run completed 2026-10-26T15:56:50.56937
 Reused/reopened #114 after plugin verified PR #141 merged at5829c1e4a0180759073d0a5687cb801ff922a08b, no open issues/PRs and prior owner idle. Branch `114-camelcase-credential-export`. Evidence: dbPassword/serviceApiKey assignments bypassed word/underscore boundaries. Before-fix policy/controller regressions failed. Scope: recognize lower-case/digit-to-upper-case transitions before existing credential names; preserve empty assignments, ordinary prose, lossless imports and records. Policy covers nested prefixes/uppercase aliases/digits/quotes/whitespace and nested candidates; controller independently exercises six aliases, safe refusal, stale-preview clearing, no writes and clean retry. Formatter188/analyzer/full Flutter tests/web build and independent exact-revision review/actual required CI remain delivery gates. F08 remains In progress/unchecked; complete backup/general secret exclusion pending. Existing8765offline; no inference/download/deployment. Unrelated IDE/history edits retained. Recorded 2026-10-26T16:01:12.040907+00:00.
 
 Final local validation 2026-10-26T16:01:42.727999+00:00: formatter188/analyzer/all510Flutter tests-seven opt-in skips/web build/Wasm dry run pass. Independent review/actual required CI/protected merge pending.
+
+
+### F08 camel-case credential export guard — verified PR #142 delivery (26 October 2026)
+
+Issue #114 / branch `114-camelcase-credential-export` delivered through https://github.com/arpit-it/ASG/pull/142. Independent exact-head COMMENT5655093151 and final complete-CI5655154508 approved12974be237e5b0641955efee66af3857ad30f872. Normal protected squash merge6081f54e2a5c86f83b30b9e37e045efc7ca908d0 at2026-10-26T16:08:12Z; issue closed/completed16:08:13Z independently verified through plugin. Tested local a0629db335fad0a74bfd784c584db94e0b479f3d, published head and merged main share tree57bb3615d45eab1b875dfdc7d000517f901b113e.
+
+Before-fix policy/controller regressions failed. Formatter188/analyzer/all510Flutter tests-seven skips/webWasm pass. Reviewer independently65focused tests/formatter188/analyzer pass. Required CI40355186406 complete actual logs inspected before reviewer merge: Flutter121685615026 formatter188/analyzer/508Linux tests-six skips/realChromeIndexedDB/webWasm/generated resolve-analyze-test-build0 and HTTP200/>1000-byte serving assertions; Python1216856145382download+4streaming+10process+4confinement fixtures-two skips. Parent independently verified merge/closed issue/current main via plugin; signed merge reconstructed only after byte-exact SHA check, safely fast-forwarded local main with0/0divergence and empty tested-tree diff. Unrelated IDE/history edits retained; nothing staged. GitHub exclusively plugin.
+
+F08 remains In progress/unchecked; camel-case prefixed existing credential assignments refuse export, empty values/prose/lossless imports/retry retained. Complete backup/general secret exclusion pending. Existing8765offline; no live inference/download/stable-app replacement/deployment. No new issue/task/cadence/notification change. Prior history publication exclusion/label rejection respected. Postmerge evidence retained locally for next normal reviewed increment. Recorded 2026-10-26T16:09:53.883191+00:00.
+
+Owner complete; local main synchronized. Run completed 2026-10-26T16:09:53.883191+00:00.
+
+
+### F08 browser archive download — issue #114 (26 October 2026)
+
+Reopened matching #114 after plugin verification of PR #142 merge 6081f54e2a5c86f83b30b9e37e045efc7ca908d0, closed issue and no open PR/competing active owner. Branch `114-web-archive-download`. Evidence: web export disabled despite working browser imports and existing XFile Blob download support. Enable explicit browser download without server/new dependency, retain desktop save/cancel and mobile unsupported behavior. Browser action/status says download requested and asks users to confirm in browser downloads; no disk-save completion claim. Existing validated snapshot/credential refusal remains enforced.
+
+Acceptance: real Chrome regression failed before fix (canExport false), then verifies exact Blob UTF-8 bytes/Unicode round trip, filename, invalid-file no download, controller truthful status, credential refusal/stale-preview clearing and no record writes. CI now runs the browser archive test alongside IndexedDB coverage. Formatter189/analyzer/full510Flutter tests-seven skips/web build/Wasm dry run pass; both realChrome tests pass. Existing8765 endpoint offline; no live inference/download/model setup/deployment. F08 remains In progress/unchecked; complete backup/general secret exclusion pending. Independent final-revision review, actual required CI and protected merge remain gates. Unrelated IDE/history edits preserved; prior history publication exclusion/label rejection respected. Recorded 2026-10-26T16:21:26.055948+00:00.
