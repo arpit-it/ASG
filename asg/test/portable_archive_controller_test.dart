@@ -370,6 +370,53 @@ void main() {
     },
   );
 
+  test(
+    'OpenPGP private key export refuses saved records and copies, then retries',
+    () async {
+      final records = Records();
+      final files = Files();
+      final c = PortableArchiveController('p', records, files: files);
+      addTearDown(c.dispose);
+      final store = PortableArchiveStore(records);
+      await store.restoreCopy('clean', archive());
+      for (final text in [
+        '-----BEGIN PGP PRIVATE KEY BLOCK-----',
+        '-----BEGIN PGP PRIVATE KEY BLOCK-----\r\n\r\nZml4dHVyZQ==\r\n-----END PGP PRIVATE KEY BLOCK-----',
+        'Saved key: -----BEGIN PGP PRIVATE KEY BLOCK-----\nfixture',
+        '%2D%2D%2D%2D%2DBEGIN%20PGP%20PRIVATE%20KEY%20BLOCK%2D%2D%2D%2D%2D',
+      ]) {
+        records.values['studio.chat.v1.p'] = jsonEncode([
+          {'role': 'user', 'content': text},
+        ]);
+        records.values['studio.archive.v1.sensitive'] = PortableProjectArchive(
+          requirements: RequirementsBoard(),
+          messages: [ChatMessage(role: 'user', content: text)],
+        ).encode();
+        final before = Map.of(records.values);
+        for (final prepare in [
+          c.prepareExport,
+          () => c.prepareCopyExport('sensitive'),
+        ]) {
+          await c.prepareCopyExport('clean');
+          expect(c.exportPreview, isNotNull);
+          files.written = null;
+          await prepare();
+          expect(c.error, startsWith('Export blocked:'));
+          expect(c.error, isNot(contains('PGP')));
+          expect(c.exportContents, isNull);
+          await c.exportFile();
+          expect(files.written, isNull);
+          expect(records.values, before);
+          await c.prepareCopyExport('clean');
+          await c.exportFile();
+          expect(c.error, isNull);
+          expect(files.written, archive());
+          expect(records.values, before);
+        }
+      }
+    },
+  );
+
   test('percent-encoded credential export refuses saved records and copies, then retries', () async {
     final records = Records();
     final files = Files();
