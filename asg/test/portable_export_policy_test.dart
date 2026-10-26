@@ -68,6 +68,21 @@ void main() {
     PortableExportPolicy.requireExportable(split);
   });
 
+  test('long nonmatching URL authority remains responsive', () {
+    final archive = withText('https://${'a:' * 49000}');
+    final watch = Stopwatch()..start();
+    PortableExportPolicy.requireExportable(archive);
+    PortableExportPolicy.requireExportable(withText('a.' * 49000));
+    watch.stop();
+    expect(watch.elapsed, lessThan(const Duration(seconds: 2)));
+    expect(
+      () => PortableExportPolicy.requireExportable(
+        withText('https://user:${'a:' * 48000}@example.test'),
+      ),
+      throwsA(isA<PortableExportRefused>()),
+    );
+  });
+
   test('JSON escapes are decoded before inspecting credential patterns', () {
     final encoded = withText('password: fixture-value')
         .encode()
