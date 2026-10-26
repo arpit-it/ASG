@@ -133,6 +133,117 @@ String archive() => PortableProjectArchive(
 ).encode();
 void main() {
   test(
+    'credential export refusal clears stale preview and permits clean retry',
+    () async {
+      final records = Records();
+      final files = Files();
+      final c = PortableArchiveController('p', records, files: files);
+      addTearDown(c.dispose);
+      await c.prepareExport();
+      expect(c.exportPreview, isNotNull);
+      final clean = archive();
+      final paths = <List<Object>>[
+        ['messages', 0, 'content'],
+        ['prototype', 'messages', 0, 'content'],
+        ['prototype', 'definition', 'title'],
+        ['prototype', 'definition', 'elements', 0, 'target'],
+        ['requirements', 'requirements', 0, 'acceptance'],
+        ['requirements', 'tasks', 0, 'title'],
+        ['decision', 'content'],
+      ];
+      for (final path in paths) {
+        final json = jsonDecode(clean) as Map<String, dynamic>;
+        dynamic row = json;
+        for (final key in path.take(path.length - 1)) {
+          row = row[key];
+        }
+        row[path.last] = 'password: private-fixture-value';
+        // Restored historical data uses the same production source namespaces.
+        records.values
+          ..clear()
+          ..['studio.chat.v1.p'] = jsonEncode(json['messages'])
+          ..['studio.application.v1.p'] = jsonEncode(json['prototype'])
+          ..['studio.requirements.v1.p'] = jsonEncode(json['requirements'])
+          ..['studio.historicalDecision.v1.p'] = jsonEncode(json['decision']);
+        final before = Map.of(records.values);
+        files.written = null;
+        await c.prepareExport();
+        expect(c.error, startsWith('Export blocked:'), reason: '$path');
+        expect(c.error, isNot(contains('private-fixture-value')));
+        expect(c.exportContents, isNull);
+        expect(c.exportPreview, isNull);
+        await c.exportFile();
+        expect(files.written, isNull);
+        expect(records.values, before);
+        records.values.clear();
+        await c.prepareExport();
+        expect(c.error, isNull);
+        await c.exportFile();
+        expect(files.written, c.exportContents);
+      }
+      files.selected = clean.replaceFirst(
+        'Historical only',
+        'password: fixture',
+      );
+      await c.pickImport();
+      expect(c.error, isNull);
+      await c.saveCopy('retained');
+      expect(
+        PortableArchiveStore(records).load('retained')!.decision!.content,
+        'password: fixture',
+      );
+    },
+  );
+
+  testWidgets(
+    'credential refusal is safe and readable at narrow enlarged text',
+    (tester) async {
+      tester.view.physicalSize = const Size(360, 900);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final records = Records();
+      await ConversationStore(records).save('p', const [
+        ChatMessage(role: 'user', content: 'password: private-fixture-value'),
+      ]);
+      final before = Map.of(records.values);
+      final files = Files();
+      final c = PortableArchiveController('p', records, files: files);
+      await tester.pumpWidget(
+        MaterialApp(
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(context)
+                .copyWith(textScaler: TextScaler.linear(1.8)),
+            child: child!,
+          ),
+          home: PortableArchiveScreen(controller: c),
+        ),
+      );
+      final load = find.text('Load saved records for export');
+      await tester.scrollUntilVisible(
+        load,
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(load);
+      await tester.pumpAndSettle();
+      final error = find.text(c.error!);
+      await tester.scrollUntilVisible(
+        error,
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.pumpAndSettle();
+      expect(error, findsOneWidget);
+      expect(find.textContaining('private-fixture-value'), findsNothing);
+      expect(find.text('Choose export file'), findsNothing);
+      expect(records.values, before);
+      expect(files.written, isNull);
+      expect(tester.takeException(), isNull);
+    },
+  );
+  test(
     'ambiguous saved records clear export preview and preserve retry',
     () async {
       final records = Records();

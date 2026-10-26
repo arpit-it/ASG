@@ -131,6 +131,14 @@ class _PortableArchiveScreenState extends State<PortableArchiveScreen> {
             'Archives include saved requirements, tasks, board revision and Discuss/Plan/Review conversation text. Versions 2–6 also preserve the latest saved Plan decision; versions 3–6 include historical build outcome summaries and recording times. Versions 4–6 also retain known historical requirements/prototype input revision numbers. Versions 5–6 include the saved interpreted prototype definition and its revision. Earlier versions remain supported. These records cannot grant Build approval, verify artifacts or enable rollback. Version 6 also includes prototype conversation text. Execution contexts, build logs, source files, paths, settings and approval credentials are excluded. Text is verbatim and may contain private information or secrets you typed; review it before sharing.',
           ),
           const SizedBox(height: 16),
+          const Text(
+            'Export blocks recognized private-key headers, common token prefixes, '
+            'Bearer credentials, password/key/token assignments and URLs with '
+            'usernames and passwords. Detection is limited and can also match '
+            'examples. Other secrets and private text may still be included; '
+            'review the complete archive before sharing. Nothing is automatically redacted.',
+          ),
+          const SizedBox(height: 16),
           FilledButton(
             onPressed: controller.busy ? null : controller.prepareExport,
             child: const Text('Load saved records for export'),
