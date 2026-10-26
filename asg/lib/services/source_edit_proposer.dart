@@ -49,7 +49,11 @@ class SourceEditProposer {
           'replacement text). One entry per path. Both before and after MUST be COMPLETE FILES, '
           'not snippets, search/replace fragments, diffs or individual lines. '
           'Copy before verbatim from Originals including every import, blank line, space '
-          'and final newline. after must contain the entire compiling file. '
+          'and final newline. If an original ends in a newline, the before JSON '
+          'string MUST include the escaped \\n immediately before its closing quote '
+          '(for example: "before":"void main() {}\\n"). Omitting that newline '
+          'makes the proposal stale and it will be rejected. '
+          'after must contain the entire compiling file. '
           'Preserve unrelated code and imports. Only change supplied files. No commands or new files. '
           'Instruction: ${jsonEncode(instruction)}. Originals: ${jsonEncode(snapshot)}';
       final buffer = StringBuffer();
