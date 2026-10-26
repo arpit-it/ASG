@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:asg/models/app_definition.dart';
+import 'package:asg/models/source_generation.dart';
 
 import 'package:asg/controllers/portable_archive_controller.dart';
 import 'package:asg/models/chat_message.dart';
@@ -135,6 +136,85 @@ String archive() => PortableProjectArchive(
   messages: const [ChatMessage(role: 'user', content: 'Exact private text 😀')],
 ).encode();
 void main() {
+  test(
+    'unknown saved build history fields refuse export and allow retry',
+    () async {
+      final records = Records();
+      final files = Files();
+      final c = PortableArchiveController('p', records, files: files);
+      addTearDown(c.dispose);
+      const key = 'studio.generation.v1.p';
+      final project = GeneratedProject(
+        directory: '/private/source',
+        sdk: '/private/sdk',
+        python: '/private/python',
+        sources: {'lib/main.dart': 'a' * 64},
+        phase: SourceGenerationPhase.failed,
+      ).toJson();
+      final entry = <String, Object?>{
+        'recordedAt': '2026-10-26T17:00:00.000Z',
+        'project': project,
+      };
+      final supported = <String, Object?>{
+        ...project,
+        'buildHistoryVersion': 1,
+        'buildHistory': [entry],
+      };
+      for (final extra in <Object?>[
+        'private-future-value',
+        {'nested': 1},
+        null,
+      ]) {
+        for (final location in ['current', 'entry', 'project']) {
+          records.values[key] = jsonEncode(supported);
+          await c.prepareExport();
+          expect(c.exportPreview, isNotNull);
+          records.values[key] = jsonEncode({
+            ...supported,
+            if (location == 'current') 'futureField': extra,
+            'buildHistory': [
+              {
+                ...entry,
+                if (location == 'entry') 'futureField': extra,
+                'project': {
+                  ...project,
+                  if (location == 'project') 'futureField': extra,
+                },
+              },
+            ],
+          });
+          final before = Map.of(records.values);
+          files.written = null;
+          await c.prepareExport();
+          expect(c.error, isNotNull, reason: location);
+          expect(c.error, isNot(contains('private-future-value')));
+          expect(c.exportPreview, isNull);
+          await c.exportFile();
+          expect(files.written, isNull);
+          expect(records.values, before);
+          records.values[key] = jsonEncode(supported);
+          await c.prepareExport();
+          await c.exportFile();
+          expect(c.error, isNull);
+          final revisions = PortableProjectArchive.decode(files.written!)
+              .revisions;
+          expect(revisions.single.recordedAt, DateTime.utc(2026, 10, 26, 17));
+          expect(revisions.single.outcome, 'failed');
+          expect(revisions.single.totalChecks, 0);
+          expect(files.written, isNot(contains('/private/')));
+        }
+      }
+      records.values[key] = jsonEncode(Map.of(project)..remove('limits'));
+      await c.prepareExport();
+      expect(c.error, isNull);
+      expect(c.exportPreview!.revisions.single.recordedAt, isNull);
+      records.values.clear();
+      await c.prepareExport();
+      expect(c.error, isNull);
+      expect(c.exportPreview!.revisions, isEmpty);
+    },
+  );
+
   test(
     'saved copy export is exact, read-only and refuses stale or secret input',
     () async {
