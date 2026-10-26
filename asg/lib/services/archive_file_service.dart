@@ -57,6 +57,13 @@ class ArchiveFileService {
           if (bytes.length + chunk.length > PortableProjectArchive.maxBytes) {
             throw const FormatException('Archive exceeds the 1 MiB limit.');
           }
+          // BytesBuilder truncates integers to eight bits. Refuse malformed
+          // provider data before it can normalize into a different archive.
+          if (chunk.any((byte) => byte < 0 || byte > 255)) {
+            throw const FormatException(
+              'Archive contains invalid byte values.',
+            );
+          }
           bytes.add(chunk);
         }
         return utf8.decode(bytes.takeBytes());

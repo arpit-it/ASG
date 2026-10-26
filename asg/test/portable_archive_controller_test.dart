@@ -1699,6 +1699,40 @@ void main() {
       }
     },
   );
+  test(
+    'invalid provider bytes refuse without writes and permit retry',
+    () async {
+      final encoded = archive();
+      final bytes = utf8.encode(encoded);
+      final records = Records()..values['existing'] = 'retained';
+      final files = Files();
+      final controller = PortableArchiveController('p', records, files: files);
+      addTearDown(controller.dispose);
+      for (final offset in [-256, 256]) {
+        var cancelled = false;
+        final source = StreamController<List<int>>(
+          onCancel: () => cancelled = true,
+        );
+        files.stream = source.stream;
+        final importing = controller.pickImport();
+        source.add(bytes.map((byte) => byte + offset).toList());
+        await source.close();
+        await importing;
+        expect(controller.error, isNotNull);
+        expect(controller.importPreview, isNull);
+        expect(controller.busy, isFalse);
+        expect(cancelled, isTrue);
+        await controller.saveCopy('invalid');
+        expect(records.values, {'existing': 'retained'});
+      }
+      files.stream = Stream.value(bytes);
+      await controller.pickImport();
+      expect(controller.error, isNull);
+      expect(controller.importContents, encoded);
+      await controller.saveCopy('valid');
+      expect(PortableArchiveStore(records).load('valid')!.encode(), encoded);
+    },
+  );
   test('import owns bytes when a provider reuses its chunk buffer', () async {
     final encoded = archive();
     Stream<List<int>> reusedBuffer() async* {
