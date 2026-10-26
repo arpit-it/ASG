@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:crypto/crypto.dart';
+
 import 'record_storage.dart';
 
 /// Saved references only. Opening always requires a fresh read-only inspection.
@@ -7,6 +9,11 @@ class InspectedFolderStore {
   InspectedFolderStore(this.records);
   final RecordStorage records;
   static const key = 'studio.inspectedFolders.v1';
+
+  /// Separate from generated project IDs; use the inspector's canonical root.
+  /// Moving a folder creates a new workspace rather than merging user records.
+  static String workspaceId(String root) =>
+      'imported-${sha256.convert(utf8.encode(root))}';
 
   List<String> load() {
     final raw = records.getString(key);

@@ -113,6 +113,149 @@ void main() {
     await work;
     expect(c.findings, isNull);
   });
+  test(
+    'workspace entry requires saved folder and fresh successful inspection',
+    () async {
+      SharedPreferences.setMockInitialValues({});
+      final store = InspectedFolderStore(
+        PreferenceRecords(await SharedPreferences.getInstance()),
+      );
+      var reads = 0;
+      var missing = false;
+      final c = ProjectInspectionController(
+        store: store,
+        picker: Picker(),
+        inspect: (root) async {
+          reads++;
+          if (missing) throw const FormatException('Folder missing');
+          return result(root);
+        },
+      );
+      expect(await c.openWorkspace(), isNull);
+      await c.chooseFolder();
+      expect(await c.openWorkspace(), isNull);
+      expect(reads, 1);
+      await c.saveFolder();
+      expect(c.canOpenWorkspace, isTrue);
+      expect((await c.openWorkspace())?.root, '/project');
+      expect(reads, 2);
+      missing = true;
+      expect(await c.openWorkspace(), isNull);
+      expect(c.findings, isNull);
+      expect(c.canOpenWorkspace, isFalse);
+      expect(c.error, contains('missing'));
+      expect(store.load(), ['/project']);
+      c.dispose();
+    },
+  );
+  test(
+    'workspace entry excludes overlapping work and ignores disposal',
+    () async {
+      SharedPreferences.setMockInitialValues({});
+      final store = InspectedFolderStore(
+        PreferenceRecords(await SharedPreferences.getInstance()),
+      );
+      await store.save('/project');
+      Completer<ProjectInspection>? pending;
+      var reads = 0;
+      final picker = Picker();
+      final c = ProjectInspectionController(
+        store: store,
+        picker: picker,
+        inspect: (root) async {
+          reads++;
+          return pending == null ? result(root) : pending.future;
+        },
+      );
+      await c.reopen('/project');
+      pending = Completer<ProjectInspection>();
+      final opening = c.openWorkspace();
+      expect(c.busy, isTrue);
+      expect(await c.openWorkspace(), isNull);
+      await c.chooseFolder();
+      await c.saveFolder();
+      expect(picker.calls, 0);
+      expect(reads, 2);
+      c.dispose();
+      pending.complete(result('/project'));
+      expect(await opening, isNull);
+      expect(await c.openWorkspace(), isNull);
+    },
+  );
+  testWidgets(
+    'imported workspace edits and reopens its isolated requirements',
+    (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      final store = InspectedFolderStore(
+        PreferenceRecords(await SharedPreferences.getInstance()),
+      );
+      await store.save('/project');
+      var reads = 0;
+      Future<void> open() => tester.pumpWidget(
+        MaterialApp(
+          home: ProjectInspectionScreen(
+            key: UniqueKey(),
+            controller: ProjectInspectionController(
+              store: store,
+              picker: Picker(),
+              inspect: (root) async {
+                reads++;
+                return result(root);
+              },
+            ),
+          ),
+        ),
+      );
+      await open();
+      await tester.tap(find.text('/project'));
+      await tester.pumpAndSettle();
+      await tester.scrollUntilVisible(
+        find.text('Open requirements workspace'),
+        180,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.tap(find.text('Open requirements workspace'));
+      await tester.pumpAndSettle();
+      expect(reads, 2);
+      expect(find.text('Imported project workspace'), findsOneWidget);
+      expect(find.textContaining('grants no write'), findsOneWidget);
+      await tester.tap(find.text('Requirements and tasks'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Add requirement'));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.widgetWithText(TextField, 'Stable ID'), 'R1');
+      await tester.enterText(
+        find.widgetWithText(TextField, 'Title'),
+        'Keep existing source',
+      );
+      await tester.enterText(
+        find.widgetWithText(TextField, 'Acceptance criteria'),
+        'No imported files change',
+      );
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+      expect(find.text('R1: Keep existing source'), findsOneWidget);
+      await tester.pageBack();
+      await tester.pumpAndSettle();
+      await tester.pageBack();
+      await tester.pumpAndSettle();
+      await open();
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('/project'));
+      await tester.pumpAndSettle();
+      await tester.scrollUntilVisible(
+        find.text('Open requirements workspace'),
+        180,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.tap(find.text('Open requirements workspace'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Requirements and tasks'));
+      await tester.pumpAndSettle();
+      expect(find.text('R1: Keep existing source'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    },
+  );
   testWidgets('saved folder can be reopened after screen recreation', (
     tester,
   ) async {

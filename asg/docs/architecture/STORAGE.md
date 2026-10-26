@@ -85,3 +85,8 @@ Prior run snapshots are retained across manual retries. History begins with new 
 
 
 Build outcome history (F06 issue104): generation/candidate records add `buildHistoryVersion: 1` and `buildHistory`, a sequence of terminal ready/failed snapshots with UTC `recordedAt` and a full validated GeneratedProject. Current snapshot and history publish in one record write; working-candidate promotion uses its existing conditional multi-record transaction. Identical repeated terminal publication is deduplicated; a new verifying-to-terminal transition retains a separate outcome even when its content matches. Legacy terminal snapshots are retained on the next save with null timestamp, displayed as unknown. No history/artifact pruning occurs. Recorded artifact hashes/paths are evidence, not live existence claims; opening preview continues existing validation. Rollback remains pending under F06.
+
+
+## Imported folder requirements workspaces
+
+`studio.inspectedFolders.v1` retains explicitly saved folder references. Inspection and workspace entry reread current files without commands or source writes. Requirements and tasks use the existing validated requirements schema at `studio.requirements.v1.imported-<SHA256>`, hashing UTF-8 canonical root text from the inspector. This namespace is separate from generated project IDs. Folder moves/renames start separate records; no automatic merge/migration is attempted. References and boards are application database records, not files in the imported folder. Current integration grants no source-write/execution approval and does not create a generated prototype. Imported Plan context/approval remains pending.

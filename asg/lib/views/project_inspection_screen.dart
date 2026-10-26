@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../controllers/project_inspection_controller.dart';
 import '../models/project_inspection.dart';
+import 'imported_project_workspace.dart';
 
 /// Owns the controller and its pending selection lifecycle.
 class ProjectInspectionScreen extends StatefulWidget {
@@ -22,6 +23,19 @@ class _ProjectInspectionScreenState extends State<ProjectInspectionScreen> {
 
   void refresh() {
     if (mounted) setState(() {});
+  }
+
+  Future<void> openWorkspace() async {
+    final findings = await widget.controller.openWorkspace();
+    if (!mounted || findings == null) return;
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => ImportedProjectWorkspace(
+          inspection: findings,
+          records: widget.controller.store!.records,
+        ),
+      ),
+    );
   }
 
   @override
@@ -117,10 +131,16 @@ class _ProjectInspectionScreenState extends State<ProjectInspectionScreen> {
                   icon: const Icon(Icons.bookmark_add_outlined),
                   label: const Text('Save folder reference'),
                 ),
+                OutlinedButton.icon(
+                  onPressed: controller.canOpenWorkspace ? openWorkspace : null,
+                  icon: const Icon(Icons.workspaces_outline),
+                  label: const Text('Open requirements workspace'),
+                ),
                 const Text(
                   'These findings describe this inspection only. Saving remembers '
-                  'the folder for fresh inspection; it does not create a workspace '
-                  'or approve a plan. Imported-project editing is not available yet.',
+                  'the folder for fresh inspection. Open its requirements workspace '
+                  'after saving; plan approval and imported-project editing are '
+                  'not available yet.',
                 ),
               ],
             ],

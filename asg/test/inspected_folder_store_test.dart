@@ -1,6 +1,10 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:asg/controllers/requirements_controller.dart';
+import 'package:asg/models/requirements_board.dart';
+import 'package:asg/services/requirements_store.dart';
+
 import 'package:asg/controllers/project_inspection_controller.dart';
 import 'package:asg/services/inspected_folder_store.dart';
 import 'package:asg/services/record_storage.dart';
@@ -49,6 +53,32 @@ void main() {
       await c.saveFolder();
       await c.saveFolder();
       expect(c.savedFolders, ['/project']);
+      final workspaceId = InspectedFolderStore.workspaceId(c.findings!.root);
+      final board = RequirementsController(workspaceId, RequirementsStore(db))
+        ..load();
+      expect(
+        await board.saveRequirement(
+          ProjectRequirement(
+            id: 'R1',
+            title: 'Import acceptance',
+            acceptance: 'Files stay untouched',
+          ),
+        ),
+        isTrue,
+      );
+      expect(
+        await board.saveTask(
+          DevelopmentTask(
+            id: 'T1',
+            title: 'Inspect',
+            requirementId: 'R1',
+            dependencies: [],
+            status: TaskStatus.queued,
+          ),
+        ),
+        isTrue,
+      );
+      board.dispose();
       c.dispose();
       await db.database.close();
       db = await StudioDatabase.migrate(
@@ -70,6 +100,20 @@ void main() {
       expect(reopened.savedFolders, ['/project']);
       await reopened.reopen('/project');
       expect(reads, 1);
+      final reopenedBoard = RequirementsStore(db)
+          .load(InspectedFolderStore.workspaceId(reopened.findings!.root));
+      expect(reopenedBoard.requirements.single.title, 'Import acceptance');
+      expect(reopenedBoard.tasks.single.id, 'T1');
+      expect(
+        RequirementsStore(db)
+            .load(InspectedFolderStore.workspaceId('/another'))
+            .requirements,
+        isEmpty,
+      );
+      expect(
+        RequirementsStore(db).load('generated-project').requirements,
+        isEmpty,
+      );
       expect(reopened.findings?.root, '/project');
       missing = true;
       await reopened.reopen('/project');
