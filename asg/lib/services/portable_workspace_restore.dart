@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import '../models/portable_project_archive.dart';
 import '../models/project.dart';
+import '../models/structured_proposal_json.dart';
 import 'portable_archive_store.dart';
 import 'inspected_folder_store.dart';
 import 'portable_decision_store.dart';
@@ -29,7 +30,20 @@ class PortableWorkspaceRestore {
     final archive = PortableProjectArchive.decode(encoded);
     const catalogKey = 'studio.projects.v1';
     final catalog = records.getString(catalogKey);
+    // Validate syntax and member uniqueness before typed identity checks. Keep
+    // raw rows so appending a workspace cannot erase future catalog metadata.
+    if (catalog != null) {
+      jsonDecode(catalog);
+      rejectDuplicateJsonMembers(catalog);
+    }
     final projects = StudioStore(records).load(); // Corruption fails closed.
+    // Keep original number lexemes too: decoding unknown metadata can round
+    // large integers on native and JavaScript runtimes. The validated list
+    // ends at its final closing bracket; append only the new encoded row.
+    final prefix = catalog?.trimRight();
+    final catalogStart = prefix == null
+        ? '['
+        : prefix.substring(0, prefix.length - 1);
     final ids = <String>{};
     for (final project in projects) {
       if (!ids.add(project.id) || project.id == id) {
@@ -91,9 +105,8 @@ class PortableWorkspaceRestore {
         ),
       if (archive.decision case final decision?)
         PortableDecisionStore.key(id): jsonEncode(decision.toJson()),
-      catalogKey: jsonEncode(
-        [...projects, project].map((p) => p.toJson()).toList(),
-      ),
+      catalogKey:
+          '$catalogStart${projects.isEmpty ? '' : ','}${jsonEncode(project.toJson())}]',
       'studio.chat.v1.$id': jsonEncode(
         archive.messages.map((m) => m.toJson()).toList(),
       ),

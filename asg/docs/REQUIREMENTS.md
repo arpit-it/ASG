@@ -69,7 +69,7 @@ A task moves Queued → In progress → Awaiting merge → Done; use Blocked wit
 
 ## Active task and delivery ledger
 
-Active: F08 In progress/unchecked. Issue #114 selected project metadata validation on `114-project-metadata-validation` awaits final review/CI/merge. Prior PR #162 verified merged as 2cba6e0b169f936056c11fb7de6998c636ea7d87. Full backup/general secret exclusion pending; no later feature selected.
+Active: F08 In progress/unchecked. Issue #114 restore catalog preservation on `114-restore-catalog-preservation` awaits independent final-head review/required CI/merge. Prior PR #163 verified merged as24e560a73cb800212280e46b69a8d9443c21e537. Broader backup/general secret exclusion pending.
 
 ### F03 acceptance boundary and evidence
 
@@ -2686,3 +2686,28 @@ Acceptance: unsupported selected metadata clears stale export preview, refuses w
 Recorded 2026-10-26T22:19:56.750354+00:00.
 
 Validation: 92 focused archive/controller/native-reopen/policy/MVC tests and 536 full Flutter tests passed (seven opt-in skips); analyzer, formatter192, actual Chrome selected-metadata regression and web build/Wasm dry run passed. Initial focused command named a nonexistent native test; corrected complete suite passed. Independent exact-head review and required CI remain merge gates.
+
+
+### F08 selected project metadata validation — verified PR #163 delivery
+
+Issue #114 / branch `114-project-metadata-validation` delivered through https://github.com/arpit-it/ASG/pull/163. Independent exact-head COMMENT5659907685 and final-CI5659936091 approved `52c41ea455e237e1648ab76eeb58fec113880ed8`. Normal protected squash merge `24e560a73cb800212280e46b69a8d9443c21e537` at2026-10-26T22:25:33Z; issue114 closed/completed22:25:35Z. Parent independently plugin verified merged PR/approved head/closed issue/current main. Tested local8d2318c, published head and merged main share tree1c1d049706fe0d272a3fb6ffbdac6bfb9605eba2. Signed merge SHA/tree validated before local import; safely fast-forwarded main,0/0 divergence and empty source/test diff. Existing IDE/history edits retained; nothing staged.
+
+Before-fix regression failed. Local92focused/536fullFlutter-seven opt-in skips/actualChrome/formatter192/analyzer/webWasm passed. Reviewer independently92focused+Chrome/formatter/analyzer passed. RequiredCI40411799951 success; reviewer inspected actual Flutter121884093376 logs formatter192/analyzer/534Linux-six skips/new regression/twoChrome/webWasm/generated all4exit0+serving acceptance and Python1218840937602+4+10+4fixtures-two confinement skips before merge.
+
+Unsupported selected project metadata now refuses export rather than silently disappearing, clears stale preview and prevents writes/download/value disclosure; exact Unicode clean retry and unrelated metadata remain supported. Identity/name/location exclusions and archive schema unchanged. F08 remains In progress/unchecked for broader backup/general secret exclusion. Runtime8765 unavailable; no live inference/download/stable-app replacement/deployment. No new task/issue/cadence/notification change. History-publication exclusion and prior label rejection retained. Postmerge evidence retained locally for next reviewed increment. Owner complete; local main synchronized.
+Recorded 2026-10-26T22:26:27.380806+00:00.
+
+
+### F08 export boundary audit — 2026-10-26T22:29:39.239705+00:00
+
+PR #163 merge24e560a73cb800212280e46b69a8d9443c21e537 and issue #114 completion independently verified via GitHub plugin. Duplicate saved catalog members already fail closed through PortableExportRecords; direct controller probe passed without code changes. Investigative reopening of #114 reverted to completed with evidence; no new issue/task or implementation justified from this checked path. Fresh92focused archive/controller/store/policy/MVC tests passed; source/test diff empty, main synchronized, unrelated edits retained. F08 remains In progress/unchecked for broader backup/general secret exclusion; full acceptance not claimed. Local runtime offline, no live inference.
+
+
+### F08 restore catalog preservation — issue #114
+
+Prior PR #163 verified merged as 24e560a73cb800212280e46b69a8d9443c21e537; no competing active ASG owner or open work at selection. Reopened matching #114 on `114-restore-catalog-preservation`. Independent audit confirmed restoring a new workspace projected and rewrote unrelated existing catalog rows, silently deleting unknown metadata. Before-fix native reopen regression failed. Restore now appends to raw validated catalog rows, retaining nested Unicode/future fields, and refuses duplicate JSON members (including escaped keys) before writes. Existing identity/collision checks and atomic expected-record transaction remain.
+
+Acceptance: existing metadata survives restore/native reopen; ambiguous catalogs refuse without writes; clean retry succeeds. 94 focused and 538 full Flutter tests passed (seven opt-in skips), formatter192/analyzer, actual Chrome new regression and web build/Wasm dry run passed. Independent exact-head review/required CI/merge remain gates. F08 stays In progress/unchecked for broader backup/general secret exclusion. Runtime8765offline; no live inference. Existing IDE/history edits preserved and history publication exclusion retained. No new issue/task or cadence/notification change. Recorded 2026-10-26T22:40:15.949878+00:00.
+
+
+Independent review #5660088015 found raw-row re-encoding still rounded unknown numeric metadata above integer precision. Fixed by retaining validated existing catalog JSON text and encoding only the appended new row. New tests preserve exact >2^53/>int64, decimal and exponent lexemes, whitespace/empty lists, plus native database reopen. 95focused/539fullFlutter-seven skips/analyzer/formatter192 and actualChrome numeric regression pass; final web build and fresh exact-head review/CI remain gates. Recorded 2026-10-26T22:43:01.681678+00:00.
