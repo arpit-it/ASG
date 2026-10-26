@@ -10,6 +10,7 @@ import 'structured_proposal_json.dart';
 class PortableProjectArchive {
   PortableProjectArchive({
     required this.requirements,
+    this.decision,
     required List<ChatMessage> messages,
   }) : messages = List.unmodifiable(
          messages.map((m) => ChatMessage(role: m.role, content: m.content)),
@@ -20,6 +21,7 @@ class PortableProjectArchive {
   static const maxBytes = 1024 * 1024;
   static const maxMessages = 1000;
   static const maxMessageCharacters = 100000;
+  final PortablePlanDecision? decision;
   final RequirementsBoard requirements;
   final List<ChatMessage> messages;
 
@@ -42,7 +44,8 @@ class PortableProjectArchive {
 
   Map<String, Object> _json() => {
     'format': 'asg-portable-records',
-    'version': 1,
+    'version': decision == null ? 1 : 2,
+    if (decision != null) 'decision': decision!.toJson(),
     'requirements': requirements.toJson(),
     'messages': messages
         .map((m) => {'role': m.role, 'content': m.content})
@@ -68,15 +71,17 @@ class PortableProjectArchive {
       final decoded = jsonDecode(encoded);
       // Validate syntax first; duplicate keys must not collapse into lost records.
       rejectDuplicateJsonMembers(encoded);
-      final root = _object(decoded, const [
+      final version = decoded is Map ? decoded['version'] : null;
+      final root = _object(decoded, [
         'format',
         'version',
         'requirements',
         'messages',
+        if (version == 2) 'decision',
       ]);
       if (root['format'] != 'asg-portable-records' ||
           root['version'] is! int ||
-          root['version'] != 1) {
+          !const [1, 2].contains(root['version'])) {
         throw const FormatException('Unsupported portable archive version.');
       }
       final board = _object(root['requirements'], const [
@@ -122,6 +127,9 @@ class PortableProjectArchive {
       }
       return PortableProjectArchive(
         requirements: requirements,
+        decision: version == 2
+            ? PortablePlanDecision.fromJson(root['decision'])
+            : null,
         messages: rows.map((row) {
           final message = _object(row, const ['role', 'content']);
           return ChatMessage(
@@ -144,5 +152,49 @@ class PortableProjectArchive {
       throw const FormatException('Unsupported portable archive fields.');
     }
     return value;
+  }
+}
+
+/// Historical information only: no execution context or message index.
+class PortablePlanDecision {
+  PortablePlanDecision({
+    required this.content,
+    required this.approved,
+    required DateTime recordedAt,
+  }) : recordedAt = recordedAt.toUtc() {
+    if (content.isEmpty ||
+        content.length > PortableProjectArchive.maxMessageCharacters) {
+      throw const FormatException('Unsupported historical Plan decision.');
+    }
+  }
+  final String content;
+  final bool approved;
+  final DateTime recordedAt;
+  Map<String, Object> toJson() => {
+    'content': content,
+    'approved': approved,
+    'recordedAt': recordedAt.toIso8601String(),
+  };
+  factory PortablePlanDecision.fromJson(Object? value) {
+    final row = PortableProjectArchive._object(value, const [
+      'content',
+      'approved',
+      'recordedAt',
+    ]);
+    final content = row['content'];
+    final approved = row['approved'];
+    final timestamp = row['recordedAt'];
+    if (content is! String || approved is! bool || timestamp is! String) {
+      throw const FormatException('Malformed historical Plan decision.');
+    }
+    final date = DateTime.tryParse(timestamp);
+    if (date == null || !date.isUtc || date.toIso8601String() != timestamp) {
+      throw const FormatException('Invalid historical decision timestamp.');
+    }
+    return PortablePlanDecision(
+      content: content,
+      approved: approved,
+      recordedAt: date,
+    );
   }
 }

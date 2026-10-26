@@ -93,3 +93,10 @@ Build outcome history (F06 issue104): generation/candidate records add `buildHis
 
 
 Imported plan review uses `studio.importedPlan.v1.<imported-workspace-id>`: bounded user-authored text, exact serialized folder metadata/requirements context, approval boolean and UTC decision/save time. Native database validates and isolates corrupt records without replacing them. Reopening and each decision require fresh read-only inspection; source-content changes outside inspected metadata are not tracked. This planning consent is never accepted by generated-project execution gates. Moving folders creates a separate identity; only the latest draft/decision is retained.
+
+
+## Portable historical Plan decisions (F08)
+
+Portable records remain version 1 when no saved decision exists. Version 2 adds one required `decision` object containing exact Plan text, the historical approved/withdrawn boolean and a canonical UTC timestamp. Readers retain version-1 support and reject unknown/duplicate members, malformed timestamps and oversized text; the complete archive still has a 1 MiB limit. This carries only the latest saved decision, not a complete decision journal. Text remains verbatim and may contain user-entered private data; no general secret redaction is claimed.
+
+Restoration atomically writes history to `studio.historicalDecision.v1.<newProjectId>` with the new catalog/board/conversation. It never writes `studio.planApproval.v1.*`, Plan context or message indices. The new identity must have no historical record, including corrupt/orphan records. Native reopen validates and isolates damaged historical records without replacing them. Export uses a subsequent locally saved decision when present, otherwise imported history. The Portable records preview explicitly labels historical information as unable to grant Build approval. A new current Plan and explicit local consent are still required. No source/build evidence or broader prototype revision metadata is included by this increment.

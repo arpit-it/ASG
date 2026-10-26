@@ -39,6 +39,55 @@ PortableProjectArchive archive() => PortableProjectArchive(
 );
 
 void main() {
+  test('historical decisions round trip without execution credentials', () {
+    for (final approved in [false, true]) {
+      final value = PortableProjectArchive(
+        requirements: board(),
+        messages: archive().messages,
+        decision: PortablePlanDecision(
+          content: 'Exact decision 😀\ntext',
+          approved: approved,
+          recordedAt: DateTime.utc(2026, 10, 26),
+        ),
+      );
+      final decoded = PortableProjectArchive.decode(value.encode());
+      expect(decoded.decision!.toJson(), value.decision!.toJson());
+      expect(decoded.encode(), value.encode());
+      expect(jsonDecode(value.encode())['version'], 2);
+      expect(value.encode(), isNot(contains('planContext')));
+      final mutations = <void Function(Map<String, dynamic>)>[
+        (j) => j['decision']['context'] = 'credential',
+        (j) => j['decision']['messageIndex'] = 0,
+        (j) => j['decision']['approved'] = 'true',
+        (j) => j['decision']['content'] = '',
+        (j) => j['decision']['content'] = 'x' * 100001,
+        (j) => j['decision']['recordedAt'] = '2026-02-31T00:00:00.000Z',
+        (j) => j['decision']['recordedAt'] = '2026-10-26T00:00:00',
+        (j) => j['decision'] = null,
+        (j) => j['version'] = 1,
+      ];
+      for (final mutate in mutations) {
+        final json = jsonDecode(value.encode()) as Map<String, dynamic>;
+        mutate(json);
+        expect(
+          () => PortableProjectArchive.decode(jsonEncode(json)),
+          throwsFormatException,
+        );
+      }
+      expect(
+        () => PortableProjectArchive.decode(
+          value.encode().replaceFirst(
+            '"approved":',
+            '"approved":false,"approved":',
+          ),
+        ),
+        throwsFormatException,
+      );
+    }
+    expect(PortableProjectArchive.decode(archive().encode()).decision, isNull);
+    expect(jsonDecode(archive().encode())['version'], 1);
+  });
+
   test('round trip preserves exact board revision, dependencies, statuses and text', () {
     final original = archive();
     final decoded = PortableProjectArchive.decode(original.encode());
