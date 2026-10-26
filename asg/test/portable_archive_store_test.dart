@@ -132,6 +132,9 @@ void main() {
     db = await open();
     final reopened = PortableArchiveController('unused', db);
     addTearDown(reopened.dispose);
+    await reopened.prepareCopyExport('copy');
+    expect(reopened.exportContents, encoded);
+    expect(StudioStore(db).load(), isEmpty);
     await reopened.loadCopy('copy');
     expect(reopened.importContents, encoded);
     expect(StudioStore(db).load(), isEmpty);

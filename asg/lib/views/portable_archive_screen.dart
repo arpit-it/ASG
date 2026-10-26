@@ -184,6 +184,15 @@ class _PortableArchiveScreenState extends State<PortableArchiveScreen> {
                 : () => controller.loadCopy(savedCopyId.text),
             child: const Text('Load saved data copy'),
           ),
+          OutlinedButton(
+            onPressed: controller.busy
+                ? null
+                : () => controller.prepareCopyExport(savedCopyId.text),
+            child: const Text('Load saved copy for export'),
+          ),
+          const Text(
+            'To export a saved copy, load it for export, then review it above and choose an export file. No project is created.',
+          ),
           if (controller.importPreview case final archive?) ...[
             summary(archive),
             completeContents(controller.importContents!),
