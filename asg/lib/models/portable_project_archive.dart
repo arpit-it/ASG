@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'chat_message.dart';
 import 'requirements_board.dart';
+import 'structured_proposal_json.dart';
 
 /// Data-only first F08 slice. No project identity, paths, settings or approval
 /// credentials are portable. Text is retained verbatim and may be private;
@@ -64,7 +65,10 @@ class PortableProjectArchive {
       throw const FormatException('Archive exceeds the 1 MiB limit.');
     }
     try {
-      final root = _object(jsonDecode(encoded), const [
+      final decoded = jsonDecode(encoded);
+      // Validate syntax first; duplicate keys must not collapse into lost records.
+      rejectDuplicateJsonMembers(encoded);
+      final root = _object(decoded, const [
         'format',
         'version',
         'requirements',

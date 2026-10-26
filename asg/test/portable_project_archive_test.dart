@@ -147,6 +147,49 @@ void main() {
     },
   );
 
+  test('ambiguous members refuse at every depth including escaped keys', () {
+    final encoded = archive().encode();
+    final duplicates = [
+      encoded.replaceFirst('"version":1', '"version":2,"version":1'),
+      encoded.replaceFirst('"revision":7', '"revision":8,"revision":7'),
+      encoded.replaceFirst(
+        '"title":"Résumé"',
+        '"title":"Other","title":"Résumé"',
+      ),
+      encoded.replaceFirst(
+        '"status":"done"',
+        '"status":"pending","status":"done"',
+      ),
+      encoded.replaceFirst('"role":"user"', '"role":"assistant","role":"user"'),
+      encoded.replaceFirst('"content":', r'"co\u006etent":"lost","content":'),
+      encoded.replaceFirst(
+        '"format":',
+        '"format":"asg-portable-records","format":',
+      ),
+    ];
+    for (final raw in duplicates) {
+      expect(raw, isNot(encoded));
+      expect(() => PortableProjectArchive.decode(raw), throwsFormatException);
+    }
+  });
+
+  test('separate objects and JSON-looking conversation text remain valid', () {
+    final original = PortableProjectArchive(
+      requirements: board(),
+      messages: const [
+        ChatMessage(
+          role: 'user',
+          content: r'{"version":1,"version":2}: \" quoted',
+        ),
+        ChatMessage(role: 'assistant', content: r'"content": { } [ ] \u0061'),
+      ],
+    );
+    expect(
+      PortableProjectArchive.decode(original.encode()).encode(),
+      original.encode(),
+    );
+  });
+
   test('message and UTF8 aggregate limits apply on import and export', () {
     expect(
       () => PortableProjectArchive(
