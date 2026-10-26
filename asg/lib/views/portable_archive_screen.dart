@@ -152,12 +152,12 @@ class _PortableArchiveScreenState extends State<PortableArchiveScreen> {
               onPressed: controller.busy || !controller.files.canExport
                   ? null
                   : controller.exportFile,
-              child: const Text('Choose export file'),
+              child: Text(controller.files.exportButtonLabel),
             ),
           ],
           if (!controller.files.canExport)
             const Text(
-              'File export is available in the desktop app. Import remains available here.',
+              'File export is available in a desktop app or browser. Import remains available here.',
             ),
           const Divider(height: 32),
           const Text(

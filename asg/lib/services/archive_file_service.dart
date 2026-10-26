@@ -12,12 +12,19 @@ import '../models/portable_project_archive.dart';
 class ArchiveFileService {
   static const readTimeout = Duration(seconds: 15);
   bool get canExport =>
-      !kIsWeb &&
+      kIsWeb ||
       const [
         TargetPlatform.macOS,
         TargetPlatform.windows,
         TargetPlatform.linux,
       ].contains(defaultTargetPlatform);
+
+  String get exportButtonLabel =>
+      kIsWeb ? 'Download archive file' : 'Choose export file';
+
+  String get exportSuccessMessage => kIsWeb
+      ? 'Download requested. Check your browser downloads to confirm the file was saved.'
+      : 'Archive file saved.';
 
   Future<String?> pickImport() async {
     final file = await openFile();
@@ -66,19 +73,28 @@ class ArchiveFileService {
     );
   }
 
-  /// False means the user cancelled, not that a file was written.
+  /// False means native dialog cancellation. Web success means download requested.
   Future<bool> export(String encoded) async {
     if (!canExport) {
-      throw UnsupportedError('Archive file export requires a desktop app.');
+      throw UnsupportedError(
+        'Archive file export requires a desktop app or browser.',
+      );
     }
     PortableProjectArchive.decode(encoded);
-    final location = await getSaveLocation(suggestedName: 'asg-records.json');
-    if (location == null) return false;
-    await XFile.fromData(
+    final file = XFile.fromData(
       Uint8List.fromList(utf8.encode(encoded)),
       mimeType: 'application/json',
       name: 'asg-records.json',
-    ).saveTo(location.path);
+    );
+    // Web saveTo requests a Blob download; browsers own its final destination
+    // and completion. Native desktop keeps the explicit save/cancel dialog.
+    if (kIsWeb) {
+      await file.saveTo('asg-records.json');
+      return true;
+    }
+    final location = await getSaveLocation(suggestedName: 'asg-records.json');
+    if (location == null) return false;
+    await file.saveTo(location.path);
     return true;
   }
 }

@@ -92,7 +92,7 @@ class PortableArchiveController extends ChangeNotifier {
     PortableExportPolicy.requireExportable(preview);
     final saved = await files.export(preview.encode());
     if (!_disposed) {
-      _status = saved ? 'Archive file saved.' : 'Export cancelled.';
+      _status = saved ? files.exportSuccessMessage : 'Export cancelled.';
     }
   });
 
