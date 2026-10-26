@@ -10,6 +10,38 @@ PortableProjectArchive withText(String text) => PortableProjectArchive(
 );
 
 void main() {
+  test('command-line credential options refuse only supplied values', () {
+    for (final text in [
+      'tool --password fixture-value',
+      'tool --api-key "fixture-value"',
+      "tool --client-secret 'fixture-value'",
+      'tool --TOKEN\tfixture-value',
+      'tool --aws-secret-access-key\nfixture-value',
+      'tool --passphrase " "',
+      Uri.encodeComponent('tool --token fixture-value'),
+    ]) {
+      expect(
+        () => PortableExportPolicy.requireExportable(withText(text)),
+        throwsA(isA<PortableExportRefused>()),
+      );
+    }
+    for (final text in [
+      'tool --password',
+      'tool --password   ',
+      'tool --password "" --help',
+      "tool --password '' --help",
+      'tool --password --help',
+      'tool --password-policy strong',
+      'tool --username ordinary',
+      'tool --password${' ' * 98000}',
+    ]) {
+      final archive = withText(text);
+      final before = archive.encode();
+      PortableExportPolicy.requireExportable(archive);
+      expect(archive.encode(), before);
+    }
+  });
+
   test('recognized credential forms refuse without exposing text', () {
     final fixtures = [
       '---- BEGIN SSH2 ENCRYPTED PRIVATE KEY ----',

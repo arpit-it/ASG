@@ -135,7 +135,7 @@ class _PortableArchiveScreenState extends State<PortableArchiveScreen> {
           const SizedBox(height: 16),
           const Text(
             'Export blocks recognized private-key headers, common token prefixes, '
-            'Bearer credentials, password/key/token assignments and URLs with '
+            'Bearer credentials, password/key/token assignments, command-line credential values and URLs with '
             'passwords or HTTP(S) user-info (including token-only URLs). Detection '
             'also inspects one percent-encoded ASCII layer, is limited and can match '
             'examples. Other secrets and private text may still be included; '
