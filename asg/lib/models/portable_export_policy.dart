@@ -16,7 +16,7 @@ class PortableExportPolicy {
     ),
     RegExp(r'\bBearer\s+[A-Za-z0-9._~+/-]{8,}=*', caseSensitive: false),
     RegExp(
-      r'''\b(?:password|passwd|api[_ -]?key|access[_ -]?token|refresh[_ -]?token|client[_ -]?secret|secret[_ -]?key)["']?\s*[:=]\s*["']?[^\s"',;}{<>]{1,}''',
+      r'''\b(?:password|passwd|api[_ -]?key|access[_ -]?token|refresh[_ -]?token|client[_ -]?secret|secret[_ -]?key)["']?\s*[:=]\s*(?:"[^"]|'[^']|[^\s"',;}{<>]+)''',
       caseSensitive: false,
     ),
   ];
