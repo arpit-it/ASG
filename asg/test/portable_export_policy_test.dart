@@ -116,6 +116,36 @@ void main() {
     }
   });
 
+  test('one percent-encoded ASCII layer cannot hide credentials', () {
+    for (final text in [
+      'https://example.test?api%5Fkey=fixture-value',
+      'https://example.test?%74oken%3Dfixture-value',
+      '%41uthorization%3a%20Basic%20dTo=',
+      '%41uthorization%3A%20Bearer%20fixture-value',
+      'db%50assword%3Dfixture-value',
+      'https%3a%2f%2ffixture-token%40example.test',
+      '%ZZ % private%5Fkey%3Dfixture-value',
+      'password=%22%20%22',
+    ]) {
+      expect(
+        () => PortableExportPolicy.requireExportable(withText(text)),
+        throwsA(isA<PortableExportRefused>()),
+      );
+    }
+    for (final text in [
+      'https://example.test?q=hello%20world&name=%E4%B8%AD',
+      'An encoded percentage: 100%25 and malformed %ZZ',
+      'api%5Fkey=',
+      'token%3D%22%22',
+      'Use the password%20input',
+    ]) {
+      final archive = withText(text);
+      final before = archive.encode();
+      PortableExportPolicy.requireExportable(archive);
+      expect(archive.encode(), before);
+    }
+  });
+
   test('clean prose, Unicode and separate fields remain exact', () {
     for (final text in [
       'Add a password input and API key settings',

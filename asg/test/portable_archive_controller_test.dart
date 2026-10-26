@@ -253,6 +253,49 @@ void main() {
     },
   );
 
+  test('percent-encoded credential export refuses saved records and copies, then retries', () async {
+    final records = Records();
+    final files = Files();
+    final c = PortableArchiveController('p', records, files: files);
+    addTearDown(c.dispose);
+    final store = PortableArchiveStore(records);
+    await store.restoreCopy('clean', archive());
+    for (final text in [
+      'https://example.test?api%5Fkey=fixture-value',
+      '%41uthorization%3A%20Bearer%20fixture-value',
+      'https%3A%2F%2Ffixture-token%40example.test',
+    ]) {
+      records.values['studio.chat.v1.p'] = jsonEncode([
+        {'role': 'user', 'content': text},
+      ]);
+      records.values['studio.archive.v1.sensitive'] = PortableProjectArchive(
+        requirements: RequirementsBoard(),
+        messages: [ChatMessage(role: 'user', content: text)],
+      ).encode();
+      final before = Map.of(records.values);
+      for (final prepare in [
+        c.prepareExport,
+        () => c.prepareCopyExport('sensitive'),
+      ]) {
+        await c.prepareCopyExport('clean');
+        expect(c.exportPreview, isNotNull);
+        files.written = null;
+        await prepare();
+        expect(c.error, startsWith('Export blocked:'));
+        expect(c.error, isNot(contains('fixture-token')));
+        expect(c.exportContents, isNull);
+        await c.exportFile();
+        expect(files.written, isNull);
+        expect(records.values, before);
+        await c.prepareCopyExport('clean');
+        await c.exportFile();
+        expect(c.error, isNull);
+        expect(files.written, archive());
+        expect(records.values, before);
+      }
+    }
+  });
+
   test(
     'unknown saved build history fields refuse export and allow retry',
     () async {

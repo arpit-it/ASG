@@ -137,7 +137,7 @@ class _PortableArchiveScreenState extends State<PortableArchiveScreen> {
             'Export blocks recognized private-key headers, common token prefixes, '
             'Bearer credentials, password/key/token assignments and URLs with '
             'passwords or HTTP(S) user-info (including token-only URLs). Detection '
-            'is limited and can also match '
+            'also inspects one percent-encoded ASCII layer, is limited and can match '
             'examples. Other secrets and private text may still be included; '
             'review the complete archive before sharing. Nothing is automatically redacted.',
           ),
