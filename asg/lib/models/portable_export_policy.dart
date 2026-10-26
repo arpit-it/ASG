@@ -1,0 +1,85 @@
+import 'dart:convert';
+
+import 'portable_project_archive.dart';
+
+/// Refuses recognizable credential patterns without rewriting portable data.
+/// This bounded guard is not proof that arbitrary free text contains no secrets.
+class PortableExportPolicy {
+  static final _patterns = <RegExp>[
+    RegExp(r'-----BEGIN (?:[A-Z0-9]+ )*PRIVATE KEY-----'),
+    RegExp(
+      r'\b(?:gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|sk-[A-Za-z0-9_-]{20,}|(?:AKIA|ASIA)[A-Z0-9]{16})\b',
+    ),
+    RegExp(r'\bBearer\s+[A-Za-z0-9._~+/-]{8,}=*', caseSensitive: false),
+    RegExp(
+      r'''\b(?:password|passwd|api[_ -]?key|access[_ -]?token|refresh[_ -]?token|client[_ -]?secret|secret[_ -]?key)["']?\s*[:=]\s*["']?[^\s"',;}{<>]{1,}''',
+      caseSensitive: false,
+    ),
+  ];
+
+  static final _schemeCharacter = RegExp(r'[A-Za-z0-9+.-]');
+  static final _schemeStart = RegExp(r'[A-Za-z]');
+  static final _space = RegExp(r'\s');
+
+  static bool _hasPasswordUrl(String text) {
+    // Locate separators first. Scheme and authority scans cannot cross another
+    // separator, so dotted schemes and repeated colons are scanned only once.
+    for (final separator in '://'.allMatches(text)) {
+      var start = separator.start;
+      while (start > 0 && _schemeCharacter.hasMatch(text[start - 1])) {
+        start--;
+      }
+      if (start == separator.start || !_schemeStart.hasMatch(text[start])) {
+        continue;
+      }
+      final authorityStart = separator.end;
+      var colon = -1;
+      for (var i = authorityStart; i < text.length; i++) {
+        final char = text[i];
+        if (char == '/' || _space.hasMatch(char)) break;
+        if (char == '@') {
+          if (colon > authorityStart && i > colon + 1) return true;
+          break;
+        }
+        if (char == ':' && colon < 0) colon = i;
+      }
+    }
+    return false;
+  }
+
+  static void requireExportable(PortableProjectArchive archive) {
+    // Scan decoded values rather than JSON syntax: escaped whitespace/quotes
+    // must not hide credentials, and field boundaries must remain separate.
+    _inspect(jsonDecode(archive.encode()));
+  }
+
+  static void _inspect(Object? value) {
+    if (value is String) {
+      if (_patterns.any((pattern) => pattern.hasMatch(value)) ||
+          _hasPasswordUrl(value)) {
+        throw const PortableExportRefused();
+      }
+    } else if (value is List) {
+      for (final item in value) {
+        _inspect(item);
+      }
+    } else if (value is Map) {
+      for (final item in value.values) {
+        _inspect(item);
+      }
+    }
+  }
+}
+
+/// Carries no matching text, field values or original exception details.
+class PortableExportRefused implements Exception {
+  const PortableExportRefused();
+
+  static const message =
+      'Export blocked: saved text matches a credential pattern. '
+      'Review credentials in conversations, requirements, tasks, prototype '
+      'and historical Plan text before retrying. Saved records are unchanged.';
+
+  @override
+  String toString() => message;
+}

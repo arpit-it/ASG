@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 
 import '../models/portable_project_archive.dart';
+import '../models/portable_export_policy.dart';
 import '../services/archive_file_service.dart';
 import '../services/portable_prototype_store.dart';
 import '../services/portable_export_records.dart';
@@ -49,6 +50,11 @@ class PortableArchiveController extends ChangeNotifier {
     notifyListeners();
     try {
       await action();
+    } on PortableExportRefused {
+      if (!_disposed) {
+        _exportPreview = null;
+        _error = PortableExportRefused.message;
+      }
     } on TimeoutException {
       if (!_disposed) {
         _error =
@@ -75,7 +81,7 @@ class PortableArchiveController extends ChangeNotifier {
       revisions: PortableRevisionStore(source).load(projectId),
       messages: ConversationStore(source).load(projectId),
     );
-    archive.encode();
+    PortableExportPolicy.requireExportable(archive);
     _exportPreview = archive;
     _status = 'Saved records loaded for export. Review before sharing.';
   });
@@ -83,6 +89,7 @@ class PortableArchiveController extends ChangeNotifier {
   Future<void> exportFile() => _run(() async {
     final preview = _exportPreview;
     if (preview == null) throw StateError('Load saved records first.');
+    PortableExportPolicy.requireExportable(preview);
     final saved = await files.export(preview.encode());
     if (!_disposed) {
       _status = saved ? 'Archive file saved.' : 'Export cancelled.';
