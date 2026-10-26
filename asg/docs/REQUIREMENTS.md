@@ -69,7 +69,7 @@ A task moves Queued → In progress → Awaiting merge → Done; use Blocked wit
 
 ## Active task and delivery ledger
 
-Active: F08 In progress/unchecked; reopened #114 on `114-restore-imported-identities` to protect imported workspace identities during portable restore. Prior PR #130 verified merged as `d0676a4287f3bad24b2587b54a8120b42efc0754`. Independent final-revision review, required CI and protected merge remain delivery gates. Complete backup/general secret exclusion remain pending. No later task selected.
+Active: F08 In progress/unchecked; issue #114 reopened on `114-basic-export-guard` for HTTP Basic authorization export refusal. Prior PR #131 merge `85f13798332af7ec4ec06909c342807190759923` verified through connected GitHub. Complete backup/general secret exclusion remain pending; no later task selected.
 
 ### F03 acceptance boundary and evidence
 
@@ -2143,3 +2143,21 @@ F08 remains In progress/unchecked. Saved copies export directly from a validated
 Reopened matching #114 on `114-restore-imported-identities` from connected-plugin-verified main/PR #130 merge `d0676a4287f3bad24b2587b54a8120b42efc0754`; no competing active ASG run/open issue/PR. Evidence: portable workspace restore omitted imported-folder identities and the imported Plan namespace from collision checks, so a matching ID could attach restored records to an existing imported workspace. Restore now checks saved folder identities, refuses orphan imported Plan records (including corrupt records), and conditionally guards the folder-reference snapshot and Plan absence at atomic publication. No schema or consent change.
 
 Acceptance/validation: native database reopen proves imported identities and clean unrelated restoration survive; corrupt folder and Plan records remain intact after refusal. Controller regression covers both preexisting and concurrently introduced folder/Plan records, no partial publication, retained preview and clean retry. All 38 focused archive controller/native tests pass; formatter188 unchanged, analyzer clean, full499Flutter tests/seven opt-in skips and web build/Wasm dry run pass. Independent final-revision review and actual required CI remain merge gates. No live inference or runtime connectivity claim, model download, stable-app replacement or deployment. F08 stays In progress/unchecked; no next task/new issue/cadence change. Unrelated IDE/history edits retained; history publication remains excluded.
+
+
+### F08 imported workspace restore isolation — verified PR #131 delivery (26 October 2026)
+
+Issue #114 / branch `114-restore-imported-identities` delivered through [PR #131](https://github.com/arpit-it/ASG/pull/131). Independent final-revision COMMENT approval `5652501455` and final complete-CI gate `5652543170` approved exact head `5e79139ca3c8e82adb8b59c4263f6d34641728a0`. Normal protected squash merge `85f13798332af7ec4ec06909c342807190759923` at 2026-10-26 13:15:39 UTC and issue closure/completed 13:15:40 independently verified through connected GitHub. Tested local `3660cc35f7fde7d609eed65ba3236994ea298861`, published head and merged main share tree `97116dc6c47dee9dde29d8dfe7359cdeb6ae7405`.
+
+Independent55focused tests pass. Required CI `40328425756` complete actual logs inspected before reviewer merge: Flutter `121591096168` passes497Linux tests/six skips, formatter188/analyzer, actualChromeIndexedDB, web/Wasm and independent generated resolve/analyze/test/build all0 with HTTP200/>1000-byte serving assertions; Python `121591096451` passes2download+4streaming+10process+4confinement fixtures/two macOS skips. Local499Flutter tests/seven skips, formatter188/analyzer/webWasm and38focused tests pass. Parent independently verified PR merged, issue closed, current remote main and identical tree through GitHub plugin; reconstructed signed merge only after reproducing exact SHA, safely fast-forwarded local main with0/0divergence and empty tested-tree diff. Unrelated IDE/history edits retained; nothing staged. No terminal GitHub access.
+
+F08 remains In progress/unchecked. Restore now refuses existing imported workspace identities and orphan Plan records and concurrent folder/Plan introduction without partial writes; preview stays available for retry. Complete backup/general secret exclusion remain pending. No live inference/download/stable-app replacement/deployment. No new issue/task/cadence/notification change. Prior history publication exclusion and label rejection retained without repeat attempts. Postmerge evidence retained locally for next normal reviewed increment.
+
+
+### F08 HTTP Basic credential export refusal — issue #114 (26 October 2026)
+
+Reused/reopened #114 on `114-basic-export-guard` from plugin-verified current main `85f13798332af7ec4ec06909c342807190759923`; no competing active run or open issue/PR. Evidence: saved `Authorization: Basic dXNlcjpwYXNz` passed the credential guard and reached portable export despite containing an encoded username/password. Extend the bounded guard to Basic tokens in Authorization/Proxy-Authorization assignments, including quoted JSON/config text, mixed case, whitespace and padded/unpadded values. No decoding, redaction, import/schema change or general secret-detection claim. Bare Basic prose remains allowed.
+
+Acceptance: policy fixtures refuse these credential forms without exposing the token; controller refusal invalidates stale preview, changes no records, writes no file and permits clean retry. Formatter/analyzer/full Flutter tests/web build and independent exact-revision review/actual required CI are delivery gates. F08 remains In progress/unchecked for complete backup/general secret exclusion. Prior delivery evidence remains above; final PR/review/check/merge evidence will be recorded after verification.
+
+Local validation: formatter188 unchanged, analyzer clean, full500Flutter tests/seven opt-in skips, 26focused policy/controller tests and web build/Wasm dry run pass. Exact final review/CI/merge remain pending.

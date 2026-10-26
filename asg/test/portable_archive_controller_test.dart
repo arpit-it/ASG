@@ -391,6 +391,35 @@ void main() {
     },
   );
 
+  test(
+    'Basic authorization export refuses without writes and retries',
+    () async {
+      final records = Records();
+      final files = Files();
+      final c = PortableArchiveController('p', records, files: files);
+      addTearDown(c.dispose);
+      await c.prepareExport();
+      expect(c.exportPreview, isNotNull);
+      records.values['studio.chat.v1.p'] = jsonEncode([
+        {'role': 'user', 'content': 'Authorization: Basic dXNlcjpwYXNz'},
+      ]);
+      final before = Map.of(records.values);
+      await c.prepareExport();
+      expect(c.error, startsWith('Export blocked:'));
+      expect(c.error, isNot(contains('dXNlcjpwYXNz')));
+      expect(c.exportPreview, isNull);
+      expect(c.exportContents, isNull);
+      await c.exportFile();
+      expect(files.written, isNull);
+      expect(records.values, before);
+      records.values.clear();
+      await c.prepareExport();
+      expect(c.error, isNull);
+      await c.exportFile();
+      expect(files.written, c.exportContents);
+    },
+  );
+
   testWidgets(
     'credential refusal is safe and readable at narrow enlarged text',
     (tester) async {
