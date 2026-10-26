@@ -46,10 +46,30 @@ class PortableRevisionStore {
   static PortableRevisionSummary summarize(
     GeneratedProject project,
     DateTime? at,
-  ) => PortableRevisionSummary(
-    recordedAt: at,
-    outcome: project.phase.name,
-    passedChecks: project.steps.where((step) => step.succeeded).length,
-    totalChecks: project.steps.length,
-  );
+  ) {
+    int? requirementsRevision, prototypeRevision;
+    final context = project.approval?.context;
+    if (context != null && context.trimLeft().startsWith('{')) {
+      rejectDuplicateJsonMembers(context);
+      final value = jsonDecode(context);
+      if (value is Map &&
+          (value.containsKey('requirementsRevision') ||
+              value.containsKey('prototypeRevision'))) {
+        if (value['requirementsRevision'] is! int ||
+            value['prototypeRevision'] is! int) {
+          throw const FormatException('Invalid historical input revisions.');
+        }
+        requirementsRevision = value['requirementsRevision'] as int;
+        prototypeRevision = value['prototypeRevision'] as int;
+      }
+    }
+    return PortableRevisionSummary(
+      requirementsRevision: requirementsRevision,
+      prototypeRevision: prototypeRevision,
+      recordedAt: at,
+      outcome: project.phase.name,
+      passedChecks: project.steps.where((step) => step.succeeded).length,
+      totalChecks: project.steps.length,
+    );
+  }
 }

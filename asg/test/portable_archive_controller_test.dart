@@ -78,6 +78,8 @@ String archive() => PortableProjectArchive(
       outcome: 'failed',
       passedChecks: 0,
       totalChecks: 1,
+      requirementsRevision: 3,
+      prototypeRevision: 12,
     ),
   ],
   decision: PortablePlanDecision(

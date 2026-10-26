@@ -1,4 +1,7 @@
 import 'dart:io';
+
+import 'package:asg/models/plan_approval.dart';
+
 import 'dart:convert';
 
 import 'package:asg/services/portable_decision_store.dart';
@@ -24,6 +27,55 @@ import 'package:sembast/sembast_io.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  test(
+    'invalid or ambiguous local input revision metadata refuses summary',
+    () {
+      for (final context in [
+        '{"requirementsRevision":1}',
+        '{"requirementsRevision":1,"prototypeRevision":0}',
+        '{"requirementsRevision":1,"requirementsRevision":2,"prototypeRevision":3}',
+        '{"requirementsRevision":1.5,"prototypeRevision":3}',
+      ]) {
+        final project = GeneratedProject(
+          directory: '/private',
+          sdk: '/sdk',
+          python: 'python3',
+          sources: {},
+          phase: SourceGenerationPhase.failed,
+          approval: PlanApproval(
+            messageIndex: 0,
+            content: 'Plan',
+            context: context,
+            approved: true,
+            recordedAt: DateTime.utc(2026),
+          ),
+        );
+        expect(
+          () => PortableRevisionStore.summarize(project, null),
+          throwsFormatException,
+        );
+      }
+      final legacy = GeneratedProject(
+        directory: '/private',
+        sdk: '/sdk',
+        python: 'python3',
+        sources: {},
+        phase: SourceGenerationPhase.failed,
+        approval: PlanApproval(
+          messageIndex: 0,
+          content: 'Plan',
+          context: 'legacy context',
+          approved: true,
+          recordedAt: DateTime.utc(2026),
+        ),
+      );
+      expect(
+        PortableRevisionStore.summarize(legacy, null).requirementsRevision,
+        isNull,
+      );
+    },
+  );
+
   TestWidgetsFlutterBinding.ensureInitialized();
   late Directory temp;
   late StudioDatabase db;
@@ -46,6 +98,17 @@ void main() {
   });
   test('revision summaries survive native reopen without paths or executable history', () async {
     final generation = GeneratedProject(
+      approval: PlanApproval(
+        messageIndex: 0,
+        content: 'Private Plan',
+        context: jsonEncode({
+          'requirementsRevision': 7,
+          'prototypeRevision': 12,
+          'project': '/private/ignored',
+        }),
+        approved: true,
+        recordedAt: DateTime.utc(2026),
+      ),
       directory: '/private/source',
       sdk: '/private/sdk',
       python: 'python3',
@@ -66,6 +129,9 @@ void main() {
     expect(controller.error, isNull);
     final original = controller.exportPreview!;
     expect(original.revisions.single.outcome, 'failed');
+    expect(original.revisions.single.requirementsRevision, 7);
+    expect(original.revisions.single.prototypeRevision, 12);
+    expect(original.encode(), isNot(contains('Private Plan')));
     expect(original.encode(), isNot(contains('/private')));
     expect(original.encode(), isNot(contains('private log')));
     await PortableArchiveStore(db).restoreCopy('copy', original.encode());

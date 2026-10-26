@@ -39,6 +39,50 @@ PortableProjectArchive archive() => PortableProjectArchive(
 );
 
 void main() {
+  test('v4 preserves paired historical input revisions and rejects invalid metadata', () {
+    final a = PortableProjectArchive(
+      requirements: board(),
+      messages: [],
+      revisions: [
+        PortableRevisionSummary(
+          recordedAt: null,
+          outcome: 'failed',
+          passedChecks: 0,
+          totalChecks: 0,
+          requirementsRevision: 0,
+          prototypeRevision: 12,
+        ),
+        PortableRevisionSummary(
+          recordedAt: null,
+          outcome: 'failed',
+          passedChecks: 0,
+          totalChecks: 0,
+        ),
+      ],
+    );
+    expect(jsonDecode(a.encode())['version'], 4);
+    final restored = PortableProjectArchive.decode(a.encode());
+    expect(restored.encode(), a.encode());
+    expect(restored.revisions.first.prototypeRevision, 12);
+    expect(restored.revisions.last.requirementsRevision, isNull);
+    for (final mutate in <void Function(Map<String, dynamic>)>[
+      (j) => j['revisions'][0]['requirementsRevision'] = -1,
+      (j) => j['revisions'][0]['prototypeRevision'] = 0,
+      (j) => j['revisions'][0]['prototypeRevision'] = null,
+      (j) => j['revisions'][0]['requirementsRevision'] = 1.0,
+      (j) => j['revisions'][0]['prototypeRevision'] = 9007199254740992,
+      (j) => j['revisions'][0].remove('prototypeRevision'),
+      (j) => j['version'] = 3,
+    ]) {
+      final json = jsonDecode(a.encode()) as Map<String, dynamic>;
+      mutate(json);
+      expect(
+        () => PortableProjectArchive.decode(jsonEncode(json)),
+        throwsFormatException,
+      );
+    }
+  });
+
   test(
     'revision summaries preserve bounded historical evidence and old versions',
     () {
