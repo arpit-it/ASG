@@ -136,7 +136,8 @@ class _PortableArchiveScreenState extends State<PortableArchiveScreen> {
           const Text(
             'Export blocks recognized private-key headers, common token prefixes, '
             'Bearer credentials, password/key/token assignments and URLs with '
-            'usernames and passwords. Detection is limited and can also match '
+            'passwords or HTTP(S) user-info (including token-only URLs). Detection '
+            'is limited and can also match '
             'examples. Other secrets and private text may still be included; '
             'review the complete archive before sharing. Nothing is automatically redacted.',
           ),
