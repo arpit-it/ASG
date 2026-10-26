@@ -69,7 +69,7 @@ A task moves Queued → In progress → Awaiting merge → Done; use Blocked wit
 
 ## Active task and delivery ledger
 
-Active: F08 In progress/unchecked; reopened #114 on `114-password-alias-export` for password-alias export refusal. PR #136 merge verified. Complete backup/general secret exclusion remain pending; no later task selected.
+Active: F08 In progress/unchecked; reopened #114 on `114-id-token-export` for OAuth identity-token export refusal. PR #137 merge verified. Complete backup/general secret exclusion remain pending; no later task selected.
 
 ### F03 acceptance boundary and evidence
 
@@ -2241,3 +2241,20 @@ F08 remains In progress/unchecked. AWS secret-access-key/session-token assignmen
 Reused #114 after connected GitHub verified PR #136 merged at 9dbe518141d0a3eba77f39c147b85524c44c5366, no open PR/issue and no competing active run. Connection-string PWD and passphrase assignments bypassed named credential recognition. Scope: recognize these aliases case-insensitively using existing nonempty assignment semantics; preserve empty assignments, prose, lossless imports and saved records. Before-fix policy/controller regressions both failed. Acceptance: policy fixtures cover connection strings/JSON/quotes/whitespace/empty values; controller clears stale preview, returns a safe error, writes no records/files and supports clean retry. Format/analyze/full tests/web build, independent final-revision review and required CI remain gates. F08 remains In progress.
 
 Local final validation: formatter188 unchanged; analyzer clean; all505Flutter tests pass with seven opt-in skips; web build and Wasm dry run pass. Existing8765endpoint offline; no live inference claimed. Independent review/required CI/merge pending.
+
+
+### F08 password-alias export guard — verified PR #137 delivery (26 October 2026)
+
+Issue #114 / branch `114-password-alias-export` delivered through https://github.com/arpit-it/ASG/pull/137. Independent review5654014829 and final complete-CI gate5654064999 approved exact799bb7fc87dd80bb74cff95758bfabce189aece1. Protected squash merge2fe74b47d2a451c20d3ff38ae977c0eb26b1ebd1 at2026-10-26T14:56:44Z and issue closed/completed14:56:45Z independently verified via connected GitHub. Tested local5ec929427ddd49d4848bf7d3aca4193c89d70e9a, published head and merged main share tree55e4b1e1b4725c38be56762b2d4f20fc116816f5.
+
+Before-fix two regressions failed. Formatter188/analyzer/all505Flutter tests-seven skips/webWasm pass. Reviewer independently passed61focused tests/formatter/analyzer. Required CI40343711460 complete logs reviewed: Flutter121644913488 passes503Linux tests-six skips, ChromeIndexedDB/webWasm and independent generated resolve/analyze/test/build0 plus serving assertions; Python121644912873 passes2+4+10+4fixtures/two skips. Parent independently verified main/issue closure/tree through plugin, reconstructed signed merge only after exact SHA verification, safely fast-forwarded local main with0/0divergence and empty tested-tree diff. Unrelated IDE/history edits retained; nothing staged.
+
+F08 remains In progress/unchecked. Nonempty PWD/passphrase assignments now refuse export; empty values/prose/lossless import and clean retry preserved. Complete backup/general secret exclusion remain pending. Existing8765offline; no live inference/download/stable-app replacement/deployment. No new task/issue/cadence/notification change. Prior history publication exclusion/label rejection respected. Postmerge bookkeeping remains local for next normal reviewed increment. Recorded 2026-10-26T14:58:27.988930+00:00.
+
+
+### F08 OAuth identity-token export refusal — issue #114 (26 October 2026)
+
+Reused #114 after connected GitHub confirmed PR #137 merged at `2fe74b47d2a451c20d3ff38ae977c0eb26b1ebd1`, no open issues/PRs and no competing active ASG run. OAuth `id_token` assignments bypassed existing access/refresh-token recognition. Scope: recognize nonempty identity-token assignments with existing underscore/hyphen/space/camel-case and case-insensitive semantics; retain empty values, ordinary prose, lossless imports and saved records. Before-fix policy/controller regressions both failed. Acceptance: JSON/quotes/whitespace/empty policy fixtures; controller safe refusal, stale-preview clearing, no file/record writes and clean retry. Formatter/analyzer/full Flutter tests/web build, independent final-revision review and actual required CI remain delivery gates. F08 remains In progress/unchecked; complete backup/general secret exclusion pending. Existing8765endpoint offline; no live inference/download/deployment. Final validation/review/merge evidence follows in the linked PR.
+
+
+Run 2026-10-26T15:10:00.963767+00:00 — F08 #114 OAuth id_token export refusal on 114-id-token-export. Before-fix policy/controller regressions failed; fixed nonempty identity-token assignment detection with case/separator/quotes/whitespace coverage and empty values/prose preserved. Formatter188/analyzer/full506Flutter tests-seven skips/web build/Wasm pass. Independent review/required CI/merge pending. Existing8765offline; no inference/download/deployment. F08 remains In progress; unrelated IDE/history edits preserved.
