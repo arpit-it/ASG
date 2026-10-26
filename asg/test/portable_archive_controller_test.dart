@@ -149,6 +149,53 @@ String withoutProjectIntent(PortableProjectArchive value) =>
 
 void main() {
   test(
+    'unsupported selected project metadata refuses export without data loss',
+    () async {
+      final records = Records();
+      Map<String, Object> project(String id) => {
+        'id': id,
+        'name': 'Original',
+        'description': 'Résumé 中文 😀',
+        'type': 'Flutter',
+        'platforms': ['Web'],
+        'location': '/private/source',
+      };
+      final selected = project('source');
+      final other = {...project('other'), 'futureMetadata': 'unrelated'};
+      records.values['studio.projects.v1'] = jsonEncode([selected, other]);
+      final files = Files();
+      final controller = PortableArchiveController(
+        'source',
+        records,
+        files: files,
+      );
+      addTearDown(controller.dispose);
+      await controller.prepareExport();
+      expect(controller.error, isNull);
+      final clean = controller.exportContents;
+      expect(clean, contains('Résumé 中文 😀'));
+      records.values['studio.projects.v1'] = jsonEncode([
+        {...selected, 'futureMetadata': 'must-not-disappear'},
+        other,
+      ]);
+      final before = Map.of(records.values);
+      await controller.prepareExport();
+      expect(controller.error, isNotNull);
+      expect(controller.error, isNot(contains('must-not-disappear')));
+      expect(controller.exportPreview, isNull);
+      await controller.exportFile();
+      expect(files.written, isNull);
+      expect(records.values, before);
+      records.values['studio.projects.v1'] = jsonEncode([selected, other]);
+      await controller.prepareExport();
+      expect(controller.error, isNull);
+      expect(controller.exportContents, clean);
+      await controller.exportFile();
+      expect(files.written, clean);
+    },
+  );
+
+  test(
     'project intent round trips without identity or paths and secrets refuse',
     () async {
       final records = Records();
