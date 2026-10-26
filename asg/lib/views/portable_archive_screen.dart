@@ -44,6 +44,11 @@ class _PortableArchiveScreenState extends State<PortableArchiveScreen> {
         'board revision ${archive.requirements.revision} · '
         '${archive.messages.length} assistance messages',
       ),
+      Text(
+        archive.prototype == null
+            ? 'No saved prototype included; restored prototype starts fresh.'
+            : 'Saved prototype: ${archive.prototype!.definition.title} · revision ${archive.prototype!.revision}',
+      ),
       if (archive.revisions.isNotEmpty) ...[
         const Text(
           'Historical revision summaries only; artifacts and rollback are unavailable.',
@@ -65,6 +70,15 @@ class _PortableArchiveScreenState extends State<PortableArchiveScreen> {
       ExpansionTile(
         title: const Text('Review included text'),
         children: [
+          if (archive.prototype case final prototype?)
+            ListTile(
+              title: SelectableText(prototype.definition.title),
+              subtitle: SelectableText(
+                prototype.definition.elements
+                    .map((e) => '${e.label}\n${e.items.join('\n')}\n${e.value}')
+                    .join('\n'),
+              ),
+            ),
           for (final requirement in archive.requirements.requirements)
             ListTile(
               title: SelectableText(
@@ -92,7 +106,7 @@ class _PortableArchiveScreenState extends State<PortableArchiveScreen> {
         padding: const EdgeInsets.all(16),
         children: [
           const Text(
-            'Archives include saved requirements, tasks, board revision and Discuss/Plan/Review conversation text. Versions 2–4 also preserve the latest saved Plan decision; versions 3–4 include historical build outcome summaries and recording times. Version 4 also retains known historical requirements/prototype input revision numbers. Earlier versions remain supported. These records cannot grant Build approval, verify artifacts or enable rollback. Prototype edit chat, build logs, source files, paths, settings and approval credentials are excluded. Text is verbatim and may contain private information or secrets you typed; review it before sharing.',
+            'Archives include saved requirements, tasks, board revision and Discuss/Plan/Review conversation text. Versions 2–5 also preserve the latest saved Plan decision; versions 3–5 include historical build outcome summaries and recording times. Versions 4–5 also retain known historical requirements/prototype input revision numbers. Version 5 includes the saved interpreted prototype definition and its revision. Earlier versions remain supported. These records cannot grant Build approval, verify artifacts or enable rollback. Prototype edit chat, build logs, source files, paths, settings and approval credentials are excluded. Text is verbatim and may contain private information or secrets you typed; review it before sharing.',
           ),
           const SizedBox(height: 16),
           FilledButton(
@@ -114,7 +128,7 @@ class _PortableArchiveScreenState extends State<PortableArchiveScreen> {
             ),
           const Divider(height: 32),
           const Text(
-            'Import can save a separate data copy or explicitly restore these records into a new Flutter web workspace. Existing projects are never replaced. A restored workspace starts with a fresh prototype and no source files, executable build history or Plan approval. Open it from Projects after restoring; no code runs here.',
+            'Import can save a separate data copy or explicitly restore these records into a new Flutter web workspace. Existing projects are never replaced. A restored workspace uses the included saved prototype, or a fresh prototype for older archives, with no source files, executable build history or Plan approval. Open it from Projects after restoring; no code runs here.',
           ),
           const SizedBox(height: 12),
           OutlinedButton(

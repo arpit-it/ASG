@@ -62,12 +62,17 @@ class PortableWorkspaceRestore {
       name: name.trim(),
       description:
           'Restored portable requirements and assistance conversation. '
-          'Prototype and source are not part of this archive.',
+          '${archive.prototype == null ? 'Prototype starts fresh.' : 'Includes the saved interpreted prototype.'} Source files are excluded.',
       type: 'Flutter',
       platforms: const ['Web'],
       location: '',
     );
     final updates = <String, String>{
+      if (archive.prototype case final prototype?)
+        'studio.application.v1.$id': jsonEncode({
+          ...prototype.toJson(),
+          'messages': <Object>[],
+        }),
       if (archive.revisions.isNotEmpty)
         PortableRevisionStore.key(id): jsonEncode(
           archive.revisions.map((r) => r.toJson()).toList(),

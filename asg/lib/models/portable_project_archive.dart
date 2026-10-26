@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'app_definition.dart';
 import 'chat_message.dart';
 import 'requirements_board.dart';
 import 'structured_proposal_json.dart';
@@ -11,6 +12,7 @@ class PortableProjectArchive {
   PortableProjectArchive({
     required this.requirements,
     this.decision,
+    this.prototype,
     List<PortableRevisionSummary> revisions = const [],
     required List<ChatMessage> messages,
   }) : revisions = List.unmodifiable(revisions),
@@ -23,6 +25,7 @@ class PortableProjectArchive {
   static const maxBytes = 1024 * 1024;
   static const maxMessages = 1000;
   static const maxMessageCharacters = 100000;
+  final PortablePrototype? prototype;
   final List<PortableRevisionSummary> revisions;
   final PortablePlanDecision? decision;
   final RequirementsBoard requirements;
@@ -50,20 +53,24 @@ class PortableProjectArchive {
 
   Map<String, Object?> _json() => {
     'format': 'asg-portable-records',
-    'version': revisions.any((r) => r.requirementsRevision != null)
+    'version': prototype != null
+        ? 5
+        : revisions.any((r) => r.requirementsRevision != null)
         ? 4
         : (revisions.isNotEmpty ? 3 : (decision == null ? 1 : 2)),
-    if (revisions.isNotEmpty)
+    if (prototype != null) 'prototype': prototype!.toJson(),
+    if (revisions.isNotEmpty || prototype != null)
       'revisions': revisions
           .map(
             (r) => r.toJson(
-              includeInputRevisions: revisions.any(
-                (r) => r.requirementsRevision != null,
-              ),
+              includeInputRevisions:
+                  prototype != null ||
+                  revisions.any((r) => r.requirementsRevision != null),
             ),
           )
           .toList(),
-    if (revisions.isNotEmpty && decision == null) 'decision': null,
+    if ((revisions.isNotEmpty || prototype != null) && decision == null)
+      'decision': null,
     if (decision != null) 'decision': decision!.toJson(),
     'requirements': requirements.toJson(),
     'messages': messages
@@ -96,12 +103,14 @@ class PortableProjectArchive {
         'version',
         'requirements',
         'messages',
-        if (version == 2 || version == 3 || version == 4) 'decision',
-        if (version == 3 || version == 4) 'revisions',
+        if (version == 2 || version == 3 || version == 4 || version == 5)
+          'decision',
+        if (version == 3 || version == 4 || version == 5) 'revisions',
+        if (version == 5) 'prototype',
       ]);
       if (root['format'] != 'asg-portable-records' ||
           root['version'] is! int ||
-          !const [1, 2, 3, 4].contains(root['version'])) {
+          !const [1, 2, 3, 4, 5].contains(root['version'])) {
         throw const FormatException('Unsupported portable archive version.');
       }
       final board = _object(root['requirements'], const [
@@ -147,15 +156,19 @@ class PortableProjectArchive {
       }
       return PortableProjectArchive(
         requirements: requirements,
-        revisions: version == 3 || version == 4
+        prototype: version == 5
+            ? PortablePrototype.fromJson(root['prototype'])
+            : null,
+        revisions: version == 3 || version == 4 || version == 5
             ? PortableRevisionSummary.parseList(
                 root['revisions'],
-                inputRevisions: version == 4,
+                inputRevisions: version == 4 || version == 5,
               )
             : const [],
         decision:
             version == 2 ||
-                ((version == 3 || version == 4) && root['decision'] != null)
+                ((version == 3 || version == 4 || version == 5) &&
+                    root['decision'] != null)
             ? PortablePlanDecision.fromJson(root['decision'])
             : null,
         messages: rows.map((row) {
@@ -312,6 +325,60 @@ class PortableRevisionSummary {
           prototypeRevision: json['prototypeRevision'] as int?,
         );
       }),
+    );
+  }
+}
+
+/// Saved interpreted app data only; carries no source paths or execution consent.
+class PortablePrototype {
+  PortablePrototype({required AppDefinition definition, required this.revision})
+    : definition = AppDefinition.fromJson(definition.toJson()) {
+    if (revision < 1 || revision > 9007199254740991) {
+      throw const FormatException('Invalid saved prototype revision.');
+    }
+  }
+  final AppDefinition definition;
+  final int revision;
+  Map<String, Object> toJson() => {
+    'definition': definition.toJson(),
+    'revision': revision,
+  };
+  factory PortablePrototype.fromJson(Object? value) {
+    final row = PortableProjectArchive._object(value, const [
+      'definition',
+      'revision',
+    ]);
+    final definition = PortableProjectArchive._object(row['definition'], const [
+      'title',
+      'theme',
+      'elements',
+    ]);
+    final elements = definition['elements'];
+    if (row['revision'] is! int || elements is! List) {
+      throw const FormatException('Malformed saved prototype.');
+    }
+    for (final element in elements) {
+      final item = PortableProjectArchive._object(element, const [
+        'id',
+        'type',
+        'label',
+        'items',
+        'completed',
+        'action',
+        'target',
+        'value',
+      ]);
+      if (item['items'] is! List ||
+          item['completed'] is! List ||
+          item['action'] is! String ||
+          item['target'] is! String ||
+          item['value'] is! String) {
+        throw const FormatException('Malformed saved prototype element.');
+      }
+    }
+    return PortablePrototype(
+      definition: AppDefinition.fromJson(definition),
+      revision: row['revision'] as int,
     );
   }
 }

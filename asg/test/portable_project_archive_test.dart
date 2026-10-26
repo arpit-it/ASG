@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:asg/models/app_definition.dart';
+
 import 'package:asg/models/chat_message.dart';
 import 'package:asg/models/portable_project_archive.dart';
 import 'package:asg/models/requirements_board.dart';
@@ -39,6 +41,70 @@ PortableProjectArchive archive() => PortableProjectArchive(
 );
 
 void main() {
+  test('v5 immutable prototype round trip and strict malformed rejection', () {
+    final items = ['Résumé 😀'];
+    final original = PortableProjectArchive(
+      requirements: board(),
+      messages: [],
+      prototype: PortablePrototype(
+        revision: 12,
+        definition: AppDefinition(
+          title: 'Saved 中文',
+          theme: 'green',
+          elements: [
+            AppElement(
+              id: 'items',
+              kind: ElementKind.taskList,
+              label: 'Tasks',
+              items: items,
+              completed: const [0],
+            ),
+          ],
+        ),
+      ),
+    );
+    items.clear();
+    final restored = PortableProjectArchive.decode(original.encode());
+    expect(restored.encode(), original.encode());
+    expect(restored.prototype!.definition.elements.single.items, ['Résumé 😀']);
+    expect(jsonDecode(original.encode())['version'], 5);
+    expect(
+      () => restored.prototype!.definition.elements.clear(),
+      throwsUnsupportedError,
+    );
+    for (final mutate in <void Function(Map<String, dynamic>)>[
+      (j) => j['prototype'] = null,
+      (j) => j['prototype']['revision'] = 0,
+      (j) => j['prototype']['revision'] = 1.0,
+      (j) => j['prototype']['revision'] = 9007199254740992,
+      (j) => j['prototype']['messages'] = [],
+      (j) => j['prototype']['definition']['path'] = '/private',
+      (j) => j['prototype']['definition']['theme'] = 'invalid',
+      (j) => j['prototype']['definition']['elements'][0]['action'] = null,
+      (j) => j['prototype']['definition']['elements'][0]['items'] = null,
+      (j) => j['prototype']['definition']['elements'][0]['completed'] = [1],
+      (j) =>
+          j['prototype']['definition']['elements'][0]['context'] = 'credential',
+      (j) => j['version'] = 4,
+    ]) {
+      final json = jsonDecode(original.encode()) as Map<String, dynamic>;
+      mutate(json);
+      expect(
+        () => PortableProjectArchive.decode(jsonEncode(json)),
+        throwsFormatException,
+      );
+    }
+    expect(
+      () => PortableProjectArchive.decode(
+        original.encode().replaceFirst(
+          '"theme":"green"',
+          '"theme":"pink","theme":"green"',
+        ),
+      ),
+      throwsFormatException,
+    );
+    expect(PortableProjectArchive.decode(archive().encode()).prototype, isNull);
+  });
   test('v4 preserves paired historical input revisions and rejects invalid metadata', () {
     final a = PortableProjectArchive(
       requirements: board(),

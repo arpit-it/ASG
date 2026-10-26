@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:asg/models/app_definition.dart';
+
 import 'package:asg/models/plan_approval.dart';
 
 import 'dart:convert';
@@ -95,6 +97,61 @@ void main() {
   tearDown(() async {
     await db.database.close();
     await temp.delete(recursive: true);
+  });
+  test('saved prototype survives native copy and new workspace reopen without consent or edit chat', () async {
+    const definition = AppDefinition(
+      title: 'Saved 中文',
+      theme: 'pink',
+      elements: [
+        AppElement(
+          id: 'notes',
+          kind: ElementKind.notes,
+          label: 'Private notes',
+        ),
+      ],
+    );
+    await ApplicationStore(db).save(
+      'source',
+      const ApplicationSnapshot(definition, [
+        ChatMessage(
+          role: 'assistant',
+          content: 'Excluded edit chat',
+          planContext: '/private/context',
+        ),
+      ], 12),
+    );
+    final c = PortableArchiveController('source', db);
+    addTearDown(c.dispose);
+    await c.prepareExport();
+    expect(c.error, isNull);
+    final encoded = c.exportPreview!.encode();
+    expect(encoded, isNot(contains('Excluded edit chat')));
+    expect(encoded, isNot(contains('/private/context')));
+    await PortableArchiveStore(db).restoreCopy('copy', encoded);
+    final project = await PortableWorkspaceRestore(db)
+        .restore(id: 'restored', name: 'Restored', encoded: encoded);
+    await db.database.close();
+    db = await open();
+    final snapshot = ApplicationStore(db).load(project);
+    expect(snapshot.definition.toJson(), definition.toJson());
+    expect(snapshot.revision, 12);
+    expect(snapshot.messages, isEmpty);
+    expect(PortableArchiveStore(db).load('copy')!.encode(), encoded);
+    final restored = PortableArchiveController('restored', db);
+    addTearDown(restored.dispose);
+    await restored.prepareExport();
+    expect(restored.exportPreview!.encode(), encoded);
+    expect(PlanApprovalStore(db).load('restored'), isNull);
+    expect(SourceGenerationStore(db).load('restored'), isNull);
+    await expectLater(
+      PortableWorkspaceRestore(db)
+          .restore(id: 'restored', name: 'Replace', encoded: encoded),
+      throwsStateError,
+    );
+    expect(
+      ApplicationStore(db).load(project).definition.toJson(),
+      definition.toJson(),
+    );
   });
   test('revision summaries survive native reopen without paths or executable history', () async {
     final generation = GeneratedProject(
