@@ -166,6 +166,56 @@ void main() {
       expect(store.load('copy-1')!.encode(), encoded);
     },
   );
+  test(
+    'ambiguous archives never publish copies or workspace records',
+    () async {
+      final ambiguous = encoded.replaceFirst(
+        '"revision":7',
+        '"revision":8,"revision":7',
+      );
+      await PortableArchiveStore(db).restoreCopy('healthy', encoded);
+      for (final raw in [
+        ambiguous,
+        encoded.replaceFirst('"content":', r'"co\u006etent":"lost","content":'),
+      ]) {
+        await expectLater(
+          PortableArchiveStore(db).restoreCopy('invalid', raw),
+          throwsFormatException,
+        );
+        await expectLater(
+          PortableWorkspaceRestore(db)
+              .restore(id: 'invalid', name: 'Invalid', encoded: raw),
+          throwsFormatException,
+        );
+      }
+      expect(db.getString('studio.projects.v1'), isNull);
+      expect(db.getString('studio.archive.v1.invalid'), isNull);
+      expect(db.getString('studio.chat.v1.invalid'), isNull);
+      expect(db.getString('studio.requirements.v1.invalid'), isNull);
+      expect(PortableArchiveStore(db).load('healthy')!.encode(), encoded);
+
+      final records = StoreRef<String, String>('records');
+      await records
+          .record('studio.archive.v1.ambiguous')
+          .put(db.database, ambiguous);
+      await db.database.close();
+      db = await open();
+      expect(
+        () => PortableArchiveStore(db).load('ambiguous'),
+        throwsFormatException,
+      );
+      await expectLater(
+        PortableArchiveStore(db).restoreCopy('ambiguous', encoded),
+        throwsFormatException,
+      );
+      expect(
+        await records.record('studio.archive.v1.ambiguous').get(db.database),
+        ambiguous,
+      );
+      expect(PortableArchiveStore(db).load('healthy')!.encode(), encoded);
+    },
+  );
+
   test('concurrent copies cannot replace the same destination', () async {
     final results = await Future.wait([
       for (var i = 0; i < 2; i++)
