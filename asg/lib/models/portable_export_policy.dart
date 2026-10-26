@@ -42,7 +42,8 @@ class PortableExportPolicy {
         final char = text[i];
         if (char == '/' || _space.hasMatch(char)) break;
         if (char == '@') {
-          if (colon > authorityStart && i > colon + 1) return true;
+          // Password-only URLs (for example Redis) have an empty username.
+          if (colon >= authorityStart && i > colon + 1) return true;
           break;
         }
         if (char == ':' && colon < 0) colon = i;

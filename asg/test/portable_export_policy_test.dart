@@ -32,6 +32,9 @@ void main() {
       'refresh-token: fixture-value',
       'https://user:fixture-value@example.test/path',
       'postgres://user:fixture-value@localhost/db',
+      'redis://:fixture-value@localhost/0',
+      'REDISS://:%70%61%73%73@localhost',
+      'custom+scheme://:fixture-value@example.test',
     ];
     for (final text in fixtures) {
       expect(
@@ -59,6 +62,10 @@ void main() {
       'Authorization: Basic',
       'Basic dXNlcjpwYXNz',
       'password:',
+      'redis://:@localhost/0',
+      'redis://user:@localhost/0',
+      'redis://localhost:6379/0',
+      'https://example.test/path/:fixture-value@host',
       '{"count":1,"count":2}',
     ]) {
       final archive = withText(text);
