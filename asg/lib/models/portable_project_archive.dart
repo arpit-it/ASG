@@ -54,7 +54,7 @@ class PortableProjectArchive {
   Map<String, Object?> _json() => {
     'format': 'asg-portable-records',
     'version': prototype != null
-        ? 5
+        ? (prototype!.messages.isEmpty ? 5 : 6)
         : revisions.any((r) => r.requirementsRevision != null)
         ? 4
         : (revisions.isNotEmpty ? 3 : (decision == null ? 1 : 2)),
@@ -103,14 +103,19 @@ class PortableProjectArchive {
         'version',
         'requirements',
         'messages',
-        if (version == 2 || version == 3 || version == 4 || version == 5)
+        if (version == 2 ||
+            version == 3 ||
+            version == 4 ||
+            version == 5 ||
+            version == 6)
           'decision',
-        if (version == 3 || version == 4 || version == 5) 'revisions',
-        if (version == 5) 'prototype',
+        if (version == 3 || version == 4 || version == 5 || version == 6)
+          'revisions',
+        if (version == 5 || version == 6) 'prototype',
       ]);
       if (root['format'] != 'asg-portable-records' ||
           root['version'] is! int ||
-          !const [1, 2, 3, 4, 5].contains(root['version'])) {
+          !const [1, 2, 3, 4, 5, 6].contains(root['version'])) {
         throw const FormatException('Unsupported portable archive version.');
       }
       final board = _object(root['requirements'], const [
@@ -156,18 +161,24 @@ class PortableProjectArchive {
       }
       return PortableProjectArchive(
         requirements: requirements,
-        prototype: version == 5
-            ? PortablePrototype.fromJson(root['prototype'])
+        prototype: version == 5 || version == 6
+            ? PortablePrototype.fromJson(
+                root['prototype'],
+                includeMessages: version == 6,
+              )
             : null,
-        revisions: version == 3 || version == 4 || version == 5
+        revisions: version == 3 || version == 4 || version == 5 || version == 6
             ? PortableRevisionSummary.parseList(
                 root['revisions'],
-                inputRevisions: version == 4 || version == 5,
+                inputRevisions: version == 4 || version == 5 || version == 6,
               )
             : const [],
         decision:
             version == 2 ||
-                ((version == 3 || version == 4 || version == 5) &&
+                ((version == 3 ||
+                        version == 4 ||
+                        version == 5 ||
+                        version == 6) &&
                     root['decision'] != null)
             ? PortablePlanDecision.fromJson(root['decision'])
             : null,
@@ -331,22 +342,64 @@ class PortableRevisionSummary {
 
 /// Saved interpreted app data only; carries no source paths or execution consent.
 class PortablePrototype {
-  PortablePrototype({required AppDefinition definition, required this.revision})
-    : definition = AppDefinition.fromJson(definition.toJson()) {
+  PortablePrototype({
+    required AppDefinition definition,
+    required this.revision,
+    List<ChatMessage> messages = const [],
+  }) : messages = List.unmodifiable(
+         messages.map((m) => ChatMessage(role: m.role, content: m.content)),
+       ),
+       definition = AppDefinition.fromJson(definition.toJson()) {
+    if (messages.length > PortableProjectArchive.maxMessages ||
+        messages.any(
+          (m) =>
+              !const ['user', 'assistant'].contains(m.role) ||
+              m.content.length > PortableProjectArchive.maxMessageCharacters,
+        )) {
+      throw const FormatException('Unsupported prototype conversation.');
+    }
     if (revision < 1 || revision > 9007199254740991) {
       throw const FormatException('Invalid saved prototype revision.');
     }
   }
+
+  /// Validates portable text only; contexts and unknown fields are refused.
+  static List<ChatMessage> parseMessages(Object? value) {
+    if (value is! List || value.length > PortableProjectArchive.maxMessages) {
+      throw const FormatException('Invalid prototype conversation.');
+    }
+    return value.map((message) {
+      final row = PortableProjectArchive._object(message, const [
+        'role',
+        'content',
+      ]);
+      if (row['role'] is! String || row['content'] is! String) {
+        throw const FormatException('Malformed prototype conversation.');
+      }
+      return ChatMessage(
+        role: row['role'] as String,
+        content: row['content'] as String,
+      );
+    }).toList();
+  }
+
   final AppDefinition definition;
+  final List<ChatMessage> messages;
   final int revision;
   Map<String, Object> toJson() => {
     'definition': definition.toJson(),
     'revision': revision,
+    if (messages.isNotEmpty)
+      'messages': messages.map((m) => m.toJson()).toList(),
   };
-  factory PortablePrototype.fromJson(Object? value) {
-    final row = PortableProjectArchive._object(value, const [
+  factory PortablePrototype.fromJson(
+    Object? value, {
+    bool includeMessages = false,
+  }) {
+    final row = PortableProjectArchive._object(value, [
       'definition',
       'revision',
+      if (includeMessages) 'messages',
     ]);
     final definition = PortableProjectArchive._object(row['definition'], const [
       'title',
@@ -379,6 +432,7 @@ class PortablePrototype {
     return PortablePrototype(
       definition: AppDefinition.fromJson(definition),
       revision: row['revision'] as int,
+      messages: includeMessages ? parseMessages(row['messages']) : const [],
     );
   }
 }
