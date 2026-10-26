@@ -78,6 +78,24 @@ class PortableExportPolicy {
     return false;
   }
 
+  static final _asciiEscape = RegExp(r'%([0-7][0-9A-Fa-f])');
+
+  static bool _hasCredential(String text) =>
+      _patterns.any((pattern) => pattern.hasMatch(text)) ||
+      _hasCredentialUrl(text) ||
+      _hasCamelAssignment(text);
+
+  static bool _hasEncodedCredential(String text) {
+    // Inspect exactly one encoding layer; retain the original archive verbatim.
+    // Decode ASCII individually so malformed escapes and encoded Unicode do
+    // not mask adjacent credential syntax or cause a decoding exception.
+    final decoded = text.replaceAllMapped(
+      _asciiEscape,
+      (match) => String.fromCharCode(int.parse(match[1]!, radix: 16)),
+    );
+    return decoded != text && _hasCredential(decoded);
+  }
+
   static void requireExportable(PortableProjectArchive archive) {
     // Scan decoded values rather than JSON syntax: escaped whitespace/quotes
     // must not hide credentials, and field boundaries must remain separate.
@@ -86,9 +104,7 @@ class PortableExportPolicy {
 
   static void _inspect(Object? value) {
     if (value is String) {
-      if (_patterns.any((pattern) => pattern.hasMatch(value)) ||
-          _hasCredentialUrl(value) ||
-          _hasCamelAssignment(value)) {
+      if (_hasCredential(value) || _hasEncodedCredential(value)) {
         throw const PortableExportRefused();
       }
     } else if (value is List) {
