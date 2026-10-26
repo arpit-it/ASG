@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import '../models/imported_plan.dart';
+import '../models/portable_project_archive.dart';
 
 import '../models/repair_attempt.dart';
 
@@ -84,7 +85,8 @@ class StudioDatabase implements ConditionalRecordStorage {
       try {
         validate(record.key, record.value);
       } catch (_) {
-        if (record.key != InspectedFolderStore.key &&
+        if (!record.key.startsWith('studio.archive.v1.') &&
+            record.key != InspectedFolderStore.key &&
             !record.key.startsWith('studio.application.v1.') &&
             !record.key.startsWith('studio.generation.v1.') &&
             !record.key.startsWith('studio.sourceCandidate.v1.') &&
@@ -123,7 +125,9 @@ class StudioDatabase implements ConditionalRecordStorage {
     if (key == 'studio.lastProject.v1') return;
     final decoded = jsonDecode(value);
     final source = _SingleRecord(key, value);
-    if (key.startsWith('studio.importedPlan.v1.')) {
+    if (key.startsWith('studio.archive.v1.')) {
+      PortableProjectArchive.decode(value);
+    } else if (key.startsWith('studio.importedPlan.v1.')) {
       ImportedPlan.fromJson(decoded as Map<String, dynamic>);
     } else if (key == InspectedFolderStore.key) {
       InspectedFolderStore(source).load();
