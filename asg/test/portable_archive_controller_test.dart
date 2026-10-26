@@ -149,6 +149,40 @@ String withoutProjectIntent(PortableProjectArchive value) =>
 
 void main() {
   test(
+    'ambiguous existing catalog refuses workspace restore with clean retry',
+    () async {
+      final records = Records();
+      const clean =
+          '[{"id":"existing","name":"Old","description":"",'
+          '"type":"Flutter","platforms":["Web"],"location":"",'
+          '"future":{"note":"Exact 中文 😀"}}]';
+      for (final raw in [
+        clean.replaceFirst('"id":"existing"', '"id":"hidden","id":"existing"'),
+        clean.replaceFirst('"note":"Exact 中文 😀"', '"note":1,"note":2'),
+        clean.replaceFirst(
+          '"id":"existing"',
+          r'"id":"hidden","\u0069d":"existing"',
+        ),
+      ]) {
+        records.values['studio.projects.v1'] = raw;
+        final before = Map.of(records.values);
+        await expectLater(
+          PortableWorkspaceRestore(records)
+              .restore(id: 'new', name: 'New', encoded: archive()),
+          throwsFormatException,
+        );
+        expect(records.values, before);
+      }
+      records.values['studio.projects.v1'] = clean;
+      await PortableWorkspaceRestore(records)
+          .restore(id: 'new', name: 'New', encoded: archive());
+      final rows = jsonDecode(records.values['studio.projects.v1']!) as List;
+      expect(rows.first, (jsonDecode(clean) as List).first);
+      expect(rows.last['id'], 'new');
+    },
+  );
+
+  test(
     'unsupported selected project metadata refuses export without data loss',
     () async {
       final records = Records();

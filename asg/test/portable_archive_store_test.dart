@@ -108,6 +108,31 @@ void main() {
     await db.database.close();
     await temp.delete(recursive: true);
   });
+  test(
+    'workspace restore preserves unrelated catalog metadata after reopen',
+    () async {
+      final existing = {
+        'id': 'existing',
+        'name': ' Existing ',
+        'description': 'Résumé 中文 😀',
+        'type': 'Flutter',
+        'platforms': ['Web'],
+        'location': '/original/location',
+        'futureMetadata': {
+          'nested': ['Exact 中文 😀', 7, null],
+        },
+      };
+      await db.setString('studio.projects.v1', jsonEncode([existing]));
+      await PortableWorkspaceRestore(db)
+          .restore(id: 'new', name: 'New', encoded: encoded);
+      await db.database.close();
+      db = await open();
+      final rows = jsonDecode(db.getString('studio.projects.v1')!) as List;
+      expect(rows.first, existing);
+      expect(rows.last['id'], 'new');
+      expect(StudioStore(db).load(), hasLength(2));
+    },
+  );
   test('project intent survives native database close and reopen', () async {
     final original = PortableProjectArchive(
       project: PortableProjectIntent(

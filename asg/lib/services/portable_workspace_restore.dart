@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import '../models/portable_project_archive.dart';
 import '../models/project.dart';
+import '../models/structured_proposal_json.dart';
 import 'portable_archive_store.dart';
 import 'inspected_folder_store.dart';
 import 'portable_decision_store.dart';
@@ -29,7 +30,14 @@ class PortableWorkspaceRestore {
     final archive = PortableProjectArchive.decode(encoded);
     const catalogKey = 'studio.projects.v1';
     final catalog = records.getString(catalogKey);
+    // Validate syntax and member uniqueness before typed identity checks. Keep
+    // raw rows so appending a workspace cannot erase future catalog metadata.
+    if (catalog != null) {
+      jsonDecode(catalog);
+      rejectDuplicateJsonMembers(catalog);
+    }
     final projects = StudioStore(records).load(); // Corruption fails closed.
+    final rows = catalog == null ? <Object?>[] : jsonDecode(catalog) as List;
     final ids = <String>{};
     for (final project in projects) {
       if (!ids.add(project.id) || project.id == id) {
@@ -91,9 +99,7 @@ class PortableWorkspaceRestore {
         ),
       if (archive.decision case final decision?)
         PortableDecisionStore.key(id): jsonEncode(decision.toJson()),
-      catalogKey: jsonEncode(
-        [...projects, project].map((p) => p.toJson()).toList(),
-      ),
+      catalogKey: jsonEncode([...rows, project.toJson()]),
       'studio.chat.v1.$id': jsonEncode(
         archive.messages.map((m) => m.toJson()).toList(),
       ),
