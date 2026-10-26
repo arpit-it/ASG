@@ -69,7 +69,7 @@ A task moves Queued → In progress → Awaiting merge → Done; use Blocked wit
 
 ## Active task and delivery ledger
 
-Active: F08 In progress/unchecked; reopened #114 on `114-strict-build-history-export` for strict saved build-history export. PR #146 merge verified. Complete backup/general secret exclusion pending; no later task selected.
+Active: F08 In progress/unchecked; reopened #114 on `114-short-bearer-export` for short Bearer credential refusal. PR #147 merge verified. Complete backup/general secret exclusion pending; no later task selected.
 
 ### F03 acceptance boundary and evidence
 
@@ -2412,3 +2412,21 @@ Owner complete; local main synchronized. Run completed 2026-10-26T17:30:51.97073
 Reopened matching #114 on `114-strict-build-history-export` after plugin verification of PR #146 merge0dc2ba6c613f477381c4efd4334e97bd4604ddd8, no open issue/PR and no active competing ASG owner. Export-only validation rejects unsupported current generation fields, build-history entry fields and historical project fields before ordinary decoders can drop them. Known execution/source details remain deliberately excluded; normal generation decoding is unchanged. Acceptance: scalar/nested/null unknown fields refuse without writes/downloads/disclosure, stale preview clears, clean retry retains supported summaries/timestamps, absent and legacy journal-free records remain supported. Regression failed before the fix at unknown current field. F08 stays In progress/unchecked for complete backup/general secret exclusion. Independent exact-revision review and actual required CI/protected merge remain gates. Existing8765 endpoint offline; no live inference/download/deployment. Unrelated IDE/history edits retained and prior publication exclusions respected. Recorded 2026-10-26T17:50:37.217784+00:00.
 
 Local final validation: before-fix regression failed; formatter191 unchanged, analyzer clean, all515Flutter tests passed/seven opt-in skips, 58focused archive/interaction/MVC tests passed; web build and Wasm dry run passed. Independent final-revision review and required CI remain pending.
+
+
+### F08 strict saved build history export — verified PR #147 delivery (26 October 2026)
+
+Issue #114 / branch `114-strict-build-history-export` delivered through https://github.com/arpit-it/ASG/pull/147. Independent exact-head COMMENT5656598419 and final-CI5656656608 approved981be4d9f2c41277ade49b4e409349c13286944a. Normal protected squash mergebf7c125a31842b4f47a8c9a562294e004be756c9 at2026-10-26T17:58:43Z; issue114closed/completed17:58:45Z independently verified through connected GitHub. Tested local157513b817abffa5a9b172199c364eb009ba2ef0, published head and merged main share tree d31144daf6a17a520dc9988616a7036b9b5a413e.
+
+Before-fix regression failed. Local formatter191/analyzer/all515Flutter tests-seven skips/58focused archive-interaction-MVC tests/web build/Wasm pass. Reviewer independently59focused archive/transactional-storage/MVC tests/formatter191/analyzer pass. Required CI40372812430 actual complete logs inspected before reviewer merge: Flutter121747753658 formatter191/analyzer/513Linux tests-six skips/twoChrome tests/webWasm/generated resolve-analyze-test-build all4exits0 and passed HTTP200/>1000byte serving assertions; Python1217477534512download+4streaming+10process+4confinement fixtures-two skips. Parent independently verified merged PR/exact head/closed issue/current main/exact tree through plugin; imported signed merge only after byte-exact SHA verification, safely fast-forwarded local main with0/0divergence and empty tested-tree diff. Unrelated IDE/history edits retained; nothing staged. GitHub exclusively plugin.
+
+F08 remains In progress/unchecked. Unsupported current generation, history-entry and historical-project fields refuse export before summarization; supported summaries/timestamps, legacy absence, deliberate source/execution exclusion and clean retry remain intact. Complete backup/general secret exclusion pending. Existing8765endpoint offline; no live inference/model download/stable-app replacement/deployment. No new issue/task/cadence/notification change. Prior history publication exclusion and label rejection respected. Postmerge evidence retained locally for next normal reviewed increment. Recorded 2026-10-26T17:59:54.789537+00:00.
+
+Owner complete; local main synchronized. Run completed 2026-10-26T17:59:54.789537+00:00.
+
+
+### F08 short Bearer export guard — issue #114 (26 October 2026)
+
+Reopened matching #114 after plugin verification of PR #147 merge bf7c125a31842b4f47a8c9a562294e004be756c9 and no open work or competing active ASG owner. Evidence: the existing eight-character minimum allowed `Authorization: Bearer x` into archives; the new controller regression failed before the fix. Scope: refuse every nonempty supported Bearer token without rewriting records; preserve incomplete/empty prose. Acceptance covers lengths 1–7, mixed case, whitespace, punctuation/padding, stale-preview clearance, no writes/downloads/disclosure and clean retry through both saved-record and saved-copy exports. F08 remains In progress/unchecked for complete backup/general secret exclusion. Independent final-revision review, actual required CI and protected merge remain gates. Existing runtime endpoint refused connection; no live inference claimed.
+
+Local validation: before-fix regression failed; formatter191 unchanged, analyzer clean, all517 Flutter tests passed (seven opt-in skips), focused73 archive/persistence/MVC tests passed. Web build and Wasm dry run passed. Independent final-revision review/required CI/protected merge remain pending.
