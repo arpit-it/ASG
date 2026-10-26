@@ -132,6 +132,110 @@ String archive() => PortableProjectArchive(
   messages: const [ChatMessage(role: 'user', content: 'Exact private text 😀')],
 ).encode();
 void main() {
+  test(
+    'saved copy export is exact, read-only and refuses stale or secret input',
+    () async {
+      final records = Records();
+      final files = Files();
+      final encoded = archive();
+      await PortableArchiveStore(records).restoreCopy('copy', encoded);
+      records.values[PortableArchiveStore.key('broken')] = '{broken';
+      final secret = PortableProjectArchive(
+        requirements: RequirementsBoard(),
+        messages: const [
+          ChatMessage(role: 'user', content: 'password=private123'),
+        ],
+      ).encode();
+      await PortableArchiveStore(records).restoreCopy('secret', secret);
+      final before = Map.of(records.values);
+      final c = PortableArchiveController('unrelated', records, files: files);
+      addTearDown(c.dispose);
+      for (final id in ['missing', 'broken', '../copy', '', 'secret']) {
+        await c.prepareCopyExport('copy');
+        expect(c.exportContents, encoded);
+        await c.prepareCopyExport(id);
+        expect(c.exportContents, isNull);
+        expect(c.error, isNotNull);
+        expect(c.error, isNot(contains('private123')));
+        await c.exportFile();
+        expect(files.written, isNull);
+        expect(records.values, before);
+      }
+      await c.prepareCopyExport('copy');
+      records.values[PortableArchiveStore.key('copy')] = '{changed';
+      files.cancelled = true;
+      await c.exportFile();
+      expect(c.status, 'Export cancelled.');
+      files.cancelled = false;
+      files.fail = true;
+      await c.exportFile();
+      expect(c.error, isNotNull);
+      expect(c.exportContents, encoded);
+      files.fail = false;
+      await c.exportFile();
+      expect(files.written, encoded);
+      expect(records.values, {
+        ...before,
+        PortableArchiveStore.key('copy'): '{changed',
+      });
+      await c.prepareExport();
+      expect(c.exportContents, isNot(encoded));
+      expect(c.error, isNull);
+    },
+  );
+
+  testWidgets(
+    'saved copy export works at narrow enlarged text without restore',
+    (tester) async {
+      tester.view.physicalSize = const Size(360, 900);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final records = Records();
+      await PortableArchiveStore(records).restoreCopy('saved', archive());
+      final before = Map.of(records.values);
+      final files = Files();
+      final c = PortableArchiveController('unused', records, files: files);
+      await tester.pumpWidget(
+        MaterialApp(
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(context)
+                .copyWith(textScaler: TextScaler.linear(1.8)),
+            child: child!,
+          ),
+          home: PortableArchiveScreen(controller: c),
+        ),
+      );
+      Future<void> reveal(Finder finder, double delta) async {
+        await tester.scrollUntilVisible(
+          finder,
+          delta,
+          scrollable: find.byType(Scrollable).first,
+        );
+        await tester.pumpAndSettle();
+      }
+
+      final id = find.widgetWithText(TextField, 'Saved data copy ID');
+      await reveal(id, 300);
+      await tester.enterText(id, 'saved');
+      final load = find.text('Load saved copy for export');
+      await reveal(load, 200);
+      await tester.tap(load);
+      await tester.pumpAndSettle();
+      expect(c.exportContents, archive());
+      expect(c.importPreview, isNull);
+      expect(files.written, isNull);
+      expect(records.values, before);
+      final export = find.text('Choose export file');
+      await reveal(export, -250);
+      await tester.tap(export);
+      await tester.pumpAndSettle();
+      expect(files.written, archive());
+      expect(records.values, before);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
   test('saved copies reopen read-only, clear stale previews and retry', () async {
     final records = Records();
     final encoded = archive();
@@ -637,11 +741,15 @@ void main() {
       final picking = c.pickImport();
       await c.saveCopy('copy');
       await c.restoreWorkspace('new', 'Ignored');
+      await c.prepareCopyExport('copy');
+      expect(c.exportPreview, isNull);
       expect(c.busy, isTrue);
       c.dispose();
       final before = notifications;
       files.pending!.complete(archive());
       await picking;
+      await c.prepareCopyExport('after');
+      expect(c.exportPreview, isNull);
       await c.saveCopy('after');
       await c.restoreWorkspace('after', 'Ignored');
       expect(records.values, isEmpty);

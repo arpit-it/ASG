@@ -96,6 +96,15 @@ class PortableArchiveController extends ChangeNotifier {
     }
   });
 
+  Future<void> prepareCopyExport(String id) => _run(() async {
+    _exportPreview = null;
+    final archive = PortableArchiveStore(records).load(id);
+    if (archive == null) throw StateError('Saved copy not found.');
+    PortableExportPolicy.requireExportable(archive);
+    _exportPreview = archive;
+    _status = 'Saved copy loaded for export. Review before sharing.';
+  });
+
   Future<void> pickImport() => _run(() async {
     _importPreview = null;
     final encoded = await files.pickImport();
