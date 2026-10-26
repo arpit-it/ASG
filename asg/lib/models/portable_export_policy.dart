@@ -7,6 +7,8 @@ import 'portable_project_archive.dart';
 class PortableExportPolicy {
   static final _patterns = <RegExp>[
     RegExp(r'-----BEGIN (?:[A-Z0-9]+ )*PRIVATE KEY-----'),
+    // OpenPGP secret-key armor includes BLOCK after PRIVATE KEY (RFC 9580).
+    RegExp(r'-----BEGIN PGP PRIVATE KEY BLOCK-----'),
     // PuTTY PPK keys use a versioned signature rather than PEM delimiters.
     RegExp(r'\bPuTTY-User-Key-File-[23]:'),
     RegExp(

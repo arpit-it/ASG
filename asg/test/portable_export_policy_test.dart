@@ -12,6 +12,7 @@ PortableProjectArchive withText(String text) => PortableProjectArchive(
 void main() {
   test('recognized credential forms refuse without exposing text', () {
     final fixtures = [
+      '-----BEGIN PGP PRIVATE KEY BLOCK-----',
       'PuTTY-User-Key-File-2: ssh-rsa',
       'PuTTY-User-Key-File-3: ssh-ed25519',
       '-----BEGIN PRIVATE KEY-----\nfixture',
@@ -150,6 +151,11 @@ void main() {
 
   test('clean prose, Unicode and separate fields remain exact', () {
     for (final text in [
+      'Use PGP private key blocks for secret keys',
+      '-----BEGIN PGP PUBLIC KEY BLOCK-----\nZml4dHVyZQ==',
+      '-----BEGIN PGP SIGNATURE-----',
+      '-----BEGIN PGP MESSAGE-----',
+      '-----BEGIN PGP SIGNED MESSAGE-----',
       'Use PuTTY PPK version 2 or 3 for private key files',
       'PuTTY-User-Key-File-3',
       'ssh-ed25519 Zml4dHVyZQ== public-key@example.test',

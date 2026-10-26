@@ -69,7 +69,7 @@ A task moves Queued → In progress → Awaiting merge → Done; use Blocked wit
 
 ## Active task and delivery ledger
 
-Active: F08 In progress/unchecked; reopened #114 on `114-putty-key-export`. PR #151 verified merged. PuTTY private-key export guard in progress; full backup/general secret exclusion pending. No later feature selected.
+Active: F08 In progress/unchecked. Issue #114 OpenPGP private-key export increment in progress on `114-openpgp-key-export`; full backup/general secret exclusion pending. Prior PR #152 merge verified. No later feature selected.
 
 ### F03 acceptance boundary and evidence
 
@@ -2498,3 +2498,19 @@ Owner complete; local main synchronized. Run completed 2026-10-26T19:30:21.22407
 ### F08 PuTTY private-key export guard — issue #114
 
 Prior PR #151 verified merged at71b29ef32afa91d0dcdbc13c1ce3e73bcb1b95be through connected GitHub; no competing active ASG owner/open issue or PR. Reopened matching #114 on `114-putty-key-export`. Evidence: PPK v2/v3 signatures bypassed the existing PEM guard; controller regression failed before fix. PuTTY format source: https://www.puttyssh.org/0.80/htmldoc/AppendixC.html . Refuse recognized PPK signatures alongside existing patterns, preserving records and data-only import. Acceptance: encrypted/unencrypted v2/v3, CRLF/embedded and one percent-encoded layer refuse saved-project/copy exports; stale preview clears, no writes/download/disclosure, clean retry succeeds; public keys and PPK prose remain exact. Focused79 tests, full523Flutter tests/seven opt-in skips, formatter191, analyzer and web build/Wasm dry run passed. Independent final-head review/actual required CI/protected merge remain gates. F08 stays In progress for full backup/general secret exclusion. Existing8765runtime offline; no live inference claimed. Prior history-publication exclusion respected. Recorded 2026-10-26T19:39:25.080446+00:00.
+
+
+### F08 PuTTY private-key export guard — verified PR #152 delivery (26 October 2026)
+
+Issue #114 / branch `114-putty-key-export` delivered through https://github.com/arpit-it/ASG/pull/152. Independent exact-head COMMENT5657967789 and final-CI5658008657 approved ae3cb6bfa9badbe668a25fa65f1f4b1417a75501. Normal protected squash merge83cd002ee0c9d68494f1f85d873e47c807ea574a at2026-10-26T19:44:36Z; issue114closed/completed19:44:37Z plugin verified. Tested local075b9f1d83ffda84d439dba46b3b56353bae3047, published head and merged main share tree2a3aba89f0724653770b243347ac5f63aab956a0.
+
+Before-fix controller regression failed. Local79focused/full523Flutter tests-seven opt-in skips/formatter191/analyzer/webWasm passed. Reviewer independently79focused+5actualChrome policy tests/formatter/analyzer passed. Actual required CI40388836577 both successful logs inspected before reviewer merge: Flutter121804164942 formatter191/analyzer/521Linux-six skips/twoChrome/storage-download/webWasm/generated resolve-analyze-test-build4exits0 and passing artifact-serving assertions; Python1218041644822+4+10+4fixtures-two skips. Parent independently plugin verified merged PR/exact head/no open issues. Imported signed merge only after exact SHA/tree verification, safely fast-forwarded local main with0/0divergence and empty tested-tree diff. Unrelated IDE/history edits retained; nothing staged. GitHub exclusively plugin.
+
+F08 remains In progress/unchecked for full backup/general secret exclusion. PPK v2/v3 signatures now refuse saved-project/copy exports, including embedded/CRLF and one percent-encoded layer; stale preview clears, no writes/download/disclosure, clean retry works. Public keys/prose remain exact. Existing8765runtime offline; no live inference/download/stable-app replacement/deployment. No new issue/task/cadence/notification change. History remains local per prior user instruction and label rejection respected. Postmerge evidence retained locally for the next normal reviewed increment. Recorded 2026-10-26T19:45:25.860484+00:00.
+
+Owner complete; local main synchronized. Run completed 2026-10-26T19:45:25.860484+00:00.
+
+
+### F08 OpenPGP private-key export guard — issue #114
+
+Prior PR #152 verified merged at83cd002ee0c9d68494f1f85d873e47c807ea574a through connected GitHub; no competing active ASG owner/open issue or PR. Reopened matching #114 on `114-openpgp-key-export`. Evidence: RFC9580 private-key armor includes BLOCK after PRIVATE KEY and bypassed the PEM-only delimiter guard; controller regression failed before fix. Source: https://www.rfc-editor.org/rfc/rfc9580.html . Scope: refuse the exact OpenPGP private-key delimiter alongside existing patterns, preserving records and data-only import. Acceptance: bare, multiline/CRLF, embedded and one percent-encoded layer refuse saved-project/copy export; stale preview clears, no writes/download/disclosure, clean retry succeeds. Public-key blocks, signatures, messages and prose remain exact. Focused80/full524Flutter tests-seven opt-in skips, formatter191 and analyzer passed; web build/Wasm dry run passed. Initial focused invocation referenced a nonexistent persistence test; corrected to portable_archive_store_test.dart and reran successfully. Independent final-head review/actual required CI/protected merge remain gates. F08 stays In progress/unchecked for full backup/general secret exclusion. Existing8765runtime offline; no live inference/download/stable-app replacement/deployment. Prior history-publication exclusion respected. Recorded 2026-10-26T19:59:45.160039+00:00.
