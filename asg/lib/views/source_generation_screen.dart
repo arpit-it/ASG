@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../controllers/source_generation_controller.dart';
 import '../models/source_generation.dart';
+import '../models/build_history_entry.dart';
 import '../services/folder_picker.dart';
 import 'board_verification_progress.dart';
 import 'source_review_screen.dart';
@@ -73,6 +74,9 @@ class _SourceGenerationScreenState extends State<SourceGenerationScreen> {
   @override
   Widget build(BuildContext context) {
     final result = controller.result;
+    final List<BuildHistoryEntry> history = result == null
+        ? const []
+        : controller.buildHistory;
     final snapshotStatus = controller.snapshotStatus;
     final previewLabel = switch (snapshotStatus) {
       GeneratedSnapshotStatus.outdated => 'Preview earlier generated build',
@@ -337,6 +341,48 @@ class _SourceGenerationScreenState extends State<SourceGenerationScreen> {
                   child: Text(previewLabel),
                 ),
             ],
+            if (result != null && history.isNotEmpty)
+              ExpansionTile(
+                title: const Text('Recorded build history'),
+                children: [
+                  const Text(
+                    'Saved evidence only. Artifact availability is unverified until preview opens. History does not restore files or grant execution approval.',
+                  ),
+                  for (final entry in history.reversed)
+                    ExpansionTile(
+                      title: Text(
+                        '${entry.recordedAt?.toLocal() ?? 'Legacy outcome · timestamp unknown'} · ${entry.project.phase.name}',
+                      ),
+                      subtitle: Text(entry.project.directory),
+                      children: [
+                        if (entry.project.phase ==
+                                SourceGenerationPhase.ready &&
+                            identical(
+                              entry,
+                              history.lastWhere(
+                                (item) =>
+                                    item.project.phase ==
+                                    SourceGenerationPhase.ready,
+                              ),
+                            ))
+                          const Text('Last recorded successful version'),
+                        SelectableText(
+                          'Input/source identity: ${entry.project.sources}',
+                        ),
+                        SelectableText(
+                          'Preview artifact identity: ${entry.project.outputs}',
+                        ),
+                        for (final step in entry.project.steps)
+                          ListTile(
+                            title: Text(
+                              '${step.operation}: exit ${step.exitCode}',
+                            ),
+                            subtitle: Text(step.output),
+                          ),
+                      ],
+                    ),
+                ],
+              ),
             if (controller.preview != null) ...[
               const Text(
                 'Actual generated build served locally; this is separate from the in-app prototype. The server stops when this screen closes.',

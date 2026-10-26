@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import '../models/app_definition.dart';
+import '../models/build_history_entry.dart';
 import '../models/build_plan.dart';
 import '../models/plan_approval.dart';
 import '../models/project.dart';
@@ -47,6 +48,8 @@ class SourceGenerationController extends BaseController {
       _input?.compare(_result) ?? GeneratedSnapshotStatus.unknown;
   GeneratedProject? _result;
   GeneratedProject? get result => _result;
+  List<BuildHistoryEntry> get buildHistory => store.history(project.id);
+
   String _initialPython = 'python3';
   String get initialPython => _result?.python ?? _initialPython;
   String? _error;
@@ -148,7 +151,7 @@ class SourceGenerationController extends BaseController {
       await records.commitRecords(
         expected: expected,
         updates: {
-          generationKey: jsonEncode(candidate.toJson()),
+          generationKey: store.encodeUpdate(project.id, candidate),
           'studio.generationPrevious.v1.${project.id}': old,
         },
         authorize: check,

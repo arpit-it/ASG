@@ -204,6 +204,9 @@ void main() {
         SourceGenerationStore(records).load(project.id)!.directory,
         '/candidate',
       );
+      final history = SourceGenerationStore(records).history(project.id);
+      expect(history.last.project.directory, '/candidate');
+      expect(history.last.project.phase, SourceGenerationPhase.ready);
       expect(working.result!.directory, '/candidate');
       expect(working.preview, isNotNull);
       expect(await working.verifyAgain(approved: true), isFalse);
