@@ -29,6 +29,15 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:sembast/sembast_io.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+String withoutProjectIntent(PortableProjectArchive value) =>
+    PortableProjectArchive(
+      requirements: value.requirements,
+      messages: value.messages,
+      prototype: value.prototype,
+      decision: value.decision,
+      revisions: value.revisions,
+    ).encode();
+
 void main() {
   test(
     'invalid or ambiguous local input revision metadata refuses summary',
@@ -99,6 +108,36 @@ void main() {
     await db.database.close();
     await temp.delete(recursive: true);
   });
+  test('project intent survives native database close and reopen', () async {
+    final original = PortableProjectArchive(
+      project: PortableProjectIntent(
+        description: 'Exact 中文 😀',
+        type: 'Rust',
+        platforms: ['Linux', 'macOS'],
+      ),
+      requirements: RequirementsBoard(),
+      messages: [],
+    );
+    await PortableArchiveStore(db).restoreCopy('intent', original.encode());
+    await db.database.close();
+    db = await open();
+    await PortableWorkspaceRestore(db).restore(
+      id: 'restoredIntent',
+      name: 'Restored',
+      encoded: PortableArchiveStore(db).load('intent')!.encode(),
+    );
+    await db.database.close();
+    db = await open();
+    final project = StudioStore(db).load().single;
+    expect(project.description, 'Exact 中文 😀');
+    expect(project.type, 'Rust');
+    expect(project.platforms, ['Linux', 'macOS']);
+    expect(project.location, '');
+    final controller = PortableArchiveController(project.id, db);
+    addTearDown(controller.dispose);
+    await controller.prepareExport();
+    expect(controller.exportContents, original.encode());
+  });
   test('saved prototype survives native copy and new workspace reopen with conversation text but without consent', () async {
     const definition = AppDefinition(
       title: 'Saved 中文',
@@ -155,7 +194,7 @@ void main() {
     final restored = PortableArchiveController('restored', db);
     addTearDown(restored.dispose);
     await restored.prepareExport();
-    expect(restored.exportPreview!.encode(), encoded);
+    expect(withoutProjectIntent(restored.exportPreview!), encoded);
     expect(PlanApprovalStore(db).load('restored'), isNull);
     expect(SourceGenerationStore(db).load('restored'), isNull);
     await expectLater(
@@ -215,7 +254,7 @@ void main() {
     final restored = PortableArchiveController('restored', db);
     addTearDown(restored.dispose);
     await restored.prepareExport();
-    expect(restored.exportPreview!.encode(), original.encode());
+    expect(withoutProjectIntent(restored.exportPreview!), original.encode());
     expect(SourceGenerationStore(db).load('restored'), isNull);
     expect(PlanApprovalStore(db).load('restored'), isNull);
     await SourceGenerationStore(db).save('restored', generation);
@@ -318,7 +357,7 @@ void main() {
     final controller = PortableArchiveController(project.id, db);
     addTearDown(controller.dispose);
     await controller.prepareExport();
-    expect(controller.exportPreview!.encode(), original.encode());
+    expect(withoutProjectIntent(controller.exportPreview!), original.encode());
     // A later local decision is exported instead of the imported historical one.
     await db.setString(
       'studio.planApproval.v1.history',

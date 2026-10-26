@@ -137,7 +137,89 @@ String archive() => PortableProjectArchive(
   ),
   messages: const [ChatMessage(role: 'user', content: 'Exact private text 😀')],
 ).encode();
+
+String withoutProjectIntent(PortableProjectArchive value) =>
+    PortableProjectArchive(
+      requirements: value.requirements,
+      messages: value.messages,
+      prototype: value.prototype,
+      decision: value.decision,
+      revisions: value.revisions,
+    ).encode();
+
 void main() {
+  test(
+    'project intent round trips without identity or paths and secrets refuse',
+    () async {
+      final records = Records();
+      Map<String, Object> project(String description) => {
+        'id': 'source',
+        'name': 'Original',
+        'description': description,
+        'type': 'Python',
+        'platforms': ['Linux', 'Windows'],
+        'location': '/private/source',
+      };
+      records.values['studio.projects.v1'] = jsonEncode([
+        project('Résumé 中文 😀'),
+      ]);
+      final files = Files();
+      final c = PortableArchiveController('source', records, files: files);
+      addTearDown(c.dispose);
+      await c.prepareExport();
+      expect(c.error, isNull);
+      final encoded = c.exportContents!;
+      expect(jsonDecode(encoded)['version'], 7);
+      expect(encoded, isNot(contains('/private/source')));
+      expect(encoded, isNot(contains('Original')));
+      expect(encoded, isNot(contains('"source"')));
+      await PortableWorkspaceRestore(records)
+          .restore(id: 'new', name: 'New', encoded: encoded);
+      final saved =
+          (jsonDecode(records.values['studio.projects.v1']!) as List).last;
+      expect(saved['description'], 'Résumé 中文 😀');
+      expect(saved['type'], 'Python');
+      expect(saved['platforms'], ['Linux', 'Windows']);
+      expect(saved['location'], '');
+      final again = PortableArchiveController('new', records);
+      addTearDown(again.dispose);
+      await again.prepareExport();
+      expect(again.exportContents, encoded);
+      for (final mutate in <void Function(Map<String, dynamic>)>[
+        (j) => j['project']['location'] = '/hidden',
+        (j) => j['project']['platforms'] = ['Web', 5],
+        (j) => j['project']['platforms'] = ['Web', 'Web'],
+        (j) => j['project']['type'] = '',
+        (j) => j['project'] = null,
+      ]) {
+        final raw = jsonDecode(encoded) as Map<String, dynamic>;
+        mutate(raw);
+        final before = Map.of(records.values);
+        await expectLater(
+          PortableWorkspaceRestore(records)
+              .restore(id: 'bad', name: 'Bad', encoded: jsonEncode(raw)),
+          throwsFormatException,
+        );
+        expect(records.values, before);
+      }
+      records.values['studio.projects.v1'] = jsonEncode([
+        project('password=fixture-secret'),
+      ]);
+      await c.prepareExport();
+      expect(c.exportPreview, isNull);
+      expect(c.error, isNot(contains('fixture-secret')));
+      await c.exportFile();
+      expect(files.written, isNull);
+      records.values['studio.projects.v1'] = jsonEncode([
+        project('Clean'),
+        project('Duplicate'),
+      ]);
+      await c.prepareExport();
+      expect(c.error, isNotNull);
+      expect(c.exportPreview, isNull);
+    },
+  );
+
   test(
     'unsafe requirements revision refuses export and restore without writes',
     () async {
@@ -828,7 +910,7 @@ void main() {
     final restored = PortableArchiveController('new', records, files: Files());
     addTearDown(restored.dispose);
     await restored.prepareExport();
-    expect(restored.exportContents, encoded);
+    expect(withoutProjectIntent(restored.exportPreview!), encoded);
   });
 
   testWidgets(
