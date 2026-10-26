@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../controllers/portable_archive_controller.dart';
+import 'portable_archive_screen.dart';
+
 import '../controllers/requirements_controller.dart';
 import '../services/requirements_store.dart';
 import 'requirements_screen.dart';
@@ -94,6 +97,23 @@ class _ProjectWorkspaceState extends State<ProjectWorkspace> {
     if (await controller.apply(input.text) && mounted) input.clear();
   }
 
+  Future<void> portableRecords() async {
+    final records = controller.records;
+    if (records is! ConditionalRecordStorage ||
+        controller.busy ||
+        controller.savingInteractions ||
+        controller.hasUnsavedInteractions) {
+      return;
+    }
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => PortableArchiveScreen(
+          controller: PortableArchiveController(widget.project.id, records),
+        ),
+      ),
+    );
+  }
+
   Future<void> requirements() async {
     final records = controller.records;
     if (records == null ||
@@ -177,6 +197,17 @@ class _ProjectWorkspaceState extends State<ProjectWorkspace> {
                 'Chat',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
               ),
+            ),
+            IconButton(
+              tooltip: 'Portable records',
+              onPressed:
+                  controller.records is! ConditionalRecordStorage ||
+                      controller.busy ||
+                      controller.savingInteractions ||
+                      controller.hasUnsavedInteractions
+                  ? null
+                  : portableRecords,
+              icon: const Icon(Icons.import_export),
             ),
             IconButton(
               tooltip: 'Requirements and tasks',
