@@ -72,6 +72,14 @@ class Files extends ArchiveFileService {
 
 String archive() => PortableProjectArchive(
   requirements: RequirementsBoard(revision: 3),
+  revisions: [
+    PortableRevisionSummary(
+      recordedAt: null,
+      outcome: 'failed',
+      passedChecks: 0,
+      totalChecks: 1,
+    ),
+  ],
   decision: PortablePlanDecision(
     content: "Historical only",
     approved: false,
@@ -340,6 +348,16 @@ void main() {
     await tester.tap(select);
     await tester.pumpAndSettle();
     expect(records.values, isEmpty);
+    final revisionHistory = find.text(
+      'Historical revision summaries only; artifacts and rollback are unavailable.',
+    );
+    await tester.scrollUntilVisible(
+      revisionHistory,
+      150,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+    expect(revisionHistory, findsOneWidget);
     final history = find.text(
       'Historical information only. This does not grant Build approval.',
     );

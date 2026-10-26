@@ -11,8 +11,10 @@ class PortableProjectArchive {
   PortableProjectArchive({
     required this.requirements,
     this.decision,
+    List<PortableRevisionSummary> revisions = const [],
     required List<ChatMessage> messages,
-  }) : messages = List.unmodifiable(
+  }) : revisions = List.unmodifiable(revisions),
+       messages = List.unmodifiable(
          messages.map((m) => ChatMessage(role: m.role, content: m.content)),
        ) {
     _validate();
@@ -21,12 +23,16 @@ class PortableProjectArchive {
   static const maxBytes = 1024 * 1024;
   static const maxMessages = 1000;
   static const maxMessageCharacters = 100000;
+  final List<PortableRevisionSummary> revisions;
   final PortablePlanDecision? decision;
   final RequirementsBoard requirements;
   final List<ChatMessage> messages;
 
   void _validate() {
     requirements.validate();
+    if (revisions.length > 1000) {
+      throw const FormatException('Too many historical revision summaries.');
+    }
     if (requirements.revision == 0 &&
         (requirements.requirements.isNotEmpty ||
             requirements.tasks.isNotEmpty)) {
@@ -42,9 +48,12 @@ class PortableProjectArchive {
     }
   }
 
-  Map<String, Object> _json() => {
+  Map<String, Object?> _json() => {
     'format': 'asg-portable-records',
-    'version': decision == null ? 1 : 2,
+    'version': revisions.isNotEmpty ? 3 : (decision == null ? 1 : 2),
+    if (revisions.isNotEmpty)
+      'revisions': revisions.map((r) => r.toJson()).toList(),
+    if (revisions.isNotEmpty && decision == null) 'decision': null,
     if (decision != null) 'decision': decision!.toJson(),
     'requirements': requirements.toJson(),
     'messages': messages
@@ -77,11 +86,12 @@ class PortableProjectArchive {
         'version',
         'requirements',
         'messages',
-        if (version == 2) 'decision',
+        if (version == 2 || version == 3) 'decision',
+        if (version == 3) 'revisions',
       ]);
       if (root['format'] != 'asg-portable-records' ||
           root['version'] is! int ||
-          !const [1, 2].contains(root['version'])) {
+          !const [1, 2, 3].contains(root['version'])) {
         throw const FormatException('Unsupported portable archive version.');
       }
       final board = _object(root['requirements'], const [
@@ -127,7 +137,10 @@ class PortableProjectArchive {
       }
       return PortableProjectArchive(
         requirements: requirements,
-        decision: version == 2
+        revisions: version == 3
+            ? PortableRevisionSummary.parseList(root['revisions'])
+            : const [],
+        decision: version == 2 || (version == 3 && root['decision'] != null)
             ? PortablePlanDecision.fromJson(root['decision'])
             : null,
         messages: rows.map((row) {
@@ -195,6 +208,66 @@ class PortablePlanDecision {
       content: content,
       approved: approved,
       recordedAt: date,
+    );
+  }
+}
+
+/// Historical terminal outcome only, without paths, logs or execution authority.
+class PortableRevisionSummary {
+  PortableRevisionSummary({
+    required DateTime? recordedAt,
+    required this.outcome,
+    required this.passedChecks,
+    required this.totalChecks,
+  }) : recordedAt = recordedAt?.toUtc() {
+    if (!const ['ready', 'failed'].contains(outcome) ||
+        totalChecks < 0 ||
+        totalChecks > 4 ||
+        passedChecks < 0 ||
+        passedChecks > totalChecks ||
+        (outcome == 'ready' && (totalChecks != 4 || passedChecks != 4))) {
+      throw const FormatException('Invalid historical revision summary.');
+    }
+  }
+  final DateTime? recordedAt;
+  final String outcome;
+  final int passedChecks, totalChecks;
+  Map<String, Object?> toJson() => {
+    'recordedAt': recordedAt?.toIso8601String(),
+    'outcome': outcome,
+    'passedChecks': passedChecks,
+    'totalChecks': totalChecks,
+  };
+  static List<PortableRevisionSummary> parseList(Object? value) {
+    if (value is! List || value.length > 1000) {
+      throw const FormatException('Invalid historical revision list.');
+    }
+    return List.unmodifiable(
+      value.map((row) {
+        final json = PortableProjectArchive._object(row, const [
+          'recordedAt',
+          'outcome',
+          'passedChecks',
+          'totalChecks',
+        ]);
+        final timestamp = json['recordedAt'];
+        final date = timestamp is String ? DateTime.tryParse(timestamp) : null;
+        if ((timestamp != null &&
+                (date == null ||
+                    !date.isUtc ||
+                    date.toIso8601String() != timestamp)) ||
+            json['outcome'] is! String ||
+            json['passedChecks'] is! int ||
+            json['totalChecks'] is! int) {
+          throw const FormatException('Malformed historical revision summary.');
+        }
+        return PortableRevisionSummary(
+          recordedAt: date,
+          outcome: json['outcome'] as String,
+          passedChecks: json['passedChecks'] as int,
+          totalChecks: json['totalChecks'] as int,
+        );
+      }),
     );
   }
 }

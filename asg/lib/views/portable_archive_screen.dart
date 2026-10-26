@@ -44,6 +44,15 @@ class _PortableArchiveScreenState extends State<PortableArchiveScreen> {
         'board revision ${archive.requirements.revision} · '
         '${archive.messages.length} assistance messages',
       ),
+      if (archive.revisions.isNotEmpty) ...[
+        const Text(
+          'Historical revision summaries only; artifacts and rollback are unavailable.',
+        ),
+        for (final revision in archive.revisions)
+          Text(
+            '${revision.recordedAt?.toIso8601String() ?? 'Unknown time'} · ${revision.outcome} · ${revision.passedChecks}/${revision.totalChecks} recorded checks passed',
+          ),
+      ],
       if (archive.decision case final decision?) ...[
         Text(
           'Historical Plan decision: ${decision.approved ? 'approved' : 'withdrawn'} · ${decision.recordedAt.toIso8601String()}',
@@ -83,7 +92,7 @@ class _PortableArchiveScreenState extends State<PortableArchiveScreen> {
         padding: const EdgeInsets.all(16),
         children: [
           const Text(
-            'Archives include saved requirements, tasks, board revision and Discuss/Plan/Review conversation text. Version 2 also includes the latest saved Plan decision as historical information only; version 1 remains supported. Prototype edit chat, build history, source files, settings and approval credentials are excluded. Text is verbatim and may contain private information or secrets you typed; review it before sharing.',
+            'Archives include saved requirements, tasks, board revision and Discuss/Plan/Review conversation text. Versions 2 and 3 also preserve the latest saved Plan decision; version 3 includes historical build outcome summaries and recording times. Earlier versions remain supported. These records cannot grant Build approval, verify artifacts or enable rollback. Prototype edit chat, build logs, source files, paths, settings and approval credentials are excluded. Text is verbatim and may contain private information or secrets you typed; review it before sharing.',
           ),
           const SizedBox(height: 16),
           FilledButton(
@@ -105,7 +114,7 @@ class _PortableArchiveScreenState extends State<PortableArchiveScreen> {
             ),
           const Divider(height: 32),
           const Text(
-            'Import can save a separate data copy or explicitly restore these records into a new Flutter web workspace. Existing projects are never replaced. A restored workspace starts with a fresh prototype and no source files, build history or Plan approval. Open it from Projects after restoring; no code runs here.',
+            'Import can save a separate data copy or explicitly restore these records into a new Flutter web workspace. Existing projects are never replaced. A restored workspace starts with a fresh prototype and no source files, executable build history or Plan approval. Open it from Projects after restoring; no code runs here.',
           ),
           const SizedBox(height: 12),
           OutlinedButton(

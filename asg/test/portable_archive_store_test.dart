@@ -2,6 +2,9 @@ import 'dart:io';
 import 'dart:convert';
 
 import 'package:asg/services/portable_decision_store.dart';
+import 'package:asg/services/portable_revision_store.dart';
+import 'package:asg/services/source_generation_store.dart';
+import 'package:asg/models/source_generation.dart';
 import 'package:asg/services/plan_approval_store.dart';
 import 'package:asg/controllers/portable_archive_controller.dart';
 
@@ -41,6 +44,113 @@ void main() {
     await db.database.close();
     await temp.delete(recursive: true);
   });
+  test('revision summaries survive native reopen without paths or executable history', () async {
+    final generation = GeneratedProject(
+      directory: '/private/source',
+      sdk: '/private/sdk',
+      python: 'python3',
+      sources: {'lib/main.dart': 'a' * 64},
+      phase: SourceGenerationPhase.failed,
+      steps: const [
+        GenerationStep(
+          operation: 'resolve',
+          exitCode: 1,
+          output: 'private log',
+        ),
+      ],
+    );
+    await SourceGenerationStore(db).save('source', generation);
+    final controller = PortableArchiveController('source', db);
+    addTearDown(controller.dispose);
+    await controller.prepareExport();
+    expect(controller.error, isNull);
+    final original = controller.exportPreview!;
+    expect(original.revisions.single.outcome, 'failed');
+    expect(original.encode(), isNot(contains('/private')));
+    expect(original.encode(), isNot(contains('private log')));
+    await PortableArchiveStore(db).restoreCopy('copy', original.encode());
+    await PortableWorkspaceRestore(db)
+        .restore(id: 'restored', name: 'Restored', encoded: original.encode());
+    await db.database.close();
+    db = await open();
+    expect(PortableArchiveStore(db).load('copy')!.encode(), original.encode());
+    final restored = PortableArchiveController('restored', db);
+    addTearDown(restored.dispose);
+    await restored.prepareExport();
+    expect(restored.exportPreview!.encode(), original.encode());
+    expect(SourceGenerationStore(db).load('restored'), isNull);
+    expect(PlanApprovalStore(db).load('restored'), isNull);
+    await SourceGenerationStore(db).save('restored', generation);
+    await restored.prepareExport();
+    expect(restored.exportPreview!.revisions.length, 2);
+    expect(
+      restored.exportPreview!.revisions.first.toJson(),
+      original.revisions.single.toJson(),
+    );
+  });
+  test('legacy terminal records keep unknown time and damaged local evidence blocks export', () async {
+    final generation = GeneratedProject(
+      directory: '/legacy',
+      sdk: '/sdk',
+      python: 'python3',
+      sources: {'lib/main.dart': 'a' * 64},
+      phase: SourceGenerationPhase.failed,
+    );
+    await db.setString(
+      'studio.generation.v1.legacy',
+      jsonEncode(generation.toJson()),
+    );
+    final c = PortableArchiveController('legacy', db);
+    addTearDown(c.dispose);
+    await c.prepareExport();
+    expect(c.error, isNull);
+    expect(c.exportPreview!.revisions.single.recordedAt, isNull);
+    expect(c.exportPreview!.revisions.single.totalChecks, 0);
+    const raw = '{"phase":"failed"}';
+    await StoreRef<String, String>('records')
+        .record('studio.generation.v1.broken')
+        .put(db.database, raw);
+    await db.database.close();
+    db = await open();
+    final broken = PortableArchiveController('broken', db);
+    addTearDown(broken.dispose);
+    await broken.prepareExport();
+    expect(broken.error, isNotNull);
+    expect(broken.exportPreview, isNull);
+    expect(
+      await StoreRef<String, String>('records')
+          .record('studio.generation.v1.broken')
+          .get(db.database),
+      raw,
+    );
+  });
+  test(
+    'damaged revision summaries stay isolated and refuse orphan replacement',
+    () async {
+      final key = PortableRevisionStore.key('orphan');
+      const raw = '[{"outcome":"failed","outcome":"ready"}]';
+      await StoreRef<String, String>('records')
+          .record(key)
+          .put(db.database, raw);
+      await db.database.close();
+      db = await open();
+      expect(
+        () => PortableRevisionStore(db).load('orphan'),
+        throwsFormatException,
+      );
+      await expectLater(
+        PortableWorkspaceRestore(db)
+            .restore(id: 'orphan', name: 'No', encoded: encoded),
+        throwsFormatException,
+      );
+      expect(db.getString('studio.projects.v1'), isNull);
+      expect(
+        await StoreRef<String, String>('records').record(key).get(db.database),
+        raw,
+      );
+      expect(PortableRevisionStore(db).load('other'), isEmpty);
+    },
+  );
   test('historical decision persists through native restore and re-export without consent', () async {
     final original = PortableProjectArchive(
       requirements: RequirementsBoard(revision: 7),
