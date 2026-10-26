@@ -13,6 +13,7 @@ class PortableArchiveScreen extends StatefulWidget {
 
 class _PortableArchiveScreenState extends State<PortableArchiveScreen> {
   final backupId = TextEditingController();
+  final projectName = TextEditingController();
   PortableArchiveController get controller => widget.controller;
 
   @override
@@ -30,6 +31,7 @@ class _PortableArchiveScreenState extends State<PortableArchiveScreen> {
     controller.removeListener(refresh);
     controller.dispose();
     backupId.dispose();
+    projectName.dispose();
     super.dispose();
   }
 
@@ -94,7 +96,7 @@ class _PortableArchiveScreenState extends State<PortableArchiveScreen> {
             ),
           const Divider(height: 32),
           const Text(
-            'Import creates a separate data-only backup copy in app storage. It never replaces a project, grants approval or runs code. Opening copies as project workspaces is not available yet.',
+            'Import can save a separate data copy or explicitly restore these records into a new Flutter web workspace. Existing projects are never replaced. A restored workspace starts with a fresh prototype and no source files, build history or Plan approval. Open it from Projects after restoring; no code runs here.',
           ),
           const SizedBox(height: 12),
           OutlinedButton(
@@ -108,7 +110,7 @@ class _PortableArchiveScreenState extends State<PortableArchiveScreen> {
               enabled: !controller.busy,
               maxLength: 80,
               decoration: const InputDecoration(
-                labelText: 'New backup ID',
+                labelText: 'New backup or project ID',
                 helperText: 'Letters, digits, underscores and hyphens; existing IDs refuse replacement.',
               ),
             ),
@@ -117,6 +119,22 @@ class _PortableArchiveScreenState extends State<PortableArchiveScreen> {
                   ? null
                   : () => controller.saveCopy(backupId.text),
               child: const Text('Save separate data copy'),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: projectName,
+              enabled: !controller.busy,
+              maxLength: 200,
+              decoration: const InputDecoration(labelText: 'New project name'),
+            ),
+            OutlinedButton(
+              onPressed: controller.busy
+                  ? null
+                  : () => controller.restoreWorkspace(
+                      backupId.text,
+                      projectName.text,
+                    ),
+              child: const Text('Restore records into new project'),
             ),
           ],
           if (controller.busy) const LinearProgressIndicator(),

@@ -4,6 +4,7 @@ import '../models/portable_project_archive.dart';
 import '../services/archive_file_service.dart';
 import '../services/conversation_store.dart';
 import '../services/portable_archive_store.dart';
+import '../services/portable_workspace_restore.dart';
 import '../services/record_storage.dart';
 import '../services/requirements_store.dart';
 
@@ -88,6 +89,19 @@ class PortableArchiveController extends ChangeNotifier {
       _importPreview = null;
       _status =
           'Data copy saved as $id. No executable project or approval was created.';
+    }
+  });
+
+  Future<void> restoreWorkspace(String id, String name) => _run(() async {
+    final preview = _importPreview;
+    if (preview == null) throw StateError('Select a valid archive first.');
+    final project = await PortableWorkspaceRestore(records)
+        .restore(id: id, name: name, encoded: preview.encode());
+    if (!_disposed) {
+      _importPreview = null;
+      _status =
+          'Project "${project.name}" saved. Open it from Projects. '
+          'Its prototype starts fresh; create and approve a new Plan before building.';
     }
   });
 

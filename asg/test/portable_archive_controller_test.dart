@@ -170,16 +170,43 @@ void main() {
       c.addListener(() => notifications++);
       final picking = c.pickImport();
       await c.saveCopy('copy');
+      await c.restoreWorkspace('new', 'Ignored');
       expect(c.busy, isTrue);
       c.dispose();
       final before = notifications;
       files.pending!.complete(archive());
       await picking;
       await c.saveCopy('after');
+      await c.restoreWorkspace('after', 'Ignored');
       expect(records.values, isEmpty);
       expect(notifications, before);
     },
   );
+  test('workspace commit failure retains preview for retry', () async {
+    final records = Records()..fail = true;
+    final c = PortableArchiveController(
+      'p',
+      records,
+      files: Files()..selected = archive(),
+    );
+    addTearDown(c.dispose);
+    await c.pickImport();
+    await c.restoreWorkspace('new', 'Restored');
+    expect(c.error, isNotNull);
+    expect(c.importPreview, isNotNull);
+    expect(records.values, isEmpty);
+    records.fail = false;
+    records.values['studio.projects.v1'] = '{}';
+    await c.restoreWorkspace('new', 'Restored');
+    expect(c.error, isNotNull);
+    expect(records.values, {'studio.projects.v1': '{}'});
+    records.values.clear();
+    await c.restoreWorkspace('new', 'Restored');
+    expect(c.importPreview, isNull);
+    expect(c.status, contains('Open it from Projects'));
+    expect(records.values['studio.projects.v1'], contains('Restored'));
+    expect(records.values['studio.planApproval.v1.new'], isNull);
+  });
   testWidgets('narrow large text preview saves only on explicit action', (
     tester,
   ) async {
@@ -213,7 +240,11 @@ void main() {
     await tester.tap(select);
     await tester.pumpAndSettle();
     expect(records.values, isEmpty);
-    final id = find.byType(TextField);
+    final id = find.byWidgetPredicate(
+      (w) =>
+          w is TextField &&
+          w.decoration?.labelText == 'New backup or project ID',
+    );
     await tester.scrollUntilVisible(
       id,
       200,
@@ -232,6 +263,79 @@ void main() {
     await tester.pumpAndSettle();
     expect(PortableArchiveStore(records).load('ui-copy')!.encode(), archive());
     expect(find.textContaining('Data copy saved as ui-copy'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+  testWidgets('narrow large text restores only on explicit action', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(360, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final records = Records();
+    final c = PortableArchiveController(
+      'p',
+      records,
+      files: Files()..selected = archive(),
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(context)
+              .copyWith(textScaler: TextScaler.linear(1.8)),
+          child: child!,
+        ),
+        home: PortableArchiveScreen(controller: c),
+      ),
+    );
+    final select = find.text('Select archive file (up to 1 MiB)');
+    await tester.scrollUntilVisible(
+      select,
+      250,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(select);
+    await tester.pumpAndSettle();
+    expect(records.values, isEmpty);
+    final id = find.byWidgetPredicate(
+      (w) =>
+          w is TextField &&
+          w.decoration?.labelText == 'New backup or project ID',
+    );
+    await tester.scrollUntilVisible(
+      id,
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+    await tester.enterText(id, 'ui-copy');
+    final name = find.byWidgetPredicate(
+      (w) => w is TextField && w.decoration?.labelText == 'New project name',
+    );
+    await tester.scrollUntilVisible(
+      name,
+      150,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+    await tester.enterText(name, 'Restored UI');
+    final save = find.text('Restore records into new project');
+    await tester.scrollUntilVisible(
+      save,
+      150,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(save);
+    await tester.pumpAndSettle();
+    expect(records.values['studio.projects.v1'], contains('Restored UI'));
+    expect(
+      records.values['studio.chat.v1.ui-copy'],
+      contains('Exact private text'),
+    );
+    expect(records.values['studio.planApproval.v1.ui-copy'], isNull);
+    expect(find.textContaining('Project "Restored UI" saved.'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 }
