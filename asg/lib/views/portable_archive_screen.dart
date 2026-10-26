@@ -50,7 +50,7 @@ class _PortableArchiveScreenState extends State<PortableArchiveScreen> {
         ),
         for (final revision in archive.revisions)
           Text(
-            '${revision.recordedAt?.toIso8601String() ?? 'Unknown time'} · ${revision.outcome} · ${revision.passedChecks}/${revision.totalChecks} recorded checks passed',
+            '${revision.recordedAt?.toIso8601String() ?? 'Unknown time'} · ${revision.outcome} · ${revision.passedChecks}/${revision.totalChecks} recorded checks passed · historical inputs: ${revision.requirementsRevision == null ? 'unknown' : 'requirements ${revision.requirementsRevision}, prototype ${revision.prototypeRevision}'}',
           ),
       ],
       if (archive.decision case final decision?) ...[
@@ -92,7 +92,7 @@ class _PortableArchiveScreenState extends State<PortableArchiveScreen> {
         padding: const EdgeInsets.all(16),
         children: [
           const Text(
-            'Archives include saved requirements, tasks, board revision and Discuss/Plan/Review conversation text. Versions 2 and 3 also preserve the latest saved Plan decision; version 3 includes historical build outcome summaries and recording times. Earlier versions remain supported. These records cannot grant Build approval, verify artifacts or enable rollback. Prototype edit chat, build logs, source files, paths, settings and approval credentials are excluded. Text is verbatim and may contain private information or secrets you typed; review it before sharing.',
+            'Archives include saved requirements, tasks, board revision and Discuss/Plan/Review conversation text. Versions 2–4 also preserve the latest saved Plan decision; versions 3–4 include historical build outcome summaries and recording times. Version 4 also retains known historical requirements/prototype input revision numbers. Earlier versions remain supported. These records cannot grant Build approval, verify artifacts or enable rollback. Prototype edit chat, build logs, source files, paths, settings and approval credentials are excluded. Text is verbatim and may contain private information or secrets you typed; review it before sharing.',
           ),
           const SizedBox(height: 16),
           FilledButton(
