@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import '../models/imported_plan.dart';
+
 import '../models/repair_attempt.dart';
 
 import 'package:sembast/sembast.dart';
@@ -90,6 +92,7 @@ class StudioDatabase implements ConditionalRecordStorage {
             !record.key.startsWith('studio.repairAttempts.v1.') &&
             !record.key.startsWith('studio.generationPrevious.v1.') &&
             !record.key.startsWith('studio.requirements.v1.') &&
+            !record.key.startsWith('studio.importedPlan.v1.') &&
             !record.key.startsWith('studio.planApproval.v1.')) {
           rethrow;
         }
@@ -120,7 +123,9 @@ class StudioDatabase implements ConditionalRecordStorage {
     if (key == 'studio.lastProject.v1') return;
     final decoded = jsonDecode(value);
     final source = _SingleRecord(key, value);
-    if (key == InspectedFolderStore.key) {
+    if (key.startsWith('studio.importedPlan.v1.')) {
+      ImportedPlan.fromJson(decoded as Map<String, dynamic>);
+    } else if (key == InspectedFolderStore.key) {
       InspectedFolderStore(source).load();
     } else if (key == 'studio.projects.v1') {
       StudioStore(source).load();

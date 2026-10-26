@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:asg/controllers/imported_plan_controller.dart';
+import 'package:asg/services/imported_plan_store.dart';
+
 import 'package:asg/controllers/requirements_controller.dart';
 import 'package:asg/models/requirements_board.dart';
 import 'package:asg/services/requirements_store.dart';
@@ -78,6 +81,18 @@ void main() {
         ),
         isTrue,
       );
+      final plan = ImportedPlanController(
+        '/project',
+        ImportedPlanStore(db),
+        inspect: (root) async => result(root),
+      );
+      await plan.load();
+      await plan.saveDraft(
+        'Review imported requirements before any modification',
+      );
+      await plan.decide(true);
+      expect(plan.approved, isTrue);
+      plan.dispose();
       board.dispose();
       c.dispose();
       await db.database.close();
@@ -85,6 +100,15 @@ void main() {
         await databaseFactoryIo.openDatabase(path),
         legacy,
       );
+      final reopenedPlan = ImportedPlanController(
+        '/project',
+        ImportedPlanStore(db),
+        inspect: (root) async => result(root),
+      );
+      await reopenedPlan.load();
+      expect(reopenedPlan.approved, isTrue);
+      expect(reopenedPlan.plan!.text, contains('before any modification'));
+      reopenedPlan.dispose();
       var reads = 0;
       var missing = false;
       final reopened = ProjectInspectionController(

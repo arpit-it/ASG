@@ -6,6 +6,9 @@ import '../services/inspected_folder_store.dart';
 import '../services/record_storage.dart';
 import '../services/requirements_store.dart';
 import 'requirements_screen.dart';
+import 'imported_plan_screen.dart';
+import '../controllers/imported_plan_controller.dart';
+import '../services/imported_plan_store.dart';
 
 /// Planning records for an inspected folder, without a generated prototype.
 class ImportedProjectWorkspace extends StatelessWidget {
@@ -55,6 +58,20 @@ class ImportedProjectWorkspace extends StatelessWidget {
           icon: const Icon(Icons.checklist),
           label: const Text('Requirements and tasks'),
         ),
+        OutlinedButton.icon(
+          onPressed: () => Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) => ImportedPlanScreen(
+                controller: ImportedPlanController(
+                  inspection.root,
+                  ImportedPlanStore(records),
+                ),
+              ),
+            ),
+          ),
+          icon: const Icon(Icons.approval),
+          label: const Text('Plan and approval'),
+        ),
         const SizedBox(height: 16),
         for (final limitation in ProjectInspection.limitations)
           Padding(
@@ -62,7 +79,7 @@ class ImportedProjectWorkspace extends StatelessWidget {
             child: Text(limitation),
           ),
         const Text(
-          'Imported-project plan approval, source editing, execution and preview '
+          'Imported-project source editing, execution and preview '
           'are not available yet. Opening this workspace grants no write or '
           'execution approval.',
         ),
