@@ -30,6 +30,23 @@ class ProjectInspectionController extends BaseController {
       _findings != null &&
       !_savedFolders.contains(_findings!.root);
 
+  bool get canOpenWorkspace =>
+      !isDisposed &&
+      supported &&
+      !_busy &&
+      _storageError == null &&
+      store != null &&
+      _findings != null &&
+      _savedFolders.contains(_findings!.root);
+
+  /// Never navigate using observations from an earlier selection or reopen.
+  Future<ProjectInspection?> openWorkspace() async {
+    if (!canOpenWorkspace) return null;
+    final root = _findings!.root;
+    await reopen(root);
+    return !isDisposed && _findings?.root == root ? _findings : null;
+  }
+
   Future<void> saveFolder() async {
     if (isDisposed || !canSave) return;
     final root = _findings!.root;
