@@ -9,6 +9,7 @@ import 'package:asg/models/portable_project_archive.dart';
 import 'package:asg/models/requirements_board.dart';
 import 'package:asg/services/archive_file_service.dart';
 import 'package:asg/services/conversation_store.dart';
+import 'package:asg/services/inspected_folder_store.dart';
 import 'package:asg/services/portable_archive_store.dart';
 import 'package:asg/services/record_storage.dart';
 import 'package:asg/views/portable_archive_screen.dart';
@@ -18,6 +19,7 @@ import 'package:flutter_test/flutter_test.dart';
 class Records implements ConditionalRecordStorage {
   final values = <String, String>{};
   bool fail = false;
+  void Function()? beforeCommit;
   @override
   String? getString(String key) => values[key];
   @override
@@ -32,6 +34,7 @@ class Records implements ConditionalRecordStorage {
     required Map<String, String> updates,
     required void Function() authorize,
   }) async {
+    beforeCommit?.call();
     if (fail || expected.entries.any((e) => values[e.key] != e.value)) {
       throw StateError('Refused');
     }
@@ -691,6 +694,45 @@ void main() {
     expect(c.exportContents, isNull);
     expect(c.error, isNotNull);
   });
+  test('imported workspace collisions and concurrent records refuse restore with retry', () async {
+    const root = '/fixture/imported';
+    final importedId = InspectedFolderStore.workspaceId(root);
+    for (final concurrent in [false, true]) {
+      for (final key in [
+        InspectedFolderStore.key,
+        'studio.importedPlan.v1.$importedId',
+      ]) {
+        final records = Records();
+        final value = key == InspectedFolderStore.key
+            ? jsonEncode([root])
+            : '{}';
+        if (concurrent) {
+          records.beforeCommit = () => records.values[key] = value;
+        } else {
+          records.values[key] = value;
+        }
+        final c = PortableArchiveController(
+          'p',
+          records,
+          files: Files()..selected = archive(),
+        );
+        addTearDown(c.dispose);
+        await c.pickImport();
+        await c.restoreWorkspace(importedId, 'Collision');
+        expect(c.error, isNotNull);
+        expect(c.importContents, archive());
+        expect(records.values, {key: value});
+        records.beforeCommit = null;
+        await c.restoreWorkspace('unrelated', 'Recovered');
+        expect(c.error, isNull);
+        expect(c.importPreview, isNull);
+        expect(records.values[key], value);
+        expect(records.values['studio.chat.v1.$importedId'], isNull);
+        expect(records.values['studio.chat.v1.unrelated'], isNotNull);
+      }
+    }
+  });
+
   test(
     'import preview writes nothing, failure/collision retry never replaces',
     () async {

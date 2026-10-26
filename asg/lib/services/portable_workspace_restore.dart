@@ -3,6 +3,7 @@ import 'dart:convert';
 import '../models/portable_project_archive.dart';
 import '../models/project.dart';
 import 'portable_archive_store.dart';
+import 'inspected_folder_store.dart';
 import 'portable_decision_store.dart';
 import 'portable_revision_store.dart';
 import 'record_storage.dart';
@@ -37,12 +38,22 @@ class PortableWorkspaceRestore {
         );
       }
     }
-    final expected = <String, String?>{catalogKey: catalog};
+    final folders = records.getString(InspectedFolderStore.key);
+    if (InspectedFolderStore(records)
+        .load()
+        .any((root) => InspectedFolderStore.workspaceId(root) == id)) {
+      throw StateError('Imported workspace identity exists. Choose a new ID.');
+    }
+    final expected = <String, String?>{
+      catalogKey: catalog,
+      InspectedFolderStore.key: folders,
+    };
     for (final namespace in const [
       'application',
       'chat',
       'requirements',
       'planApproval',
+      'importedPlan',
       'historicalDecision',
       'historicalRevisions',
       'generation',
