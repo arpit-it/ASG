@@ -592,13 +592,16 @@ class SourceReviewController extends BaseController {
   Future<void> cancel() async {
     if (_repairLoopActive) {
       _loopCancelled = true;
-      _cancelled = true;
     }
     if (_candidateSession?.busy ?? false) {
+      if (_repairLoopActive) _cancelled = true;
       _candidateSession!.cancel();
       return;
     }
-    if (!_busy || _cancelled || isDisposed) return;
+    if (!_busy || _cancelled || isDisposed) {
+      if (_repairLoopActive) _cancelled = true;
+      return;
+    }
     _cancelled = true;
     _status = 'Cancelling review…';
     update();

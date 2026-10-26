@@ -159,201 +159,202 @@ void main() {
     'dispose',
     'working',
     'stop request',
+    'stop model',
     'stop copy',
     'stop checks',
     'withdraw',
     'offline',
   ]) {
-    test(
-      'automatic repair $outcome retains working output and durable evidence',
-      () async {
-        controller.dispose();
-        var copies = 0;
-        final delayed = DelayedRepairHost();
-        controller = create(
-          createHost: () => outcome == 'categories'
-              ? ReviewCandidateHost(
-                  failure: copies <= 3
-                      ? ['analyze', 'test', 'build'][copies - 1]
-                      : null,
-                )
-              : copies == 1 || outcome == 'exhausted'
-              ? FailedCheckHost()
-              : outcome == 'stop checks'
-              ? delayed
-              : ReviewCandidateHost(),
-          publish: (_, host, guard) async =>
-              throw StateError('Unexpected promotion'),
-          prepare:
-              ({
-                required project,
-                required generated,
-                required evidence,
-                required records,
-                required parent,
-                required checkActive,
-              }) async {
-                if (copies > 0 && outcome == 'stop copy') {
-                  unawaited(controller.cancel());
-                }
-                checkActive();
-                copies++;
-                expect(parent, '/candidates');
-                return GeneratedProject(
-                  directory: '/candidate/automatic-$copies',
-                  sdk: '/sdk',
-                  python: 'python3',
-                  confined: true,
-                  sources: GenerationInput(
-                    project,
-                    ApplicationStore(records).load(project).definition,
-                  ).fingerprints,
-                  approval: evidence.approval,
-                  tasks: BuildPlan.parse(
-                    evidence.approval.content,
-                    board: RequirementsStore(records).load(project.id),
-                  ).tasks,
-                );
-              },
-        );
-        Future<void> answer() async {
-          await tick();
-          final current = provider;
-          expect(current.prompt, isNotNull);
-          current.stream.add(response());
-          provider = FakeProvider();
-          await current.stream.close();
-          await tick();
-        }
+    test('automatic repair $outcome retains working output and durable evidence', () async {
+      controller.dispose();
+      var copies = 0;
+      final delayed = DelayedRepairHost();
+      controller = create(
+        createHost: () => outcome == 'categories'
+            ? ReviewCandidateHost(
+                failure: copies <= 3
+                    ? ['analyze', 'test', 'build'][copies - 1]
+                    : null,
+              )
+            : copies == 1 || outcome == 'exhausted'
+            ? FailedCheckHost()
+            : outcome == 'stop checks'
+            ? delayed
+            : ReviewCandidateHost(),
+        publish: (_, host, guard) async =>
+            throw StateError('Unexpected promotion'),
+        prepare:
+            ({
+              required project,
+              required generated,
+              required evidence,
+              required records,
+              required parent,
+              required checkActive,
+            }) async {
+              if (copies > 0 && outcome == 'stop copy') {
+                unawaited(controller.cancel());
+              }
+              checkActive();
+              copies++;
+              expect(parent, '/candidates');
+              return GeneratedProject(
+                directory: '/candidate/automatic-$copies',
+                sdk: '/sdk',
+                python: 'python3',
+                confined: true,
+                sources: GenerationInput(
+                  project,
+                  ApplicationStore(records).load(project).definition,
+                ).fingerprints,
+                approval: evidence.approval,
+                tasks: BuildPlan.parse(
+                  evidence.approval.content,
+                  board: RequirementsStore(records).load(project.id),
+                ).tasks,
+              );
+            },
+      );
+      Future<void> answer() async {
+        await tick();
+        final current = provider;
+        expect(current.prompt, isNotNull);
+        current.stream.add(response());
+        provider = FakeProvider();
+        await current.stream.close();
+        await tick();
+      }
 
-        final first = controller.request('Tanalyze', ['lib/main.dart']);
-        await answer();
-        await first;
-        await controller.selectCandidateParent();
-        await controller.prepareCandidate();
-        await controller.candidateSession!.verify(approved: true);
-        await controller.selectCandidateParent();
-        final working = records.getString('studio.generation.v1.${project.id}');
-        await controller.runAutomaticRepairs([
-          'lib/main.dart',
-        ], approved: false);
+      final first = controller.request('Tanalyze', ['lib/main.dart']);
+      await answer();
+      await first;
+      await controller.selectCandidateParent();
+      await controller.prepareCandidate();
+      await controller.candidateSession!.verify(approved: true);
+      await controller.selectCandidateParent();
+      final working = records.getString('studio.generation.v1.${project.id}');
+      await controller.runAutomaticRepairs(['lib/main.dart'], approved: false);
+      expect(provider.prompt, isNull);
+      expect(controller.repairHistory, isEmpty);
+      var stopped = false;
+      void listener() {
+        if (stopped || !controller.automaticRepairActive) return;
+        if (outcome == 'stop request' &&
+            controller.status.startsWith('Requesting local model')) {
+          stopped = true;
+          unawaited(controller.cancel());
+        }
+        if ((outcome == 'dispose' || outcome == 'working') &&
+            controller.status.startsWith('Requesting local model')) {
+          stopped = true;
+          if (outcome == 'dispose') {
+            controller.dispose();
+          } else {
+            records.values['studio.generation.v1.${project.id}'] = 'changed';
+          }
+        }
+        if (outcome == 'withdraw' &&
+            controller.status.startsWith('Requesting local model')) {
+          stopped = true;
+          records.values['studio.planApproval.v1.${project.id}'] = '{}';
+        }
+        if (outcome == 'stop checks' &&
+            (controller.candidateSession?.busy ?? false)) {
+          stopped = true;
+          unawaited(controller.cancel());
+        }
+      }
+
+      controller.addListener(listener);
+      final run = controller.runAutomaticRepairs([
+        'lib/main.dart',
+      ], approved: true);
+      if ([
+        'stop request',
+        'withdraw',
+        'dispose',
+        'working',
+      ].contains(outcome)) {
+        await run;
         expect(provider.prompt, isNull);
         expect(controller.repairHistory, isEmpty);
-        var stopped = false;
-        void listener() {
-          if (stopped || !controller.automaticRepairActive) return;
-          if (outcome == 'stop request' &&
-              controller.status.startsWith('Requesting local model')) {
-            stopped = true;
-            unawaited(controller.cancel());
-          }
-          if ((outcome == 'dispose' || outcome == 'working') &&
-              controller.status.startsWith('Requesting local model')) {
-            stopped = true;
-            if (outcome == 'dispose') {
-              controller.dispose();
-            } else {
-              records.values['studio.generation.v1.${project.id}'] = 'changed';
-            }
-          }
-          if (outcome == 'withdraw' &&
-              controller.status.startsWith('Requesting local model')) {
-            stopped = true;
-            records.values['studio.planApproval.v1.${project.id}'] = '{}';
-          }
-          if (outcome == 'stop checks' &&
-              (controller.candidateSession?.busy ?? false)) {
-            stopped = true;
-            unawaited(controller.cancel());
-          }
+      } else if (outcome == 'stop model') {
+        await tick();
+        expect(provider.prompt, isNotNull);
+        expect(controller.busy, isTrue);
+        final before = provider.cancellations;
+        await controller.cancel();
+        expect(provider.cancellations, greaterThan(before));
+        // A late model response cannot prepare a copy or start another request.
+        provider.stream.add(response());
+        await provider.stream.close();
+        await run;
+        expect(copies, 1);
+        expect(controller.repairHistory.length, 1);
+        expect(controller.status, contains('cancelled'));
+      } else if (outcome == 'offline') {
+        await tick();
+        provider.stream.addError(StateError('offline'));
+        await provider.stream.close();
+        await run;
+        expect(controller.repairHistory.length, 1);
+        expect(copies, 1);
+      } else {
+        for (
+          var i = 0;
+          i < (['exhausted', 'categories'].contains(outcome) ? 3 : 1);
+          i++
+        ) {
+          await answer();
         }
-
-        controller.addListener(listener);
-        final run = controller.runAutomaticRepairs([
-          'lib/main.dart',
-        ], approved: true);
-        if ([
-          'stop request',
-          'withdraw',
-          'dispose',
-          'working',
-        ].contains(outcome)) {
-          await run;
-          expect(provider.prompt, isNull);
-          expect(controller.repairHistory, isEmpty);
-        } else if (outcome == 'offline') {
-          await tick();
-          provider.stream.addError(StateError('offline'));
-          await provider.stream.close();
-          await run;
-          expect(controller.repairHistory.length, 1);
-          expect(copies, 1);
-        } else {
-          for (
-            var i = 0;
-            i < (['exhausted', 'categories'].contains(outcome) ? 3 : 1);
-            i++
-          ) {
-            await answer();
-          }
-          await run;
-          expect(
-            controller.repairHistory.length,
-            ['exhausted', 'categories'].contains(outcome) ? 3 : 1,
-          );
-          if (outcome == 'success' || outcome == 'categories') {
-            expect(controller.candidate!.phase, SourceGenerationPhase.ready);
-            expect(controller.candidateSession!.canPromote, isTrue);
-            expect(controller.error, isNull);
-          } else if (outcome == 'exhausted') {
-            expect(controller.error, contains('budget exhausted'));
-            expect(copies, 4);
-            expect(controller.repairUsage['analyze'], 3);
-            expect(provider.prompt, isNull);
-          } else {
-            expect(controller.status, contains('cancelled'));
-            expect(provider.prompt, isNull);
-          }
-        }
-        expect(controller.busy, isFalse);
-        expect(controller.promoted, isFalse);
+        await run;
         expect(
-          records.getString('studio.generation.v1.${project.id}'),
-          outcome == 'working' ? 'changed' : working,
+          controller.repairHistory.length,
+          ['exhausted', 'categories'].contains(outcome) ? 3 : 1,
         );
-        final runs = CandidateVerificationStore(
-          records,
-          project.id,
-        ).load().runs;
-        expect(
-          runs.first.snapshot.steps.last.exitCode,
-          outcome == 'categories' ? 1 : 65,
-        );
-        expect(
-          runs.first.snapshot.steps.last.output,
-          contains(
-            outcome == 'categories'
-                ? 'source failure fixture'
-                : 'Undefined name',
-          ),
-        );
-        if (outcome == 'exhausted') expect(runs.length, 4);
         if (outcome == 'success' || outcome == 'categories') {
-          expect(runs.length, outcome == 'categories' ? 4 : 2);
-          if (outcome == 'categories') {
-            expect(controller.repairUsage, {
-              'analyze': 1,
-              'test': 1,
-              'build': 1,
-            });
-          }
-          expect(
-            runs.last.snapshot.steps.every((step) => step.succeeded),
-            isTrue,
-          );
+          expect(controller.candidate!.phase, SourceGenerationPhase.ready);
+          expect(controller.candidateSession!.canPromote, isTrue);
+          expect(controller.error, isNull);
+        } else if (outcome == 'exhausted') {
+          expect(controller.error, contains('budget exhausted'));
+          expect(copies, 4);
+          expect(controller.repairUsage['analyze'], 3);
+          expect(provider.prompt, isNull);
+        } else {
+          expect(controller.status, contains('cancelled'));
+          expect(provider.prompt, isNull);
         }
-      },
-    );
+      }
+      expect(controller.busy, isFalse);
+      expect(controller.promoted, isFalse);
+      expect(
+        records.getString('studio.generation.v1.${project.id}'),
+        outcome == 'working' ? 'changed' : working,
+      );
+      final runs = CandidateVerificationStore(records, project.id).load().runs;
+      expect(
+        runs.first.snapshot.steps.last.exitCode,
+        outcome == 'categories' ? 1 : 65,
+      );
+      expect(
+        runs.first.snapshot.steps.last.output,
+        contains(
+          outcome == 'categories' ? 'source failure fixture' : 'Undefined name',
+        ),
+      );
+      if (outcome == 'exhausted') expect(runs.length, 4);
+      if (outcome == 'success' || outcome == 'categories') {
+        expect(runs.length, outcome == 'categories' ? 4 : 2);
+        if (outcome == 'categories') {
+          expect(controller.repairUsage, {'analyze': 1, 'test': 1, 'build': 1});
+        }
+        expect(
+          runs.last.snapshot.steps.every((step) => step.succeeded),
+          isTrue,
+        );
+      }
+    });
   }
 
   for (final repair in [false, true]) {
