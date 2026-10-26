@@ -69,7 +69,7 @@ A task moves Queued → In progress → Awaiting merge → Done; use Blocked wit
 
 ## Active task and delivery ledger
 
-Active: F08 In progress/unchecked; reopened #114 on `114-strict-conversation-export` for lossless assistance-field validation. PR #143 merge verified. Complete backup/general secret exclusion pending; no later task selected.
+Active: F08 In progress/unchecked; reopened #114 on `114-strict-requirements-export` for lossless requirements-field validation. PR #144 merge verified. Complete backup/general secret exclusion pending; no later task selected.
 
 ### F03 acceptance boundary and evidence
 
@@ -2358,3 +2358,21 @@ Owner complete; local main synchronized. Run completed 2026-10-26T16:30:02.87875
 ### F08 strict saved assistance export — issue #114 (26 October 2026)
 
 Reopened matching #114 on `114-strict-conversation-export` after verifying PR #143 merged as `9e5a765d8fb5722641968284bbd3c786bd03795a`, no open PR/issues and no competing active ASG run. Evidence: normal conversation decoding silently ignored unknown saved message fields during export, unlike prototype export. Regression failed before fix. Export now validates assistance message field names before conversion; role/content and validated optional planContext remain supported, with context intentionally excluded. Unknown scalar/nested/null fields refuse export without writes or content disclosure, clear stale previews, preserve raw records and permit clean retry. Exact Unicode/legacy/contextual text remains supported. F08 remains In progress/unchecked for complete backup/general secret exclusion. Formatter190/analyzer passed; full tests/web build and independent exact-revision review/required CI remain gates. Existing8765endpoint offline; no live inference/download/deployment. Unrelated IDE/history edits retained. Recorded 2026-10-26T16:40:08.222883+00:00.
+
+
+### F08 strict saved assistance export — verified PR #144 delivery (26 October 2026)
+
+Issue #114 / branch `114-strict-conversation-export` delivered through https://github.com/arpit-it/ASG/pull/144. Independent exact-head COMMENT5655689619 and final complete-CI5655731811 approved `f41a2d071638bb15ce42a7c8389db99d6c8b6204`. Normal protected squash merge `e71e284de060b310f03696e26047a9d12104daed` at2026-10-26T16:47:04Z; issue closed/completed16:47:06Z independently verified through connected GitHub. Tested local `03d003886e4304506b0e9d46478578e45b59aa45`, published head and merged main share tree `b49f7da125e7ffa592738a336d4d3fb33def5148`.
+
+Before-fix regression failed. Local formatter190/analyzer/all511Flutter tests-seven skips/web build/Wasm pass. Reviewer independently38focused archive/policy/MVC tests/formatter190/analyzer pass. Required CI40361742210 complete actual logs inspected before reviewer merge: Flutter121708725899 formatter190/analyzer/509Linux tests-six skips/twoChrome tests/webWasm/generated resolve-analyze-test-build0 plus HTTP200/>1000byte serving assertions; Python1217087247472download+4streaming+10process+4confinement fixtures-two skips. Parent independently verified merged PR/exact head/closed issue/current main/exact tree through plugin; imported signed merge only after byte-exact SHA verification, safely fast-forwarded local main with0/0divergence and empty tested-tree diff. Unrelated IDE/history edits retained; nothing staged. GitHub exclusively plugin.
+
+F08 remains In progress/unchecked. Unknown saved assistance message fields now refuse export rather than silently losing data; supported legacy/contextual text, deliberate context exclusion and clean retry retained. Complete backup/general secret exclusion pending. Existing8765endpoint offline; no live inference/model download/stable-app replacement/deployment. No new issue/task/cadence/notification change. Prior history publication exclusion/label rejection respected. Postmerge evidence retained locally for the next normal reviewed increment. Recorded 2026-10-26T16:48:04.264384+00:00.
+
+Owner complete; local main synchronized. Run completed 2026-10-26T16:48:04.264384+00:00.
+
+
+### F08 strict saved requirements export — issue #114 (26 October 2026)
+
+Reopened matching #114 on `114-strict-requirements-export` after plugin verification of PR #144 merge e71e284de060b310f03696e26047a9d12104daed, closed issue, no open PR/issues and no competing active ASG owner. Evidence: normal board/requirement/task decoders silently ignored unknown saved fields during export. Regression failed before fix. Export-only strict validation now refuses unknown scalar/nested/null fields at all three levels, missing fields and malformed shapes before conversion. No source writes/downloads or private field disclosure; stale previews clear and clean retry retains exact Unicode, revision, statuses and dependency edges. Absent boards remain supported. Normal editing and archive versions unchanged. F08 remains In progress/unchecked for complete backup/general secret exclusion. Independent final-revision review and actual required CI remain merge gates. Existing8765endpoint offline; no live inference/download/deployment. Unrelated IDE/history edits retained and prior history-publication exclusion respected. Recorded 2026-10-26T17:00:24.353862+00:00.
+
+Local validation: before-fix regression failed; formatter191/analyzer/all513Flutter tests-seven skips/web build and Wasm dry run passed. Final independent review, required CI and merge pending.
