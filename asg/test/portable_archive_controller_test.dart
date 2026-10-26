@@ -110,6 +110,59 @@ String archive() => PortableProjectArchive(
 ).encode();
 void main() {
   test(
+    'ambiguous saved records clear export preview and preserve retry',
+    () async {
+      final records = Records();
+      final files = Files();
+      final c = PortableArchiveController('p', records, files: files);
+      addTearDown(c.dispose);
+      final sources = <String, String>{
+        'studio.chat.v1.p':
+            r'[{"role":"user","content":"lost","co\u006etent":"kept"}]',
+        'studio.requirements.v1.p': '{"version":1,"revision":1,"revision":2,"requirements":[],"tasks":[]}',
+        'studio.planApproval.v1.p': '{"content":"lost","content":"kept"}',
+        'studio.generation.v1.p': '{"phase":"ready","phase":"failed"}',
+        'studio.historicalDecision.v1.p': '{"approved":true,"approved":false}',
+        'studio.historicalRevisions.v1.p':
+            '[{"outcome":"ready","outcome":"failed"}]',
+      };
+      for (final source in sources.entries) {
+        records.values.clear();
+        await c.prepareExport();
+        expect(c.exportPreview, isNotNull);
+        files.written = null;
+        records.values[source.key] = source.value;
+        final before = Map.of(records.values);
+        await c.prepareExport();
+        expect(c.error, isNotNull, reason: source.key);
+        expect(c.exportPreview, isNull, reason: source.key);
+        await c.exportFile();
+        expect(files.written, isNull);
+        expect(records.values, before);
+        records.values.remove(source.key);
+        await c.prepareExport();
+        expect(c.error, isNull);
+        await c.exportFile();
+        expect(files.written, isNotNull);
+      }
+      records.values['studio.chat.v1.p'] = jsonEncode([
+        {'role': 'user', 'content': r'{"x":1,"x":2}: "quoted"'},
+        {
+          'role': 'assistant',
+          'content': 'Exact 中文 😀',
+          'planContext': 'private',
+        },
+      ]);
+      await c.prepareExport();
+      expect(c.error, isNull);
+      await c.exportFile();
+      final restored = PortableProjectArchive.decode(files.written!);
+      expect(restored.messages.first.content, r'{"x":1,"x":2}: "quoted"');
+      expect(restored.messages.last.content, 'Exact 中文 😀');
+      expect(files.written, isNot(contains('private')));
+    },
+  );
+  test(
     'damaged saved prototype blocks export and malformed import writes nothing',
     () async {
       final records = Records();

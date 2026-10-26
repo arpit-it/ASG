@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import '../models/portable_project_archive.dart';
 import '../services/archive_file_service.dart';
 import '../services/portable_prototype_store.dart';
+import '../services/portable_export_records.dart';
 import '../services/conversation_store.dart';
 import '../services/portable_archive_store.dart';
 import '../services/portable_decision_store.dart';
@@ -61,12 +62,13 @@ class PortableArchiveController extends ChangeNotifier {
 
   Future<void> prepareExport() => _run(() async {
     _exportPreview = null;
+    final source = PortableExportRecords(records);
     final archive = PortableProjectArchive(
-      requirements: RequirementsStore(records).load(projectId),
-      prototype: PortablePrototypeStore(records).load(projectId),
-      decision: PortableDecisionStore(records).load(projectId),
-      revisions: PortableRevisionStore(records).load(projectId),
-      messages: ConversationStore(records).load(projectId),
+      requirements: RequirementsStore(source).load(projectId),
+      prototype: PortablePrototypeStore(source).load(projectId),
+      decision: PortableDecisionStore(source).load(projectId),
+      revisions: PortableRevisionStore(source).load(projectId),
+      messages: ConversationStore(source).load(projectId),
     );
     archive.encode();
     _exportPreview = archive;
