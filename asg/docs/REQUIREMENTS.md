@@ -69,7 +69,7 @@ A task moves Queued → In progress → Awaiting merge → Done; use Blocked wit
 
 ## Active task and delivery ledger
 
-Active: F08 In progress/unchecked; issue #114 reopened on `114-basic-export-guard` for HTTP Basic authorization export refusal. Prior PR #131 merge `85f13798332af7ec4ec06909c342807190759923` verified through connected GitHub. Complete backup/general secret exclusion remain pending; no later task selected.
+Active: F08 In progress/unchecked; reopened #114 on `114-empty-user-url-guard` for password-only URL export refusal. PR #132 merge `40a3b348c07cabaa730f0484ff70f136863b3f35` verified through connected GitHub. Complete backup/general secret exclusion remain pending; no later task selected.
 
 ### F03 acceptance boundary and evidence
 
@@ -2161,3 +2161,19 @@ Reused/reopened #114 on `114-basic-export-guard` from plugin-verified current ma
 Acceptance: policy fixtures refuse these credential forms without exposing the token; controller refusal invalidates stale preview, changes no records, writes no file and permits clean retry. Formatter/analyzer/full Flutter tests/web build and independent exact-revision review/actual required CI are delivery gates. F08 remains In progress/unchecked for complete backup/general secret exclusion. Prior delivery evidence remains above; final PR/review/check/merge evidence will be recorded after verification.
 
 Local validation: formatter188 unchanged, analyzer clean, full500Flutter tests/seven opt-in skips, 26focused policy/controller tests and web build/Wasm dry run pass. Exact final review/CI/merge remain pending.
+
+
+### F08 Basic credential export guard — verified PR #132 delivery (26 October 2026)
+
+Issue #114 / branch `114-basic-export-guard` delivered through [PR #132](https://github.com/arpit-it/ASG/pull/132). Independent final-revision COMMENT approval `5652636526` and complete-CI gate `5652683268` approved exact head `8ba469ecd4dc6be230cf7aff10294ce500f48be8`. Normal protected squash merge `40a3b348c07cabaa730f0484ff70f136863b3f35` at 2026-10-26 13:26:39 UTC and issue closure/completed 13:26:40 independently verified through connected GitHub. Tested local `c50ae92`, published head and merged main share tree `004460936bd3c02fb6413a4bc643312522244327`.
+
+Independent56focused tests and external Basic/quoted/CRLF/+slash fixtures pass; 98k failed-prefix performance probes18ms. Required CI `40329871952` complete actual logs inspected before reviewer merge: Flutter `121596129561` passes498Linux tests/six skips, formatter188/analyzer, actualChromeIndexedDB/webWasm and generated resolve/analyze/test/build all0 with HTTP200/>1000-byte serving assertions; Python `121596129950` passes2download+4streaming+10process+4confinement fixtures/two skips. Local500Flutter tests/seven skips, formatter188/analyzer/26focused/webWasm pass. Parent independently verified merged PR, closed issue, current remote main and identical tree through plugin; imported signed merge only after exact SHA reproduction and safely fast-forwarded local main with0/0divergence and empty tested-tree diff. Unrelated IDE/history edits retained; nothing staged. No terminal GitHub access.
+
+F08 remains In progress/unchecked. Bounded Basic authorization refusal is delivered; complete backup/general secret exclusion remain pending. Existing8765 endpoint offline; no live inference/download/stable-app replacement/deployment. No new issue/task/cadence/notification change. Prior history publication exclusion and label rejection retained without repeat attempts. Postmerge evidence retained locally for the next normal reviewed increment.
+
+
+### F08 password-only URL export refusal — issue #114 (26 October 2026)
+
+Reopened matching #114 on `114-empty-user-url-guard` after plugin verification of PR #132 merge and no competing owner/open PR. Evidence: the password URL guard required a nonempty username, allowing Redis-style password-only URLs through export. Scope: refuse nonempty passwords with empty usernames; retain lossless import, empty-password URLs, ordinary hosts and data integrity. Policy fixtures cover custom/mixed-case schemes and percent-encoded passwords; controller regression requires stale-preview invalidation, no writes, safe errors and clean retry. Formatter/analyzer/full Flutter tests/web build and independent final-revision review/required CI remain gates. F08 stays In progress/unchecked; general secret exclusion and complete backup remain pending.
+
+Local validation: formatter188 unchanged, analyzer clean, all501Flutter tests pass (seven opt-in skips); web build and Wasm dry run pass. Independent final-revision review and actual required CI remain merge gates.
