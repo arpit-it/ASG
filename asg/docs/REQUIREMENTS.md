@@ -69,7 +69,7 @@ A task moves Queued → In progress → Awaiting merge → Done; use Blocked wit
 
 ## Active task and delivery ledger
 
-Current: F09 In progress/unchecked; reopened issue #167 on `167-private-plan-previews` protects read-only executable-task and proposed-task preview failures. PR #209 verified merged. Awaiting independent final-revision review, required CI and verified merge; no later task selected.
+Current: F09 issue #167 on `167-private-requirements-errors` addresses private requirements board load/save diagnostics. Awaiting validation, independent final-revision review and required CI/merge. PR #210 verified merged as `4648d3d378c9621005f5813f5d44d17c224bd1ca`. F09 remains In progress/unchecked; no later task selected. Earlier active summaries below are historical.
 
 Latest verified increment: F09 issue #167 / PR #200 merged as `974167fec059ee98f661436e9b9b71f238319a3f` after independent reviews `5667369555` / `5667432142` and required CI `40507722336`. F09 remains In progress/unchecked; no unmerged increment. Detailed final evidence below.
 
@@ -3448,3 +3448,21 @@ Branch `167-private-plan-previews` from verified PR #209 merge `045e246ae5941e22
 Baseline corruption regressions fail with exposed private markers for project/conversation records. Coverage includes requirements corruption, repeated read-only access, byte-identical saved records, no writes/notifications/state changes, correction recovery, proposed-task gate recovery and disposed reads. Original five local edits retained in the main checkout; documentation content carried forward. Full validation and independent final-revision review/required CI/merge evidence recorded in the linked PR before completion. No fresh live inference claimed.
 
 Validation: 18 focused and 684 full Flutter tests passed (seven opt-in skips); analyzer clean. Formatter and web build/Wasm checked before publication. Configured local8765 endpoint unavailable; no fresh inference claimed. Independent final-head review and actual required CI remain mandatory.
+
+
+### F09 private Plan previews — verified PR #210 (27 October 2026)
+
+Issue #167 / branch `167-private-plan-previews` delivered through https://github.com/arpit-it/ASG/pull/210. Final head `950c22feb8faa34bdb634003cdb3b2acf290beb1`, tested tree `33e0cd118ff1123c7e9033953604d1f6ee22bbfb` identical to local `3aa94d08588429cf4c5f8841bc1b84564a6599fc`. Independent final-revision reviews `5670201963` / `5670271085` approved with no blocking findings or unresolved threads. Reviewer normal protected squash merge `4648d3d378c9621005f5813f5d44d17c224bd1ca` at 2026-10-27T16:00:41Z. Parent independently verified merged PR, closed/completed issue, remote main and exact signed merge object with matching tested tree through connected GitHub plugin.
+
+Read-only Plan executable-task/proposed-task preview failures now show authored recovery guidance instead of raw private saved JSON. Valid previews and approval/import gates remain. Baseline corruption regressions expose private project/conversation markers; final coverage verifies repeated reads, unchanged saved bytes/writes/notifications/controller state, correction recovery, proposed-task gate recovery and disposed reads. Local18focused/684fullFlutter tests passed/seven opt-in skips; formatter206/analyzer/web build/Wasm passed. Independent18focused passed. Actual required CI40535699884 passed: Flutter122300223614681Linux tests/seven skips,2Chrome storage/archive tests,formatter206/analyzer/webWasm and enabled generated resolve/analyze/test/build0 plus HTTP200/>1000-byte main.dart.js serving acceptance; Python1223002220652+4+10+4fixtures/two confinement skips.
+
+F09 remains In progress/unchecked pending remaining acceptance audit; no later task selected. All three docs published; both automation labels applied. Original IDE edits verified byte-identical and original documentation content retained (current ledger updated), backed up at `/private/tmp/asg-210-preserved`. Local main/origin0/0, source/tests/index clean before final evidence append. Local8765 endpoint unavailable; no fresh inference/model download/stable-app replacement. Schedule and notification preference unchanged.
+
+
+### F09 private requirements board failures — issue #167 (27 October 2026)
+
+Branch `167-private-requirements-errors` from verified PR #210 merge `4648d3d378c9621005f5813f5d44d17c224bd1ca`. Requirements board load/save rendered raw storage errors with private record content. Authored recovery guidance now contains backend failures; pure model validation retains actionable graph/field messages. Failed saves retain the last loaded revision; load failure prevents edits without replacing saved records. F09 remains In progress/unchecked; no later task selected.
+
+Two baseline privacy regressions failed. Coverage checks repeated failed reads with unchanged bytes/writes, failed write and successful retry/reopen, invalid graph rejection before writes and disposal during failed save. Full validation, exact published tree, independent final-revision review and actual CI/merge evidence will be recorded in the linked PR. No model download, live inference or stable-app replacement claimed.
+
+Validation: 12 focused and 687 full Flutter tests passed (seven opt-in skips); formatter207/analyzer clean; web build and Wasm dry run passed. Local8765 endpoint unavailable; no fresh inference verified. Independent final-head review and actual required CI remain mandatory.
