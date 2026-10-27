@@ -33,10 +33,10 @@ Update this document with task selection and delivery evidence, alongside [agent
 - [x] F07 Existing project import — Done; depends on F01
   - Inspect an existing Flutter repository without overwriting it; identify toolchains, project metadata and unsupported capabilities.
   - Accept when users can select and reopen an imported project, inspect findings and approve a plan before any source modification; invalid folders fail without writes.
-- [ ] F08 Portable project backup and restore — In progress; depends on F01
+- [x] F08 Portable project backup and restore — Done; depends on F01
   - Export and restore requirements, conversations, decisions, tasks and revision metadata with versioned manifests.
   - Accept when round trips preserve records, corrupt/incompatible archives fail safely, secrets are excluded and existing projects are never silently replaced.
-- [ ] F09 Runtime diagnostics and resource controls — Queued
+- [ ] F09 Runtime diagnostics and resource controls — In progress
   - Show actual model connectivity, active request, cancellation scope, request limits and actionable setup failures.
   - Accept when offline, timeout and cancellation states are truthful, settings persist, and diagnostics omit secrets and private prompt content.
 - [ ] F14 Resizable and collapsible workspace panes — Queued; depends on F01
@@ -69,7 +69,7 @@ A task moves Queued → In progress → Awaiting merge → Done; use Blocked wit
 
 ## Active task and delivery ledger
 
-Active: F08 In progress/unchecked on issue #165, branch `165-export-redaction`. On 27 October 2026 the user approved export-only user-selected literal redaction, resulting preview, strict validation and saved-original preservation. Policy choice is resolved. Implementation is tested and awaits independent final-revision review, required CI and merge; no later feature selected. Prior issue #114/PR #164 verified merged as `5f205f66d3f8602494401b402438674a55f695d8`.
+Active: No unmerged F08 work. F08 Done under the user-approved manual literal-redaction policy after PR #166 merge `512a6992caa4b37d73a9a72a7c61f8fe4a3242d1` on 27 October 2026. Independent final-head review and all required checks passed. F09 In progress on issue #167, branch `167-model-diagnostics`; bounded private connection diagnostics await independent review/CI/merge. No later task selected.
 
 ### F03 acceptance boundary and evidence
 
@@ -2722,3 +2722,55 @@ Branch `165-export-redaction` adds a separate local review draft, including draf
 Acceptance/validation: seven new model/controller/widget tests cover quoted/escaped/Unicode literals, repeated matches, project intent, structural identity, atomic failure, busy/disposed actions, blocked project and saved-copy redaction, export/restore round trips, cancellation and 360px/1.8x text UI. Existing browser regression now verifies actual downloaded redacted bytes against the review snapshot. Local 546 full Flutter tests passed (seven opt-in skips); 68 focused tests passed before the additional intent case; formatter/analyzer, actual Chrome download test and web build/Wasm dry run passed. Initial UI test scrolling and one analyzer style finding were fixed and relevant checks rerun. No live inference claimed. Independent exact-head review, required CI and verified merge remain gates. F08 stays unchecked pending that evidence and overall acceptance audit under the approved policy. No later feature selected.
 
 Recorded 2026-10-27T03:52:01.003170+00:00.
+
+
+### F08 restore catalog preservation — verified PR #164 delivery
+
+Issue #114 / branch `114-restore-catalog-preservation` delivered through https://github.com/arpit-it/ASG/pull/164. Independent final-head review5660103075/finalgate5660141344 approved `080dc9f839e1449ee846b1e6d24a24b06922c321`; earlier numeric precision finding5660088015 resolved and thread closed. Normal protected squash merge `5f205f66d3f8602494401b402438674a55f695d8` at2026-10-26T22:48:56Z; issue114closed/completed22:48:57Z. Parent independently plugin verified merged PR/approved head/current main/issue closure. Tested local8d272aa, published final head and merged main tree `e9f10f964426dca04d2d6c8687fa11217c7600b3` match. Exact signed merge SHA/tree validated before local import; safely fast-forwarded main,0/0divergence, no source/test diff and nothing staged. Existing IDE/history edits retained.
+
+Before-fix native reopen regression failed. Final95focused/539fullFlutter-seven opt-in skips/actualChrome numeric regression/formatter192/analyzer/webWasm passed. Reviewer independently95focused/formerly failing numeric probe/actualChrome/formatter/analyzer passed. RequiredCI40414617419success; actual Flutter121893793990logs537Linux-six skips/new regressions/twoChrome/webWasm/generated resolve-analyze-test-build all4exit0+serving pass and Python1218937942362+4+10+4fixtures-two confinement skips inspected before merge.
+
+Restore now retains validated original catalog JSON text while appending a new workspace, preserving unknown nested Unicode metadata and exact integer/decimal/exponent lexemes. Duplicate members including escaped/nested keys refuse without writes; clean retry, empty lists, atomic conflict/identity guards remain verified. F08 remains In progress/unchecked for broader backup/general secret exclusion; no next feature selected. Runtime8765offline; no live inference/download/stable-app replacement/deployment. No new task/issue/cadence/notification change. History-publication exclusion and prior label rejection retained. Postmerge evidence retained for the next normal reviewed increment. Owner complete; local main synchronized. Recorded 2026-10-26T22:49:45.958997+00:00.
+
+
+### F08 post-merge acceptance audit — 2026-10-26T22:58:42.348688+00:00
+
+Connected GitHub plugin verified PR #164 merged as 5f205f66d3f8602494401b402438674a55f695d8, matching current remote/local main; issue #114 closed/completed. No open remote issue/PR or competing active ASG owner at inspection. Read project guidance, coding standards/workflow, requirements and history; inspected portable project intent, raw catalog append, revision summaries, strict archive parsing, export record validation, credential scanning and controller workflows. Fresh focused archive/model/store/controller/policy/MVC suite passed 95/95 on merged main. No additional reproducible defect established in these inspected paths; no new issue, task, branch, source edit or PR created. This bounded audit does not establish complete F08 acceptance: general secret exclusion remains explicitly unproven, and F08 stays In progress/unchecked. No later task selected.
+
+Runtime http://127.0.0.1:8765/health connection refused; no live inference claimed. Existing IDE/requirements/history edits preserved, no staged changes. No model download, stable-app replacement, deployment, schedule or notification change. Existing postmerge bookkeeping remains local for a future normal reviewed increment.
+
+
+### F08 credential and restore boundary inspection — 2026-10-26T23:08:13.606446+00:00
+
+Verified through connected GitHub plugin: PR #164 merged as 5f205f66d3f8602494401b402438674a55f695d8; issue #114 closed/completed. Local HEAD matches. No open remote issues/PRs or competing active ASG run at inspection. Inspected decoded-value credential scanning (including encoded, XML, command-line and URL forms), export snapshots, atomic restore collision checks and original catalog JSON preservation. Fresh focused policy/archive/controller/store/MVC suite passed 95/95. No new reproducible defect established; no issue, branch, source change or PR created. F08 remains In progress/unchecked: bounded recognizable-pattern checks do not establish arbitrary secret exclusion. No later feature selected.
+
+Runtime 127.0.0.1:8765 health connection refused; no live inference. Preserved unrelated IDE/requirements/history edits. No model download, installed-app replacement, deployment, schedule or notification change. Evidence logged locally; no publication attempted.
+
+
+### F08 export boundary revalidation — 2026-10-26T23:28:36.353095+00:00
+
+Connected GitHub plugin verified PR #164 merged as 5f205f66d3f8602494401b402438674a55f695d8 and issue #114 closed/completed; local HEAD matches that merge. No open GitHub issues/PRs or competing active ASG run observed. Read required guidance, current requirements and recent histories. Inspected decoded credential scanning, immutable export snapshots, imported/local decision selection and revision summarization. Fresh focused portable archive/model/controller/store/credential-policy/MVC tests passed 95/95. No additional reproducible defect established in inspected paths; no new issue/task, branch, source change or PR. F08 remains In progress/unchecked: recognizable-pattern checks and manual full-content review do not establish general secret exclusion. No later feature selected.
+
+Runtime 127.0.0.1:8765 health connection refused; no live inference claimed. Preserved existing IDE/requirements/history edits and empty index. Evidence recorded locally for future reviewed publication; no remote write, model download, stable-app replacement, deployment or automation preference change.
+
+
+### F08 independent acceptance audit — 2026-10-26T23:50:04.818720+00:00
+
+Connected GitHub plugin verified no open issue/PR, PR #164 merged as `5f205f66d3f8602494401b402438674a55f695d8`, and #114 closed/completed; local HEAD matches. No competing active ASG run observed. Independent reviewer `/root/review_f08_boundary` inspected source and actual credential tests (9/9 passed). Known-pattern blocking cannot establish arbitrary secret exclusion, and current read-only archive review cannot remove identified private text without editing source records. Recommended concrete F08 increment is export-only literal redaction with resulting preview, strict revalidation and original-record preservation. Product choice between reviewed verbatim text, user-selected redaction and excluding all authored text was requested and remains unanswered. F08 explicitly Blocked/unchecked pending that policy decision; no later task selected. No duplicate issue or source change/PR created. Existing local edits retained. Runtime8765 connection refused; no live inference claimed. No schedule/notification change.
+
+
+### F08 export-only redaction — verified completion (27 October 2026)
+
+User explicitly approved export-only user-selected literal redaction with resulting preview, strict validation and saved-original preservation; prior policy blocker resolved. Issue #165 / branch `165-export-redaction` delivered through https://github.com/arpit-it/ASG/pull/166. Exact published head `9fa67b855ade69fcdf7fc32058cf0e8daa6f8264` independently approved in reviews 5662026286 and final gate 5662040212. Protected squash merge `512a6992caa4b37d73a9a72a7c61f8fe4a3242d1` at 2026-10-27T03:57:10Z; issue #165 closed/completed 03:57:12Z. Parent independently verified PR merge, issue closure and current remote main through the connected GitHub plugin. Merge/published/tested local `aab832a12ed51af35d3f9600eba1545ce8e29e95` share tree `40a12b99fd0dd1fbeceb2e083def88ac8f0c97d8`; exact signed merge object SHA/tree verified before local import.
+
+Required CI 40446616184 passed both jobs. Reviewer inspected actual Flutter 121999322999 logs: formatter 194/analyzer, 544 Linux tests (six opt-in skips), all seven new redaction tests, two actual Chrome tests, web/Wasm build, independent generated-project resolve/analyze/test/build all exit 0 plus serving acceptance. Python 121999322347 passed 2+4+10+4 fixtures with two confinement skips. Local 546 Flutter tests passed (seven opt-in skips), formatter/analyzer/web/Wasm and actual Chrome redacted download passed. Independent 89 focused redaction/controller/native-persistence/policy/MVC tests, actual Chrome and structural/action-link/historical-consent preservation probe passed.
+
+F08 is Done under the explicitly approved manual-redaction policy. Supported versioned record round trips, corrupt/incompatible refusal, atomic nonreplacement restore, local review/redaction and recognized-credential refusal have acceptance evidence. Redaction preserves IDs, links, revisions and historical metadata; saved originals remain unchanged and restored history never grants executable approval. Arbitrary secrets still require user review and literal selection; no automatic universal secret-detection claim. No live inference claimed or model/runtime/installed-app replacement/deployment. Existing IDE/requirements/history edits retained. No later feature selected; next eligible F09 awaits the next run. This postmerge bookkeeping remains local for the next normal reviewed increment.
+Recorded 2026-10-27T03:58:45.723736+00:00.
+
+
+### F09 bounded private connection diagnostics — issue #167
+
+Branch `167-model-diagnostics`, based on verified PR #166 merge `512a6992caa4b37d73a9a72a7c61f8fe4a3242d1`. No open issues/PRs or competing active ASG run at selection. First F09 increment: model connection probe omits response and raw exception text, distinguishes completed nonempty/empty/failure/timeout/stopped states, bounds total time to 30 seconds and text to 4096 characters, and offers Stop with explicit app-connection-only scope. Generation transport retains 256 output tokens, 15-second startup and 30-second inactivity limits. Cancellation/disposal and late callbacks cannot hold busy state or overwrite a newer test. Settings schema unchanged; save failures use safe diagnostic text.
+
+Acceptance: five new tests cover private output/errors, empty output, total timeout, output cap, explicit Stop/retry/late output, invalid settings, disposal and narrow enlarged-text dialog. Local full suite 551 passed/seven opt-in skips; formatter195 and analyzer passed. Web build/Wasm dry run passed; independent final-head review, required CI and verified merge remain gates. Runtime loopback refused connection; no live inference claimed. F09 remains In progress for broader active-request/resource diagnostics; no later task selected. Existing IDE/history edits preserved, excluded from publication except relevant F08 postmerge requirements reconciliation.

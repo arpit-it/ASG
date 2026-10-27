@@ -71,6 +71,8 @@ class _ModelSettingsState extends State<ModelSettings> {
               'On Android Emulator, use 10.0.2.2 instead of 127.0.0.1 to reach this Mac. Physical phones need a separate secured connection; it is not configured here.',
             ),
             const SizedBox(height: 16),
+            const Text(ModelSettingsController.requestLimits),
+            const SizedBox(height: 16),
             SelectableText(controller.status),
             if (controller.busy) const LinearProgressIndicator(),
           ],
@@ -82,6 +84,11 @@ class _ModelSettingsState extends State<ModelSettings> {
         onPressed: () => Navigator.pop(context),
         child: const Text('Close'),
       ),
+      if (controller.testing)
+        OutlinedButton(
+          onPressed: controller.stopTest,
+          child: const Text('Stop test'),
+        ),
       OutlinedButton(
         onPressed: controller.busy ? null : () => controller.test(config),
         child: const Text('Test model'),

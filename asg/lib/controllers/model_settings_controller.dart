@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import '../models/local_model_config.dart';
 import '../services/model_settings_store.dart';
 import '../services/local_model.dart';
@@ -11,6 +13,17 @@ class ModelSettingsController extends BaseController {
   final ModelSettingsStore store;
   final ProviderFactory _createProvider;
   ModelProvider? _provider;
+  StreamSubscription<String>? _subscription;
+  Timer? _deadline;
+  Completer<void>? _completion;
+  int _request = 0;
+  bool get testing => _completion != null;
+  static const probeTimeout = Duration(seconds: 30);
+  static const probeOutputLimit = 4096;
+  static const requestLimits =
+      'Connection test: 30 seconds total, 4096 text characters, 256 output tokens. '
+      'Transport startup: 15 seconds; inactivity: 30 seconds. '
+      'Stop closes this app connection; server-side inference may continue.';
   LocalModelConfig get initial => store.load();
   String status =
       'Qwen 9B selected as the initial model family. Confirm the exact server model ID before testing.';
@@ -23,7 +36,7 @@ class ModelSettingsController extends BaseController {
       await store.save(config);
       status = 'Settings saved. Model availability has not been verified.';
     } catch (e) {
-      status = '$e';
+      status = 'Settings could not be saved. Check local storage and retry.';
     } finally {
       busy = false;
       update();
@@ -33,29 +46,103 @@ class ModelSettingsController extends BaseController {
   Future<void> test(LocalModelConfig config) async {
     if (busy || isDisposed) return;
     busy = true;
-    status = 'Waiting for the local model…';
+    final request = ++_request;
+    final completion = Completer<void>();
+    _completion = completion;
+    status = 'Connection test active. Waiting for a completed model response…';
     update();
+    var characters = 0;
+    var hasText = false;
     try {
+      // Validate before creating a provider, including injected providers.
+      config.endpoint;
       _provider = _createProvider(config);
-      final result = await _provider!
+      _deadline = Timer(probeTimeout, () {
+        if (request == _request) {
+          _finish('Connection test timed out. Check the runtime and retry.');
+        }
+      });
+      _subscription = _provider!
           .generate(
             'Reply with one short sentence confirming you can help plan a software project.',
           )
-          .join();
-      status = 'Local server responded:\n$result';
-    } catch (e) {
-      status = 'Connection test failed: $e';
-    } finally {
-      await _provider?.cancel();
-      _provider = null;
-      busy = false;
-      update();
+          .listen(
+            (text) {
+              if (request != _request || isDisposed) return;
+              characters += text.length;
+              hasText = hasText || text.trim().isNotEmpty;
+              if (characters > probeOutputLimit) {
+                _finish(
+                  'Connection test stopped: response exceeded the text limit.',
+                );
+              }
+            },
+            onError: (Object error) {
+              if (request != _request || isDisposed) return;
+              _finish(
+                error is TimeoutException
+                    ? 'Connection test timed out. Check the runtime and retry.'
+                    : 'Connection test failed. Check the local server, model ID and streaming API, then retry.',
+              );
+            },
+            onDone: () {
+              if (request != _request || isDisposed) return;
+              _finish(
+                hasText
+                    ? 'Local server completed the connection test. Response text is omitted.'
+                    : 'Connection test failed: the server returned no text. Check the model ID and runtime.',
+              );
+            },
+          );
+    } on FormatException {
+      _finish(
+        'Invalid connection settings. Use a local HTTP URL without credentials, query or fragment and a nonempty model ID.',
+      );
+    } catch (_) {
+      _finish(
+        'Connection test failed. Check the local server and model ID, then retry.',
+      );
+    }
+    await completion.future;
+  }
+
+  void stopTest() {
+    if (!testing || isDisposed) return;
+    _finish(
+      'Connection test stopped. App connection closed; server-side inference may continue.',
+    );
+  }
+
+  void _finish(String message) {
+    ++_request;
+    _deadline?.cancel();
+    _deadline = null;
+    final subscription = _subscription;
+    final provider = _provider;
+    _subscription = null;
+    _provider = null;
+    // Cleanup must not keep the UI busy if an external provider stalls or fails.
+    if (subscription != null) unawaited(_ignoreCleanup(subscription.cancel));
+    if (provider != null) unawaited(_ignoreCleanup(provider.cancel));
+    final completion = _completion;
+    _completion = null;
+    if (completion != null && !completion.isCompleted) completion.complete();
+    busy = false;
+    status = message;
+    update();
+  }
+
+  Future<void> _ignoreCleanup(Future<void> Function() cleanup) async {
+    try {
+      await cleanup();
+    } catch (_) {
+      // Never render transport errors: they can contain private response text.
     }
   }
 
   @override
   void dispose() {
-    _provider?.cancel();
+    _finish('Connection test closed.');
     super.dispose();
   }
 }
