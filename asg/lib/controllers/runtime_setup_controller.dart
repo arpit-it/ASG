@@ -313,7 +313,15 @@ class RuntimeSetupController extends BaseController {
       model: config.model,
       chatOutputTokens: _loadChatCeiling(),
     );
-    await modelStore.save(saved);
+    try {
+      await modelStore.save(saved);
+    } catch (_) {
+      // Storage errors may contain private paths or serialized record content.
+      throw StateError(
+        'Connection settings could not be saved. Check local storage and retry. '
+        'A started managed runtime can still be stopped with Stop.',
+      );
+    }
     return saved;
   }
 
