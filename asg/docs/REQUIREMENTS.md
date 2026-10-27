@@ -3232,3 +3232,10 @@ PR #193 verified merged as `8a137a7bbd62a5168dd69f5060caad98c3a8ef4e`; independe
 Use locally authored storage/settings guidance, retain saved messages and unsaved completed responses for explicit Retry saving, suppress disposed late failures and clear failure diagnostics after successful retry. Three new regressions fail on baseline. Original checkout edits retained; endpoint offline, no live inference or model download verified. Final local checks, PR, exact-revision independent review, actual required CI and merge evidence follow below. Status: Awaiting merge after checks/publication.
 
 Final local checks: formatter199/analyzer clean; 623 Flutter tests passed/seven opt-in skips; web build/Wasm passed. Three new baseline regressions failed and now pass. F09 remains In progress pending wider acceptance; this increment awaits independent final-head review and required CI.
+
+
+### F09 private task-import save diagnostics — issue #167 (27 October 2026)
+
+PR #195 verified merged as c4eaa5e9e4a552ac60fefd72f70d7be7ba169d6e after independent final reviews and required CI40498014447. F09 remains In progress/unchecked. No overlapping run or open PR. Reopened #167 on 167-private-task-save: a baseline injected storage failure disclosed private prompt/token/path content through ChatController.addPlanTasks.
+
+Scope/acceptance: authored save/reopen/retry guidance; failed writes preserve board/conversation; successful retry adds queued tasks once without inference and clears the error; disposed late failures cannot publish diagnostics. Baseline privacy regression failed. Focused/full Flutter tests, formatter/analyzer/web build, independent exact-head review and actual required CI gate merge. Preview diagnostics remain a subsequent acceptance audit; no later feature selected. Endpoint offline; no live inference/model download verified.

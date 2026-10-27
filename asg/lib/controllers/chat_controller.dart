@@ -263,8 +263,13 @@ class ChatController extends BaseController {
     update();
     try {
       await PlanTaskImport(_store!.records).add(project, _messages);
-    } catch (e) {
-      if (!isDisposed) error = '$e';
+    } catch (_) {
+      if (!isDisposed) {
+        error =
+            'Proposed tasks could not be saved. Check local storage and retry. '
+            'If the Plan or requirements changed, reopen the project and draft a current Plan. '
+            'Saved conversation and existing task records have not been replaced.';
+      }
     } finally {
       busy = false;
       phase = GenerationPhase.idle;
