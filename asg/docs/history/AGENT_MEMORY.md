@@ -2533,3 +2533,13 @@ Prior PR #198 verified merged as `1b3aab04f12f7bc69bb95c9068e514903804aa8b`; ind
 Scope/acceptance: authored local-storage retry/reopen guidance; failed writes preserve saved metadata and application; explicit retry clears error and updates the existing project once; disposed failed completion cannot publish diagnostics. Two baseline privacy regressions fail; all three new tests and 17 focused tests pass. Full checks, independent final-head review and actual required CI gate protected merge. No live inference/model download or stable-app replacement.
 
 Final local checks: formatter204/analyzer clean; 638 Flutter tests passed/seven opt-in skips; web build/Wasm dry run passed. Both baseline privacy regressions fail and now pass. F09 remains In progress; exact-final-revision independent review and actual required CI remain merge gates.
+
+
+### F09 private source-review diagnostics — issue #167 (27 October 2026)
+
+Branch `167-private-source-review` replaces raw source-review folder, preparation, approval, proposal, automatic-repair and cancellation-cleanup exception diagnostics with private authored recovery guidance. Working output, retained candidates, explicit retries, current approval guards and three-attempt repair budgets remain enforced. Cancellation guidance distinguishes ignoring the response from stopping server-side inference.
+
+Five baseline privacy regressions failed. The final source-review suite passes 56 tests, including five new capture/folder/approval/cleanup/disposal cases; full Flutter tests pass 648 with seven opt-in skips, formatter205/analyzer clean. Web build and Wasm dry run passed. Endpoint offline; no fresh inference or model download claimed. Awaiting publication, independent final-revision review, required CI and protected merge. F09 remains In progress/unchecked; no later task selected.
+
+
+Independent review follow-up for PR #201: review comment `5667598591` reproduced raw constructor working-record and initial approval-reread failures. The constructor now fails closed with private reopen guidance and cannot mistake an unreadable record for an absent one. Approval binding is guarded before source capture or model use; disposal during refresh exits without a request or late diagnostic. Three new regressions verify no record/model/source effects, explicit reopen, approval retry and disposal. Final focused suite59tests and651fullFlutter tests passed/seven opt-in skips; formatter205/analyzer/web build and Wasm dry run passed. Awaiting fresh exact-revision review and required CI after this diff change.

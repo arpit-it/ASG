@@ -3,6 +3,7 @@ import 'dart:async';
 import '../models/approved_source_proposal.dart';
 import '../models/build_plan.dart';
 import '../models/project.dart';
+import '../models/plan_approval.dart';
 import '../models/repair_attempt.dart';
 import '../models/requirements_board.dart';
 import '../models/source_edit_proposal.dart';
@@ -53,12 +54,23 @@ class SourceReviewController extends BaseController {
        _prepareCandidate = prepareCandidate ?? prepareSourceCandidate,
        _folderPicker = folderPicker ?? FolderPicker(),
        _createCandidateHost = createCandidateHost ?? createGenerationHost {
-    _workingRecord = records.getString('studio.generation.v1.${project.id}');
+    try {
+      _workingRecord = records.getString('studio.generation.v1.${project.id}');
+      _workingRecordReadable = true;
+    } catch (_) {
+      _workingRecordReadable = false;
+    }
     refreshApproval();
   }
 
   late final String? _workingRecord;
+  late final bool _workingRecordReadable;
+  static const _workingReadError =
+      'The working build record could not be read. Restore local storage access, '
+      'then close and reopen source review. Saved records and working output '
+      'have not been replaced.';
   void _requireWorking() {
+    if (!_workingRecordReadable) throw StateError(_workingReadError);
     if (records.getString('studio.generation.v1.${project.id}') !=
         _workingRecord) {
       throw StateError(
@@ -104,8 +116,8 @@ class SourceReviewController extends BaseController {
       if (!isDisposed && proposal != null && parent != null) {
         _candidateParent = parent;
       }
-    } catch (error) {
-      if (!isDisposed) _error = 'Folder selection failed. $error';
+    } catch (_) {
+      if (!isDisposed) _error = 'Folder selection failed. Try the folder picker again and check local file access.';
     } finally {
       _busy = false;
       update();
@@ -227,9 +239,9 @@ class SourceReviewController extends BaseController {
               : 'Repaired candidate checks stopped; inspect saved exits. Working output retained.';
         }
       }
-    } catch (error) {
+    } catch (_) {
       if (!isDisposed) {
-        _error = 'Candidate preparation did not complete. $error';
+        _error = 'Candidate preparation did not complete. Check local file access and the current Plan approval, then retry. Inspect the selected folder for any partial copy; working output is retained.';
         _status = 'Candidate preparation failed; working output retained.';
       }
     } finally {
@@ -450,9 +462,9 @@ class SourceReviewController extends BaseController {
       throw StateError(
         'Automatic repair session limit reached. Inspect saved attempts.',
       );
-    } catch (error) {
+    } catch (_) {
       if (!isDisposed) {
-        _error = _loopCancelled ? null : 'Automatic repair stopped. $error';
+        _error = _loopCancelled ? null : repairBlockedReason ?? 'Automatic repair stopped. Check the current Plan approval and local model connection, then inspect saved attempts and exits before retrying. Working output is retained.';
         _status = _loopCancelled
             ? 'Automatic repair cancelled; working output retained.'
             : 'Automatic repair stopped; inspect saved attempts and exits. Working output retained.';
@@ -466,6 +478,12 @@ class SourceReviewController extends BaseController {
 
   void refreshApproval() {
     if (busy || isDisposed) return;
+    if (!_workingRecordReadable) {
+      _tasks = const [];
+      _error = _workingReadError;
+      update();
+      return;
+    }
     try {
       final approval = PlanApprovalStore(records)
           .requireCurrentApproval(project);
@@ -479,9 +497,9 @@ class SourceReviewController extends BaseController {
         throw StateError('Approve a Plan mapped to saved board tasks first.');
       }
       _error = null;
-    } catch (error) {
+    } catch (_) {
       _tasks = const [];
-      _error = 'Source review is unavailable. $error';
+      _error = 'Source review is unavailable. Reopen Build and approve a current Plan mapped to saved tasks. If saved records cannot be read, restore valid local records before retrying.';
     }
     update();
   }
@@ -508,6 +526,7 @@ class SourceReviewController extends BaseController {
     final repairCandidate = repair ? _candidateSession?.result : null;
     if (repair && (!_hasRepairFailure || repairBlockedReason != null)) return;
     refreshApproval();
+    if (isDisposed || _error != null) return;
     if (!_tasks.any((task) => task.id == taskId)) {
       _error = 'Select a task in the current approved Plan.';
       update();
@@ -523,7 +542,17 @@ class SourceReviewController extends BaseController {
       return;
     }
     // Bind the entire request, including asynchronous source capture, to approval.
-    final started = PlanApprovalStore(records).requireCurrentApproval(project);
+    late final PlanApproval started;
+    try {
+      _requireWorking();
+      started = PlanApprovalStore(records).requireCurrentApproval(project);
+    } catch (_) {
+      if (!isDisposed) {
+        _error = 'Source review approval could not be read. Restore local storage access and approve a current Plan before retrying. Working output is retained.';
+        update();
+      }
+      return;
+    }
     _busy = true;
     _cancelled = false;
     if (!repair) {
@@ -577,9 +606,9 @@ class SourceReviewController extends BaseController {
       _proposal = value;
       _proposalSource = source;
       _status = 'Proposal ready for review. No files changed.';
-    } catch (error) {
+    } catch (_) {
       if (!isDisposed && !_cancelled) {
-        _error = 'Source proposal failed. $error';
+        _error = 'Source proposal failed. Check the local model connection, recorded source access and current Plan approval, then request a new proposal. Working output is retained.';
         _status = 'Source proposal failed. Previous candidate and working output retained.';
       }
     } finally {
@@ -607,8 +636,8 @@ class SourceReviewController extends BaseController {
     update();
     try {
       await _proposer.cancel();
-    } catch (error) {
-      if (!isDisposed) _error = 'Model transport cleanup failed. $error';
+    } catch (_) {
+      if (!isDisposed) _error = 'Model transport cleanup failed. The review result will be ignored; check runtime activity before retrying. Stopping the local request does not confirm server-side inference stopped.';
     }
   }
 
