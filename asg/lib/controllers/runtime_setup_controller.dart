@@ -223,12 +223,14 @@ class RuntimeSetupController extends BaseController {
         host.ownsProcess &&
         DateTime.now().isBefore(deadline)) {
       final result = await connection.check(config);
-      if (_startupCancelled || !host.ownsProcess) return;
+      if (_startupCancelled) return;
+      if (!host.ownsProcess) break;
       if (result.ready &&
           result.model == candidate.name &&
           result.modelPath == candidate.path) {
         final savedConfig = await _saveConnection(config);
-        if (_startupCancelled || !host.ownsProcess) return;
+        if (_startupCancelled) return;
+        if (!host.ownsProcess) break;
         _connectionConfig = savedConfig;
         _health = result;
         _status = 'Runtime ready. Project chat now uses ${candidate.name}.';

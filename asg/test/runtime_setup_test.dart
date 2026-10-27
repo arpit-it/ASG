@@ -369,6 +369,49 @@ void main() {
   );
 
   test(
+    'runtime exit during health reports failure instead of loading',
+    () async {
+      final prefs = await SharedPreferences.getInstance();
+      final settings = ModelSettingsStore.fromPreferences(prefs);
+      await settings.save(const LocalModelConfig(model: 'previous'));
+      final before = prefs.getString('studio.localModel.v1');
+      for (final status in ['loading', 'ready']) {
+        final host = FakeRuntimeHost();
+        final entered = Completer<void>();
+        final release = Completer<void>();
+        final c = await controller(
+          host,
+          api: RuntimeConnection(
+            client: MockClient((_) async {
+              entered.complete();
+              await release.future;
+              return http.Response(
+                jsonEncode({
+                  'status': status,
+                  'model': 'Qwen3.5-9B',
+                  'model_path': '/models',
+                }),
+                200,
+              );
+            }),
+          ),
+        );
+        await c.inspect('/models');
+        final pending = c.start(const RuntimeSetup(python: '/python'));
+        await entered.future;
+        host.ownsProcess = false;
+        release.complete();
+        await pending;
+        expect(c.error, contains('Runtime exited before becoming ready'));
+        expect(c.health.ready, isFalse);
+        expect(c.busy, isFalse);
+        expect(prefs.getString('studio.localModel.v1'), before);
+        c.dispose();
+      }
+    },
+  );
+
+  test(
     'reconnect preserves latest durable ceiling after health verification',
     () async {
       final prefs = await SharedPreferences.getInstance();
