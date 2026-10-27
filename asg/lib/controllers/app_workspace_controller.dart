@@ -103,8 +103,13 @@ class AppWorkspaceController extends BaseController {
       if (isDisposed) return;
       _store = store;
       _state = loaded;
-    } catch (e) {
-      _error = 'Application could not be restored: $e';
+      _error = null;
+    } catch (_) {
+      if (!isDisposed) {
+        _error =
+            'Application could not be restored. Check local storage and reopen '
+            'the project to retry. Saved records have not been replaced.';
+      }
     }
     update();
   }
@@ -161,10 +166,13 @@ class AppWorkspaceController extends BaseController {
       _state = updated;
       _runtimeDefinition = null;
       return true;
-    } catch (e) {
-      _error = _cancelRequested
-          ? 'Generation cancelled. Your last working version is unchanged.'
-          : 'Update could not be applied. Your last working version is unchanged. $e';
+    } catch (_) {
+      if (!isDisposed) {
+        _error = _cancelRequested
+            ? 'Generation cancelled. Your last working version is unchanged.'
+            : 'Update could not be applied. Your last working version is unchanged. '
+                  'Check the model connection and local storage, then retry the instruction.';
+      }
       return false;
     } finally {
       _busy = false;
