@@ -36,10 +36,10 @@ Update this document with task selection and delivery evidence, alongside [agent
 - [x] F08 Portable project backup and restore — Done; depends on F01
   - Export and restore requirements, conversations, decisions, tasks and revision metadata with versioned manifests.
   - Accept when round trips preserve records, corrupt/incompatible archives fail safely, secrets are excluded and existing projects are never silently replaced.
-- [ ] F09 Runtime diagnostics and resource controls — Awaiting merge
+- [x] F09 Runtime diagnostics and resource controls — Done
   - Show actual model connectivity, active request, cancellation scope, request limits and actionable setup failures.
   - Accept when offline, timeout and cancellation states are truthful, settings persist, and diagnostics omit secrets and private prompt content.
-- [ ] F14 Resizable and collapsible workspace panes — Queued; depends on F01
+- [ ] F14 Resizable and collapsible workspace panes — Awaiting merge; depends on F01
   - Priority: after active F02 and existing higher-priority F03–F09 work; does not interrupt active delivery.
   - Source/evidence: product specification §4.3 requires resizable/collapsible panels. `lib/views/project_workspace.dart` currently uses a clamped 40% width and a static VerticalDivider, with narrow-screen tabs; no resize/collapse controls exist. Existing F01–F13 do not cover pane layout controls. No second GitHub issue created in the #50 run.
   - Scope/value: let users allocate desktop chat/preview space and collapse/restore a pane while keeping narrow-screen tabs and working state.
@@ -69,7 +69,7 @@ A task moves Queued → In progress → Awaiting merge → Done; use Blocked wit
 
 ## Active task and delivery ledger
 
-Current: F09 issue #167 / branch `167-runtime-acceptance` records the full acceptance audit after verified PR #213 merge. Acceptance tests pass; independent final-revision review and required CI/merge remain pending. F09 is Awaiting merge/unchecked; no later task selected.
+Current: F14 Awaiting merge on issue #215, branch `215-workspace-panes`, after plugin verification of F09 PR #214 merge `8beb4c1309555b00100abb90802ce3c11fbd0218`. No overlapping active ASG run/open PR. Desktop pointer/keyboard resize and collapse/restore are implemented with state-retaining responsive panes. Final independent review, required CI and verified merge remain mandatory; unchecked until then.
 
 Latest verified increment: F09 issue #167 / PR #200 merged as `974167fec059ee98f661436e9b9b71f238319a3f` after independent reviews `5667369555` / `5667432142` and required CI `40507722336`. F09 remains In progress/unchecked; no unmerged increment. Detailed final evidence below.
 
@@ -77,7 +77,7 @@ Active: No unmerged F08 work. F08 Done under the user-approved manual literal-re
 
 ### F09 acceptance boundary and evidence
 
-Acceptance audit on reused issue #167, branch `167-runtime-acceptance`, based on plugin-verified main `aa3957d084bc12cd1d8517d4e5808d0a44f4a01e` (PR #213). No remaining implementation gap was found against the stated F09 criteria. F09 remains unchecked until independent final-revision review, actual required CI and verified merge of this acceptance record.
+Acceptance audit on reused issue #167, branch `167-runtime-acceptance`, based on plugin-verified main `aa3957d084bc12cd1d8517d4e5808d0a44f4a01e` (PR #213). No remaining implementation gap was found against the stated F09 criteria. F09 Done after independent final-revision reviews `5671325783` / `5671373101`, actual required CI `40548110715` and verified PR #214 merge `8beb4c1309555b00100abb90802ce3c11fbd0218` at 2026-10-27T17:15:34Z. Detailed final evidence below.
 
 | Acceptance criterion | Implemented behavior and regression evidence |
 | --- | --- |
@@ -3531,3 +3531,21 @@ F09 remains In progress/unchecked pending remaining acceptance audit; no later t
 Branch `167-runtime-acceptance` from plugin-verified main `aa3957d084bc12cd1d8517d4e5808d0a44f4a01e`. Reused issue #167 after confirming PR #213 merged, no open issue/PR and no competing active ASG run. Compared every F09 criterion to actual source and tests; independent read-only audit found no remaining blocking implementation gap. The canonical requirements now contain the acceptance mapping and explicit supported limits. F09 is Awaiting merge/unchecked until independent exact-final PR review, actual required CI and verified reviewer merge; no later task selected.
 
 Fresh local tests: 80 connectivity/settings/setup/chat/local-transport tests and eight native-process/token-control tests passed. Native fixtures used real local Python processes to verify private raw stdout/stderr/malformed-byte suppression and owned-only Stop. Six streaming parser/error/inactivity fixtures passed (94 focused acceptance tests total). This documentation-only increment retains all original local documentation content and both unrelated IDE edits; original five-file backup `/private/tmp/asg-acceptance-preserved`. Local model endpoint refused connection; no fresh inference/model download/stable-app replacement claimed. Schedule and notification preference unchanged.
+
+
+### F09 complete — verified acceptance PR #214 (27 October 2026)
+
+Issue #167 / branch `167-runtime-acceptance` delivered through https://github.com/arpit-it/ASG/pull/214. Final head `e5da8a87cf16e51f6850f63769bcdbd2c43eebd7`, tested tree `153c0c70fa0c1957b75e955264e4e88a6d142fa8` identical to local `58b5824`. Independent exact-final-revision reviews `5671325783` / `5671373101` approved without blockers or unresolved threads. Reviewer normal protected squash merge `8beb4c1309555b00100abb90802ce3c11fbd0218` at 2026-10-27T17:15:34Z. Parent independently verified merged PR, closed/completed issue, current remote main and exact signed merge object/tree through the connected GitHub plugin; local main safely fast-forwarded to that revision, origin/main divergence 0/0.
+
+Every stated F09 criterion is mapped to actual implementation and regression evidence in the canonical acceptance section. No remaining gap was found; F09 is now Done/checked only after the verified merge. Resource limits remain requested token ceilings/fixed client time/output bounds, health readiness is server-reported and app cancellation does not prove server-side inference termination. Local model endpoint was offline; no fresh inference/model download/stable-app replacement claimed. No later task selected during this run; F14 is next eligible after normal overlap/remote checks.
+
+Fresh parent 94 focused acceptance tests passed. Independent reviewer 29 focused tests passed, including actual native Python output-privacy/owned-stop fixtures. Actual required CI `40548110715` passed: Flutter job `122344134080` 693 Linux tests/seven opt-in skips, two real Chrome storage/archive tests, formatter208/analyzer/web build/Wasm and enabled real generated-project resolve/analyze/test/build exit0 plus source-asserted HTTP200/>1000-byte serving acceptance; Python job `122344133707` 2+4+10+4 fixtures/two platform skips. Reviewer inspected decoded actual logs before merge.
+
+Both automation labels applied. All original documentation retained in merged tree (current F09 summary/status reconciled); both IDE edits remain byte-identical to `/private/tmp/asg-acceptance-preserved`. Source/tests/index clean. Post-merge Done/ledger/history evidence remains as three local documentation edits to carry into the next task's reviewed branch, because this record necessarily follows its own merge. Schedule and notification preference unchanged. No blocker or required user action.
+
+
+### F14 workspace pane controls — issue #215 (27 October 2026)
+
+Branch `215-workspace-panes` from plugin-verified main `8beb4c1309555b00100abb90802ce3c11fbd0218`; selected the next eligible canonical task after verifying F09 PR #214 merged, no open issues/PRs and no other active ASG run. Issue https://github.com/arpit-it/ASG/issues/215 records bounded acceptance and validation. Session layout controller clamps desktop chat/preview widths; pointer divider and focusable keyboard slider resize; labeled controls collapse/restore either pane. Both children remain mounted at stable tree positions across collapse, tabs and responsive changes, preserving draft/prototype state. Larger text selects tabs when usable paired widths cannot fit. Preview header wraps at constrained widths. No durable layout preference or generation/runtime behavior change.
+
+Five new controller/widget tests include actual workspace draft/prototype retention and 360px double-text-scale behavior. Thirteen focused pane/persistence tests passed. The initial full suite exposed a lazy preview notes-field assumption after adding the toolbar; its existing busy/save test now uses an explicit viewport that includes notes. Final full suite passed 701 tests with seven opt-in skips; 13 focused pane/persistence tests passed. Formatter211/analyzer and web build/Wasm dry run passed. Local model endpoint refused connection; no fresh inference, model download or stable-app replacement. Original IDE and documentation changes retained; F09 post-merge Done evidence carried into this reviewed branch. F14 remains Awaiting merge/unchecked until final PR review/CI/merge; no later task selected.

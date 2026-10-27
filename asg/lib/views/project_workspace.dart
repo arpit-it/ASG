@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'workspace_panes.dart';
+
 import '../controllers/portable_archive_controller.dart';
 import 'portable_archive_screen.dart';
 
@@ -52,7 +54,6 @@ class _ProjectWorkspaceState extends State<ProjectWorkspace> {
   int lastMessageCount = 0;
   String lastDraft = '';
   bool lastBusy = false;
-  int mobilePane = 0;
   @override
   void initState() {
     super.initState();
@@ -373,16 +374,13 @@ class _ProjectWorkspaceState extends State<ProjectWorkspace> {
     children: [
       Padding(
         padding: const EdgeInsets.all(16),
-        child: Row(
+        child: Wrap(
+          spacing: 8,
+          crossAxisAlignment: WrapCrossAlignment.center,
           children: [
             const Icon(Icons.play_circle_outline, size: 20),
             const SizedBox(width: 8),
-            const Expanded(
-              child: Text(
-                'Application preview',
-                style: TextStyle(fontSize: 18),
-              ),
-            ),
+            const Text('Application preview', style: TextStyle(fontSize: 18)),
             IconButton(
               tooltip: 'Generate Flutter source',
               onPressed:
@@ -444,56 +442,12 @@ class _ProjectWorkspaceState extends State<ProjectWorkspace> {
   );
   @override
   Widget build(BuildContext context) {
-    final body = LayoutBuilder(
-      builder: (context, size) {
-        if (size.maxWidth >= 800) {
-          return Row(
-            children: [
-              SizedBox(
-                width: (size.maxWidth * 0.4).clamp(320, 500),
-                child: chat(),
-              ),
-              const VerticalDivider(width: 1),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(12, 0, 16, 16),
-                  child: preview(),
-                ),
-              ),
-            ],
-          );
-        }
-        return Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8),
-              child: SegmentedButton<int>(
-                segments: const [
-                  ButtonSegment(
-                    value: 0,
-                    label: Text('Chat'),
-                    icon: Icon(Icons.chat_bubble_outline),
-                  ),
-                  ButtonSegment(
-                    value: 1,
-                    label: Text('Preview'),
-                    icon: Icon(Icons.preview_outlined),
-                  ),
-                ],
-                selected: {mobilePane},
-                onSelectionChanged: (value) =>
-                    setState(() => mobilePane = value.single),
-              ),
-            ),
-            Expanded(
-              child: IndexedStack(
-                index: mobilePane,
-                children: [chat(), preview()],
-              ),
-            ),
-          ],
-        );
-      },
+    final body = WorkspacePanes(
+      chat: chat(),
+      preview: Padding(
+        padding: const EdgeInsets.fromLTRB(12, 0, 16, 16),
+        child: preview(),
+      ),
     );
     return PopScope(
       canPop:
