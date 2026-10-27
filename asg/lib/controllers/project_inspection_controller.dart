@@ -13,8 +13,8 @@ class ProjectInspectionController extends BaseController {
        _inspect = inspect ?? ProjectInspector().inspect {
     try {
       _savedFolders = store?.load() ?? const [];
-    } catch (e) {
-      _storageError = 'Could not load saved folders: $e';
+    } catch (_) {
+      _storageError = 'Saved folders could not be loaded. Restore valid local records and storage access, then reopen this screen. Existing records have not been replaced.';
     }
   }
 
@@ -56,8 +56,8 @@ class ProjectInspectionController extends BaseController {
     try {
       final roots = await store!.save(root);
       if (!isDisposed) _savedFolders = roots;
-    } catch (e) {
-      if (!isDisposed) _error = 'Could not save folder reference: $e';
+    } catch (_) {
+      if (!isDisposed) _error = 'Folder reference could not be saved. Check local storage access, then retry saving. Current findings and saved references are retained.';
     } finally {
       if (!isDisposed) {
         _busy = false;
@@ -80,8 +80,8 @@ class ProjectInspectionController extends BaseController {
     try {
       final result = await _inspect(root);
       if (!isDisposed) _findings = result;
-    } catch (e) {
-      if (!isDisposed) _error = 'Could not reopen this folder: $e';
+    } catch (_) {
+      if (!isDisposed) _error = 'Folder could not be reopened. Check that it still exists, is an accessible Flutter project and has a readable pubspec.yaml, then retry. Saved references are retained.';
     } finally {
       if (!isDisposed) {
         _busy = false;
@@ -118,8 +118,8 @@ class ProjectInspectionController extends BaseController {
       update();
       final result = await _inspect(path);
       if (!isDisposed) _findings = result;
-    } catch (e) {
-      if (!isDisposed) _error = 'Could not inspect this folder: $e';
+    } catch (_) {
+      if (!isDisposed) _error = 'Folder selection or inspection failed. Check local folder access and choose a Flutter project with a readable pubspec.yaml, then retry.';
     } finally {
       if (!isDisposed) {
         _busy = false;

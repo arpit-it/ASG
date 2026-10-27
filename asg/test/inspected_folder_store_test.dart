@@ -142,7 +142,7 @@ void main() {
       missing = true;
       await reopened.reopen('/project');
       expect(reopened.findings, isNull);
-      expect(reopened.error, contains('missing'));
+      expect(reopened.error, contains('Check that it still exists'));
       expect(reopened.savedFolders, ['/project']);
       reopened.dispose();
       await db.database.close();
