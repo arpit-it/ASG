@@ -259,7 +259,14 @@ class RuntimeSetupController extends BaseController {
   }
 
   Future<void> connect(LocalModelConfig config) => _action(() async {
-    config.endpoint;
+    try {
+      config.endpoint;
+    } on FormatException {
+      // URI parser exceptions can include the private input URL.
+      throw const FormatException(
+        'Invalid connection settings. Use a local HTTP URL without credentials, query or fragment and a nonempty model ID.',
+      );
+    }
     _loadChatCeiling();
     final result = await connection.check(config);
     if (!result.ready || result.model != config.model) {

@@ -1546,3 +1546,14 @@ Scope: native checkpoint scanning rendered raw metadata parsing exceptions and m
 Acceptance: no private metadata source or untrusted filename in these diagnostics; actionable config/index or complete-checkpoint guidance; unchanged files; valid checkpoints still accepted. F09 remains In progress/unchecked; no later task or new issue selected. Formatter/analyzer/full Flutter tests/web build, independent exact-final-revision review and actual required CI gate merge. No live inference, model download, installed-app replacement or external deployment claimed. PR/check/review/merge evidence follows after publication.
 
 Final local validation: formatter198 unchanged; analyzer clean; 585 Flutter tests passed/seven opt-in skips; web build and Wasm dry run passed. All three privacy regressions fail against baseline and pass after the fix. Independent final-head review/required CI still gate merge; no live inference claimed.
+
+
+### F09 private connection URL validation — reopened issue #167 (27 October 2026)
+
+Prior PR #179 verified merged as `3cc73d5a5745b3b15b9512c873b0bd6bcc4f71c1` at 2026-10-27T06:47:20Z; independent reviews `5663195446` / `5663222282` and required CI `40462671324` passed. Original checkout IDE/document edits remain preserved.
+
+Branch `167-private-connect-validation` fixes raw Uri.parse FormatException source rendered by runtime setup Connect. Acceptance: locally authored actionable invalid-connection guidance omits private URL source; malformed URLs dispatch no health request and do not replace saved settings. Two controller/visible-screen regressions fail against baseline; final focused setup tests pass (27). Valid readiness/mismatch and persistence behavior remain covered. No new issue/task; F09 remains In progress/unchecked. No competing active run/open PR at selection. Endpoint offline; no live inference claimed.
+
+Validation plan: formatter/analyzer/full Flutter tests/web build; independent exact-final-revision review and actual required CI gate merge. PR/review/check/merge evidence follows publication.
+
+Final local validation: formatter198 unchanged, analyzer clean, 587 Flutter tests passed/seven opt-in skips; web build and Wasm dry run passed. Both new regressions fail against baseline and pass with the fix. Independent final-head review and actual required CI remain merge gates.

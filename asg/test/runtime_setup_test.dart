@@ -540,6 +540,60 @@ void main() {
     },
   );
 
+  test(
+    'malformed connect URL omits private parser source without effects',
+    () async {
+      final prefs = await SharedPreferences.getInstance();
+      final settings = ModelSettingsStore.fromPreferences(prefs);
+      await settings.save(const LocalModelConfig(model: 'previous'));
+      final before = prefs.getString('studio.localModel.v1');
+      var requests = 0;
+      final c = await controller(
+        FakeRuntimeHost(),
+        api: RuntimeConnection(
+          client: MockClient((_) async {
+            requests++;
+            return http.Response('{}', 200);
+          }),
+        ),
+      );
+      await c.connect(
+        const LocalModelConfig(
+          baseUrl: 'http://[PRIVATE_CONNECT_SENTINEL token=secret/v1',
+        ),
+      );
+      expect(c.error, contains('Invalid connection settings'));
+      expect(c.error, isNot(contains('PRIVATE_CONNECT_SENTINEL')));
+      expect(c.error, isNot(contains('token=secret')));
+      expect(requests, 0);
+      expect(prefs.getString('studio.localModel.v1'), before);
+      expect(c.connectionConfig.model, 'Qwen3.5-9B');
+      expect(c.busy, isFalse);
+      c.dispose();
+    },
+  );
+
+  testWidgets('malformed connect shows safe actionable guidance', (
+    tester,
+  ) async {
+    final c = await controller(FakeRuntimeHost());
+    await tester.pumpWidget(
+      MaterialApp(home: RuntimeSetupScreen(controller: c)),
+    );
+    await tester.pump();
+    await c.connect(
+      const LocalModelConfig(
+        baseUrl: 'http://[PRIVATE_CONNECT_SENTINEL token=secret/v1',
+      ),
+    );
+    await tester.drag(find.byType(ListView), const Offset(0, -2000));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Invalid connection settings'), findsOneWidget);
+    expect(find.textContaining('PRIVATE_CONNECT_SENTINEL'), findsNothing);
+    expect(find.textContaining('token=secret'), findsNothing);
+    await tester.pumpWidget(const SizedBox());
+  });
+
   test('connection mismatch cannot overwrite saved model settings', () async {
     final host = FakeRuntimeHost();
     final c = await controller(
