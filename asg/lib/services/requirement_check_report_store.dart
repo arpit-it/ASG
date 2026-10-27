@@ -96,6 +96,24 @@ class RequirementCheckReportStore {
             reason,
             ids.toList(),
             operations.map((t) => t.id).toList(),
+            checks: [
+              for (final task in operations)
+                () {
+                  final step = saved!.steps
+                      .where((s) => s.operation == task.operation.name)
+                      .firstOrNull;
+                  return RequirementOperationEvidence(
+                    taskId: task.id,
+                    boardTaskId: task.boardTaskId!,
+                    operation: task.operation,
+                    status: saved.taskStatus(task, active: false),
+                    exitCode: step?.exitCode,
+                    timedOut: step?.timedOut ?? false,
+                    cancelled: step?.cancelled ?? false,
+                    outputLimitExceeded: step?.outputLimitExceeded ?? false,
+                  );
+                }(),
+            ],
           );
         }(),
     ];
@@ -129,6 +147,8 @@ class RequirementCheckReportStore {
             {
               'id': r.requirement.id,
               'state': r.state.name,
+              'acceptanceStatus': 'unverified',
+              'checks': [for (final check in r.checks) check.toJson()],
               'boardTaskIds': r.taskIds,
               'operationIds': r.operationIds,
             },

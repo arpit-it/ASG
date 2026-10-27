@@ -23,7 +23,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'board_mapped_build_plan_test.dart'
-    show sharedBoard, sharedContract, boardContent;
+    show sharedBoard, sharedContract, boardContent, mappedBoard;
 
 class Records implements RecordStorage {
   final data = <String, String>{};
@@ -354,6 +354,184 @@ void main() {
     controller.load();
     expect(controller.report, isNotNull);
   });
+  test('requirement evidence is scoped, immutable and survives reopen without writes', () async {
+    final records = Records();
+    final original = mappedBoard();
+    final saved = await prepare(
+      records,
+      content: boardContent(),
+      board: RequirementsBoard(
+        requirements: [
+          ...original.requirements,
+          const ProjectRequirement(
+            id: 'R2',
+            title: 'Output',
+            acceptance: 'Show result',
+          ),
+        ],
+        tasks: [
+          for (final task in original.tasks)
+            DevelopmentTask(
+              id: task.id,
+              requirementId: task.id == 'Tbuild' ? 'R2' : 'R1',
+              title: task.title,
+              dependencies: task.dependencies,
+            ),
+        ],
+      ),
+    );
+    await SourceGenerationStore(records).save('p', saved);
+    final before = Map.of(records.data);
+    final report = RequirementCheckReportStore(records).load(project);
+    expect(report.results.first.checks.map((c) => c.operation), [
+      BuildOperation.resolve,
+      BuildOperation.test,
+      BuildOperation.analyze,
+    ]);
+    expect(report.results.last.checks.single.operation, BuildOperation.build);
+    expect(report.results.last.checks.single.boardTaskId, 'Tbuild');
+    expect(report.results.last.checks.single.exitCode, 0);
+    expect(report.results.last.requirement.acceptance, 'Show result');
+    final json = jsonDecode(report.evidenceJson) as Map;
+    expect(
+      (json['requirements'] as List).map((r) => r['acceptanceStatus']),
+      everyElement('unverified'),
+    );
+    expect(() => report.results.first.checks.clear(), throwsUnsupportedError);
+    final reopened = Records()..data.addAll(before);
+    expect(
+      RequirementCheckReportStore(reopened).load(project).evidenceJson,
+      report.evidenceJson,
+    );
+    expect(records.data, before);
+    expect(report.evidenceJson, isNot(contains('PRIVATE_')));
+  });
+  test(
+    'scoped checks retain actual failure flags and absent results',
+    () async {
+      final records = Records();
+      final saved = await prepare(records);
+      for (final failure in [
+        const GenerationStep(
+          operation: 'resolve',
+          exitCode: 9,
+          output: 'PRIVATE_LOG',
+        ),
+        const GenerationStep(
+          operation: 'resolve',
+          exitCode: 0,
+          output: 'PRIVATE_LOG',
+          timedOut: true,
+        ),
+        const GenerationStep(
+          operation: 'resolve',
+          exitCode: 0,
+          output: 'PRIVATE_LOG',
+          cancelled: true,
+        ),
+        const GenerationStep(
+          operation: 'resolve',
+          exitCode: 0,
+          output: 'PRIVATE_LOG',
+          outputLimitExceeded: true,
+        ),
+      ]) {
+        await SourceGenerationStore(records).save(
+          'p',
+          saved.copy(phase: SourceGenerationPhase.failed, steps: [failure]),
+        );
+        final result = RequirementCheckReportStore(records)
+            .load(project)
+            .results
+            .single;
+        final check = result.checks.first;
+        expect(result.state, RequirementCheckState.failed);
+        expect(check.status, BuildTaskStatus.failed);
+        expect(check.exitCode, failure.exitCode);
+        expect(check.timedOut, failure.timedOut);
+        expect(check.cancelled, failure.cancelled);
+        expect(check.outputLimitExceeded, failure.outputLimitExceeded);
+        expect(result.checks.last.exitCode, isNull);
+        expect(result.checks.last.summary, 'No saved command result');
+        expect(result.checks.last.status, BuildTaskStatus.blocked);
+        expect(check.summary, isNot(contains('PRIVATE_LOG')));
+      }
+    },
+  );
+  testWidgets(
+    'acceptance and scoped outcomes stay visible after durable reload',
+    (tester) async {
+      tester.view.physicalSize = const Size(360, 800);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final records = Records();
+      final saved = await prepare(records);
+      await SourceGenerationStore(records).save(
+        'p',
+        saved.copy(
+          phase: SourceGenerationPhase.failed,
+          steps: [
+            const GenerationStep(
+              operation: 'resolve',
+              exitCode: 7,
+              output: 'PRIVATE_LOG',
+              timedOut: true,
+            ),
+          ],
+        ),
+      );
+      await tester.pumpWidget(
+        MaterialApp(
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(context)
+                .copyWith(textScaler: TextScaler.linear(2)),
+            child: child!,
+          ),
+          home: RequirementCheckReportScreen(
+            controller: RequirementCheckReportController(
+              project,
+              RequirementCheckReportStore(records),
+            ),
+          ),
+        ),
+      );
+      await tester.scrollUntilVisible(
+        find.text(RequirementCheckResult.acceptanceStatus),
+        200,
+      );
+      expect(find.text('Verify output'), findsOneWidget);
+      await tester.scrollUntilVisible(
+        find.textContaining('Exit 7; timed out: true'),
+        200,
+      );
+      expect(find.textContaining('PRIVATE_LOG'), findsNothing);
+      expect(tester.takeException(), isNull);
+      final store = RequirementsStore(records);
+      final board = store.load('p');
+      await store.save(
+        'p',
+        board,
+        RequirementsBoard(
+          requirements: const [
+            ProjectRequirement(
+              id: 'R1',
+              title: 'Starter',
+              acceptance: 'Changed acceptance',
+            ),
+          ],
+          tasks: board.tasks,
+        ),
+      );
+      await tester.scrollUntilVisible(find.text('Reload saved evidence'), -200);
+      await tester.tap(find.text('Reload saved evidence'));
+      await tester.pump();
+      await tester.scrollUntilVisible(find.text('Changed acceptance'), 200);
+      await tester.scrollUntilVisible(find.text('Stale evidence'), 200);
+      expect(find.text('Verify output'), findsNothing);
+      expect(tester.takeException(), isNull);
+    },
+  );
   testWidgets(
     'workspace opens deterministic report from requirements and returns safely',
     (tester) async {

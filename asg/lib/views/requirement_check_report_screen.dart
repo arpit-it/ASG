@@ -57,8 +57,23 @@ class _RequirementCheckReportScreenState
                           '${result.requirement.id}: ${result.requirement.title}',
                           style: Theme.of(context).textTheme.titleMedium,
                         ),
+                        const Text(RequirementCheckResult.acceptanceStatus),
+                        Text(result.requirement.acceptance),
                         Text(result.label),
                         Text(result.reason),
+                        for (final check in result.checks)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '${check.taskId} (${check.boardTaskId}): ${check.operation.name} — ${check.status.name}',
+                                ),
+                                Text(check.summary),
+                              ],
+                            ),
+                          ),
                         Text(
                           'Tasks: ${result.taskIds.isEmpty ? 'none' : result.taskIds.join(', ')}',
                         ),
