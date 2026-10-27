@@ -101,16 +101,28 @@ class ChatController extends BaseController {
     busy = true;
     phase = GenerationPhase.applying;
     error = null;
+    _failureDiagnostic = null;
     update();
     try {
       await _saveCompletedResponse();
-    } catch (e) {
-      if (!isDisposed) error = '$e';
+    } catch (_) {
+      if (!isDisposed) _reportSaveFailure();
     } finally {
       busy = false;
       phase = GenerationPhase.idle;
       update();
     }
+  }
+
+  void _reportSaveFailure() {
+    _failureDiagnostic = hasUnsavedResponse
+        ? 'Chat response save failed. Completed response retained for Retry saving.'
+        : 'Chat preparation failed. Saved messages retained; no model request started.';
+    error = hasUnsavedResponse
+        ? 'Conversation could not be saved. Check local storage and Retry saving. The completed response remains available in this screen.'
+        : _outputTokenLimit == null
+        ? 'Saved model settings could not be loaded. Restore valid settings and retry. Saved data has not been overwritten.'
+        : 'Conversation could not be saved or prepared. Check local storage and saved settings, then retry. Saved messages have not been replaced.';
   }
 
   Future<void> _saveCompletedResponse() async {
@@ -319,12 +331,20 @@ class ChatController extends BaseController {
     final requestMode = _mode;
     bool accepted = false;
     bool requestingModel = false;
+    String? planValidationError;
     try {
       final config = _loadModelConfig();
       final requirements = RequirementsStore(_store!.records).load(project.id);
-      final fullRequirements = requestMode == ConversationMode.plan
-          ? requirements.planDocument(project.name)
-          : requirements.document(project.name);
+      final String fullRequirements;
+      try {
+        fullRequirements = requestMode == ConversationMode.plan
+            ? requirements.planDocument(project.name)
+            : requirements.document(project.name);
+      } on StateError catch (e) {
+        // This pure model method authors a size-only validation message.
+        planValidationError = e.message;
+        rethrow;
+      }
       final requestPlanContext = requestMode == ConversationMode.plan
           ? PlanApprovalStore(_store!.records).contextFor(project)
           : null;
@@ -393,6 +413,7 @@ class ChatController extends BaseController {
       update();
       await _saveCompletedResponse();
     } catch (e) {
+      if (isDisposed) return accepted;
       if (requestingModel) {
         if (!cancelled) {
           _failureDiagnostic = e is TimeoutException
@@ -403,7 +424,8 @@ class ChatController extends BaseController {
               : 'The model request failed. Check the local runtime, model ID and connection, then retry.';
         }
       } else {
-        error = '$e';
+        _reportSaveFailure();
+        if (planValidationError != null) error = planValidationError;
       }
     } finally {
       try {
