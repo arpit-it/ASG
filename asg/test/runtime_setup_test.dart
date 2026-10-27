@@ -68,6 +68,35 @@ class FakeRuntimeHost implements RuntimeHost {
   }
 }
 
+class DelayedStartupHost extends FakeRuntimeHost {
+  Completer<void>? scanGate, launchGate;
+  final entered = Completer<void>();
+  int launches = 0;
+  @override
+  Future<List<ModelCandidate>> scan(String path) async {
+    if (scanGate != null) {
+      entered.complete();
+      await scanGate!.future;
+    }
+    return super.scan(path);
+  }
+
+  @override
+  Future<void> start(RuntimeSetup setup, String modelId) async {
+    launches++;
+    if (launchGate != null) {
+      entered.complete();
+      await launchGate!.future;
+    }
+    await super.start(setup, modelId);
+  }
+
+  @override
+  Future<void> stop() async {
+    if (ownsProcess) await super.stop();
+  }
+}
+
 RuntimeConnection connection({
   required bool Function() ready,
   String model = 'Qwen3.5-9B',
@@ -250,6 +279,95 @@ void main() {
       c.dispose();
     },
   );
+  test('Stop during startup revalidation prevents a later launch', () async {
+    final host = DelayedStartupHost();
+    final c = await controller(host);
+    await c.inspect('/models');
+    host.scanGate = Completer<void>();
+    final pending = c.start(const RuntimeSetup(python: '/python'));
+    await host.entered.future;
+    await c.stop();
+    host.scanGate!.complete();
+    await pending;
+    expect(host.launches, 0);
+    expect(c.status, 'Managed runtime stopped.');
+    expect(c.error, isNull);
+    expect(c.busy, isFalse);
+    c.dispose();
+  });
+
+  test('Stop cleans up a managed launch that completes late', () async {
+    final host = DelayedStartupHost()..launchGate = Completer<void>();
+    final c = await controller(host);
+    await c.inspect('/models');
+    final pending = c.start(const RuntimeSetup(python: '/python'));
+    await host.entered.future;
+    await c.stop();
+    host.launchGate!.complete();
+    await pending;
+    expect(host.launches, 1);
+    expect(host.stops, 1);
+    expect(host.ownsProcess, isFalse);
+    expect(c.status, 'Managed runtime stopped.');
+    expect(c.error, isNull);
+    c.dispose();
+  });
+
+  test(
+    'late ready health cannot publish or save after Stop or disposal',
+    () async {
+      final prefs = await SharedPreferences.getInstance();
+      final settings = ModelSettingsStore.fromPreferences(prefs);
+      for (final dispose in [false, true]) {
+        await settings.save(
+          const LocalModelConfig(model: 'previous', chatOutputTokens: 512),
+        );
+        final before = prefs.getString('studio.localModel.v1');
+        final host = FakeRuntimeHost();
+        final entered = Completer<void>();
+        final release = Completer<void>();
+        var calls = 0;
+        final c = await controller(
+          host,
+          api: RuntimeConnection(
+            client: MockClient((_) async {
+              if (calls++ == 0) {
+                entered.complete();
+                await release.future;
+                return http.Response(
+                  jsonEncode({
+                    'status': 'ready',
+                    'model': 'Qwen3.5-9B',
+                    'model_path': '/models',
+                  }),
+                  200,
+                );
+              }
+              return http.Response(jsonEncode({'status': 'loading'}), 200);
+            }),
+          ),
+        );
+        await c.inspect('/models');
+        final pending = c.start(const RuntimeSetup(python: '/python'));
+        await entered.future;
+        if (dispose) {
+          c.dispose();
+        } else {
+          await c.stop();
+        }
+        final status = c.status;
+        release.complete();
+        await pending;
+        expect(prefs.getString('studio.localModel.v1'), before);
+        expect(c.status, status);
+        expect(c.health.ready, isFalse);
+        expect(c.error, isNull);
+        expect(c.busy, isFalse);
+        if (!dispose) c.dispose();
+      }
+    },
+  );
+
   test(
     'reconnect preserves latest durable ceiling after health verification',
     () async {

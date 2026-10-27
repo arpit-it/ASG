@@ -175,7 +175,10 @@ class RuntimeSetupController extends BaseController {
     _status =
         'Download complete. Check compatibility before starting inference.';
   });
+  bool get _startupCancelled => isDisposed || _stopRequested;
+
   Future<void> start(RuntimeSetup values) => _action(() async {
+    _stopRequested = false;
     final candidate = _selected;
     if (candidate == null || !candidate.supported) {
       throw StateError('Scan and select a compatible checkpoint first.');
@@ -188,6 +191,7 @@ class RuntimeSetupController extends BaseController {
     _loadChatCeiling();
     // Revalidate immediately before launch, in case files changed after scanning.
     final validated = await host.scan(candidate.path);
+    if (_startupCancelled) return;
     if (!validated.any((m) => m.path == candidate.path && m.supported)) {
       throw StateError('Selected checkpoint is no longer valid.');
     }
@@ -199,25 +203,33 @@ class RuntimeSetupController extends BaseController {
       revision: values.revision,
     );
     await store.save(saved);
+    if (_startupCancelled) return;
     _setup = saved;
     final config = LocalModelConfig(
       baseUrl: 'http://127.0.0.1:8765/v1',
       model: candidate.name,
     );
-    _stopRequested = false;
     await host.start(saved, candidate.name);
+    if (_startupCancelled) {
+      // Stop may have run before the asynchronous launch acquired its process.
+      if (_stopRequested && host.ownsProcess) await host.stop();
+      return;
+    }
     // Persist chat configuration only after the runtime reports the selected path.
     _status = 'Loading selected model…';
     update();
     final deadline = DateTime.now().add(const Duration(minutes: 3));
-    while (!isDisposed &&
+    while (!_startupCancelled &&
         host.ownsProcess &&
         DateTime.now().isBefore(deadline)) {
       final result = await connection.check(config);
+      if (_startupCancelled || !host.ownsProcess) return;
       if (result.ready &&
           result.model == candidate.name &&
           result.modelPath == candidate.path) {
-        _connectionConfig = await _saveConnection(config);
+        final savedConfig = await _saveConnection(config);
+        if (_startupCancelled || !host.ownsProcess) return;
+        _connectionConfig = savedConfig;
         _health = result;
         _status = 'Runtime ready. Project chat now uses ${candidate.name}.';
         return;
