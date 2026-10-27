@@ -83,7 +83,7 @@ class RequirementCheckReport {
 
   static const authoredEvidenceNotice =
       'Expanded and copied evidence includes your requirement titles, acceptance '
-      'criteria and task definitions. Review that text before sharing. Manual '
+      'criteria, declared check outcomes and task definitions. Review that text before sharing. Manual '
       'task status is progress only; acceptance criteria remain unverified.';
 
   static const limits =
@@ -138,7 +138,7 @@ class RequirementAcceptanceEvidence {
       sha256.convert(utf8.encode(jsonEncode(requirement.toJson()))).toString();
   static const label = 'Unmet acceptance evidence';
   static const reason =
-      'No check is explicitly mapped to this acceptance block. Generic '
+      'No direct check result is recorded for this acceptance block. Generic '
       'operation results, manual task progress and advisory model Review '
       'do not verify it.';
   Map<String, Object?> toJson() => {
@@ -148,6 +148,10 @@ class RequirementAcceptanceEvidence {
     'text': requirement.acceptance,
     'status': 'unverified',
     'reason': reason,
+    'declaredChecks': [
+      for (final check in requirement.checks)
+        {...check.toJson(), 'status': 'missing', 'result': null},
+    ],
     'directChecks': <Object>[],
   };
 }

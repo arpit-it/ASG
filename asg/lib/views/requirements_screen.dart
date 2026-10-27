@@ -234,12 +234,19 @@ class _BoardEditorState extends State<_BoardEditor> {
       widget.controller.board!.requirements.firstOrNull?.id ??
       '';
   late TaskStatus status = widget.task?.status ?? TaskStatus.queued;
+  late final checks = [
+    for (final c in widget.requirement?.checks ?? <AcceptanceCheckDefinition>[])
+      _CheckEditor(c),
+  ];
   @override
   void dispose() {
     id.dispose();
     title.dispose();
     acceptance.dispose();
     dependencies.dispose();
+    for (final check in checks) {
+      check.dispose();
+    }
     super.dispose();
   }
 
@@ -262,6 +269,7 @@ class _BoardEditorState extends State<_BoardEditor> {
               id: id.text.trim(),
               title: title.text.trim(),
               acceptance: acceptance.text.trim(),
+              checks: List.unmodifiable(checks.map((c) => c.definition)),
             ),
             editing: widget.requirement != null,
           );
@@ -309,6 +317,70 @@ class _BoardEditorState extends State<_BoardEditor> {
                         labelText: 'Acceptance criteria',
                       ),
                     ),
+                  if (!widget.taskEditor) ...[
+                    const Text(
+                      'Acceptance checks are planned mappings. Defining a check does not run it or verify acceptance.',
+                    ),
+                    for (var i = 0; i < checks.length; i++)
+                      Padding(
+                        key: ObjectKey(checks[i]),
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        child: Column(
+                          children: [
+                            TextField(
+                              controller: checks[i].id,
+                              enabled: !busy,
+                              maxLength: 40,
+                              decoration: InputDecoration(
+                                labelText: 'Check ${i + 1} ID',
+                              ),
+                            ),
+                            DropdownButtonFormField<AcceptanceCheckType>(
+                              initialValue: checks[i].type,
+                              isExpanded: true,
+                              decoration: const InputDecoration(
+                                labelText: 'Evidence type',
+                              ),
+                              items: [
+                                for (final type in AcceptanceCheckType.values)
+                                  DropdownMenuItem(
+                                    value: type,
+                                    child: Text(type.name),
+                                  ),
+                              ],
+                              onChanged: busy
+                                  ? null
+                                  : (value) =>
+                                        setState(() => checks[i].type = value!),
+                            ),
+                            TextField(
+                              controller: checks[i].expectation,
+                              enabled: !busy,
+                              maxLength: 500,
+                              minLines: 2,
+                              maxLines: 4,
+                              decoration: const InputDecoration(
+                                labelText: 'Expected observable outcome',
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: busy
+                                  ? null
+                                  : () => setState(() {
+                                      checks.removeAt(i).dispose();
+                                    }),
+                              child: Text('Remove check ${i + 1}'),
+                            ),
+                          ],
+                        ),
+                      ),
+                    TextButton(
+                      onPressed: busy || checks.length >= 10
+                          ? null
+                          : () => setState(() => checks.add(_CheckEditor())),
+                      child: const Text('Add acceptance check'),
+                    ),
+                  ],
                   if (widget.taskEditor) ...[
                     DropdownButtonFormField<String>(
                       initialValue: requirementId,
@@ -369,4 +441,22 @@ class _BoardEditorState extends State<_BoardEditor> {
       );
     },
   );
+}
+
+class _CheckEditor {
+  _CheckEditor([AcceptanceCheckDefinition? value])
+    : id = TextEditingController(text: value?.id),
+      expectation = TextEditingController(text: value?.expectation),
+      type = value?.type ?? AcceptanceCheckType.automated;
+  final TextEditingController id, expectation;
+  AcceptanceCheckType type;
+  AcceptanceCheckDefinition get definition => AcceptanceCheckDefinition(
+    id: id.text.trim(),
+    type: type,
+    expectation: expectation.text.trim(),
+  );
+  void dispose() {
+    id.dispose();
+    expectation.dispose();
+  }
 }

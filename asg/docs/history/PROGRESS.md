@@ -2984,3 +2984,14 @@ Owner steered the unpublished Apache draft to an ecosystem-friendly protective l
 
 
 Validation for issue #230: Mozilla's canonical MPL text SHA-256 `3f3d9e0024b1921b067d6f7f88deb4a60cbe7a78e76c64e3f1d7fc3b779b9d04`; 229 own-source SPDX headers, notice copies, 99 local links/anchors, platform metadata, compiled web notices and queue states verified. Formatter221/analyzer, full731Flutter tests/seven opt-in skips,33focused tests, all20Python fixtures, web/Wasm and macOS debug builds passed. Windows-host build unavailable. Real independent generated resolve/analyze/test/build/resume and HTTP-served compiled notices passed with exact MPL text. Independent draft review identified copied-scaffold notices and header-stripping gaps; both fixed with export/parser/provider regressions and affected/full checks rerun. A test-binding license-collector assumption and mechanical template syntax edit were corrected before final checks. No live-model inference or installed-app replacement. Final exact-revision review/required CI/merge remain gates.
+
+
+### F10 declared acceptance-check mappings — reopened issue #217 (28 October 2026)
+
+Branch `217-acceptance-check-mappings` starts from verified PR #231 merge `1bd8bb5f34ae64abaade4cb87cd5ca4d818b6884`; no competing active ASG owner or open PR was found. Prior MPL delivery is independently reviewed and merged; local main matches. Existing local IDE/history/requirements edits remain preserved outside this isolated increment.
+
+Users can declare up to ten named automated/manual/advisory checks per exact authored acceptance block, with expected observable outcomes. Editing declarations uses existing board persistence, reopens affected work and invalidates prior plan approval; legacy boards retain their JSON shape and identity when no checks exist. Documents, portable export/restore/redaction and reports retain declarations. Reports explicitly show missing direct results even when generic commands pass: declarations grant no execution authority and cannot establish acceptance. F10 remains In progress/unchecked; actual targeted check execution and exact source/input-bound results remain unmet. No later task is selected.
+
+Validation: focused model/store/approval/report/editor/archive regressions, formatter/analyzer, full Flutter tests and web build. Actual final counts, independent final-revision review, required CI and merge evidence follow after verification. No fresh inference (local runtime offline), model download, stable-app replacement or deployment.
+
+Final local validation: formatter222/analyzer,737Flutter tests with seven opt-in skips, six new mapping regressions and web build/Wasm dry run passed. Independent exact-final review and required CI remain merge gates; declarations are still missing direct execution results.

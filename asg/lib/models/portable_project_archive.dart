@@ -148,7 +148,12 @@ class PortableProjectArchive {
         throw const FormatException('Archive board exceeds supported limits.');
       }
       for (final row in requirementRows) {
-        _object(row, const ['id', 'title', 'acceptance']);
+        _object(row, [
+          'id',
+          'title',
+          'acceptance',
+          if (row is Map && row.containsKey('checks')) 'checks',
+        ]);
       }
       for (final row in taskRows) {
         _object(row, const [

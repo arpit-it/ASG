@@ -87,6 +87,15 @@ class _RequirementCheckReportScreenState
                         Text(
                           'Requirement SHA-256: ${result.acceptance.requirementSha256}',
                         ),
+                        for (final check in result.requirement.checks) ...[
+                          Text(
+                            'Declared check ${check.id} (${check.type.name})',
+                          ),
+                          Text(check.expectation),
+                          const Text(
+                            'Missing direct result; acceptance remains unverified.',
+                          ),
+                        ],
                         Text(result.label),
                         Text(result.reason),
                         for (final check in result.checks)
