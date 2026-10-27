@@ -173,6 +173,20 @@ class RequirementCheckReportStore {
             },
         ],
       }),
+      savedProject: saved,
+      snapshotFingerprint: sha256
+          .convert(
+            utf8.encode(
+              jsonEncode({
+                'project': project.toJson(),
+                'board': board.toJson(),
+                'saved': saved?.toJson(),
+                'current': current,
+                'history': matchingHistory?.toJson(),
+              }),
+            ),
+          )
+          .toString(),
     );
   }
 }

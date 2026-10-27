@@ -40,6 +40,22 @@ class _RequirementCheckReportScreenState
               onPressed: widget.controller.load,
               child: const Text('Reload saved evidence'),
             ),
+            TextButton(
+              onPressed:
+                  widget.controller.inspecting || report?.savedProject == null
+                  ? null
+                  : widget.controller.inspectArtifacts,
+              child: Text(
+                widget.controller.inspecting
+                    ? 'Inspecting current artifacts…'
+                    : 'Inspect current artifacts',
+              ),
+            ),
+            if (widget.controller.inspecting) const LinearProgressIndicator(),
+            if (widget.controller.inspection != null)
+              Text(widget.controller.inspection!.label),
+            if (widget.controller.inspectionNotice != null)
+              Text(widget.controller.inspectionNotice!),
             if (widget.controller.error != null)
               SelectableText(widget.controller.error!),
             if (report != null) ...[

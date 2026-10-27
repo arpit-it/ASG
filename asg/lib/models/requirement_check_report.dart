@@ -1,5 +1,6 @@
 import 'requirements_board.dart';
 import 'build_task.dart';
+import 'source_generation.dart';
 
 enum RequirementCheckState {
   missing,
@@ -40,13 +41,17 @@ class RequirementCheckReport {
   RequirementCheckReport(
     this.requirementsRevision,
     List<RequirementCheckResult> results,
-    this.evidenceJson,
-  ) : results = List.unmodifiable(results);
+    this.evidenceJson, {
+    this.savedProject,
+    this.snapshotFingerprint = '',
+  }) : results = List.unmodifiable(results);
   final int requirementsRevision;
   final List<RequirementCheckResult> results;
   final String evidenceJson;
+  final GeneratedProject? savedProject;
+  final String snapshotFingerprint;
   static const limits =
-      'Saved command evidence only. No new checks, file inspection or inference ran. Mapped checks passed does not verify acceptance criteria or current artifact availability. Model Review remains advisory; manual task Done does not count as evidence.';
+      'Mapped checks passed describes saved command evidence, not acceptance criteria or current artifact availability. Inspect current artifacts separately to compare recorded source and output fingerprints. Inspection is read-only and reflects files only when inspected; it does not run commands or inference. Model Review remains advisory; manual task Done does not count as evidence.';
 }
 
 /// Only authored identifiers and result flags; raw command output is excluded.
