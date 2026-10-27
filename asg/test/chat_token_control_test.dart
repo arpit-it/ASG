@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:asg/controllers/chat_controller.dart';
 import 'package:asg/models/local_model_config.dart';
+import 'package:asg/models/chat_message.dart';
 import 'package:asg/services/conversation_store.dart';
 import 'package:asg/services/local_model.dart';
 import 'package:asg/services/model_settings_store.dart';
@@ -147,4 +148,42 @@ void main() {
     expect(prefs.getString('studio.localModel.v1'), raw);
     expect(tester.takeException(), isNull);
   });
+  test(
+    'corrupt model settings retain history and safely refuse new model work',
+    () async {
+      final store = ConversationStore.fromPreferences(prefs);
+      await store.save(project.id, [
+        const ChatMessage(role: 'assistant', content: 'saved history'),
+      ]);
+      for (final raw in [
+        '{"baseUrl":"http://127.0.0.1:8765/v1","model":"local","chatOutputTokens":0}',
+        'private-sentinel-invalid-json',
+      ]) {
+        await prefs.setString('studio.localModel.v1', raw);
+        var requests = 0;
+        final controller = ChatController(
+          project,
+          openStore: () async => store,
+          createProvider: (_) {
+            requests++;
+            throw StateError('must not start');
+          },
+        );
+        await controller.load();
+        expect(controller.ready, isTrue);
+        expect(controller.messages.single.content, 'saved history');
+        expect(
+          controller.requestLimits,
+          contains('settings could not be loaded'),
+        );
+        expect(await controller.send('new prompt'), isFalse);
+        expect(requests, 0);
+        expect(controller.error, contains('settings could not be loaded'));
+        expect(controller.error, isNot(contains('private-sentinel')));
+        expect(store.load(project.id).single.content, 'saved history');
+        expect(prefs.getString('studio.localModel.v1'), raw);
+        controller.dispose();
+      }
+    },
+  );
 }

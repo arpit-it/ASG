@@ -30,14 +30,15 @@ class ChatController extends BaseController {
              idleTimeout: inactivityLimit,
              totalTimeout: requestLimit,
            ));
-  int _outputTokenLimit = LocalModelConfig.defaultChatOutputTokens;
+  int? _outputTokenLimit = LocalModelConfig.defaultChatOutputTokens;
   static const inactivityLimit = Duration(seconds: 30);
   static const requestLimit = Duration(minutes: 3);
-  String get requestLimits =>
-      'Chat limits: $_outputTokenLimit output tokens, 15 seconds to connect, '
-      '30 seconds without data, 3 minutes total per model request. '
-      'Last loaded limits shown; saved settings are reloaded for each request. '
-      'The server may impose a lower output ceiling.';
+  String get requestLimits => _outputTokenLimit == null
+      ? 'Chat limits unavailable: saved model settings could not be loaded. Saved conversations remain available.'
+      : 'Chat limits: $_outputTokenLimit output tokens, 15 seconds to connect, '
+            '30 seconds without data, 3 minutes total per model request. '
+            'Last loaded limits shown; saved settings are reloaded for each request. '
+            'The server may impose a lower output ceiling.';
   static const cancellationScope =
       'Stop closes this app connection and discards the partial response. '
       'Server-side inference may continue. Saved messages are retained.';
@@ -260,16 +261,32 @@ class ChatController extends BaseController {
   bool busy = false;
   bool get ready => _store != null;
   String? error;
+  LocalModelConfig _loadModelConfig() {
+    try {
+      final config = ModelSettingsStore(_store!.records).load();
+      _outputTokenLimit = config.chatOutputTokens;
+      return config;
+    } catch (_) {
+      _outputTokenLimit = null;
+      throw const FormatException(
+        'Saved model settings could not be loaded. Saved data has not been overwritten.',
+      );
+    }
+  }
+
   Future<void> load() async {
     if (busy || hasUnsavedResponse || isDisposed) return;
     try {
       final store = await _openStore();
       final saved = store.load(project.id);
-      final config = ModelSettingsStore(store.records).load();
       if (isDisposed) return;
       _store = store;
-      _outputTokenLimit = config.chatOutputTokens;
       _messages = saved;
+      try {
+        _loadModelConfig();
+      } catch (_) {
+        // Model settings must not hide valid conversation or approval evidence.
+      }
       try {
         _approval = PlanApprovalStore(store.records).load(project.id);
         approvalError = null;
@@ -296,6 +313,7 @@ class ChatController extends BaseController {
     final requestMode = _mode;
     bool accepted = false;
     try {
+      final config = _loadModelConfig();
       final requirements = RequirementsStore(_store!.records).load(project.id);
       final fullRequirements = requestMode == ConversationMode.plan
           ? requirements.planDocument(project.name)
@@ -313,8 +331,6 @@ class ChatController extends BaseController {
       accepted = true;
       update();
       if (cancelled) return accepted;
-      final config = ModelSettingsStore(_store!.records).load();
-      _outputTokenLimit = config.chatOutputTokens;
       _provider = _createProvider(config);
       update();
       final recent = _messages
