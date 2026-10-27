@@ -3,6 +3,7 @@ import 'dart:async';
 import '../models/approved_source_proposal.dart';
 import '../models/build_plan.dart';
 import '../models/project.dart';
+import '../models/plan_approval.dart';
 import '../models/repair_attempt.dart';
 import '../models/requirements_board.dart';
 import '../models/source_edit_proposal.dart';
@@ -53,12 +54,23 @@ class SourceReviewController extends BaseController {
        _prepareCandidate = prepareCandidate ?? prepareSourceCandidate,
        _folderPicker = folderPicker ?? FolderPicker(),
        _createCandidateHost = createCandidateHost ?? createGenerationHost {
-    _workingRecord = records.getString('studio.generation.v1.${project.id}');
+    try {
+      _workingRecord = records.getString('studio.generation.v1.${project.id}');
+      _workingRecordReadable = true;
+    } catch (_) {
+      _workingRecordReadable = false;
+    }
     refreshApproval();
   }
 
   late final String? _workingRecord;
+  late final bool _workingRecordReadable;
+  static const _workingReadError =
+      'The working build record could not be read. Restore local storage access, '
+      'then close and reopen source review. Saved records and working output '
+      'have not been replaced.';
   void _requireWorking() {
+    if (!_workingRecordReadable) throw StateError(_workingReadError);
     if (records.getString('studio.generation.v1.${project.id}') !=
         _workingRecord) {
       throw StateError(
@@ -466,6 +478,12 @@ class SourceReviewController extends BaseController {
 
   void refreshApproval() {
     if (busy || isDisposed) return;
+    if (!_workingRecordReadable) {
+      _tasks = const [];
+      _error = _workingReadError;
+      update();
+      return;
+    }
     try {
       final approval = PlanApprovalStore(records)
           .requireCurrentApproval(project);
@@ -508,6 +526,7 @@ class SourceReviewController extends BaseController {
     final repairCandidate = repair ? _candidateSession?.result : null;
     if (repair && (!_hasRepairFailure || repairBlockedReason != null)) return;
     refreshApproval();
+    if (isDisposed || _error != null) return;
     if (!_tasks.any((task) => task.id == taskId)) {
       _error = 'Select a task in the current approved Plan.';
       update();
@@ -523,7 +542,17 @@ class SourceReviewController extends BaseController {
       return;
     }
     // Bind the entire request, including asynchronous source capture, to approval.
-    final started = PlanApprovalStore(records).requireCurrentApproval(project);
+    late final PlanApproval started;
+    try {
+      _requireWorking();
+      started = PlanApprovalStore(records).requireCurrentApproval(project);
+    } catch (_) {
+      if (!isDisposed) {
+        _error = 'Source review approval could not be read. Restore local storage access and approve a current Plan before retrying. Working output is retained.';
+        update();
+      }
+      return;
+    }
     _busy = true;
     _cancelled = false;
     if (!repair) {

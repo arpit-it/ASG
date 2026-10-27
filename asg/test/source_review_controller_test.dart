@@ -185,6 +185,67 @@ void main() {
     expect(controller.generated.directory, '/saved');
   }
 
+  test('opening read failure blocks effects until explicit reopen', () async {
+    controller.dispose();
+    (records as PrivateFailureRecords).failRead = true;
+    final saved = Map.of(records.values);
+    controller = create();
+    expectPrivateFailure();
+    expect(controller.tasks, isEmpty);
+    expect(controller.error, contains('close and reopen'));
+    (records as PrivateFailureRecords).failRead = false;
+    controller.refreshApproval();
+    await controller.request('Tanalyze', ['lib/main.dart']);
+    expectPrivateFailure();
+    expect(reads, 0);
+    expect(provider.prompt, isNull);
+    expect(records.values, saved);
+    controller.dispose();
+    controller = create();
+    expect(controller.error, isNull);
+    final pending = controller.request('Tanalyze', ['lib/main.dart']);
+    await tick();
+    provider.stream.add(response());
+    await provider.stream.close();
+    await pending;
+    expect(controller.proposal, isNotNull);
+  });
+
+  test(
+    'approval reread failure after notification stays private and retry works',
+    () async {
+      final saved = Map.of(records.values);
+      void failRead() => (records as PrivateFailureRecords).failRead = true;
+      controller.addListener(failRead);
+      await controller.request('Tanalyze', ['lib/main.dart']);
+      expectPrivateFailure();
+      expect(reads, 0);
+      expect(provider.prompt, isNull);
+      expect(records.values, saved);
+      expect(controller.busy, isFalse);
+      controller.removeListener(failRead);
+      (records as PrivateFailureRecords).failRead = false;
+      final pending = controller.request('Tanalyze', ['lib/main.dart']);
+      await tick();
+      provider.stream.add(response());
+      await provider.stream.close();
+      await pending;
+      expect(controller.error, isNull);
+      expect(controller.proposal, isNotNull);
+    },
+  );
+
+  test(
+    'disposal during approval refresh starts no request or diagnostic',
+    () async {
+      controller.addListener(controller.dispose);
+      await controller.request('Tanalyze', ['lib/main.dart']);
+      expect(controller.error, isNull);
+      expect(reads, 0);
+      expect(provider.prompt, isNull);
+    },
+  );
+
   test(
     'source capture errors stay private and explicit retry succeeds',
     () async {
