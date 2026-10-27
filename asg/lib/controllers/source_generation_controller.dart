@@ -388,8 +388,10 @@ class SourceGenerationController extends BaseController {
     try {
       final selected = await picker.pick();
       return isDisposed ? null : selected;
-    } catch (e) {
-      if (!isDisposed) _error = 'Directory could not be selected: $e';
+    } catch (_) {
+      if (!isDisposed) {
+        _error = 'Build destination could not be selected. Check folder access and the system folder picker. Retry selecting a destination; saved output is preserved.';
+      }
       return null;
     } finally {
       _busy = false;
