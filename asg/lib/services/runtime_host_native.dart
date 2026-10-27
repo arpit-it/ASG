@@ -71,13 +71,16 @@ class NativeRuntimeHost implements RuntimeHost {
 
   void _observe(Process process) {
     for (final stream in [process.stdout, process.stderr]) {
-      stream.transform(utf8.decoder).listen((chunk) {
-        for (final line
-            in chunk
-                .split(RegExp(r'[\r\n]+'))
-                .where((s) => s.trim().isNotEmpty)) {
-          _log(line);
-        }
+      var reported = false;
+      // Child output is untrusted and may contain prompts, credentials or paths.
+      // Consume bytes without decoding or forwarding them, with one activity
+      // notice per stream so verbose processes cannot flood the setup log.
+      stream.listen((bytes) {
+        if (bytes.isEmpty || reported) return;
+        reported = true;
+        _log(
+          'Runtime process output received. Raw output is hidden for privacy.',
+        );
       }, onError: (_) => _log('Runtime output could not be read.'));
     }
   }
