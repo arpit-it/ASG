@@ -156,6 +156,13 @@ class RequirementCheckReportStore {
               'id': r.requirement.id,
               'state': r.state.name,
               'acceptanceStatus': 'unverified',
+              'acceptanceEvidence': r.acceptance.toJson(),
+              'contextualEvidence': {
+                'type': 'automatedOperation',
+                'criterionMapping': 'none',
+                'operationIds': r.operationIds,
+                'state': r.state.name,
+              },
               'checks': [for (final check in r.checks) check.toJson()],
               'boardTaskIds': r.taskIds,
               'operationIds': r.operationIds,

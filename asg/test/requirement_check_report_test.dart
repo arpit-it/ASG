@@ -94,6 +94,172 @@ Future<GeneratedProject> prepare(
 }
 
 void main() {
+  test('acceptance identity preserves the entire authored block and changes on edits', () {
+    const original = ProjectRequirement(
+      id: 'R1',
+      title: 'Task ✓',
+      acceptance: 'First.  Second?\n- Keep 🧪  ',
+    );
+    final evidence = RequirementAcceptanceEvidence(original);
+    expect(evidence.toJson()['text'], original.acceptance);
+    expect(evidence.toJson()['granularity'], 'authoredAcceptanceBlock');
+    expect(
+      evidence.requirementSha256,
+      sha256.convert(utf8.encode(jsonEncode(original.toJson()))).toString(),
+    );
+    for (final changed in [
+      ProjectRequirement(
+        id: 'R2',
+        title: original.title,
+        acceptance: original.acceptance,
+      ),
+      ProjectRequirement(
+        id: original.id,
+        title: 'Changed',
+        acceptance: original.acceptance,
+      ),
+      ProjectRequirement(
+        id: original.id,
+        title: original.title,
+        acceptance: original.acceptance.trim(),
+      ),
+    ]) {
+      expect(
+        RequirementAcceptanceEvidence(changed).requirementSha256,
+        isNot(evidence.requirementSha256),
+      );
+    }
+  });
+
+  test('direct evidence remains unmet across contextual outcomes and same-revision edits', () async {
+    final records = Records();
+    final saved = await prepare(records);
+    final store = RequirementCheckReportStore(records);
+    Map<String, dynamic> acceptance() =>
+        ((jsonDecode(store.load(project).evidenceJson) as Map)['requirements']
+                    as List)
+                .single['acceptanceEvidence']
+            as Map<String, dynamic>;
+    final initial = acceptance();
+    for (final outcome in [
+      saved,
+      saved.copy(
+        phase: SourceGenerationPhase.failed,
+        steps: [
+          GenerationStep(
+            operation: saved.tasks!.first.operation.name,
+            exitCode: 1,
+            output: 'failure',
+          ),
+        ],
+      ),
+      saved.copy(phase: SourceGenerationPhase.verifying, steps: []),
+    ]) {
+      await SourceGenerationStore(records).save('p', outcome);
+      final report = store.load(project);
+      final result =
+          ((jsonDecode(report.evidenceJson) as Map)['requirements'] as List)
+              .single;
+      expect(acceptance(), initial);
+      expect(result['acceptanceEvidence']['status'], 'unverified');
+      expect(result['acceptanceEvidence']['directChecks'], isEmpty);
+      expect(result['contextualEvidence']['type'], 'automatedOperation');
+      expect(result['contextualEvidence']['criterionMapping'], 'none');
+      expect(
+        result['contextualEvidence']['state'],
+        report.results.single.state.name,
+      );
+      expect(
+        result['contextualEvidence']['operationIds'],
+        report.results.single.operationIds,
+      );
+    }
+    final board = RequirementsStore(records).load('p');
+    await records.setString(
+      RequirementsStore.key('p'),
+      jsonEncode(
+        RequirementsBoard(
+          revision: board.revision,
+          requirements: board.requirements,
+          tasks: [for (final t in board.tasks) t.withStatus(TaskStatus.queued)],
+        ).toJson(),
+      ),
+    );
+    expect(acceptance(), initial); // Manual progress cannot define acceptance.
+    final r = board.requirements.single;
+    await records.setString(
+      RequirementsStore.key('p'),
+      jsonEncode(
+        RequirementsBoard(
+          revision: board.revision,
+          requirements: [
+            ProjectRequirement(
+              id: r.id,
+              title: r.title,
+              acceptance: '${r.acceptance} changed',
+            ),
+          ],
+          tasks: board.tasks,
+        ).toJson(),
+      ),
+    );
+    expect(
+      acceptance()['requirementSha256'],
+      isNot(initial['requirementSha256']),
+    );
+    final requirements = RequirementsStore(records);
+    final edited = requirements.load('p');
+    await requirements.save('p', edited, edited);
+    expect(
+      store.load(project).results.single.state,
+      RequirementCheckState.stale,
+    );
+    final before = Map.of(records.data);
+    final reopened = Records()..data.addAll(before);
+    expect(
+      RequirementCheckReportStore(reopened).load(project).evidenceJson,
+      store.load(project).evidenceJson,
+    );
+    expect(records.data, before);
+  });
+
+  testWidgets('unmet acceptance evidence is readable at narrow double text', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(320, 640);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final records = Records();
+    final saved = await prepare(records);
+    await SourceGenerationStore(records).save('p', saved);
+    await tester.pumpWidget(
+      MaterialApp(
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(context)
+              .copyWith(textScaler: const TextScaler.linear(2)),
+          child: child!,
+        ),
+        home: RequirementCheckReportScreen(
+          controller: RequirementCheckReportController(
+            project,
+            RequirementCheckReportStore(records),
+          ),
+        ),
+      ),
+    );
+    await tester.scrollUntilVisible(
+      find.text(RequirementAcceptanceEvidence.label),
+      150,
+    );
+    expect(find.text(RequirementAcceptanceEvidence.label), findsOneWidget);
+    await tester.scrollUntilVisible(
+      find.text(RequirementAcceptanceEvidence.reason),
+      100,
+    );
+    expect(find.text(RequirementAcceptanceEvidence.reason), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
   test('copied context reconstructs exact criteria and task graph with canonical digest', () async {
     final records = Records();
     final base = mappedBoard();
