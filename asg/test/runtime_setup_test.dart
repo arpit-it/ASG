@@ -74,6 +74,26 @@ class FakeRuntimeHost implements RuntimeHost {
   }
 }
 
+class PickerRuntimeHost extends FakeRuntimeHost {
+  bool fail = true;
+  bool cancel = false;
+  @override
+  Future<String?> chooseDirectory() async {
+    if (fail) {
+      throw StateError('PRIVATE_PICKER_SENTINEL token=secret /private/models');
+    }
+    return cancel ? null : '/models';
+  }
+
+  @override
+  Future<String?> choosePython() async {
+    if (fail) {
+      throw StateError('PRIVATE_PICKER_SENTINEL token=secret /private/python');
+    }
+    return cancel ? null : '/python';
+  }
+}
+
 class DelayedStartupHost extends FakeRuntimeHost {
   Completer<void>? scanGate, launchGate;
   final entered = Completer<void>();
@@ -182,6 +202,35 @@ class SetupProbe implements ModelProvider {
 }
 
 void main() {
+  for (final python in [false, true]) {
+    test(
+      '${python ? 'Python' : 'model folder'} picker errors are private and retryable',
+      () async {
+        SharedPreferences.setMockInitialValues({});
+        final host = PickerRuntimeHost();
+        final c = await controller(host);
+        addTearDown(c.dispose);
+        Future<String?> pick() =>
+            python ? c.choosePython() : c.chooseDirectory();
+        expect(await pick(), isNull);
+        expect(c.error, isNot(contains('PRIVATE_PICKER_SENTINEL')));
+        expect(c.error, isNot(contains('token=secret')));
+        expect(c.error, isNot(contains('/private/')));
+        expect(c.error, contains('Try again'));
+        expect(c.error, contains(python ? 'Python' : 'model folder'));
+        host.fail = false;
+        expect(await pick(), python ? '/python' : '/models');
+        expect(c.error, isNull);
+        host.cancel = true;
+        expect(await pick(), isNull);
+        expect(c.error, isNull);
+        expect(host.downloads, 0);
+        expect(host.ownsProcess, isFalse);
+        expect(c.setup.modelPath, isEmpty);
+      },
+    );
+  }
+
   setUp(() => SharedPreferences.setMockInitialValues({}));
   for (final managed in [false, true]) {
     test(
