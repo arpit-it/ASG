@@ -234,6 +234,87 @@ void main() {
     if (!c.isDisposed) c.dispose();
   });
 
+  for (final failure in ['history', 'settings']) {
+    test(
+      'Build $failure initialization failure is private and recoverable',
+      () async {
+        expect(await generate(true), isTrue);
+        final saved = store.records.getString('${store.prefix}p');
+        final runtime = store.records.getString('studio.runtimeSetup.v1');
+        const privateDetails = 'private-prompt token-secret /private/model';
+        final failingStore = InitializationHistory(store.records);
+        if (failure == 'settings') {
+          await store.records.setString(
+            'studio.runtimeSetup.v1',
+            privateDetails,
+          );
+        } else {
+          failingStore.fail = true;
+        }
+        c.dispose();
+        host = FixtureHost();
+        c = SourceGenerationController(
+          project: project,
+          definition: definition,
+          store: failingStore,
+          host: host,
+        );
+        expect(c.available, isFalse);
+        expect(c.error, isNotNull);
+        for (final marker in privateDetails.split(' ')) {
+          expect(c.error, isNot(contains(marker)));
+        }
+        expect(c.error, contains('Reopen Build'));
+        final error = c.error;
+        final picker = BuildFolderPicker();
+        expect(await generate(true), isFalse);
+        expect(await c.verifyAgain(approved: true), isFalse);
+        expect(await c.chooseDirectory(picker), isNull);
+        expect(c.canRollback(store.history('p').first), isFalse);
+        expect(c.createSourceReview(), isNull);
+        expect(picker.calls, 0);
+        expect(host.generations, 0);
+        expect(host.verifications, 0);
+        expect(c.error, error);
+        expect(store.records.getString('${store.prefix}p'), saved);
+        if (failure == 'settings') {
+          expect(
+            store.records.getString('studio.runtimeSetup.v1'),
+            privateDetails,
+          );
+          await store.records.setString(
+            'studio.runtimeSetup.v1',
+            runtime ??
+                jsonEncode({
+                  'python': 'python3',
+                  'modelPath': '',
+                  'repository': '',
+                  'downloadParent': '',
+                  'revision': 'main',
+                }),
+          );
+        }
+        failingStore.fail = false;
+        expect(await generate(true), isFalse);
+        expect(c.error, error);
+        c.dispose();
+        c = SourceGenerationController(
+          project: project,
+          definition: definition,
+          store: failingStore,
+          host: FixtureHost(),
+        );
+        expect(c.available, isTrue);
+        expect(c.error, isNull);
+        expect(
+          jsonEncode(c.result!.toJson()),
+          jsonEncode(store.load('p')!.toJson()),
+        );
+        expect(store.records.getString('${store.prefix}p'), saved);
+      },
+    );
+  }
+
   test(
     'Build picker failure is private and retry preserves generated history',
     () async {
@@ -1370,5 +1451,15 @@ class StopDuringReadyStore extends SourceGenerationStore {
   Future<void> save(String id, GeneratedProject project) async {
     if (project.phase == SourceGenerationPhase.ready) onReady?.call();
     await super.save(id, project);
+  }
+}
+
+class InitializationHistory extends SourceGenerationStore {
+  InitializationHistory(super.records);
+  bool fail = false;
+  @override
+  GeneratedProject? load(String id) {
+    if (fail) throw StateError('private-prompt token-secret /private/model');
+    return super.load(id);
   }
 }
