@@ -118,20 +118,32 @@ class RuntimeSetupController extends BaseController {
   }
 
   Future<String?> chooseDirectory() async {
+    if (isDisposed) return null;
     try {
-      return await host.chooseDirectory();
-    } catch (e) {
-      _error = '$e';
+      final path = await host.chooseDirectory();
+      if (isDisposed) return null;
+      _error = null;
+      update();
+      return path;
+    } catch (_) {
+      if (isDisposed) return null;
+      _error = 'The model folder picker could not be opened. Try again and check that file selection is available on this device.';
       update();
       return null;
     }
   }
 
   Future<String?> choosePython() async {
+    if (isDisposed) return null;
     try {
-      return await host.choosePython();
-    } catch (e) {
-      _error = '$e';
+      final path = await host.choosePython();
+      if (isDisposed) return null;
+      _error = null;
+      update();
+      return path;
+    } catch (_) {
+      if (isDisposed) return null;
+      _error = 'The Python interpreter picker could not be opened. Try again and check that file selection is available on this device.';
       update();
       return null;
     }
