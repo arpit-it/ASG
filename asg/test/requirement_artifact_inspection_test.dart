@@ -1,4 +1,7 @@
 import 'dart:async';
+import 'dart:convert';
+
+import 'package:crypto/crypto.dart';
 
 import 'package:asg/controllers/requirement_check_report_controller.dart';
 import 'package:asg/models/artifact_inspection.dart';
@@ -52,17 +55,45 @@ void main() {
       await SourceGenerationStore(records).save('p', saved);
       final before = Map.of(records.data);
       final inspector = Inspector();
+      final observed = DateTime.parse('2026-10-28T03:00:00+05:30');
       final controller = RequirementCheckReportController(
         project,
         RequirementCheckReportStore(records),
         inspector: inspector,
+        clock: () => observed,
       );
       controller.load();
       expect(inspector.calls, 0);
+      expect(
+        (jsonDecode(controller.evidenceJson!) as Map)['artifactInspection'],
+        isNull,
+      );
+      final savedJson = controller.report!.evidenceJson;
       for (final outcome in ArtifactInspection.values) {
         inspector.outcome = outcome;
         await controller.inspectArtifacts();
         expect(controller.inspection, outcome);
+        final exported = jsonDecode(controller.evidenceJson!) as Map;
+        final observation = exported['artifactInspection'] as Map;
+        expect(observation['outcome'], outcome.name);
+        expect(observation['observedAt'], '2026-10-27T21:30:00.000Z');
+        expect(controller.inspectedAt, observed.toUtc());
+        expect(
+          observation['savedEvidenceSha256'],
+          sha256.convert(utf8.encode(savedJson)).toString(),
+        );
+        expect(exported['savedEvidence'], jsonDecode(savedJson));
+        expect(
+          observation['scope'],
+          contains('not a semantic acceptance verdict'),
+        );
+        expect(controller.report!.evidenceJson, savedJson);
+        expect(controller.evidenceJson, isNot(contains('PRIVATE_')));
+        expect(
+          controller.evidenceJson,
+          isNot(contains(controller.report!.snapshotFingerprint)),
+        );
+
         expect(controller.inspecting, isFalse);
         expect(
           controller.report!.results.single.state,
@@ -81,6 +112,11 @@ void main() {
       expect(controller.error, isNull);
       controller.load();
       expect(controller.inspection, isNull);
+      expect(controller.inspectedAt, isNull);
+      expect(
+        (jsonDecode(controller.evidenceJson!) as Map)['artifactInspection'],
+        isNull,
+      );
       controller.dispose();
     },
   );
@@ -107,6 +143,11 @@ void main() {
     await pending;
     expect(controller.inspection, isNull);
     expect(controller.inspectionNotice, contains('changed during inspection'));
+    expect(controller.inspectedAt, isNull);
+    expect(
+      (jsonDecode(controller.evidenceJson!) as Map)['artifactInspection'],
+      isNull,
+    );
     expect(controller.report!.savedProject!.directory, changed.directory);
     expect(controller.report!.evidenceJson, isNot(contains('PRIVATE')));
     controller.dispose();
@@ -139,6 +180,7 @@ void main() {
       expect(controller.inspection, isNull);
       if (action == 'corrupt') {
         expect(controller.report, isNull);
+        expect(controller.evidenceJson, isNull);
         expect(controller.error, isNot(contains('PRIVATE')));
       }
       if (action == 'dispose') {
@@ -215,6 +257,7 @@ void main() {
       await tester.scrollUntilVisible(
         find.text('Inspect current artifacts'),
         150,
+        scrollable: find.byType(Scrollable).first,
       );
       await tester.tap(find.text('Inspect current artifacts'));
       await tester.pump();
@@ -225,17 +268,45 @@ void main() {
       await tester.scrollUntilVisible(
         find.text(ArtifactInspection.missing.label),
         150,
+        scrollable: find.byType(Scrollable).first,
       );
+      await tester.scrollUntilVisible(
+        find.textContaining('Observed at '),
+        150,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(
+        find.textContaining('(UTC); files may change afterward.'),
+        findsOneWidget,
+      );
+      await tester.scrollUntilVisible(
+        find.text('Exact saved revision and results'),
+        300,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.tap(find.text('Exact saved revision and results'));
+      await tester.pumpAndSettle();
+      await tester.scrollUntilVisible(
+        find.text(controller.evidenceJson!),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(find.textContaining('"artifactInspection"'), findsOneWidget);
       expect(tester.takeException(), isNull);
       await tester.scrollUntilVisible(
         find.text(RequirementCheckResult.acceptanceStatus),
         150,
+        scrollable: find.byType(Scrollable).first,
       );
       expect(
         find.text(RequirementCheckResult.acceptanceStatus),
         findsOneWidget,
       );
-      await tester.scrollUntilVisible(find.text('Reload saved evidence'), -150);
+      await tester.scrollUntilVisible(
+        find.text('Reload saved evidence'),
+        -150,
+        scrollable: find.byType(Scrollable).first,
+      );
       await tester.ensureVisible(find.text('Reload saved evidence'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Reload saved evidence'));

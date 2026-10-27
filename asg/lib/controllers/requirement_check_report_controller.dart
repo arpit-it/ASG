@@ -10,8 +10,11 @@ class RequirementCheckReportController extends BaseController {
     this.project,
     this.store, {
     ArtifactInspector? inspector,
-  }) : _inspector = inspector ?? RequirementArtifactInspector();
+    DateTime Function()? clock,
+  }) : _inspector = inspector ?? RequirementArtifactInspector(),
+       _clock = clock ?? DateTime.now;
   final ArtifactInspector _inspector;
+  final DateTime Function() _clock;
   final StudioProject project;
   final RequirementCheckReportStore store;
   RequirementCheckReport? _report;
@@ -20,15 +23,17 @@ class RequirementCheckReportController extends BaseController {
   String? get error => _error;
   bool _inspecting = false;
   bool get inspecting => _inspecting;
-  ArtifactInspection? _inspection;
-  ArtifactInspection? get inspection => _inspection;
+  RequirementArtifactObservation? _observation;
+  ArtifactInspection? get inspection => _observation?.outcome;
+  DateTime? get inspectedAt => _observation?.observedAt;
+  String? get evidenceJson => _report?.evidenceWithInspection(_observation);
   String? _inspectionNotice;
   String? get inspectionNotice => _inspectionNotice;
   int _revision = 0;
   void load() {
     if (isDisposed) return;
     _revision++;
-    _inspection = null;
+    _observation = null;
     _inspectionNotice = null;
     try {
       _report = store.load(project);
@@ -63,13 +68,14 @@ class RequirementCheckReportController extends BaseController {
       } catch (_) {
         outcome = ArtifactInspection.unavailable;
       }
+      final observedAt = _clock().toUtc();
       if (isDisposed || revision != _revision) return;
       final current = store.load(project);
       _report = current;
       if (current.snapshotFingerprint != selected.snapshotFingerprint) {
         _inspectionNotice = 'Saved evidence changed during inspection. Current evidence was reloaded; inspect again.';
       } else {
-        _inspection = outcome;
+        _observation = RequirementArtifactObservation(outcome, observedAt);
       }
     } catch (_) {
       // A newly corrupt record must clear the formerly successful report.

@@ -1,3 +1,8 @@
+import 'dart:convert';
+
+import 'package:crypto/crypto.dart';
+
+import 'artifact_inspection.dart';
 import 'requirements_board.dart';
 import 'build_task.dart';
 import 'source_generation.dart';
@@ -50,6 +55,27 @@ class RequirementCheckReport {
   final String evidenceJson;
   final GeneratedProject? savedProject;
   final String snapshotFingerprint;
+
+  /// Public evidence only: do not export the private snapshot fingerprint.
+  String evidenceWithInspection(RequirementArtifactObservation? observation) =>
+      const JsonEncoder.withIndent('  ').convert({
+        'savedEvidence': jsonDecode(evidenceJson),
+        'artifactInspection': observation == null
+            ? null
+            : {
+                'outcome': observation.outcome.name,
+                'observedAt': observation.observedAt.toUtc().toIso8601String(),
+                'savedEvidenceSha256': sha256
+                    .convert(utf8.encode(evidenceJson))
+                    .toString(),
+                'scope':
+                    'Read-only point-in-time observation of recorded source '
+                    'and output fingerprints. No commands or inference ran. '
+                    'This is not a semantic acceptance verdict or a guarantee '
+                    'that files remain unchanged.',
+              },
+      });
+
   static const limits =
       'Mapped checks passed describes saved command evidence, not acceptance criteria or current artifact availability. Inspect current artifacts separately to compare recorded source and output fingerprints. Inspection is read-only and reflects files only when inspected; it does not run commands or inference. Model Review remains advisory; manual task Done does not count as evidence.';
 }
@@ -84,4 +110,11 @@ class RequirementOperationEvidence {
     'cancelled': cancelled,
     'outputLimitExceeded': outputLimitExceeded,
   };
+}
+
+/// Transient observation accepted only after checking the durable snapshot.
+class RequirementArtifactObservation {
+  const RequirementArtifactObservation(this.outcome, this.observedAt);
+  final ArtifactInspection outcome;
+  final DateTime observedAt;
 }
