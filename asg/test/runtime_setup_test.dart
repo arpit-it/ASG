@@ -146,6 +146,18 @@ class PendingConnectionStore extends ModelSettingsStore {
   }
 }
 
+class FailingConnectionStore extends ModelSettingsStore {
+  FailingConnectionStore(super.records);
+  bool fail = true;
+  @override
+  Future<void> save(LocalModelConfig config) async {
+    if (fail) {
+      throw StateError('PRIVATE_SAVE_SENTINEL token=secret /private/record');
+    }
+    await super.save(config);
+  }
+}
+
 class SetupProbe implements ModelProvider {
   final output = StreamController<String>();
   int cancellations = 0;
@@ -765,6 +777,77 @@ void main() {
       c.dispose();
     },
   );
+
+  for (final managed in [false, true]) {
+    test(
+      'connection save failure stays private and recoverable: $managed',
+      () async {
+        final prefs = await SharedPreferences.getInstance();
+        final durable = ModelSettingsStore.fromPreferences(prefs);
+        await durable.save(
+          const LocalModelConfig(model: 'previous', chatOutputTokens: 512),
+        );
+        final before = prefs.getString('studio.localModel.v1');
+        final failing = FailingConnectionStore(durable.records);
+        final host = FakeRuntimeHost();
+        final c = RuntimeSetupController(
+          store: RuntimeSetupStore.fromPreferences(prefs),
+          modelStore: failing,
+          host: host,
+          connection: connection(
+            ready: () => !managed || host.ownsProcess,
+            path: '/models',
+          ),
+        );
+        addTearDown(c.dispose);
+        if (managed) {
+          await c.inspect('/models');
+          await c.start(const RuntimeSetup(python: '/python'));
+        } else {
+          await c.connect(const LocalModelConfig());
+        }
+        expect(c.error, contains('Connection settings could not be saved'));
+        expect(c.error, contains('retry'));
+        for (final private in [
+          'PRIVATE_SAVE_SENTINEL',
+          'token=secret',
+          '/private/record',
+        ]) {
+          expect(c.error, isNot(contains(private)));
+        }
+        expect(c.status, isNot(contains('Project chat now uses')));
+        expect(c.status, isNot(startsWith('Connected.')));
+        expect(c.health.ready, isFalse);
+        expect(c.busy, isFalse);
+        expect(prefs.getString('studio.localModel.v1'), before);
+        expect(
+          c.connectionConfig.chatOutputTokens,
+          LocalModelConfig.defaultChatOutputTokens,
+        );
+        if (managed) {
+          expect(host.ownsProcess, isTrue);
+          await c.stop();
+          expect(host.ownsProcess, isFalse);
+          expect(host.stops, 1);
+        }
+        await durable.save(
+          const LocalModelConfig(model: 'previous', chatOutputTokens: 1024),
+        );
+        failing.fail = false;
+        if (managed) {
+          await c.start(const RuntimeSetup(python: '/python'));
+        } else {
+          await c.connect(const LocalModelConfig());
+        }
+        expect(c.error, isNull);
+        expect(c.health.ready, isTrue);
+        expect(durable.load().model, 'Qwen3.5-9B');
+        expect(durable.load().chatOutputTokens, 1024);
+        expect(c.connectionConfig.chatOutputTokens, 1024);
+        if (managed) await c.stop();
+      },
+    );
+  }
 
   test('managed startup retains saved chat ceiling', () async {
     final prefs = await SharedPreferences.getInstance();
