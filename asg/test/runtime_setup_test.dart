@@ -159,6 +159,102 @@ class SetupProbe implements ModelProvider {
 
 void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
+  for (final oldReady in [false, true]) {
+    test(
+      'old connection refresh cannot replace newly connected health: $oldReady',
+      () async {
+        final response = Completer<http.Response>();
+        final entered = Completer<void>();
+        var requests = 0;
+        final c = await controller(
+          FakeRuntimeHost(),
+          api: RuntimeConnection(
+            client: MockClient((request) {
+              requests++;
+              if (requests == 1) {
+                entered.complete();
+                return response.future;
+              }
+              expect(request.url.port, 9876);
+              return Future.value(
+                http.Response(
+                  jsonEncode({
+                    'status': 'ready',
+                    'model': 'selected',
+                    'phase': 'writing',
+                  }),
+                  200,
+                ),
+              );
+            }),
+          ),
+        );
+        addTearDown(c.dispose);
+        final pending = c.refresh();
+        await entered.future;
+        await c.connect(
+          const LocalModelConfig(
+            baseUrl: 'http://127.0.0.1:9876/v1',
+            model: 'selected',
+          ),
+        );
+        expect(c.error, isNull);
+        expect(c.health.ready, isTrue);
+        final verifiedHealth = c.health;
+        response.complete(
+          http.Response(
+            jsonEncode({
+              'status': oldReady ? 'ready' : 'error',
+              'model': 'old-model',
+              'phase': 'idle',
+            }),
+            200,
+          ),
+        );
+        await pending;
+        expect(c.health, same(verifiedHealth));
+        expect(c.health.model, 'selected');
+        expect(c.health.detail, contains('streaming'));
+        expect(c.connectionConfig.baseUrl, 'http://127.0.0.1:9876/v1');
+        // Dropping an obsolete result must still release the polling guard.
+        await c.refresh();
+        expect(requests, 3);
+        expect(c.health.model, 'selected');
+      },
+    );
+  }
+
+  test('pending refresh publishes when connection remains current', () async {
+    final response = Completer<http.Response>();
+    final entered = Completer<void>();
+    final c = await controller(
+      FakeRuntimeHost(),
+      api: RuntimeConnection(
+        client: MockClient((_) {
+          entered.complete();
+          return response.future;
+        }),
+      ),
+    );
+    addTearDown(c.dispose);
+    final pending = c.refresh();
+    await entered.future;
+    response.complete(
+      http.Response(
+        jsonEncode({
+          'status': 'ready',
+          'model': 'current-model',
+          'phase': 'thinking',
+        }),
+        200,
+      ),
+    );
+    await pending;
+    expect(c.health.ready, isTrue);
+    expect(c.health.model, 'current-model');
+    expect(c.health.detail, contains('processing'));
+  });
+
   test('Connect does not publish a dispatched save after disposal', () async {
     final prefs = await SharedPreferences.getInstance();
     final ordinary = ModelSettingsStore.fromPreferences(prefs);
