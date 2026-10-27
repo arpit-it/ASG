@@ -1,10 +1,10 @@
-# Progress — 25 October 2026
+# Progress and delivery history
 
-## Current context — 25 October 2026
+## Current context — 28 October 2026
 
 ASG is a Flutter application targeting Android, iOS, web, macOS, Windows and Linux. Included platform runners do not establish tested device support. Managed MLX setup and the current independent Flutter web generator host are macOS-specific; other platforms retain supported app features and runtime connection controls.
 
-F01–F06/F13 are Done. F06 completed through independently reviewed PR #107, verified merge `9d7221080c88fe478588aa4f3ef66dbb9c11a28b`; issue #104 closed. F07 is next eligible after overlap/open-work inspection. The [requirements ledger](../REQUIREMENTS.md) is the sole feature/task queue; earlier entries are historical evidence.
+F01–F09, F13 and F14 are Done within their final recorded acceptance boundaries; F10 remains In progress for actual acceptance-specific checks. F09 acceptance merged through PR #214 and F14 pane controls through PR #216. The [requirements ledger](../REQUIREMENTS.md) is the sole task queue and authority for current work and exact merge evidence; earlier dated status entries are historical snapshots. Issue #224 reconciles these summaries and documents staged portability and product-verification improvements without starting later product work.
 
 ## Environment / milestone 0
 
@@ -2944,3 +2944,8 @@ The controller reloads the durable working pointer before dispatch, prevents dup
 Validation: 18 focused report/controller/widget/MVC tests passed, including seven new regressions: every outcome, no writes, pointer-change race despite equal fingerprints, reload/corruption/disposal, duplicate/missing dispatch, host ownership/unsupported fallback, narrow double-text progress/reload, and real native source/output fingerprint changes/missing files. Initial native fixture omitted mandatory main.dart.js and one test tap needed scrolling below the app bar; fixtures corrected and all focused checks rerun successfully. Full checks and final PR/review/CI/merge evidence follow. Local runtime endpoint refused connection; no fresh inference, model download, stable-app replacement, deployment or schedule/notification change. Semantic acceptance-specific checks remain F10 work; no later feature selected.
 
 Validation completed for this increment: formatter219/analyzer passed, full Flutter suite718passed/seven opt-in skips, focused18passed, web build and Wasm dry run passed. Independent final-revision review/required CI/merge pending; F10 remains In progress. No fresh inference claimed.
+
+
+## Documentation reconciliation — issue #224 (28 October 2026)
+
+Updated current delivery summaries and separated historical snapshots from present scope. The canonical requirements queue retains F10/F15 guidance and adds distinct generator-host portability and reproducible product acceptance tasks, with real-host evidence and honest unavailable states. Documentation-only: no runtime/dependency/CI behavior or completed-feature status changes. Local validation covers documentation links, queue consistency and whitespace; exact-final independent review and actual required CI remain mandatory before merge.
