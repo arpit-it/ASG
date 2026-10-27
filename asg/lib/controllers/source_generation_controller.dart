@@ -159,9 +159,9 @@ class SourceGenerationController extends BaseController {
       }
       unawaited(previousHost.dispose().catchError((Object _) {}));
       return true;
-    } catch (e) {
+    } catch (_) {
       if (!isDisposed) {
-        _error = 'Rollback did not complete; current work is preserved. $e';
+        _error = 'Rollback did not complete; current work is preserved. Check the selected build artifacts and saved project storage. Reopen Build if the working version changed. Retry the selected rollback after resolving the problem.';
       }
       return false;
     } finally {
