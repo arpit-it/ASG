@@ -227,11 +227,11 @@ class _ModelChatState extends State<ModelChat> {
           key: const ValueKey('chatRequestDiagnostics'),
           title: const Text('Chat request diagnostics'),
           subtitle: Text(controller.requestDiagnostic),
-          children: const [
+          children: [
             Padding(
-              padding: EdgeInsets.all(12),
+              padding: const EdgeInsets.all(12),
               child: Text(
-                '${ChatController.requestLimits}\n'
+                '${controller.requestLimits}\n'
                 '${ChatController.cancellationScope}',
               ),
             ),

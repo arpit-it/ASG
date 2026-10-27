@@ -1,3 +1,4 @@
+import '../models/local_model_config.dart';
 import '../models/requirements_board.dart';
 import '../models/build_plan.dart';
 import '../services/plan_task_import.dart';
@@ -25,16 +26,18 @@ class ChatController extends BaseController {
            createProvider ??
            ((config) => LocalModelProvider(
              config,
-             maxTokens: outputTokenLimit,
+             maxTokens: config.chatOutputTokens,
              idleTimeout: inactivityLimit,
              totalTimeout: requestLimit,
            ));
-  static const outputTokenLimit = 1536;
+  int _outputTokenLimit = LocalModelConfig.defaultChatOutputTokens;
   static const inactivityLimit = Duration(seconds: 30);
   static const requestLimit = Duration(minutes: 3);
-  static const requestLimits =
-      'Chat limits: 1536 output tokens, 15 seconds to connect, '
-      '30 seconds without data, 3 minutes total per model request.';
+  String get requestLimits =>
+      'Chat limits: $_outputTokenLimit output tokens, 15 seconds to connect, '
+      '30 seconds without data, 3 minutes total per model request. '
+      'Last loaded limits shown; saved settings are reloaded for each request. '
+      'The server may impose a lower output ceiling.';
   static const cancellationScope =
       'Stop closes this app connection and discards the partial response. '
       'Server-side inference may continue. Saved messages are retained.';
@@ -262,8 +265,10 @@ class ChatController extends BaseController {
     try {
       final store = await _openStore();
       final saved = store.load(project.id);
+      final config = ModelSettingsStore(store.records).load();
       if (isDisposed) return;
       _store = store;
+      _outputTokenLimit = config.chatOutputTokens;
       _messages = saved;
       try {
         _approval = PlanApprovalStore(store.records).load(project.id);
@@ -308,7 +313,10 @@ class ChatController extends BaseController {
       accepted = true;
       update();
       if (cancelled) return accepted;
-      _provider = _createProvider(ModelSettingsStore(_store!.records).load());
+      final config = ModelSettingsStore(_store!.records).load();
+      _outputTokenLimit = config.chatOutputTokens;
+      _provider = _createProvider(config);
+      update();
       final recent = _messages
           .skip(_messages.length > 8 ? _messages.length - 8 : 0)
           .map((m) => '${m.role}: ${m.content}')

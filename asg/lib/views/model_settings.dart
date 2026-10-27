@@ -17,8 +17,12 @@ class _ModelSettingsState extends State<ModelSettings> {
   late final initial = controller.initial;
   late final url = TextEditingController(text: initial.baseUrl);
   late final model = TextEditingController(text: initial.model);
-  LocalModelConfig get config =>
-      LocalModelConfig(baseUrl: url.text.trim(), model: model.text.trim());
+  late int chatOutputTokens = initial.chatOutputTokens;
+  LocalModelConfig get config => LocalModelConfig(
+    baseUrl: url.text.trim(),
+    model: model.text.trim(),
+    chatOutputTokens: chatOutputTokens,
+  );
   @override
   void initState() {
     super.initState();
@@ -54,17 +58,41 @@ class _ModelSettingsState extends State<ModelSettings> {
             const SizedBox(height: 16),
             TextField(
               controller: url,
-              enabled: !controller.busy,
+              enabled: !controller.busy && !controller.settingsLoadFailed,
               decoration: const InputDecoration(
                 labelText: 'Local API base URL',
               ),
             ),
             TextField(
               controller: model,
-              enabled: !controller.busy,
+              enabled: !controller.busy && !controller.settingsLoadFailed,
               decoration: const InputDecoration(
                 labelText: 'Exact server model ID',
               ),
+            ),
+            const SizedBox(height: 16),
+            DropdownButtonFormField<int>(
+              initialValue: chatOutputTokens,
+              isExpanded: true,
+              decoration: const InputDecoration(
+                labelText: 'Chat output tokens',
+              ),
+              items: LocalModelConfig.chatTokenOptions
+                  .map(
+                    (value) =>
+                        DropdownMenuItem(value: value, child: Text('$value')),
+                  )
+                  .toList(),
+              onChanged: controller.busy || controller.settingsLoadFailed
+                  ? null
+                  : (value) {
+                      if (value != null) {
+                        setState(() => chatOutputTokens = value);
+                      }
+                    },
+            ),
+            const Text(
+              'Applies to the next chat request after Save. This is a requested output ceiling; the server may impose a lower limit. Connection tests, source edits and repairs use separate fixed limits.',
             ),
             const SizedBox(height: 16),
             const Text(
@@ -90,11 +118,15 @@ class _ModelSettingsState extends State<ModelSettings> {
           child: const Text('Stop test'),
         ),
       OutlinedButton(
-        onPressed: controller.busy ? null : () => controller.test(config),
+        onPressed: controller.busy || controller.settingsLoadFailed
+            ? null
+            : () => controller.test(config),
         child: const Text('Test model'),
       ),
       FilledButton(
-        onPressed: controller.busy ? null : () => controller.save(config),
+        onPressed: controller.busy || controller.settingsLoadFailed
+            ? null
+            : () => controller.save(config),
         child: const Text('Save'),
       ),
     ],
