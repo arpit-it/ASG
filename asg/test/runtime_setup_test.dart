@@ -141,6 +141,50 @@ class SetupProbe implements ModelProvider {
 
 void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
+  for (final key in ['studio.runtimeSetup.v1', 'studio.localModel.v1']) {
+    test(
+      'saved settings load diagnostics omit private content for $key',
+      () async {
+        const damaged = 'PRIVATE_SETTINGS_SENTINEL /private/model token=secret';
+        SharedPreferences.setMockInitialValues({key: damaged});
+        final prefs = await SharedPreferences.getInstance();
+        final c = await controller(FakeRuntimeHost());
+        addTearDown(c.dispose);
+        c.initialize();
+        await c.refresh();
+        expect(c.error, contains('Saved runtime settings could not be loaded'));
+        expect(c.error, contains('Restore valid settings'));
+        expect(c.error, isNot(contains('PRIVATE_SETTINGS_SENTINEL')));
+        expect(c.error, isNot(contains('token=secret')));
+        expect(prefs.getString(key), damaged);
+      },
+    );
+  }
+
+  testWidgets('damaged settings show private recovery guidance in setup', (
+    tester,
+  ) async {
+    const damaged = 'PRIVATE_SETTINGS_SENTINEL token=secret';
+    SharedPreferences.setMockInitialValues({'studio.runtimeSetup.v1': damaged});
+    final c = await controller(FakeRuntimeHost());
+    await tester.pumpWidget(
+      MaterialApp(home: RuntimeSetupScreen(controller: c)),
+    );
+    await tester.pump();
+    await tester.drag(find.byType(ListView), const Offset(0, -2000));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Restore valid settings'), findsOneWidget);
+    expect(find.textContaining('PRIVATE_SETTINGS_SENTINEL'), findsNothing);
+    expect(find.textContaining('token=secret'), findsNothing);
+    expect(
+      (await SharedPreferences.getInstance()).getString(
+        'studio.runtimeSetup.v1',
+      ),
+      damaged,
+    );
+    await tester.pumpWidget(const SizedBox());
+  });
+
   test('setup probe omits private output and bounds responses', () async {
     for (final outcome in ['success', 'error', 'large', 'stop', 'dispose']) {
       final probe = SetupProbe();
