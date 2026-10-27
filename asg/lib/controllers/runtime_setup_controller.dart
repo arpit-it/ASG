@@ -166,7 +166,7 @@ class RuntimeSetupController extends BaseController {
   });
   Future<void> download(RuntimeSetup values) => _action(() async {
     ModelRepository.parse(values.repository);
-    await store.save(values);
+    await _saveSetup(values);
     _setup = values;
     _status = 'Downloading model artifacts. This may be a large transfer; see the log.';
     update();
@@ -211,7 +211,7 @@ class RuntimeSetupController extends BaseController {
       downloadParent: values.downloadParent,
       revision: values.revision,
     );
-    await store.save(saved);
+    await _saveSetup(saved);
     if (_startupCancelled) return;
     _setup = saved;
     final config = LocalModelConfig(
@@ -295,6 +295,18 @@ class RuntimeSetupController extends BaseController {
     _health = result;
     _status = 'Connected. Project chat uses ${config.model}.';
   });
+  Future<void> _saveSetup(RuntimeSetup values) async {
+    try {
+      await store.save(values);
+    } catch (_) {
+      // Storage exceptions can include private paths or serialized setup data.
+      throw StateError(
+        'Runtime setup settings could not be saved. Check local storage and retry. '
+        'No download or runtime launch was started.',
+      );
+    }
+  }
+
   int _loadChatCeiling() {
     try {
       return modelStore.load().chatOutputTokens;
