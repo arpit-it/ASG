@@ -74,6 +74,21 @@ class FakeRuntimeHost implements RuntimeHost {
   }
 }
 
+class StopRuntimeHost extends FakeRuntimeHost {
+  bool fail = true;
+  Completer<void>? gate;
+  @override
+  Future<void> stop() async {
+    await gate?.future;
+    if (fail) {
+      throw ProcessException('/private/python', [
+        'token=PRIVATE_STOP',
+      ], 'PRIVATE_STOP failed');
+    }
+    await super.stop();
+  }
+}
+
 class PrepareRuntimeHost extends FakeRuntimeHost {
   bool fail = true;
   Completer<void>? gate;
@@ -218,6 +233,43 @@ class SetupProbe implements ModelProvider {
 }
 
 void main() {
+  test(
+    'Stop failures are private and successful retry clears diagnostics',
+    () async {
+      SharedPreferences.setMockInitialValues({});
+      final host = StopRuntimeHost()..ownsProcess = true;
+      final c = await controller(host);
+      addTearDown(c.dispose);
+      await c.stop();
+      expect(c.error, isNot(contains('PRIVATE_STOP')));
+      expect(c.error, isNot(contains('/private/')));
+      expect(c.error, contains('retry'));
+      expect(c.status, contains('failed'));
+      expect(host.ownsProcess, isTrue);
+      host.fail = false;
+      await c.stop();
+      expect(c.error, isNull);
+      expect(c.status, 'Managed runtime stopped.');
+      expect(host.ownsProcess, isFalse);
+    },
+  );
+  for (final fail in [false, true]) {
+    test('disposed Stop ignores delayed completion: $fail', () async {
+      SharedPreferences.setMockInitialValues({});
+      final host = StopRuntimeHost()..ownsProcess = true;
+      host.fail = fail;
+      host.gate = Completer<void>();
+      final c = await controller(host);
+      final pending = c.stop();
+      final status = c.status;
+      c.dispose();
+      host.gate!.complete();
+      await pending;
+      expect(c.status, status);
+      expect(c.error, isNull);
+    });
+  }
+
   test('Prepare failures are private, terminal and retryable', () async {
     SharedPreferences.setMockInitialValues({});
     final host = PrepareRuntimeHost();
@@ -491,7 +543,7 @@ void main() {
     final pending = c.refresh();
     await Future<void>.delayed(Duration.zero);
     await c.stop();
-    expect(c.error, contains('Not owned'));
+    expect(c.error, contains('retry'));
     await c.refresh();
     expect(requests, 1);
     response.complete(

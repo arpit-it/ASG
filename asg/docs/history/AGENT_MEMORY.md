@@ -2408,3 +2408,21 @@ Prepare forwarded raw host process/filesystem exceptions and retained a misleadi
 Acceptance/validation: private sentinel/path absent from diagnostics, failure releases busy without ready, successful retry restores ready, duplicate requests excluded, disposal respected. Formatter/analyzer/full Flutter tests/web build, independent final-revision review and actual required CI gate protected merge. Endpoint offline; no live inference claimed. No new task/issue, model download, stable app replacement, deployment or schedule/notification changes.
 
 Final local validation: formatter/analyzer clean; 48 focused tests and 604 full Flutter tests passed/seven opt-in skips; web build/Wasm dry run passed. Both regressions failed on baseline. Awaiting merge: independent exact-final-revision review and actual required CI remain gates.
+
+
+### F09 private Prepare diagnostics — verified increment (27 October 2026)
+
+Reopened issue #167 / branch `167-private-prepare-errors` delivered through https://github.com/arpit-it/ASG/pull/187. Final head `6c2201c5cf53adbe128d32f10398abb7ec5d33ea` independently approved in review `5664235058` and final gate `5664267755`. Normal protected squash merge `1c5b41b4971c52851a4310b00a405d5c8496fafc` at 2026-10-27T08:44:10Z; issue closed/completed 08:44:11Z. Parent independently verified merged PR, issue closure, remote main and exact signed merge object through the connected GitHub plugin. Merge/published/tested local `8c9a3a9a71ba6ffa07a0578f2b78ad5ba6cbcaa5` share tree `bda6d1ea75fcfca2ee20bd6d9315493300e484ba`.
+
+Required CI `40475153229` passed. Reviewer inspected actual Flutter `122091456533` logs: formatter198/analyzer,602 Linux tests/six opt-in skips including both regressions, two actual Chrome tests, web/Wasm, generated-project resolve/analyze/test/build each exit0 plus serving acceptance. Python `122091455988` passed2+4+10+4fixtures/two confinement skips. Local604Flutter tests/seven skips, formatter/analyzer/webWasm passed. Independent48focused tests passed; both baseline regressions independently failed then passed with exact reviewed controller restored. No blockers or unresolved review threads.
+
+Prepare now omits private process/filesystem exceptions, reports terminal failure with actionable retry guidance, recovers on retry and ignores disposed completion. F09 remains In progress/unchecked; no later task or new issue selected. Endpoint offline; no live inference, model download, stable-app replacement, deployment or schedule/notification changes. Local main synchronized0/0 with plugin-verified remote main; original IDE bytes and document content preserved with hashed backup `/private/tmp/asg-187-preserved`; source/tests/index clean. Final merge evidence retained for next normal reviewed increment.
+
+
+### F09 private Stop diagnostics — reopened issue #167 (27 October 2026)
+
+PR #187 verified merged as `1c5b41b4971c52851a4310b00a405d5c8496fafc` through the connected GitHub plugin. No open issue/PR or competing active run. Reused #167 on `167-private-stop-errors`; F09 remains In progress/unchecked. Prior merge evidence retained; no new task or later feature selected.
+
+Managed Stop exposed raw host exceptions and retained stale errors after successful retry. Baseline tests reproduce private process/path disclosure and both disposed-completion mutations. Stop now shows locally authored retry guidance and truthful failure status, clears errors on retry and suppresses disposed completion. Failed Stop preserves the pending health check; successful Stop still supersedes it and checks current health. Only owned-process Stop is requested.
+
+Validation: formatter198/analyzer clean; 51 focused tests and 607 full Flutter tests passed/seven opt-in skips. Web build and Wasm dry run passed. Independent exact-final-head review and actual required CI gate merge. No live inference, model download, installed-app replacement, deployment or schedule/notification change. Original five checkout edits preserved outside this isolated increment.

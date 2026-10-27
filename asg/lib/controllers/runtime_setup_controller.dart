@@ -279,16 +279,21 @@ class RuntimeSetupController extends BaseController {
   });
   Future<void> stop() async {
     // Stop remains available during startup; it targets only the owned process.
+    if (isDisposed) return;
+    _error = null;
     try {
       _stopRequested = true;
       await host.stop();
+      if (isDisposed) return;
       _status = 'Managed runtime stopped.';
       // Supersede pre-stop checks and immediately observe the stopped runtime.
       // Their late completion must not publish or release the new poll guard.
       _healthCheck = null;
       await refresh();
-    } catch (e) {
-      _error = '$e';
+    } catch (_) {
+      if (isDisposed) return;
+      _status = 'Managed runtime stop failed.';
+      _error = 'Could not stop the managed runtime. Check the local runtime process and retry Stop. Externally started runtimes must be stopped in their terminal.';
     }
     update();
   }
