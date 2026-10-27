@@ -88,6 +88,14 @@ class FailedCheckHost extends FixtureHost {
   }
 }
 
+class PrivateCleanupHost extends FixtureHost {
+  @override
+  Future<void> dispose() async {
+    await super.dispose();
+    throw StateError('private-prompt token=private-token /private/path');
+  }
+}
+
 void main() {
   late AtomicRecords records;
   late FixtureHost workingHost, candidateHost;
@@ -269,6 +277,43 @@ void main() {
       expect(candidate.error, isNull);
       expect(notifications, 3);
       expect(workingHost.server, isTrue);
+    },
+  );
+
+  test(
+    'disposed failed promotion contains cleanup failure and clears busy',
+    () async {
+      await candidate.verify(approved: true);
+      final initial = candidate.result;
+      final evidence = candidate.evidence;
+      candidate.dispose();
+      candidateHost = PrivateCleanupHost();
+      candidate = SourceCandidateController(
+        project: project,
+        candidate: initial,
+        evidence: evidence,
+        records: records,
+        host: candidateHost,
+        publish: (value, host, guard) async {
+          candidate.dispose();
+          throw StateError(privateFailure);
+        },
+      );
+      var notifications = 0;
+      candidate.addListener(() => notifications++);
+      expect(await candidate.promote(approved: true), isFalse);
+      expect(candidate.error, isNull);
+      expect(candidate.busy, isFalse);
+      expect(candidate.promoting, isFalse);
+      expect(candidate.promoted, isFalse);
+      expect(notifications, 1);
+      expect(candidateHost.disposed, isTrue);
+      expect(working.result!.directory, '/working');
+      expect(workingHost.server, isTrue);
+      expect(
+        SourceGenerationStore(records).load(project.id)!.directory,
+        '/working',
+      );
     },
   );
 

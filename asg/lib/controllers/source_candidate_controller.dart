@@ -209,7 +209,14 @@ class SourceCandidateController extends BaseController {
       return false;
     } finally {
       _promoting = false;
-      if (isDisposed && !_transferred) await host.dispose();
+      if (isDisposed && !_transferred) {
+        try {
+          await host.dispose();
+        } catch (_) {
+          // The closed review cannot report cleanup failures. Do not let an
+          // external host error escape or prevent releasing controller state.
+        }
+      }
       _busy = false;
       update();
     }
