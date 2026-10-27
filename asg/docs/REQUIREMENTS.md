@@ -69,7 +69,7 @@ A task moves Queued → In progress → Awaiting merge → Done; use Blocked wit
 
 ## Active task and delivery ledger
 
-Current: F09 private candidate verification/promotion diagnostics, reopened issue #167 / branch `167-private-candidate-errors`, awaiting final checks, publication and independent review. PR #201 verified merged as `dffd8f2afb30b1dec95b4ee30120797bcbb359ca` after final independent review and required CI. F09 remains In progress/unchecked; earlier active summaries below are historical.
+Current: F09 issue #167 reopened on `167-private-inspection-errors` for private folder-inspection diagnostics. Prior PR #202 verified merged as `6a530b76dede1820fde1790f5d7b657285fec83f`; no competing owner. F09 remains In progress/unchecked.
 
 Latest verified increment: F09 issue #167 / PR #200 merged as `974167fec059ee98f661436e9b9b71f238319a3f` after independent reviews `5667369555` / `5667432142` and required CI `40507722336`. F09 remains In progress/unchecked; no unmerged increment. Detailed final evidence below.
 
@@ -3350,3 +3350,21 @@ Scope/acceptance: replace raw candidate verification, authorization, checkpoint 
 Independent review follow-up for PR #202: review `5667999147` reproduced a raw host-disposal error after review closure during failed promotion. Cleanup errors are now contained without late disposed diagnostics and cannot skip clearing busy/promoting state. A new regression fails on the prior revision and verifies no escaped private exception, retained working preview/record and cleared state. Fresh full checks and final-revision review required after this diff change. Full Agent Memory and Progress uploads were rejected by automatic approval review for private paths/operational history; retained locally in `/private/tmp/asg-candidate-retained`, not published.
 
 Final PR #202 review-fix checks:21focused/656fullFlutter tests passed with seven opt-in skips; formatter205/analyzer clean; web build and Wasm dry run passed. Awaiting fresh independent final-revision review and new required CI.
+
+
+### F09 private candidate diagnostics — verified PR #202 (27 October 2026)
+
+Issue #167 / branch `167-private-candidate-errors` delivered through https://github.com/arpit-it/ASG/pull/202. Final head `5a3dd8fe54537393ec7b9a6c0523aae3668e8c0c`, tested tree `8ef18cd65562228bfbe5a27736105223861fed88` identical to local `30cef24`, independently approved in reviews `5668053638` / `5668110504`. Reviewer normal protected squash merge `6a530b76dede1820fde1790f5d7b657285fec83f` at 2026-10-27T13:50:42Z. Parent independently verified merged PR, closed/completed issue, remote main, signed merge object and matching tested tree through connected GitHub plugin.
+
+Verification/promotion exceptions now use authored recovery guidance without private prompt/token/path markers. Actual observed exits, working output and explicit retry preserved; cancellation text does not claim server inference stopped. Independent review `5667999147` reproduced disposed promotion cleanup raw escape/busy leak; fixed and covered by a failing-baseline regression before fresh review. Three original baseline privacy regressions fail and now pass;21focused and656fullFlutter tests passed/seven opt-in skips, formatter205/analyzer clean, web build/Wasm passed. Independently21focused tests passed. Actual required CI40514974986 passed: Flutter122226548670653Linux tests/seven skips,twoChrome tests,formatter/analyzer/webWasm and enabled real independent generated resolve/analyze/test/build0 plus HTTP200/>1000-byte serving; Python1222265481892+4+10+4fixtures/two confinement skips. No remaining review blockers or unresolved threads.
+
+F09 remains In progress/unchecked; no later task selected. Full AgentMemory/Progress publication auto-review rejected for private paths and operational history; retained at `/private/tmp/asg-candidate-retained`. Source/tests/Requirements published; both automation labels applied. All five original edits verified byte-identical across safe main synchronization before this final evidence append; backup `/private/tmp/asg-202-preserved`. Local main/origin0/0; source/tests/index clean. Endpoint offline; no fresh live inference/model download/stable-app replacement. Schedule and notification preference unchanged. Resume remaining F09 acceptance audit after overlap checks.
+
+
+### F09 private folder-inspection diagnostics — issue #167 (27 October 2026)
+
+Scope: `167-private-inspection-errors` replaces raw saved-folder load/save, picker, inspect and reopen exceptions with authored recovery guidance. Findings/references remain available after failed saves; failed inspections clear stale findings and refuse workspace entry; corrupt storage remains blocked until recovery and screen reopen. No imported-source writes or execution authority added.
+
+Acceptance: injected private prompt/token/path markers excluded from visible diagnostics; explicit retries clear errors; late disposed failures publish nothing. Four new privacy regressions fail on the baseline; five new cases cover privacy, retry, storage preservation and disposal. Existing native reopen expectation now checks recovery guidance.
+
+Validation: 14 focused tests and 661 full Flutter tests passed (seven opt-in skips); formatter (205 files), analyzer and web build/Wasm dry run passed. Endpoint offline; no fresh live inference claimed. Independent final-revision review, required CI and protected merge pending; F09 remains In progress/unchecked.

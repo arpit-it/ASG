@@ -29,7 +29,197 @@ ProjectInspection result(String root) => ProjectInspection(
   dartSdk: '^3.9.0',
   runners: ['web'],
 );
+
+const privateDetail = 'private-prompt token-secret /private/user/source';
+
+class FailingFolderStore extends InspectedFolderStore {
+  FailingFolderStore(super.records);
+  bool failLoad = false;
+  bool failSave = false;
+  Completer<List<String>>? pending;
+  @override
+  List<String> load() {
+    if (failLoad) throw StateError(privateDetail);
+    return super.load();
+  }
+
+  @override
+  Future<List<String>> save(String root) async {
+    if (pending != null) return pending!.future;
+    if (failSave) throw StateError(privateDetail);
+    return super.save(root);
+  }
+}
+
+void expectPrivate(String? message) {
+  expect(message, isNotNull);
+  for (final marker in ['private-prompt', 'token-secret', '/private/user']) {
+    expect(message, isNot(contains(marker)));
+  }
+}
+
 void main() {
+  test(
+    'private saved-folder load failure blocks writes until reopen',
+    () async {
+      SharedPreferences.setMockInitialValues({});
+      final store = FailingFolderStore(
+        PreferenceRecords(await SharedPreferences.getInstance()),
+      );
+      await store.save('/saved');
+      store.failLoad = true;
+      final c = ProjectInspectionController(
+        store: store,
+        picker: Picker(),
+        inspect: (root) async => result(root),
+      );
+      expectPrivate(c.storageError);
+      await c.chooseFolder();
+      expect(c.canSave, isFalse);
+      expect(c.canOpenWorkspace, isFalse);
+      store.failLoad = false;
+      await c.saveFolder();
+      expect(store.load(), ['/saved']);
+      c.dispose();
+      final reopened = ProjectInspectionController(
+        store: store,
+        picker: Picker(),
+      );
+      expect(reopened.storageError, isNull);
+      expect(reopened.savedFolders, ['/saved']);
+      reopened.dispose();
+    },
+  );
+  test('private save failure retains findings and references; explicit retry succeeds', () async {
+    SharedPreferences.setMockInitialValues({});
+    final store = FailingFolderStore(
+      PreferenceRecords(await SharedPreferences.getInstance()),
+    );
+    await store.save('/saved');
+    final c = ProjectInspectionController(
+      store: store,
+      picker: Picker(),
+      inspect: (root) async => result(root),
+    );
+    await c.chooseFolder();
+    store.failSave = true;
+    await c.saveFolder();
+    expectPrivate(c.error);
+    expect(c.findings?.root, '/project');
+    expect(c.savedFolders, ['/saved']);
+    expect(c.canOpenWorkspace, isFalse);
+    expect(c.busy, isFalse);
+    store.failSave = false;
+    await c.saveFolder();
+    expect(c.error, isNull);
+    expect(c.savedFolders, ['/saved', '/project']);
+    expect(c.canOpenWorkspace, isTrue);
+    c.dispose();
+  });
+  test(
+    'private picker and inspection failures recover without stale findings',
+    () async {
+      final picker = Picker();
+      var fail = false;
+      final c = ProjectInspectionController(
+        picker: picker,
+        inspect: (root) async {
+          if (fail) throw StateError(privateDetail);
+          return result(root);
+        },
+      );
+      await c.chooseFolder();
+      picker.select = () async => throw StateError(privateDetail);
+      await c.chooseFolder();
+      expectPrivate(c.error);
+      expect(c.findings?.root, '/project');
+      picker.select = () async => '/other';
+      fail = true;
+      await c.chooseFolder();
+      expectPrivate(c.error);
+      expect(c.findings, isNull);
+      fail = false;
+      await c.chooseFolder();
+      expect(c.error, isNull);
+      expect(c.findings?.root, '/other');
+      c.dispose();
+    },
+  );
+  test('private reopen failure blocks workspace; retry reinspects', () async {
+    SharedPreferences.setMockInitialValues({});
+    final store = InspectedFolderStore(
+      PreferenceRecords(await SharedPreferences.getInstance()),
+    );
+    await store.save('/project');
+    var fail = false;
+    final c = ProjectInspectionController(
+      store: store,
+      picker: Picker(),
+      inspect: (root) async {
+        if (fail) throw StateError(privateDetail);
+        return result(root);
+      },
+    );
+    await c.reopen('/project');
+    fail = true;
+    expect(await c.openWorkspace(), isNull);
+    expectPrivate(c.error);
+    expect(c.findings, isNull);
+    expect(c.canOpenWorkspace, isFalse);
+    expect(store.load(), ['/project']);
+    fail = false;
+    await c.reopen('/project');
+    expect(c.error, isNull);
+    expect(c.canOpenWorkspace, isTrue);
+    c.dispose();
+  });
+  test(
+    'disposed picker, inspection, reopen and save failures publish nothing',
+    () async {
+      SharedPreferences.setMockInitialValues({});
+      final store = FailingFolderStore(
+        PreferenceRecords(await SharedPreferences.getInstance()),
+      );
+      await store.save('/project');
+      for (final operation in ['picker', 'inspection', 'reopen', 'save']) {
+        final picker = Picker();
+        final pendingPick = Completer<String?>();
+        final pendingInspect = Completer<ProjectInspection>();
+        final deferInspection = operation != 'save';
+        if (operation == 'picker') picker.select = () => pendingPick.future;
+        final c = ProjectInspectionController(
+          store: store,
+          picker: picker,
+          inspect: (root) async =>
+              deferInspection ? pendingInspect.future : result(root),
+        );
+        Future<void> work;
+        if (operation == 'save') {
+          picker.select = () async => '/new';
+          await c.chooseFolder();
+          store.pending = Completer<List<String>>();
+          work = c.saveFolder();
+        } else if (operation == 'reopen') {
+          work = c.reopen('/project');
+        } else {
+          work = c.chooseFolder();
+        }
+        await Future<void>.delayed(Duration.zero);
+        c.dispose();
+        if (operation == 'picker') {
+          pendingPick.completeError(StateError(privateDetail));
+        } else if (operation == 'save') {
+          store.pending!.completeError(StateError(privateDetail));
+        } else {
+          pendingInspect.completeError(StateError(privateDetail));
+        }
+        await work;
+        expect(c.error, isNull);
+        store.pending = null;
+      }
+    },
+  );
+
   test(
     'overlap excluded, cancel retains observations, picker failure recovers',
     () async {
@@ -51,7 +241,7 @@ void main() {
       expect(c.findings?.root, '/project');
       picker.select = () async => throw StateError('picker unavailable');
       await c.chooseFolder();
-      expect(c.error, contains('picker unavailable'));
+      expect(c.error, contains('Check local folder access'));
       expect(c.busy, isFalse);
       c.dispose();
     },
@@ -69,7 +259,7 @@ void main() {
     fail = true;
     await c.chooseFolder();
     expect(c.findings, isNull);
-    expect(c.error, contains('Invalid folder'));
+    expect(c.error, contains('Check local folder access'));
     fail = false;
     await c.chooseFolder();
     expect(c.error, isNull);
@@ -143,7 +333,7 @@ void main() {
       expect(await c.openWorkspace(), isNull);
       expect(c.findings, isNull);
       expect(c.canOpenWorkspace, isFalse);
-      expect(c.error, contains('missing'));
+      expect(c.error, contains('Check that it still exists'));
       expect(store.load(), ['/project']);
       c.dispose();
     },
