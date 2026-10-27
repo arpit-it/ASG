@@ -22,6 +22,7 @@ import 'source_generation_controller_test.dart'
 class AtomicRecords implements ConditionalRecordStorage {
   final values = <String, String>{};
   bool fail = false;
+  Object? privateFailure;
   @override
   String? getString(String key) => values[key];
   @override
@@ -37,6 +38,7 @@ class AtomicRecords implements ConditionalRecordStorage {
     required void Function() authorize,
   }) async {
     authorize();
+    if (privateFailure != null) throw privateFailure!;
     if (fail ||
         expected.entries.any((entry) => values[entry.key] != entry.value)) {
       throw StateError('Commit refused');
@@ -146,6 +148,52 @@ void main() {
       expect(records.getString('studio.generationPrevious.v1.p'), isNull);
     },
   );
+  for (final boundary in ['preview', 'storage']) {
+    test(
+      'rollback $boundary failure is private and retry preserves work',
+      () async {
+        const marker = 'PRIVATE_PROMPT token=secret /private/workspace';
+        final preview = controller.preview;
+        if (boundary == 'preview') {
+          newHost.previewGate = Completer<Uri>();
+        } else {
+          records.privateFailure = StateError(marker);
+        }
+        final pending = restore();
+        if (boundary == 'preview') {
+          newHost.previewGate!.completeError(StateError(marker));
+        }
+        expect(await pending, isFalse);
+        expect(controller.error, isNot(contains(marker)));
+        expect(controller.error, contains('Retry'));
+        expect(controller.busy, isFalse);
+        expect(controller.preview, preview);
+        expect(controller.host, oldHost);
+        expect(oldHost.server, isTrue);
+        expect(newHost.disposed, isTrue);
+        expect(controller.result!.toJson(), current.toJson());
+        expect(records.getString(key), before);
+        expect(records.getString('studio.generationPrevious.v1.p'), isNull);
+        records.privateFailure = null;
+        newHost = FixtureHost();
+        expect(await restore(), isTrue);
+        expect(controller.error, isNull);
+      },
+    );
+  }
+  test('disposed rollback failure publishes no private diagnostic', () async {
+    newHost.previewGate = Completer<Uri>();
+    final pending = restore();
+    controller.dispose();
+    newHost.previewGate!.completeError(
+      StateError('PRIVATE_PROMPT token=secret'),
+    );
+    expect(await pending, isFalse);
+    expect(controller.error, isNull);
+    expect(controller.busy, isFalse);
+    expect(newHost.disposed, isTrue);
+    expect(records.getString(key), before);
+  });
   test(
     'changed durable state during preview refuses publication and overlap',
     () async {
