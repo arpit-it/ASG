@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:asg/services/folder_picker.dart';
+
 import 'board_mapped_build_plan_test.dart'
     show mappedBoard, boardContent, boardContract, sharedBoard, sharedContract;
 
@@ -179,6 +181,18 @@ class FixtureHost implements GenerationHost, ArtifactInspector {
   }
 }
 
+class BuildFolderPicker extends FolderPicker {
+  Future<String?> Function() action = () async => '/selected';
+  int calls = 0;
+  @override
+  bool get supported => true;
+  @override
+  Future<String?> pick() {
+    calls++;
+    return action();
+  }
+}
+
 void main() {
   late FixtureHost host;
   late SourceGenerationStore store;
@@ -219,6 +233,65 @@ void main() {
   tearDown(() {
     if (!c.isDisposed) c.dispose();
   });
+
+  test(
+    'Build picker failure is private and retry preserves generated history',
+    () async {
+      expect(await generate(true), isTrue);
+      final result = c.result;
+      final history = jsonEncode(
+        c.buildHistory.map((e) => e.toJson()).toList(),
+      );
+      final picker = BuildFolderPicker()
+        ..action = () async =>
+            throw StateError('private-prompt token-secret /private/model');
+      expect(await c.chooseDirectory(picker), isNull);
+      expect(c.error, isNotNull);
+      for (final marker in [
+        'private-prompt',
+        'token-secret',
+        '/private/model',
+      ]) {
+        expect(c.error, isNot(contains(marker)));
+      }
+      expect(c.error, contains('Retry'));
+      expect(c.result, same(result));
+      expect(
+        jsonEncode(c.buildHistory.map((e) => e.toJson()).toList()),
+        history,
+      );
+      picker.action = () async => '/selected';
+      expect(await c.chooseDirectory(picker), '/selected');
+      expect(c.error, isNull);
+      expect(c.result, same(result));
+      picker.action = () async => null;
+      expect(await c.chooseDirectory(picker), isNull);
+      expect(c.error, isNull);
+    },
+  );
+
+  test(
+    'Build picker excludes overlap and suppresses disposed late failures',
+    () async {
+      final gate = Completer<String?>();
+      final picker = BuildFolderPicker()..action = () => gate.future;
+      var notifications = 0;
+      c.addListener(() => notifications++);
+      final pending = c.chooseDirectory(picker);
+      expect(c.busy, isTrue);
+      expect(await c.chooseDirectory(picker), isNull);
+      expect(picker.calls, 1);
+      c.dispose();
+      final before = notifications;
+      gate.completeError(
+        StateError('private-prompt token-secret /private/model'),
+      );
+      expect(await pending, isNull);
+      expect(c.error, isNull);
+      expect(c.busy, isFalse);
+      expect(notifications, before);
+    },
+  );
 
   test('artifact inspection is read-only, excludes overlap and ignores disposed results', () async {
     expect(await generate(true), isTrue);
