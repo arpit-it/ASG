@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 
 import '../models/portable_project_archive.dart';
 import '../models/portable_export_policy.dart';
+import '../models/portable_export_redaction.dart';
 import '../services/archive_file_service.dart';
 import '../services/portable_prototype_store.dart';
 import '../services/portable_export_records.dart';
@@ -27,6 +28,11 @@ class PortableArchiveController extends ChangeNotifier {
   final ConditionalRecordStorage records;
   final ArchiveFileService files;
   PortableProjectArchive? _exportPreview;
+  PortableProjectArchive? _exportDraft;
+
+  /// Local review draft, including text that policy refuses to export.
+  PortableProjectArchive? get exportReviewPreview => _exportDraft;
+  String? get exportReviewContents => _exportDraft?.encode();
   PortableProjectArchive? _importPreview;
   PortableProjectArchive? get exportPreview => _exportPreview;
   PortableProjectArchive? get importPreview => _importPreview;
@@ -74,6 +80,7 @@ class PortableArchiveController extends ChangeNotifier {
 
   Future<void> prepareExport() => _run(() async {
     _exportPreview = null;
+    _exportDraft = null;
     final source = PortableExportRecords(records);
     final archive = PortableProjectArchive(
       project: PortableProjectStore(source).load(projectId),
@@ -83,16 +90,40 @@ class PortableArchiveController extends ChangeNotifier {
       revisions: PortableRevisionStore(source).load(projectId),
       messages: PortableConversationStore(source).load(projectId),
     );
-    PortableExportPolicy.requireExportable(archive);
-    _exportPreview = archive;
+    final draft = PortableProjectArchive.decode(archive.encode());
+    _exportDraft = draft;
+    PortableExportPolicy.requireExportable(draft);
+    _exportPreview = draft;
     _status = 'Saved records loaded for export. Review before sharing.';
+  });
+
+  Future<void> redactExport(String literal) => _run(() async {
+    final draft = _exportDraft;
+    if (draft == null) throw StateError('Load saved records first.');
+    final PortableExportRedaction result;
+    try {
+      result = PortableExportRedaction.apply(draft, literal);
+    } on FormatException {
+      _error =
+          'Redaction failed. Enter nonempty matching authored text. '
+          'The result must fit archive field limits. The review copy and saved records are unchanged.';
+      return;
+    }
+    _exportDraft = result.archive;
+    _exportPreview = null;
+    PortableExportPolicy.requireExportable(result.archive);
+    _exportPreview = result.archive;
+    _status =
+        '${result.matches} literal matches redacted in the export copy. '
+        'Review the updated archive before sharing. Saved records are unchanged.';
   });
 
   Future<void> exportFile() => _run(() async {
     final preview = _exportPreview;
     if (preview == null) throw StateError('Load saved records first.');
-    PortableExportPolicy.requireExportable(preview);
-    final saved = await files.export(preview.encode());
+    final validated = PortableProjectArchive.decode(preview.encode());
+    PortableExportPolicy.requireExportable(validated);
+    final saved = await files.export(validated.encode());
     if (!_disposed) {
       _status = saved ? files.exportSuccessMessage : 'Export cancelled.';
     }
@@ -100,10 +131,13 @@ class PortableArchiveController extends ChangeNotifier {
 
   Future<void> prepareCopyExport(String id) => _run(() async {
     _exportPreview = null;
+    _exportDraft = null;
     final archive = PortableArchiveStore(records).load(id);
     if (archive == null) throw StateError('Saved copy not found.');
-    PortableExportPolicy.requireExportable(archive);
-    _exportPreview = archive;
+    final draft = PortableProjectArchive.decode(archive.encode());
+    _exportDraft = draft;
+    PortableExportPolicy.requireExportable(draft);
+    _exportPreview = draft;
     _status = 'Saved copy loaded for export. Review before sharing.';
   });
 
