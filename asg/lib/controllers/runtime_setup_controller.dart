@@ -283,7 +283,8 @@ class RuntimeSetupController extends BaseController {
     }
     if (_startupCancelled) {
       // Stop may have run before the asynchronous launch acquired its process.
-      if (_stopRequested && host.ownsProcess) await host.stop();
+      // Reuse Stop's private failure/retry state for this late cleanup too.
+      if (_stopRequested && host.ownsProcess) await _stopManaged();
       return;
     }
     // Persist chat configuration only after the runtime reports the selected path.
@@ -319,7 +320,11 @@ class RuntimeSetupController extends BaseController {
   Future<void> stop() async {
     // Stop remains available during startup; it targets only the owned process.
     if (isDisposed) return;
-    _error = null;
+    await _stopManaged();
+  }
+
+  Future<void> _stopManaged() async {
+    if (!isDisposed) _error = null;
     try {
       _stopRequested = true;
       await host.stop();

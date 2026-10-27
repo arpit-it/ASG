@@ -212,6 +212,24 @@ class DelayedStartupHost extends FakeRuntimeHost {
   }
 }
 
+class CancelledLaunchHost extends DelayedStartupHost {
+  bool failStop = true;
+  Completer<void>? stopGate;
+  final stopping = Completer<void>();
+  @override
+  Future<void> stop() async {
+    if (!ownsProcess) return;
+    if (!stopping.isCompleted) stopping.complete();
+    await stopGate?.future;
+    if (failStop) {
+      throw ProcessException('/private/python', [
+        'token=PRIVATE_CLEANUP',
+      ], 'PRIVATE_CLEANUP failed');
+    }
+    await super.stop();
+  }
+}
+
 RuntimeConnection connection({
   required bool Function() ready,
   String model = 'Qwen3.5-9B',
@@ -1095,6 +1113,73 @@ void main() {
     expect(c.error, isNull);
     expect(c.busy, isFalse);
     c.dispose();
+  });
+
+  for (final dispose in [false, true]) {
+    test(
+      'late cancelled launch cleanup failure respects privacy and disposal: $dispose',
+      () async {
+        SharedPreferences.setMockInitialValues({});
+        final host = CancelledLaunchHost()..launchGate = Completer<void>();
+        final c = await controller(host);
+        await c.inspect('/models');
+        final selected = c.selected;
+        final prefs = await SharedPreferences.getInstance();
+        final before = prefs.getString('studio.localModel.v1');
+        final pending = c.start(const RuntimeSetup(python: '/python'));
+        await host.entered.future;
+        await c.stop();
+        expect(c.status, 'Managed runtime stopped.');
+        host.stopGate = Completer<void>();
+        host.launchGate!.complete();
+        await host.stopping.future;
+        final status = c.status;
+        if (dispose) c.dispose();
+        host.stopGate!.complete();
+        await pending;
+        expect(c.busy, isFalse);
+        expect(host.ownsProcess, isTrue);
+        expect(c.selected, same(selected));
+        expect(prefs.getString('studio.localModel.v1'), before);
+        final diagnostics = '${c.error} ${c.status} ${c.logs.join(' ')}';
+        expect(diagnostics, isNot(contains('PRIVATE_CLEANUP')));
+        expect(diagnostics, isNot(contains('/private/')));
+        if (dispose) {
+          expect(c.status, status);
+          expect(c.error, isNull);
+        } else {
+          expect(c.status, 'Managed runtime stop failed.');
+          expect(c.error, contains('retry Stop'));
+          host.failStop = false;
+          await c.stop();
+          expect(c.error, isNull);
+          expect(c.status, 'Managed runtime stopped.');
+          expect(host.ownsProcess, isFalse);
+          expect(host.stops, 1);
+          c.dispose();
+        }
+      },
+    );
+  }
+
+  test('late cancelled launch is still cleaned up after disposal', () async {
+    SharedPreferences.setMockInitialValues({});
+    final host = CancelledLaunchHost()
+      ..launchGate = Completer<void>()
+      ..failStop = false;
+    final c = await controller(host);
+    await c.inspect('/models');
+    final pending = c.start(const RuntimeSetup(python: '/python'));
+    await host.entered.future;
+    await c.stop();
+    final status = c.status;
+    c.dispose();
+    host.launchGate!.complete();
+    await pending;
+    expect(host.ownsProcess, isFalse);
+    expect(host.stops, 1);
+    expect(c.status, status);
+    expect(c.error, isNull);
   });
 
   test('Stop cleans up a managed launch that completes late', () async {
