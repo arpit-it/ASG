@@ -140,10 +140,8 @@ class _RuntimeSetupScreenState extends State<RuntimeSetupScreen> {
                   Expanded(
                     child: Text(
                       controller.health.ready
-                          ? 'Ready · ${controller.health.model}'
-                          : controller.host.ownsProcess
-                          ? 'Starting local runtime…'
-                          : 'Runtime offline',
+                          ? 'Runtime reports ready'
+                          : 'Runtime not ready',
                     ),
                   ),
                 ],
