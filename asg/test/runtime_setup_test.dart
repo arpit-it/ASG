@@ -74,6 +74,22 @@ class FakeRuntimeHost implements RuntimeHost {
   }
 }
 
+class PrepareRuntimeHost extends FakeRuntimeHost {
+  bool fail = true;
+  Completer<void>? gate;
+  int preparations = 0;
+  @override
+  Future<void> prepare(String python) async {
+    preparations++;
+    await gate?.future;
+    if (fail) {
+      throw ProcessException('/private/python', [
+        'token=PRIVATE_PREPARE',
+      ], 'PRIVATE_PREPARE failed');
+    }
+  }
+}
+
 class PickerRuntimeHost extends FakeRuntimeHost {
   bool fail = true;
   bool cancel = false;
@@ -202,6 +218,43 @@ class SetupProbe implements ModelProvider {
 }
 
 void main() {
+  test('Prepare failures are private, terminal and retryable', () async {
+    SharedPreferences.setMockInitialValues({});
+    final host = PrepareRuntimeHost();
+    final c = await controller(host);
+    addTearDown(c.dispose);
+    await c.prepare('/private/python');
+    expect(c.error, isNot(contains('PRIVATE_PREPARE')));
+    expect(c.error, isNot(contains('/private/')));
+    expect(c.error, contains('Python'));
+    expect(c.error, contains('retry'));
+    expect(c.status, contains('failed'));
+    expect(c.status, isNot(contains('Checking')));
+    expect(c.busy, isFalse);
+    expect(host.downloads, 0);
+    expect(host.ownsProcess, isFalse);
+    host.fail = false;
+    await c.prepare('/python');
+    expect(c.error, isNull);
+    expect(c.status, contains('helper ready'));
+    expect(host.preparations, 2);
+  });
+
+  test('Prepare excludes duplicates and ignores disposed completion', () async {
+    SharedPreferences.setMockInitialValues({});
+    final host = PrepareRuntimeHost()..fail = false;
+    host.gate = Completer<void>();
+    final c = await controller(host);
+    final pending = c.prepare('/python');
+    expect(c.busy, isTrue);
+    await c.prepare('/other');
+    expect(host.preparations, 1);
+    c.dispose();
+    host.gate!.complete();
+    await pending;
+    expect(c.status, isNot(contains('helper ready')));
+  });
+
   for (final python in [false, true]) {
     test(
       '${python ? 'Python' : 'model folder'} picker errors are private and retryable',

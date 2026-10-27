@@ -173,7 +173,18 @@ class RuntimeSetupController extends BaseController {
   Future<void> prepare(String python) => _action(() async {
     _status = 'Checking Python and preparing the helper…';
     update();
-    await host.prepare(python.trim());
+    try {
+      await host.prepare(python.trim());
+    } catch (_) {
+      if (isDisposed) return;
+      _status = 'Runtime helper preparation failed.';
+      // Host errors may contain private filesystem paths or process arguments.
+      throw StateError(
+        'Could not prepare the runtime helper. Check the selected Python '
+        'interpreter, required packages and local storage permissions, then retry.',
+      );
+    }
+    if (isDisposed) return;
     _status = 'Runtime helper ready. You can start the selected model.';
   });
   Future<void> download(RuntimeSetup values) => _action(() async {
