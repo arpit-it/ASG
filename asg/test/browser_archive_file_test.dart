@@ -102,5 +102,24 @@ void main() {
           .toDart,
       previousHref,
     );
+    await controller.redactExport('password=fixture-value');
+    expect(controller.error, isNull);
+    expect(controller.exportReviewContents, isNot(contains('fixture-value')));
+    await controller.exportFile();
+    final redactedHref = querySelector('#__x_file_dom_element a'.toJS)!
+        .getProperty<JSString>('href'.toJS);
+    final redactedResponse = await fetchBlob(redactedHref).toDart;
+    final redactedText = await redactedResponse
+        .callMethod<JSPromise<JSString>>('text'.toJS)
+        .toDart;
+    expect(redactedText.toDart, controller.exportReviewContents);
+    expect(
+      PortableProjectArchive.decode(redactedText.toDart)
+          .messages
+          .single
+          .content,
+      '[redacted]',
+    );
+    expect(records.values, before);
   });
 }

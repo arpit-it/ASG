@@ -17,6 +17,7 @@ class _PortableArchiveScreenState extends State<PortableArchiveScreen> {
   final backupId = TextEditingController();
   final savedCopyId = TextEditingController();
   final projectName = TextEditingController();
+  final redactionText = TextEditingController();
   PortableArchiveController get controller => widget.controller;
 
   @override
@@ -36,6 +37,7 @@ class _PortableArchiveScreenState extends State<PortableArchiveScreen> {
     backupId.dispose();
     savedCopyId.dispose();
     projectName.dispose();
+    redactionText.dispose();
     super.dispose();
   }
 
@@ -136,7 +138,7 @@ class _PortableArchiveScreenState extends State<PortableArchiveScreen> {
         padding: const EdgeInsets.all(16),
         children: [
           const Text(
-            'Archives include saved requirements, tasks, board revision and Discuss/Plan/Review conversation text. Versions 2–6 also preserve the latest saved Plan decision; versions 3–6 include historical build outcome summaries and recording times. Versions 4–6 also retain known historical requirements/prototype input revision numbers. Versions 5–6 include the saved interpreted prototype definition and its revision. Earlier versions remain supported. These records cannot grant Build approval, verify artifacts or enable rollback. Version 6 also includes prototype conversation text. Execution contexts, build logs, source files, paths, settings and approval credentials are excluded. Text is verbatim and may contain private information or secrets you typed; review it before sharing.',
+            'Archives include saved requirements, tasks, board revision and Discuss/Plan/Review conversation text. Versions 2–6 also preserve the latest saved Plan decision; versions 3–6 include historical build outcome summaries and recording times. Versions 4–6 also retain known historical requirements/prototype input revision numbers. Versions 5–6 include the saved interpreted prototype definition and its revision. Earlier versions remain supported. These records cannot grant Build approval, verify artifacts or enable rollback. Version 6 also includes prototype conversation text. Execution contexts, build logs, source files, paths, settings and approval credentials are excluded. Text may contain private information or secrets you typed; review and redact the export copy before sharing.',
           ),
           const SizedBox(height: 16),
           const Text(
@@ -145,18 +147,49 @@ class _PortableArchiveScreenState extends State<PortableArchiveScreen> {
             'passwords or HTTP(S) user-info (including token-only URLs). Detection '
             'also inspects one percent-encoded ASCII layer, is limited and can match '
             'examples. Other secrets and private text may still be included; '
-            'review the complete archive before sharing. Nothing is automatically redacted.',
+            'review the complete archive before sharing. Nothing is automatically redacted. '
+            'Literal redaction changes only the export copy; saved records stay unchanged. '
+            'Identifiers and links cannot be redacted here.',
           ),
           const SizedBox(height: 16),
           FilledButton(
             onPressed: controller.busy ? null : controller.prepareExport,
             child: const Text('Load saved records for export'),
           ),
-          if (controller.exportPreview case final archive?) ...[
+          if (controller.exportReviewPreview case final archive?) ...[
             summary(archive),
-            completeContents(controller.exportContents!),
+            completeContents(controller.exportReviewContents!),
+            TextField(
+              controller: redactionText,
+              enabled: !controller.busy,
+              maxLength: PortableProjectArchive.maxMessageCharacters,
+              maxLines: 3,
+              decoration: const InputDecoration(
+                labelText: 'Literal text to redact from export copy',
+                helperText: 'Paste exact text, not JSON escapes. All matches in authored text become [redacted].',
+                helperMaxLines: 3,
+              ),
+            ),
+            OutlinedButton(
+              onPressed: controller.busy
+                  ? null
+                  : () async {
+                      await controller.redactExport(redactionText.text);
+                      if (mounted && controller.error == null) {
+                        redactionText.clear();
+                      }
+                    },
+              child: const Text('Redact export copy'),
+            ),
+            if (controller.exportPreview == null)
+              const Text(
+                'Export is blocked. Redact recognized credentials and review again.',
+              ),
             FilledButton(
-              onPressed: controller.busy || !controller.files.canExport
+              onPressed:
+                  controller.busy ||
+                      controller.exportPreview == null ||
+                      !controller.files.canExport
                   ? null
                   : controller.exportFile,
               child: Text(controller.files.exportButtonLabel),

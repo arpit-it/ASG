@@ -69,7 +69,7 @@ A task moves Queued → In progress → Awaiting merge → Done; use Blocked wit
 
 ## Active task and delivery ledger
 
-Active: F08 In progress/unchecked. Issue #114 restore catalog preservation on `114-restore-catalog-preservation` awaits independent final-head review/required CI/merge. Prior PR #163 verified merged as24e560a73cb800212280e46b69a8d9443c21e537. Broader backup/general secret exclusion pending.
+Active: F08 In progress/unchecked on issue #165, branch `165-export-redaction`. On 27 October 2026 the user approved export-only user-selected literal redaction, resulting preview, strict validation and saved-original preservation. Policy choice is resolved. Implementation is tested and awaits independent final-revision review, required CI and merge; no later feature selected. Prior issue #114/PR #164 verified merged as `5f205f66d3f8602494401b402438674a55f695d8`.
 
 ### F03 acceptance boundary and evidence
 
@@ -2711,3 +2711,14 @@ Acceptance: existing metadata survives restore/native reopen; ambiguous catalogs
 
 
 Independent review #5660088015 found raw-row re-encoding still rounded unknown numeric metadata above integer precision. Fixed by retaining validated existing catalog JSON text and encoding only the appended new row. New tests preserve exact >2^53/>int64, decimal and exponent lexemes, whitespace/empty lists, plus native database reopen. 95focused/539fullFlutter-seven skips/analyzer/formatter192 and actualChrome numeric regression pass; final web build and fresh exact-head review/CI remain gates. Recorded 2026-10-26T22:43:01.681678+00:00.
+
+
+### F08 export-only literal redaction — issue #165
+
+The user approved the recommended export policy on 27 October 2026: user-selected literal redaction of an export-only snapshot, complete resulting preview and strict revalidation, preserving saved originals. This resolves the prior policy question; do not ask for it again. Known-pattern credential blocking remains a bounded guard, not automatic detection of arbitrary secrets. Users must review and select private text before sharing.
+
+Branch `165-export-redaction` adds a separate local review draft, including drafts whose recognized credentials block file export. Exact literal matches in project intent, requirements/task prose, prototype title/labels/items/values and both conversation histories plus historical decision text become `[redacted]`. IDs, dependency/action links, revisions, timestamps, status and historical approval metadata remain unchanged. Redaction changes no saved record; loading records/copies again starts from saved originals. Invalid/no-match/oversized transformations retain the prior draft. Remaining recognized credentials keep export blocked; users can redact incrementally. Only the strictly decoded, policy-validated snapshot can reach file output. Restore does not transfer executable approval.
+
+Acceptance/validation: seven new model/controller/widget tests cover quoted/escaped/Unicode literals, repeated matches, project intent, structural identity, atomic failure, busy/disposed actions, blocked project and saved-copy redaction, export/restore round trips, cancellation and 360px/1.8x text UI. Existing browser regression now verifies actual downloaded redacted bytes against the review snapshot. Local 546 full Flutter tests passed (seven opt-in skips); 68 focused tests passed before the additional intent case; formatter/analyzer, actual Chrome download test and web build/Wasm dry run passed. Initial UI test scrolling and one analyzer style finding were fixed and relevant checks rerun. No live inference claimed. Independent exact-head review, required CI and verified merge remain gates. F08 stays unchecked pending that evidence and overall acceptance audit under the approved policy. No later feature selected.
+
+Recorded 2026-10-27T03:52:01.003170+00:00.
