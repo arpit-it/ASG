@@ -35,7 +35,9 @@ class ModelSettingsController extends BaseController {
     try {
       await store.save(config);
       status = 'Settings saved. Model availability has not been verified.';
-    } catch (e) {
+    } on FormatException {
+      status = 'Invalid connection settings. Use a local HTTP URL without credentials, query or fragment and a nonempty model ID.';
+    } catch (_) {
       status = 'Settings could not be saved. Check local storage and retry.';
     } finally {
       busy = false;

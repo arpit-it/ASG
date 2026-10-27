@@ -29,6 +29,25 @@ void main() {
       await SharedPreferences.getInstance(),
     );
   });
+  test(
+    'invalid saves explain settings and preserve saved configuration',
+    () async {
+      final c = ModelSettingsController(store);
+      const original = LocalModelConfig(model: 'existing-model');
+      await c.save(original);
+      for (final invalid in [
+        const LocalModelConfig(baseUrl: 'http://private@example.com'),
+        const LocalModelConfig(model: ''),
+      ]) {
+        await c.save(invalid);
+        expect(c.status, contains('Invalid connection settings'));
+        expect(c.status, isNot(contains('private@')));
+        expect(store.load().model, original.model);
+        expect(store.load().baseUrl, original.baseUrl);
+      }
+      c.dispose();
+    },
+  );
   testWidgets('connection limits fit narrow enlarged dialog', (tester) async {
     tester.view.physicalSize = const Size(360, 720);
     tester.view.devicePixelRatio = 1;
