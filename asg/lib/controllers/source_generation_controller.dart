@@ -435,6 +435,7 @@ class SourceGenerationController extends BaseController {
     _error = null;
     update();
     GeneratedProject? active;
+    _stopRequested = false;
     try {
       final approval = _requirePlan();
       final plan = BuildPlan.parse(
@@ -497,6 +498,7 @@ class SourceGenerationController extends BaseController {
     _error = null;
     update();
     var verificationStarted = false;
+    _stopRequested = false;
     try {
       if (current.confined) {
         throw StateError(

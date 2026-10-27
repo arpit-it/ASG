@@ -236,6 +236,22 @@ void main() {
     if (!c.isDisposed) c.dispose();
   });
 
+  test('new preparation failure does not inherit previous Stop', () async {
+    host.afterResolve = () async => c.stopVerification();
+    expect(await generate(true), isFalse);
+    expect(c.error, contains('stopped by user'));
+    host.afterResolve = null;
+    host.beforeGenerationWrite = () async {
+      throw StateError('private-prompt token-secret /private/model');
+    };
+    expect(await generate(true), isFalse);
+    expect(c.error, contains('Check'));
+    expect(c.error, isNot(contains('stopped by user')));
+    expect(c.error, isNot(contains('private-prompt')));
+    host.beforeGenerationWrite = null;
+    expect(await generate(true), isTrue);
+  });
+
   test('execution exception is private, durable and retryable', () async {
     host.verificationError = StateError(
       'private-prompt token-secret /private/model',
