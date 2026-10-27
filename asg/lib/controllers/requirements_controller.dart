@@ -17,15 +17,24 @@ class RequirementsController extends BaseController {
     try {
       _board = store.load(projectId);
       _error = null;
-    } catch (e) {
+    } catch (_) {
       _board = null;
-      _error = '$e';
+      _error = 'Saved requirements are unreadable. Records have not been overwritten. Check local storage or restore valid records, then Retry loading.';
     }
     update();
   }
 
   Future<bool> _save(RequirementsBoard draft) async {
     if (busy || isDisposed || _board == null) return false;
+    // Only this pure model validation owns the messages shown to the user.
+    // Storage exceptions can embed private records, paths or backend details.
+    try {
+      draft.validate();
+    } on FormatException catch (error) {
+      _error = error.message;
+      update();
+      return false;
+    }
     _busy = true;
     _error = null;
     update();
@@ -34,8 +43,10 @@ class RequirementsController extends BaseController {
       if (isDisposed) return false;
       _board = saved;
       return true;
-    } catch (e) {
-      if (!isDisposed) _error = '$e';
+    } catch (_) {
+      if (!isDisposed) {
+        _error = 'Requirements could not be saved. Check local storage and retry. Reopen the board if another editor changed it; your last loaded revision is retained.';
+      }
       return false;
     } finally {
       _busy = false;
