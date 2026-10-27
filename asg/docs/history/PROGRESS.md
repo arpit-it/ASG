@@ -2453,3 +2453,23 @@ Model-folder and Python pickers exposed raw platform exceptions containing priva
 Validation: 46 focused runtime setup/connection tests passed. Formatter198 unchanged; full analyzer/tests/web build results follow publication. Endpoint offline; no live inference claimed. Independent exact-final-head review and actual required CI gate protected merge. Original five IDE/document edits retained. No model download, stable app replacement, deployment or schedule/notification change.
 
 Final local validation: formatter198 unchanged, analyzer clean, 602 Flutter tests passed/seven opt-in skips; web build and Wasm dry run passed. Initial test-helper lint corrected before full rerun. 46 focused tests passed and both privacy regressions reproduced against baseline. Awaiting publication, independent final-revision review and required CI.
+
+
+### F09 private picker diagnostics — verified increment (27 October 2026)
+
+Reopened issue #167 / branch `167-private-picker-errors` delivered through https://github.com/arpit-it/ASG/pull/186. Final head `9b6ea120aad73ef2effc9288b685b8ef66246555` independently approved in review `5664062681` and final gate `5664087024`. Normal protected squash merge `1ae2894f7eb0183e94214fa689c19dfdb82d2180` at 2026-10-27T08:30:15Z; issue closed/completed 08:30:16Z. Parent independently verified merged PR, issue closure, remote main and exact signed merge object through the connected GitHub plugin. Merge/published/tested local `3c7e1d32537b580c67437d7d552e17b2851f6d72` share tree `7c5395dce59d56ed695080d81ce31b7bc69cdb55`.
+
+Required CI `40473512346` passed. Reviewer inspected actual Flutter `122086030848` logs: formatter198/analyzer,600 Linux tests/six opt-in skips including both privacy regressions, two actual Chrome tests, web/Wasm, generated-project resolve/analyze/test/build each exit0 and serving acceptance passed. Python `122086031391` passed2+4+10+4fixtures/two confinement skips. Local602Flutter tests/seven skips, formatter/analyzer/webWasm passed. Independent46focused tests passed; both baseline disclosure regressions independently failed, then exact restored controller passed. No blockers or unresolved review threads.
+
+Model-folder and Python picker failures now omit raw platform exceptions and show retry guidance; selection retries clear stale errors and cancellation remains silent. F09 remains In progress/unchecked; no later task/new issue selected. Endpoint offline; no live inference, model download, stable-app replacement, deployment or schedule/notification change. Local main synchronized0/0 with plugin-verified remote main; original five edits retained with hashed backup `/private/tmp/asg-186-preserved`; source/tests/index clean. Final evidence retained for the next normal reviewed increment.
+
+
+### F09 private Prepare diagnostics — reopened issue #167 (27 October 2026)
+
+Prior PR #186 verified merged as `1ae2894f7eb0183e94214fa689c19dfdb82d2180` through the connected GitHub plugin. No open issue/PR or competing active ASG run. Reused #167 on `167-private-prepare-errors`; F09 remains In progress/unchecked. Original IDE/document edits retained outside this isolated checkout and prior documentation evidence carried forward.
+
+Prepare forwarded raw host process/filesystem exceptions and retained a misleading checking status after failure. Both new regressions fail on baseline: private process details leak and disposed completion reports ready. Prepare now provides locally authored Python/package/storage retry guidance with terminal failure status; successful retry clears errors. Duplicate exclusion remains and disposed completions cannot publish ready. No new download/launch authority.
+
+Acceptance/validation: private sentinel/path absent from diagnostics, failure releases busy without ready, successful retry restores ready, duplicate requests excluded, disposal respected. Formatter/analyzer/full Flutter tests/web build, independent final-revision review and actual required CI gate protected merge. Endpoint offline; no live inference claimed. No new task/issue, model download, stable app replacement, deployment or schedule/notification changes.
+
+Final local validation: formatter/analyzer clean; 48 focused tests and 604 full Flutter tests passed/seven opt-in skips; web build/Wasm dry run passed. Both regressions failed on baseline. Awaiting merge: independent exact-final-revision review and actual required CI remain gates.
