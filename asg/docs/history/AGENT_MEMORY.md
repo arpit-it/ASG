@@ -1492,3 +1492,14 @@ Branch `167-private-connect-validation` fixes raw Uri.parse FormatException sour
 Validation plan: formatter/analyzer/full Flutter tests/web build; independent exact-final-revision review and actual required CI gate merge. PR/review/check/merge evidence follows publication.
 
 Final local validation: formatter198 unchanged, analyzer clean, 587 Flutter tests passed/seven opt-in skips; web build and Wasm dry run passed. Both new regressions fail against baseline and pass with the fix. Independent final-head review and actual required CI remain merge gates.
+
+
+### F09 Connect lifecycle — reopened issue #167 (27 October 2026)
+
+Prior increment verified: PR #180 merged as `463f09b184919868b0e543b3b962ec8a201707cd` at 2026-10-27T07:01:06Z; issue closed/completed before reopening. Independent exact-head reviews `5663298229` / `5663331607`, required CI `40463998042` passed. Final head `f5112dba638c2784b59647184fbfac7a2edf00b3` matched tested tree `cf6c661ee07bdab7e0e6d757baa7e74980a439cb`; 587 local tests/seven skips, required Flutter/Python jobs and independent 31 focused tests passed. Private URL baseline regressions reproduced. Original checkout IDE/document edits remain preserved.
+
+Issue #167 / branch `167-connect-lifecycle` guards Connect health/save continuations after setup disposal. Baseline delayed-health regression shows closing setup still replaces global saved chat settings. Acceptance: late health after closure dispatches no settings write or connection/status/health publication; a live request still connects and preserves the latest durable token ceiling. A write already dispatched before closure may finish; its state must not publish to the closed controller. F09 remains In progress/unchecked; no later task or new issue selected. No competing active ASG run or open PR at selection.
+
+Validation: baseline regression fails with selected model replacing previous settings; focused final tests pass. Formatter/analyzer/full Flutter tests/web build, independent exact-final-head review and actual required CI gate merge. PR/review/check/merge evidence follows publication. No live inference, model download, stable app replacement, external deployment or schedule/notification change.
+
+Final local validation: formatter198 unchanged, analyzer clean, 590 Flutter tests passed/seven opt-in skips; web build and Wasm dry run passed. Three new tests cover disposed delayed health, live delayed health/token preservation and disposal during an already dispatched save. Initial baseline closed-health regression failed with previous settings replaced. Required CI and independent exact-head review remain merge gates.
