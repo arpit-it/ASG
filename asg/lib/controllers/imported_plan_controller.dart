@@ -48,8 +48,10 @@ class ImportedPlanController extends BaseController {
         _inspection = inspection;
         plan = saved;
       }
-    } catch (e) {
-      if (!isDisposed) error = '$e';
+    } catch (_) {
+      if (!isDisposed) {
+        error = 'Could not load the imported plan. Check the folder and saved planning data, then reload.';
+      }
     } finally {
       if (!isDisposed) {
         busy = false;
@@ -81,10 +83,10 @@ class ImportedPlanController extends BaseController {
         approved: approved,
       );
       if (!isDisposed) plan = saved;
-    } catch (e) {
+    } catch (_) {
       if (!isDisposed) {
         _context = null;
-        error = '$e';
+        error = 'Imported plan could not be saved. Check the folder and saved planning data, then retry. Save a current draft before approving.';
       }
     } finally {
       if (!isDisposed) {

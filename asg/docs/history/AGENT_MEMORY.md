@@ -2735,3 +2735,21 @@ Branch `167-private-requirements-errors` from verified PR #210 merge `4648d3d378
 Two baseline privacy regressions failed. Coverage checks repeated failed reads with unchanged bytes/writes, failed write and successful retry/reopen, invalid graph rejection before writes and disposal during failed save. Full validation, exact published tree, independent final-revision review and actual CI/merge evidence will be recorded in the linked PR. No model download, live inference or stable-app replacement claimed.
 
 Validation: 12 focused and 687 full Flutter tests passed (seven opt-in skips); formatter207/analyzer clean; web build and Wasm dry run passed. Local8765 endpoint unavailable; no fresh inference verified. Independent final-head review and actual required CI remain mandatory.
+
+
+### F09 private requirements board failures — verified PR #211 (27 October 2026)
+
+Issue #167 / branch `167-private-requirements-errors` delivered through https://github.com/arpit-it/ASG/pull/211. Final head `cce4fb8185a565a04c4238f170808768824cef7e`, tested tree `7faecf235de4b006ad0c2588bff3d2c06938d163` identical to local `6653037e71ca3ac07f1a885f4084a67b98b5112b`. Independent final-revision reviews `5670430963` / `5670498426` approved with no blocking findings/unresolved threads. Reviewer normal protected squash merge `9d0822764ac09741eca778c98026e94ddabc3d04` at 2026-10-27T16:15:28Z. Parent independently verified merged PR, closed/completed issue, remote main and exact signed merge object with matching tested tree through connected GitHub plugin.
+
+Requirements board read/write failures now show authored recovery guidance instead of private backend errors. Pure model validation messages and revision/write ordering remain. Two privacy regressions fail on baseline; final coverage checks repeated failed reads without record changes/writes, failed-save revision retention, retry/reopen, graph rejection before writes and disposal during failed save. Local12focused/687fullFlutter tests passed/seven opt-in skips; formatter207/analyzer/web build/Wasm passed. Independent12focused passed. Actual required CI40538285617 passed: Flutter122309396617684Linux tests/seven skips,2Chrome storage/archive tests,formatter207/analyzer/webWasm and enabled generated resolve/analyze/test/build0 plus source-confirmed HTTP200/>1000-byte serving acceptance; Python1223093959362+4+10+4fixtures/two confinement skips.
+
+F09 remains In progress/unchecked pending remaining acceptance audit; no later task selected. All three docs published; both automation labels applied. Original IDE edits verified byte-identical and original documentation content retained (current ledger updated), backed up at `/private/tmp/asg-211-preserved`. Local main/origin0/0, source/tests/index clean before final evidence append. Local8765 endpoint unavailable; no fresh inference/model download/stable-app replacement. Schedule and notification preference unchanged.
+
+
+### F09 private imported-plan failures — issue #167 (27 October 2026)
+
+Branch `167-private-imported-plan` from verified PR #211 merge `9d0822764ac09741eca778c98026e94ddabc3d04`. Imported-plan load/save previously displayed raw inspection, parser and storage exceptions containing private saved plan text or paths. Authored recovery guidance now preserves saved records and existing approval/context gates. F09 remains In progress/unchecked; no later task selected.
+
+Two baseline privacy regressions failed. Coverage verifies repeated failed reads, inspection/save failure, backend write failure, corrupt JSON refusal without writes, saved-plan retention, retry/reopen and silent disposal. Full validation and independent final-revision review/actual CI/merge evidence will be recorded in the PR. Original five local edits retained; no fresh inference or stable-app replacement claimed.
+
+Validation: 10 focused and 691 full Flutter tests passed (seven opt-in skips); formatter207/analyzer clean; web build and Wasm dry run passed. No fresh inference verified. Independent final-head review and actual required CI remain mandatory before merge.
