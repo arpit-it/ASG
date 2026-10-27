@@ -26,9 +26,8 @@ class StudioSessionController extends BaseController {
     try {
       final projects = store.load();
       if (projects.any((saved) => saved.id == project.id)) {
-        throw StateError(
-          'Project identity already exists. Open it from Projects.',
-        );
+        _error = 'Project identity already exists. Open it from Projects.';
+        return false;
       }
       await store.projects.save([...projects, project]);
       if (isDisposed) return false;
@@ -38,11 +37,11 @@ class StudioSessionController extends BaseController {
       _savedCreation = null;
       _current = project;
       return true;
-    } catch (e) {
+    } catch (_) {
       if (!isDisposed) {
         _error = _savedCreation == null
-            ? 'Project could not be created: $e'
-            : 'Project "${_savedCreation!.name}" was saved but could not be opened. Retry opening it or find it in Projects. $e';
+            ? 'Project could not be created. Check local storage and retry.'
+            : 'Project was saved but could not be opened. Check local storage, then retry opening it or find it in Projects.';
       }
       return false;
     } finally {
@@ -58,8 +57,8 @@ class StudioSessionController extends BaseController {
     try {
       final project = store.load().where((p) => p.id == saved.id).single;
       await select(project);
-    } catch (e) {
-      _error = 'Saved project could not be reopened. Check Projects. $e';
+    } catch (_) {
+      _error = 'Saved project could not be reopened. Check Projects and local storage, then retry opening it.';
       update();
     }
   }
@@ -69,8 +68,8 @@ class StudioSessionController extends BaseController {
     try {
       _current = store.load().where((p) => p.id == _current!.id).single;
       _error = null;
-    } catch (e) {
-      _error = 'Project details could not be refreshed: $e';
+    } catch (_) {
+      _error = 'Project details could not be refreshed. Check local storage and retry.';
     }
     update();
   }
@@ -86,8 +85,8 @@ class StudioSessionController extends BaseController {
         _current = project;
         _savedCreation = null;
       }
-    } catch (e) {
-      if (!isDisposed) _error = 'Project could not be opened: $e';
+    } catch (_) {
+      if (!isDisposed) _error = 'Project could not be opened. Check local storage and retry from Projects.';
     } finally {
       _busy = false;
       update();
