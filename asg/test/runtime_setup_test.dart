@@ -74,6 +74,19 @@ class FakeRuntimeHost implements RuntimeHost {
   }
 }
 
+class ScanRuntimeHost extends FakeRuntimeHost {
+  bool fail = false;
+  Completer<void>? gate;
+  @override
+  Future<List<ModelCandidate>> scan(String path) async {
+    await gate?.future;
+    if (fail) {
+      throw FileSystemException('PRIVATE_SCAN token=secret', '/private/model');
+    }
+    return super.scan(path);
+  }
+}
+
 class StopRuntimeHost extends FakeRuntimeHost {
   bool fail = true;
   Completer<void>? gate;
@@ -233,6 +246,50 @@ class SetupProbe implements ModelProvider {
 }
 
 void main() {
+  for (final action in ['inspect', 'download', 'start']) {
+    test('scan failure is private and retryable during $action', () async {
+      SharedPreferences.setMockInitialValues({});
+      final host = ScanRuntimeHost();
+      final c = await controller(host);
+      addTearDown(c.dispose);
+      await c.inspect('/models');
+      final selected = c.selected;
+      host.fail = true;
+      if (action == 'inspect') {
+        await c.inspect('/other');
+      } else if (action == 'download') {
+        await c.download(const RuntimeSetup(repository: 'owner/model'));
+      } else {
+        await c.start(const RuntimeSetup());
+      }
+      expect(c.error, isNot(contains('PRIVATE_SCAN')));
+      expect(c.error, isNot(contains('/private/')));
+      expect(c.error, contains('retry'));
+      expect(c.status, contains('failed'));
+      expect(c.busy, isFalse);
+      expect(c.selected, same(selected));
+      expect(host.ownsProcess, isFalse);
+      host.fail = false;
+      await c.inspect('/recovered');
+      expect(c.error, isNull);
+      expect(c.selected?.path, '/recovered');
+      expect(c.status, contains('found'));
+    });
+  }
+  test('disposed scan failure cannot publish diagnostics', () async {
+    SharedPreferences.setMockInitialValues({});
+    final host = ScanRuntimeHost()..fail = true;
+    host.gate = Completer<void>();
+    final c = await controller(host);
+    final pending = c.inspect('/models');
+    final status = c.status;
+    c.dispose();
+    host.gate!.complete();
+    await pending;
+    expect(c.error, isNull);
+    expect(c.status, status);
+  });
+
   test(
     'Stop failures are private and successful retry clears diagnostics',
     () async {
