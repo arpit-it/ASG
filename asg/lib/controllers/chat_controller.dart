@@ -181,8 +181,14 @@ class ChatController extends BaseController {
       final store = PlanApprovalStore(_store!.records);
       await store.save(project, _messages, approved);
       if (!isDisposed) _approval = store.load(project.id);
-    } catch (e) {
-      if (!isDisposed) error = '$e';
+    } catch (_) {
+      if (!isDisposed) {
+        error =
+            'Plan approval could not be saved. Check local storage and retry. '
+            'If the project is missing or ambiguous, or the Plan or requirements changed, '
+            'reopen the project and draft a current Plan. '
+            'The previous saved approval and conversation have not been replaced.';
+      }
     } finally {
       busy = false;
       phase = GenerationPhase.idle;
