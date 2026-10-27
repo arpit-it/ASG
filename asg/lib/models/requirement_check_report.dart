@@ -31,6 +31,8 @@ class RequirementCheckResult {
   final String reason;
   final List<String> taskIds, operationIds;
   final List<RequirementOperationEvidence> checks;
+  RequirementAcceptanceEvidence get acceptance =>
+      RequirementAcceptanceEvidence(requirement);
   static const acceptanceStatus = 'Acceptance criteria: not verified';
   String get label => switch (state) {
     RequirementCheckState.missing => 'Missing evidence',
@@ -122,4 +124,27 @@ class RequirementArtifactObservation {
   const RequirementArtifactObservation(this.outcome, this.observedAt);
   final ArtifactInspection outcome;
   final DateTime observedAt;
+}
+
+/// The board stores one free-form acceptance block per requirement. Treat it
+/// atomically: splitting sentences or bullets would invent authored criteria.
+class RequirementAcceptanceEvidence {
+  const RequirementAcceptanceEvidence(this.requirement);
+  final ProjectRequirement requirement;
+  String get requirementSha256 =>
+      sha256.convert(utf8.encode(jsonEncode(requirement.toJson()))).toString();
+  static const label = 'Unmet acceptance evidence';
+  static const reason =
+      'No check is explicitly mapped to this acceptance block. Generic '
+      'operation results, manual task progress and advisory model Review '
+      'do not verify it.';
+  Map<String, Object?> toJson() => {
+    'granularity': 'authoredAcceptanceBlock',
+    'requirementId': requirement.id,
+    'requirementSha256': requirementSha256,
+    'text': requirement.acceptance,
+    'status': 'unverified',
+    'reason': reason,
+    'directChecks': <Object>[],
+  };
 }

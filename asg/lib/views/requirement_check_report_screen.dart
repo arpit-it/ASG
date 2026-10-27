@@ -79,6 +79,11 @@ class _RequirementCheckReportScreenState
                         ),
                         const Text(RequirementCheckResult.acceptanceStatus),
                         Text(result.requirement.acceptance),
+                        const Text(RequirementAcceptanceEvidence.label),
+                        const Text(RequirementAcceptanceEvidence.reason),
+                        Text(
+                          'Requirement SHA-256: ${result.acceptance.requirementSha256}',
+                        ),
                         Text(result.label),
                         Text(result.reason),
                         for (final check in result.checks)
