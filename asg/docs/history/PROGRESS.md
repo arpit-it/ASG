@@ -2961,3 +2961,13 @@ Thirteen Markdown-only files and 90 local links validated; queue order/statuses 
 ## Expanded product requirements — issue #226 (28 October 2026)
 
 Documented the owner-requested engineering Ask, snippet Explain/Check/Run/Fix, GitHub/Git repository workflows, multi-language generation and real runners for Java/Kotlin/PHP and the mainstream catalog (HTML/CSS/JavaScript is only the first additional adapter), instruction-file timers/schedules and hardware-aware larger-model selection. Extended existing adapter/backend/evidence tasks and added stable F18–F23 for distinct capabilities; cloud service creation/connection is explicitly final. All added product tasks remain queued and F10 stays active. No runtime, account, schedule, model download or cloud infrastructure change. Supporting documentation links to the sole requirements queue. Documentation consistency/link/whitespace validation and independent exact-final review/required CI remain merge gates.
+
+
+### Multi-language requirements verified — PR #227 (28 October 2026)
+
+Issue #226 completed through independently reviewed PR #227, verified protected merge `f8062fe786efc3872d93b3242c2d9e983fc4e8d8` at 2026-10-27T22:15:56Z. Final reviewed head `84db76763250d3dafad7f0e9975f680b42e3158c`, tree `25273cb5f3541a868eb4f2d42497095f8e30b38f`, independent approval `5675163154`; no unresolved threads. Parent independently verified merge/issue closure/matching tree and safely synchronized local main while preserving local edits. Required CI `40592597358` passed: Flutter job `122500375681` formatter/analyzer,722 Linux tests/seven skips, two Chrome tests, web/Wasm and real generated-project verification; Python job `122500375286` two/four/ten/four fixtures with two macOS-only skips. Four documentation files and35local links/anchors/queue/order/whitespace checks passed. All newly specified capabilities remain queued; no runtime feature or cloud resource was implemented.
+
+
+### User-owned Hugging Face cloud planning — issue #228 (28 October 2026)
+
+Refined existing final F23 for free local use plus optional user-owned HF Spaces, API or dedicated endpoints, explicit provider-billed creation/start, supported public-client authentication and separate generation-versus-hardware lifecycle controls. No new task ID, early cloud implementation, ASG billing platform, resource deployment, credential access, repository visibility or application license change. Licensing/copyright terms remain unresolved. Documentation references/links/queue/status/order/whitespace and independent final-revision review/required CI gate delivery.
