@@ -207,7 +207,21 @@ class RuntimeSetupController extends BaseController {
     _setup = values;
     _status = 'Downloading model artifacts. This may be a large transfer; see the log.';
     update();
-    final path = await host.download(values);
+    final String path;
+    try {
+      path = await host.download(values);
+    } catch (_) {
+      if (isDisposed) return;
+      _status = 'Model download failed.';
+      // Host failures can embed private paths, repository URLs or arguments.
+      throw StateError(
+        'Could not download model files. Check the repository, revision, Python '
+        'environment, network and destination permissions, then retry. Existing '
+        'folders are retained; inspect downloaded files or choose a different '
+        'destination if a partial folder already exists.',
+      );
+    }
+    if (isDisposed) return;
     final found = await _scan(path);
     if (isDisposed) return;
     _candidates = found;

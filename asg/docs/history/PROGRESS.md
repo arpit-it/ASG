@@ -2511,3 +2511,12 @@ Inspect, downloaded-folder inspection and pre-launch revalidation forwarded raw 
 All four new regressions failed on baseline: three private scan paths and delayed disposed failure. Validation requires focused/full Flutter tests, formatter/analyzer/web build, independent exact-final-revision review and actual required CI before protected merge. No live inference, model download, stable app replacement, deployment or schedule/notification change. Prior local documentation evidence retained in this increment; unrelated IDE edits preserved.
 
 Final local checks: formatter198/analyzer clean;55focused and611full Flutter tests passed/seven opt-in skips;web build/Wasm dry run passed. All4new regressions failed baseline. Runtime endpoint offline;no live inference claimed. Awaiting merge: independent exact-final-revision review and required CI remain gates.
+
+
+### F09 private download diagnostics — issue #167 (27 October 2026)
+
+Prior managed launch increment PR #190 is verified merged as `b0cb4c04d589ef6d8d410209fab9d28f04e2ad85`; issue #167 closed after independent final-head review and required CI. Its launch-failure guidance remains covered by regression tests.
+
+Reopened #167 on `167-private-download-errors` for an observed F09 gap: download host exceptions reached visible error text and left a downloading status after failure. Scope: locally authored private terminal failure/retry guidance, retained selection/settings, duplicate-request guard and ignored disposed completion before scanning. Acceptance: injected private exception content stays absent; retry succeeds; no scan or notification after disposal. No model download or live inference is part of these fixtures. F09 remains In progress/unchecked; no later feature selected.
+
+Implementation and three regression tests prepared; baseline terminal-status regression reproduced. Final local checks: 616 full Flutter tests passed with seven opt-in skips; analyzer, formatter and web build/Wasm dry run passed. Local endpoint offline; no live inference verified. Independent exact-PR review and required CI remain delivery gates. Status: Awaiting merge, not Done.
