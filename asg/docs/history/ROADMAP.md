@@ -1,6 +1,10 @@
 # Historical roadmap
 
-## Current context — 25 October 2026
+## Current summary — 28 October 2026
+
+F01–F09, F13 and F14 are delivered within their recorded acceptance boundaries; F10 remains In progress. Future tasks and exact delivery evidence live only in [Requirements](../REQUIREMENTS.md). The dated snapshots below retain historical state and do not override that queue.
+
+## Historical context — 25 October 2026
 
 ASG is a Flutter application targeting Android, iOS, web, macOS, Windows and Linux. Included platform runners do not establish tested device support. Managed MLX setup and the current independent Flutter web generator host are macOS-specific; other platforms retain supported app features and runtime connection controls.
 

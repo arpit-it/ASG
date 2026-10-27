@@ -94,7 +94,7 @@ A successful build does not establish a successful device launch. Report verifie
 
 ## Current enforcement and remaining work
 
-Current enforcement: Flutter lints, formatter, architecture boundary tests, controller/unit/widget tests, native database reopen and actual Chrome storage coverage, Python runtime/process fixtures, web build and real independent generated-project verification in CI. Issue #50 locally passes 200 default tests (four opt-in skips), analysis and web build; older counts describe historical increments. The standards above govern future changes; they do not assert that accessibility, all device layouts, strict JSON validation, fully private controller state, transactional storage, or every platform has already been audited.
+Current enforcement: Flutter lints, formatter, architecture boundary tests, controller/unit/widget tests, native database reopen and actual Chrome storage coverage, Python runtime/process fixtures, web build and real independent generated-project verification in CI. Issue #50 recorded 200 default tests (four opt-in skips), analysis and web build at that historical revision; current suite totals and exact-head validation belong in the requirements delivery ledger. The standards above govern future changes; they do not assert that accessibility, all device layouts, strict JSON validation, fully private controller state, transactional storage, or every platform has already been audited.
 
 ## References
 
