@@ -171,6 +171,85 @@ void main() {
       c.dispose();
     },
   );
+  test(
+    'reconnect preserves latest durable ceiling after health verification',
+    () async {
+      final prefs = await SharedPreferences.getInstance();
+      final settings = ModelSettingsStore.fromPreferences(prefs);
+      await settings.save(const LocalModelConfig(chatOutputTokens: 512));
+      final entered = Completer<void>();
+      final release = Completer<void>();
+      final c = await controller(
+        FakeRuntimeHost(),
+        api: RuntimeConnection(
+          client: MockClient((_) async {
+            entered.complete();
+            await release.future;
+            return http.Response(
+              jsonEncode({'status': 'ready', 'model': 'new'}),
+              200,
+            );
+          }),
+        ),
+      );
+      final pending = c.connect(const LocalModelConfig(model: 'new'));
+      await entered.future;
+      await settings.save(const LocalModelConfig(chatOutputTokens: 1024));
+      release.complete();
+      await pending;
+      expect(c.error, isNull);
+      expect(settings.load().model, 'new');
+      expect(settings.load().chatOutputTokens, 1024);
+      expect(c.connectionConfig.chatOutputTokens, 1024);
+      c.dispose();
+    },
+  );
+
+  test('managed startup retains saved chat ceiling', () async {
+    final prefs = await SharedPreferences.getInstance();
+    final settings = ModelSettingsStore.fromPreferences(prefs);
+    await settings.save(
+      const LocalModelConfig(model: 'old', chatOutputTokens: 512),
+    );
+    final host = FakeRuntimeHost();
+    final c = await controller(
+      host,
+      api: connection(ready: () => host.ownsProcess, path: '/models'),
+    );
+    await c.inspect('/models');
+    await c.start(const RuntimeSetup(python: '/python'));
+    expect(c.error, isNull);
+    expect(settings.load().model, 'Qwen3.5-9B');
+    expect(settings.load().chatOutputTokens, 512);
+    expect(c.connectionConfig.chatOutputTokens, 512);
+    await c.stop();
+    c.dispose();
+  });
+
+  test(
+    'corrupt settings block reconnect and startup without writes or launch',
+    () async {
+      final prefs = await SharedPreferences.getInstance();
+      for (final raw in [
+        'private-sentinel',
+        '{"baseUrl":"http://127.0.0.1:8765/v1","model":"local","chatOutputTokens":0}',
+      ]) {
+        await prefs.setString('studio.localModel.v1', raw);
+        final host = FakeRuntimeHost();
+        final c = await controller(host, api: connection(ready: () => true));
+        await c.connect(const LocalModelConfig());
+        expect(c.error, contains('Restore valid settings'));
+        expect(c.error, isNot(contains('private-sentinel')));
+        await c.inspect('/models');
+        await c.start(const RuntimeSetup(python: '/python'));
+        expect(c.error, contains('Restore valid settings'));
+        expect(host.ownsProcess, isFalse);
+        expect(prefs.getString('studio.localModel.v1'), raw);
+        c.dispose();
+      }
+    },
+  );
+
   test('connection mismatch cannot overwrite saved model settings', () async {
     final host = FakeRuntimeHost();
     final c = await controller(

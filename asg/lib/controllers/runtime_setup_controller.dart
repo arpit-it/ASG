@@ -168,6 +168,7 @@ class RuntimeSetupController extends BaseController {
         'A runtime is already running. Use it or stop it before starting another. Externally started runtimes must be stopped in their terminal.',
       );
     }
+    _loadChatCeiling();
     // Revalidate immediately before launch, in case files changed after scanning.
     final validated = await host.scan(candidate.path);
     if (!validated.any((m) => m.path == candidate.path && m.supported)) {
@@ -199,8 +200,7 @@ class RuntimeSetupController extends BaseController {
       if (result.ready &&
           result.model == candidate.name &&
           result.modelPath == candidate.path) {
-        await modelStore.save(config);
-        _connectionConfig = config;
+        _connectionConfig = await _saveConnection(config);
         _health = result;
         _status = 'Runtime ready. Project chat now uses ${candidate.name}.';
         return;
@@ -229,17 +229,39 @@ class RuntimeSetupController extends BaseController {
 
   Future<void> connect(LocalModelConfig config) => _action(() async {
     config.endpoint;
+    _loadChatCeiling();
     final result = await connection.check(config);
     if (!result.ready || result.model != config.model) {
       throw StateError(
         'No ready runtime reporting this model ID. Check the URL and model ID.',
       );
     }
-    await modelStore.save(config);
-    _connectionConfig = config;
+    _connectionConfig = await _saveConnection(config);
     _health = result;
     _status = 'Connected. Project chat uses ${config.model}.';
   });
+  int _loadChatCeiling() {
+    try {
+      return modelStore.load().chatOutputTokens;
+    } catch (_) {
+      throw StateError(
+        'Saved model settings could not be loaded. Restore valid settings before connecting or starting a model. Records have not been overwritten.',
+      );
+    }
+  }
+
+  Future<LocalModelConfig> _saveConnection(LocalModelConfig config) async {
+    // Setup changes only the connection. Reload at save time to retain settings
+    // changed during health verification or model loading.
+    final saved = LocalModelConfig(
+      baseUrl: config.baseUrl,
+      model: config.model,
+      chatOutputTokens: _loadChatCeiling(),
+    );
+    await modelStore.save(saved);
+    return saved;
+  }
+
   Future<void> test(LocalModelConfig config) => _action(() async {
     _status = 'Testing inference…';
     update();
