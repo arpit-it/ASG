@@ -54,6 +54,10 @@ class _RequirementCheckReportScreenState
             if (widget.controller.inspecting) const LinearProgressIndicator(),
             if (widget.controller.inspection != null)
               Text(widget.controller.inspection!.label),
+            if (widget.controller.inspectedAt != null)
+              Text(
+                'Observed at ${widget.controller.inspectedAt!.toIso8601String()} (UTC); files may change afterward.',
+              ),
             if (widget.controller.inspectionNotice != null)
               Text(widget.controller.inspectionNotice!),
             if (widget.controller.error != null)
@@ -105,7 +109,7 @@ class _RequirementCheckReportScreenState
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(12),
-                    child: SelectableText(report.evidenceJson),
+                    child: SelectableText(widget.controller.evidenceJson!),
                   ),
                 ],
               ),
