@@ -74,6 +74,32 @@ class FakeRuntimeHost implements RuntimeHost {
   }
 }
 
+class DownloadRuntimeHost extends FakeRuntimeHost {
+  bool fail = true;
+  Completer<void>? gate;
+  final entered = Completer<void>();
+  int scans = 0;
+  @override
+  Future<String> download(RuntimeSetup setup) async {
+    downloads++;
+    if (!entered.isCompleted) entered.complete();
+    await gate?.future;
+    if (fail) {
+      throw FileSystemException(
+        'PRIVATE_DOWNLOAD token=secret',
+        '/private/model',
+      );
+    }
+    return '/models/downloaded';
+  }
+
+  @override
+  Future<List<ModelCandidate>> scan(String path) async {
+    scans++;
+    return super.scan(path);
+  }
+}
+
 class StartRuntimeHost extends FakeRuntimeHost {
   bool fail = true;
   Completer<void>? gate;
@@ -265,6 +291,67 @@ class SetupProbe implements ModelProvider {
 }
 
 void main() {
+  test('Download failure is private, terminal and retryable', () async {
+    SharedPreferences.setMockInitialValues({});
+    final host = DownloadRuntimeHost()..gate = Completer<void>();
+    final c = await controller(host);
+    await c.inspect('/models/existing');
+    final selected = c.selected;
+    const setup = RuntimeSetup(
+      repository: 'owner/model',
+      downloadParent: '/models',
+    );
+    final pending = c.download(setup);
+    await host.entered.future;
+    await c.download(setup);
+    expect(host.downloads, 1);
+    host.gate!.complete();
+    await pending;
+    expect(c.busy, isFalse);
+    expect(c.status, 'Model download failed.');
+    expect(c.error, contains('Could not download model files'));
+    expect(c.error, contains('retry'));
+    for (final secret in [
+      'PRIVATE_DOWNLOAD',
+      '/private/model',
+      'token=secret',
+    ]) {
+      expect('${c.error} ${c.status} ${c.logs}', isNot(contains(secret)));
+    }
+    expect(c.selected, same(selected));
+    expect(c.setup.repository, setup.repository);
+    expect(host.scans, 1);
+    host.fail = false;
+    host.gate = null;
+    await c.download(setup);
+    expect(c.error, isNull);
+    expect(c.selected?.path, '/models/downloaded');
+    expect(c.status, contains('Download complete'));
+    expect(host.downloads, 2);
+    c.dispose();
+  });
+  for (final fail in [true, false]) {
+    test('Disposed download completion is ignored (failure: $fail)', () async {
+      SharedPreferences.setMockInitialValues({});
+      final host = DownloadRuntimeHost()
+        ..fail = fail
+        ..gate = Completer<void>();
+      final c = await controller(host);
+      final pending = c.download(const RuntimeSetup(repository: 'owner/model'));
+      await host.entered.future;
+      final status = c.status;
+      var notifications = 0;
+      c.addListener(() => notifications++);
+      c.dispose();
+      host.gate!.complete();
+      await pending;
+      expect(c.error, isNull);
+      expect(c.status, status);
+      expect(host.scans, 0);
+      expect(notifications, 0);
+    });
+  }
+
   test('Start launch failure is private, terminal and retryable', () async {
     SharedPreferences.setMockInitialValues({});
     final host = StartRuntimeHost();
