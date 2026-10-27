@@ -66,8 +66,8 @@ class RuntimeSetupController extends BaseController {
     try {
       _setup = store.load();
       _connectionConfig = modelStore.load();
-    } catch (e) {
-      _error = 'Saved runtime settings could not be loaded: $e';
+    } catch (_) {
+      _error = 'Saved runtime settings could not be loaded. Records have not been overwritten. Restore valid settings before continuing.';
     }
     _subscription = host.events.listen((line) {
       _logs.add(line);
