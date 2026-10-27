@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../controllers/requirement_check_report_controller.dart';
+import '../services/requirement_check_report_store.dart';
+import 'requirement_check_report_screen.dart';
+
 import 'workspace_panes.dart';
 
 import '../controllers/portable_archive_controller.dart';
@@ -131,6 +135,16 @@ class _ProjectWorkspaceState extends State<ProjectWorkspace> {
             RequirementsStore(records),
           ),
           projectName: widget.project.name,
+          onCheckReport: () => Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) => RequirementCheckReportScreen(
+                controller: RequirementCheckReportController(
+                  widget.project,
+                  RequirementCheckReportStore(records),
+                ),
+              ),
+            ),
+          ),
         ),
       ),
     );
