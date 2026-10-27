@@ -3002,3 +3002,23 @@ PR #183 verified merged as `610f0929ab10864a0b3f18b4266841572e24db44` through th
 Connect and managed startup forwarded raw model-settings write errors to visible diagnostics. Both new regressions reproduce private sentinel/credential/path disclosure against baseline. Connection writes now emit locally authored storage/retry/Stop guidance; existing load-error guidance and save-before-publication ordering remain intact. Tests cover both entry points, retained previous durable settings, no false connected/ready success, owned runtime Stop after failed startup, and successful retry preserving the latest chat token ceiling.
 
 Validation: formatter198 unchanged, analyzer clean, 598 Flutter tests passed/seven opt-in skips; web build and Wasm dry run passed. Initial test lint fixed and full checks rerun. Publication/review/CI/merge evidence follows. No live inference claimed, model download, installed-app replacement, deployment or schedule/notification change. Original five checkout edits preserved. Independent exact-final-head review and actual required CI gate protected merge.
+
+
+### F09 private connection save diagnostics — verified increment (27 October 2026)
+
+Reopened issue #167 / branch `167-private-connection-save` delivered through https://github.com/arpit-it/ASG/pull/184. Final head `3902fc87841447628ee07163c38b33479bd1c285` independently approved in verdict `5663781238` and final gate `5663799275`. Normal protected squash merge `41e7a2157a7c9773dfc64cf8676c705f67388ed4` at 2026-10-27T08:00:21Z; issue closed/completed 08:00:23Z. Parent independently verified merged PR, issue closure, remote main and exact signed merge object through the connected GitHub plugin. Merge/published/tested local `824b710f14fb2e4f9b38815e8c58895051e8c0c1` share tree `03da4ca597a524ee26a444c654c104a9a008bc74`.
+
+Required CI `40470148708` passed. Reviewer inspected actual Flutter `122075045335` logs: formatter198/analyzer,596 Linux tests/six opt-in skips including both regressions, two actual Chrome tests, web/Wasm, generated-project resolve/analyze/test/build each exit0 and serving acceptance. Python `122075045106` passed2+4+10+4fixtures/two confinement skips. Local598Flutter tests/seven skips, formatter/analyzer/webWasm passed. Independent42focused setup/connection tests passed; both baseline disclosure regressions independently failed then passed with the exact reviewed controller restored. No blockers or unresolved review threads.
+
+Connect and managed startup now omit raw connection-storage write errors, preserving retry/Stop guidance, durable settings and latest token ceiling on recovery. F09 remains In progress/unchecked; no later task/new issue selected. Endpoint offline; no live inference, model download, stable-app replacement, deployment or schedule/notification change. Local main synchronized0/0 with plugin-verified remote main; original five edits retained with hashed backup `/private/tmp/asg-184-preserved`; source/tests/index clean. Automatic approval review rejected optional provider labels as conflicting with naming preference; omitted. Final evidence retained for next normal reviewed increment.
+
+
+### F09 private setup save diagnostics — reopened issue #167 (27 October 2026)
+
+PR #184 verified merged as `41e7a2157a7c9773dfc64cf8676c705f67388ed4` through the connected GitHub plugin. No open PR or competing active run at selection. Reused #167 on `167-private-setup-save`; F09 remains In progress/unchecked; no new issue/task or later feature selected.
+
+Download and Start exposed raw runtime setup storage errors. Both regressions fail against baseline with private sentinel/credential/path content. Setup writes now emit locally authored storage/retry guidance and prevent download/launch side effects on failure. Prior durable/controller setup survives and both workflows succeed after retry. No schema or execution authority changes.
+
+Validation: 44 focused setup/connection tests passed. Formatter/analyzer/full Flutter suite/web build and independent exact-final-head review with actual required CI gate merge; final evidence follows publication. Runtime endpoint offline; no live inference, model download, stable app replacement, deployment or schedule/notification changes. Original five checkout edits preserved outside this isolated worktree.
+
+Final local validation: formatter198 unchanged, analyzer clean, 600 Flutter tests passed/seven opt-in skips; web build and Wasm dry run passed. Both baseline privacy regressions reproduced; 44 focused setup/connection tests passed. Independent review and actual required CI still gate merge.

@@ -158,6 +158,18 @@ class FailingConnectionStore extends ModelSettingsStore {
   }
 }
 
+class FailingSetupStore extends RuntimeSetupStore {
+  FailingSetupStore(super.records);
+  bool fail = true;
+  @override
+  Future<void> save(RuntimeSetup setup) async {
+    if (fail) {
+      throw StateError('PRIVATE_SETUP_SENTINEL token=secret /private/setup');
+    }
+    await super.save(setup);
+  }
+}
+
 class SetupProbe implements ModelProvider {
   final output = StreamController<String>();
   int cancellations = 0;
@@ -171,6 +183,70 @@ class SetupProbe implements ModelProvider {
 
 void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
+  for (final managed in [false, true]) {
+    test(
+      'setup save failure stays private and prevents effects: $managed',
+      () async {
+        final prefs = await SharedPreferences.getInstance();
+        final durable = RuntimeSetupStore.fromPreferences(prefs);
+        const previous = RuntimeSetup(python: '/previous');
+        await durable.save(previous);
+        final before = prefs.getString('studio.runtimeSetup.v1');
+        final failing = FailingSetupStore(durable.records);
+        final host = FakeRuntimeHost();
+        final c = RuntimeSetupController(
+          store: failing,
+          modelStore: ModelSettingsStore.fromPreferences(prefs),
+          host: host,
+          connection: connection(
+            ready: () => host.ownsProcess,
+            path: '/models',
+          ),
+        );
+        addTearDown(c.dispose);
+        c.initialize();
+        await c.refresh();
+        await c.inspect('/models');
+        const values = RuntimeSetup(
+          python: '/python',
+          repository: 'owner/model',
+        );
+        if (managed) {
+          await c.start(values);
+        } else {
+          await c.download(values);
+        }
+        expect(c.error, contains('Runtime setup settings could not be saved'));
+        expect(c.error, contains('retry'));
+        for (final private in [
+          'PRIVATE_SETUP_SENTINEL',
+          'token=secret',
+          '/private/setup',
+        ]) {
+          expect(c.error, isNot(contains(private)));
+        }
+        expect(prefs.getString('studio.runtimeSetup.v1'), before);
+        expect(c.setup.python, previous.python);
+        expect(host.downloads, 0);
+        expect(host.ownsProcess, isFalse);
+        expect(c.busy, isFalse);
+        expect(c.health.ready, isFalse);
+        failing.fail = false;
+        if (managed) {
+          await c.start(values);
+          expect(host.ownsProcess, isTrue);
+          expect(c.health.ready, isTrue);
+          await c.stop();
+        } else {
+          await c.download(values);
+          expect(host.downloads, 1);
+        }
+        expect(c.error, isNull);
+        expect(durable.load().python, values.python);
+        expect(c.setup.python, values.python);
+      },
+    );
+  }
   for (final oldReady in [false, true]) {
     test(
       'old connection refresh cannot replace newly connected health: $oldReady',
