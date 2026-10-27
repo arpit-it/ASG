@@ -2491,3 +2491,23 @@ PR #187 verified merged as `1c5b41b4971c52851a4310b00a405d5c8496fafc` through th
 Managed Stop exposed raw host exceptions and retained stale errors after successful retry. Baseline tests reproduce private process/path disclosure and both disposed-completion mutations. Stop now shows locally authored retry guidance and truthful failure status, clears errors on retry and suppresses disposed completion. Failed Stop preserves the pending health check; successful Stop still supersedes it and checks current health. Only owned-process Stop is requested.
 
 Validation: formatter198/analyzer clean; 51 focused tests and 607 full Flutter tests passed/seven opt-in skips. Web build and Wasm dry run passed. Independent exact-final-head review and actual required CI gate merge. No live inference, model download, installed-app replacement, deployment or schedule/notification change. Original five checkout edits preserved outside this isolated increment.
+
+
+### F09 private Stop diagnostics — verified increment (27 October 2026)
+
+Reopened issue #167 / branch `167-private-stop-errors` delivered through https://github.com/arpit-it/ASG/pull/188. Final head `0e61d4be017583ef753506cac956ca53975f04e3` independently approved in review `5664450743` and final gate `5664496996`. Protected squash merge `a8da5168b7c6d4418c7874be9211877459131167` at 2026-10-27T09:00:21Z; issue closed/completed 09:00:23Z. Parent independently verified PR, issue closure, remote main and signed merge object through connected GitHub plugin. Merge/published/tested local `517a2399ad84c0b7ee0bdbe445b950b615da98a0` share tree `3b8ed0f959cd048f27cf32c70e21fff614f84780`.
+
+Required CI `40476912131` passed. Reviewer inspected actual Flutter `122097288239` logs: formatter198/analyzer,605 Linux tests/six opt-in skips including three regressions, two actual Chrome tests, web/Wasm, real generated resolve/analyze/test/build each exit0 plus serving acceptance. Python `122097287720` passed2+4+10+4fixtures/two confinement skips. Local607Flutter tests/seven skips, formatter/analyzer/webWasm passed. Independent51focused tests passed; all three baseline regressions failed then exact restored controller passed9Stop tests. No blockers or unresolved threads.
+
+Stop now omits raw private host exceptions, reports truthful failure/retry guidance, clears previous errors on retry and ignores disposed completion. F09 remains In progress/unchecked. No new task/issue or later feature selected. Endpoint offline; no live inference, model download, stable-app replacement, deployment or schedule/notification changes. Local main synchronized0/0 with plugin-verified remote main through hash-verified signed commit import, without terminal GitHub access. Original IDE bytes and document content preserved with hashed backup `/private/tmp/asg-188-preserved`; source/tests/index clean. Final evidence retained for the next normal reviewed increment.
+
+
+### F09 private model-folder scan diagnostics — reopened issue #167 (27 October 2026)
+
+PR #188 verified merged as `a8da5168b7c6d4418c7874be9211877459131167`; its independent reviews and required CI passed. Reopened #167 on `167-private-scan-errors` after confirming no competing active run or open PR. F09 remains In progress/unchecked; no later task or new issue selected.
+
+Inspect, downloaded-folder inspection and pre-launch revalidation forwarded raw filesystem exceptions into diagnostics. One shared scan boundary now shows private, actionable retry guidance and a truthful failed status while retaining previous candidates/selection. Failed pre-launch validation cannot start a runtime. Disposed action errors cannot publish diagnostics.
+
+All four new regressions failed on baseline: three private scan paths and delayed disposed failure. Validation requires focused/full Flutter tests, formatter/analyzer/web build, independent exact-final-revision review and actual required CI before protected merge. No live inference, model download, stable app replacement, deployment or schedule/notification change. Prior local documentation evidence retained in this increment; unrelated IDE edits preserved.
+
+Final local checks: formatter198/analyzer clean;55focused and611full Flutter tests passed/seven opt-in skips;web build/Wasm dry run passed. All4new regressions failed baseline. Runtime endpoint offline;no live inference claimed. Awaiting merge: independent exact-final-revision review and required CI remain gates.

@@ -110,6 +110,7 @@ class RuntimeSetupController extends BaseController {
     try {
       await operation();
     } catch (e) {
+      if (isDisposed) return;
       _error = '$e';
     } finally {
       _busy = false;
@@ -149,8 +150,21 @@ class RuntimeSetupController extends BaseController {
     }
   }
 
+  Future<List<ModelCandidate>> _scan(String path) async {
+    try {
+      return await host.scan(path);
+    } catch (_) {
+      if (!isDisposed) _status = 'Model folder scan failed.';
+      // Filesystem errors may embed private paths and host diagnostics.
+      throw StateError(
+        'Could not inspect model files. Check the selected folder and read '
+        'permissions, then retry the scan.',
+      );
+    }
+  }
+
   Future<void> inspect(String path) => _action(() async {
-    final found = await host.scan(path);
+    final found = await _scan(path);
     if (isDisposed) return;
     _candidates = found;
     _selected = null;
@@ -194,7 +208,7 @@ class RuntimeSetupController extends BaseController {
     _status = 'Downloading model artifacts. This may be a large transfer; see the log.';
     update();
     final path = await host.download(values);
-    final found = await host.scan(path);
+    final found = await _scan(path);
     if (isDisposed) return;
     _candidates = found;
     _selected = null;
@@ -222,7 +236,7 @@ class RuntimeSetupController extends BaseController {
     }
     _loadChatCeiling();
     // Revalidate immediately before launch, in case files changed after scanning.
-    final validated = await host.scan(candidate.path);
+    final validated = await _scan(candidate.path);
     if (_startupCancelled) return;
     if (!validated.any((m) => m.path == candidate.path && m.supported)) {
       throw StateError('Selected checkpoint is no longer valid.');
