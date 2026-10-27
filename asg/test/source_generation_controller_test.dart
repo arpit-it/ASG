@@ -80,6 +80,7 @@ class FixtureHost implements GenerationHost, ArtifactInspector {
   int writes = 0;
   bool failAfterResolveEvidence = false;
   bool throwAnalyze = false;
+  Object? verificationError;
   final operations = <String>[];
   int generations = 0, verifications = 0;
   bool? lastResume;
@@ -114,6 +115,7 @@ class FixtureHost implements GenerationHost, ArtifactInspector {
     await progress(
       project.copy(phase: SourceGenerationPhase.verifying, failedOperation: ''),
     );
+    if (verificationError case final error?) throw error;
     if (failVerification) throw StateError('Missing interpreter');
     var current = project.copy(
       steps: resume ? project.steps : const [],
@@ -232,6 +234,80 @@ void main() {
   });
   tearDown(() {
     if (!c.isDisposed) c.dispose();
+  });
+
+  test('execution exception is private, durable and retryable', () async {
+    host.verificationError = StateError(
+      'private-prompt token-secret /private/model',
+    );
+    expect(await generate(true), isFalse);
+    expect(c.error, isNotNull);
+    for (final marker in ['private-prompt', 'token-secret', '/private/model']) {
+      expect(c.error, isNot(contains(marker)));
+      expect(
+        store.records.getString('studio.generation.v1.p'),
+        isNot(contains(marker)),
+      );
+    }
+    c.dispose();
+    c = SourceGenerationController(
+      project: project,
+      definition: definition,
+      store: store,
+      host: host,
+    );
+    expect(c.result!.phase, SourceGenerationPhase.failed);
+    expect(c.result!.error, contains('Check'));
+    host.verificationError = null;
+    expect(await c.verifyAgain(approved: true), isTrue);
+    expect(c.error, isNull);
+  });
+
+  test(
+    'corrupt execution preflight preserves output and preview privately',
+    () async {
+      expect(await generate(true), isTrue);
+      await c.startPreview();
+      final working = c.result;
+      final preview = c.preview;
+      final history = store.records.getString('studio.generation.v1.p');
+      const key = 'studio.planApproval.v1.p';
+      final approval = store.records.getString(key)!;
+      await store.records.setString(
+        key,
+        'private-prompt token-secret /private/model',
+      );
+      expect(await c.verifyAgain(approved: true), isFalse);
+      for (final marker in [
+        'private-prompt',
+        'token-secret',
+        '/private/model',
+      ]) {
+        expect(c.error, isNot(contains(marker)));
+      }
+      expect(c.result, same(working));
+      expect(c.preview, preview);
+      expect(host.server, isTrue);
+      expect(host.verifications, 1);
+      expect(store.records.getString('studio.generation.v1.p'), history);
+      await store.records.setString(key, approval);
+      expect(await c.verifyAgain(approved: true), isTrue);
+      expect(c.error, isNull);
+    },
+  );
+
+  test('disposed late execution exception stays silent', () async {
+    host.beforeGenerationWrite = () async {
+      c.dispose();
+      throw StateError('private-prompt token-secret /private/model');
+    };
+    var notifications = 0;
+    c.addListener(() => notifications++);
+    expect(await generate(true), isFalse);
+    expect(c.error, isNull);
+    expect(store.load('p'), isNull);
+    expect(host.verifications, 0);
+    expect(notifications, 1);
   });
 
   for (final key in ['studio.planApproval.v1.p', 'studio.chat.v1.p']) {
@@ -836,7 +912,7 @@ void main() {
       await ConversationStore(store.records).save(project.id, plans);
       await PlanApprovalStore(store.records).save(project, plans, true);
       expect(await generate(true), isFalse);
-      expect(c.error, contains('saved prototype changed'));
+      expect(c.error, contains('Reopen Build'));
       expect(c.preview, preview);
       expect(host.server, isTrue);
       expect(host.generations, before);
@@ -951,7 +1027,7 @@ void main() {
       expect(host.verifications, 1);
       expect(host.server, isTrue);
       expect(store.records.getString('studio.generation.v1.p'), history);
-      expect(c.error, contains('does not match'));
+      expect(c.error, contains('changed inputs'));
     },
   );
 
@@ -1158,7 +1234,7 @@ void main() {
       await StudioStore(store.records).save([]);
       expect(await generate(true), isFalse);
       expect(host.generations, 0);
-      expect(c.error, contains('missing or ambiguous'));
+      expect(c.error, contains('Check project data'));
     },
   );
 
@@ -1174,7 +1250,7 @@ void main() {
       expect(await running, isFalse);
       expect(host.verifications, 0);
       expect(store.load('p')!.phase, SourceGenerationPhase.failed);
-      expect(c.error, contains('Build requires'));
+      expect(c.error, contains('current Plan approval'));
     },
   );
 
@@ -1263,7 +1339,7 @@ void main() {
         host: FixtureHost(),
       );
       expect(c.result!.toJson(), saved.toJson());
-      expect(c.result!.error, contains('Linked dependency metadata'));
+      expect(c.result!.error, contains('toolchain availability'));
     },
   );
 
@@ -1300,7 +1376,7 @@ void main() {
       host: FixtureHost(),
     );
     expect(restored.result!.phase, SourceGenerationPhase.failed);
-    expect(restored.result!.error, contains('Missing interpreter'));
+    expect(restored.result!.error, contains('toolchain availability'));
     restored.dispose();
     host.failVerification = false;
     expect(await c.verifyAgain(approved: true), isTrue);

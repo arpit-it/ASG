@@ -345,13 +345,13 @@ class SourceGenerationController extends BaseController {
   ) async {
     try {
       _recheckPlan(approval);
-    } catch (error) {
+    } catch (_) {
       // Keep actual completed command evidence, but never publish Ready after
       // consent changed. Throwing stops the host before its next operation.
       await _save(
         value.copy(
           phase: SourceGenerationPhase.failed,
-          error: 'Plan approval changed during verification. $error',
+          error: 'Plan approval could not be confirmed during verification. Check saved project data and review the current Plan before restarting Build.',
         ),
       );
       rethrow;
@@ -406,9 +406,11 @@ class SourceGenerationController extends BaseController {
     update();
   }
 
-  Future<void> _failure(GeneratedProject? active, Object error) async {
+  Future<void> _failure(GeneratedProject? active) async {
     if (isDisposed) return;
-    _error = 'Generation stopped; existing files were preserved. $error';
+    _error = _stopRequested
+        ? 'Verification stopped by user. Existing files and completed results are retained.'
+        : 'Generation stopped; existing files were preserved. Check project data, current Plan approval, folder access and toolchain availability. Reopen Build after correcting saved data; retry with a current approved structured starter Plan.';
     if (active == null) return;
     final latest = _result?.directory == active.directory ? _result! : active;
     try {
@@ -468,8 +470,8 @@ class SourceGenerationController extends BaseController {
       return !isDisposed &&
           !_stopRequested &&
           verified.phase == SourceGenerationPhase.ready;
-    } catch (e) {
-      await _failure(active, e);
+    } catch (_) {
+      await _failure(active);
       return false;
     } finally {
       _verifying = false;
@@ -538,11 +540,11 @@ class SourceGenerationController extends BaseController {
       return !isDisposed &&
           !_stopRequested &&
           verified.phase == SourceGenerationPhase.ready;
-    } catch (e) {
+    } catch (_) {
       if (verificationStarted) {
-        await _failure(current, e);
+        await _failure(current);
       } else if (!isDisposed) {
-        _error = 'Build did not start. $e';
+        _error = 'Build did not start; existing output is preserved. Check saved project data, the current prototype and approved structured starter Plan. For changed inputs, Generate a new folder. Resume requires unchanged saved toolchains and a safe checkpoint; model-written output requires a separate source review candidate. Reopen Build after resolving the problem.';
       }
       return false;
     } finally {
