@@ -333,8 +333,15 @@ class _RuntimeSetupScreenState extends State<RuntimeSetupScreen> {
                         : () => controller.test(connection),
                     child: const Text('Test inference'),
                   ),
+                  if (controller.testing)
+                    OutlinedButton(
+                      onPressed: controller.stopTest,
+                      child: const Text('Stop test'),
+                    ),
                 ],
               ),
+              const SizedBox(height: 12),
+              const Text(RuntimeSetupController.requestLimits),
               const SizedBox(height: 12),
               const Text(
                 'Connecting checks the runtime’s /health endpoint before saving the model for project chat.',

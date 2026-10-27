@@ -11,6 +11,7 @@ import 'package:asg/controllers/runtime_setup_controller.dart';
 import 'package:asg/models/local_model_config.dart';
 import 'package:asg/models/runtime_setup.dart';
 import 'package:asg/services/model_settings_store.dart';
+import 'package:asg/services/model_provider.dart';
 import 'package:asg/services/runtime_connection.dart';
 import 'package:asg/services/runtime_host.dart';
 import 'package:asg/services/runtime_host_native.dart';
@@ -86,18 +87,96 @@ RuntimeConnection connection({
 Future<RuntimeSetupController> controller(
   FakeRuntimeHost host, {
   RuntimeConnection? api,
+  ProviderFactory? createProvider,
 }) async {
   final prefs = await SharedPreferences.getInstance();
   return RuntimeSetupController(
     store: RuntimeSetupStore.fromPreferences(prefs),
     modelStore: ModelSettingsStore.fromPreferences(prefs),
     host: host,
+    createProvider: createProvider,
     connection: api ?? connection(ready: () => false),
   );
 }
 
+class SetupProbe implements ModelProvider {
+  final output = StreamController<String>();
+  int cancellations = 0;
+  @override
+  Stream<String> generate(String prompt) => output.stream;
+  @override
+  Future<void> cancel() async {
+    cancellations++;
+  }
+}
+
 void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
+  test('setup probe omits private output and bounds responses', () async {
+    for (final outcome in ['success', 'error', 'large', 'stop', 'dispose']) {
+      final probe = SetupProbe();
+      final c = await controller(
+        FakeRuntimeHost(),
+        createProvider: (_) => probe,
+      );
+      final pending = c.test(const LocalModelConfig());
+      expect(c.testing, isTrue);
+      if (outcome == 'error') {
+        probe.output.addError(StateError('PRIVATE_PROMPT'));
+      } else if (outcome == 'stop') {
+        c.stopTest();
+        probe.output.add('PRIVATE_PROMPT');
+      } else if (outcome == 'dispose') {
+        c.dispose();
+      } else {
+        probe.output.add(
+          outcome == 'large' ? 'PRIVATE_PROMPT' * 400 : 'PRIVATE_PROMPT',
+        );
+        await probe.output.close();
+      }
+      await pending;
+      expect(c.status, isNot(contains('PRIVATE_PROMPT')));
+      if (outcome != 'dispose') {
+        expect(
+          c.status,
+          contains(
+            outcome == 'success'
+                ? 'completed'
+                : outcome == 'large'
+                ? 'text limit'
+                : outcome == 'stop'
+                ? 'stopped'
+                : 'failed',
+          ),
+        );
+        c.dispose();
+      }
+      expect(c.busy, isFalse);
+      expect(probe.cancellations, 1);
+      if (!probe.output.isClosed) await probe.output.close();
+    }
+  });
+  testWidgets('setup probe exposes stop and enforces deadline', (tester) async {
+    final probe = SetupProbe();
+    final c = await controller(
+      FakeRuntimeHost(supported: false),
+      createProvider: (_) => probe,
+    );
+    await tester.pumpWidget(
+      MaterialApp(home: RuntimeSetupScreen(controller: c)),
+    );
+    final pending = c.test(const LocalModelConfig());
+    await tester.pump();
+    expect(find.text('Stop test'), findsOneWidget);
+    expect(find.text(RuntimeSetupController.requestLimits), findsOneWidget);
+    await tester.pump(const Duration(seconds: 31));
+    await tester.pump();
+    expect(c.status, contains('timed out'));
+    await pending;
+    expect(c.busy, isFalse);
+    await tester.pumpWidget(const SizedBox());
+    unawaited(probe.output.close());
+  });
   test(
     'parses HF IDs/URLs and HTTPS Git, rejects credentials and shell input',
     () {
