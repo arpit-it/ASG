@@ -76,6 +76,11 @@ class RequirementCheckReport {
               },
       });
 
+  static const authoredEvidenceNotice =
+      'Expanded and copied evidence includes your requirement titles, acceptance '
+      'criteria and task definitions. Review that text before sharing. Manual '
+      'task status is progress only; acceptance criteria remain unverified.';
+
   static const limits =
       'Mapped checks passed describes saved command evidence, not acceptance criteria or current artifact availability. Inspect current artifacts separately to compare recorded source and output fingerprints. Inspection is read-only and reflects files only when inspected; it does not run commands or inference. Model Review remains advisory; manual task Done does not count as evidence.';
 }

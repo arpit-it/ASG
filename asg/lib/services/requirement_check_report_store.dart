@@ -132,6 +132,14 @@ class RequirementCheckReportStore {
       const JsonEncoder.withIndent('  ').convert({
         'scope': RequirementCheckReport.limits,
         'requirementsRevision': board.revision,
+        // No record is distinct from a saved, empty board. The canonical
+        // model encoding preserves exact authored text and dependency order.
+        'requirementsBoard': board.revision == 0 ? null : board.toJson(),
+        'requirementsBoardSha256': board.revision == 0
+            ? null
+            : sha256
+                  .convert(utf8.encode(jsonEncode(board.toJson())))
+                  .toString(),
         'savedInputsCurrent': current,
         'recordedAt': matchingHistory?.recordedAt?.toUtc().toIso8601String(),
         'phase': saved?.phase.name,
