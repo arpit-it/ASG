@@ -8,9 +8,11 @@ class RequirementsScreen extends StatefulWidget {
     super.key,
     required this.controller,
     required this.projectName,
+    this.onCheckReport,
   });
   final RequirementsController controller;
   final String projectName;
+  final VoidCallback? onCheckReport;
   @override
   State<RequirementsScreen> createState() => _RequirementsScreenState();
 }
@@ -89,6 +91,13 @@ class _RequirementsScreenState extends State<RequirementsScreen> {
                           : () => editTask(),
                       child: const Text('Add task'),
                     ),
+                    if (widget.onCheckReport != null)
+                      OutlinedButton(
+                        onPressed: controller.busy
+                            ? null
+                            : widget.onCheckReport,
+                        child: const Text('Requirement check report'),
+                      ),
                     TextButton(
                       onPressed: () => showDialog<void>(
                         context: context,
