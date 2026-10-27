@@ -564,8 +564,10 @@ class SourceGenerationController extends BaseController {
         return;
       }
       _preview = uri;
-    } catch (e) {
-      if (!isDisposed) _error = '$e';
+    } catch (_) {
+      if (!isDisposed) {
+        _error = 'Compiled preview could not start. Check the saved build artifacts and local preview host. Retry starting preview; saved output is preserved.';
+      }
     } finally {
       _busy = false;
       update();
@@ -575,18 +577,37 @@ class SourceGenerationController extends BaseController {
   Future<void> openPreview() async {
     final uri = _preview;
     if (uri == null || _busy || isDisposed) return;
+    _busy = true;
+    _error = null;
+    update();
     try {
       await host.openPreview(uri);
-    } catch (e) {
-      _error = '$e';
+    } catch (_) {
+      if (!isDisposed) {
+        _error = 'The browser could not open compiled preview. Check the default browser and local preview host. Retry opening preview; saved output is preserved.';
+      }
+    } finally {
+      _busy = false;
       update();
     }
   }
 
   Future<void> stopPreview() async {
-    await host.stopPreview();
-    _preview = null;
+    if (_busy || isDisposed) return;
+    _busy = true;
+    _error = null;
     update();
+    try {
+      await host.stopPreview();
+      if (!isDisposed) _preview = null;
+    } catch (_) {
+      if (!isDisposed) {
+        _error = 'Compiled preview stop was not confirmed. Retry stopping preview; the local server may still be running. Saved output is preserved.';
+      }
+    } finally {
+      _busy = false;
+      update();
+    }
   }
 
   @override
