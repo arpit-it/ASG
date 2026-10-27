@@ -175,6 +175,103 @@ void main() {
     if (!working.isDisposed) working.dispose();
   });
 
+  const privateFailure = 'private-prompt token=private-token /private/path';
+  void expectPrivate(String? message) {
+    expect(message, isNotNull);
+    for (final marker in ['private-prompt', 'private-token', '/private/path']) {
+      expect(message, isNot(contains(marker)));
+    }
+  }
+
+  test('host exception stays private in diagnostics and saved history; retry succeeds', () async {
+    final original = records.values['studio.generation.v1.${project.id}'];
+    candidateHost.afterResolve = () async => throw StateError(privateFailure);
+    await candidate.verify(approved: true);
+    expectPrivate(candidate.error);
+    expectPrivate(candidate.result.error);
+    expectPrivate(candidate.history.single.snapshot.error);
+    expect(candidate.history.single.snapshot.steps, isEmpty);
+    expect(candidate.canPromote, isFalse);
+    expect(records.values['studio.generation.v1.${project.id}'], original);
+    expect(workingHost.server, isTrue);
+    candidateHost.afterResolve = null;
+    await candidate.verify(approved: true);
+    expect(candidate.error, isNull);
+    expect(candidate.result.phase, SourceGenerationPhase.ready);
+    expect(candidate.history.length, 2);
+  });
+
+  test(
+    'checkpoint exceptions retain observed exits without private diagnostics',
+    () async {
+      candidateHost.afterResolve = () async {
+        records.beforeCommit = () async => throw StateError(privateFailure);
+      };
+      await candidate.verify(approved: true);
+      expectPrivate(candidate.error);
+      expectPrivate(candidate.result.error);
+      expect(candidate.error, contains('checkpoint could not be saved'));
+      expect(candidate.result.steps.single.operation, 'resolve');
+      expect(candidate.result.steps.single.exitCode, 0);
+      expect(workingHost.server, isTrue);
+      records.beforeCommit = null;
+      candidateHost.afterResolve = null;
+      await candidate.verify(approved: true);
+      expect(candidate.error, isNull);
+      expect(candidate.result.phase, SourceGenerationPhase.ready);
+    },
+  );
+
+  test('promotion exception stays private, preserves working output and allows retry', () async {
+    await candidate.verify(approved: true);
+    final initial = candidate.result;
+    final evidence = candidate.evidence;
+    candidate.dispose();
+    candidateHost = FixtureHost();
+    var failing = true;
+    candidate = SourceCandidateController(
+      project: project,
+      candidate: initial,
+      evidence: evidence,
+      records: records,
+      host: candidateHost,
+      publish: (value, host, guard) async {
+        if (failing) throw StateError(privateFailure);
+        return working.promoteCandidate(
+          value,
+          host,
+          guard,
+          expectedWorking: saved,
+        );
+      },
+    );
+    expect(await candidate.promote(approved: true), isFalse);
+    expectPrivate(candidate.error);
+    expect(candidate.canPromote, isTrue);
+    expect(working.result!.directory, '/working');
+    expect(workingHost.server, isTrue);
+    failing = false;
+    expect(await candidate.promote(approved: true), isTrue);
+    expect(candidate.error, isNull);
+    expect(working.result!.directory, '/candidate');
+  });
+
+  test(
+    'disposed host failure publishes no diagnostic or late notification',
+    () async {
+      var notifications = 0;
+      candidate.addListener(() => notifications++);
+      candidateHost.afterResolve = () async {
+        candidate.dispose();
+        throw StateError(privateFailure);
+      };
+      await candidate.verify(approved: true);
+      expect(candidate.error, isNull);
+      expect(notifications, 3);
+      expect(workingHost.server, isTrue);
+    },
+  );
+
   test(
     'separate consent, candidate evidence, atomic promotion and host ownership',
     () async {

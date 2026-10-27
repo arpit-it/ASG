@@ -158,10 +158,11 @@ class SourceCandidateController extends BaseController {
       await store.checkpoint(verified, _authorize, finished: true);
       _authorize();
       _result = verified;
-    } catch (error) {
+    } catch (_) {
       if (!isDisposed) {
-        _error =
-            'Candidate verification stopped; working output retained. $error';
+        _error = _cancelled
+            ? 'Candidate verification stopped after cancellation; working output retained. Check saved exits and runtime activity before retrying. Stopping the local request does not confirm server-side inference stopped.'
+            : 'Candidate verification stopped; working output retained. Check local toolchain and file access, current Plan approval and saved exits before retrying.';
         _result = (_unsavedObservation ?? _result).copy(
           phase: SourceGenerationPhase.failed,
           error: _error!,
@@ -201,9 +202,9 @@ class SourceCandidateController extends BaseController {
       _preview = await publish(_result, host, _authorize);
       _transferred = true;
       return true;
-    } catch (error) {
+    } catch (_) {
       if (!isDisposed) {
-        _error = 'Promotion refused; working output retained. $error';
+        _error = 'Promotion refused; working output retained. Check local preview and storage access and the current Plan approval, then retry promotion.';
       }
       return false;
     } finally {
