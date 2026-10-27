@@ -221,6 +221,23 @@ class _ModelChatState extends State<ModelChat> {
             ),
           ),
         ),
+      Padding(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+        child: ExpansionTile(
+          key: const ValueKey('chatRequestDiagnostics'),
+          title: const Text('Chat request diagnostics'),
+          subtitle: Text(controller.requestDiagnostic),
+          children: const [
+            Padding(
+              padding: EdgeInsets.all(12),
+              child: Text(
+                '${ChatController.requestLimits}\n'
+                '${ChatController.cancellationScope}',
+              ),
+            ),
+          ],
+        ),
+      ),
     ],
   );
 

@@ -23,7 +23,40 @@ class ChatController extends BaseController {
   }) : _openStore = openStore ?? ConversationStore.open,
        _createProvider =
            createProvider ??
-           ((config) => LocalModelProvider(config, maxTokens: 1536));
+           ((config) => LocalModelProvider(
+             config,
+             maxTokens: outputTokenLimit,
+             idleTimeout: inactivityLimit,
+             totalTimeout: requestLimit,
+           ));
+  static const outputTokenLimit = 1536;
+  static const inactivityLimit = Duration(seconds: 30);
+  static const requestLimit = Duration(minutes: 3);
+  static const requestLimits =
+      'Chat limits: 1536 output tokens, 15 seconds to connect, '
+      '30 seconds without data, 3 minutes total per model request.';
+  static const cancellationScope =
+      'Stop closes this app connection and discards the partial response. '
+      'Server-side inference may continue. Saved messages are retained.';
+
+  /// Locally authored status only; never includes prompt, response or endpoint.
+  String get requestDiagnostic {
+    if (busy) {
+      if (phase == GenerationPhase.applying) {
+        return 'Saving local conversation data. Stop is unavailable during saving.';
+      }
+      if (cancelled) {
+        return 'Stop requested; waiting for the app connection to close.';
+      }
+      return _provider == null
+          ? 'Preparing the chat request; no model connection started yet.'
+          : 'Chat model request active in this screen.';
+    }
+    return cancelled
+        ? 'Chat request stopped. Partial response discarded; saved messages retained.'
+        : 'No chat request active in this screen.';
+  }
+
   final StudioProject project;
   final Future<ConversationStore> Function() _openStore;
   final ProviderFactory _createProvider;
