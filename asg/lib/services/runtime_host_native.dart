@@ -192,8 +192,7 @@ class NativeRuntimeHost implements RuntimeHost {
           }
           final file = File('$folder/$name');
           if (!await file.exists()) {
-            problem =
-                'Missing $name. Download the complete model, not just its config.';
+            problem = 'Required checkpoint files are missing. Download the complete model, not just its config.';
             break;
           }
           final resolved = await file.resolveSymbolicLinks();
@@ -215,13 +214,13 @@ class NativeRuntimeHost implements RuntimeHost {
                 problem ?? 'Qwen3.5 · complete local Safetensors checkpoint',
           ),
         );
-      } catch (e) {
+      } catch (_) {
         result.add(
           ModelCandidate(
             path: folder,
             name: folder.split(Platform.pathSeparator).last,
             supported: false,
-            detail: 'Invalid model metadata: $e',
+            detail: 'Model metadata could not be validated. Check config.json and the weight index, then select a complete compatible checkpoint.',
           ),
         );
       }

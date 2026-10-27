@@ -21,6 +21,12 @@ import 'package:asg/views/studio_app.dart';
 import 'package:asg/views/dashboard.dart';
 import 'package:asg/services/studio_store.dart';
 
+// The filesystem-only scanner is portable; production managed setup stays macOS-only.
+class ScanningRuntimeHost extends NativeRuntimeHost {
+  @override
+  bool get supported => true;
+}
+
 class FakeRuntimeHost implements RuntimeHost {
   FakeRuntimeHost({this.supported = true});
   @override
@@ -578,6 +584,44 @@ void main() {
     },
     skip: !Platform.isMacOS,
   );
+  for (final metadata in ['config', 'index', 'missing shard']) {
+    test('checkpoint $metadata diagnostics omit private metadata', () async {
+      final root = await Directory.systemTemp.createTemp(
+        'asg-private-metadata-',
+      );
+      addTearDown(() => root.delete(recursive: true));
+      const sentinel = 'PRIVATE_METADATA_SENTINEL_token=secret';
+      final config = File('${root.path}/config.json');
+      final index = File('${root.path}/model.safetensors.index.json');
+      final validConfig = jsonEncode({
+        'architectures': ['Qwen3_5ForConditionalGeneration'],
+      });
+      await config.writeAsString(metadata == 'config' ? sentinel : validConfig);
+      if (metadata != 'config') {
+        await index.writeAsString(
+          metadata == 'index'
+              ? sentinel
+              : jsonEncode({
+                  'weight_map': {'weight': '$sentinel.safetensors'},
+                }),
+        );
+      }
+      final before = await config.readAsString();
+      final indexBefore = await index.exists()
+          ? await index.readAsString()
+          : null;
+      final candidate = (await ScanningRuntimeHost().scan(root.path)).single;
+      expect(candidate.supported, isFalse);
+      expect(candidate.path, await root.resolveSymbolicLinks());
+      expect(candidate.detail, isNot(contains(sentinel)));
+      expect(
+        candidate.detail,
+        contains(metadata == 'missing shard' ? 'complete' : 'config.json'),
+      );
+      expect(await config.readAsString(), before);
+      if (indexBefore != null) expect(await index.readAsString(), indexBefore);
+    });
+  }
   testWidgets('landing page has top-right runtime FAB', (tester) async {
     final prefs = await SharedPreferences.getInstance();
     await tester.pumpWidget(
