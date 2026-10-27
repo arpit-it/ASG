@@ -69,6 +69,8 @@ A task moves Queued → In progress → Awaiting merge → Done; use Blocked wit
 
 ## Active task and delivery ledger
 
+Current: F09 private source-review diagnostics, issue #167 / branch `167-private-source-review`, awaiting final checks and independent review. Latest verified PR #200 merged `974167fec059ee98f661436e9b9b71f238319a3f` after reviews `5667369555` / `5667432142` and required CI `40507722336`. F09 remains In progress/unchecked. Earlier active summaries below are historical.
+
 Latest verified increment: F09 PR #199 merged `afae83fd94645688314c7f0a9a41c3ed140e5c6a`. Current increment: #167 private session errors, awaiting independent review/CI and merge. F09 remains In progress/unchecked.
 
 Latest verified increment: F09 issue #167 / PR #198 merged as `1b3aab04f12f7bc69bb95c9068e514903804aa8b` after independent reviews `5667003572` / `5667060010` and required CI `40503682463`. F09 remains In progress/unchecked. Current increment: #167 private project-details save diagnostics; awaiting checks/publication and independent final-revision review.
@@ -3266,3 +3268,10 @@ Final local checks: formatter204/analyzer clean; 638 Flutter tests passed/seven 
 PR #199 verified merged as `afae83fd94645688314c7f0a9a41c3ed140e5c6a`; independent final reviews `5667200759` / `5667256734` and required CI `40505845517` passed. No open PR or overlapping ASG owner. Reopened #167 on `167-private-session-errors` for raw storage exception disclosure during creation, selection, canonical refresh and saved-creation recovery. F09 remains In progress/unchecked; no later task or new issue selected.
 
 Scope/acceptance: authored local-storage retry guidance; preserve duplicate-ID validation, saved records/current project, canonical rereads and saved-but-not-opened selection-only recovery. Injected prompt/token/path markers must never appear in failures; successful retry clears errors; disposed failures publish no diagnostic. Four baseline privacy regressions fail and now pass; all five new regressions and18focused tests pass. Formatter205/analyzer clean;643fullFlutter tests passed/seven opt-in skips; web build/Wasm dry run passed. Endpoint offline; no fresh inference/model download or stable-app replacement. Status: Awaiting merge after publication, independent final-head review and actual required CI.
+
+
+### F09 private source-review diagnostics — issue #167 (27 October 2026)
+
+Branch `167-private-source-review` replaces raw source-review folder, preparation, approval, proposal, automatic-repair and cancellation-cleanup exception diagnostics with private authored recovery guidance. Working output, retained candidates, explicit retries, current approval guards and three-attempt repair budgets remain enforced. Cancellation guidance distinguishes ignoring the response from stopping server-side inference.
+
+Five baseline privacy regressions failed. The final source-review suite passes 56 tests, including five new capture/folder/approval/cleanup/disposal cases; full Flutter tests pass 648 with seven opt-in skips, formatter205/analyzer clean. Web build and Wasm dry run passed. Endpoint offline; no fresh inference or model download claimed. Awaiting publication, independent final-revision review, required CI and protected merge. F09 remains In progress/unchecked; no later task selected.

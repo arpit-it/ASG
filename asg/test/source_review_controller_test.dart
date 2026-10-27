@@ -36,6 +36,28 @@ class CandidateFolderPicker extends FolderPicker {
   Future<String?> pick() async => '/candidates';
 }
 
+class PrivateFailureRecords extends AtomicRecords {
+  bool failRead = false;
+  @override
+  String? getString(String key) {
+    if (failRead) {
+      throw StateError('private-prompt token=private-token /private/path');
+    }
+    return super.getString(key);
+  }
+}
+
+class PrivateFailurePicker extends CandidateFolderPicker {
+  bool failing = true;
+  @override
+  Future<String?> pick() async {
+    if (failing) {
+      throw StateError('private-prompt token=private-token /private/path');
+    }
+    return super.pick();
+  }
+}
+
 class ReviewCandidateHost extends FixtureHost {
   ReviewCandidateHost({this.failure});
   final String? failure;
@@ -116,6 +138,7 @@ void main() {
     CandidatePromotion? publish,
     GenerationHost Function()? createHost,
     SourceSnapshotReader? read,
+    FolderPicker? picker,
   }) => SourceReviewController(
     project: project,
     generated: GeneratedProject(
@@ -128,7 +151,7 @@ void main() {
     prepareCandidate: prepare,
     publishCandidate: publish,
     createCandidateHost: createHost ?? () => ReviewCandidateHost(),
-    folderPicker: CandidateFolderPicker(),
+    folderPicker: picker ?? CandidateFolderPicker(),
     proposer: ApprovedSourceProposer(
       records,
       proposer: SourceEditProposer(createProvider: (_) => provider),
@@ -142,7 +165,7 @@ void main() {
         },
   );
   setUp(() async {
-    records = AtomicRecords();
+    records = PrivateFailureRecords();
     await seed(records);
     provider = FakeProvider();
     reads = 0;
@@ -151,6 +174,110 @@ void main() {
   tearDown(() {
     if (!controller.isDisposed) controller.dispose();
   });
+
+  const privateFailure = 'private-prompt token=private-token /private/path';
+  void expectPrivateFailure() {
+    expect(controller.error, isNotNull);
+    for (final marker in ['private-prompt', 'private-token', '/private/path']) {
+      expect(controller.error, isNot(contains(marker)));
+      expect(controller.status, isNot(contains(marker)));
+    }
+    expect(controller.generated.directory, '/saved');
+  }
+
+  test(
+    'source capture errors stay private and explicit retry succeeds',
+    () async {
+      controller.dispose();
+      var fail = true;
+      controller = create(
+        read: (_, paths) async {
+          if (fail) throw StateError(privateFailure);
+          return originals;
+        },
+      );
+      final saved = Map.of(records.values);
+      await controller.request('Tanalyze', ['lib/main.dart']);
+      expectPrivateFailure();
+      expect(records.values, saved);
+      expect(provider.prompt, isNull);
+      fail = false;
+      final pending = controller.request('Tanalyze', ['lib/main.dart']);
+      await tick();
+      provider.stream.add(response());
+      await provider.stream.close();
+      await pending;
+      expect(controller.error, isNull);
+      expect(controller.proposal, isNotNull);
+    },
+  );
+
+  test('folder errors stay private and retry retains proposal', () async {
+    controller.dispose();
+    final picker = PrivateFailurePicker();
+    controller = create(picker: picker);
+    final pending = controller.request('Tanalyze', ['lib/main.dart']);
+    await tick();
+    provider.stream.add(response());
+    await provider.stream.close();
+    await pending;
+    final proposal = controller.proposal;
+    await controller.selectCandidateParent();
+    expectPrivateFailure();
+    expect(controller.proposal, same(proposal));
+    expect(controller.candidateParent, isNull);
+    picker.failing = false;
+    await controller.selectCandidateParent();
+    expect(controller.error, isNull);
+    expect(controller.candidateParent, '/candidates');
+  });
+
+  test('approval parse errors stay private without replacing records', () {
+    (records as PrivateFailureRecords).failRead = true;
+    final saved = Map.of(records.values);
+    controller.refreshApproval();
+    expectPrivateFailure();
+    expect(controller.tasks, isEmpty);
+    expect(records.values, saved);
+  });
+
+  test(
+    'cancel cleanup errors stay private with truthful inference scope',
+    () async {
+      final cleanup = Completer<void>();
+      provider.cleanup = cleanup;
+      final pending = controller.request('Tanalyze', ['lib/main.dart']);
+      await tick();
+      final cancel = controller.cancel();
+      cleanup.completeError(StateError(privateFailure));
+      await cancel;
+      expectPrivateFailure();
+      expect(controller.error, contains('does not confirm'));
+      provider.stream.add(response());
+      await provider.stream.close();
+      await pending;
+      expect(controller.proposal, isNull);
+      expect(controller.status, contains('cancelled'));
+    },
+  );
+
+  test(
+    'late source capture failure after disposal publishes no diagnostic',
+    () async {
+      controller.dispose();
+      final capture = Completer<Map<String, String>>();
+      controller = create(capture: capture);
+      final pending = controller.request('Tanalyze', ['lib/main.dart']);
+      var updates = 0;
+      controller.addListener(() => updates++);
+      controller.dispose();
+      capture.completeError(StateError(privateFailure));
+      await pending;
+      expect(controller.error, isNull);
+      expect(updates, 0);
+      expect(provider.prompt, isNull);
+    },
+  );
 
   for (final outcome in [
     'success',
@@ -703,7 +830,7 @@ void main() {
     expect(controller.busy, isFalse);
     expect(controller.status, contains('Source proposal failed'));
     expect(controller.status, isNot(contains('Requesting')));
-    expect(controller.error, contains('offline repair retry'));
+    expect(controller.error, isNot(contains('offline repair retry')));
     expect(controller.proposal, same(reviewed));
     expect(controller.candidate, same(failedCandidate));
     final store = RepairAttemptStore(records, project.id);
@@ -838,9 +965,7 @@ void main() {
         }
         if (outcome == 'dispose') controller.dispose();
         if (outcome == 'failure') {
-          done.completeError(
-            StateError('Retained partial candidate: /partial'),
-          );
+          done.completeError(StateError(privateFailure));
         } else {
           done.complete(
             GeneratedProject(
@@ -857,7 +982,7 @@ void main() {
           expect(controller.candidateParent, isNull);
           expect(controller.status, contains('Unverified candidate prepared'));
         } else if (outcome == 'failure') {
-          expect(controller.error, contains('/partial'));
+          expectPrivateFailure();
           expect(controller.status, contains('failed'));
         } else if (outcome == 'withdraw') {
           expect(controller.error, contains('did not complete'));
@@ -1381,11 +1506,11 @@ void main() {
     final saved = controller.generated;
     final pending = controller.request('Tanalyze', ['lib/main.dart']);
     await tick();
-    provider.stream.addError(StateError('offline'));
+    provider.stream.addError(StateError(privateFailure));
     await provider.stream.close();
     await pending;
     expect(controller.busy, isFalse);
-    expect(controller.error, contains('offline'));
+    expectPrivateFailure();
     expect(controller.generated, same(saved));
     expect(controller.proposal, isNull);
   });
