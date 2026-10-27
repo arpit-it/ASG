@@ -26,12 +26,22 @@ class RequirementCheckReportStore {
     final generation = SourceGenerationStore(records);
     final saved = generation.load(project.id);
     final history = generation.history(project.id);
+    final input = GenerationInput(
+      project,
+      ApplicationStore(records).load(project).definition,
+    );
+    final approvalSha256 = saved?.approval == null
+        ? null
+        : sha256
+              .convert(utf8.encode(jsonEncode(saved!.approval!.toJson())))
+              .toString();
+    final identity = RequirementRunIdentity(
+      sources: saved?.sources ?? const {},
+      currentInputs: input.fingerprints,
+      approvalSha256: approvalSha256,
+    );
     var current = false;
     if (saved != null) {
-      final input = GenerationInput(
-        project,
-        ApplicationStore(records).load(project).definition,
-      );
       // A withdrawn/replaced approval or changed board/prototype is stale even
       // when command exits were zero. Never infer mapping from model prose.
       try {
@@ -151,6 +161,7 @@ class RequirementCheckReportStore {
             : sha256
                   .convert(utf8.encode(jsonEncode(saved!.approval!.toJson())))
                   .toString(),
+        'revisionIdentity': identity.toJson(),
         'sourceFingerprints': saved?.sources,
         'outputFingerprints': saved?.outputs,
         'requirements': [
@@ -160,6 +171,12 @@ class RequirementCheckReportStore {
               'state': r.state.name,
               'acceptanceStatus': 'unverified',
               'acceptanceEvidence': r.acceptance.toJson(),
+              'bindingContext': {
+                'requirementSha256': r.acceptance.requirementSha256,
+                'savedRunSha256': identity.savedRunSha256,
+                'savedInputsCurrent': current,
+                'scope': 'Candidate binding context only. Declared checks have no direct results.',
+              },
               'contextualEvidence': {
                 'type': 'automatedOperation',
                 'criterionMapping': 'none',

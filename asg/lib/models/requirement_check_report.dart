@@ -155,3 +155,74 @@ class RequirementAcceptanceEvidence {
     'directChecks': <Object>[],
   };
 }
+
+/// Public content identity of a saved run, never proof of execution or freshness.
+/// The input names are the fixed Flutter adapter's version-1 payload contract.
+class RequirementRunIdentity {
+  RequirementRunIdentity({
+    required Map<String, String> sources,
+    required Map<String, String> currentInputs,
+    required String? approvalSha256,
+  }) : approvalSha256 =
+           approvalSha256 != null &&
+               RegExp(r'^[a-f0-9]{64}$').hasMatch(approvalSha256)
+           ? approvalSha256
+           : null,
+       sourceSha256 = manifestSha256(sources),
+       savedInputSha256 = inputSha256(sources),
+       currentInputSha256 = inputSha256(currentInputs);
+
+  final String? sourceSha256, savedInputSha256, currentInputSha256;
+  final String? approvalSha256;
+  static const inputPaths = ['assets/app.json', 'asg_project.json'];
+
+  /// Manifest order is irrelevant; names and digests are both part of identity.
+  /// Empty/incomplete legacy evidence has no identity, not an empty-file hash.
+  static String? manifestSha256(Map<String, String> manifest) {
+    if (manifest.isEmpty ||
+        manifest.values.any(
+          (value) => !RegExp(r'^[a-f0-9]{64}$').hasMatch(value),
+        )) {
+      return null;
+    }
+    final names = manifest.keys.toList()..sort();
+    return sha256
+        .convert(
+          utf8.encode(
+            jsonEncode({for (final name in names) name: manifest[name]}),
+          ),
+        )
+        .toString();
+  }
+
+  static String? inputSha256(Map<String, String> manifest) =>
+      inputPaths.any((name) => !manifest.containsKey(name))
+      ? null
+      : manifestSha256({for (final name in inputPaths) name: manifest[name]!});
+
+  String? get savedRunSha256 =>
+      sourceSha256 == null || savedInputSha256 == null || approvalSha256 == null
+      ? null
+      : sha256
+            .convert(
+              utf8.encode(
+                jsonEncode({
+                  'schema': 1,
+                  'sourceSha256': sourceSha256,
+                  'inputSha256': savedInputSha256,
+                  'approvalSha256': approvalSha256,
+                }),
+              ),
+            )
+            .toString();
+
+  Map<String, Object?> toJson() => {
+    'schema': 1,
+    'scope': 'Saved content identity only; not a direct check result or live artifact observation.',
+    'savedRunSha256': savedRunSha256,
+    'savedSourceSha256': sourceSha256,
+    'savedInputSha256': savedInputSha256,
+    'savedApprovalSha256': approvalSha256,
+    'currentInputSha256': currentInputSha256,
+  };
+}
