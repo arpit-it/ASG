@@ -234,6 +234,46 @@ void main() {
     if (!c.isDisposed) c.dispose();
   });
 
+  for (final key in ['studio.planApproval.v1.p', 'studio.chat.v1.p']) {
+    test('Build plan status keeps corrupt $key private and recovers', () async {
+      expect(await generate(true), isTrue);
+      await c.startPreview();
+      final working = c.result;
+      final preview = c.preview;
+      final history = store.records.getString('studio.generation.v1.p');
+      final original = store.records.getString(key)!;
+      const privateDetails = 'private-prompt token-secret /private/model';
+      await store.records.setString(key, privateDetails);
+      var notifications = 0;
+      c.addListener(() => notifications++);
+      for (var read = 0; read < 2; read++) {
+        final status = c.planStatus;
+        expect(status, contains('Build is locked'));
+        for (final marker in [
+          'private-prompt',
+          'token-secret',
+          '/private/model',
+        ]) {
+          expect(status, isNot(contains(marker)));
+        }
+        expect(status, contains('Plan'));
+        expect(store.records.getString(key), privateDetails);
+        expect(c.result, same(working));
+        expect(c.preview, preview);
+        expect(store.records.getString('studio.generation.v1.p'), history);
+      }
+      expect(notifications, 0);
+      await store.records.setString(key, original);
+      expect(c.planStatus, contains('Current saved plan approved'));
+      expect(host.generations, 1);
+      expect(host.verifications, 1);
+      c.dispose();
+      await store.records.setString(key, privateDetails);
+      expect(c.planStatus, isNot(contains('private-prompt')));
+      expect(notifications, 0);
+    });
+  }
+
   for (final failure in ['history', 'settings']) {
     test(
       'Build $failure initialization failure is private and recoverable',
