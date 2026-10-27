@@ -2524,3 +2524,12 @@ PR #193 verified merged as `8a137a7bbd62a5168dd69f5060caad98c3a8ef4e`; independe
 Use locally authored storage/settings guidance, retain saved messages and unsaved completed responses for explicit Retry saving, suppress disposed late failures and clear failure diagnostics after successful retry. Three new regressions fail on baseline. Original checkout edits retained; endpoint offline, no live inference or model download verified. Final local checks, PR, exact-revision independent review, actual required CI and merge evidence follow below. Status: Awaiting merge after checks/publication.
 
 Final local checks: formatter199/analyzer clean; 623 Flutter tests passed/seven opt-in skips; web build/Wasm passed. Three new baseline regressions failed and now pass. F09 remains In progress pending wider acceptance; this increment awaits independent final-head review and required CI.
+
+
+### F09 private project-details save diagnostics — issue #167 (27 October 2026)
+
+Prior PR #198 verified merged as `1b3aab04f12f7bc69bb95c9068e514903804aa8b`; independent final reviews `5667003572` / `5667060010` and required CI `40503682463` passed. F09 remains In progress/unchecked. No overlapping ASG owner or open PR. Reopened #167 on `167-private-project-details` for raw storage exception disclosure during starter preservation and metadata saves. No new issue or later task selected.
+
+Scope/acceptance: authored local-storage retry/reopen guidance; failed writes preserve saved metadata and application; explicit retry clears error and updates the existing project once; disposed failed completion cannot publish diagnostics. Two baseline privacy regressions fail; all three new tests and 17 focused tests pass. Full checks, independent final-head review and actual required CI gate protected merge. No live inference/model download or stable-app replacement.
+
+Final local checks: formatter204/analyzer clean; 638 Flutter tests passed/seven opt-in skips; web build/Wasm dry run passed. Both baseline privacy regressions fail and now pass. F09 remains In progress; exact-final-revision independent review and actual required CI remain merge gates.
