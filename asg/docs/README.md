@@ -6,6 +6,8 @@ Current delivery: F01–F09, F13 and F14 are delivered within their recorded acc
 
 [Requirements and task queue](REQUIREMENTS.md) is the single source for product scope, new tasks, dependencies, acceptance criteria and completion status. Its [current application architecture](REQUIREMENTS.md#current-application-architecture-and-implemented-behavior) describes the implemented MVC layers, workflows, storage namespaces, platform matrix, model limits and remaining boundaries.
 
+The [expanded workflow contract](REQUIREMENTS.md#expanded-product-workflows-and-support-contract--28-october-2026) records planned engineering Ask/Code Lab modes, Git repository workflows, language/framework coverage, instruction-file scheduling and model selection. Cloud service creation/connection is the final phase; these additions are requirements, not delivered capabilities.
+
 ## Architecture and behavior
 
 - [Architecture](architecture/ARCHITECTURE.md)
