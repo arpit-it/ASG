@@ -14,10 +14,18 @@ import 'package:flutter_test/flutter_test.dart';
 class Records implements RecordStorage {
   final values = <String, String>{};
   bool fail = false;
+  String? failure, writeFailure;
+  int writes = 0;
   @override
-  String? getString(String key) => values[key];
+  String? getString(String key) {
+    if (failure != null) throw StateError(failure!);
+    return values[key];
+  }
+
   @override
   Future<bool> setString(String key, String value) async {
+    if (writeFailure != null) throw StateError(writeFailure!);
+    writes++;
     if (fail) return false;
     values[key] = value;
     return true;
@@ -45,6 +53,120 @@ Future<ImportedPlanController> create(
 }
 
 void main() {
+  test(
+    'private write and corrupt JSON failures retain bytes and recover',
+    () async {
+      final records = Records();
+      final c = await create(records);
+      await c.saveDraft('Original');
+      final saved = Map<String, String>.of(records.values);
+      final plan = c.plan;
+      records.writeFailure = 'PRIVATE_WRITE /private/secret';
+      await c.saveDraft('Changed');
+      expect(c.error, isNot(contains('PRIVATE_WRITE')));
+      expect(c.error, isNot(contains('/private/secret')));
+      expect(c.plan, same(plan));
+      expect(records.values, saved);
+      records.writeFailure = null;
+      await c.saveDraft('Changed');
+      expect(c.error, isNull);
+      final key = ImportedPlanStore.key('/project');
+      records.values[key] = '{"text":"PRIVATE_JSON",';
+      final corrupt = Map<String, String>.of(records.values);
+      final writes = records.writes;
+      await c.load();
+      expect(c.error, isNot(contains('PRIVATE_JSON')));
+      expect(c.approved, isFalse);
+      await c.saveDraft('Do not replace corrupt data');
+      expect(c.error, isNot(contains('PRIVATE_JSON')));
+      expect(records.values, corrupt);
+      expect(records.writes, writes);
+      records.values[key] = saved[key]!;
+      await c.load();
+      expect(c.plan!.text, 'Original');
+      expect(c.error, isNull);
+      c.dispose();
+    },
+  );
+  test(
+    'disposed inspection failure emits no late error or notification',
+    () async {
+      final records = Records();
+      final pending = Completer<ProjectInspection>();
+      final c = ImportedPlanController(
+        '/project',
+        ImportedPlanStore(records),
+        inspect: (_) => pending.future,
+      );
+      var notifications = 0;
+      c.addListener(() => notifications++);
+      final load = c.load();
+      c.dispose();
+      final before = notifications;
+      pending.completeError(StateError('PRIVATE_LATE'));
+      await load;
+      expect(c.error, isNull);
+      expect(notifications, before);
+      expect(records.writes, 0);
+    },
+  );
+  test(
+    'private read errors preserve plan and recover approval on reload',
+    () async {
+      final records = Records();
+      final c = await create(records);
+      await c.saveDraft('Original plan');
+      await c.decide(true);
+      final saved = Map<String, String>.of(records.values);
+      final plan = c.plan;
+      records.failure = 'PRIVATE_PROMPT /private/secret';
+      for (var i = 0; i < 2; i++) {
+        await c.load();
+        expect(c.error, isNot(contains('PRIVATE_PROMPT')));
+        expect(c.error, isNot(contains('/private/secret')));
+        expect(c.plan, same(plan));
+        expect(c.approved, isFalse);
+        expect(c.busy, isFalse);
+      }
+      expect(records.values, saved);
+      records.failure = null;
+      await c.load();
+      expect(c.error, isNull);
+      expect(c.approved, isTrue);
+      c.dispose();
+    },
+  );
+  test(
+    'private inspection failures during save retain plan and retry',
+    () async {
+      final records = Records();
+      var fail = false;
+      final c = await create(
+        records,
+        inspect: (_) async {
+          if (fail) throw StateError('PRIVATE_PROMPT /private/secret');
+          return finding();
+        },
+      );
+      await c.saveDraft('Original');
+      final saved = Map<String, String>.of(records.values);
+      final plan = c.plan;
+      fail = true;
+      await c.saveDraft('Changed');
+      expect(c.error, isNot(contains('PRIVATE_PROMPT')));
+      expect(c.error, isNot(contains('/private/secret')));
+      expect(c.plan, same(plan));
+      expect(c.approved, isFalse);
+      expect(records.values, saved);
+      fail = false;
+      await c.saveDraft('Changed');
+      expect(c.error, isNull);
+      final reopened = await create(records);
+      expect(reopened.plan!.text, 'Changed');
+      c.dispose();
+      reopened.dispose();
+    },
+  );
   test(
     'reopen retains plan and consent; changed requirements invalidate',
     () async {
@@ -139,7 +261,7 @@ void main() {
       inspect: (_) async => throw StateError('missing folder'),
     );
     await missing.saveDraft('Plan');
-    expect(missing.error, contains('missing'));
+    expect(missing.error, contains('could not be saved'));
     missing.dispose();
   });
   testWidgets('failed save retries the unchanged editor draft without reload', (
