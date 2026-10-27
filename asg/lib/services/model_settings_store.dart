@@ -15,17 +15,31 @@ class ModelSettingsStore {
     final raw = records.getString('studio.localModel.v1');
     if (raw == null) return const LocalModelConfig();
     final data = jsonDecode(raw) as Map<String, dynamic>;
-    return LocalModelConfig(
+    final tokens = data.containsKey('chatOutputTokens')
+        ? data['chatOutputTokens']
+        : LocalModelConfig.defaultChatOutputTokens;
+    if (tokens is! int) {
+      throw const FormatException('Invalid saved chat token limit.');
+    }
+    final config = LocalModelConfig(
       baseUrl: data['baseUrl'] as String,
       model: data['model'] as String,
+      chatOutputTokens: tokens,
     );
+    config.validateChatLimit();
+    return config;
   }
 
   Future<void> save(LocalModelConfig config) async {
     config.endpoint;
+    config.validateChatLimit();
     if (!await records.setString(
       'studio.localModel.v1',
-      jsonEncode({'baseUrl': config.baseUrl, 'model': config.model}),
+      jsonEncode({
+        'baseUrl': config.baseUrl,
+        'model': config.model,
+        'chatOutputTokens': config.chatOutputTokens,
+      }),
     )) {
       throw StateError('Unable to save local model settings.');
     }

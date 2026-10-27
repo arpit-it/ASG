@@ -24,19 +24,29 @@ class ModelSettingsController extends BaseController {
       'Connection test: 30 seconds total, 4096 text characters, 256 output tokens. '
       'Transport startup: 15 seconds; inactivity: 30 seconds. '
       'Stop closes this app connection; server-side inference may continue.';
-  LocalModelConfig get initial => store.load();
+  bool settingsLoadFailed = false;
+  LocalModelConfig get initial {
+    try {
+      return store.load();
+    } catch (_) {
+      settingsLoadFailed = true;
+      status = 'Saved model settings could not be loaded. Records have not been overwritten. Restore valid settings before saving or testing.';
+      return const LocalModelConfig();
+    }
+  }
+
   String status =
       'Qwen 9B selected as the initial model family. Confirm the exact server model ID before testing.';
   bool busy = false;
   Future<void> save(LocalModelConfig config) async {
-    if (busy || isDisposed) return;
+    if (busy || settingsLoadFailed || isDisposed) return;
     busy = true;
     update();
     try {
       await store.save(config);
       status = 'Settings saved. Model availability has not been verified.';
     } on FormatException {
-      status = 'Invalid connection settings. Use a local HTTP URL without credentials, query or fragment and a nonempty model ID.';
+      status = 'Invalid connection settings. Use a local HTTP URL without credentials, query or fragment, a nonempty model ID and a supported chat token limit.';
     } catch (_) {
       status = 'Settings could not be saved. Check local storage and retry.';
     } finally {
@@ -46,7 +56,7 @@ class ModelSettingsController extends BaseController {
   }
 
   Future<void> test(LocalModelConfig config) async {
-    if (busy || isDisposed) return;
+    if (busy || settingsLoadFailed || isDisposed) return;
     busy = true;
     final request = ++_request;
     final completion = Completer<void>();
@@ -58,6 +68,7 @@ class ModelSettingsController extends BaseController {
     try {
       // Validate before creating a provider, including injected providers.
       config.endpoint;
+      config.validateChatLimit();
       _provider = _createProvider(config);
       _deadline = Timer(probeTimeout, () {
         if (request == _request) {
@@ -98,7 +109,7 @@ class ModelSettingsController extends BaseController {
           );
     } on FormatException {
       _finish(
-        'Invalid connection settings. Use a local HTTP URL without credentials, query or fragment and a nonempty model ID.',
+        'Invalid connection settings. Use a local HTTP URL without credentials, query or fragment, a nonempty model ID and a supported chat token limit.',
       );
     } catch (_) {
       _finish(
