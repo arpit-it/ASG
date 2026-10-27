@@ -307,8 +307,8 @@ class SourceGenerationController extends BaseController {
         board: RequirementsStore(store.records).load(project.id),
       );
       return 'Current saved plan approved. Build runs the fixed Flutter starter pipeline only.\nValidated tasks: ${plan.preview}\n\n${approval.content}';
-    } catch (e) {
-      return 'Build is locked. $e';
+    } catch (_) {
+      return 'Build is locked. Check saved project data, requirements and Plan approval. Open Plan, review a current structured starter Plan and approve it. Reopen Build after resolving unreadable saved records; existing output is preserved.';
     }
   }
 
