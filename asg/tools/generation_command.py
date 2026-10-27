@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: MPL-2.0
+# Copyright 2026 Arpit Sinha
+
 """Run one fixed Flutter operation with a deadline and owned process-group cleanup."""
 import argparse
 import json

@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright 2026 Arpit Sinha
+
 import '../models/project.dart';
 import '../models/project_blueprint.dart';
 import '../services/project_discovery.dart';

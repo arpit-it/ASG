@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright 2026 Arpit Sinha
+
 @TestOn('mac-os || linux')
 library;
 
@@ -438,6 +441,20 @@ void main() {
     'writes portable MVC source and treats hostile labels as JSON data',
     () async {
       final generated = await generate();
+      final notices = await File('${generated.directory}/NOTICES')
+          .readAsString();
+      expect(notices, contains(File('../LICENSE').readAsStringSync()));
+      expect(notices, contains(File('../NOTICE').readAsStringSync()));
+      expect(notices, contains('Unrelated user-authored code and data'));
+      expect(generated.sources, contains('NOTICES'));
+      for (final source in generated.sources.keys.where(
+        (name) => name.endsWith('.dart'),
+      )) {
+        expect(
+          await File('${generated.directory}/$source').readAsString(),
+          startsWith('// SPDX-License-Identifier: MPL-2.0'),
+        );
+      }
       expect(
         GenerationInput(project, definition).compare(generated),
         GeneratedSnapshotStatus.current,
@@ -1216,6 +1233,19 @@ void main() {
         expect(
           (await response.fold<int>(0, (total, bytes) => total + bytes.length)),
           greaterThan(1000),
+        );
+        final noticesResponse = await (await client.getUrl(
+          uri.resolve('assets/NOTICES'),
+        )).close();
+        expect(noticesResponse.statusCode, 200);
+        final bundledNotices = await noticesResponse
+            .transform(utf8.decoder)
+            .join();
+        expect(bundledNotices, contains('Copyright 2026 Arpit Sinha'));
+        expect(bundledNotices, contains(File('../LICENSE').readAsStringSync()));
+        expect(
+          bundledNotices,
+          contains('Unrelated user-authored code and data'),
         );
       } finally {
         if (const bool.fromEnvironment('ASG_BROWSER_REVIEW')) {

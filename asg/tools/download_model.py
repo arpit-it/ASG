@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: MPL-2.0
+# Copyright 2026 Arpit Sinha
+
 """Download only model artifacts from an explicit Hugging Face repository."""
 import argparse
 from pathlib import Path

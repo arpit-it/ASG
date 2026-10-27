@@ -96,3 +96,8 @@ Added sembast 3.9.0 and sembast_web 2.4.6+1 (BSD-3-Clause), idb_shim 2.10.1+1 (B
 ## Source generation — issue #3
 
 crypto 3.0.7 is now a direct dependency for SHA-256 source/resolution/output fingerprints (BSD-3-Clause; reviewed installed package license). It was already a transitive dependency. The command helper uses the selected installed Python standard library; generated apps depend only on Flutter/Flutter test from the selected SDK. No external package/model installation is added to generation.
+
+
+## Application license and retained third-party terms
+
+ASG-owned code/documentation use [Mozilla Public License 2.0](../../../LICENSE), with attribution in [NOTICE](../../../NOTICE). The Flutter package's `NOTICES` combines these two files for automatic inclusion alongside dependency notices in Flutter's offline Licenses page. The matching assets/legal/ASG_NOTICES.txt copy supplies source exports without colliding with Flutter's generated NOTICES asset. Keep both copies synchronized with the root texts. New exported scaffolds retain scoped NOTICES for copied ASG code, which Flutter also bundles in compiled output. This does not replace or relicense the packages, SDKs, fonts, platform material or model checkpoints listed above. No new dependency or model license is introduced by this correction.

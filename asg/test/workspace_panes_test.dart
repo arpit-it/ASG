@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright 2026 Arpit Sinha
+
 import 'package:asg/controllers/workspace_layout_controller.dart';
 import 'package:asg/controllers/app_workspace_controller.dart';
 import 'package:asg/services/application_store.dart';

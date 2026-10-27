@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright 2026 Arpit Sinha
+
 import '../models/project_inspection.dart';
 import '../services/folder_picker.dart';
 import '../services/inspected_folder_store.dart';

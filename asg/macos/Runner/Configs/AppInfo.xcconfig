@@ -11,4 +11,4 @@ PRODUCT_NAME = Automated Software Generator
 PRODUCT_BUNDLE_IDENTIFIER = com.arsinha.asg.asg
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2026 com.arsinha.asg. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2026 Arpit Sinha. Licensed under MPL-2.0.

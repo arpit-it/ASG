@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright 2026 Arpit Sinha
+
 import 'source_generation.dart';
 
 /// Manual candidate checks, not automatic model repair attempts or authority.

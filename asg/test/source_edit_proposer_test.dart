@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright 2026 Arpit Sinha
+
 import 'dart:async';
 import 'dart:convert';
 
@@ -46,6 +49,68 @@ void main() {
     expect(result.changes.single.after, replacement);
     expect(() => result.changes.clear(), throwsUnsupportedError);
   });
+
+  test('MPL replacements retain the existing legal header verbatim', () {
+    const header =
+        '// SPDX-License-Identifier: MPL-2.0\n'
+        '// Copyright 2026 Arpit Sinha\n';
+    const covered = '$header\n$original';
+    for (final stripped in [
+      replacement,
+      '// Copyright 2026 Arpit Sinha\n$replacement',
+      '${header.replaceAll('MPL-2.0', 'MIT')}\n$replacement',
+      '${header.replaceAll('Arpit Sinha', 'Someone else')}\n$replacement',
+      '$replacement\n$header',
+    ]) {
+      expect(
+        () => SourceEditProposal.parse(
+          response(before: covered, after: stripped),
+          originals: {'lib/main.dart': covered},
+        ),
+        throwsA(
+          isA<FormatException>().having(
+            (error) => error.message,
+            'guidance',
+            contains('Preserve'),
+          ),
+        ),
+      );
+    }
+    expect(
+      SourceEditProposal.parse(
+        response(before: covered, after: '$header\n$replacement'),
+        originals: {'lib/main.dart': covered},
+      ).changes.single.after,
+      '$header\n$replacement',
+    );
+    // Existing unmarked source keeps its earlier edit behavior.
+    expect(
+      SourceEditProposal.parse(response(), originals: originals).changes,
+      hasLength(1),
+    );
+  });
+
+  test(
+    'provider response cannot strip notices and still releases transport',
+    () async {
+      const covered =
+          '// SPDX-License-Identifier: MPL-2.0\n'
+          '// Copyright 2026 Arpit Sinha\n\n$original';
+      final provider = FakeProvider();
+      final proposer = SourceEditProposer(createProvider: (_) => provider);
+      final result = proposer.propose(
+        config: const LocalModelConfig(),
+        instruction: 'Add greeting',
+        originals: {'lib/main.dart': covered},
+      );
+      final rejected = expectLater(result, throwsFormatException);
+      provider.stream.add(jsonEncode(response(before: covered)));
+      await provider.stream.close();
+      await rejected;
+      expect(provider.prompt, contains('copyright headers verbatim'));
+      expect(provider.cancellations, 1);
+    },
+  );
 
   test('rejects paths outside existing Dart source scope', () {
     for (final path in [

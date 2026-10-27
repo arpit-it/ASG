@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright 2026 Arpit Sinha
+
 import 'dart:convert';
 
 /// Scan validated JSON, decoding keys so escaped spellings share an identity.

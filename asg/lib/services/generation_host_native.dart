@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright 2026 Arpit Sinha
+
 import 'dart:convert';
 import 'dart:io';
 import 'dart:isolate';
@@ -123,6 +126,7 @@ class NativeGenerationHost implements GenerationHost, ArtifactInspector {
       project,
       definition,
       await loadAsset('lib/models/app_definition.dart'),
+      await loadAsset('assets/legal/ASG_NOTICES.txt'),
     );
     checkWrite();
     for (final entry in files.entries) {

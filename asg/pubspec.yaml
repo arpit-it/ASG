@@ -65,6 +65,7 @@ flutter:
   # the material Icons class.
   uses-material-design: true
   assets:
+    - assets/legal/ASG_NOTICES.txt
     - tools/qwen_server.py
     - tools/download_model.py
     - tools/generation_command.py

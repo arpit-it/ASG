@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright 2026 Arpit Sinha
+
 import 'source_line_diff.dart';
 
 /// A review artifact only. Constructing it grants no write or execution access.
@@ -61,6 +64,16 @@ class SourceEditProposal {
           originals[path] != before) {
         throw const FormatException(
           'Invalid, duplicate or stale source change.',
+        );
+      }
+      final legalHeader = RegExp(r'^(?://[^\n]*\n)+')
+          .firstMatch(before)
+          ?.group(0);
+      if (legalHeader != null &&
+          legalHeader.contains('SPDX-License-Identifier: MPL-2.0') &&
+          !after.startsWith(legalHeader)) {
+        throw const FormatException(
+          'Preserve the existing MPL license and copyright header verbatim in the replacement.',
         );
       }
       changes.add(SourceReplacement._(path, before, after));

@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright 2026 Arpit Sinha
+
 import '../models/requirements_board.dart';
 import '../services/requirements_store.dart';
 import 'base_controller.dart';

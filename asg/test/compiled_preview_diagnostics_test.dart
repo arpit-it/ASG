@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright 2026 Arpit Sinha
+
 import 'dart:async';
 
 import 'package:asg/controllers/source_generation_controller.dart';

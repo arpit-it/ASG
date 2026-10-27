@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright 2026 Arpit Sinha
+
 import '../models/chat_message.dart';
 import '../models/plan_task_proposal.dart';
 import '../models/project.dart';

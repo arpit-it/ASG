@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright 2026 Arpit Sinha
+
 import 'package:flutter/material.dart';
 
 import '../controllers/project_wizard_controller.dart';

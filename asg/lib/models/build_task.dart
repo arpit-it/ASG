@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright 2026 Arpit Sinha
+
 /// The starter adapter's complete allowlist. No command text is accepted.
 enum BuildOperation { resolve, analyze, test, build }
 

@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright 2026 Arpit Sinha
+
 /// Extracts only human-readable summary text from an incomplete JSON response.
 /// Partial edit JSON is never shown as prose or applied to the live application.
 String streamedSummary(String buffer) {

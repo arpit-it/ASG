@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright 2026 Arpit Sinha
+
 enum ElementKind { heading, text, taskList, counter, notes, button }
 
 enum AppAction { message, increment, clear, addItem }

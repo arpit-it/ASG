@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright 2026 Arpit Sinha
+
 import '../controllers/project_inspection_controller.dart';
 import '../services/inspected_folder_store.dart';
 import 'project_inspection_screen.dart';
@@ -19,6 +22,7 @@ import 'dashboard.dart';
 import 'project_wizard.dart';
 import 'project_workspace.dart';
 import 'runtime_setup_screen.dart';
+import 'app_licenses_button.dart';
 
 class StudioHome extends StatefulWidget {
   const StudioHome({super.key, required this.store, required this.projects});
@@ -92,6 +96,7 @@ class _StudioHomeState extends State<StudioHome> {
     appBar: AppBar(
       title: Text(controller.current?.name ?? 'Automated Software Generator'),
       actions: [
+        AppLicensesButton(enabled: !controller.busy && !workspacePending),
         IconButton(
           tooltip: 'Inspect existing Flutter project',
           onPressed: controller.busy || workspacePending

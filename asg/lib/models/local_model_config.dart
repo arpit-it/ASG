@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright 2026 Arpit Sinha
+
 class LocalModelConfig {
   const LocalModelConfig({
     this.baseUrl = 'http://127.0.0.1:8765/v1',

@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright 2026 Arpit Sinha
+
 import 'package:asg/models/source_generation.dart';
 import 'package:flutter_test/flutter_test.dart';
 

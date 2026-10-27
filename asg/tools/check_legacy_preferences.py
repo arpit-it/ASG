@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: MPL-2.0
+# Copyright 2026 Arpit Sinha
+
 """Compile and test the actual migration function without touching app records."""
 import subprocess
 import tempfile
