@@ -243,6 +243,11 @@ void main() {
   testWidgets('pending save disables preview immediately when chat starts', (
     tester,
   ) async {
+    // Keep the notes field in the lazy preview viewport with pane controls.
+    tester.view.physicalSize = const Size(1000, 1000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
     SharedPreferences.setMockInitialValues({});
     final records = PreferenceRecords(await SharedPreferences.getInstance());
     await ApplicationStore(records)
