@@ -7,6 +7,11 @@ import '../models/local_model_config.dart';
 import '../models/generation_event.dart';
 import 'model_provider.dart';
 
+// Only locally authored guidance may cross the transport error boundary.
+class _SafeModelFailure extends StateError {
+  _SafeModelFailure(super.message);
+}
+
 /// Token streaming with bounded startup, inactivity and total request duration.
 class LocalModelProvider implements StreamingModelProvider {
   LocalModelProvider(
@@ -66,7 +71,17 @@ class LocalModelProvider implements StreamingModelProvider {
           },
           onError: (Object error, StackTrace stack) {
             if (finished) return;
-            output.addError(error, stack);
+            // Raw errors can include echoed prompts, response bodies or URLs.
+            final safe = error is _SafeModelFailure
+                ? error
+                : error is TimeoutException
+                ? TimeoutException(
+                    'Local model timed out. Check the runtime and retry.',
+                  )
+                : StateError(
+                    'Local model request failed. Check the local server, model ID and streaming API, then retry.',
+                  );
+            output.addError(safe);
           },
           onDone: () {
             if (finished) return;
@@ -82,7 +97,7 @@ class LocalModelProvider implements StreamingModelProvider {
   }
 
   Stream<GenerationEvent> _generateEvents(String prompt) async* {
-    if (_cancelled) throw StateError('Provider has been cancelled.');
+    if (_cancelled) throw _SafeModelFailure('Provider has been cancelled.');
     yield const GenerationEvent.phase(GenerationPhase.thinking);
     final request =
         http.Request('POST', config.endpoint.resolve('chat/completions'))
@@ -103,7 +118,7 @@ class LocalModelProvider implements StreamingModelProvider {
     if (response.statusCode != 200) {
       // Close the response stream even on a rejected request.
       await response.stream.take(1).drain<void>();
-      throw StateError(
+      throw _SafeModelFailure(
         response.statusCode == 429
             ? 'The local model is busy. Cancel or wait for the current request.'
             : 'Local model request failed (HTTP ${response.statusCode}). Check the model ID and streaming runtime.',
@@ -117,13 +132,13 @@ class LocalModelProvider implements StreamingModelProvider {
       final data = jsonDecode(body) as Map<String, dynamic>;
       final choice = (data['choices'] as List).first as Map;
       if (choice['finish_reason'] == 'length') {
-        throw StateError(
+        throw _SafeModelFailure(
           'Model output was truncated. Try a smaller instruction.',
         );
       }
       final content = (choice['message'] as Map)['content'] as String?;
       if (content == null || content.trim().isEmpty) {
-        throw StateError('Local model returned no text.');
+        throw _SafeModelFailure('Local model returned no text.');
       }
       if (!_cancelled) yield GenerationEvent.text(content);
       return;
@@ -151,12 +166,16 @@ class LocalModelProvider implements StreamingModelProvider {
       final name = eventName;
       eventName = 'message';
       if (payload == '[DONE]') {
-        if (!receivedText) throw StateError('Local model returned no text.');
+        if (!receivedText) {
+          throw _SafeModelFailure('Local model returned no text.');
+        }
         return;
       }
       final data = jsonDecode(payload) as Map<String, dynamic>;
       if (name == 'error' || data.containsKey('error')) {
-        throw StateError('Local generation failed: ${data['error']}');
+        throw _SafeModelFailure(
+          'Local generation failed. Check the runtime and retry.',
+        );
       }
       if (name == 'ping') continue;
       if (name == 'status') {
@@ -172,7 +191,7 @@ class LocalModelProvider implements StreamingModelProvider {
       if (choices is! List || choices.isEmpty) continue;
       final choice = choices.first as Map;
       if (choice['finish_reason'] == 'length') {
-        throw StateError(
+        throw _SafeModelFailure(
           'Model output was truncated. Try a smaller instruction.',
         );
       }
@@ -183,7 +202,7 @@ class LocalModelProvider implements StreamingModelProvider {
       }
     }
     if (!_cancelled) {
-      throw StateError(
+      throw _SafeModelFailure(
         'The model stream ended before completion. Your application was not changed.',
       );
     }
