@@ -118,11 +118,15 @@ class ProjectWizardController extends BaseController {
   }
 
   Future<void> chooseFolder() async {
+    if (isDisposed) return;
     try {
       final selected = await picker.pick();
-      if (!isDisposed && selected != null) location = selected;
-    } catch (e) {
-      error = 'Folder selection failed: $e';
+      if (isDisposed) return;
+      if (selected != null) location = selected;
+      error = null;
+    } catch (_) {
+      if (isDisposed) return;
+      error = 'Folder selection failed. Check that file selection is available on this device, then retry. Your previous selection is retained.';
     }
     update();
   }

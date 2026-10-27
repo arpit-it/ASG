@@ -20,7 +20,9 @@ class Dashboard extends StatefulWidget {
     required this.store,
     required this.initialProjects,
     this.onSelect,
+    this.folderPicker,
   });
+  final FolderPicker? folderPicker;
   final ValueChanged<StudioProject>? onSelect;
   final StudioStore store;
   final List<StudioProject> initialProjects;
@@ -33,7 +35,7 @@ class _DashboardState extends State<Dashboard> {
     widget.store,
     widget.initialProjects,
   );
-  final picker = FolderPicker();
+  late final picker = widget.folderPicker ?? FolderPicker();
   @override
   void initState() {
     super.initState();
@@ -186,11 +188,13 @@ class _DashboardState extends State<Dashboard> {
                             ),
                           );
                         }
-                      } catch (e) {
+                      } catch (_) {
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Unable to open folder: $e'),
+                            const SnackBar(
+                              content: Text(
+                                'Unable to open folder. Check that file selection is available on this device, then retry.',
+                              ),
                             ),
                           );
                         }
