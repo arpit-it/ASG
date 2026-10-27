@@ -43,7 +43,8 @@ class RuntimeSetupController extends BaseController {
     detail: 'Checking runtime…',
   );
   RuntimeHealth get health => _health;
-  bool _busy = false, _checking = false, _stopRequested = false;
+  bool _busy = false, _stopRequested = false;
+  Object? _healthCheck;
   bool get busy => _busy || host.working;
   String? _error;
   String? get error => _error;
@@ -82,18 +83,21 @@ class RuntimeSetupController extends BaseController {
   }
 
   Future<void> refresh() async {
-    if (_checking || isDisposed) return;
-    _checking = true;
+    if (_healthCheck != null || isDisposed) return;
+    final check = Object();
+    _healthCheck = check;
     final checkedConfig = _connectionConfig;
     try {
       final result = await connection.check(checkedConfig);
       // A newly connected or started runtime owns its verified health. A late
       // poll of the previous connection must not replace that result.
-      if (!isDisposed && identical(checkedConfig, _connectionConfig)) {
+      if (!isDisposed &&
+          identical(check, _healthCheck) &&
+          identical(checkedConfig, _connectionConfig)) {
         _health = result;
       }
     } finally {
-      _checking = false;
+      if (identical(check, _healthCheck)) _healthCheck = null;
       update();
     }
   }
@@ -256,6 +260,9 @@ class RuntimeSetupController extends BaseController {
       _stopRequested = true;
       await host.stop();
       _status = 'Managed runtime stopped.';
+      // Supersede pre-stop checks and immediately observe the stopped runtime.
+      // Their late completion must not publish or release the new poll guard.
+      _healthCheck = null;
       await refresh();
     } catch (e) {
       _error = '$e';
