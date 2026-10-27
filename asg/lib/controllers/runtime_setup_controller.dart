@@ -2,13 +2,13 @@ import 'dart:async';
 
 import '../models/local_model_config.dart';
 import '../models/runtime_setup.dart';
-import '../services/local_model.dart';
 import '../services/model_provider.dart';
 import '../services/model_settings_store.dart';
 import '../services/runtime_setup_store.dart';
 import '../services/runtime_connection.dart';
 import '../services/runtime_host.dart';
 import 'base_controller.dart';
+import 'model_settings_controller.dart';
 
 class RuntimeSetupController extends BaseController {
   RuntimeSetupController({
@@ -16,7 +16,14 @@ class RuntimeSetupController extends BaseController {
     required this.modelStore,
     required this.host,
     RuntimeConnection? connection,
-  }) : connection = connection ?? RuntimeConnection();
+    ProviderFactory? createProvider,
+  }) : connection = connection ?? RuntimeConnection(),
+       _probe = ModelSettingsController(
+         modelStore,
+         createProvider: createProvider,
+       ) {
+    _probe.addListener(_probeChanged);
+  }
   final RuntimeSetupStore store;
   final ModelSettingsStore modelStore;
   final RuntimeHost host;
@@ -44,7 +51,17 @@ class RuntimeSetupController extends BaseController {
   String get status => _status;
   Timer? _timer;
   StreamSubscription<String>? _subscription;
-  ModelProvider? _testProvider;
+  final ModelSettingsController _probe;
+  bool get testing => _probe.testing;
+  static const requestLimits = ModelSettingsController.requestLimits;
+
+  void _probeChanged() {
+    if (isDisposed) return;
+    _status = _probe.status;
+    update();
+  }
+
+  void stopTest() => _probe.stopTest();
   void initialize() {
     try {
       _setup = store.load();
@@ -263,24 +280,14 @@ class RuntimeSetupController extends BaseController {
   }
 
   Future<void> test(LocalModelConfig config) => _action(() async {
-    _status = 'Testing inference…';
-    update();
-    _testProvider = LocalModelProvider(config);
-    try {
-      final reply = await _testProvider!
-          .generate('Reply briefly: local inference is ready.')
-          .join();
-      _status = 'Model response: $reply';
-    } finally {
-      await _testProvider?.cancel();
-      _testProvider = null;
-    }
+    await _probe.test(config);
   });
   @override
   void dispose() {
     _timer?.cancel();
     unawaited(_subscription?.cancel());
-    unawaited(_testProvider?.cancel());
+    _probe.removeListener(_probeChanged);
+    _probe.dispose();
     connection.close();
     super.dispose();
   }
