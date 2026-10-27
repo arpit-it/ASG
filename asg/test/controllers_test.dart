@@ -101,7 +101,8 @@ void main() {
       await controller.load();
       await controller.send('Hello');
       expect(store.load(project.id).single.content, 'Hello');
-      expect(controller.error, contains('Offline'));
+      expect(controller.error, contains('model request failed'));
+      expect(controller.error, isNot(contains('Offline')));
       expect(controller.busy, false);
       controller.dispose();
     },

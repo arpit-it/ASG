@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import '../models/local_model_config.dart';
 import '../models/requirements_board.dart';
 import '../models/build_plan.dart';
@@ -43,6 +45,8 @@ class ChatController extends BaseController {
       'Stop closes this app connection and discards the partial response. '
       'Server-side inference may continue. Saved messages are retained.';
 
+  String? _failureDiagnostic;
+
   /// Locally authored status only; never includes prompt, response or endpoint.
   String get requestDiagnostic {
     if (busy) {
@@ -56,6 +60,7 @@ class ChatController extends BaseController {
           ? 'Preparing the chat request; no model connection started yet.'
           : 'Chat model request active in this screen.';
     }
+    if (!cancelled && _failureDiagnostic != null) return _failureDiagnostic!;
     return cancelled
         ? 'Chat request stopped. Partial response discarded; saved messages retained.'
         : 'No chat request active in this screen.';
@@ -306,12 +311,14 @@ class ChatController extends BaseController {
     }
     busy = true;
     cancelled = false;
+    _failureDiagnostic = null;
     phase = GenerationPhase.thinking;
     draftResponse = '';
     error = null;
     update();
     final requestMode = _mode;
     bool accepted = false;
+    bool requestingModel = false;
     try {
       final config = _loadModelConfig();
       final requirements = RequirementsStore(_store!.records).load(project.id);
@@ -331,6 +338,7 @@ class ChatController extends BaseController {
       accepted = true;
       update();
       if (cancelled) return accepted;
+      requestingModel = true;
       _provider = _createProvider(config);
       update();
       final recent = _messages
@@ -372,6 +380,7 @@ class ChatController extends BaseController {
       if (result.isEmpty) {
         throw StateError('The local model returned no response.');
       }
+      requestingModel = false;
       if (isDisposed) return accepted;
       _unsavedResponse = ChatMessage(
         role: 'assistant',
@@ -384,7 +393,18 @@ class ChatController extends BaseController {
       update();
       await _saveCompletedResponse();
     } catch (e) {
-      error = '$e';
+      if (requestingModel) {
+        if (!cancelled) {
+          _failureDiagnostic = e is TimeoutException
+              ? 'Chat request timed out. Partial response discarded; saved messages retained.'
+              : 'Chat request failed. Partial response discarded; saved messages retained.';
+          error = e is TimeoutException
+              ? 'The model request timed out. Check the local runtime and retry.'
+              : 'The model request failed. Check the local runtime, model ID and connection, then retry.';
+        }
+      } else {
+        error = '$e';
+      }
     } finally {
       try {
         await _provider?.cancel();
