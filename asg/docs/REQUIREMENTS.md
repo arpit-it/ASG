@@ -69,7 +69,7 @@ A task moves Queued → In progress → Awaiting merge → Done; use Blocked wit
 
 ## Active task and delivery ledger
 
-Current: F09 issue #167 / `167-private-build-picker` — Awaiting merge for private Build destination picker diagnostics. F09 remains In progress/unchecked. PR #205 merge verified.
+Current: F09 issue #167 / `167-private-build-initialization` — Awaiting merge for private Build initialization diagnostics. PR #206 merge verified. F09 remains In progress/unchecked.
 
 Latest verified increment: F09 issue #167 / PR #200 merged as `974167fec059ee98f661436e9b9b71f238319a3f` after independent reviews `5667369555` / `5667432142` and required CI `40507722336`. F09 remains In progress/unchecked; no unmerged increment. Detailed final evidence below.
 
@@ -3388,8 +3388,19 @@ Rollback host/storage exceptions now use actionable private recovery guidance. F
 F09 remains In progress/unchecked; other source-generation diagnostics still require acceptance audit. No later task selected. All three docs published; both automation labels applied. All five original edits verified byte-identical across safe main synchronization before this evidence append; backup `/private/tmp/asg-205-preserved`. Local main/origin0/0; source/tests/index clean. Configured model endpoint offline; no fresh live inference/model download/stable-app replacement. Schedule/notification preference unchanged.
 
 
-### F09 private Build destination picker — issue #167 (27 October 2026)
+### F09 private Build destination picker — verified PR #206 (27 October 2026)
 
-PR #205 verified merged as `2dd93ee420f4d80b22049ff911f48dc6a56e77fc`; issue closed and no overlapping active run/open PR before selection. Reopened existing #167 on `167-private-build-picker`; no new task or issue created. Evidence: Build destination selection interpolated raw platform exceptions, exposing private prompt/token/path markers.
+Issue #167 / branch `167-private-build-picker` delivered through https://github.com/arpit-it/ASG/pull/206. Final head `c31f5b1ed8b4689aa03f327250ed0279aae084f1`, tested tree `01fbf17ffc6731579bfbc3e480a9cce817cbdb49` identical to local `1ed01707e33ace038d0a2391be390523ec02b532`, independently approved in reviews `5669196671` / `5669268147`. Reviewer normal protected squash merge `f355425f708cbc34a06cd27fae08426c419dcfa0` at 2026-10-27T14:59:25Z. Parent independently verified merged PR, closed/completed issue, remote main and exact signed merge object with matching tested tree through connected GitHub plugin.
 
-Scope/acceptance: authored recovery guidance without exception text; preserve generated result and durable history; successful explicit retry clears error; cancel remains silent; concurrent picker calls excluded; disposed late failure publishes no error/notification. One new privacy regression fails on baseline. Two new tests cover all acceptance cases. 49 focused / 672 full Flutter tests passed (seven opt-in skips); analyzer clean. Formatter and web build final results recorded in linked PR before independent final-head review and actual required CI. Endpoint offline; no fresh inference claimed. Original five main edits retained. F09 remains In progress/unchecked; this increment Awaiting merge. Independent reviewer alone may merge after final approval and passing required checks; final PR/head/tree/review/CI/merge evidence follows after verification.
+Build destination picker exceptions now show actionable authored recovery guidance without private prompt/token/path markers. Failed selection preserves generated result/history; explicit retry clears errors; cancellation remains silent; concurrent selection excluded; disposed late failure publishes no diagnostic/notification. One baseline privacy regression fails; two new cases cover acceptance. Local49focused/672fullFlutter tests passed/seven opt-in skips; formatter206/analyzer/web build/Wasm passed. Independent49focused passed. Actual required CI40525703398 passed: Flutter122264562941669Linux tests/seven skips,2Chrome storage/archive tests,formatter/analyzer/webWasm and enabled real generated resolve/analyze/test/build0 plus HTTP200/>1000-byte serving acceptance; Python1222645626142+4+10+4fixtures/two confinement skips. No review blockers or unresolved threads.
+
+F09 remains In progress/unchecked; remaining source-generation diagnostics need acceptance audit. No later task selected. All three docs published; both automation labels applied. Original IDE edits byte-identical and all original documentation content retained (current ledger updated), backed up at `/private/tmp/asg-206-preserved`. Local main/origin0/0, source/tests/index clean. Configured model endpoint offline; no fresh live inference/model download/stable-app replacement. Schedule/notification preference unchanged.
+
+
+### F09 private Build initialization — issue #167 (27 October 2026)
+
+PR #206 verified merged as `f355425f708cbc34a06cd27fae08426c419dcfa0`; no other active ASG run or open PR. Reopened existing #167 on `167-private-build-initialization`; no new task/issue. Evidence: Build initialization appended raw history/storage exceptions and malformed runtime-settings JSON to visible diagnostics, exposing private prompt/token/path markers.
+
+Scope/acceptance: authored recovery guidance, retained saved records and fail-closed initialization; generate, verify, picker, rollback and source review remain unavailable until the underlying problem is resolved and Build reopened. Reopening valid state clears the error and restores saved output. Two baseline regressions fail for history reads/settings parsing; both now pass with preservation and explicit reopen assertions. No execution/storage authority added. F09 remains In progress/unchecked; independent final-revision review and actual required CI gate protected merge. Model endpoint offline; no fresh inference claimed. Original main checkout edits preserved.
+
+Validation: 51 focused / 674 full Flutter tests passed (seven opt-in skips); formatter206/analyzer clean; web build and Wasm dry run passed. Two baseline privacy regressions failed before the fix. This increment is Awaiting merge; final review, CI and merge evidence follows after verification.

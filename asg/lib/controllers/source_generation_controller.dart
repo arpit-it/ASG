@@ -35,9 +35,8 @@ class SourceGenerationController extends BaseController {
       _input = GenerationInput(project, definition);
       _result = store.load(project.id);
       _initialPython = RuntimeSetupStore(store.records).load().python;
-    } catch (e) {
-      _error =
-          'Generation inputs, settings or history could not be read. It has not been overwritten. $e';
+    } catch (_) {
+      _error = 'Build inputs, settings or history could not be read. Saved records have not been overwritten. Check saved project data and runtime settings. Reopen Build after resolving the problem.';
       _historyInvalid = true;
     }
   }
