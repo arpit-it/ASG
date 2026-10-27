@@ -224,6 +224,96 @@ void main() {
     );
   }
 
+  for (final oldReady in [true, false]) {
+    test(
+      'Stop refresh supersedes pending pre-stop health: $oldReady',
+      () async {
+        final oldResponse = Completer<http.Response>();
+        final stoppedResponse = Completer<http.Response>();
+        var requests = 0;
+        final host = FakeRuntimeHost()..ownsProcess = true;
+        final c = await controller(
+          host,
+          api: RuntimeConnection(
+            client: MockClient((_) {
+              requests++;
+              if (requests == 1) return oldResponse.future;
+              return stoppedResponse.future;
+            }),
+          ),
+        );
+        addTearDown(c.dispose);
+        final pending = c.refresh();
+        await Future<void>.delayed(Duration.zero);
+        final stopping = c.stop();
+        await Future<void>.delayed(Duration.zero);
+        expect(host.ownsProcess, isFalse);
+        expect(
+          requests,
+          2,
+          reason: 'Stop must check current health immediately',
+        );
+        oldResponse.complete(
+          http.Response(
+            jsonEncode({
+              'status': oldReady ? 'ready' : 'error',
+              'model': 'obsolete',
+            }),
+            200,
+          ),
+        );
+        await pending;
+        expect(c.health.model, isNot('obsolete'));
+        await c.refresh();
+        expect(
+          requests,
+          2,
+          reason: 'Obsolete completion must retain newer poll guard',
+        );
+        stoppedResponse.complete(
+          http.Response(
+            jsonEncode({'status': 'error', 'model': 'stopped'}),
+            200,
+          ),
+        );
+        await stopping;
+        expect(c.health.ready, isFalse);
+        expect(c.health.model, 'stopped');
+        await c.refresh();
+        expect(requests, 3);
+      },
+    );
+  }
+
+  test('failed Stop leaves current pending health check valid', () async {
+    final response = Completer<http.Response>();
+    var requests = 0;
+    final c = await controller(
+      FakeRuntimeHost(),
+      api: RuntimeConnection(
+        client: MockClient((_) {
+          requests++;
+          return response.future;
+        }),
+      ),
+    );
+    addTearDown(c.dispose);
+    final pending = c.refresh();
+    await Future<void>.delayed(Duration.zero);
+    await c.stop();
+    expect(c.error, contains('Not owned'));
+    await c.refresh();
+    expect(requests, 1);
+    response.complete(
+      http.Response(jsonEncode({'status': 'ready', 'model': 'external'}), 200),
+    );
+    await pending;
+    expect(c.health.ready, isTrue);
+    expect(c.health.model, 'external');
+    await c.refresh();
+    expect(requests, 2);
+  });
+
   test('pending refresh publishes when connection remains current', () async {
     final response = Completer<http.Response>();
     final entered = Completer<void>();
