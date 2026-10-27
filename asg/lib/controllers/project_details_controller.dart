@@ -36,8 +36,12 @@ class ProjectDetailsController extends BaseController {
       if (isDisposed) return false;
       _project = updated;
       return true;
-    } catch (e) {
-      if (!isDisposed) _error = 'Project details could not be saved. $e';
+    } catch (_) {
+      if (!isDisposed) {
+        _error =
+            'Project details could not be saved. Check local storage and retry. '
+            'Reopen the project details if the saved project has changed.';
+      }
       return false;
     } finally {
       _busy = false;
