@@ -1,3 +1,4 @@
+import 'plan_task_import_test.dart' as proposals show seed;
 import 'board_mapped_build_plan_test.dart' show mappedBoard, boardContent;
 
 import 'package:asg/models/build_plan.dart';
@@ -27,6 +28,89 @@ Future<void> seed(ControlledRecords records, String content) async {
 }
 
 void main() {
+  test('task proposal corruption stays private and correction restores valid preview', () async {
+    final records = ControlledRecords();
+    await proposals.seed(records);
+    final controller = chat(records, PlanningProvider());
+    await controller.load();
+    final valid = controller.taskProposalPreview;
+    expect(controller.canAddPlanTasks, isTrue);
+    final key = 'studio.chat.v1.${project.id}';
+    final saved = records.values[key]!;
+    records.values[key] = 'PRIVATE_PROPOSAL token=secret /private/record';
+    final writes = records.writes;
+    final preview = controller.taskProposalPreview;
+    for (final marker in [
+      'PRIVATE_PROPOSAL',
+      'token=secret',
+      '/private/record',
+    ]) {
+      expect(preview, isNot(contains(marker)));
+    }
+    expect(preview, contains('Check saved project data'));
+    expect(controller.canAddPlanTasks, isFalse);
+    expect(records.writes, writes);
+    records.values[key] = saved;
+    expect(controller.taskProposalPreview, valid);
+    expect(controller.canAddPlanTasks, isTrue);
+    expect(records.writes, writes);
+    controller.dispose();
+  });
+
+  for (final record in [
+    'studio.projects.v1',
+    'studio.chat.v1.${project.id}',
+    'studio.requirements.v1.${project.id}',
+  ]) {
+    test(
+      'Plan previews keep corrupt $record private and recover without writes',
+      () async {
+        final records = ControlledRecords();
+        await seed(records, BuildPlan.starterContract);
+        final controller = chat(records, PlanningProvider());
+        await controller.load();
+        final original = Map<String, String>.from(records.values);
+        records.values[record] = 'PRIVATE_PROMPT token=secret /private/record';
+        final damaged = Map<String, String>.from(records.values);
+        final writes = records.writes;
+        final messages = controller.messages.toList();
+        var notifications = 0;
+        controller.addListener(() => notifications++);
+        for (var read = 0; read < 2; read++) {
+          for (final preview in [
+            controller.executionPlanPreview,
+            controller.taskProposalPreview,
+          ]) {
+            for (final marker in [
+              'PRIVATE_PROMPT',
+              'token=secret',
+              '/private/record',
+            ]) {
+              expect(preview, isNot(contains(marker)));
+            }
+            expect(preview, contains('Check saved project data'));
+          }
+          expect(controller.canAddPlanTasks, isFalse);
+        }
+        expect(records.values, damaged);
+        expect(records.writes, writes);
+        expect(controller.messages, messages);
+        expect(controller.error, isNull);
+        expect(controller.busy, isFalse);
+        expect(notifications, 0);
+        records.values
+          ..clear()
+          ..addAll(original);
+        expect(controller.executionPlanPreview, contains('Validated fixed'));
+        expect(records.writes, writes);
+        expect(notifications, 0);
+        controller.dispose();
+        expect(controller.executionPlanPreview, contains('unavailable'));
+        expect(controller.taskProposalPreview, isEmpty);
+      },
+    );
+  }
+
   test('board mapping preview rereads durable references without marking completion', () async {
     final records = ControlledRecords();
     final boards = RequirementsStore(records);
@@ -55,7 +139,7 @@ void main() {
     await fresh.load();
     expect(
       fresh.executionPlanPreview,
-      contains('A mapped board task is missing.'),
+      contains('board links and dependencies'),
     );
   });
 

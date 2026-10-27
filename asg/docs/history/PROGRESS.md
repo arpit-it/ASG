@@ -2780,3 +2780,21 @@ Two new privacy regressions fail on baseline. 56 focused / 679 full Flutter test
 
 
 PR #209 independent review `5669955196` reproduced stale Stop state: a later preparation failure inherited user-cancellation wording. Reset the request-scoped stop flag for each accepted generation/retry and add Stop → preparation failure → successful retry regression. Final validation: 57 focused / 680 full Flutter tests passed (seven skips), formatter206/analyzer clean, web rebuild/Wasm passed. Fresh final-revision review and required CI remain mandatory before merge.
+
+
+### F09 private Build execution failures — verified PR #209 (27 October 2026)
+
+Issue #167 / branch `167-private-build-execution` delivered through https://github.com/arpit-it/ASG/pull/209. Final head `b57b2fa301a6231de78f0a5c1f494bfbfbedffc0`, tested tree `5cf38d2b690209ed440d574410ba8bf6a0b5e229` identical to local `9c9e1dff38f737703d4854b912099a6353ea5b5f`. Independent review `5669955196` found stale Stop state mislabeled a later preparation failure; fixed and retested, then freshly approved exact final head in reviews `5669980826` / `5670059967`. Reviewer normal protected squash merge `045e246ae5941e221bd8c4a921cd5e6da5ede9f6` at 2026-10-27T15:47:31Z. Parent independently verified merged PR, closed/completed issue, remote main and exact signed merge object with matching tested tree through connected GitHub plugin.
+
+Build execution/preflight/approval-progress exceptions now use authored recovery guidance instead of raw private source text. Completed command/failed-operation evidence and Stop wording survive; preflight failure preserves working output/history/preview and starts no command. Two privacy regressions fail on baseline; final tests cover durable reopen, retry, no preflight side effects, disposal and Stop → preparation failure → successful retry. Local57focused/680fullFlutter tests passed/seven opt-in skips; formatter206/analyzer/web build/Wasm passed. Independent57focused passed. Actual required CI40533539153 passed: Flutter122292989123677Linux tests/seven skips,2Chrome storage/archive tests,formatter206/analyzer/webWasm and enabled real generated resolve/analyze/test/build0 plus HTTP200/>1000-byte serving acceptance; Python1222929901172+4+10+4fixtures/two confinement skips. No blocking review findings or unresolved threads.
+
+F09 remains In progress/unchecked pending final acceptance audit; no later task selected. All three docs published; both automation labels applied. Original IDE edits verified byte-identical and original documentation content retained (current ledger updated), backed up at `/private/tmp/asg-209-preserved`. Local main/origin0/0, source/tests/index clean before final evidence append. Local8765 endpoint unavailable; no fresh inference/model download/stable-app replacement. Schedule and notification preference unchanged.
+
+
+### F09 private Plan previews — issue #167 (27 October 2026)
+
+Branch `167-private-plan-previews` from verified PR #209 merge `045e246ae5941e221bd8c4a921cd5e6da5ede9f6`. Read-only Chat Plan executable-task/proposed-task previews rendered raw parser/storage exceptions containing private saved JSON. Use authored recovery guidance for saved data, task contracts, links and dependencies; valid previews and approval/import gates are retained. F09 remains In progress/unchecked; no later task selected.
+
+Baseline corruption regressions fail with exposed private markers for project/conversation records. Coverage includes requirements corruption, repeated read-only access, byte-identical saved records, no writes/notifications/state changes, correction recovery, proposed-task gate recovery and disposed reads. Original five local edits retained in the main checkout; documentation content carried forward. Full validation and independent final-revision review/required CI/merge evidence recorded in the linked PR before completion. No fresh live inference claimed.
+
+Validation: 18 focused and 684 full Flutter tests passed (seven opt-in skips); analyzer clean. Formatter and web build/Wasm checked before publication. Configured local8765 endpoint unavailable; no fresh inference claimed. Independent final-head review and actual required CI remain mandatory.
