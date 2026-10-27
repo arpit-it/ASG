@@ -74,6 +74,25 @@ class FakeRuntimeHost implements RuntimeHost {
   }
 }
 
+class StartRuntimeHost extends FakeRuntimeHost {
+  bool fail = true;
+  Completer<void>? gate;
+  final entered = Completer<void>();
+  int launches = 0;
+  @override
+  Future<void> start(RuntimeSetup setup, String modelId) async {
+    launches++;
+    if (!entered.isCompleted) entered.complete();
+    await gate?.future;
+    if (fail) {
+      throw ProcessException('/private/python', [
+        'token=PRIVATE_START',
+      ], 'PRIVATE_START failed');
+    }
+    await super.start(setup, modelId);
+  }
+}
+
 class ScanRuntimeHost extends FakeRuntimeHost {
   bool fail = false;
   Completer<void>? gate;
@@ -246,6 +265,81 @@ class SetupProbe implements ModelProvider {
 }
 
 void main() {
+  test('Start launch failure is private, terminal and retryable', () async {
+    SharedPreferences.setMockInitialValues({});
+    final host = StartRuntimeHost();
+    final c = await controller(
+      host,
+      api: connection(ready: () => host.ownsProcess, path: '/models'),
+    );
+    addTearDown(c.dispose);
+    await c.inspect('/models');
+    final selected = c.selected;
+    final originalConnection = c.modelStore.load();
+    await c.start(const RuntimeSetup(python: '/python'));
+    final diagnostics = '${c.error} ${c.status} ${c.logs.join(' ')}';
+    expect(diagnostics, isNot(contains('PRIVATE_START')));
+    expect(diagnostics, isNot(contains('/private/')));
+    expect(c.error, contains('retry'));
+    expect(c.error, contains('Python'));
+    expect(c.status, contains('failed'));
+    expect(c.busy, isFalse);
+    expect(c.selected, same(selected));
+    expect(c.setup.modelPath, '/models');
+    expect(
+      [
+        c.modelStore.load().baseUrl,
+        c.modelStore.load().model,
+        c.modelStore.load().chatOutputTokens,
+      ],
+      [
+        originalConnection.baseUrl,
+        originalConnection.model,
+        originalConnection.chatOutputTokens,
+      ],
+    );
+    expect(host.ownsProcess, isFalse);
+    host.fail = false;
+    await c.start(const RuntimeSetup(python: '/python'));
+    expect(c.error, isNull);
+    expect(c.health.ready, isTrue);
+    expect(c.status, contains('Runtime ready'));
+    expect(c.modelStore.load().model, 'Qwen3.5-9B');
+    expect(host.launches, 2);
+  });
+
+  test(
+    'Start excludes duplicate launch and ignores disposed failure',
+    () async {
+      SharedPreferences.setMockInitialValues({});
+      final host = StartRuntimeHost()..gate = Completer<void>();
+      final c = await controller(host);
+      await c.inspect('/models');
+      final pending = c.start(const RuntimeSetup());
+      await host.entered.future;
+      expect(c.busy, isTrue);
+      await c.start(const RuntimeSetup());
+      expect(host.launches, 1);
+      final status = c.status;
+      final savedConnection = [
+        c.modelStore.load().baseUrl,
+        c.modelStore.load().model,
+        c.modelStore.load().chatOutputTokens,
+      ];
+      c.dispose();
+      host.gate!.complete();
+      await pending;
+      expect(c.error, isNull);
+      expect(c.status, status);
+      expect([
+        c.modelStore.load().baseUrl,
+        c.modelStore.load().model,
+        c.modelStore.load().chatOutputTokens,
+      ], savedConnection);
+      expect(host.ownsProcess, isFalse);
+    },
+  );
+
   for (final action in ['inspect', 'download', 'start']) {
     test('scan failure is private and retryable during $action', () async {
       SharedPreferences.setMockInitialValues({});

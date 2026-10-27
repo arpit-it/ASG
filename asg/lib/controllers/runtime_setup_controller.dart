@@ -255,7 +255,18 @@ class RuntimeSetupController extends BaseController {
       baseUrl: 'http://127.0.0.1:8765/v1',
       model: candidate.name,
     );
-    await host.start(saved, candidate.name);
+    try {
+      await host.start(saved, candidate.name);
+    } catch (_) {
+      if (_startupCancelled) return;
+      _status = 'Managed runtime launch failed.';
+      // Process failures may include private interpreter paths and arguments.
+      throw StateError(
+        'Could not launch the managed runtime. Check the selected Python '
+        'interpreter, required packages and local port availability, then retry. '
+        'If a process started, Stop is available before retrying.',
+      );
+    }
     if (_startupCancelled) {
       // Stop may have run before the asynchronous launch acquired its process.
       if (_stopRequested && host.ownsProcess) await host.stop();
