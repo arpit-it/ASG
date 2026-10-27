@@ -303,6 +303,37 @@ void main() {
     final scaffold = tester.widget<Scaffold>(find.byType(Scaffold).first);
     expect(scaffold.floatingActionButtonLocation, isA<RuntimeFabLocation>());
   });
+  testWidgets(
+    'health panel omits server identity and does not label loading offline',
+    (tester) async {
+      final c = await controller(
+        FakeRuntimeHost(),
+        api: RuntimeConnection(
+          client: MockClient(
+            (_) async => http.Response(
+              jsonEncode({
+                'status': 'loading',
+                'phase': 'private-phase-sentinel',
+                'backend': 'private-backend-sentinel',
+                'model': 'private-model-sentinel',
+              }),
+              200,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpWidget(
+        MaterialApp(home: RuntimeSetupScreen(controller: c)),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Runtime not ready'), findsOneWidget);
+      expect(find.textContaining('model loading'), findsOneWidget);
+      expect(find.text('Runtime offline'), findsNothing);
+      expect(find.textContaining('sentinel'), findsNothing);
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox());
+    },
+  );
   testWidgets('runtime setup remains usable on a narrow viewport', (
     tester,
   ) async {
