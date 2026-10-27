@@ -134,6 +134,18 @@ Future<RuntimeSetupController> controller(
   );
 }
 
+class PendingConnectionStore extends ModelSettingsStore {
+  PendingConnectionStore(super.records);
+  final entered = Completer<void>();
+  final release = Completer<void>();
+  @override
+  Future<void> save(LocalModelConfig config) async {
+    entered.complete();
+    await release.future;
+    await super.save(config);
+  }
+}
+
 class SetupProbe implements ModelProvider {
   final output = StreamController<String>();
   int cancellations = 0;
@@ -147,6 +159,79 @@ class SetupProbe implements ModelProvider {
 
 void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
+  test('Connect does not publish a dispatched save after disposal', () async {
+    final prefs = await SharedPreferences.getInstance();
+    final ordinary = ModelSettingsStore.fromPreferences(prefs);
+    final delayed = PendingConnectionStore(ordinary.records);
+    final c = RuntimeSetupController(
+      store: RuntimeSetupStore.fromPreferences(prefs),
+      modelStore: delayed,
+      host: FakeRuntimeHost(),
+      connection: connection(ready: () => true),
+    );
+    final status = c.status;
+    final initialConnection = c.connectionConfig;
+    final pending = c.connect(const LocalModelConfig(model: 'Qwen3.5-9B'));
+    await delayed.entered.future;
+    c.dispose();
+    delayed.release.complete();
+    await pending;
+    // A dispatched durable write is allowed to finish; closed UI stays unchanged.
+    expect(ordinary.load().model, 'Qwen3.5-9B');
+    expect(c.connectionConfig, same(initialConnection));
+    expect(c.status, status);
+    expect(c.health.ready, isFalse);
+  });
+
+  for (final closed in [true, false]) {
+    test('late Connect health respects setup disposal: $closed', () async {
+      final prefs = await SharedPreferences.getInstance();
+      final store = ModelSettingsStore.fromPreferences(prefs);
+      await store.save(
+        const LocalModelConfig(model: 'previous', chatOutputTokens: 512),
+      );
+      final response = Completer<http.Response>();
+      final entered = Completer<void>();
+      final c = await controller(
+        FakeRuntimeHost(),
+        api: RuntimeConnection(
+          client: MockClient((_) {
+            entered.complete();
+            return response.future;
+          }),
+        ),
+      );
+      const selected = LocalModelConfig(model: 'selected');
+      final pending = c.connect(selected);
+      await entered.future;
+      final status = c.status;
+      final initialConnection = c.connectionConfig;
+      if (closed) c.dispose();
+      // Preserve settings changed during health verification for live requests.
+      await store.save(
+        const LocalModelConfig(model: 'previous', chatOutputTokens: 1024),
+      );
+      response.complete(
+        http.Response(
+          jsonEncode({'status': 'ready', 'model': 'selected'}),
+          200,
+        ),
+      );
+      await pending;
+      expect(store.load().model, closed ? 'previous' : 'selected');
+      expect(store.load().chatOutputTokens, 1024);
+      if (closed) {
+        expect(c.connectionConfig, same(initialConnection));
+        expect(c.status, status);
+        expect(c.health.ready, isFalse);
+      } else {
+        expect(c.connectionConfig.model, 'selected');
+        expect(c.health.ready, isTrue);
+        c.dispose();
+      }
+    });
+  }
+
   for (final key in ['studio.runtimeSetup.v1', 'studio.localModel.v1']) {
     test(
       'saved settings load diagnostics omit private content for $key',

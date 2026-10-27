@@ -269,12 +269,17 @@ class RuntimeSetupController extends BaseController {
     }
     _loadChatCeiling();
     final result = await connection.check(config);
+    if (isDisposed) return;
     if (!result.ready || result.model != config.model) {
       throw StateError(
         'No ready runtime reporting this model ID. Check the URL and model ID.',
       );
     }
-    _connectionConfig = await _saveConnection(config);
+    final savedConfig = await _saveConnection(config);
+    // A write already dispatched before closure may complete; do not publish
+    // state to the closed setup controller.
+    if (isDisposed) return;
+    _connectionConfig = savedConfig;
     _health = result;
     _status = 'Connected. Project chat uses ${config.model}.';
   });
