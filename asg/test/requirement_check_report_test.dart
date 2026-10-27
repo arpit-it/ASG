@@ -19,6 +19,7 @@ import 'package:asg/services/source_generation_store.dart';
 import 'package:asg/services/studio_store.dart';
 import 'package:asg/views/requirement_check_report_screen.dart';
 import 'package:asg/views/project_workspace.dart';
+import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -93,6 +94,215 @@ Future<GeneratedProject> prepare(
 }
 
 void main() {
+  test('copied context reconstructs exact criteria and task graph with canonical digest', () async {
+    final records = Records();
+    final base = mappedBoard();
+    final board = RequirementsBoard(
+      requirements: const [
+        ProjectRequirement(
+          id: 'R1',
+          title: 'Task "board" 🧪',
+          acceptance: 'Keep exact spaces  \nand Unicode ✓',
+        ),
+      ],
+      tasks: [
+        for (final task in base.tasks)
+          DevelopmentTask(
+            id: task.id,
+            requirementId: task.requirementId,
+            title: '${task.title} ✓',
+            dependencies: task.dependencies,
+            status: TaskStatus.done,
+          ),
+      ],
+    );
+    final saved = await prepare(records, board: board, content: boardContent());
+    await SourceGenerationStore(records).save('p', saved);
+    final before = Map.of(records.data);
+    final report = RequirementCheckReportStore(records).load(project);
+    final evidence = jsonDecode(report.evidenceJson) as Map<String, dynamic>;
+    final copiedBoard = RequirementsBoard.fromJson(
+      evidence['requirementsBoard'] as Map<String, dynamic>,
+    );
+    final original = RequirementsStore(records).load('p');
+    expect(copiedBoard.toJson(), original.toJson());
+    expect(
+      copiedBoard.requirements.single.acceptance,
+      board.requirements.single.acceptance,
+    );
+    expect(copiedBoard.tasks.last.dependencies, isNotEmpty);
+    expect(
+      copiedBoard.tasks.every((task) => task.status == TaskStatus.done),
+      isTrue,
+    );
+    expect(
+      evidence['requirementsBoardSha256'],
+      sha256.convert(utf8.encode(jsonEncode(copiedBoard.toJson()))).toString(),
+    );
+    expect(evidence['requirementsRevision'], copiedBoard.revision);
+    expect(
+      (evidence['requirements'] as List).single['acceptanceStatus'],
+      'unverified',
+    );
+    expect(report.evidenceJson, isNot(contains('PRIVATE_')));
+    expect(records.data, before);
+    final reopened = Records()..data.addAll(before);
+    expect(
+      RequirementCheckReportStore(reopened).load(project).evidenceJson,
+      report.evidenceJson,
+    );
+  });
+
+  test('board digest binds criteria and task content even at an equal imported revision', () async {
+    final records = Records();
+    final saved = await prepare(records);
+    await SourceGenerationStore(records).save('p', saved);
+    final store = RequirementCheckReportStore(records);
+    final original = jsonDecode(
+      records.data[RequirementsStore.key('p')]!,
+    ) as Map<String, dynamic>;
+    final first = jsonDecode(store.load(project).evidenceJson) as Map;
+    for (final field in ['title', 'acceptance', 'taskTitle', 'status']) {
+      final changed = jsonDecode(jsonEncode(original)) as Map<String, dynamic>;
+      if (field == 'taskTitle') {
+        (changed['tasks'] as List).first['title'] = 'Changed task';
+      } else if (field == 'status') {
+        (changed['tasks'] as List).first['status'] = 'queued';
+      } else {
+        (changed['requirements'] as List).first[field] = 'Changed criterion';
+      }
+      records.data[RequirementsStore.key('p')] = jsonEncode(changed);
+      final next = jsonDecode(store.load(project).evidenceJson) as Map;
+      expect(next['requirementsRevision'], first['requirementsRevision']);
+      expect(
+        next['requirementsBoardSha256'],
+        isNot(first['requirementsBoardSha256']),
+        reason: field,
+      );
+    }
+  });
+
+  test(
+    'missing board and saved empty board remain distinct without generation',
+    () async {
+      final records = Records();
+      final store = RequirementCheckReportStore(records);
+      final missing = jsonDecode(store.load(project).evidenceJson) as Map;
+      expect(missing['requirementsRevision'], 0);
+      expect(missing['requirementsBoard'], isNull);
+      expect(missing['requirementsBoardSha256'], isNull);
+      await RequirementsStore(records)
+          .save('p', RequirementsBoard(), RequirementsBoard());
+      final empty =
+          jsonDecode(store.load(project).evidenceJson) as Map<String, dynamic>;
+      expect(
+        RequirementsBoard.fromJson(
+          empty['requirementsBoard'] as Map<String, dynamic>,
+        ).requirements,
+        isEmpty,
+      );
+      expect(
+        empty['requirementsBoardSha256'],
+        matches(RegExp(r'^[0-9a-f]{64}$')),
+      );
+      expect(empty['phase'], isNull);
+      final board = RequirementsStore(records).load('p');
+      await RequirementsStore(records).save('p', board, sharedBoard());
+      final report = store.load(project);
+      expect(report.results.single.state, RequirementCheckState.missing);
+      expect(
+        (jsonDecode(
+          report.evidenceJson,
+        ) as Map)['requirementsBoard']['requirements'].single['acceptance'],
+        'Verify output',
+      );
+    },
+  );
+
+  testWidgets(
+    'expanded copied evidence declares authored content at narrow enlarged text',
+    (tester) async {
+      tester.view.physicalSize = const Size(360, 800);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final records = Records();
+      await prepare(records);
+      await tester.pumpWidget(
+        MaterialApp(
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(context)
+                .copyWith(textScaler: TextScaler.linear(2)),
+            child: child!,
+          ),
+          home: RequirementCheckReportScreen(
+            controller: RequirementCheckReportController(
+              project,
+              RequirementCheckReportStore(records),
+            ),
+          ),
+        ),
+      );
+      await tester.scrollUntilVisible(
+        find.text('Exact saved revision and results'),
+        200,
+        scrollable: find
+            .descendant(
+              of: find.byType(ListView),
+              matching: find.byType(Scrollable),
+            )
+            .first,
+      );
+      await tester.drag(find.byType(ListView), const Offset(0, -250));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Exact saved revision and results'));
+      await tester.pumpAndSettle();
+      await tester.scrollUntilVisible(
+        find.text(RequirementCheckReport.authoredEvidenceNotice),
+        200,
+        scrollable: find
+            .descendant(
+              of: find.byType(ListView),
+              matching: find.byType(Scrollable),
+            )
+            .first,
+      );
+      expect(
+        find.text(RequirementCheckReport.authoredEvidenceNotice),
+        findsOneWidget,
+      );
+      await tester.scrollUntilVisible(
+        find.byWidgetPredicate(
+          (widget) =>
+              widget is SelectableText &&
+              (widget.data?.contains('requirementsBoardSha256') ?? false),
+        ),
+        200,
+        scrollable: find
+            .descendant(
+              of: find.byType(ListView),
+              matching: find.byType(Scrollable),
+            )
+            .first,
+      );
+      final selectable = tester.widget<SelectableText>(
+        find.byWidgetPredicate(
+          (widget) =>
+              widget is SelectableText &&
+              (widget.data?.contains('requirementsBoardSha256') ?? false),
+        ),
+      );
+      final copied = jsonDecode(selectable.data!) as Map;
+      expect(
+        copied['savedEvidence']['requirementsBoard']['requirements']
+            .single['acceptance'],
+        'Verify output',
+      );
+      expect(copied['artifactInspection'], isNull);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
   test('durable mapped report links exact evidence without writes or raw diagnostics', () async {
     final records = Records();
     final saved = await prepare(records);

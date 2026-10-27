@@ -107,6 +107,10 @@ class _RequirementCheckReportScreenState
               ExpansionTile(
                 title: const Text('Exact saved revision and results'),
                 children: [
+                  const Padding(
+                    padding: EdgeInsets.all(12),
+                    child: Text(RequirementCheckReport.authoredEvidenceNotice),
+                  ),
                   Padding(
                     padding: const EdgeInsets.all(12),
                     child: SelectableText(widget.controller.evidenceJson!),
