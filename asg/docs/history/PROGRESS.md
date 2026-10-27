@@ -2502,6 +2502,13 @@ Required CI `40476912131` passed. Reviewer inspected actual Flutter `12209728823
 Stop now omits raw private host exceptions, reports truthful failure/retry guidance, clears previous errors on retry and ignores disposed completion. F09 remains In progress/unchecked. No new task/issue or later feature selected. Endpoint offline; no live inference, model download, stable-app replacement, deployment or schedule/notification changes. Local main synchronized0/0 with plugin-verified remote main through hash-verified signed commit import, without terminal GitHub access. Original IDE bytes and document content preserved with hashed backup `/private/tmp/asg-188-preserved`; source/tests/index clean. Final evidence retained for the next normal reviewed increment.
 
 
+### F09 scan diagnostics — publication blocked (27 October 2026)
+
+Reopened #167 / `167-private-scan-errors`; local source and regression implementation complete in `/private/tmp/asg-private-scan-errors`, commit `00df157796afdf05e7c9d82c8c52d9051642fb5e`, tree `f7457fefa3ac6b2caa113ffb620df1475654e691`. One private scan boundary covers Inspect/download/pre-launch; retains selected candidates, reports failure/retry, suppresses disposed errors. Four baseline regressions fail;55focused/611full Flutter tests pass/seven skips;formatter198/analyzer/webWasm pass. Runtime endpoint offline;no live inference claimed.
+
+Automatic approval review rejected publishing history memory (possible private paths/text/credential-like content), despite explicit docs publication authorization and inspection of added text with no credential matches. Requirements blob retry passed; memory retry rejected. Safer scope excluded rejected memory (retained `/private/tmp/asg-scan-retained-agent-memory.md`); remote tree matches local tree. Commit creation then rejected for insufficient authorization for exact payload/public destination. No bypass attempted. Remote branch exists at baseline a8da516; no remote implementation commit, PR, CI or merge. Independent local review requested; exact-PR review remains pending publication. Required input: approve publishing retained issue167 tested contents to public arpit-it/ASG through connected plugin. F09 remains In progress/unchecked and blocked on publication; resume this task, do not select another. Original IDE/docs edits retained; schedule unchanged.
+
+Independent local reviewer approved exact00df157796afdf05e7c9d82c8c52d9051642fb5e/treef7457fefa3ac6b2caa113ffb620df1475654e691; no blockers; independently55focused tests pass, baseline failures/full611/format/analyzer/web logs inspected;checkout clean. Remote blocker issue-status update also auto-review rejected, so GitHub issue body remains original scan scope, not the attempted blocker report. No PR/CI/merge. Recorded 2026-10-27T09:15:09.909733+00:00. Await explicit publication approval; preserve local work and resume #167.
 ### F09 private model-folder scan diagnostics — reopened issue #167 (27 October 2026)
 
 PR #188 verified merged as `a8da5168b7c6d4418c7874be9211877459131167`; its independent reviews and required CI passed. Reopened #167 on `167-private-scan-errors` after confirming no competing active run or open PR. F09 remains In progress/unchecked; no later task or new issue selected.
@@ -2513,6 +2520,26 @@ All four new regressions failed on baseline: three private scan paths and delaye
 Final local checks: formatter198/analyzer clean;55focused and611full Flutter tests passed/seven opt-in skips;web build/Wasm dry run passed. All4new regressions failed baseline. Runtime endpoint offline;no live inference claimed. Awaiting merge: independent exact-final-revision review and required CI remain gates.
 
 
+### F09 private model-folder scan diagnostics — verified increment (27 October 2026)
+
+Historical publication blocker above is resolved. The user explicitly approved revision `00df157` (controller, tests, requirements and progress documentation) for public `arpit-it/ASG` publication through the connected GitHub plugin, followed by review, CI and merge.
+
+Reopened issue #167 / branch `167-private-scan-errors` delivered through https://github.com/arpit-it/ASG/pull/189. Final published head `acd37813bd7935d94889a5316dc8eb7164eb094a` independently approved in review `5665111874` and final gate `6438757983`. Normal protected squash merge `59d3e3c603bca6ec9df89b5aefeb84c6d7c7b69b` at 2026-10-27T09:54:00Z; issue closed/completed, merged PR and remote main independently verified through the connected GitHub plugin. Merge, published head and tested local `00df157796afdf05e7c9d82c8c52d9051642fb5e` share tree `f7457fefa3ac6b2caa113ffb620df1475654e691`.
+
+Required CI `40483541798` passed. Independent reviewer inspected actual Flutter `122119546356` logs: formatter198/analyzer,609 Linux tests/six opt-in skips, two actual Chrome tests, web/Wasm, real generated-project resolve/analyze/test/build each exit0 plus serving acceptance. Python `122119545839` passed2+4+10+4fixtures/two confinement skips. Local611Flutter tests/seven skips, formatter/analyzer/webWasm passed. Independent55focused tests passed and all four regressions failed against baseline; exact reviewed controller restored. No blockers or unresolved review threads.
+
+Inspect, downloaded-folder inspection and pre-launch scan failures now omit raw filesystem details, retain prior selection, report actionable retry guidance and prevent launch after failed validation. Disposed failures cannot publish diagnostics. This increment is merged; F09 remains In progress/unchecked. No new task or issue selected. No live inference, model download, stable-app replacement, deployment or schedule/notification change. Local main safely synchronized0/0 with plugin-verified remote main through hash-verified signed commit import. Original IDE bytes and historical document content preserved with hashed backup `/private/tmp/asg-189-preserved`; source/tests/index clean. Postmerge evidence retained for the next normal reviewed increment.
+
+
+### F09 private managed launch diagnostics — verified PR #190
+
+Issue #167 / branch `167-private-start-errors` delivered through https://github.com/arpit-it/ASG/pull/190. Final head `6c8f2a561e0570ee9baf7e2420b36fb9f1f8f4a5` independently approved in reviews5665396038 and5665426865; protected squash merge `b0cb4c04d589ef6d8d410209fab9d28f04e2ad85` at2026-10-27T10:15:10Z. Remote main and issue closure verified. Published/merged tree4572fd6f919dd4e55f4b85a088828d3a4d52c530 matches tested source/tests at local292402f.
+
+Start errors now show private Python/package/port retry guidance, preserve selection/settings and respect cancellation/disposal. Local53focused/613full Flutter tests passed/seven skips; formatter198/analyzer/web/Wasm passed. Independent reviewer reran53 tests and inspected actual required CI40486549462: Flutter122129652614 passed Linux, Chrome, web and generated-project verification; Python122129652295 fixtures passed. No live inference verified.
+
+F09 remains In progress/unchecked. Prior automatic approval review rejected documentation publication for private-history risk; source/test-only PR merged; documentation retained locally. Original five edits preserved at /private/tmp/asg-190-preserved. Main synchronized0/0 through hash-verified plugin commit import; source/tests/index clean. No new issue/task or schedule change. Recorded 2026-10-27T10:22:58.789381+00:00.
+
+
 ### F09 private download diagnostics — issue #167 (27 October 2026)
 
 Prior managed launch increment PR #190 is verified merged as `b0cb4c04d589ef6d8d410209fab9d28f04e2ad85`; issue #167 closed after independent final-head review and required CI. Its launch-failure guidance remains covered by regression tests.
@@ -2522,6 +2549,16 @@ Reopened #167 on `167-private-download-errors` for an observed F09 gap: download
 Implementation and three regression tests prepared; baseline terminal-status regression reproduced. Final local checks: 616 full Flutter tests passed with seven opt-in skips; analyzer, formatter and web build/Wasm dry run passed. Local endpoint offline; no live inference verified. Independent exact-PR review and required CI remain delivery gates. Status: Awaiting merge, not Done.
 
 
+### F09 private download diagnostics — verified PR #191 (27 October 2026)
+
+Issue #167 / branch `167-private-download-errors` delivered through https://github.com/arpit-it/ASG/pull/191. Final published head `9253131eb8f7bd452e47fbca6556618ad185542d` independently approved in reviews `5665734451` and `5665784101`; protected squash merge `693f99b53295d7082b8088e79657b73d1cffa715` at 2026-10-27T10:45:38Z. Remote main and closed/completed issue independently verified. Merged tree `cb9b2af0ecc03a8fdef7d783f430657edc2ffe00` matches tested local `2deae7c66dce93d08fbfc2208bde346b946b6c38`.
+
+Download errors now show private terminal failure/retry guidance, preserve selection/settings and ignore disposed completion before scanning. Baseline failure reproduced; local 616 Flutter tests passed/seven opt-in skips; formatter198/analyzer/web/Wasm passed. Independent reviewer reran56focused tests and inspected actual required CI40490284788: Flutter122142212256 passed614Linux tests/six skips, two realChrome tests, web/Wasm and generated-project resolve/analyze/test/build/serving; Python122142211793 passed2+4+10+4fixtures/two confinement skips. No blockers or unresolved threads.
+
+F09 remains In progress/unchecked; this increment is merged, no later task selected. No live inference or model download verified; endpoint offline. Original five edits retained with hash backup `/private/tmp/asg-191-preserved`. Schedule/notification preference unchanged. Postmerge evidence retained for the next reviewed increment.
+
+
+
 ### F09 private process output — issue #167 (27 October 2026)
 
 Prior PR #191 verified merged as `693f99b53295d7082b8088e79657b73d1cffa715` at 2026-10-27T10:45:38Z. Exact head `9253131eb8f7bd452e47fbca6556618ad185542d` independently approved; required CI40490284788 passed. F09 remains In progress/unchecked.
@@ -2529,8 +2566,35 @@ Prior PR #191 verified merged as `693f99b53295d7082b8088e79657b73d1cffa715` at 2
 Reopened #167 on `167-private-process-output`: raw child stdout/stderr bypassed sanitized action errors and reached setup logs. Consume bytes without decoding or forwarding private output; emit at most one authored activity notice per stream, preserving lifecycle/exit guidance. Actual Python fixture emits private prompt/path/credential markers and malformed UTF-8; no model or network is involved. Acceptance requires private markers absent, bounded activity and start/exit/Stop present. Baseline activity regression fails; corrected fixture awaits asynchronous event delivery. Formatter/analyzer, full Flutter suite and web/Wasm build are required before exact-PR independent review and required CI. No live inference, download, installed-app replacement or schedule change. Final local checks: formatter198/analyzer clean;617 Flutter tests passed/seven opt-in skips; web build/Wasm dry run passed. Status: Awaiting merge pending exact-final-revision independent review and required CI.
 
 
+### F09 private process output — verified PR #192 (27 October 2026)
+
+Issue #167 / branch `167-private-process-output` delivered through https://github.com/arpit-it/ASG/pull/192. Final published head `4260c72622bdf75e3b66c3bf3592c17a3b61608f` independently approved in reviews5665918794 and5665981897; protected squash merge `6cc23d30da139c334c2a99587832552eb07dd1a8` at2026-10-27T11:02:45Z. Remote main and issue167 closed/completed independently verified through connected plugin. Merge tree258eddbff5e21fb51ed6391c937337e485c5722d matches tested local4d004b0.
+
+Raw child stdout/stderr is consumed without disclosure/decoding; at most two authored activity notices retain bounded visible progress alongside lifecycle diagnostics. Actual Python fixture emits private prompt/path/credential markers and malformed bytes.617localFlutter tests passed/seven opt-in skips;formatter198/analyzer/webWasm passed. Independent62runtime tests passed. Actual required CI40492367153 passed: Flutter122149196645614Linux tests/seven skips,twoChrome tests,format/analyzer/webWasm,generated-project resolve/analyze/test/build0 plus serving; Python1221491971382+4+10+4fixtures/two confinement skips. No blockers/unresolved review threads.
+
+F09 remains In progress/unchecked; this increment is merged, no later task selected. Endpoint offline; no live inference/model download verified. Local main synchronized0/0 through exact-hash signed commit import from connected plugin. All five original edits retained with hashed backup `/private/tmp/asg-192-preserved`; original document bytes retained before new evidence, source/tests/index clean. Schedule/notification preference unchanged. Postmerge evidence retained for next reviewed increment.
+
+
 ### F09 cancelled launch cleanup — issue #167 (27 October 2026)
 
 Prior PR #192 is verified merged as `6cc23d30da139c334c2a99587832552eb07dd1a8`; independent final-head review and required CI passed. F09 remains In progress/unchecked. Reopened #167 on `167-cancelled-launch-cleanup` for a reproduced cancellation boundary: a late launch's direct cleanup forwarded private process errors and retained a misleading stopped status when cleanup failed.
 
 Late cleanup now reuses the private Stop workflow: truthful failure/retry guidance, retained process ownership and selected checkpoint, unchanged chat settings, successful explicit Stop retry and suppressed disposed completion. Regression fails on baseline with an injected private process/path/token exception. All three new cases and 59 focused runtime setup tests pass. Final local validation: formatter198/analyzer clean, 620 full Flutter tests passed/seven opt-in skips, web build/Wasm dry run passed; exact-final-revision independent review and actual required CI gate protected merge. No live inference, model download, installed-app replacement or schedule change. Original checkout edits retained. Status: Awaiting merge; final PR evidence follows after publication.
+
+
+### F09 cancelled launch cleanup — verified PR #193 (27 October 2026)
+
+Issue #167 / branch `167-cancelled-launch-cleanup` delivered through https://github.com/arpit-it/ASG/pull/193. Final published head `141d64817451e812a1e0f4898e44df58c527501e` independently approved in reviews `5666107279` and `5666169713`; protected squash merge `8a137a7bbd62a5168dd69f5060caad98c3a8ef4e` at 2026-10-27T11:15:09Z. Parent independently verified merged/closed PR, issue #167 closed/completed, remote main and signed merge object through connected GitHub plugin. Merged/published/tested local `0870ceedd21a633bc2694646a9a75a041ed09de8` share tree `b441c5ef1aabfd824cffd36f9650a3b005d441b1`.
+
+Late cancelled launch cleanup now uses private Stop failure/retry guidance, preserves ownership/selection/chat settings, and continues cleanup after disposal without publishing state. Baseline privacy regression failed; three new cases pass. Local 59 focused and 620 full Flutter tests passed/seven opt-in skips; formatter198/analyzer/web/Wasm passed. Independent reviewer ran69focused tests and inspected actual required CI40494102418: Flutter122155053200 passed617Linux tests/seven skips, two actualChrome tests, web/Wasm and real generated-project resolve/analyze/test/build0 plus serving; Python122155053544 passed2+4+10+4fixtures/two confinement skips. No blockers or unresolved threads.
+
+F09 remains In progress/unchecked; this increment is merged and no later task selected. Endpoint offline; no live inference/model download verified. Local main safely synchronized0/0 through exact-hash signed commit import from plugin. Original five edits retained with hashed backup `/private/tmp/asg-193-preserved`; original document bytes retained before new evidence, source/tests/index clean. Schedule and notification preference unchanged. Postmerge evidence retained for next normal reviewed increment.
+
+
+### F09 private chat persistence diagnostics — issue #167 (27 October 2026)
+
+PR #193 verified merged as `8a137a7bbd62a5168dd69f5060caad98c3a8ef4e`; independent reviews5666107279/5666169713 and required CI40494102418 passed. F09 remains In progress/unchecked. Independent acceptance audit reproduced raw storage exception disclosure before model startup, after completed inference and on explicit save retry. Reopened #167 on `167-private-chat-storage`; no new issue or later task selected.
+
+Use locally authored storage/settings guidance, retain saved messages and unsaved completed responses for explicit Retry saving, suppress disposed late failures and clear failure diagnostics after successful retry. Three new regressions fail on baseline. Original checkout edits retained; endpoint offline, no live inference or model download verified. Final local checks, PR, exact-revision independent review, actual required CI and merge evidence follow below. Status: Awaiting merge after checks/publication.
+
+Final local checks: formatter199/analyzer clean; 623 Flutter tests passed/seven opt-in skips; web build/Wasm passed. Three new baseline regressions failed and now pass. F09 remains In progress pending wider acceptance; this increment awaits independent final-head review and required CI.
