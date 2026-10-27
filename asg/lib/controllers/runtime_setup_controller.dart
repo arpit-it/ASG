@@ -84,9 +84,14 @@ class RuntimeSetupController extends BaseController {
   Future<void> refresh() async {
     if (_checking || isDisposed) return;
     _checking = true;
+    final checkedConfig = _connectionConfig;
     try {
-      final result = await connection.check(_connectionConfig);
-      if (!isDisposed) _health = result;
+      final result = await connection.check(checkedConfig);
+      // A newly connected or started runtime owns its verified health. A late
+      // poll of the previous connection must not replace that result.
+      if (!isDisposed && identical(checkedConfig, _connectionConfig)) {
+        _health = result;
+      }
     } finally {
       _checking = false;
       update();
