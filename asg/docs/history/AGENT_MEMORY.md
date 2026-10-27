@@ -2861,3 +2861,15 @@ Validation completed for this increment: formatter219/analyzer passed, full Flut
 ## Documentation reconciliation — issue #224 (28 October 2026)
 
 Updated current delivery summaries and separated historical snapshots from present scope. The canonical requirements queue retains F10/F15 guidance and adds distinct generator-host portability and reproducible product acceptance tasks, with real-host evidence and honest unavailable states. Documentation-only: no runtime/dependency/CI behavior or completed-feature status changes. Local validation covers documentation links, queue consistency and whitespace; exact-final independent review and actual required CI remain mandatory before merge.
+
+
+### Documentation reconciliation complete — PR #225 (28 October 2026)
+
+Issue #224 completed through independently reviewed PR #225, verified protected squash merge `47d51b101db080d52c72ed5e43b1685d735900a5` at 2026-10-27T21:59:08Z. Final reviewed head `959ea64f3dc4701169aa06df4b16c63b642282cc`, merged tree `8ffd9e362ca36254c483f4830a460f2f38cfb720`, independent approved review `5674996513`; no unresolved threads. Parent independently verified merged PR, closed/completed issue and matching remote tree, then safely synchronized local main while preserving local edits.
+
+Thirteen Markdown-only files and 90 local links validated; queue order/statuses and whitespace passed. Required CI `40590363395` succeeded: actual Flutter job `122492713800` formatter/analyzer,722 Linux tests/seven opt-in skips, two real Chrome tests, web/Wasm and actual generated-project verification/resume/served output; Python job `122492713385` two download/four streaming/ten process/four confinement fixtures with two macOS-only skips. F10 remains active; new portability/evidence tasks are queued. No fresh inference, app behavior change or new platform claim.
+
+
+## Expanded product requirements — issue #226 (28 October 2026)
+
+Documented the owner-requested engineering Ask, snippet Explain/Check/Run/Fix, GitHub/Git repository workflows, multi-language generation and real runners for Java/Kotlin/PHP and the mainstream catalog (HTML/CSS/JavaScript is only the first additional adapter), instruction-file timers/schedules and hardware-aware larger-model selection. Extended existing adapter/backend/evidence tasks and added stable F18–F23 for distinct capabilities; cloud service creation/connection is explicitly final. All added product tasks remain queued and F10 stays active. No runtime, account, schedule, model download or cloud infrastructure change. Supporting documentation links to the sole requirements queue. Documentation consistency/link/whitespace validation and independent exact-final review/required CI remain merge gates.
