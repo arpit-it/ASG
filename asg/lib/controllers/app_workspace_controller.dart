@@ -62,9 +62,12 @@ class AppWorkspaceController extends BaseController {
           _runtimeDefinition = null;
         }
         _error = null;
-      } catch (e) {
-        _error =
-            'Preview changes are not saved. Retry saving before leaving this project. $e';
+      } catch (_) {
+        if (!isDisposed) {
+          _error =
+              'Preview changes are not saved. Check local storage and Retry saving '
+              'before leaving this project. Your pending preview changes remain available.';
+        }
         return false;
       }
     }
