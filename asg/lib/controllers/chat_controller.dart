@@ -229,8 +229,8 @@ class ChatController extends BaseController {
           'Creates a separate starter from the saved prototype; no custom source edits. '
           'Board links do not mark tasks complete or verify requirement acceptance. '
           'Build rechecks the current saved Plan approval and requires separate operation consent.';
-    } catch (e) {
-      return 'Executable tasks unavailable: $e';
+    } catch (_) {
+      return 'Executable tasks unavailable. Check saved project data and the current Plan task contract, board links and dependencies. Reopen Plan after correcting the problem; draft a current Plan if requirements changed.';
     }
   }
 
@@ -240,8 +240,8 @@ class ChatController extends BaseController {
       return PlanTaskImport(_store!.records)
           .preview(project, _messages)
           .preview;
-    } catch (e) {
-      return 'Task import unavailable: $e';
+    } catch (_) {
+      return 'Task import unavailable. Check saved project data and the proposed task IDs, requirement links and dependencies. Reopen Plan after correcting the problem; draft a current Plan if requirements changed.';
     }
   }
 
