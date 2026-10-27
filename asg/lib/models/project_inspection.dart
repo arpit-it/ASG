@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright 2026 Arpit Sinha
+
 /// Point-in-time findings; no execution or write approval.
 class ProjectInspection {
   ProjectInspection({

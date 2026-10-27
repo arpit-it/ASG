@@ -1,0 +1,27 @@
+Automated Software Generator (ASG)
+Copyright 2026 Arpit Sinha
+
+ASG-owned source files and documentation are made available under the Mozilla
+Public License, v. 2.0 (MPL-2.0). Copyright remains with its respective holders;
+contributors retain their ownership. This notice does not modify the license.
+
+This Source Code Form is subject to the terms of the Mozilla Public License,
+v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain
+one at https://mozilla.org/MPL/2.0/.
+
+Official project source: https://github.com/arpit-it/ASG
+Source accompanies this repository distribution. Anyone distributing modified
+executables must make the corresponding MPL-covered source, including covered
+modifications, available to recipients as required by MPL section 3.2, and tell
+recipients how to obtain it; the upstream URL alone is not a substitute for
+their modifications. Preserve applicable copyright and license notices.
+
+Independent plugins, framework adapters and other separate files may use their
+own licenses when they do not contain MPL-covered code. Modifications to covered
+files, and new files containing covered code, retain applicable MPL obligations.
+Generated projects are not blanket-licensed by ASG: copied/derived scaffold files
+remain MPL-covered; unrelated user-authored code/data retain their own terms.
+
+Third-party dependencies, SDK components, assets and model checkpoints retain
+their own terms. See asg/docs/development/DEPENDENCIES.md in the ASG source
+repository and bundled third-party notices. No model weights are included here.

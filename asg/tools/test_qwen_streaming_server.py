@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: MPL-2.0
+# Copyright 2026 Arpit Sinha
+
 """Tests the actual HTTP/SSE handler with a lightweight backend, no weights."""
 import importlib.util
 import json

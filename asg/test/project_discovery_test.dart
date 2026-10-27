@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright 2026 Arpit Sinha
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:asg/controllers/project_wizard_controller.dart';
 import 'package:asg/models/project_blueprint.dart';

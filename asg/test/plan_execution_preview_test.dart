@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright 2026 Arpit Sinha
+
 import 'plan_task_import_test.dart' as proposals show seed;
 import 'board_mapped_build_plan_test.dart' show mappedBoard, boardContent;
 

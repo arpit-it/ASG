@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright 2026 Arpit Sinha
+
 import '../models/runtime_setup.dart';
 
 abstract interface class RuntimeHost {

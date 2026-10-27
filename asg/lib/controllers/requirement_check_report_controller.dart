@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright 2026 Arpit Sinha
+
 import '../models/project.dart';
 import '../models/artifact_inspection.dart';
 import '../models/requirement_check_report.dart';

@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright 2026 Arpit Sinha
+
 import 'package:flutter/material.dart';
 
 import '../models/project.dart';
@@ -6,6 +9,7 @@ import '../services/studio_store.dart';
 import '../services/model_settings_store.dart';
 import '../services/folder_picker.dart';
 import 'model_settings.dart';
+import 'app_licenses_button.dart';
 import 'runtime_setup_screen.dart';
 import '../controllers/runtime_setup_controller.dart';
 import '../services/runtime_setup_store.dart';
@@ -100,6 +104,7 @@ class _DashboardState extends State<Dashboard> {
       appBar: AppBar(
         title: const Text('Automated Software Generator'),
         actions: [
+          const AppLicensesButton(),
           IconButton(
             tooltip: 'Settings',
             icon: const Icon(Icons.settings_outlined),

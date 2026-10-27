@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright 2026 Arpit Sinha
+
 import 'dart:convert';
 
 import '../models/local_model_config.dart';
@@ -54,6 +57,8 @@ class SourceEditProposer {
           '(for example: "before":"void main() {}\\n"). Omitting that newline '
           'makes the proposal stale and it will be rejected. '
           'after must contain the entire compiling file. '
+          'Preserve existing license identifiers and copyright headers verbatim '
+          'at the beginning of after, including during build repairs. '
           'Preserve unrelated code and imports. Only change supplied files. No commands or new files. '
           'Instruction: ${jsonEncode(instruction)}. Originals: ${jsonEncode(snapshot)}';
       final buffer = StringBuffer();

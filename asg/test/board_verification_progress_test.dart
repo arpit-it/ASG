@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright 2026 Arpit Sinha
+
 import 'package:asg/models/build_plan.dart';
 import 'package:asg/models/build_task.dart';
 import 'package:asg/models/plan_approval.dart';

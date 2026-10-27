@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright 2026 Arpit Sinha
+
 /// Review consent for imported planning only; never an execution credential.
 class ImportedPlan {
   const ImportedPlan({

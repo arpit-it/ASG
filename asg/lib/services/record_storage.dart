@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright 2026 Arpit Sinha
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Synchronous session snapshot; writes complete only after durable commit.
