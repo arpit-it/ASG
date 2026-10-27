@@ -8,6 +8,8 @@ Current delivery: F01–F09, F13 and F14 are delivered within their recorded acc
 
 The [expanded workflow contract](REQUIREMENTS.md#expanded-product-workflows-and-support-contract--28-october-2026) records planned engineering Ask/Code Lab modes, Git repository workflows, language/framework coverage, instruction-file scheduling and model selection. Cloud service creation/connection is the final phase; these additions are requirements, not delivered capabilities.
 
+The [user-owned Hugging Face cloud direction](REQUIREMENTS.md#user-owned-hugging-face-cloud-and-pricing-direction--28-october-2026) keeps local ASG free and scopes optional user-billed Spaces/API/endpoints to final F23. Cloud support remains planned; public repository visibility does not resolve the application license.
+
 ## Architecture and behavior
 
 - [Architecture](architecture/ARCHITECTURE.md)
