@@ -3,24 +3,67 @@
 
 enum TaskStatus { queued, inProgress, blocked, done }
 
+enum AcceptanceCheckType { automated, manual, advisory }
+
+/// An authored mapping, not permission to execute or evidence that it passed.
+class AcceptanceCheckDefinition {
+  const AcceptanceCheckDefinition({
+    required this.id,
+    required this.type,
+    required this.expectation,
+  });
+  final String id, expectation;
+  final AcceptanceCheckType type;
+  Map<String, Object> toJson() => {
+    'id': id,
+    'type': type.name,
+    'expectation': expectation,
+  };
+  factory AcceptanceCheckDefinition.fromJson(Map<String, dynamic> json) {
+    if (json.length != 3 ||
+        json['id'] is! String ||
+        json['expectation'] is! String ||
+        json['type'] is! String) {
+      throw const FormatException('Invalid acceptance check definition.');
+    }
+    return AcceptanceCheckDefinition(
+      id: json['id'] as String,
+      type: AcceptanceCheckType.values.byName(json['type'] as String),
+      expectation: json['expectation'] as String,
+    );
+  }
+}
+
 class ProjectRequirement {
   const ProjectRequirement({
     required this.id,
     required this.title,
     required this.acceptance,
+    this.checks = const [],
   });
   final String id, title, acceptance;
+  final List<AcceptanceCheckDefinition> checks;
   Map<String, Object> toJson() => {
     'id': id,
     'title': title,
     'acceptance': acceptance,
+    if (checks.isNotEmpty) 'checks': checks.map((c) => c.toJson()).toList(),
   };
-  factory ProjectRequirement.fromJson(Map<String, dynamic> json) =>
-      ProjectRequirement(
-        id: json['id'] as String,
-        title: json['title'] as String,
-        acceptance: json['acceptance'] as String,
-      );
+  factory ProjectRequirement.fromJson(Map<String, dynamic> json) {
+    if (json.containsKey('checks') && json['checks'] is! List) {
+      throw const FormatException('Invalid acceptance check declarations.');
+    }
+    return ProjectRequirement(
+      id: json['id'] as String,
+      title: json['title'] as String,
+      acceptance: json['acceptance'] as String,
+      checks: List.unmodifiable(
+        (json['checks'] as List? ?? const []).map(
+          (c) => AcceptanceCheckDefinition.fromJson(c as Map<String, dynamic>),
+        ),
+      ),
+    );
+  }
 }
 
 class DevelopmentTask {
@@ -96,6 +139,21 @@ class RequirementsBoard {
       id(r.id);
       text(r.title, 200);
       text(r.acceptance, 2000);
+      if (r.checks.length > 10) {
+        throw const FormatException(
+          'Use at most 10 acceptance checks per requirement.',
+        );
+      }
+      final checkIds = <String>{};
+      for (final check in r.checks) {
+        id(check.id);
+        text(check.expectation, 500);
+        if (!checkIds.add(check.id)) {
+          throw const FormatException(
+            'Acceptance check IDs must be unique within a requirement.',
+          );
+        }
+      }
       if (!ids.add(r.id)) {
         throw const FormatException('Requirement IDs must be unique.');
       }
@@ -201,6 +259,11 @@ class RequirementsBoard {
       out.writeln(
         '## ${r.id}: ${r.title}\n\nAcceptance criteria:\n${r.acceptance}\n',
       );
+      for (final check in r.checks) {
+        out.writeln(
+          '- Check ${check.id} (${check.type.name}): ${check.expectation} — no direct result recorded.',
+        );
+      }
       for (final t in tasks.where((t) => t.requirementId == r.id)) {
         out.writeln(
           '- [${t.status == TaskStatus.done ? 'x' : ' '}] ${t.id}: ${t.title} (${t.status.name}); dependencies: ${t.dependencies.isEmpty ? 'none' : t.dependencies.join(', ')}',

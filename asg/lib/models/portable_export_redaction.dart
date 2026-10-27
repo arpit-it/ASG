@@ -51,6 +51,14 @@ class PortableExportRedaction {
                 id: r.id,
                 title: redact(r.title),
                 acceptance: redact(r.acceptance),
+                checks: [
+                  for (final c in r.checks)
+                    AcceptanceCheckDefinition(
+                      id: c.id,
+                      type: c.type,
+                      expectation: redact(c.expectation),
+                    ),
+                ],
               ),
             )
             .toList(),

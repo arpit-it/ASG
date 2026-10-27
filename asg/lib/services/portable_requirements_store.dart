@@ -23,7 +23,12 @@ class PortableRequirementsStore {
       'tasks',
     ]);
     for (final row in board['requirements'] as List) {
-      _object(row, const ['id', 'title', 'acceptance']);
+      _object(row, [
+        'id',
+        'title',
+        'acceptance',
+        if (row is Map && row.containsKey('checks')) 'checks',
+      ]);
     }
     for (final row in board['tasks'] as List) {
       _object(row, const [
