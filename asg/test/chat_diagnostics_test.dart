@@ -80,6 +80,94 @@ void main() {
       controller.dispose();
     },
   );
+  test(
+    'provider failures stay private, retain outcome and reset on retry',
+    () async {
+      for (final failure in [
+        StateError('private-error-sentinel'),
+        TimeoutException('private-timeout-sentinel'),
+      ]) {
+        SharedPreferences.setMockInitialValues({});
+        final first = ProbeProvider(), second = ProbeProvider();
+        final controller = await create([first, second]);
+        await controller.load();
+        final sending = controller.send('private-prompt-sentinel');
+        await Future<void>.delayed(Duration.zero);
+        first.events.add(
+          const GenerationEvent.text('private-partial-sentinel'),
+        );
+        first.events.addError(failure);
+        await first.events.close();
+        await sending;
+        expect(controller.error, isNot(contains('sentinel')));
+        expect(controller.requestDiagnostic, isNot(contains('sentinel')));
+        expect(
+          controller.requestDiagnostic,
+          contains(failure is TimeoutException ? 'timed out' : 'failed'),
+        );
+        expect(controller.messages, hasLength(1));
+        expect(controller.draftResponse, isEmpty);
+        expect(first.cancelled, isTrue);
+        final retry = controller.send('retry');
+        expect(controller.requestDiagnostic, contains('Preparing'));
+        expect(controller.error, isNull);
+        await Future<void>.delayed(Duration.zero);
+        second.events.add(const GenerationEvent.text('complete'));
+        await second.events.close();
+        await retry;
+        expect(
+          controller.requestDiagnostic,
+          contains('No chat request active'),
+        );
+        expect(controller.messages, hasLength(3));
+        controller.dispose();
+      }
+    },
+  );
+
+  test(
+    'provider creation failures are private and do not claim success',
+    () async {
+      final store = ConversationStore.fromPreferences(
+        await SharedPreferences.getInstance(),
+      );
+      final controller = ChatController(
+        project,
+        openStore: () async => store,
+        createProvider: (_) => throw StateError('private-factory-sentinel'),
+      );
+      await controller.load();
+      expect(await controller.send('hello'), isTrue);
+      expect(controller.error, isNot(contains('sentinel')));
+      expect(controller.requestDiagnostic, contains('failed'));
+      expect(store.load(project.id), hasLength(1));
+      controller.dispose();
+    },
+  );
+
+  testWidgets('timeout outcome is visible without private exception content', (
+    tester,
+  ) async {
+    final provider = ProbeProvider();
+    final controller = await create([provider]);
+    await tester.pumpWidget(
+      MaterialApp(
+        home: ModelChat(project: project, controller: controller),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final sending = controller.send('request');
+    await tester.pump();
+    provider.events.addError(TimeoutException('private-timeout-sentinel'));
+    await provider.events.close();
+    await sending;
+    await tester.pumpAndSettle();
+    expect(find.textContaining('The model request timed out'), findsOneWidget);
+    expect(find.textContaining('Chat request timed out'), findsOneWidget);
+    expect(find.textContaining('sentinel'), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('chat diagnostics and Stop scope fit narrow enlarged text', (
     tester,
   ) async {

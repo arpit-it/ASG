@@ -283,7 +283,8 @@ void main() {
       if (fail) provider.events.addError(StateError('Offline'));
       await provider.events.close();
       await sending;
-      expect(controller.error, contains(fail ? 'Offline' : 'no response'));
+      expect(controller.error, contains('model request failed'));
+      expect(controller.error, isNot(contains('Offline')));
       expect(controller.messages.single.role, 'user');
       expect(controller.busy, false);
       controller.dispose();
