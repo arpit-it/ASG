@@ -41,8 +41,9 @@ class DashboardController extends BaseController {
       if (isDisposed) return false;
       _projects = updated;
       return true;
-    } catch (e) {
-      error = 'Could not save project: $e';
+    } catch (_) {
+      if (isDisposed) return false;
+      error = 'Could not save project. Check local storage and retry. Your saved projects have not been changed.';
       return false;
     } finally {
       busy = false;

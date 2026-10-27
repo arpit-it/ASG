@@ -69,7 +69,7 @@ A task moves Queued → In progress → Awaiting merge → Done; use Blocked wit
 
 ## Active task and delivery ledger
 
-Current: F09 issue #167 / branch `167-private-imported-plan` addresses private imported-plan failures. PR #211 verified merged; F09 remains In progress/unchecked pending remaining acceptance audit. No later task selected.
+Current: F09 issue #167 / branch `167-private-project-errors` contains project creation and folder diagnostics. PR #212 verified merged as `c29de533ab3865e421c4fbba0b2d58ea60f535c5`. Awaiting validation, independent final-revision review and required CI/merge. F09 remains In progress/unchecked; no later task selected.
 
 Latest verified increment: F09 issue #167 / PR #200 merged as `974167fec059ee98f661436e9b9b71f238319a3f` after independent reviews `5667369555` / `5667432142` and required CI `40507722336`. F09 remains In progress/unchecked; no unmerged increment. Detailed final evidence below.
 
@@ -3484,3 +3484,21 @@ Branch `167-private-imported-plan` from verified PR #211 merge `9d0822764ac09741
 Two baseline privacy regressions failed. Coverage verifies repeated failed reads, inspection/save failure, backend write failure, corrupt JSON refusal without writes, saved-plan retention, retry/reopen and silent disposal. Full validation and independent final-revision review/actual CI/merge evidence will be recorded in the PR. Original five local edits retained; no fresh inference or stable-app replacement claimed.
 
 Validation: 10 focused and 691 full Flutter tests passed (seven opt-in skips); formatter207/analyzer clean; web build and Wasm dry run passed. No fresh inference verified. Independent final-head review and actual required CI remain mandatory before merge.
+
+
+### F09 private imported-plan failures — verified PR #212 (27 October 2026)
+
+Issue #167 / branch `167-private-imported-plan` delivered through https://github.com/arpit-it/ASG/pull/212. Final head `53043910be0864bb9b196f68121bf92c8913e0b5`, tested tree `436fb2d69875d80ad091412164841f0e4de3737b` identical to local `6955e243e7bfdd89a980ce30e48bc3ff8ba39ba3`. Independent exact-final-revision reviews `5670853681` / `5670912361` approved without blockers or unresolved threads. Reviewer normal protected squash merge `c29de533ab3865e421c4fbba0b2d58ea60f535c5` at 2026-10-27T16:42:55Z. Parent independently verified merged PR, closed/completed issue, remote main and exact signed merge object with matching tested tree through connected GitHub plugin.
+
+Imported-plan load/save errors now use authored recovery guidance without raw private inspection/parser/storage content. Saved plans, current-context approval gates and draft retry remain. Two baseline privacy regressions failed; coverage checks repeated failed reads, inspection/write failure, corrupt-data refusal without writes, saved-plan retention, retry/reopen and silent disposal. Local10focused/691fullFlutter tests passed/seven skips; resumed parent and independent reviewer each reran10focused successfully. Format207/analyzer/web build/Wasm passed. Actual requiredCI40542818410 passed: Flutter122325425196688Linux7skip,2Chrome,formatter207/analyzer/webWasm and enabled generated resolve/analyze/test/build0 plus source-confirmed HTTP200/>1000-byte serving acceptance; Python1223254256812+4+10+4fixtures/two confinement skips.
+
+F09 remains In progress/unchecked pending remaining acceptance audit; no later task selected. All three docs published; both automation labels applied. Original IDE edits byte-identical and all original documentation content retained (current summary updated), backup `/private/tmp/asg-212-preserved`. Local main/origin0/0 and source/tests/index clean before final evidence append. Local8765 endpoint unavailable; no fresh inference/model download/stable-app replacement. Schedule/notification preference unchanged.
+
+
+### F09 private project creation and folder failures — issue #167 (27 October 2026)
+
+Branch `167-private-project-errors` from plugin-verified main `c29de533ab3865e421c4fbba0b2d58ea60f535c5`. Dashboard project saves and wizard/dashboard folder selection rendered raw backend errors, potentially exposing private content and paths. Authored recovery guidance retains saved projects and wizard choices; successful retry clears wizard errors and disposal suppresses late errors/notifications. Optional dashboard picker injection enables an actual failure/retry widget regression. F09 remains In progress/unchecked; no later task selected.
+
+All four controller privacy/disposal regressions fail on baseline. Final 10 focused tests pass, including dashboard folder failure and successful retry. Full analysis/tests/web build and independent final-revision review/required CI remain mandatory; exact results and merge evidence will be recorded before completion. Original five main-checkout edits retained. No model download, fresh inference or stable-app replacement claimed.
+
+Validation: 10 focused and 696 full Flutter tests passed (seven opt-in skips); formatter208/analyzer clean; web build and Wasm dry run passed. Independent final-revision review and required CI remain pending.

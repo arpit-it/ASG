@@ -50,7 +50,7 @@ void main() {
     );
     expect(await controller.add(project), false);
     expect(controller.projects, isEmpty);
-    expect(controller.error, contains('Disk unavailable'));
+    expect(controller.error, contains('Could not save project'));
     expect(controller.busy, false);
     controller.dispose();
   });
