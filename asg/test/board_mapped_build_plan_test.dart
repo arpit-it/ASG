@@ -21,7 +21,7 @@ Map<String, Object> boardContract() => {
 String boardContent([Map<String, Object>? contract]) =>
     mappedContent(contract ?? boardContract());
 RequirementsBoard mappedBoard({bool done = false}) => RequirementsBoard(
-  requirements: const [
+  requirements: [
     ProjectRequirement(id: 'R1', title: 'Starter', acceptance: 'Verify output'),
   ],
   tasks: [

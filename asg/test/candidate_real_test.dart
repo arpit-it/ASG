@@ -127,7 +127,7 @@ void main() {
           project.id,
           boards.load(project.id),
           RequirementsBoard(
-            requirements: const [
+            requirements: [
               ProjectRequirement(
                 id: 'R1',
                 title: 'Visible source edit',

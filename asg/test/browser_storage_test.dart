@@ -74,7 +74,7 @@ void main() {
           requirements.load('p'),
           RequirementsBoard(
             requirements: [
-              const ProjectRequirement(
+              ProjectRequirement(
                 id: 'R1',
                 title: 'Saved requirement',
                 acceptance: 'Reopen in Chrome',

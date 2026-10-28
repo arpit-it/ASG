@@ -25,7 +25,7 @@ import 'package:asg/models/generation_event.dart';
 import 'package:asg/services/conversation_store.dart';
 import 'package:asg/services/plan_approval_store.dart';
 
-const requirement = ProjectRequirement(
+final requirement = ProjectRequirement(
   id: 'R1',
   title: 'Task list',
   acceptance: 'A saved task is visible after restart.',
@@ -53,16 +53,12 @@ void main() {
       RequirementsBoard(requirements: [requirement, requirement]),
       RequirementsBoard(
         requirements: [
-          const ProjectRequirement(
-            id: '../R',
-            title: 'Bad',
-            acceptance: 'Accept',
-          ),
+          ProjectRequirement(id: '../R', title: 'Bad', acceptance: 'Accept'),
         ],
       ),
       RequirementsBoard(
         requirements: [
-          const ProjectRequirement(id: 'R', title: 'Bad', acceptance: ' '),
+          ProjectRequirement(id: 'R', title: 'Bad', acceptance: ' '),
         ],
       ),
       RequirementsBoard(tasks: [task('T1')]),
@@ -139,7 +135,7 @@ void main() {
     );
     expect(
       await c.saveRequirement(
-        const ProjectRequirement(
+        ProjectRequirement(
           id: 'R1',
           title: 'Changed',
           acceptance: 'New criteria',

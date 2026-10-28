@@ -35,12 +35,12 @@ class AcceptanceCheckDefinition {
 }
 
 class ProjectRequirement {
-  const ProjectRequirement({
+  ProjectRequirement({
     required this.id,
     required this.title,
     required this.acceptance,
-    this.checks = const [],
-  });
+    List<AcceptanceCheckDefinition> checks = const [],
+  }) : checks = List.unmodifiable(checks);
   final String id, title, acceptance;
   final List<AcceptanceCheckDefinition> checks;
   Map<String, Object> toJson() => {

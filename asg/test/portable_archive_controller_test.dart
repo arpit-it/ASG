@@ -102,7 +102,7 @@ String archive() => PortableProjectArchive(
   ),
   requirements: RequirementsBoard(
     revision: 3,
-    requirements: const [
+    requirements: [
       ProjectRequirement(
         id: 'PrivateRequirement',
         title: 'Title',
@@ -1666,7 +1666,7 @@ void main() {
     addTearDown(c.dispose);
     final board = RequirementsBoard(
       revision: 7,
-      requirements: const [
+      requirements: [
         ProjectRequirement(
           id: 'R1',
           title: 'Exact 中文 😀',
