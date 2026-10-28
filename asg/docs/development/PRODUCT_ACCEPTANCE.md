@@ -165,3 +165,47 @@ confined zero-exit checks, promotion/preservation and reopened F10 linkage.
 The [sanitized captured lines](acceptance/2026-10-28-f10-live-provenance.json)
 include test-source digests and UTC completion times. They are historical
 provenance artifacts, not current-pass collector cells or interactive UI evidence.
+
+
+## Web create/reopen observation (issue #265)
+
+The [historical web UI observation](acceptance/2026-10-28-web-reopen.json)
+records an actual release web build and browser interaction at source
+`8413e296101210d5dd532b550975e92eb91942cc`. It covers application launch,
+app-led creation, requirement/task persistence, edited requirement persistence,
+and an in-app prototype item/checked state across reload. The prototype is not
+an independently generated app. No model was invoked. Browser numeric version
+was unavailable and is recorded as such; this evidence cannot support an exact
+browser-version compatibility claim. Screenshots are retained locally and their
+digests identify those observations; their hashes alone do not authenticate them.
+
+To repeat, use a clean checkout of the recorded source and the recorded Flutter
+SDK; run `flutter build web`, then serve `build/web` with
+`python3 -m http.server <unused-port> --bind 127.0.0.1 --directory build/web`.
+Use a fresh loopback origin, confirm the initial app has no current project, and
+retain the same origin throughout. A fresh origin isolates browser storage from
+other app origins; it does not create a separate browser profile. Never point this
+exercise at the user's existing app origin/profile. Stop the owned server afterward.
+
+1. Choose New project. Describe a daily task planner, select Web app, review the
+   summary and name it Acceptance 265. Create it through the wizard.
+2. Open Requirements and tasks. Add R265 with title Reopen preserves acceptance
+   edits and acceptance text The saved title and acceptance text remain visible
+   after reload and explicit project reopen. Add queued T265, Verify durable
+   browser state, linked to R265. Confirm revision 2 and 0/1 complete.
+3. Reload. Enable Flutter accessibility again if needed. Confirm the project
+   automatically reopens, then choose Projects and explicitly reopen it. Confirm
+   R265, its exact acceptance text and T265 remain visible.
+4. Edit R265 to Edited acceptance title survives reload and acceptance text
+   Edited acceptance criteria remain exact after a second reload. Confirm revision 3.
+5. Return to the prototype, add Durable item 265 and check it. Reload again; confirm
+   the item and checked state remain. Reopen the board and confirm revision 3,
+   edited title/acceptance and unchanged linked task.
+
+This is historical human-readable observation evidence, not collector input or
+a supplied current-pass report: exact F10 input/requirement identities were not
+exported. Do not invent them from the public requirement document or these UI
+strings. F17 remains In progress for the full isolated native/web scenario matrix,
+including plan invalidation, real model/generated-output/repair interactions,
+stop/timeout, rollback and archive workflows. Repeat affected observations after
+source/toolchain/browser/configuration changes.
