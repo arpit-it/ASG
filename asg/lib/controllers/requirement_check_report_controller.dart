@@ -32,6 +32,39 @@ class RequirementCheckReportController extends BaseController {
   String? get evidenceJson => _report?.evidenceWithInspection(_observation);
   String? _inspectionNotice;
   String? get inspectionNotice => _inspectionNotice;
+  bool _saving = false;
+  bool get saving => _saving;
+  Future<void> recordManualObservation(
+    String requirementId,
+    String checkId,
+    bool passed,
+  ) async {
+    final selected = _report;
+    if (isDisposed || _saving || _inspecting || selected == null) return;
+    _saving = true;
+    final revision = _revision;
+    update();
+    try {
+      await store.recordManualObservation(
+        project,
+        selected,
+        requirementId,
+        checkId,
+        passed,
+        _clock().toUtc(),
+        authorized: () => !isDisposed && revision == _revision,
+      );
+      if (!isDisposed) load();
+    } catch (_) {
+      if (!isDisposed) {
+        _error = 'Manual observation could not be saved. Existing evidence was retained. Reload current evidence and retry.';
+      }
+    } finally {
+      _saving = false;
+      update();
+    }
+  }
+
   int _revision = 0;
   void load() {
     if (isDisposed) return;
@@ -49,7 +82,7 @@ class RequirementCheckReportController extends BaseController {
   }
 
   Future<void> inspectArtifacts() async {
-    if (isDisposed || _inspecting) return;
+    if (isDisposed || _inspecting || _saving) return;
     _inspecting = true;
     // Always inspect the current durable pointer, rather than an old screen.
     load();

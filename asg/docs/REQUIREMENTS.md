@@ -213,7 +213,7 @@ Requirements changes: existing F10 acceptance guidance and F15 backend milestone
 
 ## Active task and delivery ledger
 
-Current: F10 In progress/unchecked. PR #234 merged as `430323657a54c3a7aa5b0e34bc29231bf4580227` at 2026-10-28T00:28:39Z after final independent review `5676308891` of head `0f04336f1eace6851dbf7b5c0b9363326eac190b` and required CI `40608395690`; tested tree `6335d45f906ee80fe7d7bce2778a5c3d6092baed`. Issue #217 reopened on branch `217-freeze-acceptance-checks` for immutable authored check snapshots. Caller list edits must not change validated requirements, report identities or stored snapshots. Targeted acceptance execution/direct results remain unmet; no later task selected. Final checks, review and merge evidence follow in the linked PR.
+Current: F10 In progress/unchecked. Reopened issue #217 on `217-manual-check-observations` for explicit revision-bound human observations. Prior PR #235 independently reviewed and verified merged. Automated targeted acceptance execution remains unmet; no later task selected.
 
 ### Historical status snapshots
 
@@ -3903,3 +3903,19 @@ The ProjectRequirement constructor retained its caller's mutable check list. A r
 Scope: snapshot integrity only. F10 remains In progress/unchecked; no acceptance verification, new commands or source-execution authority. Final validation, exact-revision independent review, actual required CI and merge evidence are recorded in the linked PR. Prior PR #234 merge/review/check evidence is reconciled in the current ledger. No later task selected.
 
 Local final validation: formatter 224 files, analyzer, 745 Flutter tests (seven opt-in skips), web build and Wasm dry run passed. The new alias-mutation regression failed before the fix; both new regressions pass after it. Initial analyzer errors from const fixtures were corrected before the full passing suite. Final exact-head review and required CI remain merge gates.
+
+
+### F10 snapshot integrity merge verified — PR #235 (28 October 2026)
+
+Issue #217 previous increment merged as `f02fb2ba9684ac9c66b62517def6de06ce21a686` at 2026-10-28T00:50:28Z. Reviewed head `b8a56c1ae57cef7b6647b23ffa91e2b5c976f1bc`, tested tree `83480ec769aee32555d9098a0b7b49f17b5d65b4`, independent final review `5676443740`, required CI `40610663553` passed. Connected GitHub independently confirms merged PR. Local main matched before this increment; existing unrelated edits retained.
+
+
+### F10 explicit manual check observations — issue #217 (28 October 2026)
+
+Branch `217-manual-check-observations` extends F10 with explicit human pass/fail observations for authored manual checks on a current successful saved run. Persist requirement/check identity, exact requirement SHA-256, saved run SHA-256 and UTC observation time. Report and copied evidence show manual versus stale observations; all overall acceptance claims stay unverified. Automated targeted execution remains unmet and F10 remains In progress/unchecked.
+
+Acceptance: observations survive database reopen; requirement/source/input/approval changes invalidate affected evidence. Reject unknown/automated/advisory check IDs, stale-screen saves and unavailable transactional storage. Conditional publication compares board, source, inputs, catalog, approval, chat and prior observations and checks disposal authorization. Failed writes and corrupt records preserve prior bytes; duplicate/disposed actions cannot publish. Scope excludes command execution, inference and portable manual-evidence export. UI explicitly discloses device-local observations excluded from backups. Latest observation per authored check is retained, at most 1000; no full manual audit journal.
+
+Validation: eight new store/controller/widget/native regressions including 320px interaction; formatter/analyzer/full suite and web build recorded after final checks. Initial test compilation/scroll-position assumptions and duplicated copied-evidence freshness logic were fixed before retest. The ordinary checkout full suite encountered a pre-existing license-scan failure because ignored model dependencies were treated as first-party source; isolated source-snapshot validation excludes ignored tooling. No new model inference or installed-app replacement. Final tested revision, independent review, actual required CI and merge evidence follow in the linked PR.
+
+Final local validation: formatter227/analyzer passed; isolated source-snapshot full suite753passed/seven opt-in skips,33focused report/mapping/manual tests passed after final message clarification. Web build and Wasm dry run passed. Eight new regressions passed. No fresh inference; loopback health connection refused. Independent final-revision review and required CI remain merge gates.

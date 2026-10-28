@@ -115,3 +115,10 @@ Version 4 adds required nullable `requirementsRevision` and `prototypeRevision` 
 
 
 Model settings (`studio.localModel.v1`) optionally include integer `chatOutputTokens` with supported values512,1024,1536,2048. Legacy records without this field use1536; explicit invalid values fail without replacing the record. New saves include the field. Chat reloads it per request; connection probes/source edits/repairs retain their separate fixed limits. The setting requests a ceiling; the server can cap output further.
+
+
+## Manual check observations (F10)
+
+`studio.manualChecks.v1.<projectId>` stores version 1 with a latest-observation list (maximum 1000 unique requirement/check pairs). Each entry has authored IDs, exact requirement and saved-run SHA-256, explicit human pass/fail and UTC time. These are human assertions, not automated execution, semantic acceptance verification or live disk inspection. Changed requirements or saved run/input/approval context makes observations stale. Explicitly replacing an observation updates that pair; no complete audit journal is promised.
+
+Writes require conditional transactions and compare the complete durable binding inputs plus prior observations. Corrupt records are retained and isolated to that project on reopen. Portable archives currently exclude these local observations; the observation UI discloses that limit before recording. Existing archive and execution schemas remain unchanged.

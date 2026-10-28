@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import '../controllers/requirement_check_report_controller.dart';
 import '../models/requirement_check_report.dart';
+import '../models/requirements_board.dart';
 
 class RequirementCheckReportScreen extends StatefulWidget {
   const RequirementCheckReportScreen({super.key, required this.controller});
@@ -40,12 +41,16 @@ class _RequirementCheckReportScreenState
           children: [
             const Text(RequirementCheckReport.limits),
             TextButton(
-              onPressed: widget.controller.load,
+              onPressed: widget.controller.saving
+                  ? null
+                  : widget.controller.load,
               child: const Text('Reload saved evidence'),
             ),
             TextButton(
               onPressed:
-                  widget.controller.inspecting || report?.savedProject == null
+                  widget.controller.inspecting ||
+                      widget.controller.saving ||
+                      report?.savedProject == null
                   ? null
                   : widget.controller.inspectArtifacts,
               child: Text(
@@ -93,9 +98,50 @@ class _RequirementCheckReportScreenState
                             'Declared check ${check.id} (${check.type.name})',
                           ),
                           Text(check.expectation),
-                          const Text(
-                            'Missing direct result; acceptance remains unverified.',
-                          ),
+                          if (report.observationFor(
+                                result.requirement.id,
+                                check.id,
+                              )
+                              case final observation?) ...[
+                            Text(
+                              report.observationCurrent(observation)
+                                  ? 'Manual observation: ${observation.passed ? "passed" : "failed"}'
+                                  : 'Stale manual observation: ${observation.passed ? "passed" : "failed"}',
+                            ),
+                            Text(
+                              'Observed at ${observation.observedAt.toUtc().toIso8601String()}',
+                            ),
+                          ] else
+                            const Text(
+                              'Missing direct result; acceptance remains unverified.',
+                            ),
+                          if (check.type == AcceptanceCheckType.manual) ...[
+                            const Text(
+                              'Record only what you personally checked against this saved revision. This does not run a check or verify acceptance. Manual observations stay on this device and are excluded from portable backups.',
+                            ),
+                            Wrap(
+                              spacing: 8,
+                              children: [
+                                for (final passed in [true, false])
+                                  TextButton(
+                                    onPressed:
+                                        widget.controller.saving ||
+                                            widget.controller.inspecting ||
+                                            !report.canRecordManualObservation
+                                        ? null
+                                        : () => widget.controller
+                                              .recordManualObservation(
+                                                result.requirement.id,
+                                                check.id,
+                                                passed,
+                                              ),
+                                    child: Text(
+                                      'Record manual ${passed ? "pass" : "fail"} for ${check.id}',
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ],
                         ],
                         Text(result.label),
                         Text(result.reason),
