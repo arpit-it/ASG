@@ -903,6 +903,8 @@ void main() {
         ),
       );
       await tester.scrollUntilVisible(find.text('Reload saved evidence'), -200);
+      await tester.drag(find.byType(ListView), const Offset(0, 200));
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Reload saved evidence'));
       await tester.pump();
       await tester.scrollUntilVisible(find.text('Changed acceptance'), 200);
@@ -967,6 +969,8 @@ void main() {
       await PlanApprovalStore(records)
           .save(project, ConversationStore(records).load('p'), false);
       await tester.scrollUntilVisible(find.text('Reload saved evidence'), -200);
+      await tester.drag(find.byType(ListView), const Offset(0, 200));
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Reload saved evidence'));
       await tester.pump();
       await tester.scrollUntilVisible(find.text('Stale evidence'), 200);

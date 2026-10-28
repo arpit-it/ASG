@@ -213,7 +213,7 @@ Requirements changes: existing F10 acceptance guidance and F15 backend milestone
 
 ## Active task and delivery ledger
 
-Current: F10 In progress/unchecked. Issue #217 / PR #232 declared acceptance-check mapping increment was independently approved at head `20a3b1cfdc62a5e61d06c93282f0e9bc13c08e23`, passed required CI `40602046190`, and verified merged as `6c7a42119de9725cbacefc4baefea2121a7d2f35` at 2026-10-27T23:30:56Z. Branch `217-acceptance-check-mappings`; tested tree `e8d5228a08b31f370a917778b192000629dc2191`; final independent reviews `5675809178` / `5675832675`. Named automated/manual/advisory declarations survive editing, storage and portable reports; direct check results remain explicitly missing. Actual targeted execution and source/input-bound results remain unmet. No later product task is selected. Full actual local/CI/review/merge evidence is recorded in the final PR #232 ledger below.
+Current: F10 In progress/unchecked. Prior identity increment PR #233 was independently approved at final head `06bfa5b4f775c402f85362a4f580d2f10b7dbdd5`, required CI `40605398605` passed, and protected merge `0779a872be6961e7882f139cd800e49e841d32a0` was verified at 2026-10-28T00:09:28Z (review `5676167023`; tested tree `f41713d770f73cc46841f939fa04f689d1af2bd2`). Issue #217 is reopened for visible revision context on branch `217-visible-revision-context`: show typed saved/current hashes and unavailable/current/stale context directly in the report. Actual targeted acceptance execution and direct results remain unmet; no later task is selected. Final revision, validation, independent review, CI and merge evidence follow in the linked PR.
 
 ### Historical status snapshots
 
@@ -3885,3 +3885,12 @@ Status: Awaiting merge for this bounded increment; F10 remains In progress/unche
 Acceptance/validation: map-order invariance; changed source, inputs and approval produce appropriate identities; edited current inputs do not mutate saved identity; missing/invalid inputs remain unavailable; durable report reload reproduces identities without private paths or raw command output. Three new regressions plus existing report tests passed (20 focused tests). Final format/analyze/full tests/web build, exact tested revision, independent final-revision review, CI and PR/merge evidence are recorded after checks. Existing five local IDE/document edits were preserved; prior PR #232 final merge bookkeeping is carried forward in these documents.
 
 Final local validation for the identity increment: formatter223/analyzer passed; 740 Flutter tests passed with seven opt-in skips; web build and Wasm dry run passed. Runtime endpoint 127.0.0.1:8765 refused connection; no inference claimed. Independent exact-final review and required CI remain merge gates.
+
+
+### F10 visible revision context — issue #217 (28 October 2026)
+
+Continues verified PR #233 on branch `217-visible-revision-context`. The report exposes the same typed saved-run/source/input/approval and separate current-input identities as copied evidence. Users can select labeled hashes, see unavailable legacy identity and distinguish current project records from stale input/approval context. Content identity does not verify acceptance or live files; artifact inspection remains separate, direct results remain missing and F10 remains In progress/unchecked.
+
+Acceptance: typed/copied identity parity, unavailable legacy evidence, changed requirements and reload retaining saved identity, selectable hashes at 320px/double text and existing report/inspection flows. Validate formatter/analyzer/full Flutter suite/web build; independent exact-final review and actual required CI gate merge. No fresh live inference (configured runtime unavailable), source execution, model download or installed-app replacement. Final tested revision, check totals, review and merge evidence are recorded in the PR after verification.
+
+Final local checks: formatter224/analyzer passed; 743 Flutter tests passed with seven opt-in skips; web build and Wasm dry run passed. Three new context regressions plus existing report/artifact coverage passed. Scroll tests now position controls within the visible viewport before tapping. Independent final-revision review and required CI remain merge gates.

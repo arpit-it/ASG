@@ -67,6 +67,7 @@ class _RequirementCheckReportScreenState
               SelectableText(widget.controller.error!),
             if (report != null) ...[
               Text('Requirements revision ${report.requirementsRevision}'),
+              _RevisionContext(report: report),
               if (report.results.isEmpty)
                 const Text('No structured requirements recorded.'),
               for (final result in report.results)
@@ -140,4 +141,44 @@ class _RequirementCheckReportScreenState
       );
     },
   );
+}
+
+/// Read-only context from the same typed projection used by copied evidence.
+class _RevisionContext extends StatelessWidget {
+  const _RevisionContext({required this.report});
+  final RequirementCheckReport report;
+
+  @override
+  Widget build(BuildContext context) {
+    final identity = report.revisionIdentity;
+    final hashes = <String, String?>{
+      'Saved run SHA-256': identity?.savedRunSha256,
+      'Saved source SHA-256': identity?.sourceSha256,
+      'Saved input SHA-256': identity?.savedInputSha256,
+      'Saved approval SHA-256': identity?.approvalSha256,
+      'Current input SHA-256': identity?.currentInputSha256,
+    };
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Revision context',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            Text(report.revisionContext),
+            const Text(
+              'Content identity only. This does not verify acceptance or current files on disk. Use artifact inspection for a point-in-time file comparison.',
+            ),
+            for (final entry in hashes.entries) ...[
+              Text(entry.key),
+              SelectionArea(child: Text(entry.value ?? 'Unavailable')),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
 }

@@ -208,6 +208,8 @@ class RequirementCheckReportStore {
             },
         ],
       }),
+      revisionIdentity: identity,
+      savedInputsCurrent: current,
       savedProject: saved,
       snapshotFingerprint: sha256
           .convert(
