@@ -6,6 +6,8 @@ import '../models/artifact_inspection.dart';
 import '../models/requirement_check_report.dart';
 import '../services/requirement_artifact_inspector.dart';
 import '../services/requirement_check_report_store.dart';
+import '../services/requirement_named_test_runner.dart';
+import '../services/named_test_session.dart';
 import 'base_controller.dart';
 
 class RequirementCheckReportController extends BaseController {
@@ -14,8 +16,62 @@ class RequirementCheckReportController extends BaseController {
     this.store, {
     ArtifactInspector? inspector,
     DateTime Function()? clock,
+    NamedTestSession Function()? createNamedTestSession,
   }) : _inspector = inspector ?? RequirementArtifactInspector(),
-       _clock = clock ?? DateTime.now;
+       _clock = clock ?? DateTime.now,
+       _namedTestRunner = RequirementNamedTestRunner(
+         store,
+         createSession: createNamedTestSession,
+       );
+  final RequirementNamedTestRunner _namedTestRunner;
+  bool _runningTest = false;
+  bool get runningTest => _runningTest;
+  String? _testNotice;
+  String? get testNotice => _testNotice;
+
+  Future<void> runNamedTest(String requirementId, String checkId) async {
+    final selected = _report;
+    if (isDisposed ||
+        _runningTest ||
+        _saving ||
+        _inspecting ||
+        selected == null) {
+      return;
+    }
+    final revision = _revision;
+    _runningTest = true;
+    _testNotice =
+        'Running $checkId. Saved inputs and files are checked around execution; acceptance remains unverified.';
+    _error = null;
+    update();
+    try {
+      await _namedTestRunner.run(
+        project,
+        selected,
+        requirementId,
+        checkId,
+        authorized: () => !isDisposed && revision == _revision,
+      );
+      if (!isDisposed && revision == _revision) {
+        load();
+        _testNotice = 'Named-test result saved. Review the selected check below; acceptance remains unverified.';
+      }
+    } on UnsupportedError {
+      if (!isDisposed && revision == _revision) {
+        _error = 'Confined named tests require a supported desktop host. Existing evidence was retained.';
+        _testNotice = null;
+      }
+    } catch (_) {
+      if (!isDisposed && revision == _revision) {
+        _error = 'Named test could not be completed or saved. Existing evidence was retained. Reload approved evidence, verify current files and retry.';
+        _testNotice = null;
+      }
+    } finally {
+      _runningTest = false;
+      update();
+    }
+  }
+
   final ArtifactInspector _inspector;
   final DateTime Function() _clock;
   final StudioProject project;
@@ -40,7 +96,13 @@ class RequirementCheckReportController extends BaseController {
     bool passed,
   ) async {
     final selected = _report;
-    if (isDisposed || _saving || _inspecting || selected == null) return;
+    if (isDisposed ||
+        _saving ||
+        _inspecting ||
+        _runningTest ||
+        selected == null) {
+      return;
+    }
     _saving = true;
     final revision = _revision;
     update();
@@ -71,6 +133,7 @@ class RequirementCheckReportController extends BaseController {
     _revision++;
     _observation = null;
     _inspectionNotice = null;
+    _testNotice = null;
     try {
       _report = store.load(project);
       _error = null;
@@ -82,7 +145,7 @@ class RequirementCheckReportController extends BaseController {
   }
 
   Future<void> inspectArtifacts() async {
-    if (isDisposed || _inspecting || _saving) return;
+    if (isDisposed || _inspecting || _saving || _runningTest) return;
     _inspecting = true;
     // Always inspect the current durable pointer, rather than an old screen.
     load();

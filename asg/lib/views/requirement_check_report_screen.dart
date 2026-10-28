@@ -41,14 +41,16 @@ class _RequirementCheckReportScreenState
           children: [
             const Text(RequirementCheckReport.limits),
             TextButton(
-              onPressed: widget.controller.saving
+              onPressed:
+                  widget.controller.saving || widget.controller.runningTest
                   ? null
                   : widget.controller.load,
               child: const Text('Reload saved evidence'),
             ),
             TextButton(
               onPressed:
-                  widget.controller.inspecting ||
+                  widget.controller.runningTest ||
+                      widget.controller.inspecting ||
                       widget.controller.saving ||
                       report?.savedProject == null
                   ? null
@@ -59,7 +61,10 @@ class _RequirementCheckReportScreenState
                     : 'Inspect current artifacts',
               ),
             ),
-            if (widget.controller.inspecting) const LinearProgressIndicator(),
+            if (widget.controller.inspecting || widget.controller.runningTest)
+              const LinearProgressIndicator(),
+            if (widget.controller.testNotice != null)
+              Text(widget.controller.testNotice!),
             if (widget.controller.inspection != null)
               Text(widget.controller.inspection!.label),
             if (widget.controller.inspectedAt != null)
@@ -141,6 +146,26 @@ class _RequirementCheckReportScreenState
                             const Text(
                               'Missing direct result; acceptance remains unverified.',
                             ),
+                          if (check.type == AcceptanceCheckType.automated &&
+                              check.target != null) ...[
+                            const Text(
+                              'Explicitly run this literal Flutter test in the confined saved project. Requires a supported desktop host and current approved evidence. Closing or reloading this report prevents saving a pending result; the bounded command may finish.',
+                            ),
+                            TextButton(
+                              onPressed:
+                                  widget.controller.runningTest ||
+                                      widget.controller.saving ||
+                                      widget.controller.inspecting ||
+                                      !report.canRecordManualObservation ||
+                                      report.savedProject?.confined != true
+                                  ? null
+                                  : () => widget.controller.runNamedTest(
+                                      result.requirement.id,
+                                      check.id,
+                                    ),
+                              child: Text('Run named test for ${check.id}'),
+                            ),
+                          ],
                           if (check.type == AcceptanceCheckType.manual) ...[
                             const Text(
                               'Record only what you personally checked against this saved revision. This does not run a check or verify acceptance. Manual observations stay on this device and are excluded from portable backups.',
@@ -152,6 +177,7 @@ class _RequirementCheckReportScreenState
                                   TextButton(
                                     onPressed:
                                         widget.controller.saving ||
+                                            widget.controller.runningTest ||
                                             widget.controller.inspecting ||
                                             !report.canRecordManualObservation
                                         ? null
