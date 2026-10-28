@@ -44,6 +44,58 @@ ProjectRequirement requirement([
   checks: values,
 );
 void main() {
+  test('authored checks cannot mutate validated report snapshots', () {
+    final authored = checks.toList();
+    final value = requirement(authored);
+    final board = RequirementsBoard(requirements: [value]);
+    board.validate();
+    final result = RequirementCheckResult(
+      value,
+      RequirementCheckState.missing,
+      'No saved run',
+      [],
+      [],
+    );
+    final encoded = jsonEncode(board.toJson());
+    final identity = result.acceptance.requirementSha256;
+    final copied = jsonEncode(result.acceptance.toJson());
+    authored
+      ..clear()
+      ..add(
+        const AcceptanceCheckDefinition(
+          id: '../invalid',
+          type: AcceptanceCheckType.automated,
+          expectation: 'Changed after validation',
+        ),
+      );
+    board.validate();
+    expect(jsonEncode(board.toJson()), encoded);
+    expect(result.acceptance.requirementSha256, identity);
+    expect(jsonEncode(result.acceptance.toJson()), copied);
+    expect(() => value.checks.clear(), throwsUnsupportedError);
+  });
+
+  test('saved and decoded checks retain immutable authored snapshot', () async {
+    final records = Records();
+    final authored = checks.toList();
+    final value = requirement(authored);
+    final draft = RequirementsBoard(requirements: [value]);
+    final store = RequirementsStore(records);
+    final saved = await store.save('p', RequirementsBoard(), draft);
+    final encoded = jsonEncode(saved.toJson());
+    authored.clear();
+    expect(jsonEncode(saved.toJson()), encoded);
+    expect(jsonEncode(store.load('p').toJson()), encoded);
+    expect(
+      () => saved.requirements.single.checks.removeLast(),
+      throwsUnsupportedError,
+    );
+    expect(
+      () => store.load('p').requirements.single.checks.clear(),
+      throwsUnsupportedError,
+    );
+  });
+
   test('legacy identity unchanged; declarations survive store, archive and redaction', () async {
     final legacy = requirement([]);
     expect(legacy.toJson().keys, ['id', 'title', 'acceptance']);

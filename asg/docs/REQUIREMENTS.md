@@ -213,7 +213,7 @@ Requirements changes: existing F10 acceptance guidance and F15 backend milestone
 
 ## Active task and delivery ledger
 
-Current: F10 In progress/unchecked. Prior identity increment PR #233 was independently approved at final head `06bfa5b4f775c402f85362a4f580d2f10b7dbdd5`, required CI `40605398605` passed, and protected merge `0779a872be6961e7882f139cd800e49e841d32a0` was verified at 2026-10-28T00:09:28Z (review `5676167023`; tested tree `f41713d770f73cc46841f939fa04f689d1af2bd2`). Issue #217 is reopened for visible revision context on branch `217-visible-revision-context`: show typed saved/current hashes and unavailable/current/stale context directly in the report. Actual targeted acceptance execution and direct results remain unmet; no later task is selected. Final revision, validation, independent review, CI and merge evidence follow in the linked PR.
+Current: F10 In progress/unchecked. PR #234 merged as `430323657a54c3a7aa5b0e34bc29231bf4580227` at 2026-10-28T00:28:39Z after final independent review `5676308891` of head `0f04336f1eace6851dbf7b5c0b9363326eac190b` and required CI `40608395690`; tested tree `6335d45f906ee80fe7d7bce2778a5c3d6092baed`. Issue #217 reopened on branch `217-freeze-acceptance-checks` for immutable authored check snapshots. Caller list edits must not change validated requirements, report identities or stored snapshots. Targeted acceptance execution/direct results remain unmet; no later task selected. Final checks, review and merge evidence follow in the linked PR.
 
 ### Historical status snapshots
 
@@ -3894,3 +3894,12 @@ Continues verified PR #233 on branch `217-visible-revision-context`. The report 
 Acceptance: typed/copied identity parity, unavailable legacy evidence, changed requirements and reload retaining saved identity, selectable hashes at 320px/double text and existing report/inspection flows. Validate formatter/analyzer/full Flutter suite/web build; independent exact-final review and actual required CI gate merge. No fresh live inference (configured runtime unavailable), source execution, model download or installed-app replacement. Final tested revision, check totals, review and merge evidence are recorded in the PR after verification.
 
 Final local checks: formatter224/analyzer passed; 743 Flutter tests passed with seven opt-in skips; web build and Wasm dry run passed. Three new context regressions plus existing report/artifact coverage passed. Scroll tests now position controls within the visible viewport before tapping. Independent final-revision review and required CI remain merge gates.
+
+
+### F10 immutable acceptance declarations — issue #217 (28 October 2026)
+
+The ProjectRequirement constructor retained its caller's mutable check list. A regression reproduced an invalid check being introduced after board validation, changing report identity without a board revision or durable write. Requirements now defensively copy checks into an unmodifiable list, consistent with task dependencies and board collections. Decoded and programmatic records share that contract; stored JSON and legacy identity remain unchanged. Tests cover alias mutation, validation/hash/copied-evidence stability, persisted/reopened snapshot parity and rejected writes through exposed lists. Existing const requirement fixtures become final values because the defensive copy occurs at construction.
+
+Scope: snapshot integrity only. F10 remains In progress/unchecked; no acceptance verification, new commands or source-execution authority. Final validation, exact-revision independent review, actual required CI and merge evidence are recorded in the linked PR. Prior PR #234 merge/review/check evidence is reconciled in the current ledger. No later task selected.
+
+Local final validation: formatter 224 files, analyzer, 745 Flutter tests (seven opt-in skips), web build and Wasm dry run passed. The new alias-mutation regression failed before the fix; both new regressions pass after it. Initial analyzer errors from const fixtures were corrected before the full passing suite. Final exact-head review and required CI remain merge gates.

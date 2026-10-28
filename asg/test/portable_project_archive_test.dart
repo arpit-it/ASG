@@ -14,7 +14,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 RequirementsBoard board() => RequirementsBoard(
   revision: 7,
-  requirements: const [
+  requirements: [
     ProjectRequirement(id: 'R1', title: 'Résumé', acceptance: 'Keep 中文 text'),
   ],
   tasks: [

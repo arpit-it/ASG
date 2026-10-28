@@ -459,7 +459,7 @@ void main() {
       final archive = PortableProjectArchive(
         requirements: RequirementsBoard(
           revision: 7,
-          requirements: const [
+          requirements: [
             ProjectRequirement(
               id: 'R1',
               title: 'Preserve',

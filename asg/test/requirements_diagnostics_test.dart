@@ -9,7 +9,7 @@ import 'package:asg/services/record_storage.dart';
 import 'package:asg/services/requirements_store.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-const requirement = ProjectRequirement(
+final requirement = ProjectRequirement(
   id: 'R1',
   title: 'Feature',
   acceptance: 'Survives restart',

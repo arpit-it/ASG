@@ -98,7 +98,7 @@ Future<GeneratedProject> prepare(
 
 void main() {
   test('acceptance identity preserves the entire authored block and changes on edits', () {
-    const original = ProjectRequirement(
+    final original = ProjectRequirement(
       id: 'R1',
       title: 'Task ✓',
       acceptance: 'First.  Second?\n- Keep 🧪  ',
@@ -267,7 +267,7 @@ void main() {
     final records = Records();
     final base = mappedBoard();
     final board = RequirementsBoard(
-      requirements: const [
+      requirements: [
         ProjectRequirement(
           id: 'R1',
           title: 'Task "board" 🧪',
@@ -521,7 +521,7 @@ void main() {
         board: RequirementsBoard(
           requirements: [
             ...board.requirements,
-            const ProjectRequirement(
+            ProjectRequirement(
               id: 'R2',
               title: 'Unmapped',
               acceptance: 'Needs tests',
@@ -742,7 +742,7 @@ void main() {
       board: RequirementsBoard(
         requirements: [
           ...original.requirements,
-          const ProjectRequirement(
+          ProjectRequirement(
             id: 'R2',
             title: 'Output',
             acceptance: 'Show result',
@@ -892,7 +892,7 @@ void main() {
         'p',
         board,
         RequirementsBoard(
-          requirements: const [
+          requirements: [
             ProjectRequirement(
               id: 'R1',
               title: 'Starter',

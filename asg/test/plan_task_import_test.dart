@@ -26,7 +26,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'planning_conversation_test.dart'
     show ControlledRecords, project, chat, PlanningProvider;
 
-const r = ProjectRequirement(
+final r = ProjectRequirement(
   id: 'R1',
   title: 'List',
   acceptance: 'Save a list',
