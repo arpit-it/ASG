@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "scope": "historical-native-controller-service-run",
+  "issue": 269,
+  "sourceRevision": "7fb37b446e256002cc801d769e7d6c28f6cc7a5c",
+  "sourceTree": "3c8c10f09424837d40ff5ade4515e599ffc5dd15",
+  "observedAt": "2026-10-28T17:45:05Z",
+  "sdk": {
+    "frameworkVersion": "3.47.6",
+    "frameworkRevision": "5fc346839b5d0eef006ed8404392afb4dfae428d",
+    "dartSdkVersion": "3.13.5"
+  },
+  "measuredEnvironment": {
+    "host": {
+      "os": "darwin",
+      "version": "27.0.1",
+      "architecture": "arm64",
+      "device": "metal"
+    },
+    "runtime": {
+      "python": "3.12.8",
+      "mlx": "0.32.4",
+      "mlx-lm": "0.32.2",
+      "transformers": "5.20.2"
+    },
+    "model": {
+      "id": "Qwen3.5-9B",
+      "bits": 4,
+      "groupSize": 64,
+      "filesSha256": {
+        "README.md": "748c964f9b7e5f2c3770ce013bbc0153be7c54311d9692c343b6188eefe77ac6",
+        "chat_template.jinja": "a4aee8afcf2e0711942cf848899be66016f8d14a889ff9ede07bca099c28f715",
+        "config.json": "15303ca367065b31713bb4573030718cdf1fc31d5bca5b4a989a68ef20e9540d",
+        "model.safetensors": "e1f2a78750abdc4eeb4d41a49675dcf63667bda29b3144a93ea80dcc1c0a4f27",
+        "model.safetensors.index.json": "d50465249b0ec7eb602558c4d4b7d0c7516bc99548d8d2a3b3c3a3805a93e607",
+        "tokenizer.json": "a5cd9732badce41de57e6efce8302930ded1c1188c5f81feb2bd6c24c4a1941f",
+        "tokenizer_config.json": "86f01837a638275f2d3479804e79802aaff0e3ccef15e5f29dd6afbe6551daed"
+      }
+    },
+    "modelSha256": "0a2474760815486856945bb3077daed472642af0476afe548d6397e326cba041",
+    "generatorPython": "3.12.8"
+  },
+  "configuration": {
+    "runtime": {
+      "backendSelection": "auto",
+      "resolvedBackend": "mlx",
+      "modelId": "Qwen3.5-9B",
+      "localWeightsOnly": true,
+      "host": "loopback",
+      "port": 8765,
+      "serverTokenCap": 2048,
+      "serverSamplerTemperature": 0
+    },
+    "test": {
+      "realInference": true,
+      "acceptanceProvenance": true,
+      "realGenerationFixture": false
+    },
+    "sourceFilesSha256": {
+      "test/candidate_real_test.dart": "40dd151884d9131545c0cc819f4bba7000094a8d97675cda4254d3614c5c6517",
+      "test/support/acceptance_provenance.dart": "896aee7bc3e281e70acd86aae0b5e9e376fbb477a552a3dd709453a7e3eb4447",
+      "lib/services/source_edit_proposer.dart": "661e0fde64d2dc0e27845cd91756684bdbf3d49e116a657aaf1d86490c4390ba",
+      "lib/services/local_model.dart": "71ca2d74b9b3881276ba9a72bbfa55462a277d210de3b35e4be7e9334fbd7c62",
+      "lib/models/local_model_config.dart": "8c9536bb77a359a5c5440a07bd8cb6db2e1ea7f99f643e9e8fda79e49dca43c0",
+      "tools/qwen_server.py": "cf18f4bfdba7812ce238c304f29e84b86b1dcdd05791b2b1bb6d2d4665b80025",
+      "tools/generation_command.py": "6be66cf7de5d2f16c5d6d2e589010081d75e600dfcf26f1f8b3dea3601a2ffaf",
+      "pubspec.lock": "dd10400f6c5a381aa0e53c727075d26707c63e8f77c142d3aa7f730e8cfa42ae"
+    },
+    "runtimeVersions": {
+      "python": "3.12.8",
+      "mlx": "0.32.4",
+      "mlx-lm": "0.32.2",
+      "transformers": "5.20.2"
+    },
+    "sdk": {
+      "frameworkVersion": "3.47.6",
+      "frameworkRevision": "5fc346839b5d0eef006ed8404392afb4dfae428d",
+      "dartSdkVersion": "3.13.5"
+    },
+    "generatorPythonVersion": "3.12.8"
+  },
+  "hashEncoding": "product_acceptance.sha: UTF-8 sorted-key compact JSON",
+  "result": {
+    "test": "test/candidate_real_test.dart",
+    "durationSeconds": 49,
+    "passed": 1,
+    "separateTrustedFixtureSkipped": 1,
+    "actualInference": true,
+    "confinedExitCodes": {
+      "resolve": 0,
+      "test": 0,
+      "analyze": 0,
+      "build": 0
+    },
+    "tamperRefusalAndPreservation": true,
+    "explicitPromotion": true,
+    "servedJavascriptChanged": true,
+    "databaseReopen": true
+  },
+  "limitations": [
+    "Controller/service execution, not native application launch.",
+    "No manual browser interaction or numeric browser version.",
+    "Only two supplied-identity macOS observations; all other configured cells missing.",
+    "Android/iOS/Windows/Linux are unconfigured and unavailable.",
+    "Saved report is historical and source-bound, not current health or product support.",
+    "Published evidence revision differs from tested application source; changed identity must yield stale cells."
+  ]
+}

@@ -253,3 +253,58 @@ and exact F10 snapshots were unavailable, so this artifact is neither collector
 input nor a current-pass/support claim. No native launch, live model, generated
 source, executable history/rollback, stop/timeout or full F17 baseline is established.
 F17 remains In progress. Re-run after relevant source/toolchain/configuration changes.
+
+
+## Exact-identity candidate matrix (issue #269)
+
+The [saved report](acceptance/2026-10-28-candidate-matrix/report.json) is the first
+assembled native candidate observation with an actual measured environment and
+exact F10 linkage. Its tested application source is
+`7fb37b446e256002cc801d769e7d6c28f6cc7a5c`; the evidence publication is a later
+documentation revision. It is a historical supplied-evidence report, not live
+health, authenticated attestation or current product support. F17 stays In progress.
+
+The [observation](acceptance/2026-10-28-candidate-matrix/observation.json) records
+measured host, SDK, Python/package versions, per-file model digests and normalized
+configuration. `modelSha256` hashes the sorted compact JSON mapping of model
+filenames to measured file digests. Device/configuration hashes use the same
+`product_acceptance.sha` encoding over their named objects. Runtime version is
+Python's version; MLX and Transformers versions are separately recorded. The
+configuration also binds measured Python/MLX/MLX-LM/Transformers versions, the
+exact SDK revision/Dart object, generator Python version, and exact
+test/provider/server/tool/lockfile bytes. No private
+logs, paths, authored prompts or source contents are included.
+
+The actual offline Qwen3.5-9B candidate test passed in 49 seconds: model proposal,
+tamper refusal/preservation, confined resolve/test/analyze/build (all exit zero),
+explicit promotion, changed served JavaScript and durable database reopen. One
+separate trusted fixture was skipped. The runtime started for this run was verified
+ready/idle and stopped afterward; weights were neither downloaded nor replaced.
+
+Only `reviewed-candidate/model-proposal` and `reviewed-candidate/confined-checks`
+for macOS receive supplied-identity passes (two of 90 cells). The manual served
+interaction, native application launch and other configured cells remain missing;
+Android/iOS/Windows/Linux remain unavailable. Numeric browser version is unavailable.
+An actual browser interaction is still required beyond fetched changed JavaScript.
+
+Reproduce the live test serially using the earlier provenance command at the exact
+clean tested commit, measure the environment anew, and import both observed checks
+with `tools/import_acceptance_provenance.py`. Do not reuse an old timestamp/status
+for a rerun. The captured [provenance](acceptance/2026-10-28-candidate-matrix/provenance.json),
+[identity](acceptance/2026-10-28-candidate-matrix/identity.json) and
+[evidence](acceptance/2026-10-28-candidate-matrix/evidence.json) are the exact importer
+inputs/output for this historical run. From the Flutter root, regenerate the report:
+
+```sh
+python3 -B tools/product_acceptance.py \
+  --manifest docs/development/product_acceptance_manifest.json \
+  --identity docs/development/acceptance/2026-10-28-candidate-matrix/identity.json \
+  --evidence docs/development/acceptance/2026-10-28-candidate-matrix/evidence.json \
+  --output /tmp/candidate-acceptance-report.json
+```
+
+`generatedAt` changes on regeneration; the other fields/cells must match the saved
+report. Replacing the identity source revision with a different valid revision
+makes both saved passes stale, leaving zero current passes. The importer only
+attests supplied statuses; neither it nor a green report authenticates the run.
+Paste the report in **Product acceptance evidence** to inspect its saved coverage.
