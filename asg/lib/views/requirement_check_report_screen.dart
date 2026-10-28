@@ -100,9 +100,31 @@ class _RequirementCheckReportScreenState
                           Text(check.expectation),
                           if (check.target case final target?)
                             Text(
-                              'Planned Flutter test: ${target.file}; exact name: ${target.name}. Not executed.',
+                              'Declared Flutter test: ${target.file}; exact name: ${target.name}.',
                             ),
-                          if (report.observationFor(
+                          if ((check.type == AcceptanceCheckType.automated
+                                  ? report.namedObservationFor(
+                                      result.requirement.id,
+                                      check.id,
+                                    )
+                                  : null)
+                              case final observation?) ...[
+                            Text(
+                              '${report.namedObservationCurrent(observation) ? "Saved" : "Stale saved"} named-test result: ${observation.result.passed ? "passed" : "not passed"}',
+                            ),
+                            Text(
+                              'Executed target: ${observation.result.target.file}; exact name: ${observation.result.target.name}',
+                            ),
+                            Text(
+                              'Observed at ${observation.observedAt.toUtc().toIso8601String()} (UTC)',
+                            ),
+                            SelectableText(
+                              'Saved run SHA-256: ${observation.runSha256}',
+                            ),
+                            const Text(
+                              'Saved command evidence only; current files and acceptance criteria remain unverified.',
+                            ),
+                          ] else if (report.observationFor(
                                 result.requirement.id,
                                 check.id,
                               )
