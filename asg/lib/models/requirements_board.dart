@@ -94,26 +94,69 @@ class AcceptanceCheckDefinition {
   }
 }
 
+/// Explicit user-authored criterion and local check references. No prose parsing
+/// or inferred coverage: an empty mapping is allowed and visibly unmet.
+class AcceptanceCriterionDefinition {
+  AcceptanceCriterionDefinition({
+    required this.id,
+    required this.text,
+    List<String> checkIds = const [],
+  }) : checkIds = List.unmodifiable(checkIds);
+  final String id, text;
+  final List<String> checkIds;
+  Map<String, Object> toJson() => {
+    'id': id,
+    'text': text,
+    'checkIds': checkIds,
+  };
+  factory AcceptanceCriterionDefinition.fromJson(Map<String, dynamic> json) {
+    if (json.length != 3 ||
+        json['id'] is! String ||
+        json['text'] is! String ||
+        json['checkIds'] is! List ||
+        (json['checkIds'] as List).any((v) => v is! String)) {
+      throw const FormatException('Invalid acceptance criterion definition.');
+    }
+    return AcceptanceCriterionDefinition(
+      id: json['id'] as String,
+      text: json['text'] as String,
+      checkIds: (json['checkIds'] as List).cast<String>(),
+    );
+  }
+}
+
 class ProjectRequirement {
   ProjectRequirement({
     required this.id,
     required this.title,
     required this.acceptance,
     List<AcceptanceCheckDefinition> checks = const [],
-  }) : checks = List.unmodifiable(checks);
+    List<AcceptanceCriterionDefinition> criteria = const [],
+  }) : checks = List.unmodifiable(checks),
+       criteria = List.unmodifiable(criteria);
   final String id, title, acceptance;
   final List<AcceptanceCheckDefinition> checks;
+  final List<AcceptanceCriterionDefinition> criteria;
   Map<String, Object> toJson() => {
     'id': id,
     'title': title,
     'acceptance': acceptance,
     if (checks.isNotEmpty) 'checks': checks.map((c) => c.toJson()).toList(),
+    if (criteria.isNotEmpty)
+      'criteria': criteria.map((c) => c.toJson()).toList(),
   };
   factory ProjectRequirement.fromJson(Map<String, dynamic> json) {
     if (json.containsKey('checks') && json['checks'] is! List) {
       throw const FormatException('Invalid acceptance check declarations.');
     }
+    if (json.containsKey('criteria') && json['criteria'] is! List) {
+      throw const FormatException('Invalid acceptance criteria.');
+    }
     return ProjectRequirement(
+      criteria: [
+        for (final c in json['criteria'] as List? ?? const [])
+          AcceptanceCriterionDefinition.fromJson(c as Map<String, dynamic>),
+      ],
       id: json['id'] as String,
       title: json['title'] as String,
       acceptance: json['acceptance'] as String,
@@ -212,6 +255,28 @@ class RequirementsBoard {
         if (!checkIds.add(check.id)) {
           throw const FormatException(
             'Acceptance check IDs must be unique within a requirement.',
+          );
+        }
+      }
+      if (r.criteria.length > 10) {
+        throw const FormatException(
+          'Use at most 10 authored criteria per requirement.',
+        );
+      }
+      final criterionIds = <String>{};
+      for (final criterion in r.criteria) {
+        id(criterion.id);
+        text(criterion.text, 500);
+        if (!criterionIds.add(criterion.id)) {
+          throw const FormatException(
+            'Criterion IDs must be unique within a requirement.',
+          );
+        }
+        if (criterion.checkIds.length > 10 ||
+            criterion.checkIds.toSet().length != criterion.checkIds.length ||
+            criterion.checkIds.any((v) => !checkIds.contains(v))) {
+          throw const FormatException(
+            'Map unique existing check IDs from this requirement to each criterion. Fix mappings before removing or renaming a check.',
           );
         }
       }
@@ -320,6 +385,12 @@ class RequirementsBoard {
       out.writeln(
         '## ${r.id}: ${r.title}\n\nAcceptance criteria:\n${r.acceptance}\n',
       );
+      for (final criterion in r.criteria) {
+        out.writeln('Criterion ${criterion.id}: ${criterion.text}');
+        out.writeln(
+          'Mapped checks: ${criterion.checkIds.isEmpty ? "none" : criterion.checkIds.join(", ")}; acceptance not verified.',
+        );
+      }
       for (final check in r.checks) {
         out.writeln(
           '- Check ${check.id} (${check.type.name}): ${check.expectation} — no direct result recorded.',

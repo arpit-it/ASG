@@ -125,6 +125,10 @@ class RequirementCheckReport {
 
   Map<String, Object?> acceptanceEvidence(RequirementCheckResult result) => {
     ...result.acceptance.toJson(),
+    'criteria': [
+      for (final criterion in result.requirement.criteria)
+        criterionEvidence(result.requirement, criterion),
+    ],
     'declaredChecks': [
       for (final check in result.requirement.checks)
         directCheck(result.requirement, check).toJson(),
@@ -133,6 +137,24 @@ class RequirementCheckReport {
       for (final check in result.requirement.checks)
         if (directCheck(result.requirement, check).result != null)
           directCheck(result.requirement, check).toJson(),
+    ],
+  };
+
+  /// A deterministic mapping projection only; no criterion verdict is inferred.
+  Map<String, Object?> criterionEvidence(
+    ProjectRequirement requirement,
+    AcceptanceCriterionDefinition criterion,
+  ) => {
+    ...criterion.toJson(),
+    'status': 'unverified',
+    'mappingStatus': criterion.checkIds.isEmpty ? 'unmapped' : 'authored',
+    'scope': 'Authored mapping only. Check outcomes do not establish semantic coverage of this criterion or the free-form acceptance block.',
+    'checks': [
+      for (final id in criterion.checkIds)
+        directCheck(
+          requirement,
+          requirement.checks.firstWhere((c) => c.id == id),
+        ).toJson(),
     ],
   };
 
