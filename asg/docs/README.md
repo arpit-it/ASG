@@ -35,6 +35,7 @@ The [user-owned Hugging Face cloud direction](REQUIREMENTS.md#user-owned-hugging
 - [Local Qwen](setup/LOCAL_QWEN.md)
 - [Qwen Streaming](setup/QWEN_STREAMING.md)
 - [Runtime Setup](setup/RUNTIME_SETUP.md)
+- [Coding model catalog](setup/CODING_MODEL_CATALOG.md)
 
 ## History and continuity
 

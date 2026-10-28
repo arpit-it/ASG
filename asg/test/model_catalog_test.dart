@@ -1,0 +1,553 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright 2026 Arpit Sinha
+import 'dart:async';
+import 'dart:convert';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:asg/models/model_catalog.dart';
+import 'package:asg/services/model_catalog_service.dart';
+import 'package:asg/controllers/model_catalog_controller.dart';
+import 'package:asg/controllers/runtime_setup_controller.dart';
+import 'package:asg/services/model_settings_store.dart';
+import 'package:asg/services/runtime_setup_store.dart';
+import 'package:asg/services/runtime_connection.dart';
+import 'package:asg/views/model_catalog_screen.dart';
+import 'package:asg/views/runtime_setup_screen.dart';
+
+import 'runtime_setup_test.dart' show FakeRuntimeHost;
+
+final entry = codingModelCatalog.first;
+final now = DateTime.utc(2026, 10, 28);
+final revision = 'a' * 40;
+const host = ModelHardware(
+  appleSilicon: true,
+  memoryBytes: 36 * gib,
+  availableBytes: 24 * gib,
+  detail: 'Apple Silicon',
+);
+Map<String, Object?> api({String? repo, String? sha}) => {
+  'id': repo ?? entry.repository,
+  'sha': sha ?? revision,
+  'cardData': {'license': 'apache-2.0'},
+  'siblings': [
+    {'rfilename': 'config.json', 'size': 100},
+    {'rfilename': 'tokenizer.json', 'size': 200},
+    {'rfilename': 'model.safetensors', 'size': 5 * gib},
+  ],
+};
+Map<String, Object?> config({
+  String architecture = 'Qwen3_5ForConditionalGeneration',
+  int bits = 4,
+}) => {
+  'architectures': [architecture],
+  'quantization': {'bits': bits, 'group_size': 64},
+};
+http.Response response(Object? value, [int status = 200]) =>
+    http.Response(jsonEncode(value), status);
+ModelCatalogMetadata metadata({
+  int bytes = 5 * gib,
+  String architecture = 'Qwen3_5ForConditionalGeneration',
+  int bits = 4,
+}) => ModelCatalogMetadata(
+  revision: revision,
+  license: 'apache-2.0',
+  architecture: architecture,
+  bits: bits,
+  mlxFormat: true,
+  weightBytes: bytes,
+  downloadBytes: bytes + 300,
+  checkedAt: now,
+);
+ModelCatalogService service({
+  Map<String, Object?>? modelApi,
+  Map<String, Object?>? modelConfig,
+}) => ModelCatalogService(
+  client: MockClient(
+    (r) async => response(
+      r.url.path.startsWith('/api/')
+          ? modelApi ?? api()
+          : modelConfig ?? config(),
+    ),
+  ),
+  now: () => now,
+);
+
+class WidgetCatalogService extends ModelCatalogService {
+  @override
+  Future<ModelCatalogMetadata> check(ModelCatalogEntry entry) async =>
+      metadata();
+  @override
+  void close() {}
+}
+
+Future<void> reveal(WidgetTester tester, Finder target) async {
+  await tester.scrollUntilVisible(
+    target,
+    300,
+    scrollable: find.byType(Scrollable).first,
+  );
+  await tester.pumpAndSettle();
+}
+
+void main() {
+  test(
+    'memory estimates include all weights, cache/runtime and OS allowance',
+    () {
+      final fit = ModelAssessment.assess(host, metadata());
+      expect(fit.fit, ModelFit.estimatedFit);
+      expect(fit.estimatedBytes, (5 * gib * 1.25).ceil() + 4 * gib);
+      expect(
+        ModelAssessment.assess(host, metadata(bytes: 30 * gib)).fit,
+        ModelFit.exceedsMemory,
+      );
+      expect(
+        ModelAssessment.assess(
+          const ModelHardware(appleSilicon: true, memoryBytes: 8 * gib),
+          metadata(),
+        ).canChoose,
+        false,
+      );
+      expect(
+        ModelAssessment.assess(
+          const ModelHardware(
+            appleSilicon: true,
+            memoryBytes: 36 * gib,
+            availableBytes: 0,
+          ),
+          metadata(),
+        ).fit,
+        ModelFit.memoryPressure,
+      );
+    },
+  );
+  test('unknown hardware and unsupported architecture cannot be chosen', () {
+    for (final h in [
+      const ModelHardware(appleSilicon: false),
+      const ModelHardware(appleSilicon: true),
+    ]) {
+      expect(ModelAssessment.assess(h, metadata()).canChoose, false);
+    }
+    expect(ModelAssessment.assess(host, null).canChoose, false);
+    expect(
+      ModelAssessment.assess(
+        host,
+        metadata(architecture: 'Qwen2ForCausalLM'),
+      ).canChoose,
+      false,
+    );
+    expect(ModelAssessment.assess(host, metadata(bits: 8)).canChoose, false);
+  });
+  test(
+    'metadata requests contain no credentials and never fetch weights',
+    () async {
+      final seen = <http.Request>[];
+      final s = ModelCatalogService(
+        client: MockClient((r) async {
+          seen.add(r);
+          return response(r.url.path.startsWith('/api/') ? api() : config());
+        }),
+        now: () => now,
+      );
+      addTearDown(s.close);
+      final m = await s.check(entry);
+      expect(m.downloadBytes, 5 * gib + 300);
+      expect(m.checkedAt, now);
+      expect(m.revision, revision);
+      expect(seen.length, 2);
+      expect(
+        seen.every(
+          (r) =>
+              r.method == 'GET' &&
+              r.url.host == 'huggingface.co' &&
+              !r.headers.keys.any((k) => k.toLowerCase() == 'authorization'),
+        ),
+        true,
+      );
+      expect(seen.last.url.path, contains('/resolve/$revision/config.json'));
+      expect(seen.any((r) => r.url.path.endsWith('.safetensors')), false);
+    },
+  );
+  test(
+    'missing indexed shard is rejected; complete index is pinned and accepted',
+    () async {
+      for (final shard in ['missing.safetensors', 'model.safetensors']) {
+        final doc = api();
+        (doc['siblings'] as List).add({
+          'rfilename': 'model.safetensors.index.json',
+          'size': 20,
+        });
+        final s = ModelCatalogService(
+          client: MockClient(
+            (r) async => response(
+              r.url.path.startsWith('/api/')
+                  ? doc
+                  : r.url.path.endsWith('index.json')
+                  ? {
+                      'weight_map': {'weight': shard},
+                    }
+                  : config(),
+            ),
+          ),
+        );
+        addTearDown(s.close);
+        if (shard.startsWith('missing')) {
+          await expectLater(
+            s.check(entry),
+            throwsA(isA<ModelCatalogFailure>()),
+          );
+        } else {
+          expect((await s.check(entry)).runtimeCompatible, true);
+        }
+      }
+    },
+  );
+  for (final bad in [
+    'docs',
+    'missing-tokenizer',
+    'size',
+    'repo',
+    'revision',
+    'license',
+    'duplicate',
+    'traversal',
+    'no-index',
+  ]) {
+    test('reject malformed/incomplete repository: $bad', () async {
+      final doc = api();
+      final files = doc['siblings'] as List;
+      switch (bad) {
+        case 'docs':
+          files.clear();
+          files.add({'rfilename': 'README.md', 'size': 1});
+        case 'missing-tokenizer':
+          files.removeAt(1);
+        case 'size':
+          files[2]['size'] = -1;
+        case 'repo':
+          doc['id'] = 'PRIVATE_WRONG';
+        case 'revision':
+          doc['sha'] = 'not-a-revision';
+        case 'license':
+          doc['cardData'] = {'license': '/PRIVATE/path'};
+        case 'duplicate':
+          files.add(files[2]);
+        case 'traversal':
+          files[2]['rfilename'] = '../model.safetensors';
+        case 'no-index':
+          files[2]['rfilename'] = 'shard.safetensors';
+      }
+      final s = service(modelApi: doc);
+      addTearDown(s.close);
+      await expectLater(s.check(entry), throwsA(isA<ModelCatalogFailure>()));
+    });
+  }
+  test(
+    'unknown registered-source impersonation is rejected before IO',
+    () async {
+      var calls = 0;
+      final s = ModelCatalogService(
+        client: MockClient((r) async {
+          calls++;
+          return response(api());
+        }),
+      );
+      addTearDown(s.close);
+      await expectLater(
+        s.check(
+          const ModelCatalogEntry(
+            repository: 'other/PRIVATE',
+            name: 'x',
+            description: 'x',
+            github: '',
+          ),
+        ),
+        throwsA(isA<ModelCatalogFailure>()),
+      );
+      expect(calls, 0);
+    },
+  );
+  test(
+    'oversized and non-JSON metadata fail without raw error leakage',
+    () async {
+      for (final body in ['x' * (2 * 1024 * 1024 + 1), 'PRIVATE_NOT_JSON']) {
+        final s = ModelCatalogService(
+          client: MockClient((r) async => http.Response(body, 200)),
+        );
+        addTearDown(s.close);
+        try {
+          await s.check(entry);
+          fail('Expected rejection');
+        } catch (e) {
+          expect('$e', isNot(contains('PRIVATE')));
+        }
+      }
+    },
+  );
+  test(
+    'search is explicit, bounded, public and only adds MLX 4-bit candidates',
+    () async {
+      var calls = 0;
+      final s = ModelCatalogService(
+        client: MockClient((r) async {
+          calls++;
+          if (r.url.path == '/api/models') {
+            expect(r.url.queryParameters['limit'], '40');
+            expect(r.url.queryParameters['author'], 'mlx-community');
+            return response([
+              {'id': 'mlx-community/Example-Coder-4bit'},
+              {'id': 'mlx-community/Example-Coder-8bit'},
+            ]);
+          }
+          return response(
+            r.url.path.startsWith('/api/')
+                ? api(repo: 'mlx-community/Example-Coder-4bit')
+                : config(),
+          );
+        }),
+      );
+      addTearDown(s.close);
+      expect(calls, 0);
+      final found = await s.search('Coder');
+      expect(found.length, 1);
+      expect((await s.check(found.single)).runtimeCompatible, true);
+      await expectLater(
+        s.search('https://private/secret'),
+        throwsA(isA<ModelCatalogFailure>()),
+      );
+    },
+  );
+  test('check retry binds fresh revision and license; failed refresh removes selectable stale metadata', () async {
+    var version = 0;
+    final s = ModelCatalogService(
+      client: MockClient((r) async {
+        if (version == 2) throw Exception('PRIVATE_TOKEN');
+        final doc = api(sha: version == 0 ? revision : 'b' * 40);
+        doc['cardData'] = {'license': version == 0 ? 'apache-2.0' : 'mit'};
+        return response(r.url.path.startsWith('/api/') ? doc : config());
+      }),
+    );
+    final c = ModelCatalogController(service: s, probe: () async => host);
+    addTearDown(c.dispose);
+    await c.initialize();
+    await c.check(entry);
+    expect(c.choose(entry)?.metadata.revision, revision);
+    version = 1;
+    await c.check(entry);
+    expect(c.choose(entry)?.metadata.revision, 'b' * 40);
+    expect(c.metadata(entry)?.license, 'mit');
+    version = 2;
+    await c.check(entry);
+    expect(c.choose(entry), null);
+    expect(c.error(entry), isNot(contains('PRIVATE')));
+    version = 0;
+    await c.check(entry);
+    expect(c.choose(entry), isNotNull);
+  });
+  test('busy exclusion and disposal prevent late result updates', () async {
+    final gate = Completer<http.Response>();
+    var calls = 0;
+    final s = ModelCatalogService(
+      client: MockClient((r) {
+        calls++;
+        return gate.future;
+      }),
+    );
+    final c = ModelCatalogController(service: s, probe: () async => host);
+    await c.initialize();
+    var notifications = 0;
+    c.addListener(() => notifications++);
+    final pending = c.check(entry);
+    await c.check(codingModelCatalog[1]);
+    await Future<void>.delayed(Duration.zero);
+    expect(calls, 1);
+    expect(c.choose(entry), null);
+    c.dispose();
+    final count = notifications;
+    gate.complete(response(api()));
+    await pending;
+    expect(notifications, count);
+    expect(c.metadata(entry), null);
+  });
+  test('discovery failure retries without losing existing candidates; unsupported filter is explicit', () async {
+    var failSearch = true;
+    final s = ModelCatalogService(
+      client: MockClient((r) async {
+        if (r.url.path == '/api/models') {
+          if (failSearch) return response({}, 503);
+          return response([
+            {'id': 'mlx-community/Extra-Coder-4bit'},
+          ]);
+        }
+        return response(
+          r.url.path.startsWith('/api/')
+              ? api()
+              : config(architecture: 'Qwen2ForCausalLM'),
+        );
+      }),
+    );
+    final c = ModelCatalogController(service: s, probe: () async => host);
+    addTearDown(c.dispose);
+    await c.initialize();
+    c.search('Coder');
+    await c.discover();
+    expect(c.searchError, isNotNull);
+    expect(c.entries, isNotEmpty);
+    failSearch = false;
+    await c.discover();
+    expect(c.searchError, null);
+    expect(
+      c.entries.any((e) => e.repository == 'mlx-community/Extra-Coder-4bit'),
+      true,
+    );
+    c.search('9B');
+    await c.check(entry);
+    expect(c.entries, isEmpty);
+    c.showCompatibleOnly(false);
+    expect(c.entries, contains(entry));
+    expect(c.choose(entry), null);
+  });
+  test(
+    'hardware probe errors remain unknown and cannot enable selection',
+    () async {
+      final c = ModelCatalogController(
+        service: service(),
+        probe: () async => throw StateError('PRIVATE_HOST'),
+      );
+      addTearDown(c.dispose);
+      await c.initialize();
+      await c.check(entry);
+      expect(c.hardware.memoryBytes, null);
+      expect(c.choose(entry), null);
+      expect(c.hardware.detail, isNot(contains('PRIVATE')));
+    },
+  );
+  test(
+    'AWQ/GPTQ and unknown quantization layout never enable MLX selection',
+    () async {
+      for (final layout in [
+        {
+          'quantization_config': {
+            'bits': 4,
+            'group_size': 64,
+            'quant_method': 'awq',
+          },
+        },
+        {
+          'quantization': {'bits': 4, 'group_size': 0},
+        },
+        {
+          'quantization': {'bits': 4, 'group_size': 64, 'quant_method': 'gptq'},
+        },
+      ]) {
+        final cfg = <String, Object?>{
+          'architectures': ['Qwen3_5ForConditionalGeneration'],
+          ...layout,
+        };
+        final s = service(modelConfig: cfg);
+        addTearDown(s.close);
+        final m = await s.check(entry);
+        expect(m.mlxFormat, false);
+        expect(ModelAssessment.assess(host, m).canChoose, false);
+      }
+    },
+  );
+  testWidgets('catalog is readable at narrow width and doubled text', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(320, 700);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final c = ModelCatalogController(
+      service: WidgetCatalogService(),
+      probe: () async => host,
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(context)
+              .copyWith(textScaler: const TextScaler.linear(2)),
+          child: child!,
+        ),
+        home: ModelCatalogScreen(controller: c),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Choose a coding model'), findsOneWidget);
+    expect(tester.takeException(), null);
+    await reveal(tester, find.byType(TextField));
+    await tester.enterText(find.byType(TextField), '9B');
+    await tester.pump();
+    await reveal(tester, find.byKey(ValueKey('check-${entry.repository}')));
+    await tester.tap(find.byKey(ValueKey('check-${entry.repository}')));
+    await tester.pumpAndSettle();
+    expect(
+      c.metadata(entry),
+      isNotNull,
+      reason: 'busy=${c.busy}; error=${c.error(entry)}',
+    );
+    expect(tester.takeException(), null);
+    await tester.pumpWidget(const SizedBox());
+  });
+  testWidgets(
+    'picker selection fills pinned form without download, runtime switch or persistence',
+    (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      final preferences = await SharedPreferences.getInstance();
+      final runtimeHost = FakeRuntimeHost();
+      final store = RuntimeSetupStore.fromPreferences(preferences);
+      final runtime = RuntimeSetupController(
+        store: store,
+        modelStore: ModelSettingsStore.fromPreferences(preferences),
+        host: runtimeHost,
+        connection: RuntimeConnection(
+          client: MockClient((r) async => http.Response('{}', 503)),
+        ),
+      );
+      final c = ModelCatalogController(
+        service: WidgetCatalogService(),
+        probe: () async => host,
+      );
+      await tester.pumpWidget(
+        MaterialApp(
+          home: RuntimeSetupScreen(controller: runtime, createCatalog: () => c),
+        ),
+      );
+      await tester.pump();
+      final browse = find.text('Browse coding models for this computer');
+      await tester.ensureVisible(browse);
+      await tester.tap(browse);
+      await tester.pumpAndSettle();
+      await reveal(tester, find.byKey(ValueKey('check-${entry.repository}')));
+      await tester.tap(find.byKey(ValueKey('check-${entry.repository}')));
+      await tester.pumpAndSettle();
+      expect(
+        c.metadata(entry),
+        isNotNull,
+        reason: 'busy=${c.busy}; error=${c.error(entry)}',
+      );
+      final choose = find.byKey(ValueKey('choose-${entry.repository}'));
+      await reveal(tester, choose);
+      await tester.tap(choose);
+      await tester.pumpAndSettle();
+      for (final label in ['Model repository', 'Revision / branch']) {
+        final input = find.byWidgetPredicate(
+          (w) => w is TextField && w.decoration?.labelText == label,
+        );
+        await reveal(tester, input);
+        expect(
+          tester.widget<TextField>(input).controller?.text,
+          label == 'Model repository' ? entry.repository : revision,
+        );
+      }
+      expect(runtimeHost.downloads, 0);
+      expect(runtimeHost.ownsProcess, false);
+      expect(store.load().repository, '');
+      await tester.pumpWidget(const SizedBox());
+    },
+  );
+}
