@@ -5,32 +5,92 @@ enum TaskStatus { queued, inProgress, blocked, done }
 
 enum AcceptanceCheckType { automated, manual, advisory }
 
+/// A literal named-test selection, not a shell command or execution grant.
+class FlutterTestTarget {
+  const FlutterTestTarget({required this.file, required this.name});
+  final String file, name;
+  void validate() {
+    if (file.length > 240 ||
+        !RegExp(r'^test/(?:[a-zA-Z0-9_]+/)*[a-zA-Z0-9_]+_test\.dart$')
+            .hasMatch(file) ||
+        name.trim().isEmpty ||
+        name.length > 200 ||
+        RegExp(r'[\x00-\x1f\x7f]').hasMatch(name)) {
+      throw const FormatException(
+        'Choose a relative test/…_test.dart file and a nonempty exact test name (at most 200 characters; no control characters).',
+      );
+    }
+  }
+
+  Map<String, Object> toJson() => {
+    'runner': 'flutterTest',
+    'file': file,
+    'name': name,
+  };
+  factory FlutterTestTarget.fromJson(Map<String, dynamic> json) {
+    if (json.length != 3 ||
+        json['runner'] != 'flutterTest' ||
+        json['file'] is! String ||
+        json['name'] is! String) {
+      throw const FormatException('Invalid Flutter test target.');
+    }
+    final target = FlutterTestTarget(
+      file: json['file'] as String,
+      name: json['name'] as String,
+    );
+    target.validate();
+    return target;
+  }
+}
+
 /// An authored mapping, not permission to execute or evidence that it passed.
 class AcceptanceCheckDefinition {
   const AcceptanceCheckDefinition({
     required this.id,
     required this.type,
     required this.expectation,
+    this.target,
   });
   final String id, expectation;
   final AcceptanceCheckType type;
+  final FlutterTestTarget? target;
+  void validate() {
+    if (target != null && type != AcceptanceCheckType.automated) {
+      throw const FormatException(
+        'Only automated checks can select a Flutter test target.',
+      );
+    }
+    target?.validate();
+  }
+
   Map<String, Object> toJson() => {
     'id': id,
     'type': type.name,
     'expectation': expectation,
+    if (target != null) 'target': target!.toJson(),
   };
   factory AcceptanceCheckDefinition.fromJson(Map<String, dynamic> json) {
-    if (json.length != 3 ||
+    if ((json.length != 3 && json.length != 4) ||
+        json.keys.any(
+          (k) => !const ['id', 'type', 'expectation', 'target'].contains(k),
+        ) ||
+        (json.containsKey('target') &&
+            json['target'] is! Map<String, dynamic>) ||
         json['id'] is! String ||
         json['expectation'] is! String ||
         json['type'] is! String) {
       throw const FormatException('Invalid acceptance check definition.');
     }
-    return AcceptanceCheckDefinition(
+    final check = AcceptanceCheckDefinition(
       id: json['id'] as String,
       type: AcceptanceCheckType.values.byName(json['type'] as String),
       expectation: json['expectation'] as String,
+      target: json.containsKey('target')
+          ? FlutterTestTarget.fromJson(json['target'] as Map<String, dynamic>)
+          : null,
     );
+    check.validate();
+    return check;
   }
 }
 
@@ -146,6 +206,7 @@ class RequirementsBoard {
       }
       final checkIds = <String>{};
       for (final check in r.checks) {
+        check.validate();
         id(check.id);
         text(check.expectation, 500);
         if (!checkIds.add(check.id)) {
@@ -263,6 +324,11 @@ class RequirementsBoard {
         out.writeln(
           '- Check ${check.id} (${check.type.name}): ${check.expectation} — no direct result recorded.',
         );
+        if (check.target case final target?) {
+          out.writeln(
+            '  Target: Flutter test ${target.file}; exact name: ${target.name} (not executed).',
+          );
+        }
       }
       for (final t in tasks.where((t) => t.requirementId == r.id)) {
         out.writeln(

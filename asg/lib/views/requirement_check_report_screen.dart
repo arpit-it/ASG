@@ -98,6 +98,10 @@ class _RequirementCheckReportScreenState
                             'Declared check ${check.id} (${check.type.name})',
                           ),
                           Text(check.expectation),
+                          if (check.target case final target?)
+                            Text(
+                              'Planned Flutter test: ${target.file}; exact name: ${target.name}. Not executed.',
+                            ),
                           if (report.observationFor(
                                 result.requirement.id,
                                 check.id,

@@ -363,6 +363,41 @@ class _BoardEditorState extends State<_BoardEditor> {
                                 labelText: 'Expected observable outcome',
                               ),
                             ),
+                            if (checks[i].type ==
+                                AcceptanceCheckType.automated) ...[
+                              SwitchListTile(
+                                title: const Text('Map an exact Flutter test'),
+                                subtitle: const Text(
+                                  'Selection only; no test runs or execution permission.',
+                                ),
+                                value: checks[i].hasTarget,
+                                onChanged: busy
+                                    ? null
+                                    : (value) => setState(
+                                        () => checks[i].hasTarget = value,
+                                      ),
+                              ),
+                              if (checks[i].hasTarget) ...[
+                                TextField(
+                                  controller: checks[i].file,
+                                  enabled: !busy,
+                                  maxLength: 240,
+                                  decoration: const InputDecoration(
+                                    labelText: 'Relative test file',
+                                    hintText: 'test/saved_item_test.dart',
+                                  ),
+                                ),
+                                TextField(
+                                  controller: checks[i].name,
+                                  enabled: !busy,
+                                  maxLength: 200,
+                                  decoration: const InputDecoration(
+                                    labelText: 'Exact test name',
+                                    helperText: 'Literal full test name, including group names.',
+                                  ),
+                                ),
+                              ],
+                            ],
                             TextButton(
                               onPressed: busy
                                   ? null
@@ -447,16 +482,25 @@ class _CheckEditor {
   _CheckEditor([AcceptanceCheckDefinition? value])
     : id = TextEditingController(text: value?.id),
       expectation = TextEditingController(text: value?.expectation),
-      type = value?.type ?? AcceptanceCheckType.automated;
-  final TextEditingController id, expectation;
+      type = value?.type ?? AcceptanceCheckType.automated,
+      file = TextEditingController(text: value?.target?.file),
+      name = TextEditingController(text: value?.target?.name),
+      hasTarget = value?.target != null;
+  final TextEditingController id, expectation, file, name;
+  bool hasTarget;
   AcceptanceCheckType type;
   AcceptanceCheckDefinition get definition => AcceptanceCheckDefinition(
     id: id.text.trim(),
     type: type,
     expectation: expectation.text.trim(),
+    target: hasTarget && type == AcceptanceCheckType.automated
+        ? FlutterTestTarget(file: file.text.trim(), name: name.text)
+        : null,
   );
   void dispose() {
     id.dispose();
     expectation.dispose();
+    file.dispose();
+    name.dispose();
   }
 }
