@@ -77,6 +77,71 @@ List<dynamic> copiedCriteria(RequirementCheckReportStore store) =>
         as List;
 
 void main() {
+  test(
+    'direct evidence rejects detached declarations and requirements',
+    () async {
+      final records = await fixture();
+      final store = RequirementCheckReportStore(records);
+      await named.record(store, true);
+      final report = store.load(project);
+      final requirement = report.results.first.requirement;
+      final check = requirement.checks.first;
+      expect(
+        report.directCheck(requirement, check).status,
+        'savedTargetPassed',
+      );
+      for (final detached in [
+        AcceptanceCheckDefinition(
+          id: check.id,
+          type: check.type,
+          expectation: 'A different claim',
+          target: check.target,
+        ),
+        AcceptanceCheckDefinition(
+          id: check.id,
+          type: AcceptanceCheckType.manual,
+          expectation: check.expectation,
+        ),
+        AcceptanceCheckDefinition(
+          id: 'Unknown',
+          type: check.type,
+          expectation: check.expectation,
+          target: check.target,
+        ),
+        AcceptanceCheckDefinition(
+          id: check.id,
+          type: check.type,
+          expectation: check.expectation,
+          target: const FlutterTestTarget(
+            file: 'test/other_test.dart',
+            name: 'other',
+          ),
+        ),
+      ]) {
+        final evidence = report.directCheck(requirement, detached);
+        expect(evidence.status, 'stale');
+        expect(evidence.result, isNull);
+      }
+      final changed = ProjectRequirement(
+        id: requirement.id,
+        title: requirement.title,
+        acceptance: 'Changed requirement',
+        checks: requirement.checks,
+        criteria: requirement.criteria,
+      );
+      expect(report.directCheck(changed, check).status, 'stale');
+      expect(report.directCheck(changed, check).result, isNull);
+      final reopened = Transactions()..data.addAll(records.data);
+      final reopenedReport = RequirementCheckReportStore(reopened)
+          .load(project);
+      expect(
+        reopenedReport.directCheck(requirement, check).status,
+        'savedTargetPassed',
+      );
+      expect(reopenedReport.directCheck(changed, check).status, 'stale');
+    },
+  );
+
   test('legacy serialization unchanged; criteria and mappings immutable', () {
     final legacy = ProjectRequirement(
       id: 'R1',

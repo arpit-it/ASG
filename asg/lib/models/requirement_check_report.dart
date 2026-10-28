@@ -92,6 +92,19 @@ class RequirementCheckReport {
     ProjectRequirement requirement,
     AcceptanceCheckDefinition check,
   ) {
+    final authored = results.any(
+      (result) =>
+          result.requirement.id == requirement.id &&
+          result.acceptance.requirementSha256 ==
+              RequirementAcceptanceEvidence(requirement).requirementSha256 &&
+          result.requirement.checks.any(
+            (declaration) =>
+                jsonEncode(declaration.toJson()) == jsonEncode(check.toJson()),
+          ),
+    );
+    if (!authored) {
+      return RequirementDirectCheckEvidence(check, 'stale', null);
+    }
     if (check.type == AcceptanceCheckType.automated) {
       final value = namedObservationFor(requirement.id, check.id);
       return RequirementDirectCheckEvidence(
