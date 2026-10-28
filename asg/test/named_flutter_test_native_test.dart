@@ -206,6 +206,17 @@ void main() {
     release.complete();
     await expectLater(pending, throwsStateError);
   });
+  test('generic live helper retains strict required flags', () async {
+    final generic = NativeGenerationHost(
+      loadAsset: (_) async =>
+          "print('{\"exitCode\":0,\"output\":\"fixture\",\"timedOut\":false}')",
+    );
+    await expectLater(
+      generic.runFlutterOperation(project, 'test'),
+      throwsA(isA<TypeError>()),
+    );
+    await generic.dispose();
+  });
   test(
     'generic zero exit without target metadata cannot establish pass',
     () async {

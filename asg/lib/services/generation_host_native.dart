@@ -396,7 +396,14 @@ class NativeGenerationHost implements GenerationHost, ArtifactInspector {
       operation,
       beforeStart: beforeStart,
     );
-    return GenerationStep.fromJson({...data, 'operation': operation});
+    return GenerationStep(
+      operation: operation,
+      exitCode: data['exitCode'] as int,
+      output: data['output'] as String,
+      timedOut: data['timedOut'] as bool,
+      outputLimitExceeded: data['outputLimitExceeded'] as bool,
+      cancelled: data['cancelled'] as bool,
+    );
   }
 
   /// Command evidence only; callers must bind it to durable inputs separately.
