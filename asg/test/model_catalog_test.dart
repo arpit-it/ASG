@@ -440,6 +440,9 @@ void main() {
           'quantization': {'bits': 4, 'group_size': 0},
         },
         {
+          'quantization': {'bits': 4, 'group_size': 64.0},
+        },
+        {
           'quantization': {'bits': 4, 'group_size': 64, 'quant_method': 'gptq'},
         },
       ]) {
@@ -455,6 +458,53 @@ void main() {
       }
     },
   );
+  for (final indexed in [false, true]) {
+    test(
+      'zero-byte required weights cannot hide behind unrelated weights (indexed: $indexed)',
+      () async {
+        final doc = api();
+        final files = doc['siblings'] as List;
+        files[2]['size'] = 0;
+        files.add({'rfilename': 'unrelated.safetensors', 'size': gib});
+        if (indexed) {
+          files.add({'rfilename': 'model.safetensors.index.json', 'size': 20});
+        }
+        final s = ModelCatalogService(
+          client: MockClient(
+            (r) async => response(
+              r.url.path.startsWith('/api/')
+                  ? doc
+                  : r.url.path.endsWith('index.json')
+                  ? {
+                      'weight_map': {'weight': 'model.safetensors'},
+                    }
+                  : config(),
+            ),
+          ),
+        );
+        addTearDown(s.close);
+        await expectLater(s.check(entry), throwsA(isA<ModelCatalogFailure>()));
+      },
+    );
+  }
+  for (final name in [
+    'config.json',
+    'tokenizer.json',
+    'model.safetensors.index.json',
+  ]) {
+    test('zero-byte required metadata is rejected: $name', () async {
+      final doc = api();
+      final files = doc['siblings'] as List;
+      if (name.endsWith('index.json')) {
+        files.add({'rfilename': name, 'size': 0});
+      } else {
+        (files.firstWhere((f) => f['rfilename'] == name) as Map)['size'] = 0;
+      }
+      final s = service(modelApi: doc);
+      addTearDown(s.close);
+      await expectLater(s.check(entry), throwsA(isA<ModelCatalogFailure>()));
+    });
+  }
   testWidgets('catalog is readable at narrow width and doubled text', (
     tester,
   ) async {

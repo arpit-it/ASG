@@ -239,6 +239,18 @@ class ModelCatalogService {
         if (size is! int || size < 0 || size > 1024 * gib) {
           throw const FormatException('Unknown file size');
         }
+        final requiredArtifact =
+            name.endsWith('.safetensors') ||
+            [
+              'config.json',
+              'tokenizer.json',
+              'model.safetensors.index.json',
+            ].contains(name);
+        if (requiredArtifact && size == 0) {
+          throw const ModelCatalogFailure(
+            'Required model artifacts are empty. Choose a complete checkpoint.',
+          );
+        }
         download += size;
         if (name.endsWith('.safetensors')) weights += size;
       }
@@ -301,6 +313,7 @@ class ModelCatalogService {
     final mlx = config['quantization'];
     final mlxFormat =
         mlx is Map &&
+        mlx['group_size'] is int &&
         [32, 64, 128].contains(mlx['group_size']) &&
         (mlx['mode'] == null || mlx['mode'] == 'affine') &&
         (mlx['quant_method'] == null || mlx['quant_method'] == 'mlx');
