@@ -80,3 +80,49 @@ to project storage; reopen a report by pasting it again. Reports are limited to
 1 MiB. This is a supplied-report reader, not an independent authenticity, manifest
 completeness or live-freshness check. Omitted scenarios are not assessed. Saved
 passes do not establish current support or replace the pending real baseline.
+
+
+## Native live observations, 28 October 2026
+
+[Issue #257](https://github.com/arpit-it/ASG/issues/257) records two serial,
+opt-in executions at source revision
+`0f6f90c621b3e692c4e0bbbb55b5e0ccd90eb85d` in the
+[sanitized observation record](acceptance/2026-10-28-native-live.json).
+Both used the existing offline 4-bit Qwen3.5-9B MLX runtime on macOS/Metal.
+The record includes UTC completion times, SDK/runtime versions, test file hashes
+and an identity digest over the installed model files (canonical sorted JSON of
+filename-to-SHA-256 mappings), including the actual weights digest.
+
+From the Flutter root, run these serially against the explicitly started existing
+runtime with an initialized cached Flutter SDK:
+
+```sh
+flutter test test/candidate_real_test.dart --dart-define=ASG_REAL_INFERENCE=true --reporter expanded
+flutter test test/automatic_repair_real_test.dart --dart-define=ASG_REAL_INFERENCE=true --reporter expanded
+```
+
+The candidate execution passed in 47 seconds: real proposal, hash-tampering
+refusal and last-working preservation, confined resolve/test/analyze/build with
+four zero exits, explicit promotion, changed served JavaScript and database
+reopen assertions. Its separate trusted-fixture test was skipped because
+`ASG_REAL_GENERATION` was not enabled; that skip is not a live inference pass.
+The repair execution passed in 55 seconds: a deterministic undefined-function
+seed caused an actual analyzer failure, the correction used real model transport,
+all four confined checks passed, and durable attempt/history, promotion,
+last-working preservation and reopened-record assertions passed. The initial
+broken proposal is a fixture; the corrective proposal is real inference.
+
+Each test creates a disposable project/database root and deletes it after
+cleanup. Production app storage and the installed stable application are not
+used. These are native controller/service test executions, not native app launches.
+Fetched JavaScript and HTTP success do not establish observable browser behavior;
+no interactive browser review was enabled. No web-client workflow, manual
+create/reopen, stop/timeout interaction, rollback/archive interaction or other
+native device launch is established by these observations.
+
+This JSON is a bounded historical observation artifact, **not** a collector input
+or saved-report viewer document. The existing live tests do not export exact F10
+requirement/input snapshots. Do not invent those hashes or convert the observations
+into current-pass collector cells. Completing that provenance and the actual
+isolated-profile macOS/web interaction baseline remains F17 work. F17 stays
+In progress; rerun affected workflows after implementation/model/toolchain changes.
