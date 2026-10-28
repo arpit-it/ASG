@@ -213,7 +213,7 @@ Requirements changes: existing F10 acceptance guidance and F15 backend milestone
 
 ## Active task and delivery ledger
 
-Current: F10 In progress/unchecked. PR #236 verified merged as `31b959175e25571d74b3f1f50bbd955d1803cae0`; issue #217 reopened on `217-observation-timestamp-validation` for corrupt timestamp rejection. Automated targeted acceptance execution/results remain unmet; no later task selected.
+Current: F10 In progress/unchecked. PR #238 verified merged as `9115afd8ea006775a8adf78a3390137f9a12f5e6` after exact-final independent review `5676808831` and required CI `40616842358`. Issue #217 continues on `217-confined-named-test-runner` for confined named-test command infrastructure. App integration, durable direct results and acceptance verdicts remain unmet; no later task selected.
 
 ### Historical status snapshots
 
@@ -3944,3 +3944,14 @@ Continues verified PR #237 (merge `b44a07bfb8b350927a81c11bea0bd194e2c2bb1d`, fi
 Validation rejects unknown runner/fields, traversal/options/control characters, malformed targets and targets on manual/advisory checks before writes. Target changes invalidate exact requirement identity and approval. Portable round trips preserve targets; literal redaction removes a target if its selector changes, with visible disclosure, rather than silently rewriting its meaning. Five new schema/persistence/archive/privacy/widget regressions exercise these contracts. Formatter228/analyzer and760 Flutter tests/seven opt-in skips passed in a clean source snapshot excluding ignored third-party model tooling. Web build result, exact-final independent review, required CI and merge evidence follow in the PR.
 
 F10 remains In progress/unchecked. This is concrete test selection only; confined targeted execution, direct results and acceptance verdicts remain unmet. No command is inferred from prose or granted by a declaration. No fresh inference (local runtime unavailable), model download, installed-app replacement, deployment, schedule or notification change. Prior unrelated IDE/document edits remain preserved.
+
+
+### F10 confined named-test command primitive — issue #217 (28 October 2026)
+
+Continues PR #238, verified merged as `9115afd8ea006775a8adf78a3390137f9a12f5e6` after independent final review `5676808831` of head `61586b483aa73e79bbd71c0d5ea4a9c082bf78a6` and required CI `40616842358`. No open PR or overlapping active ASG owner was found before reopening the matching issue. Branch `217-confined-named-test-runner` adds a confined-only supervisor path for an authored test file and literal full test name. It validates paths and rejects links before launch, uses escaped/anchored argv selection and the existing deadline, output cap and process-group cleanup.
+
+Bounded JSON event evaluation requires one exact visible executed test, completed successful protocol and a successful command without cancellation/timeout/output exhaustion. Missing, skipped, duplicate, failed or incomplete results cannot pass. Raw events, errors, prints and private paths are replaced with authored outcome metadata. Generic operations remain unchanged. This is command infrastructure only: no app action, durable direct-result binding or acceptance verdict is delivered. F10 remains In progress/unchecked for those integrations.
+
+Validation: three deterministic policy/dispatch/protocol regressions plus an opt-in real confined Flutter fixture exercise exact pass, similarly named failing test exclusion, direct failure, skip and missing target. All14 command tests passed with the real smoke enabled; all4 native confinement tests passed after allowing the outer test process to launch Seatbelt. The initial restricted invocation was denied by the outer sandbox, not a product defect. Normal Flutter validation and exact-final independent review/required CI are recorded in the linked PR. Prior IDE/document edits remain preserved. No inference, model download, installed-app replacement, deployment or schedule/notification change.
+
+Final local validation: formatter228/analyzer,760 Flutter tests/seven explicit opt-in skips and web build/Wasm dry run passed in a clean source snapshot excluding ignored third-party model tooling. All14 command tests passed with the real confined smoke enabled,4 native confinement tests,2 download fixtures and4 HTTP/SSE fixtures passed. Outer-sandbox launch/bind failures were rerun with the needed test permissions. Runtime health was unavailable; no model inference claimed. Independent exact-final review and required CI remain merge gates.
