@@ -1,0 +1,70 @@
+{
+  "evidenceKind": "native-live-test-observation",
+  "sourceRevision": "0f6f90c621b3e692c4e0bbbb55b5e0ccd90eb85d",
+  "host": {
+    "os": "macos",
+    "version": "27.0.1",
+    "architecture": "arm64"
+  },
+  "sdk": {
+    "flutter": "3.47.6",
+    "dart": "3.13.5",
+    "frameworkRevision": "5fc346839b"
+  },
+  "runtime": {
+    "python": "3.12.8",
+    "backend": "mlx",
+    "mlx": "0.32.4",
+    "mlx-lm": "0.32.2",
+    "transformers": "5.20.2",
+    "device": "metal",
+    "model": "Qwen3.5-9B",
+    "quantization": "4-bit",
+    "modelFilesIdentitySha256": "0a2474760815486856945bb3077daed472642af0476afe548d6397e326cba041",
+    "weightsSha256": "e1f2a78750abdc4eeb4d41a49675dcf63667bda29b3144a93ea80dcc1c0a4f27"
+  },
+  "observations": [
+    {
+      "scenario": "reviewed-candidate",
+      "observedAt": "2026-10-28T07:51:15Z",
+      "testReference": "test/candidate_real_test.dart",
+      "testSha256": "f0255dc0ff61e56d56ce0544bd849e29c9a6664e86458a1995ebb0924add4a15",
+      "result": "passed",
+      "actualLiveInference": true,
+      "confinedOperations": {
+        "resolve": 0,
+        "test": 0,
+        "analyze": 0,
+        "build": 0
+      },
+      "databaseReopen": true,
+      "explicitPromotion": true,
+      "servedOutputFetched": true,
+      "manualBrowserInteraction": "not-run",
+      "separateTrustedFixture": "skipped"
+    },
+    {
+      "scenario": "bounded-repair",
+      "observedAt": "2026-10-28T07:52:45Z",
+      "testReference": "test/automatic_repair_real_test.dart",
+      "testSha256": "d61fb486a2102ea0668b414f92853f4963a3ad98cc4e3ea320eb588b9fffce63",
+      "result": "passed",
+      "actualLiveInference": true,
+      "confinedOperations": {
+        "resolve": 0,
+        "test": 0,
+        "analyze": 0,
+        "build": 0
+      },
+      "databaseReopen": true,
+      "explicitPromotion": true,
+      "servedOutputFetched": true,
+      "manualBrowserInteraction": "not-run"
+    }
+  ],
+  "limitations": [
+    "Not a collector input: F10 requirement/input snapshots were not exported by these tests.",
+    "No native application launch or manual browser interaction.",
+    "No current product support or full F17 baseline claim."
+  ]
+}
