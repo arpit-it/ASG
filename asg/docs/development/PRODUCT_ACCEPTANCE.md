@@ -209,3 +209,47 @@ strings. F17 remains In progress for the full isolated native/web scenario matri
 including plan invalidation, real model/generated-output/repair interactions,
 stop/timeout, rollback and archive workflows. Repeat affected observations after
 source/toolchain/browser/configuration changes.
+
+
+## Web archive restore/reopen observation (issue #267)
+
+The [historical archive UI observation](acceptance/2026-10-28-web-archive.json)
+records an actual release web build and app-led interaction at source
+`51970cdd9088a403ea48344a3b8cef3bf989ffc7`. This extends the preceding create/reopen
+observation with actual download, file selection, separate restore and reload.
+The original and restored projects remain distinct. No application code changed.
+
+Repeat with `flutter build web` in a clean checkout of that source, serve
+`build/web` on a fresh loopback origin, and confirm the initial app is empty.
+Use the same origin throughout; do not use the user's existing app origin.
+A fresh origin isolates storage but does not create a separate browser profile.
+
+1. Create Acceptance 267 through the daily task planner/Web app wizard.
+2. Add a prototype item Archive item 267 and check it. Add R267 and acceptance
+   `Restored requirement and prototype item survive reload.` Add queued T267,
+   `Verify archive reopen`, linked to R267. Confirm board revision 2.
+   The captured R267 title was `rchive preserves records`; preserve the actual
+   saved text when comparing, rather than inferring the intended typed title.
+3. Choose Portable records, Load saved records for export, review the summary
+   and complete JSON, then Download archive file. Select that actual downloaded
+   file through Select archive file. Enter new ID `restored267` and name
+   `Restored 267`; choose Restore records into new project.
+4. Confirm the saved-project success message. Return to Projects and confirm
+   Acceptance 267 and Restored 267 both exist. Explicitly open Restored 267;
+   wait until its heading is visible before reloading. Enable accessibility
+   again if needed. Confirm Restored 267 reopens, Archive item 267 remains
+   checked, and the board retains revision 2, R267 acceptance and linked T267.
+   The restored prototype intentionally retains its original Acceptance 267 title.
+5. In the restored project's Portable records, select a disposable JSON file
+   containing `{invalid}`. Confirm the sanitized operation-failed message says
+   existing records have not been replaced. Reopen the board and verify R267,
+   T267 and revision 2 remain intact. No restore controls are offered for it.
+
+The fresh web build/Wasm dry run, 85 focused archive controller/model/store tests
+and 17 collector/import fixtures passed. Retained screenshot/build/archive hashes
+identify local evidence only; hashes do not authenticate observations. The archive
+contains disposable authored text and was not published. Browser numeric version
+and exact F10 snapshots were unavailable, so this artifact is neither collector
+input nor a current-pass/support claim. No native launch, live model, generated
+source, executable history/rollback, stop/timeout or full F17 baseline is established.
+F17 remains In progress. Re-run after relevant source/toolchain/configuration changes.

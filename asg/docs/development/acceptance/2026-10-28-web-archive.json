@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "scope": "historical-web-ui-observation-only",
+  "issue": 267,
+  "sourceRevision": "51970cdd9088a403ea48344a3b8cef3bf989ffc7",
+  "observedAt": "2026-10-28T17:28:45Z",
+  "environment": {
+    "host": "macos",
+    "hostVersion": "27.0.1",
+    "target": "web",
+    "browser": "ChatGPT in-app browser",
+    "browserVersion": "unavailable",
+    "viewport": "1280x720",
+    "storageIsolation": "Fresh loopback origin initially empty; separate browser profile not created.",
+    "backend": "none",
+    "model": "not invoked",
+    "flutterVersion": "3.47.6",
+    "dartVersion": "3.13.5"
+  },
+  "checks": [
+    {
+      "scenarioId": "archive-reopen",
+      "checkId": "archive-interaction",
+      "status": "passed",
+      "observation": "App-led Acceptance 267 created; R267 and linked queued T267 saved at board revision 2; Archive item 267 checked. Actual downloaded archive selected through file chooser and restored as distinct restored267 / Restored 267. Both projects listed. Explicitly opened restored project then reloaded: Restored 267 current, checked prototype item and board revision 2, R267 acceptance and T267 retained. Malformed JSON import refused; board still intact afterward."
+    }
+  ],
+  "artifacts": {
+    "asg-267-invalid-refused.png": "dfe6e10555b37531b15c5f815e5b555d93a01f5483861866abff8d50feb474f6",
+    "asg-267-projects.png": "ef5e3eeaae29711ea5d8e46a9b0403ae5709dc2fef87eff89b783cd4019cd39f",
+    "asg-267-reopened-board.png": "f23d3317696771c406cf767ee7c73b549181779211f7bdcbf912b34132fdc645",
+    "asg-267-restored.png": "e3572f5361bc62ba78b35c353b9f7483afd088dcc3015ebf22006668b1b1bea2",
+    "asg-267-reopened-prototype.png": "7bf783192f527b3af61502dc44b4701c6b60276106f0f5932a4a177cb92fed14",
+    "builtMainDartJs": "9649c2e29769affc90c3f590392557ad7dd527ce60fd942ea24dc2ee735ca335",
+    "exportedDisposableArchive": "d5574c396b4ddec6c96e1b066c08a878564b980a3447220a0996e0a731ec94ef"
+  },
+  "notEstablished": [
+    "Exact F10 snapshot identities",
+    "Numeric browser version",
+    "Separate browser profile",
+    "Native application launch",
+    "Live model/generated-source/repair interaction",
+    "Stop/timeout or rollback interaction",
+    "Current collector pass or support verdict"
+  ],
+  "collectorInput": false,
+  "supportVerdict": false,
+  "sourceTree": "0fcee9f232cf33998415ba80bf1076e7ea35b6d1"
+}
