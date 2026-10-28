@@ -3013,3 +3013,12 @@ Status: Awaiting merge for this bounded increment; F10 remains In progress/unche
 Acceptance/validation: map-order invariance; changed source, inputs and approval produce appropriate identities; edited current inputs do not mutate saved identity; missing/invalid inputs remain unavailable; durable report reload reproduces identities without private paths or raw command output. Three new regressions plus existing report tests passed (20 focused tests). Final format/analyze/full tests/web build, exact tested revision, independent final-revision review, CI and PR/merge evidence are recorded after checks. Existing five local IDE/document edits were preserved; prior PR #232 final merge bookkeeping is carried forward in these documents.
 
 Final local validation for the identity increment: formatter223/analyzer passed; 740 Flutter tests passed with seven opt-in skips; web build and Wasm dry run passed. Runtime endpoint 127.0.0.1:8765 refused connection; no inference claimed. Independent exact-final review and required CI remain merge gates.
+
+
+### F10 visible revision context — issue #217 (28 October 2026)
+
+Continues verified PR #233 on branch `217-visible-revision-context`. The report exposes the same typed saved-run/source/input/approval and separate current-input identities as copied evidence. Users can select labeled hashes, see unavailable legacy identity and distinguish current project records from stale input/approval context. Content identity does not verify acceptance or live files; artifact inspection remains separate, direct results remain missing and F10 remains In progress/unchecked.
+
+Acceptance: typed/copied identity parity, unavailable legacy evidence, changed requirements and reload retaining saved identity, selectable hashes at 320px/double text and existing report/inspection flows. Validate formatter/analyzer/full Flutter suite/web build; independent exact-final review and actual required CI gate merge. No fresh live inference (configured runtime unavailable), source execution, model download or installed-app replacement. Final tested revision, check totals, review and merge evidence are recorded in the PR after verification.
+
+Final local checks: formatter224/analyzer passed; 743 Flutter tests passed with seven opt-in skips; web build and Wasm dry run passed. Three new context regressions plus existing report/artifact coverage passed. Scroll tests now position controls within the visible viewport before tapping. Independent final-revision review and required CI remain merge gates.

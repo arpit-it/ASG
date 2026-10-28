@@ -287,6 +287,8 @@ void main() {
         300,
         scrollable: find.byType(Scrollable).first,
       );
+      await tester.drag(find.byType(ListView), const Offset(0, -200));
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Exact saved revision and results'));
       await tester.pumpAndSettle();
       await tester.scrollUntilVisible(

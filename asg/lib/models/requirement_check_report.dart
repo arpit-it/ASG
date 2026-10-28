@@ -54,12 +54,22 @@ class RequirementCheckReport {
     this.evidenceJson, {
     this.savedProject,
     this.snapshotFingerprint = '',
+    this.revisionIdentity,
+    this.savedInputsCurrent = false,
   }) : results = List.unmodifiable(results);
   final int requirementsRevision;
   final List<RequirementCheckResult> results;
   final String evidenceJson;
   final GeneratedProject? savedProject;
   final String snapshotFingerprint;
+  final RequirementRunIdentity? revisionIdentity;
+  final bool savedInputsCurrent;
+
+  String get revisionContext => revisionIdentity?.savedRunSha256 == null
+      ? 'Saved run identity unavailable. Missing source, input or approval evidence.'
+      : savedInputsCurrent
+      ? 'Saved inputs and approval match current project records.'
+      : 'Saved inputs or approval are stale relative to current project records.';
 
   /// Public evidence only: do not export the private snapshot fingerprint.
   String evidenceWithInspection(RequirementArtifactObservation? observation) =>
