@@ -4,12 +4,20 @@
 import 'package:flutter/material.dart';
 
 import '../controllers/runtime_setup_controller.dart';
+import '../controllers/model_catalog_controller.dart';
+import '../models/model_catalog.dart';
+import 'model_catalog_screen.dart';
 import '../models/local_model_config.dart';
 import '../models/runtime_setup.dart';
 
 class RuntimeSetupScreen extends StatefulWidget {
-  const RuntimeSetupScreen({super.key, required this.controller});
+  const RuntimeSetupScreen({
+    super.key,
+    required this.controller,
+    this.createCatalog,
+  });
   final RuntimeSetupController controller;
+  final ModelCatalogController Function()? createCatalog;
   @override
   State<RuntimeSetupScreen> createState() => _RuntimeSetupScreenState();
 }
@@ -179,6 +187,34 @@ class _RuntimeSetupScreenState extends State<RuntimeSetupScreen> {
             ]),
             if (controller.host.supported) ...[
               section('1 · Select model files', [
+                OutlinedButton.icon(
+                  onPressed: controller.busy
+                      ? null
+                      : () async {
+                          final choice =
+                              await Navigator.push<ModelCatalogChoice>(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => ModelCatalogScreen(
+                                    controller:
+                                        widget.createCatalog?.call() ??
+                                        ModelCatalogController(),
+                                  ),
+                                ),
+                              );
+                          if (!mounted || choice == null || controller.busy) {
+                            return;
+                          }
+                          setState(() {
+                            source = ModelSource.remote;
+                            repository.text = choice.entry.repository;
+                            revision.text = choice.metadata.revision;
+                          });
+                        },
+                  icon: const Icon(Icons.manage_search),
+                  label: const Text('Browse coding models for this computer'),
+                ),
+                const SizedBox(height: 16),
                 SegmentedButton<ModelSource>(
                   segments: const [
                     ButtonSegment(
