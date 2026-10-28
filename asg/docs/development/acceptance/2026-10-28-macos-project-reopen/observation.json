@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "issue": 273,
+  "scope": "historical-isolated-macos-project-create-edit-restart",
+  "recordedAt": "2026-10-28T18:36:55.983258+00:00",
+  "compiledSourceRevision": "e8f6f444d82dabdd9c555ac2b11033cb8132f9d6",
+  "priorBuildObservation": "../2026-10-28-macos-launch/observation.json",
+  "candidateCheckoutRevision": "abdc3e84d3149e6dc1e54c2b46185a0115a79e3d",
+  "bundleIdentifier": "com.arsinha.asg.acceptance271",
+  "productName": "ASG Acceptance 271",
+  "executableSha256": "34b2a4ca0213dc5b78e8ce07195f17695a2f95816effe4580ca95449cfd5db46",
+  "debugDylibSha256": "980bcd7918112bae76249352b10e56a2568a5e91ff53aa89d4dbc19de68cb4b6",
+  "databaseSha256": "859ee2065d745f9759e743f30a925e99f7cbae82422186cfab9d3d1d9db5381e",
+  "databaseBytes": 2743,
+  "projectName": "My Task PlannerAcceptance 273",
+  "observations": [
+    "Candidate opened empty home with prior unique support identity.",
+    "Created project through three-step offline app-led wizard; no folder chosen.",
+    "Added Native item 273 through prototype and checked it.",
+    "Added R273 with acceptance prose and linked queued T273; board revision 2.",
+    "Quit candidate; app inventory omitted its bundle; relaunch reopened project with checked item.",
+    "Opened board after relaunch and observed revision 2 with R273/T273.",
+    "Edited R273 title to Native durable board edited; board revision 3.",
+    "Quit again; independent pgrep found no candidate process (exit 1).",
+    "Relaunched exact candidate; checked item remained and reopened board showed revision 3, edited R273 and queued T273.",
+    "Captured screenshots and read only candidate-owned database; final Quit requested."
+  ],
+  "checks": {
+    "collectorFixtures": 17,
+    "flutterBoardAndSessionTests": 22
+  },
+  "artifacts": {
+    "before-restart.png": "c8a4c66c7fca8f61ee2896c9a933287e4923f65203c3aa9d054a60f2412ec49b",
+    "reopened-prototype.png": "39bd9e73f3e0d65c89c404a29400fdacf078daf28c84d505a831b765275f7a1d",
+    "edited-reopened-board.png": "937a7a895a468e6bd8b4020abf0de00aacc0ef511e8d01d10d23dd75ec402f8a",
+    "saved-records.json": "40ee2884b753ee4c580e7a60ac5523ff9f0e7fe87fa25b3c2d52fa91dc78c8e0",
+    "bundle-manifest.json": "2813501a9afe23c005ab1989ca9c97e9c94771b47c716518d88de86dc4298fa6"
+  },
+  "limitations": [
+    "Reuses temporary unique-bundle candidate built in issue 271; no fresh build/current main or unchanged production-bundle support claim.",
+    "No exact F10 requirement/input identity: observations are historical manual evidence, not currentPass collector inputs.",
+    "Prototype is in-app interpreted UI, not generated external output.",
+    "No model inference/download, plan/build/repair, Stop, timeout, rollback, native archive or other-platform acceptance established.",
+    "Project name retains wizard default prefix after typed suffix; actual name is recorded without normalization.",
+    "F17 remains In progress."
+  ]
+}
