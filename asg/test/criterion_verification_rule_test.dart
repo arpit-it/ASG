@@ -143,6 +143,30 @@ void main() {
           store.load(project).evidenceJson,
         )['requirements'][0]['acceptanceEvidence'];
         expect(evidence['status'], 'unverified');
+        expect(
+          evidence['authoredContract']['status'],
+          passed ? 'verifiedAgainstAuthoredChecks' : 'unverified',
+        );
+        expect(
+          evidence['authoredContract']['unverifiedCriterionIds'],
+          passed ? isEmpty : ['AC1'],
+        );
+        expect(
+          evidence['authoredContract']['savedRunSha256'],
+          row['savedRunSha256'],
+        );
+        expect(
+          evidence['authoredContract']['requirementSha256'],
+          row['requirementSha256'],
+        );
+        expect(
+          store
+              .load(project)
+              .requirementVerifiedAgainstChecks(
+                store.load(project).results.first.requirement,
+              ),
+          passed,
+        );
         final controller = RequirementsController(
           'p',
           RequirementsStore(records),
@@ -156,6 +180,13 @@ void main() {
         );
         expect(mapping.copiedCriteria(store).single['status'], 'unverified');
         expect(mapping.copiedCriteria(store).single['checkSummary'], 'stale');
+        final stale = store.load(project);
+        expect(
+          stale.requirementVerifiedAgainstChecks(
+            stale.results.first.requirement,
+          ),
+          isFalse,
+        );
         controller.dispose();
       },
     );
@@ -186,6 +217,94 @@ void main() {
       controller.dispose();
     },
   );
+  test(
+    'all explicit criteria pass together and survive durable reopen',
+    () async {
+      final records = Transactions();
+      final saved = await prepare(
+        records,
+        board: mapping.mappedBoard(
+          criteria: [
+            rule(),
+            AcceptanceCriterionDefinition(
+              id: 'AC2',
+              text: 'Second authored contract',
+              checkIds: ['Auto'],
+              verificationRule: CriterionVerificationRule.allMappedNamedTests,
+            ),
+          ],
+        ),
+      );
+      await SourceGenerationStore(records).save('p', saved);
+      final store = RequirementCheckReportStore(records);
+      await named.record(store, true);
+      final reopened = Transactions()..data.addAll(records.data);
+      final report = RequirementCheckReportStore(reopened).load(project);
+      expect(
+        report.requirementVerifiedAgainstChecks(
+          report.results.first.requirement,
+        ),
+        isTrue,
+      );
+      final evidence = jsonDecode(
+        report.evidenceJson,
+      )['requirements'][0]['acceptanceEvidence'];
+      expect(evidence['authoredContract']['criterionIds'], ['AC1', 'AC2']);
+      expect(evidence['authoredContract']['unverifiedCriterionIds'], isEmpty);
+      expect(evidence['status'], 'unverified');
+      expect(report.evidenceJson, isNot(contains('PRIVATE_OUTPUT')));
+      await named.record(store, false);
+      final failed = store.load(project);
+      expect(
+        failed.requirementVerifiedAgainstChecks(
+          failed.results.first.requirement,
+        ),
+        isFalse,
+      );
+    },
+  );
+
+  for (final criteria in <List<AcceptanceCriterionDefinition>>[
+    [],
+    [mapping.criterion()],
+    [rule(), mapping.criterion(id: 'AC2', checkIds: [])],
+    [
+      rule(),
+      mapping.criterion(id: 'AC2', checkIds: ['Manual']),
+    ],
+    [
+      rule(),
+      mapping.criterion(id: 'AC2', checkIds: ['Advice']),
+    ],
+    [rule(), mapping.criterion(id: 'AC2')],
+  ]) {
+    test(
+      'whole contract refuses empty/default/mixed criteria ${criteria.map((c) => c.toJson())}',
+      () async {
+        final records = Transactions();
+        final saved = await prepare(
+          records,
+          board: mapping.mappedBoard(criteria: criteria),
+        );
+        await SourceGenerationStore(records).save('p', saved);
+        final store = RequirementCheckReportStore(records);
+        await named.record(store, true);
+        final report = store.load(project);
+        expect(
+          report.requirementVerifiedAgainstChecks(
+            report.results.first.requirement,
+          ),
+          isFalse,
+        );
+        final evidence = jsonDecode(
+          report.evidenceJson,
+        )['requirements'][0]['acceptanceEvidence'];
+        expect(evidence['authoredContract']['status'], 'unverified');
+        expect(evidence['status'], 'unverified');
+      },
+    );
+  }
+
   testWidgets('bounded saved-rule verdict visible at narrow doubled text', (
     tester,
   ) async {
@@ -215,9 +334,18 @@ void main() {
     );
     await tester.scrollUntilVisible(
       find.text(
+        'Requirement contract: verified against all authored named-test rules at saved revision',
+      ),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(tester.takeException(), isNull);
+    await tester.scrollUntilVisible(
+      find.text(
         'Criterion rule: verified against authored named tests at saved revision',
       ),
       200,
+      scrollable: find.byType(Scrollable).first,
     );
     expect(
       find.text(

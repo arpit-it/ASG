@@ -91,6 +91,12 @@ class _RequirementCheckReportScreenState
                           '${result.requirement.id}: ${result.requirement.title}',
                           style: Theme.of(context).textTheme.titleMedium,
                         ),
+                        Text(
+                          report.requirementVerdictLabel(result.requirement),
+                        ),
+                        const Text(
+                          'This contract covers only explicit authored named-test rules at the saved revision; free-form acceptance prose, semantic coverage and live files remain unverified.',
+                        ),
                         const Text(RequirementCheckResult.acceptanceStatus),
                         Text(result.requirement.acceptance),
                         const Text(RequirementAcceptanceEvidence.label),
