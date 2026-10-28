@@ -270,7 +270,9 @@ configuration. `modelSha256` hashes the sorted compact JSON mapping of model
 filenames to measured file digests. Device/configuration hashes use the same
 `product_acceptance.sha` encoding over their named objects. Runtime version is
 Python's version; MLX and Transformers versions are separately recorded. The
-configuration also binds exact test/provider/server/tool/lockfile bytes. No private
+configuration also binds measured Python/MLX/MLX-LM/Transformers versions, the
+exact SDK revision/Dart object, generator Python version, and exact
+test/provider/server/tool/lockfile bytes. No private
 logs, paths, authored prompts or source contents are included.
 
 The actual offline Qwen3.5-9B candidate test passed in 49 seconds: model proposal,

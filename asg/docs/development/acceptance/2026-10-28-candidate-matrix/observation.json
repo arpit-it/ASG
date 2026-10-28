@@ -37,7 +37,8 @@
         "tokenizer_config.json": "86f01837a638275f2d3479804e79802aaff0e3ccef15e5f29dd6afbe6551daed"
       }
     },
-    "modelSha256": "0a2474760815486856945bb3077daed472642af0476afe548d6397e326cba041"
+    "modelSha256": "0a2474760815486856945bb3077daed472642af0476afe548d6397e326cba041",
+    "generatorPython": "3.12.8"
   },
   "configuration": {
     "runtime": {
@@ -64,7 +65,19 @@
       "tools/qwen_server.py": "cf18f4bfdba7812ce238c304f29e84b86b1dcdd05791b2b1bb6d2d4665b80025",
       "tools/generation_command.py": "6be66cf7de5d2f16c5d6d2e589010081d75e600dfcf26f1f8b3dea3601a2ffaf",
       "pubspec.lock": "dd10400f6c5a381aa0e53c727075d26707c63e8f77c142d3aa7f730e8cfa42ae"
-    }
+    },
+    "runtimeVersions": {
+      "python": "3.12.8",
+      "mlx": "0.32.4",
+      "mlx-lm": "0.32.2",
+      "transformers": "5.20.2"
+    },
+    "sdk": {
+      "frameworkVersion": "3.47.6",
+      "frameworkRevision": "5fc346839b5d0eef006ed8404392afb4dfae428d",
+      "dartSdkVersion": "3.13.5"
+    },
+    "generatorPythonVersion": "3.12.8"
   },
   "hashEncoding": "product_acceptance.sha: UTF-8 sorted-key compact JSON",
   "result": {
