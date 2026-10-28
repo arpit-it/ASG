@@ -16,3 +16,40 @@ F04 adds native candidate confinement probes (`python3 -B tools/test_candidate_c
 ## Current verification boundary
 
 F04 reviewed candidate and F05 bounded automatic-repair real-model acceptance were delivered in PRs #93 and #103; `test/candidate_real_test.dart` and `test/automatic_repair_real_test.dart` retain opt-in coverage. These historical passes do not establish current endpoint availability. F06–F09 and F14 have subsequent regression/acceptance evidence in the requirements ledger. F10 report evidence remains distinct from criterion-specific product acceptance. See the sole [requirements queue](../REQUIREMENTS.md) for planned backend/host portability and real product verification; no broader platform support follows from fixtures or skipped tests.
+
+
+## Importing F10 snapshot observations into F17 saved evidence
+
+`tools/import_acceptance_provenance.py` joins one digest-only object emitted by
+`ASG_F10_PROVENANCE` with a separately supplied collector identity. Extract only
+the JSON object from the private test log, not the whole log or historical wrapper.
+Use the identity schema in `tools/product_acceptance.py`; environment fields and
+status are explicit caller attestations, not measurements or authentication.
+The source revision, requirements digest and input digest must exactly match the
+F10 snapshot. Generated-source, approval and saved-run digests plus the hash of
+the complete provenance object are retained as bounded artifact references.
+
+```sh
+python3 -B tools/import_acceptance_provenance.py \
+  --manifest docs/development/product_acceptance_manifest.json \
+  --identity identity.json --evidence evidence.json \
+  --provenance provenance.json --check model-proposal --target macos \
+  --status skipped --observed-at 2026-10-28T07:00:00Z \
+  --output imported-evidence.json
+python3 -B tools/product_acceptance.py \
+  --manifest docs/development/product_acceptance_manifest.json \
+  --identity identity.json --evidence imported-evidence.json --output report.json
+```
+
+Start an empty evidence file with `{"schemaVersion":1,"records":[]}`. Use distinct
+output paths; import refuses all input aliases and duplicate scenario/check/target
+records. Existing evidence is preserved; a refreshed observation requires an
+explicitly curated input evidence file. Supported mappings are reviewed-candidate
+→ model-proposal or confined-checks, and bounded-repair → real-repair-rerun.
+Each command imports exactly one observed check. Set passed only after separately
+observing that specific check; a provenance line alone does not establish success.
+No import runs tests, launches a model, checks live files or promotes any other
+cell. The collector compares identity/manifest for freshness, and the app continues
+to label reports saved evidence. This bridge does not complete the real native/web
+manual baseline or establish device support. Never publish private logs, prompts,
+model paths or credentials as input metadata.
