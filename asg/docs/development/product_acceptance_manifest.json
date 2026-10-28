@@ -1,0 +1,193 @@
+{
+  "schemaVersion": 1,
+  "scenarios": [
+    {
+      "id": "create-reopen",
+      "requirementIds": [
+        "F01"
+      ],
+      "targets": [
+        "macos",
+        "web"
+      ],
+      "checks": [
+        {
+          "id": "durable-records",
+          "kind": "fixture",
+          "testReferences": [
+            "test/transactional_storage_test.dart"
+          ]
+        },
+        {
+          "id": "interactive-reopen",
+          "kind": "manual",
+          "testReferences": []
+        }
+      ]
+    },
+    {
+      "id": "approved-plan",
+      "requirementIds": [
+        "F02"
+      ],
+      "targets": [
+        "macos",
+        "web"
+      ],
+      "checks": [
+        {
+          "id": "stale-plan-refusal",
+          "kind": "fixture",
+          "testReferences": [
+            "test/plan_approval_test.dart"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "reviewed-candidate",
+      "requirementIds": [
+        "F04"
+      ],
+      "targets": [
+        "macos",
+        "web"
+      ],
+      "checks": [
+        {
+          "id": "model-proposal",
+          "kind": "liveInference",
+          "testReferences": [
+            "test/candidate_real_test.dart"
+          ]
+        },
+        {
+          "id": "confined-checks",
+          "kind": "generatedOutput",
+          "testReferences": [
+            "test/candidate_real_test.dart"
+          ]
+        },
+        {
+          "id": "served-interaction",
+          "kind": "manual",
+          "testReferences": []
+        }
+      ]
+    },
+    {
+      "id": "bounded-repair",
+      "requirementIds": [
+        "F05"
+      ],
+      "targets": [
+        "macos",
+        "web"
+      ],
+      "checks": [
+        {
+          "id": "real-repair-rerun",
+          "kind": "liveInference",
+          "testReferences": [
+            "test/automatic_repair_real_test.dart"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "stop-preservation",
+      "requirementIds": [
+        "F03",
+        "F06"
+      ],
+      "targets": [
+        "macos",
+        "web"
+      ],
+      "checks": [
+        {
+          "id": "stop-and-timeout",
+          "kind": "manual",
+          "testReferences": []
+        }
+      ]
+    },
+    {
+      "id": "history-rollback",
+      "requirementIds": [
+        "F06"
+      ],
+      "targets": [
+        "macos",
+        "web"
+      ],
+      "checks": [
+        {
+          "id": "rollback-records",
+          "kind": "fixture",
+          "testReferences": [
+            "test/build_rollback_test.dart"
+          ]
+        },
+        {
+          "id": "rollback-interaction",
+          "kind": "manual",
+          "testReferences": []
+        }
+      ]
+    },
+    {
+      "id": "archive-reopen",
+      "requirementIds": [
+        "F08"
+      ],
+      "targets": [
+        "macos",
+        "web"
+      ],
+      "checks": [
+        {
+          "id": "archive-records",
+          "kind": "fixture",
+          "testReferences": [
+            "test/portable_project_archive_test.dart"
+          ]
+        },
+        {
+          "id": "archive-browser",
+          "kind": "fixture",
+          "testReferences": [
+            "test/browser_archive_file_test.dart"
+          ]
+        },
+        {
+          "id": "archive-interaction",
+          "kind": "manual",
+          "testReferences": []
+        }
+      ]
+    },
+    {
+      "id": "application-baseline",
+      "requirementIds": [
+        "F17"
+      ],
+      "targets": [
+        "macos",
+        "web"
+      ],
+      "checks": [
+        {
+          "id": "platform-build",
+          "kind": "build",
+          "testReferences": []
+        },
+        {
+          "id": "application-launch",
+          "kind": "launch",
+          "testReferences": []
+        }
+      ]
+    }
+  ]
+}
