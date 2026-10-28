@@ -8,7 +8,7 @@ manual interaction kinds remain separate. Native Android, iOS, Windows and Linux
 cells are unavailable in this initial manifest, including on a host where a
 fixture or build succeeds. This is an evidence collection foundation, not the
 completed F17 baseline or a product support certification. No scenario is executed
-by this tool. UI integration and real isolated-profile workflows remain pending.
+by this tool. Real isolated-profile workflows remain pending.
 
 `tools/product_acceptance.py` reads three JSON files and atomically writes a saved
 evidence matrix. It uses only Python's standard library:
@@ -67,3 +67,16 @@ Sanitize external artifacts before hashing/sharing; a digest does not sanitize
 its underlying file. Errors deliberately omit input content and filesystem paths.
 Existing report output survives validation failures. Do not overwrite evidence
 inputs with report output. Reports are saved observations, never live health.
+
+
+In the app, choose **Product acceptance evidence** in the home/workspace toolbar.
+Paste the collector report JSON and choose **Inspect saved report**. The viewer
+shows saved statuses by target, exact supplied identities, UTC observations and
+artifact digests. Expand each check for details. Unknown fields, duplicate keys,
+inconsistent statuses/identities, incomplete target groups and invalid timestamps
+are refused with a sanitized error; an invalid replacement retains the previous
+report. **Clear report** removes the session report and input. Nothing is saved
+to project storage; reopen a report by pasting it again. Reports are limited to
+1 MiB. This is a supplied-report reader, not an independent authenticity, manifest
+completeness or live-freshness check. Omitted scenarios are not assessed. Saved
+passes do not establish current support or replace the pending real baseline.

@@ -1,0 +1,1222 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-28T07:00:00Z",
+  "manifestSha256": "959df315ae07daa08f20f5587502aee5d7cf155d1af9d4331df48beb49492f7c",
+  "identity": {
+    "sourceRevision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "requirementSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "inputSha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "configurationSha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+    "modelSha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "deviceSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+    "sdkVersion": "3.47.6",
+    "runtimeVersion": "3.12.0",
+    "backend": "mlx",
+    "host": "macos",
+    "browserVersion": "142.0"
+  },
+  "claim": "saved-evidence-only",
+  "cells": [
+    {
+      "scenarioId": "create-reopen",
+      "checkId": "durable-records",
+      "kind": "fixture",
+      "requirementIds": [
+        "F01"
+      ],
+      "target": "macos",
+      "status": "passed",
+      "currentPass": true,
+      "savedEvidence": {
+        "scenarioId": "create-reopen",
+        "checkId": "durable-records",
+        "target": "macos",
+        "status": "passed",
+        "observedAt": "2026-10-28T07:00:00Z",
+        "identity": {
+          "sourceRevision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "requirementSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "inputSha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "configurationSha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "modelSha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+          "deviceSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "sdkVersion": "3.47.6",
+          "runtimeVersion": "3.12.0",
+          "backend": "mlx",
+          "host": "macos",
+          "browserVersion": "142.0"
+        },
+        "manifestSha256": "959df315ae07daa08f20f5587502aee5d7cf155d1af9d4331df48beb49492f7c",
+        "artifactSha256": [
+          "0000000000000000000000000000000000000000000000000000000000000000"
+        ]
+      }
+    },
+    {
+      "scenarioId": "create-reopen",
+      "checkId": "durable-records",
+      "kind": "fixture",
+      "requirementIds": [
+        "F01"
+      ],
+      "target": "web",
+      "status": "missing",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "create-reopen",
+      "checkId": "durable-records",
+      "kind": "fixture",
+      "requirementIds": [
+        "F01"
+      ],
+      "target": "android",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "create-reopen",
+      "checkId": "durable-records",
+      "kind": "fixture",
+      "requirementIds": [
+        "F01"
+      ],
+      "target": "ios",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "create-reopen",
+      "checkId": "durable-records",
+      "kind": "fixture",
+      "requirementIds": [
+        "F01"
+      ],
+      "target": "windows",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "create-reopen",
+      "checkId": "durable-records",
+      "kind": "fixture",
+      "requirementIds": [
+        "F01"
+      ],
+      "target": "linux",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "create-reopen",
+      "checkId": "interactive-reopen",
+      "kind": "manual",
+      "requirementIds": [
+        "F01"
+      ],
+      "target": "macos",
+      "status": "failed",
+      "currentPass": false,
+      "savedEvidence": {
+        "scenarioId": "create-reopen",
+        "checkId": "interactive-reopen",
+        "target": "macos",
+        "status": "failed",
+        "observedAt": "2026-10-28T07:00:00Z",
+        "identity": {
+          "sourceRevision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "requirementSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "inputSha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "configurationSha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "modelSha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+          "deviceSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "sdkVersion": "3.47.6",
+          "runtimeVersion": "3.12.0",
+          "backend": "mlx",
+          "host": "macos",
+          "browserVersion": "142.0"
+        },
+        "manifestSha256": "959df315ae07daa08f20f5587502aee5d7cf155d1af9d4331df48beb49492f7c",
+        "artifactSha256": [
+          "0000000000000000000000000000000000000000000000000000000000000000"
+        ]
+      }
+    },
+    {
+      "scenarioId": "create-reopen",
+      "checkId": "interactive-reopen",
+      "kind": "manual",
+      "requirementIds": [
+        "F01"
+      ],
+      "target": "web",
+      "status": "missing",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "create-reopen",
+      "checkId": "interactive-reopen",
+      "kind": "manual",
+      "requirementIds": [
+        "F01"
+      ],
+      "target": "android",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "create-reopen",
+      "checkId": "interactive-reopen",
+      "kind": "manual",
+      "requirementIds": [
+        "F01"
+      ],
+      "target": "ios",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "create-reopen",
+      "checkId": "interactive-reopen",
+      "kind": "manual",
+      "requirementIds": [
+        "F01"
+      ],
+      "target": "windows",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "create-reopen",
+      "checkId": "interactive-reopen",
+      "kind": "manual",
+      "requirementIds": [
+        "F01"
+      ],
+      "target": "linux",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "approved-plan",
+      "checkId": "stale-plan-refusal",
+      "kind": "fixture",
+      "requirementIds": [
+        "F02"
+      ],
+      "target": "macos",
+      "status": "skipped",
+      "currentPass": false,
+      "savedEvidence": {
+        "scenarioId": "approved-plan",
+        "checkId": "stale-plan-refusal",
+        "target": "macos",
+        "status": "skipped",
+        "observedAt": "2026-10-28T07:00:00Z",
+        "identity": {
+          "sourceRevision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "requirementSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "inputSha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "configurationSha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "modelSha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+          "deviceSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "sdkVersion": "3.47.6",
+          "runtimeVersion": "3.12.0",
+          "backend": "mlx",
+          "host": "macos",
+          "browserVersion": "142.0"
+        },
+        "manifestSha256": "959df315ae07daa08f20f5587502aee5d7cf155d1af9d4331df48beb49492f7c",
+        "artifactSha256": [
+          "0000000000000000000000000000000000000000000000000000000000000000"
+        ]
+      }
+    },
+    {
+      "scenarioId": "approved-plan",
+      "checkId": "stale-plan-refusal",
+      "kind": "fixture",
+      "requirementIds": [
+        "F02"
+      ],
+      "target": "web",
+      "status": "missing",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "approved-plan",
+      "checkId": "stale-plan-refusal",
+      "kind": "fixture",
+      "requirementIds": [
+        "F02"
+      ],
+      "target": "android",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "approved-plan",
+      "checkId": "stale-plan-refusal",
+      "kind": "fixture",
+      "requirementIds": [
+        "F02"
+      ],
+      "target": "ios",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "approved-plan",
+      "checkId": "stale-plan-refusal",
+      "kind": "fixture",
+      "requirementIds": [
+        "F02"
+      ],
+      "target": "windows",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "approved-plan",
+      "checkId": "stale-plan-refusal",
+      "kind": "fixture",
+      "requirementIds": [
+        "F02"
+      ],
+      "target": "linux",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "reviewed-candidate",
+      "checkId": "model-proposal",
+      "kind": "liveInference",
+      "requirementIds": [
+        "F04"
+      ],
+      "target": "macos",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": {
+        "scenarioId": "reviewed-candidate",
+        "checkId": "model-proposal",
+        "target": "macos",
+        "status": "unavailable",
+        "observedAt": "2026-10-28T07:00:00Z",
+        "identity": {
+          "sourceRevision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "requirementSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "inputSha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "configurationSha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "modelSha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+          "deviceSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "sdkVersion": "3.47.6",
+          "runtimeVersion": "3.12.0",
+          "backend": "mlx",
+          "host": "macos",
+          "browserVersion": "142.0"
+        },
+        "manifestSha256": "959df315ae07daa08f20f5587502aee5d7cf155d1af9d4331df48beb49492f7c",
+        "artifactSha256": [
+          "0000000000000000000000000000000000000000000000000000000000000000"
+        ]
+      }
+    },
+    {
+      "scenarioId": "reviewed-candidate",
+      "checkId": "model-proposal",
+      "kind": "liveInference",
+      "requirementIds": [
+        "F04"
+      ],
+      "target": "web",
+      "status": "missing",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "reviewed-candidate",
+      "checkId": "model-proposal",
+      "kind": "liveInference",
+      "requirementIds": [
+        "F04"
+      ],
+      "target": "android",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "reviewed-candidate",
+      "checkId": "model-proposal",
+      "kind": "liveInference",
+      "requirementIds": [
+        "F04"
+      ],
+      "target": "ios",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "reviewed-candidate",
+      "checkId": "model-proposal",
+      "kind": "liveInference",
+      "requirementIds": [
+        "F04"
+      ],
+      "target": "windows",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "reviewed-candidate",
+      "checkId": "model-proposal",
+      "kind": "liveInference",
+      "requirementIds": [
+        "F04"
+      ],
+      "target": "linux",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "reviewed-candidate",
+      "checkId": "confined-checks",
+      "kind": "generatedOutput",
+      "requirementIds": [
+        "F04"
+      ],
+      "target": "macos",
+      "status": "missing",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "reviewed-candidate",
+      "checkId": "confined-checks",
+      "kind": "generatedOutput",
+      "requirementIds": [
+        "F04"
+      ],
+      "target": "web",
+      "status": "missing",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "reviewed-candidate",
+      "checkId": "confined-checks",
+      "kind": "generatedOutput",
+      "requirementIds": [
+        "F04"
+      ],
+      "target": "android",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "reviewed-candidate",
+      "checkId": "confined-checks",
+      "kind": "generatedOutput",
+      "requirementIds": [
+        "F04"
+      ],
+      "target": "ios",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "reviewed-candidate",
+      "checkId": "confined-checks",
+      "kind": "generatedOutput",
+      "requirementIds": [
+        "F04"
+      ],
+      "target": "windows",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "reviewed-candidate",
+      "checkId": "confined-checks",
+      "kind": "generatedOutput",
+      "requirementIds": [
+        "F04"
+      ],
+      "target": "linux",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "reviewed-candidate",
+      "checkId": "served-interaction",
+      "kind": "manual",
+      "requirementIds": [
+        "F04"
+      ],
+      "target": "macos",
+      "status": "missing",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "reviewed-candidate",
+      "checkId": "served-interaction",
+      "kind": "manual",
+      "requirementIds": [
+        "F04"
+      ],
+      "target": "web",
+      "status": "missing",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "reviewed-candidate",
+      "checkId": "served-interaction",
+      "kind": "manual",
+      "requirementIds": [
+        "F04"
+      ],
+      "target": "android",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "reviewed-candidate",
+      "checkId": "served-interaction",
+      "kind": "manual",
+      "requirementIds": [
+        "F04"
+      ],
+      "target": "ios",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "reviewed-candidate",
+      "checkId": "served-interaction",
+      "kind": "manual",
+      "requirementIds": [
+        "F04"
+      ],
+      "target": "windows",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "reviewed-candidate",
+      "checkId": "served-interaction",
+      "kind": "manual",
+      "requirementIds": [
+        "F04"
+      ],
+      "target": "linux",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "bounded-repair",
+      "checkId": "real-repair-rerun",
+      "kind": "liveInference",
+      "requirementIds": [
+        "F05"
+      ],
+      "target": "macos",
+      "status": "stale",
+      "currentPass": false,
+      "savedEvidence": {
+        "scenarioId": "bounded-repair",
+        "checkId": "real-repair-rerun",
+        "target": "macos",
+        "status": "passed",
+        "observedAt": "2026-10-28T07:00:00Z",
+        "identity": {
+          "sourceRevision": "0000000000000000000000000000000000000000",
+          "requirementSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "inputSha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "configurationSha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "modelSha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+          "deviceSha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "sdkVersion": "3.47.6",
+          "runtimeVersion": "3.12.0",
+          "backend": "mlx",
+          "host": "macos",
+          "browserVersion": "142.0"
+        },
+        "manifestSha256": "959df315ae07daa08f20f5587502aee5d7cf155d1af9d4331df48beb49492f7c",
+        "artifactSha256": [
+          "0000000000000000000000000000000000000000000000000000000000000000"
+        ]
+      }
+    },
+    {
+      "scenarioId": "bounded-repair",
+      "checkId": "real-repair-rerun",
+      "kind": "liveInference",
+      "requirementIds": [
+        "F05"
+      ],
+      "target": "web",
+      "status": "missing",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "bounded-repair",
+      "checkId": "real-repair-rerun",
+      "kind": "liveInference",
+      "requirementIds": [
+        "F05"
+      ],
+      "target": "android",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "bounded-repair",
+      "checkId": "real-repair-rerun",
+      "kind": "liveInference",
+      "requirementIds": [
+        "F05"
+      ],
+      "target": "ios",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "bounded-repair",
+      "checkId": "real-repair-rerun",
+      "kind": "liveInference",
+      "requirementIds": [
+        "F05"
+      ],
+      "target": "windows",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "bounded-repair",
+      "checkId": "real-repair-rerun",
+      "kind": "liveInference",
+      "requirementIds": [
+        "F05"
+      ],
+      "target": "linux",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "stop-preservation",
+      "checkId": "stop-and-timeout",
+      "kind": "manual",
+      "requirementIds": [
+        "F03",
+        "F06"
+      ],
+      "target": "macos",
+      "status": "missing",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "stop-preservation",
+      "checkId": "stop-and-timeout",
+      "kind": "manual",
+      "requirementIds": [
+        "F03",
+        "F06"
+      ],
+      "target": "web",
+      "status": "missing",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "stop-preservation",
+      "checkId": "stop-and-timeout",
+      "kind": "manual",
+      "requirementIds": [
+        "F03",
+        "F06"
+      ],
+      "target": "android",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "stop-preservation",
+      "checkId": "stop-and-timeout",
+      "kind": "manual",
+      "requirementIds": [
+        "F03",
+        "F06"
+      ],
+      "target": "ios",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "stop-preservation",
+      "checkId": "stop-and-timeout",
+      "kind": "manual",
+      "requirementIds": [
+        "F03",
+        "F06"
+      ],
+      "target": "windows",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "stop-preservation",
+      "checkId": "stop-and-timeout",
+      "kind": "manual",
+      "requirementIds": [
+        "F03",
+        "F06"
+      ],
+      "target": "linux",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "history-rollback",
+      "checkId": "rollback-records",
+      "kind": "fixture",
+      "requirementIds": [
+        "F06"
+      ],
+      "target": "macos",
+      "status": "missing",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "history-rollback",
+      "checkId": "rollback-records",
+      "kind": "fixture",
+      "requirementIds": [
+        "F06"
+      ],
+      "target": "web",
+      "status": "missing",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "history-rollback",
+      "checkId": "rollback-records",
+      "kind": "fixture",
+      "requirementIds": [
+        "F06"
+      ],
+      "target": "android",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "history-rollback",
+      "checkId": "rollback-records",
+      "kind": "fixture",
+      "requirementIds": [
+        "F06"
+      ],
+      "target": "ios",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "history-rollback",
+      "checkId": "rollback-records",
+      "kind": "fixture",
+      "requirementIds": [
+        "F06"
+      ],
+      "target": "windows",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "history-rollback",
+      "checkId": "rollback-records",
+      "kind": "fixture",
+      "requirementIds": [
+        "F06"
+      ],
+      "target": "linux",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "history-rollback",
+      "checkId": "rollback-interaction",
+      "kind": "manual",
+      "requirementIds": [
+        "F06"
+      ],
+      "target": "macos",
+      "status": "missing",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "history-rollback",
+      "checkId": "rollback-interaction",
+      "kind": "manual",
+      "requirementIds": [
+        "F06"
+      ],
+      "target": "web",
+      "status": "missing",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "history-rollback",
+      "checkId": "rollback-interaction",
+      "kind": "manual",
+      "requirementIds": [
+        "F06"
+      ],
+      "target": "android",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "history-rollback",
+      "checkId": "rollback-interaction",
+      "kind": "manual",
+      "requirementIds": [
+        "F06"
+      ],
+      "target": "ios",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "history-rollback",
+      "checkId": "rollback-interaction",
+      "kind": "manual",
+      "requirementIds": [
+        "F06"
+      ],
+      "target": "windows",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "history-rollback",
+      "checkId": "rollback-interaction",
+      "kind": "manual",
+      "requirementIds": [
+        "F06"
+      ],
+      "target": "linux",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "archive-reopen",
+      "checkId": "archive-records",
+      "kind": "fixture",
+      "requirementIds": [
+        "F08"
+      ],
+      "target": "macos",
+      "status": "missing",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "archive-reopen",
+      "checkId": "archive-records",
+      "kind": "fixture",
+      "requirementIds": [
+        "F08"
+      ],
+      "target": "web",
+      "status": "missing",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "archive-reopen",
+      "checkId": "archive-records",
+      "kind": "fixture",
+      "requirementIds": [
+        "F08"
+      ],
+      "target": "android",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "archive-reopen",
+      "checkId": "archive-records",
+      "kind": "fixture",
+      "requirementIds": [
+        "F08"
+      ],
+      "target": "ios",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "archive-reopen",
+      "checkId": "archive-records",
+      "kind": "fixture",
+      "requirementIds": [
+        "F08"
+      ],
+      "target": "windows",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "archive-reopen",
+      "checkId": "archive-records",
+      "kind": "fixture",
+      "requirementIds": [
+        "F08"
+      ],
+      "target": "linux",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "archive-reopen",
+      "checkId": "archive-browser",
+      "kind": "fixture",
+      "requirementIds": [
+        "F08"
+      ],
+      "target": "macos",
+      "status": "missing",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "archive-reopen",
+      "checkId": "archive-browser",
+      "kind": "fixture",
+      "requirementIds": [
+        "F08"
+      ],
+      "target": "web",
+      "status": "missing",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "archive-reopen",
+      "checkId": "archive-browser",
+      "kind": "fixture",
+      "requirementIds": [
+        "F08"
+      ],
+      "target": "android",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "archive-reopen",
+      "checkId": "archive-browser",
+      "kind": "fixture",
+      "requirementIds": [
+        "F08"
+      ],
+      "target": "ios",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "archive-reopen",
+      "checkId": "archive-browser",
+      "kind": "fixture",
+      "requirementIds": [
+        "F08"
+      ],
+      "target": "windows",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "archive-reopen",
+      "checkId": "archive-browser",
+      "kind": "fixture",
+      "requirementIds": [
+        "F08"
+      ],
+      "target": "linux",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "archive-reopen",
+      "checkId": "archive-interaction",
+      "kind": "manual",
+      "requirementIds": [
+        "F08"
+      ],
+      "target": "macos",
+      "status": "missing",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "archive-reopen",
+      "checkId": "archive-interaction",
+      "kind": "manual",
+      "requirementIds": [
+        "F08"
+      ],
+      "target": "web",
+      "status": "missing",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "archive-reopen",
+      "checkId": "archive-interaction",
+      "kind": "manual",
+      "requirementIds": [
+        "F08"
+      ],
+      "target": "android",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "archive-reopen",
+      "checkId": "archive-interaction",
+      "kind": "manual",
+      "requirementIds": [
+        "F08"
+      ],
+      "target": "ios",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "archive-reopen",
+      "checkId": "archive-interaction",
+      "kind": "manual",
+      "requirementIds": [
+        "F08"
+      ],
+      "target": "windows",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "archive-reopen",
+      "checkId": "archive-interaction",
+      "kind": "manual",
+      "requirementIds": [
+        "F08"
+      ],
+      "target": "linux",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "application-baseline",
+      "checkId": "platform-build",
+      "kind": "build",
+      "requirementIds": [
+        "F17"
+      ],
+      "target": "macos",
+      "status": "missing",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "application-baseline",
+      "checkId": "platform-build",
+      "kind": "build",
+      "requirementIds": [
+        "F17"
+      ],
+      "target": "web",
+      "status": "missing",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "application-baseline",
+      "checkId": "platform-build",
+      "kind": "build",
+      "requirementIds": [
+        "F17"
+      ],
+      "target": "android",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "application-baseline",
+      "checkId": "platform-build",
+      "kind": "build",
+      "requirementIds": [
+        "F17"
+      ],
+      "target": "ios",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "application-baseline",
+      "checkId": "platform-build",
+      "kind": "build",
+      "requirementIds": [
+        "F17"
+      ],
+      "target": "windows",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "application-baseline",
+      "checkId": "platform-build",
+      "kind": "build",
+      "requirementIds": [
+        "F17"
+      ],
+      "target": "linux",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "application-baseline",
+      "checkId": "application-launch",
+      "kind": "launch",
+      "requirementIds": [
+        "F17"
+      ],
+      "target": "macos",
+      "status": "missing",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "application-baseline",
+      "checkId": "application-launch",
+      "kind": "launch",
+      "requirementIds": [
+        "F17"
+      ],
+      "target": "web",
+      "status": "missing",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "application-baseline",
+      "checkId": "application-launch",
+      "kind": "launch",
+      "requirementIds": [
+        "F17"
+      ],
+      "target": "android",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "application-baseline",
+      "checkId": "application-launch",
+      "kind": "launch",
+      "requirementIds": [
+        "F17"
+      ],
+      "target": "ios",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "application-baseline",
+      "checkId": "application-launch",
+      "kind": "launch",
+      "requirementIds": [
+        "F17"
+      ],
+      "target": "windows",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    },
+    {
+      "scenarioId": "application-baseline",
+      "checkId": "application-launch",
+      "kind": "launch",
+      "requirementIds": [
+        "F17"
+      ],
+      "target": "linux",
+      "status": "unavailable",
+      "currentPass": false,
+      "savedEvidence": null
+    }
+  ]
+}
