@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "scope": "f10-saved-snapshot-link-only",
+  "scenarioId": "reviewed-candidate",
+  "sourceRevision": "7fb37b446e256002cc801d769e7d6c28f6cc7a5c",
+  "requirementSha256": "d4bca2674d713dbff171a456ecfafe48f15ee0cd69eb89180c5736f63a19ac7f",
+  "inputSha256": "86eea591c8aac58c4fdb54df0037beb510819f1256ef9493e7e332f52da7323d",
+  "generatedSourceSha256": "ad30dc19c543d3c4ffa48a263d1ce6a2b05c784d8673814cbb0f068ae1466233",
+  "approvalSha256": "43d41dda32e8c6492255a66cd98d4052c5e37b49dfe608f6fc7577f416c9b634",
+  "savedRunSha256": "c0b36b4879aa65c57d55de4acdcd9eb19d5d7f15051414e34097ae7b6ad9f186"
+}
