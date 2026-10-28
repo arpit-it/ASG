@@ -213,7 +213,7 @@ Requirements changes: existing F10 acceptance guidance and F15 backend milestone
 
 ## Active task and delivery ledger
 
-Current: F10 In progress/unchecked. Reopened issue #217 on `217-manual-check-observations` for explicit revision-bound human observations. Prior PR #235 independently reviewed and verified merged. Automated targeted acceptance execution remains unmet; no later task selected.
+Current: F10 In progress/unchecked. PR #236 verified merged as `31b959175e25571d74b3f1f50bbd955d1803cae0`; issue #217 reopened on `217-observation-timestamp-validation` for corrupt timestamp rejection. Automated targeted acceptance execution/results remain unmet; no later task selected.
 
 ### Historical status snapshots
 
@@ -3919,3 +3919,19 @@ Acceptance: observations survive database reopen; requirement/source/input/appro
 Validation: eight new store/controller/widget/native regressions including 320px interaction; formatter/analyzer/full suite and web build recorded after final checks. Initial test compilation/scroll-position assumptions and duplicated copied-evidence freshness logic were fixed before retest. The ordinary checkout full suite encountered a pre-existing license-scan failure because ignored model dependencies were treated as first-party source; isolated source-snapshot validation excludes ignored tooling. No new model inference or installed-app replacement. Final tested revision, independent review, actual required CI and merge evidence follow in the linked PR.
 
 Final local validation: formatter227/analyzer passed; isolated source-snapshot full suite753passed/seven opt-in skips,33focused report/mapping/manual tests passed after final message clarification. Web build and Wasm dry run passed. Eight new regressions passed. No fresh inference; loopback health connection refused. Independent final-revision review and required CI remain merge gates.
+
+
+### F10 manual observations merge verified — PR #236 (28 October 2026)
+
+Final head `de5061a518db99585f6a59e1b70d4c09a878ebb5`, tested tree `a1024f86951a64bd3359f8de1bd598c46e0762f5`; independent final review `5676592063` approved after 34 focused tests and inspecting actual required CI `40613258898` logs. Protected squash merge `31b959175e25571d74b3f1f50bbd955d1803cae0` at 2026-10-28T01:14:22Z; parent independently verified merged PR and completed/closed issue #217. Local formatter227/analyzer,753 Flutter tests/seven skips,33 focused tests and web/Wasm passed. CI Flutter750 Linux tests/seven skips,two real Chrome tests,web/Wasm,real generated verification/resume/served-output; Python2+4+10+4 fixtures/two platform skips. Runtime offline; no fresh inference. F10 remains In progress for automated targeted acceptance execution/results.
+
+
+### F10 strict manual observation timestamps — issue #217 (28 October 2026)
+
+Continues verified PR #236 merge `31b959175e25571d74b3f1f50bbd955d1803cae0` on branch `217-observation-timestamp-validation`. Independent final review `5676592063`, required CI `40613258898`, tested tree `a1024f86951a64bd3359f8de1bd598c46e0762f5` and closed/completed issue were verified through the connected repository integration before reopening the same issue. No overlapping active owner or open PR was found; five pre-existing IDE/document edits remain preserved.
+
+Reproduced malformed saved evidence: Dart accepts February 30 by silently normalizing it into March. The parser now validates UTC syntax and exact calendar/clock components rather than repairing corrupt observations. Valid leap days, seconds and millisecond/microsecond timestamps remain readable. Invalid timestamps clear report availability and prevent replacement of the original record. Two regressions cover model round trips and corrupt-record/controller preservation; the invalid-date regression failed before the fix.
+
+F10 remains In progress/unchecked for automated targeted acceptance execution/results. This increment only fixes observation integrity; no new execution or acceptance verdict. Final formatter/analyzer/full tests/web build, exact-revision independent review, required CI and merge evidence follow in the linked PR. No fresh inference, model download, installed-app replacement, deployment or schedule change.
+
+Final local validation: formatter227/analyzer passed; source-snapshot full755 Flutter tests/seven opt-in skips,28 focused tests and web build/Wasm dry run passed. Two new regressions pass; the invalid-calendar regression failed before the fix. Runtime endpoint unavailable; no inference claimed. Independent final-revision review and required CI remain merge gates.

@@ -39,13 +39,30 @@ class ManualCheckObservation {
         !((json['observedAt'] as String).endsWith('Z'))) {
       throw const FormatException('Invalid manual check observation.');
     }
+    final timestamp = json['observedAt'] as String;
+    final parts = RegExp(
+      r'^([+-]?\d{4,6})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.\d{1,6})?Z$',
+    ).firstMatch(timestamp);
+    final observedAt = DateTime.tryParse(timestamp);
+    // DateTime.parse normalizes overflowing components instead of rejecting
+    // them. Evidence must retain the authored instant, not repair corruption.
+    if (parts == null ||
+        observedAt == null ||
+        observedAt.year != int.parse(parts[1]!) ||
+        observedAt.month != int.parse(parts[2]!) ||
+        observedAt.day != int.parse(parts[3]!) ||
+        observedAt.hour != int.parse(parts[4]!) ||
+        observedAt.minute != int.parse(parts[5]!) ||
+        observedAt.second != int.parse(parts[6]!)) {
+      throw const FormatException('Invalid manual observation timestamp.');
+    }
     return ManualCheckObservation(
       requirementId: json['requirementId'] as String,
       checkId: json['checkId'] as String,
       requirementSha256: json['requirementSha256'] as String,
       runSha256: json['runSha256'] as String,
       passed: json['passed'] as bool,
-      observedAt: DateTime.parse(json['observedAt'] as String),
+      observedAt: observedAt,
     );
   }
 }

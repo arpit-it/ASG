@@ -10,6 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:asg/controllers/requirement_check_report_controller.dart';
 import 'package:asg/models/requirements_board.dart';
+import 'package:asg/models/manual_check_observation.dart';
 import 'package:asg/services/manual_check_observation_store.dart';
 import 'package:asg/services/record_storage.dart';
 import 'package:asg/services/requirement_check_report_store.dart';
@@ -93,6 +94,92 @@ Future<void> record(RequirementCheckReportStore store, bool passed) {
 }
 
 void main() {
+  test(
+    'observation timestamps reject normalized calendar and clock values',
+    () {
+      final valid = ManualCheckObservation(
+        requirementId: 'R1',
+        checkId: 'Observe',
+        requirementSha256: 'a' * 64,
+        runSha256: 'b' * 64,
+        passed: true,
+        observedAt: DateTime.utc(2024, 2, 29),
+      ).toJson();
+      for (final timestamp in [
+        '2026-02-30T00:00:00.000Z',
+        '2026-02-29T00:00:00.000Z',
+        '2026-00-28T00:00:00.000Z',
+        '2026-13-28T00:00:00.000Z',
+        '2026-10-00T00:00:00.000Z',
+        '2026-10-28T25:00:00.000Z',
+        '2026-10-28T00:60:00.000Z',
+        '2026-10-28T00:00:60.000Z',
+        '2026-10-28T00:00:00.1234567Z',
+        '20261028T000000Z',
+        '2026-10-28 00:00:00.000Z',
+      ]) {
+        expect(
+          () => ManualCheckObservation.fromJson({
+            ...valid,
+            'observedAt': timestamp,
+          }),
+          throwsFormatException,
+          reason: timestamp,
+        );
+      }
+      for (final timestamp in [
+        '2024-02-29T00:00:00Z',
+        '2024-02-29T23:59:59.123Z',
+        '2024-02-29T23:59:59.123456Z',
+      ]) {
+        final observation = ManualCheckObservation.fromJson({
+          ...valid,
+          'observedAt': timestamp,
+        });
+        expect(observation.observedAt, DateTime.parse(timestamp));
+        expect(
+          ManualCheckObservation.fromJson(observation.toJson()).observedAt,
+          observation.observedAt,
+        );
+      }
+    },
+  );
+
+  test(
+    'invalid saved timestamp clears reports without replacing corrupt bytes',
+    () async {
+      final records = await fixture();
+      final store = RequirementCheckReportStore(records);
+      await record(store, true);
+      final selected = store.load(project);
+      final controller = RequirementCheckReportController(project, store)
+        ..load();
+      final key = ManualCheckObservationStore.key('p');
+      final json = jsonDecode(records.data[key]!) as Map<String, dynamic>;
+      (json['observations'] as List).single['observedAt'] =
+          '2026-02-30T00:00:00.000Z';
+      final corrupt = jsonEncode(json);
+      records.data[key] = corrupt;
+      controller.load();
+      expect(controller.report, isNull);
+      expect(controller.error, isNotNull);
+      await expectLater(
+        store.recordManualObservation(
+          project,
+          selected,
+          selected.results.first.requirement.id,
+          'Observe',
+          false,
+          DateTime.now(),
+          authorized: () => true,
+        ),
+        throwsFormatException,
+      );
+      expect(records.data[key], corrupt);
+      controller.dispose();
+    },
+  );
+
   test('explicit manual pass/fail survives reload with exact identity; never verifies acceptance', () async {
     final records = await fixture();
     final store = RequirementCheckReportStore(records);
