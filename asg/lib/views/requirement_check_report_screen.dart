@@ -98,6 +98,26 @@ class _RequirementCheckReportScreenState
                         Text(
                           'Requirement SHA-256: ${result.acceptance.requirementSha256}',
                         ),
+                        if (result.requirement.criteria.isEmpty)
+                          const Text(
+                            'No authored criterion mappings. Acceptance prose has not been split or verified.',
+                          ),
+                        for (final criterion
+                            in result.requirement.criteria) ...[
+                          Text('Criterion ${criterion.id}: ${criterion.text}'),
+                          const Text('Criterion acceptance: not verified'),
+                          if (criterion.checkIds.isEmpty)
+                            const Text(
+                              'Unmapped criterion: no checks selected.',
+                            ),
+                          for (final id in criterion.checkIds)
+                            Text(
+                              'Mapped check $id — ${report.directCheck(result.requirement, result.requirement.checks.firstWhere((c) => c.id == id)).label}',
+                            ),
+                          const Text(
+                            'Authored mapping only; check outcomes do not establish semantic coverage of this criterion or the free-form acceptance block.',
+                          ),
+                        ],
                         for (final check in result.requirement.checks) ...[
                           Text(
                             'Declared check ${check.id} (${check.type.name})',

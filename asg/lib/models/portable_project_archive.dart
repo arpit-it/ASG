@@ -153,6 +153,7 @@ class PortableProjectArchive {
           'title',
           'acceptance',
           if (row is Map && row.containsKey('checks')) 'checks',
+          if (row is Map && row.containsKey('criteria')) 'criteria',
         ]);
       }
       for (final row in taskRows) {

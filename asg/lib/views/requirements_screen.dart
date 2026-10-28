@@ -140,6 +140,10 @@ class _RequirementsScreenState extends State<RequirementsScreen> {
                             style: Theme.of(context).textTheme.titleMedium,
                           ),
                           Text('Acceptance: ${r.acceptance}'),
+                          for (final c in r.criteria)
+                            Text(
+                              'Criterion ${c.id}: ${c.text} · checks: ${c.checkIds.isEmpty ? "none" : c.checkIds.join(", ")} · not verified',
+                            ),
                           TextButton(
                             onPressed: controller.busy
                                 ? null
@@ -238,8 +242,16 @@ class _BoardEditorState extends State<_BoardEditor> {
     for (final c in widget.requirement?.checks ?? <AcceptanceCheckDefinition>[])
       _CheckEditor(c),
   ];
+  late final criteria = [
+    for (final c
+        in widget.requirement?.criteria ?? <AcceptanceCriterionDefinition>[])
+      _CriterionEditor(c),
+  ];
   @override
   void dispose() {
+    for (final criterion in criteria) {
+      criterion.dispose();
+    }
     id.dispose();
     title.dispose();
     acceptance.dispose();
@@ -270,6 +282,7 @@ class _BoardEditorState extends State<_BoardEditor> {
               title: title.text.trim(),
               acceptance: acceptance.text.trim(),
               checks: List.unmodifiable(checks.map((c) => c.definition)),
+              criteria: List.unmodifiable(criteria.map((c) => c.definition)),
             ),
             editing: widget.requirement != null,
           );
@@ -318,6 +331,61 @@ class _BoardEditorState extends State<_BoardEditor> {
                       ),
                     ),
                   if (!widget.taskEditor) ...[
+                    const Text(
+                      'Optionally author individual criteria and map local check IDs. Existing acceptance prose is retained; mappings do not verify coverage. Removing a mapped check requires updating its criteria.',
+                    ),
+                    for (var i = 0; i < criteria.length; i++)
+                      Padding(
+                        key: ObjectKey(criteria[i]),
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        child: Column(
+                          children: [
+                            TextField(
+                              controller: criteria[i].id,
+                              enabled: !busy,
+                              maxLength: 40,
+                              decoration: InputDecoration(
+                                labelText: 'Criterion ${i + 1} ID',
+                              ),
+                            ),
+                            TextField(
+                              controller: criteria[i].text,
+                              enabled: !busy,
+                              maxLength: 500,
+                              minLines: 2,
+                              maxLines: 4,
+                              decoration: InputDecoration(
+                                labelText: 'Criterion ${i + 1} text',
+                              ),
+                            ),
+                            TextField(
+                              controller: criteria[i].checkIds,
+                              enabled: !busy,
+                              maxLength: 420,
+                              decoration: InputDecoration(
+                                labelText:
+                                    'Criterion ${i + 1} check IDs (comma separated)',
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: busy
+                                  ? null
+                                  : () => setState(() {
+                                      criteria.removeAt(i).dispose();
+                                    }),
+                              child: Text('Remove criterion ${i + 1}'),
+                            ),
+                          ],
+                        ),
+                      ),
+                    TextButton(
+                      onPressed: busy || criteria.length >= 10
+                          ? null
+                          : () => setState(
+                              () => criteria.add(_CriterionEditor()),
+                            ),
+                      child: const Text('Add authored criterion'),
+                    ),
                     const Text(
                       'Acceptance checks are planned mappings. Defining a check does not run it or verify acceptance.',
                     ),
@@ -502,5 +570,25 @@ class _CheckEditor {
     expectation.dispose();
     file.dispose();
     name.dispose();
+  }
+}
+
+class _CriterionEditor {
+  _CriterionEditor([AcceptanceCriterionDefinition? value])
+    : id = TextEditingController(text: value?.id),
+      text = TextEditingController(text: value?.text),
+      checkIds = TextEditingController(text: value?.checkIds.join(', '));
+  final TextEditingController id, text, checkIds;
+  AcceptanceCriterionDefinition get definition => AcceptanceCriterionDefinition(
+    id: id.text.trim(),
+    text: text.text.trim(),
+    checkIds: checkIds.text.trim().isEmpty
+        ? []
+        : checkIds.text.split(',').map((v) => v.trim()).toList(),
+  );
+  void dispose() {
+    id.dispose();
+    text.dispose();
+    checkIds.dispose();
   }
 }
