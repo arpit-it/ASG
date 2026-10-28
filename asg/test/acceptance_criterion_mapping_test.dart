@@ -388,8 +388,25 @@ void main() {
       await tester.ensureVisible(field);
       await tester.enterText(field, entry.value);
     }
+    final ruleSwitch = find.widgetWithText(
+      SwitchListTile,
+      'Verify this criterion using all mapped named tests',
+    );
+    await tester.ensureVisible(ruleSwitch);
+    await tester.tap(ruleSwitch);
+    await tester.pumpAndSettle();
     await tester.tap(find.widgetWithText(FilledButton, 'Save'));
     await tester.pumpAndSettle();
+    expect(
+      RequirementsStore(records)
+          .load('p')
+          .requirements
+          .first
+          .criteria
+          .single
+          .verificationRule,
+      CriterionVerificationRule.allMappedNamedTests,
+    );
     expect(
       RequirementsStore(records)
           .load('p')
@@ -403,6 +420,17 @@ void main() {
     await tester.tap(find.text('Edit R1'));
     await tester.pumpAndSettle();
     expect(find.text('Exact restored item'), findsOneWidget);
+    expect(
+      tester
+          .widget<SwitchListTile>(
+            find.widgetWithText(
+              SwitchListTile,
+              'Verify this criterion using all mapped named tests',
+            ),
+          )
+          .value,
+      isTrue,
+    );
     await tester.ensureVisible(find.text('Remove criterion 1'));
     await tester.tap(find.text('Remove criterion 1'));
     await tester.pumpAndSettle();

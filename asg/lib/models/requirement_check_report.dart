@@ -174,16 +174,49 @@ class RequirementCheckReport {
     return CriterionCheckSummary.notAutomated;
   }
 
-  /// A deterministic mapping projection only; no criterion verdict is inferred.
+  /// Evaluates only the explicitly authored named-test contract at a saved run.
+  /// This never verifies prose semantics or live artifact freshness.
+  bool criterionVerifiedAgainstChecks(
+    ProjectRequirement requirement,
+    AcceptanceCriterionDefinition criterion,
+  ) =>
+      criterion.verificationRule ==
+          CriterionVerificationRule.allMappedNamedTests &&
+      criterion.checkIds.isNotEmpty &&
+      criterion.checkIds.toSet().length == criterion.checkIds.length &&
+      criterion.checkIds.every(
+        (id) => requirement.checks.any(
+          (c) =>
+              c.id == id &&
+              c.type == AcceptanceCheckType.automated &&
+              c.target != null,
+        ),
+      ) &&
+      criterionCheckSummary(requirement, criterion) ==
+          CriterionCheckSummary.automatedChecksPassed;
+
+  String criterionVerdictLabel(
+    ProjectRequirement requirement,
+    AcceptanceCriterionDefinition criterion,
+  ) => criterionVerifiedAgainstChecks(requirement, criterion)
+      ? 'Criterion rule: verified against authored named tests at saved revision'
+      : 'Criterion acceptance: not verified';
+
+  /// Deterministic authored-rule verdict; no free-form coverage is inferred.
   Map<String, Object?> criterionEvidence(
     ProjectRequirement requirement,
     AcceptanceCriterionDefinition criterion,
   ) => {
     ...criterion.toJson(),
-    'status': 'unverified',
+    'status': criterionVerifiedAgainstChecks(requirement, criterion)
+        ? 'verifiedAgainstAuthoredChecks'
+        : 'unverified',
+    'requirementSha256': RequirementAcceptanceEvidence(requirement)
+        .requirementSha256,
+    'savedRunSha256': revisionIdentity?.savedRunSha256,
     'mappingStatus': criterion.checkIds.isEmpty ? 'unmapped' : 'authored',
     'checkSummary': criterionCheckSummary(requirement, criterion).name,
-    'scope': 'Authored mapping only. Check outcomes do not establish semantic coverage of this criterion or the free-form acceptance block.',
+    'scope': 'Only an explicitly selected named-test rule can verify its authored check contract at this saved revision. Prose semantics, the free-form acceptance block and current files remain unverified.',
     'checks': [
       for (final id in criterion.checkIds)
         directCheck(
@@ -257,7 +290,7 @@ class RequirementCheckReport {
   static const authoredEvidenceNotice =
       'Expanded and copied evidence includes your requirement titles, acceptance '
       'criteria, declared check outcomes and task definitions. Review that text before sharing. Manual '
-      'task status is progress only; acceptance criteria remain unverified.';
+      'task status is progress only; prose acceptance remains unverified. Explicit named-test rules verify only their saved check contract.';
 
   static const limits =
       'Mapped checks passed describes saved command evidence, not acceptance criteria or current artifact availability. Inspect current artifacts separately to compare recorded source and output fingerprints. Inspection is read-only and reflects files only when inspected; it does not run commands or inference. Model Review remains advisory; manual task Done does not count as evidence.';
