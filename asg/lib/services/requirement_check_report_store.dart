@@ -6,11 +6,14 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 
 import '../models/build_plan.dart';
+import '../models/manual_check_observation.dart';
+import '../models/requirements_board.dart';
 import '../models/build_task.dart';
 import '../models/project.dart';
 import '../models/requirement_check_report.dart';
 import '../models/source_generation.dart';
 import 'application_store.dart';
+import 'manual_check_observation_store.dart';
 import 'generation_input.dart';
 import 'plan_approval_store.dart';
 import 'record_storage.dart';
@@ -21,8 +24,76 @@ import 'source_generation_store.dart';
 class RequirementCheckReportStore {
   RequirementCheckReportStore(this.records);
   final RecordStorage records;
+  Future<void> recordManualObservation(
+    StudioProject project,
+    RequirementCheckReport selected,
+    String requirementId,
+    String checkId,
+    bool passed,
+    DateTime observedAt, {
+    required bool Function() authorized,
+  }) async {
+    final storage = records;
+    if (storage is! ConditionalRecordStorage) {
+      throw StateError('Manual observations require transactional storage.');
+    }
+    final current = load(project);
+    final requirement = current.results
+        .where((r) => r.requirement.id == requirementId)
+        .firstOrNull;
+    final check = requirement?.requirement.checks
+        .where((c) => c.id == checkId)
+        .firstOrNull;
+    final run = current.revisionIdentity?.savedRunSha256;
+    if (current.snapshotFingerprint != selected.snapshotFingerprint ||
+        !current.canRecordManualObservation ||
+        requirement == null ||
+        check?.type != AcceptanceCheckType.manual ||
+        run == null) {
+      throw StateError(
+        'Reload current successful evidence and choose an authored manual check.',
+      );
+    }
+    final target = ManualCheckObservationStore.key(project.id);
+    final expected = <String, String?>{
+      for (final key in [
+        target,
+        'studio.projects.v1',
+        RequirementsStore.key(project.id),
+        'studio.generation.v1.${project.id}',
+        'studio.application.v1.${project.id}',
+        'studio.planApproval.v1.${project.id}',
+        'studio.chat.v1.${project.id}',
+      ])
+        key: records.getString(key),
+    };
+    final values = [
+      for (final value in current.manualObservations)
+        if (value.requirementId != requirementId || value.checkId != checkId)
+          value,
+      ManualCheckObservation(
+        requirementId: requirementId,
+        checkId: checkId,
+        requirementSha256: requirement.acceptance.requirementSha256,
+        runSha256: run,
+        passed: passed,
+        observedAt: observedAt.toUtc(),
+      ),
+    ];
+    await storage.commitRecords(
+      expected: expected,
+      updates: {target: ManualCheckObservationStore.encode(values)},
+      authorize: () {
+        if (!authorized()) {
+          throw StateError('Observation was cancelled before saving.');
+        }
+      },
+    );
+  }
+
   RequirementCheckReport load(StudioProject project) {
     final board = RequirementsStore(records).load(project.id);
+    final observations = ManualCheckObservationStore(records).load(project.id);
     final generation = SourceGenerationStore(records);
     final saved = generation.load(project.id);
     final history = generation.history(project.id);
@@ -139,12 +210,35 @@ class RequirementCheckReportStore {
                     jsonEncode(saved.toJson()),
               )
               .lastOrNull;
+    final projection = RequirementCheckReport(
+      board.revision,
+      results,
+      '',
+      savedProject: saved,
+      revisionIdentity: identity,
+      savedInputsCurrent: current,
+      manualObservations: observations,
+    );
     return RequirementCheckReport(
       board.revision,
       results,
       const JsonEncoder.withIndent('  ').convert({
         'scope': RequirementCheckReport.limits,
         'requirementsRevision': board.revision,
+        'manualObservations': [
+          for (final observation in observations)
+            {
+              ...observation.toJson(),
+              'type': 'manual',
+              'status': projection.observationCurrent(observation)
+                  ? (observation.passed
+                        ? 'manuallyReportedPassed'
+                        : 'manuallyReportedFailed')
+                  : 'stale',
+              'scope':
+                  'Human observation only; no automated acceptance verdict.',
+            },
+        ],
         // No record is distinct from a saved, empty board. The canonical
         // model encoding preserves exact authored text and dependency order.
         'requirementsBoard': board.revision == 0 ? null : board.toJson(),
@@ -175,7 +269,7 @@ class RequirementCheckReportStore {
                 'requirementSha256': r.acceptance.requirementSha256,
                 'savedRunSha256': identity.savedRunSha256,
                 'savedInputsCurrent': current,
-                'scope': 'Candidate binding context only. Declared checks have no direct results.',
+                'scope': 'Binding context only. Manual observations are separate from automated operation evidence.',
               },
               'contextualEvidence': {
                 'type': 'automatedOperation',
@@ -208,6 +302,7 @@ class RequirementCheckReportStore {
             },
         ],
       }),
+      manualObservations: observations,
       revisionIdentity: identity,
       savedInputsCurrent: current,
       savedProject: saved,
@@ -220,6 +315,9 @@ class RequirementCheckReportStore {
                 'saved': saved?.toJson(),
                 'current': current,
                 'history': matchingHistory?.toJson(),
+                'manualObservations': [
+                  for (final v in observations) v.toJson(),
+                ],
               }),
             ),
           )

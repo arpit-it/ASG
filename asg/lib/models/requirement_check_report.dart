@@ -6,6 +6,7 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 
 import 'artifact_inspection.dart';
+import 'manual_check_observation.dart';
 import 'requirements_board.dart';
 import 'build_task.dart';
 import 'source_generation.dart';
@@ -56,7 +57,36 @@ class RequirementCheckReport {
     this.snapshotFingerprint = '',
     this.revisionIdentity,
     this.savedInputsCurrent = false,
-  }) : results = List.unmodifiable(results);
+    List<ManualCheckObservation> manualObservations = const [],
+  }) : results = List.unmodifiable(results),
+       manualObservations = List.unmodifiable(manualObservations);
+  final List<ManualCheckObservation> manualObservations;
+  ManualCheckObservation? observationFor(
+    String requirementId,
+    String checkId,
+  ) => manualObservations
+      .where((v) => v.requirementId == requirementId && v.checkId == checkId)
+      .firstOrNull;
+  bool get canRecordManualObservation =>
+      savedInputsCurrent &&
+      revisionIdentity?.savedRunSha256 != null &&
+      savedProject?.phase == SourceGenerationPhase.ready &&
+      savedProject!.pendingOperation.isEmpty &&
+      savedProject!.failedOperation.isEmpty &&
+      savedProject!.steps.isNotEmpty &&
+      savedProject!.steps.every((s) => s.succeeded);
+  bool observationCurrent(ManualCheckObservation value) =>
+      canRecordManualObservation &&
+      value.runSha256 == revisionIdentity?.savedRunSha256 &&
+      results.any(
+        (r) =>
+            r.requirement.id == value.requirementId &&
+            r.acceptance.requirementSha256 == value.requirementSha256 &&
+            r.requirement.checks.any(
+              (c) =>
+                  c.id == value.checkId && c.type == AcceptanceCheckType.manual,
+            ),
+      );
   final int requirementsRevision;
   final List<RequirementCheckResult> results;
   final String evidenceJson;
@@ -148,9 +178,9 @@ class RequirementAcceptanceEvidence {
       sha256.convert(utf8.encode(jsonEncode(requirement.toJson()))).toString();
   static const label = 'Unmet acceptance evidence';
   static const reason =
-      'No direct check result is recorded for this acceptance block. Generic '
-      'operation results, manual task progress and advisory model Review '
-      'do not verify it.';
+      'No automated acceptance verdict is recorded for this acceptance block. '
+      'Manual observations are self-reported. Generic operation results, manual '
+      'task progress and advisory model Review do not verify acceptance.';
   Map<String, Object?> toJson() => {
     'granularity': 'authoredAcceptanceBlock',
     'requirementId': requirement.id,
