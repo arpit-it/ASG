@@ -92,6 +92,19 @@ void main() {
       controller.dispose();
     }
   });
+  test('rejects calendar year zero accepted by Dart but not the collector', () {
+    final report = data();
+    report['generatedAt'] = '0000-01-01T00:00:00Z';
+    for (final cell in report['cells']) {
+      if (cell['savedEvidence'] != null) {
+        cell['savedEvidence']['observedAt'] = report['generatedAt'];
+      }
+    }
+    expect(
+      () => ProductAcceptanceReport.parse(jsonEncode(report)),
+      throwsFormatException,
+    );
+  });
   test(
     'invalid replacement retains prior report and clear/disposal are safe',
     () {

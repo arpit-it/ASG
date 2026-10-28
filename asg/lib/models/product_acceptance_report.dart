@@ -221,7 +221,9 @@ String _utc(Object? value) {
   );
   final parsed = DateTime.tryParse(value as String);
   _need(
-    parsed != null && '${parsed.toIso8601String().split('.').first}Z' == value,
+    parsed != null &&
+        parsed.year >= 1 &&
+        '${parsed.toIso8601String().split('.').first}Z' == value,
   );
   return value;
 }
