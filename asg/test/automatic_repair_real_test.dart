@@ -30,6 +30,9 @@ import 'package:asg/services/requirements_store.dart';
 import 'package:asg/services/source_generation_store.dart';
 import 'package:asg/services/studio_database.dart';
 import 'package:asg/services/studio_store.dart';
+import 'package:asg/services/requirement_check_report_store.dart';
+
+import 'support/acceptance_provenance.dart';
 
 import 'planning_conversation_test.dart' show project;
 import 'board_mapped_build_plan_test.dart' show boardContent, sharedContract;
@@ -328,6 +331,11 @@ void main() {
             ).load(project.id)!.directory,
             working.directory,
           );
+          final provenance = acceptanceProvenanceLine(
+            RequirementCheckReportStore(restored).load(project),
+            scenario: 'bounded-repair',
+          );
+          if (provenance != null) debugPrint(provenance);
         } finally {
           await reopened.close();
         }

@@ -126,3 +126,42 @@ requirement/input snapshots. Do not invent those hashes or convert the observati
 into current-pass collector cells. Completing that provenance and the actual
 isolated-profile macOS/web interaction baseline remains F17 work. F17 stays
 In progress; rerun affected workflows after implementation/model/toolchain changes.
+
+## Exact F10 provenance from opt-in live tests (issue #259)
+
+The existing candidate and repair tests can emit a digest-only linkage after all
+promotion and database-reopen assertions pass. Enable it explicitly for each run:
+
+```sh
+flutter test test/candidate_real_test.dart --dart-define=ASG_REAL_INFERENCE=true --dart-define=ASG_ACCEPTANCE_PROVENANCE=true --dart-define=ASG_TESTED_REVISION=<exact-40-character-tested-commit> --reporter expanded
+flutter test test/automatic_repair_real_test.dart --dart-define=ASG_REAL_INFERENCE=true --dart-define=ASG_ACCEPTANCE_PROVENANCE=true --dart-define=ASG_TESTED_REVISION=<exact-40-character-tested-commit> --reporter expanded
+```
+
+Run serially against the explicitly started existing runtime. Verify the checkout
+matches the supplied commit before running: the helper validates the revision's
+format, not the truth of caller-supplied Git identity. Default runs emit nothing.
+Capture the `ASG_F10_PROVENANCE=` JSON line separately from private test logs;
+full logs may contain paths and generated content and must not be shared as the
+sanitized artifact. An enabled run without complete current F10 evidence fails
+rather than inventing missing identities.
+
+The version-1 line includes only a fixed scope/scenario, tested source commit and
+five digests: exact F10 requirements-board snapshot, saved input manifest,
+generated source manifest, approval and saved run. The board hash uses F10's
+existing model JSON encoding, and input/source/run hashes use
+`RequirementRunIdentity`; do not reserialize them using the Python collector's
+canonical JSON algorithm. Use `requirementSha256` and `inputSha256` directly when
+assembling a collector identity. Keep the other three hashes as linkage in this
+sanitized artifact. Add actual UTC/host/device/toolchain/model/configuration and
+manifest identities from the same run before assembling collector records.
+This linkage alone is neither a collector record nor a pass, live-freshness,
+manual-interaction or support verdict. It contains no authored text, logs, paths,
+source contents or prompts. The previous historical observations were not
+retrofitted with invented hashes. Full F17 macOS/web interaction remains pending.
+
+Actual serial executions at `a03439c4f66b7120710389954627e2dccaa48f4b`
+passed: candidate49s (one separate fixture skip) and repair57s, each with four
+confined zero-exit checks, promotion/preservation and reopened F10 linkage.
+The [sanitized captured lines](acceptance/2026-10-28-f10-live-provenance.json)
+include test-source digests and UTC completion times. They are historical
+provenance artifacts, not current-pass collector cells or interactive UI evidence.
