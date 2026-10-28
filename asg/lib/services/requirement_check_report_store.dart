@@ -7,6 +7,8 @@ import 'package:crypto/crypto.dart';
 
 import '../models/build_plan.dart';
 import '../models/manual_check_observation.dart';
+import '../models/named_check_observation.dart';
+import '../models/named_flutter_test_result.dart';
 import '../models/requirements_board.dart';
 import '../models/build_task.dart';
 import '../models/project.dart';
@@ -14,6 +16,7 @@ import '../models/requirement_check_report.dart';
 import '../models/source_generation.dart';
 import 'application_store.dart';
 import 'manual_check_observation_store.dart';
+import 'named_check_observation_store.dart';
 import 'generation_input.dart';
 import 'plan_approval_store.dart';
 import 'record_storage.dart';
@@ -58,6 +61,8 @@ class RequirementCheckReportStore {
     final expected = <String, String?>{
       for (final key in [
         target,
+        ManualCheckObservationStore.key(project.id),
+        NamedCheckObservationStore.key(project.id),
         'studio.projects.v1',
         RequirementsStore.key(project.id),
         'studio.generation.v1.${project.id}',
@@ -91,9 +96,81 @@ class RequirementCheckReportStore {
     );
   }
 
+  Future<void> recordNamedTestResult(
+    StudioProject project,
+    RequirementCheckReport selected,
+    String requirementId,
+    String checkId,
+    NamedFlutterTestResult result,
+    DateTime observedAt, {
+    required bool Function() authorized,
+  }) async {
+    final storage = records;
+    if (storage is! ConditionalRecordStorage) {
+      throw StateError('Named results require transactional storage.');
+    }
+    final current = load(project);
+    final requirement = current.results
+        .where((r) => r.requirement.id == requirementId)
+        .firstOrNull;
+    final check = requirement?.requirement.checks
+        .where((c) => c.id == checkId)
+        .firstOrNull;
+    final run = current.revisionIdentity?.savedRunSha256;
+    if (current.snapshotFingerprint != selected.snapshotFingerprint ||
+        !current.canRecordManualObservation ||
+        requirement == null ||
+        check?.type != AcceptanceCheckType.automated ||
+        check?.target?.file != result.target.file ||
+        check?.target?.name != result.target.name ||
+        run == null) {
+      throw StateError(
+        'Reload current successful evidence and choose its authored automated target.',
+      );
+    }
+    final target = NamedCheckObservationStore.key(project.id);
+    final expected = <String, String?>{
+      for (final key in [
+        target,
+        ManualCheckObservationStore.key(project.id),
+        NamedCheckObservationStore.key(project.id),
+        'studio.projects.v1',
+        RequirementsStore.key(project.id),
+        'studio.generation.v1.${project.id}',
+        'studio.application.v1.${project.id}',
+        'studio.planApproval.v1.${project.id}',
+        'studio.chat.v1.${project.id}',
+      ])
+        key: records.getString(key),
+    };
+    final values = [
+      for (final value in current.namedObservations)
+        if (value.requirementId != requirementId || value.checkId != checkId)
+          value,
+      NamedCheckObservation(
+        requirementId: requirementId,
+        checkId: checkId,
+        requirementSha256: requirement.acceptance.requirementSha256,
+        runSha256: run,
+        result: result,
+        observedAt: observedAt.toUtc(),
+      ),
+    ];
+    await storage.commitRecords(
+      expected: expected,
+      updates: {target: NamedCheckObservationStore.encode(values)},
+      authorize: () {
+        if (!authorized()) {
+          throw StateError('Observation was cancelled before saving.');
+        }
+      },
+    );
+  }
+
   RequirementCheckReport load(StudioProject project) {
     final board = RequirementsStore(records).load(project.id);
     final observations = ManualCheckObservationStore(records).load(project.id);
+    final named = NamedCheckObservationStore(records).load(project.id);
     final generation = SourceGenerationStore(records);
     final saved = generation.load(project.id);
     final history = generation.history(project.id);
@@ -218,6 +295,7 @@ class RequirementCheckReportStore {
       revisionIdentity: identity,
       savedInputsCurrent: current,
       manualObservations: observations,
+      namedObservations: named,
     );
     return RequirementCheckReport(
       board.revision,
@@ -225,6 +303,19 @@ class RequirementCheckReportStore {
       const JsonEncoder.withIndent('  ').convert({
         'scope': RequirementCheckReport.limits,
         'requirementsRevision': board.revision,
+        'namedObservations': [
+          for (final value in named)
+            {
+              ...value.toJson(),
+              'type': 'automatedNamedTest',
+              'status': projection.namedObservationCurrent(value)
+                  ? (value.result.passed
+                        ? 'savedTargetPassed'
+                        : 'savedTargetNotPassed')
+                  : 'stale',
+              'scope': 'Bound to saved content only; no live artifact or acceptance verdict.',
+            },
+        ],
         'manualObservations': [
           for (final observation in observations)
             {
@@ -303,6 +394,7 @@ class RequirementCheckReportStore {
         ],
       }),
       manualObservations: observations,
+      namedObservations: named,
       revisionIdentity: identity,
       savedInputsCurrent: current,
       savedProject: saved,
@@ -315,6 +407,7 @@ class RequirementCheckReportStore {
                 'saved': saved?.toJson(),
                 'current': current,
                 'history': matchingHistory?.toJson(),
+                'namedObservations': [for (final v in named) v.toJson()],
                 'manualObservations': [
                   for (final v in observations) v.toJson(),
                 ],

@@ -18,6 +18,7 @@ import '../models/plan_approval.dart';
 import '../models/source_generation.dart';
 import 'application_store.dart';
 import 'manual_check_observation_store.dart';
+import 'named_check_observation_store.dart';
 import 'portable_decision_store.dart';
 import 'portable_revision_store.dart';
 import 'source_generation_store.dart';
@@ -103,6 +104,7 @@ class StudioDatabase implements ConditionalRecordStorage {
             !record.key.startsWith('studio.generationPrevious.v1.') &&
             !record.key.startsWith('studio.requirements.v1.') &&
             !record.key.startsWith('studio.manualChecks.v1.') &&
+            !record.key.startsWith('studio.namedChecks.v1.') &&
             !record.key.startsWith('studio.importedPlan.v1.') &&
             !record.key.startsWith('studio.planApproval.v1.')) {
           rethrow;
@@ -168,6 +170,8 @@ class StudioDatabase implements ConditionalRecordStorage {
           (decoded['revision'] as int) < 1) {
         throw const FormatException('Invalid saved application revision.');
       }
+    } else if (key.startsWith('studio.namedChecks.v1.')) {
+      NamedCheckObservationStore.decode(value);
     } else if (key.startsWith('studio.manualChecks.v1.')) {
       ManualCheckObservationStore.decode(value);
     } else if (key.startsWith('studio.requirements.v1.')) {

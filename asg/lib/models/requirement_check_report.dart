@@ -7,6 +7,7 @@ import 'package:crypto/crypto.dart';
 
 import 'artifact_inspection.dart';
 import 'manual_check_observation.dart';
+import 'named_check_observation.dart';
 import 'requirements_board.dart';
 import 'build_task.dart';
 import 'source_generation.dart';
@@ -58,8 +59,26 @@ class RequirementCheckReport {
     this.revisionIdentity,
     this.savedInputsCurrent = false,
     List<ManualCheckObservation> manualObservations = const [],
+    List<NamedCheckObservation> namedObservations = const [],
   }) : results = List.unmodifiable(results),
-       manualObservations = List.unmodifiable(manualObservations);
+       manualObservations = List.unmodifiable(manualObservations),
+       namedObservations = List.unmodifiable(namedObservations);
+  final List<NamedCheckObservation> namedObservations;
+  bool namedObservationCurrent(NamedCheckObservation value) =>
+      canRecordManualObservation &&
+      value.runSha256 == revisionIdentity?.savedRunSha256 &&
+      results.any(
+        (r) =>
+            r.requirement.id == value.requirementId &&
+            r.acceptance.requirementSha256 == value.requirementSha256 &&
+            r.requirement.checks.any(
+              (c) =>
+                  c.id == value.checkId &&
+                  c.type == AcceptanceCheckType.automated &&
+                  c.target?.file == value.result.target.file &&
+                  c.target?.name == value.result.target.name,
+            ),
+      );
   final List<ManualCheckObservation> manualObservations;
   ManualCheckObservation? observationFor(
     String requirementId,
