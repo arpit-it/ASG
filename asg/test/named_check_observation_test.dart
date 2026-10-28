@@ -12,6 +12,9 @@ import 'package:asg/services/requirement_check_report_store.dart';
 import 'package:asg/services/source_generation_store.dart';
 import 'package:asg/services/studio_database.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter/material.dart';
+import 'package:asg/controllers/requirement_check_report_controller.dart';
+import 'package:asg/views/requirement_check_report_screen.dart';
 import 'package:sembast/sembast_io.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -90,6 +93,82 @@ Future<void> record(
 }
 
 void main() {
+  for (final passed in [true, false]) {
+    testWidgets(
+      'report displays saved named outcome $passed and stale run honestly',
+      (tester) async {
+        final records = await fixture();
+        final store = RequirementCheckReportStore(records);
+        await record(store, passed);
+        final controller = RequirementCheckReportController(project, store);
+        await tester.pumpWidget(
+          MaterialApp(
+            home: RequirementCheckReportScreen(controller: controller),
+          ),
+        );
+        await tester.scrollUntilVisible(
+          find.text('Declared check Auto (automated)'),
+          200,
+          scrollable: find.byType(Scrollable).first,
+        );
+        expect(
+          find.text(
+            'Saved named-test result: ${passed ? "passed" : "not passed"}',
+          ),
+          findsOneWidget,
+        );
+        expect(find.textContaining('Not executed.'), findsNothing);
+        expect(find.textContaining('PRIVATE_OUTPUT'), findsNothing);
+        expect(find.text('Acceptance criteria: not verified'), findsWidgets);
+        expect(
+          find.text('Missing direct result; acceptance remains unverified.'),
+          findsOneWidget,
+        );
+        final json = jsonDecode(records.data['studio.generation.v1.p']!);
+        json['sources']['lib/main.dart'] = 'c' * 64;
+        records.data['studio.generation.v1.p'] = jsonEncode(json);
+        controller.load();
+        await tester.pump();
+        expect(
+          find.text(
+            'Stale saved named-test result: ${passed ? "passed" : "not passed"}',
+          ),
+          findsOneWidget,
+        );
+        expect(
+          find.text(
+            'Saved named-test result: ${passed ? "passed" : "not passed"}',
+          ),
+          findsNothing,
+        );
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
+  testWidgets('missing automated evidence is never displayed as a saved pass', (
+    tester,
+  ) async {
+    final records = await fixture();
+    final controller = RequirementCheckReportController(
+      project,
+      RequirementCheckReportStore(records),
+    );
+    await tester.pumpWidget(
+      MaterialApp(home: RequirementCheckReportScreen(controller: controller)),
+    );
+    await tester.scrollUntilVisible(
+      find.text('Declared check Auto (automated)'),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(
+      find.text('Missing direct result; acceptance remains unverified.'),
+      findsNWidgets(2),
+    );
+    expect(find.textContaining('named-test result:'), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
   test('pass/fail replaces only the authored check and exports sanitized saved binding', () async {
     final records = await fixture();
     final store = RequirementCheckReportStore(records);

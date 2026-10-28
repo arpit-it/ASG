@@ -64,6 +64,12 @@ class RequirementCheckReport {
        manualObservations = List.unmodifiable(manualObservations),
        namedObservations = List.unmodifiable(namedObservations);
   final List<NamedCheckObservation> namedObservations;
+  NamedCheckObservation? namedObservationFor(
+    String requirementId,
+    String checkId,
+  ) => namedObservations
+      .where((v) => v.requirementId == requirementId && v.checkId == checkId)
+      .firstOrNull;
   bool namedObservationCurrent(NamedCheckObservation value) =>
       canRecordManualObservation &&
       value.runSha256 == revisionIdentity?.savedRunSha256 &&
