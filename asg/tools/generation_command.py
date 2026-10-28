@@ -13,6 +13,7 @@ import threading
 import time
 import tempfile
 import platform
+import re
 import fcntl
 
 COMMAND_TIMEOUT_SECONDS = 180
@@ -117,7 +118,92 @@ def candidate_profile(directory, sdk, pub_cache, temporary):
     ])
 
 
-def confined_operation(directory, sdk, operation, timeout, parent_pid):
+def named_test_arguments(directory, test_file, test_name):
+    """Validate an authored selector before creating caches or launching code."""
+    if (not isinstance(test_file, str) or len(test_file) > 240 or
+            not re.fullmatch(r'test/(?:[a-zA-Z0-9_]+/)*[a-zA-Z0-9_]+_test\.dart', test_file) or
+            not isinstance(test_name, str) or not test_name.strip() or len(test_name) > 200 or
+            re.search(r'[\x00-\x1f\x7f]', test_name)):
+        raise ValueError('Invalid named Flutter test target')
+    directory = Path(directory)
+    if not directory.is_absolute() or directory.resolve() != directory or not directory.is_dir():
+        raise ValueError('Expected a canonical generated project directory')
+    target = directory
+    for part in test_file.split('/'):
+        target = target / part
+        if target.is_symlink():
+            raise ValueError('Linked test target refused')
+    if not target.is_file() or target.resolve() != target:
+        raise ValueError('Named test file unavailable')
+    # Flutter --plain-name is a substring match. Anchoring an escaped literal
+    # selects the full name, including group prefixes, without shell parsing.
+    return ['test', '--no-pub', '--reporter', 'json', '--name',
+            '^' + re.escape(test_name) + '$', test_file]
+
+
+def named_test_result(result, test_file, test_name):
+    """Fail closed unless the bounded JSON stream proves one executed pass.
+
+    This is command evidence only, not a semantic or revision-bound verdict.
+    Raw events (including test prints, errors and private paths) are discarded.
+    """
+    passed = False
+    reason = 'commandFailed'
+    if (result.get('exitCode') == 0 and
+            not any(result.get(k) for k in ('timedOut', 'cancelled', 'outputLimitExceeded'))):
+        reason = 'incompleteProtocol'
+        try:
+            events = [json.loads(line) for line in result['output'].splitlines() if line.strip()]
+            if (not events or any(not isinstance(e, dict) for e in events) or
+                    events[0].get('type') != 'start' or
+                    events[0].get('protocolVersion') != '0.1.1' or
+                    sum(e.get('type') == 'start' for e in events) != 1 or
+                    sum(e.get('type') == 'done' for e in events) != 1 or
+                    events[-1].get('type') != 'done' or events[-1].get('success') is not True):
+                raise ValueError('Incomplete protocol')
+            starts, finishes = {}, {}
+            for event in events:
+                kind = event.get('type')
+                if kind == 'error':
+                    raise ValueError('Test error')
+                if kind == 'testStart':
+                    test = event['test']
+                    identifier = test['id']
+                    if type(identifier) is not int or identifier in starts or not isinstance(test['name'], str):
+                        raise ValueError('Invalid test start')
+                    starts[identifier] = test
+                if kind == 'testDone':
+                    identifier = event['testID']
+                    if type(identifier) is not int or identifier not in starts or identifier in finishes:
+                        raise ValueError('Invalid test completion')
+                    if (type(event.get('hidden')) is not bool or
+                            event.get('skipped') is not False or event.get('result') != 'success'):
+                        raise ValueError('Skipped or failed test')
+                    finishes[identifier] = event
+            if set(starts) != set(finishes):
+                raise ValueError('Unfinished tests')
+            visible = [starts[i] for i, event in finishes.items() if not event['hidden']]
+            if len(visible) == 1 and visible[0]['name'] == test_name:
+                passed, reason = True, 'executedExactTest'
+            else:
+                reason = 'missingOrAmbiguousTest'
+        except (ValueError, KeyError, TypeError):
+            reason = 'invalidOrIncompleteProtocol'
+    return {
+        **result,
+        'exitCode': 0 if passed else (result['exitCode'] or -1),
+        'output': 'Named Flutter test passed.' if passed else 'Named Flutter test did not establish a pass.',
+        'targetedTest': {'file': test_file, 'name': test_name,
+                         'status': 'passed' if passed else 'notPassed', 'reason': reason},
+    }
+
+
+def confined_operation(directory, sdk, operation, timeout, parent_pid, test_file=None, test_name=None):
+    arguments = OPERATIONS[operation]
+    if test_file is not None or test_name is not None:
+        if operation != 'test':
+            raise ValueError('Named targets require the confined test operation')
+        arguments = named_test_arguments(directory, test_file, test_name)
     if platform.system() != 'Darwin' or not Path('/usr/bin/sandbox-exec').is_file():
         raise RuntimeError('Confined candidate verification requires macOS sandbox-exec')
     sdk = Path(sdk).resolve(strict=True)
@@ -174,10 +260,11 @@ def confined_operation(directory, sdk, operation, timeout, parent_pid):
                     if time.monotonic() >= deadline:
                         raise TimeoutError('Flutter SDK cache lock deadline exceeded')
                     time.sleep(0.05)
-            return run('/usr/bin/sandbox-exec', [
+            result = run('/usr/bin/sandbox-exec', [
             '-f', str(profile), str(dart), '--packages=' + str(packages),
-            str(snapshot), '--no-version-check', *OPERATIONS[operation],
+            str(snapshot), '--no-version-check', *arguments,
         ], str(directory), max(1, deadline - time.monotonic()), parent_pid, environment)
+            return named_test_result(result, test_file, test_name) if test_file is not None else result
         finally:
             lock.close()
 
@@ -188,14 +275,21 @@ def main():
     parser.add_argument('--sdk', required=True)
     parser.add_argument('--confined', action='store_true')
     parser.add_argument('--directory', required=True)
+    parser.add_argument('--test-file')
+    parser.add_argument('--test-name')
     parser.add_argument('--timeout', type=int, choices=[COMMAND_TIMEOUT_SECONDS], default=COMMAND_TIMEOUT_SECONDS)
     parser.add_argument('--output-limit', type=int, choices=[OUTPUT_LIMIT_BYTES], default=OUTPUT_LIMIT_BYTES)
     args = parser.parse_args()
+    targeted = args.test_file is not None or args.test_name is not None
+    if targeted and (not args.confined or args.operation != 'test' or
+                     args.test_file is None or args.test_name is None):
+        parser.error('Named targets require --confined --operation test and both selectors')
     directory = Path(args.directory)
     if not directory.is_absolute() or directory.resolve() != directory or not directory.is_dir():
         raise ValueError('Expected a canonical generated project directory')
     executable = Path(args.sdk) / 'bin/flutter'
-    result = (confined_operation(directory, args.sdk, args.operation, args.timeout, os.getppid())
+    selectors = {'test_file': args.test_file, 'test_name': args.test_name} if targeted else {}
+    result = (confined_operation(directory, args.sdk, args.operation, args.timeout, os.getppid(), **selectors)
               if args.confined else run(str(executable), ['--no-version-check', *OPERATIONS[args.operation]], str(directory), args.timeout, os.getppid()))
     print(json.dumps(result))
 
