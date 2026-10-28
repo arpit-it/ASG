@@ -217,6 +217,7 @@ void main() {
         final records = await fixture();
         final store = RequirementCheckReportStore(records);
         expect(copiedCriteria(store)[0]['checks'][0]['status'], 'missing');
+        expect(copiedCriteria(store)[0]['checkSummary'], 'missing');
         await named.record(store, passed);
         final rows = copiedCriteria(store);
         expect(
@@ -228,8 +229,13 @@ void main() {
           store.load(project).revisionIdentity!.savedRunSha256,
         );
         expect(rows[0]['status'], 'unverified');
+        expect(
+          rows[0]['checkSummary'],
+          passed ? 'automatedChecksPassed' : 'failed',
+        );
         expect(rows[0]['checks'], hasLength(1));
         expect(rows[1]['mappingStatus'], 'unmapped');
+        expect(rows[1]['checkSummary'], 'unmapped');
         expect(rows[1]['checks'], isEmpty);
         final reopened = Transactions()..data.addAll(records.data);
         expect(copiedCriteria(RequirementCheckReportStore(reopened)), rows);
@@ -263,6 +269,7 @@ void main() {
         isNot(before.results.first.acceptance.requirementSha256),
       );
       expect(copiedCriteria(reports)[0]['checks'][0]['status'], 'stale');
+      expect(copiedCriteria(reports)[0]['checkSummary'], 'stale');
       expect(
         controller.board!.tasks
             .where((t) => t.requirementId == 'R1')
@@ -296,9 +303,60 @@ void main() {
     );
     final row = copiedCriteria(store).single;
     expect(row['status'], 'unverified');
+    expect(row['checkSummary'], 'notAutomated');
     expect(row['checks'][0]['status'], 'manuallyReportedPassed');
     expect(row['checks'][1]['status'], 'advisoryOnly');
   });
+
+  for (final manualPassed in [true, false]) {
+    test(
+      'mixed mapped evidence cannot pass; manual outcome $manualPassed',
+      () async {
+        final records = Transactions();
+        final saved = await prepare(
+          records,
+          board: mappedBoard(
+            criteria: [
+              criterion(checkIds: ['Auto', 'Manual']),
+            ],
+          ),
+        );
+        await SourceGenerationStore(records).save('p', saved);
+        final store = RequirementCheckReportStore(records);
+        await named.record(store, true);
+        expect(copiedCriteria(store).single['checkSummary'], 'missing');
+        await store.recordManualObservation(
+          project,
+          store.load(project),
+          'R1',
+          'Manual',
+          manualPassed,
+          DateTime.utc(2026, 10, 28),
+          authorized: () => true,
+        );
+        final row = copiedCriteria(store).single;
+        expect(row['checkSummary'], manualPassed ? 'notAutomated' : 'failed');
+        expect(row['status'], 'unverified');
+        // Failure dominates missing/advisory evidence, but never a stale run.
+        await named.record(store, false);
+        expect(copiedCriteria(store).single['checkSummary'], 'failed');
+        final controller = RequirementsController(
+          'p',
+          RequirementsStore(records),
+        )..load();
+        await controller.saveRequirement(
+          mappedBoard(
+            criteria: [
+              criterion(text: 'Changed', checkIds: ['Auto', 'Manual']),
+            ],
+          ).requirements.first,
+          editing: true,
+        );
+        expect(copiedCriteria(store).single['checkSummary'], 'stale');
+        controller.dispose();
+      },
+    );
+  }
 
   testWidgets('editor adds, reopens and removes explicit criterion mappings', (
     tester,
@@ -385,6 +443,7 @@ void main() {
       200,
     );
     expect(find.text('Criterion acceptance: not verified'), findsWidgets);
+    expect(find.text('Criterion checks: no mappings'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 }

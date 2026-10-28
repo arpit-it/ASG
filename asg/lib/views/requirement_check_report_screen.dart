@@ -106,6 +106,14 @@ class _RequirementCheckReportScreenState
                             in result.requirement.criteria) ...[
                           Text('Criterion ${criterion.id}: ${criterion.text}'),
                           const Text('Criterion acceptance: not verified'),
+                          Text(
+                            report
+                                .criterionCheckSummary(
+                                  result.requirement,
+                                  criterion,
+                                )
+                                .label,
+                          ),
                           if (criterion.checkIds.isEmpty)
                             const Text(
                               'Unmapped criterion: no checks selected.',
