@@ -123,8 +123,41 @@ class RequirementCheckReport {
     return RequirementDirectCheckEvidence(check, 'advisoryOnly', null);
   }
 
+  /// All explicitly authored contracts must pass; an empty set never verifies.
+  /// The free-form acceptance block and live files remain outside this claim.
+  bool requirementVerifiedAgainstChecks(ProjectRequirement requirement) =>
+      canRecordManualObservation &&
+      results.any(
+        (result) =>
+            result.requirement.id == requirement.id &&
+            result.acceptance.requirementSha256 ==
+                RequirementAcceptanceEvidence(requirement).requirementSha256,
+      ) &&
+      requirement.criteria.isNotEmpty &&
+      requirement.criteria.every(
+        (criterion) => criterionVerifiedAgainstChecks(requirement, criterion),
+      );
+
+  String requirementVerdictLabel(ProjectRequirement requirement) =>
+      requirementVerifiedAgainstChecks(requirement)
+      ? 'Requirement contract: verified against all authored named-test rules at saved revision'
+      : 'Requirement contract: not verified';
+
   Map<String, Object?> acceptanceEvidence(RequirementCheckResult result) => {
     ...result.acceptance.toJson(),
+    'authoredContract': {
+      'status': requirementVerifiedAgainstChecks(result.requirement)
+          ? 'verifiedAgainstAuthoredChecks'
+          : 'unverified',
+      'criterionIds': [for (final c in result.requirement.criteria) c.id],
+      'unverifiedCriterionIds': [
+        for (final c in result.requirement.criteria)
+          if (!criterionVerifiedAgainstChecks(result.requirement, c)) c.id,
+      ],
+      'requirementSha256': result.acceptance.requirementSha256,
+      'savedRunSha256': revisionIdentity?.savedRunSha256,
+      'scope': 'Only all explicitly authored named-test contracts at the saved revision. Empty criteria never verify. Free-form acceptance prose, semantic coverage and live files remain unverified.',
+    },
     'criteria': [
       for (final criterion in result.requirement.criteria)
         criterionEvidence(result.requirement, criterion),

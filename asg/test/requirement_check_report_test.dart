@@ -163,7 +163,12 @@ void main() {
       final result =
           ((jsonDecode(report.evidenceJson) as Map)['requirements'] as List)
               .single;
-      expect(acceptance(), initial);
+      final evidence = acceptance();
+      expect(evidence['authoredContract']['status'], 'unverified');
+      expect(evidence['authoredContract']['criterionIds'], isEmpty);
+      // The contract projection carries the saved run identity independently.
+      evidence.remove('authoredContract');
+      expect(evidence, Map.of(initial)..remove('authoredContract'));
       expect(result['acceptanceEvidence']['status'], 'unverified');
       expect(result['acceptanceEvidence']['directChecks'], isEmpty);
       expect(result['contextualEvidence']['type'], 'automatedOperation');
@@ -188,7 +193,10 @@ void main() {
         ).toJson(),
       ),
     );
-    expect(acceptance(), initial); // Manual progress cannot define acceptance.
+    expect(
+      acceptance()..remove('authoredContract'),
+      Map.of(initial)..remove('authoredContract'),
+    ); // Manual progress is not acceptance.
     final r = board.requirements.single;
     await records.setString(
       RequirementsStore.key('p'),
