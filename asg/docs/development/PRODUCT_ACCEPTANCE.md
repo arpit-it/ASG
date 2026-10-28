@@ -308,3 +308,36 @@ report. Replacing the identity source revision with a different valid revision
 makes both saved passes stale, leaving zero current passes. The importer only
 attests supplied statuses; neither it nor a green report authenticates the run.
 Paste the report in **Product acceptance evidence** to inspect its saved coverage.
+
+
+## Isolated macOS build and launch (issue #271)
+
+The [observation](acceptance/2026-10-28-macos-launch/observation.json) records
+a real arm64 macOS debug build and native home-window observation from source
+`e8f6f444d82dabdd9c555ac2b11033cb8132f9d6`. The only temporary build-source
+change was Runner AppInfo.xcconfig: product name `ASG Acceptance 271` and bundle
+ID `com.arsinha.asg.acceptance271`. The original and effective file hashes, exact
+SDK/Xcode identity, executable/plist hashes and lockfile digest are recorded.
+The [override values](acceptance/2026-10-28-macos-launch/build-override.xcconfig)
+are evidence, not an included production configuration change.
+
+To repeat, use a clean disposable checkout of that source revision, replace only
+those two AppInfo.xcconfig values with a fresh unique acceptance name/bundle ID,
+then run `flutter build macos --debug`. Open that exact built candidate, inspect
+its native window and support directory, and capture fresh evidence. A unique
+bundle ID separates path_provider application support and preferences from the
+stable application's identity. Do not install over the stable application.
+Restore the two source values after building; retain the temporary built bundle
+only for audit/review.
+
+The [actual screenshot](acceptance/2026-10-28-macos-launch/home.png) shows the
+empty home, creation button and empty application-preview guidance. Native AX
+inspection confirmed the same text. The unique application-support directory
+contained its own 86-byte studio-v2.db. The candidate was asked to quit after
+capture. No stable application bundle or existing project data was modified.
+
+This establishes the temporary candidate's platform build and visible launch
+only. No exact F10 snapshots were created, so this is neither collector input
+nor a current-pass/support claim. It does not establish production-bundle launch,
+create/reopen, inference, plan approval, candidate interaction, repair, Stop,
+timeout or rollback. F17 remains In progress; other native targets remain untested.

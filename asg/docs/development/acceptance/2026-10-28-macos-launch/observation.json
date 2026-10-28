@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "issue": 271,
+  "scope": "historical-isolated-macos-build-and-launch",
+  "sourceRevision": "e8f6f444d82dabdd9c555ac2b11033cb8132f9d6",
+  "sourceTree": "38030e3831efb04150b7cddab4c484fbdc7154e1",
+  "recordedAt": "2026-10-28T18:21:53Z",
+  "host": {
+    "os": "macos",
+    "osVersion": "27.0.1",
+    "architecture": "arm64"
+  },
+  "sdk": {
+    "flutter": "3.47.6",
+    "flutterRevision": "5fc346839b5d0eef006ed8404392afb4dfae428d",
+    "dart": "3.13.5",
+    "xcode": "27.0",
+    "xcodeBuild": "27A266a"
+  },
+  "build": {
+    "command": "flutter build macos --debug",
+    "exitCode": 0,
+    "configuration": "debug",
+    "temporaryOverride": {
+      "PRODUCT_NAME": "ASG Acceptance 271",
+      "PRODUCT_BUNDLE_IDENTIFIER": "com.arsinha.asg.acceptance271"
+    },
+    "originalAppInfoSha256": "bfb777c6eff553ef75dba2500279c14afaa9c0f6f0e98ea308ba2f37760dbe28",
+    "effectiveAppInfoSha256": "6a23211bf050bd457ed29fe55032aa5dfa7c1a33af88e226b8f9824c4816c7e2",
+    "pubspecLockSha256": "dd10400f6c5a381aa0e53c727075d26707c63e8f77c142d3aa7f730e8cfa42ae",
+    "executableSha256": "34b2a4ca0213dc5b78e8ce07195f17695a2f95816effe4580ca95449cfd5db46",
+    "infoPlistSha256": "1f223d4ab4358da767d43a42fcd17c912057d6537b919e607519e1261a45393f"
+  },
+  "launch": {
+    "observedWindowTitle": "ASG Acceptance 271",
+    "actualNativeWindow": true,
+    "visibleText": [
+      "Automated Software Generator",
+      "What would you like to create?",
+      "Let\u2019s create something",
+      "Application preview",
+      "Create a project to start its live application. Your current project will reopen here next time."
+    ],
+    "freshEmptyHome": true,
+    "isolatedSupportDirectoryObserved": true,
+    "isolatedDatabaseBytes": 86,
+    "candidateQuitRequested": true
+  },
+  "artifacts": {
+    "home.png": "02b39122572110a19e1cb0c5fc1d2cc1887086060dd3aee14fc6300a9d5fc168"
+  },
+  "limitations": [
+    "Temporary bundle/name override only; this is not an unchanged production-bundle launch.",
+    "Observed home only; no project creation, persistence interaction, inference, plan, generated output, repair, stop, timeout or rollback claim.",
+    "No exact F10 requirement/input snapshot; this observation is not collector input or a currentPass/support claim.",
+    "Native targets other than this macOS host untested; F17 remains In progress."
+  ]
+}
