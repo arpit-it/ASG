@@ -7,7 +7,9 @@ import '../models/requirements_board.dart';
 import '../models/source_generation.dart';
 
 /// One owned, confined named-test session. Inspection grants no authority.
-abstract interface class NamedTestSession implements ArtifactInspector {
+abstract interface class NamedTestSession {
+  /// Includes saved sources, artifacts and dependency-resolution metadata.
+  Future<ArtifactInspection> inspectNamedTestInputs(GeneratedProject project);
   bool get supported;
   Future<NamedFlutterTestResult> runNamedFlutterTest(
     GeneratedProject project,

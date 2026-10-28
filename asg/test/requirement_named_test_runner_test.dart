@@ -2,6 +2,12 @@
 // Copyright 2026 Arpit Sinha
 
 import 'dart:convert';
+import 'dart:io';
+
+import 'package:asg/services/generation_host_native.dart';
+import 'package:asg/services/generation_input.dart';
+import 'package:asg/services/application_store.dart';
+
 import 'dart:async';
 
 import 'package:asg/models/artifact_inspection.dart';
@@ -25,7 +31,9 @@ class Session implements NamedTestSession {
   Completer<void>? gate;
   void Function()? beforeDispatch, afterDispatch;
   @override
-  Future<ArtifactInspection> inspectArtifacts(GeneratedProject project) async {
+  Future<ArtifactInspection> inspectNamedTestInputs(
+    GeneratedProject project,
+  ) async {
     inspections++;
     return inspections == staleAt
         ? ArtifactInspection.stale
@@ -53,6 +61,96 @@ class Session implements NamedTestSession {
 }
 
 void main() {
+  for (final changed in [
+    'pubspec.lock',
+    '.dart_tool/package_config.json',
+    '.dart_tool/package_graph.json',
+  ]) {
+    test(
+      'native runner refuses changed $changed before helper preparation',
+      () async {
+        final temp = await Directory.systemTemp.createTemp('asg-named-inputs-');
+        final directory = Directory(await temp.resolveSymbolicLinks());
+        var assets = 0;
+        final host = NativeGenerationHost(
+          loadAsset: (_) async {
+            assets++;
+            throw StateError('Unexpected preparation');
+          },
+        );
+        try {
+          await Directory('${directory.path}/build/web')
+              .create(recursive: true);
+          await Directory('${directory.path}/.dart_tool').create();
+          await File('${directory.path}/main.dart').writeAsString('source');
+          for (final name in [
+            'pubspec.lock',
+            '.dart_tool/package_config.json',
+            '.dart_tool/package_graph.json',
+          ]) {
+            await File('${directory.path}/$name').writeAsString('metadata');
+          }
+          await File('${directory.path}/build/web/index.html')
+              .writeAsString('output');
+          final records = await fixtures.fixture();
+          final input = GenerationInput(
+            project,
+            ApplicationStore(records).load(project).definition,
+          );
+          await Directory('${directory.path}/assets').create();
+          await File('${directory.path}/assets/app.json')
+              .writeAsString(input.applicationJson);
+          await File('${directory.path}/asg_project.json')
+              .writeAsString(input.metadataJson);
+          await File('${directory.path}/build/web/main.dart.js')
+              .writeAsString('compiled');
+          final data = jsonDecode(records.data['studio.generation.v1.p']!);
+          data['directory'] = directory.path;
+          data['confinementVersion'] = 1;
+          data['sources'] = await NativeGenerationHost.fingerprints(
+            directory.path,
+            source: true,
+          );
+          data['outputs'] = await NativeGenerationHost.fingerprints(
+            '${directory.path}/build/web',
+            source: false,
+          );
+          final saved = GeneratedProject.fromJson(data);
+          data['resolution'] = await NativeGenerationHost.resolutionFiles(
+            saved,
+          );
+          records.data['studio.generation.v1.p'] = jsonEncode(data);
+          final store = RequirementCheckReportStore(records);
+          final selected = store.load(project);
+          expect(selected.canRecordManualObservation, isTrue);
+          expect(
+            await host.inspectNamedTestInputs(selected.savedProject!),
+            ArtifactInspection.matching,
+          );
+          await File('${directory.path}/$changed').writeAsString('changed');
+          expect(
+            await host.inspectNamedTestInputs(selected.savedProject!),
+            ArtifactInspection.unavailable,
+          );
+          await expectLater(
+            RequirementNamedTestRunner(store, createSession: () => host).run(
+              project,
+              selected,
+              selected.results.first.requirement.id,
+              'Auto',
+              authorized: () => true,
+            ),
+            throwsStateError,
+          );
+          expect(assets, 0);
+          expect(store.load(project).namedObservations, isEmpty);
+        } finally {
+          await host.dispose();
+          await directory.delete(recursive: true);
+        }
+      },
+    );
+  }
   test('overlapping execution refuses; revoked run retains evidence and retry works', () async {
     final records = await fixtures.fixture();
     final data = jsonDecode(records.data['studio.generation.v1.p']!);

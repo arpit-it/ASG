@@ -408,6 +408,19 @@ class NativeGenerationHost
     );
   }
 
+  @override
+  Future<ArtifactInspection> inspectNamedTestInputs(
+    GeneratedProject project,
+  ) async {
+    try {
+      await checkSources(project);
+      await checkResolution(project);
+      return await inspectArtifacts(project);
+    } catch (_) {
+      return ArtifactInspection.unavailable;
+    }
+  }
+
   /// Command evidence only; callers must bind it to durable inputs separately.
   @override
   Future<NamedFlutterTestResult> runNamedFlutterTest(

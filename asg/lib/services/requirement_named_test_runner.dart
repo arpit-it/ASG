@@ -72,7 +72,7 @@ class RequirementNamedTestRunner {
       }
       Future<void> validateFiles() async {
         checkCurrent();
-        if (await owned.inspectArtifacts(saved) !=
+        if (await owned.inspectNamedTestInputs(saved) !=
             ArtifactInspection.matching) {
           throw StateError(
             'Saved source or artifacts changed or are unavailable. Verify again.',
