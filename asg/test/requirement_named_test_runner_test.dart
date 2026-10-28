@@ -22,6 +22,14 @@ import 'package:flutter_test/flutter_test.dart';
 import 'named_check_observation_test.dart' as fixtures;
 import 'requirement_check_report_test.dart' show project;
 
+// Filesystem-only probes need the runner preflight on every CI host.
+// No command may reach asset preparation or execution in these tests.
+class InspectionHost extends NativeGenerationHost {
+  InspectionHost({required super.loadAsset});
+  @override
+  bool get supported => true;
+}
+
 class Session implements NamedTestSession {
   @override
   bool supported = true;
@@ -72,7 +80,7 @@ void main() {
         final temp = await Directory.systemTemp.createTemp('asg-named-inputs-');
         final directory = Directory(await temp.resolveSymbolicLinks());
         var assets = 0;
-        final host = NativeGenerationHost(
+        final host = InspectionHost(
           loadAsset: (_) async {
             assets++;
             throw StateError('Unexpected preparation');
