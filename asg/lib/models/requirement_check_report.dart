@@ -213,6 +213,18 @@ class RequirementCheckReport {
     ProjectRequirement requirement,
     AcceptanceCriterionDefinition criterion,
   ) =>
+      // A caller cannot attach new criterion content to an existing saved pass.
+      results.any(
+        (result) =>
+            result.requirement.id == requirement.id &&
+            result.acceptance.requirementSha256 ==
+                RequirementAcceptanceEvidence(requirement).requirementSha256 &&
+            result.requirement.criteria.any(
+              (authored) =>
+                  jsonEncode(authored.toJson()) ==
+                  jsonEncode(criterion.toJson()),
+            ),
+      ) &&
       criterion.verificationRule ==
           CriterionVerificationRule.allMappedNamedTests &&
       criterion.checkIds.isNotEmpty &&

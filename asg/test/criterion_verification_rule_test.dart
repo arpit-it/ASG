@@ -193,6 +193,52 @@ void main() {
   }
 
   test(
+    'criterion verdict rejects content outside the report snapshot',
+    () async {
+      final records = Transactions();
+      final saved = await prepare(
+        records,
+        board: mapping.mappedBoard(criteria: [rule()]),
+      );
+      await SourceGenerationStore(records).save('p', saved);
+      final store = RequirementCheckReportStore(records);
+      await named.record(store, true);
+      final report = store.load(project);
+      final requirement = report.results.first.requirement;
+      expect(
+        report.criterionVerifiedAgainstChecks(requirement, rule()),
+        isTrue,
+      );
+      for (final detached in [
+        rule(text: 'Changed acceptance'),
+        AcceptanceCriterionDefinition(
+          id: 'Unauthored',
+          text: rule().text,
+          checkIds: ['Auto'],
+          verificationRule: CriterionVerificationRule.allMappedNamedTests,
+        ),
+      ]) {
+        expect(
+          report.criterionVerifiedAgainstChecks(requirement, detached),
+          isFalse,
+        );
+        expect(
+          report.criterionEvidence(requirement, detached)['status'],
+          'unverified',
+        );
+      }
+      final changed = mapping
+          .mappedBoard(criteria: [rule(text: 'Changed acceptance')])
+          .requirements
+          .first;
+      expect(
+        report.criterionVerifiedAgainstChecks(changed, changed.criteria.single),
+        isFalse,
+      );
+    },
+  );
+
+  test(
     'adding opt-in rule invalidates previously passed mapping evidence',
     () async {
       final records = await mapping.fixture();
