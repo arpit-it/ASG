@@ -140,6 +140,40 @@ class RequirementCheckReport {
     ],
   };
 
+  /// Summarizes saved mapped checks, never semantic acceptance or live files.
+  CriterionCheckSummary criterionCheckSummary(
+    ProjectRequirement requirement,
+    AcceptanceCriterionDefinition criterion,
+  ) {
+    if (criterion.checkIds.isEmpty) return CriterionCheckSummary.unmapped;
+    final checks = <RequirementDirectCheckEvidence>[];
+    for (final id in criterion.checkIds) {
+      final declaration = requirement.checks
+          .where((c) => c.id == id)
+          .firstOrNull;
+      // Invalid/transient callers must fail closed instead of vacuously passing.
+      if (declaration == null) return CriterionCheckSummary.missing;
+      checks.add(directCheck(requirement, declaration));
+    }
+    if (checks.any((c) => c.status == 'stale')) {
+      return CriterionCheckSummary.stale;
+    }
+    if (checks.any(
+      (c) =>
+          c.status == 'savedTargetNotPassed' ||
+          c.status == 'manuallyReportedFailed',
+    )) {
+      return CriterionCheckSummary.failed;
+    }
+    if (checks.any((c) => c.status == 'missing')) {
+      return CriterionCheckSummary.missing;
+    }
+    if (checks.every((c) => c.status == 'savedTargetPassed')) {
+      return CriterionCheckSummary.automatedChecksPassed;
+    }
+    return CriterionCheckSummary.notAutomated;
+  }
+
   /// A deterministic mapping projection only; no criterion verdict is inferred.
   Map<String, Object?> criterionEvidence(
     ProjectRequirement requirement,
@@ -148,6 +182,7 @@ class RequirementCheckReport {
     ...criterion.toJson(),
     'status': 'unverified',
     'mappingStatus': criterion.checkIds.isEmpty ? 'unmapped' : 'authored',
+    'checkSummary': criterionCheckSummary(requirement, criterion).name,
     'scope': 'Authored mapping only. Check outcomes do not establish semantic coverage of this criterion or the free-form acceptance block.',
     'checks': [
       for (final id in criterion.checkIds)
@@ -390,5 +425,27 @@ class RequirementDirectCheckEvidence {
     'status': status,
     'result': result,
     'scope': 'Saved declaration-specific evidence only; acceptance remains unverified. Manual results are self-reported and advisory checks supply no verdict.',
+  };
+}
+
+/// Aggregate observation states only. Even all mapped tests passing leaves the
+/// authored criterion's semantic coverage and acceptance unverified.
+enum CriterionCheckSummary {
+  unmapped,
+  missing,
+  stale,
+  failed,
+  notAutomated,
+  automatedChecksPassed;
+
+  String get label => switch (this) {
+    unmapped => 'Criterion checks: no mappings',
+    missing => 'Criterion checks: missing evidence',
+    stale => 'Criterion checks: stale evidence',
+    failed => 'Criterion checks: recorded failure',
+    notAutomated =>
+      'Criterion checks: manual or advisory evidence only or mixed',
+    automatedChecksPassed =>
+      'Criterion checks: all mapped automated checks passed',
   };
 }
