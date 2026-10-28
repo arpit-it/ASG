@@ -49,9 +49,10 @@ Update this document with task selection and delivery evidence, alongside [agent
   - Accept when failed, missing and stale evidence cannot yield a verified requirement, and reports link to exact revisions and test results.
   - Assessment clarification (28 October 2026): extend this existing task with acceptance-criterion-level check mappings and explicit automated, manual and advisory evidence types. A green generic build or manually completed task must never verify unrelated criteria. Bind each result to exact requirement content and source/input revision; edits invalidate affected results. Show unmet criteria and evidence links in the workspace and copied report, and retain the current honest “Acceptance criteria: not verified” state until criterion-specific checks actually establish the supported claim. Validate changed criteria/source, missing checks, failed checks and reopen behavior. This scope is delivered as the explicitly bounded authored-check contract below; free-form prose and live-file freshness remain outside its verdict.
 - [ ] F17 Reproducible product acceptance and support matrix — In progress; depends on F10
-  - Active bounded increment: [issue #259](https://github.com/arpit-it/ASG/issues/259), `259-live-provenance`: optional digest-only exact F10 snapshot linkage from successful candidate/repair test reopen. Full real UI baseline remains outstanding.
+  - Active bounded increment: [issue #263](https://github.com/arpit-it/ASG/issues/263), `263-acceptance-provenance`: validate explicit F10 provenance imports against supplied environment identity and retain snapshot digests in one saved-evidence record. Source/requirement/input mismatches, unsupported mappings, duplicate records and invalid/private fields fail atomically. Caller attestations do not establish live support; full real UI baseline remains outstanding.
+  - Delivered F10 linkage: issue #259 / PR #260 merged `6ac15f46a829b3e583e6203471bdd83f36728cf8` after exact-final independent review and required CI40655877829. Full real UI baseline remains outstanding.
   - Delivered UI increment: [issue #255](https://github.com/arpit-it/ASG/issues/255), `255-acceptance-report-view`, [PR #256](https://github.com/arpit-it/ASG/pull/256), merge `0f6f90c621b3e692c4e0bbbb55b5e0ccd90eb85d`; exact-head independent review and required CI 40651485126 passed. Real isolated-profile macOS/web baseline remains outstanding.
-  - Active native-live evidence increment: [issue #257](https://github.com/arpit-it/ASG/issues/257), `257-live-acceptance-baseline`: two serial native live observations; collector snapshot provenance and manual baseline remain outstanding.
+  - Delivered native-live evidence: issue #257 / PR #258 merged `44b7b89d4c4f8ded06503904a7df04102ffc6316` after exact-final independent review and required CI40653332565. Full manual baseline remains outstanding.
   - Delivered foundation: [issue #253](https://github.com/arpit-it/ASG/issues/253), `253-acceptance-evidence`, [PR #254](https://github.com/arpit-it/ASG/pull/254): versioned scenario manifest and strict saved-evidence report CLI. Verified merge and checks are recorded above; real baseline remains outstanding.
   - Source/evidence: owner-requested product-verification improvement on 28 October 2026. Current CI exercises real generated-starter verification, browser storage and process fixtures, while real candidate/model/repair tests are opt-in and native device launches are not established. Historical real-model passes and generic command exits do not prove current end-to-end product behavior. F10 owns criterion mappings/verdicts; F17 owns repeatable collection of actual application/device evidence, not another verdict engine.
   - User value/priority: immediately after F10 and before hardware-dependent F15, establish a repeatable macOS/web product baseline before expanding claimed support. Then verify each F15/F16 host/backend milestone before advertising it. Add Android next and other native targets one at a time when their toolchains/devices are available. This evidence task does not authorize deployment, model downloads or installing/replacing the stable application.
@@ -4163,3 +4164,29 @@ Initial submitted validation: formatter/analyzer passed; full874Flutter tests pa
 ### F22 independent-review completeness fixes — issue #261 / PR #262
 
 Independent reviewer reproduced P2 at submitted `991f992e`: a zero-byte standalone/indexed required weight could hide behind unrelated positive-size weights and enable selection (comment5680504052). Parent regression failed in both forms before the fix. Reject empty required configuration/tokenizer/index and every empty Safetensors artifact; require integer MLX group size so64.0 cannot pass an integer whitelist by numeric equality. Five added empty-artifact regressions plus malformed floating-group coverage pass. Final local879Flutter tests/eight opt-in skips,formatter/analyzer,web/Wasm andmacOSdebug builds passed; live metadata-only check still validates eight sources and22searchmatches.28new regression cases overall. Initial widget tests use injected deterministic catalog service; HTTP parsing independently covered by unit tests/live metadata. No weights downloaded or fresh inference claimed. Updated final revision requires fresh independent review and CI; F17/F22 remain In progress.
+
+
+### F17 provenance collector bridge — issue #263 (28 October 2026)
+
+Scope: connect the existing PR #260 digest-only live-test export to the F17 saved
+evidence collector. One explicit scenario/check/target/status/time plus validated
+environment identity produces one record only; three F10 identity fields must
+match exactly, and generated-source/approval/run/linkage digests remain artifacts.
+No passing status is inferred from provenance. Duplicate records and invalid input
+fail before atomic output replacement. No live inference/model download/runtime or
+stable application changes. Branch `263-acceptance-provenance` from verified main
+`1da17314e297a246dbd9992e1fb126b6307fd671` (PR #262 merged; F22 discovery only).
+Acceptance: supported candidate/repair mappings roundtrip, identity changes stale
+saved results, mismatch/private/extra/malformed/time/duplicate/alias inputs preserve
+files, failed/skipped/unavailable cannot pass. Python collector suite: 17 tests
+passed locally, including four bridge regression methods covering mapping/status
+combinations and actual CLI failure/roundtrip. Independent final review, required
+CI and verified merge remain pending; F17 remains In progress, not Done.
+
+
+Prior increment reconciliation: PR #262 verified merged at
+2026-10-28T09:46:12Z as `1da17314e297a246dbd9992e1fb126b6307fd671`,
+issue #261 closed. Independent final review5680652210 approved
+`406db44bce941ef7550fc95194753291d1878445` after completeness fixes;
+required CI40666101646 passed both jobs. Discovery milestone only: F22 remains
+In progress, and no new inference or model download was claimed.

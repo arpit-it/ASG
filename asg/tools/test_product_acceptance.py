@@ -188,5 +188,121 @@ class AcceptanceTest(unittest.TestCase):
                     read_json(path)
 
 
+class ProvenanceImportTest(unittest.TestCase):
+    def provenance(self, scenario='reviewed-candidate'):
+        return dict(schemaVersion=1, scope='f10-saved-snapshot-link-only',
+                    scenarioId=scenario, sourceRevision='a' * 40,
+                    requirementSha256='b' * 64, inputSha256='c' * 64,
+                    generatedSourceSha256='1' * 64, approvalSha256='2' * 64,
+                    savedRunSha256='3' * 64)
+
+    def assemble(self, provenance=None, **kwargs):
+        from import_acceptance_provenance import import_observation
+        options = dict(check_id='model-proposal', target='macos', status='passed',
+                       observed_at=NOW, now=NOW)
+        options.update(kwargs)
+        return import_observation(SPEC, identity(), saved(),
+                                  self.provenance() if provenance is None else provenance,
+                                  **options)
+
+    def test_supported_mappings_roundtrip_without_mutation_or_pass_inference(self):
+        from import_acceptance_provenance import CHECKS
+        for scenario, checks in CHECKS.items():
+            for check in checks:
+                for status in ('passed', 'failed', 'skipped', 'unavailable'):
+                    with self.subTest(scenario=scenario, check=check, status=status):
+                        p = self.provenance(scenario)
+                        before = copy.deepcopy(p)
+                        result = self.assemble(p, check_id=check, status=status)
+                        self.assertEqual(p, before)
+                        r = result['records'][0]
+                        self.assertEqual(r['artifactSha256'],
+                                         ['1' * 64, '2' * 64, '3' * 64, sha(p)])
+                        matrix = report(SPEC, identity(), result, NOW)
+                        cells = [c for c in matrix['cells'] if c['savedEvidence']]
+                        self.assertEqual(len(cells), 1)
+                        self.assertEqual(cells[0]['status'], status)
+                        self.assertEqual(cells[0]['currentPass'], status == 'passed')
+                        changed = identity()
+                        changed['configurationSha256'] = '4' * 64
+                        stale = report(SPEC, changed, result, NOW)
+                        self.assertFalse(any(c['currentPass'] for c in stale['cells']))
+
+    def test_rejects_missing_extra_private_and_mismatched_provenance(self):
+        for field in self.provenance():
+            p = self.provenance()
+            del p[field]
+            with self.assertRaises(ValueError):
+                self.assemble(p)
+        for field in self.provenance():
+            p = self.provenance()
+            p[field] = '/Users/PRIVATE/prompt'
+            with self.assertRaises(ValueError):
+                self.assemble(p)
+        for field in ('sourceRevision', 'requirementSha256', 'inputSha256'):
+            p = self.provenance()
+            p[field] = '9' * len(p[field])
+            with self.assertRaises(ValueError):
+                self.assemble(p)
+        for field, value in (('schemaVersion', True), ('scenarioId', []),
+                             ('prompt', 'PRIVATE')):
+            p = self.provenance()
+            p[field] = value
+            with self.assertRaises(ValueError):
+                self.assemble(p)
+
+    def test_rejects_unrelated_checks_invalid_status_time_and_duplicates(self):
+        from import_acceptance_provenance import import_observation
+        for options in (dict(check_id='served-interaction'), dict(check_id=[]),
+                        dict(target='ios'), dict(status='verified'), dict(status=None),
+                        dict(observed_at='2027-01-01T00:00:00Z'),
+                        dict(observed_at='2026-02-30T00:00:00Z')):
+            with self.assertRaises(ValueError):
+                self.assemble(**options)
+        first = self.assemble()
+        before = copy.deepcopy(first)
+        with self.assertRaises(ValueError):
+            import_observation(SPEC, identity(), first, self.provenance(),
+                               check_id='model-proposal', target='macos',
+                               status='passed', observed_at=NOW, now=NOW)
+        self.assertEqual(first, before)
+
+    def test_cli_roundtrip_atomic_error_privacy_and_all_input_aliases(self):
+        with tempfile.TemporaryDirectory() as directory:
+            folder = Path(directory)
+            paths = [folder / name for name in
+                     ('manifest', 'identity', 'evidence', 'provenance')]
+            values = (SPEC, identity(), saved(), self.provenance())
+            for path, value in zip(paths, values):
+                path.write_text(json.dumps(value))
+            output = folder / 'output'
+            command = [sys.executable, '-B',
+                       str(ROOT / 'tools/import_acceptance_provenance.py')]
+            for flag, path in zip(('--manifest', '--identity', '--evidence',
+                                   '--provenance'), paths):
+                command += [flag, str(path)]
+            command += ['--check', 'model-proposal', '--target', 'macos',
+                        '--status', 'skipped', '--observed-at', NOW,
+                        '--output', str(output)]
+            result = subprocess.run(command, capture_output=True, text=True)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual(read_json(output)['records'][0]['status'], 'skipped')
+            before = output.read_bytes()
+            paths[-1].write_text('{"PRIVATE":')
+            result = subprocess.run(command, capture_output=True, text=True)
+            self.assertEqual(result.returncode, 2)
+            self.assertNotIn('PRIVATE', result.stderr)
+            self.assertNotIn(directory, result.stderr)
+            self.assertEqual(output.read_bytes(), before)
+            for path in paths:
+                command[-1] = str(path)
+                original = path.read_bytes()
+                result = subprocess.run(command, capture_output=True)
+                self.assertEqual(result.returncode, 2)
+                self.assertEqual(path.read_bytes(), original)
+            self.assertEqual(sorted(p.name for p in folder.iterdir()),
+                             ['evidence', 'identity', 'manifest', 'output', 'provenance'])
+
+
 if __name__ == '__main__':
     unittest.main()
