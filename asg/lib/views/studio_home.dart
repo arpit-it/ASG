@@ -23,6 +23,7 @@ import 'project_wizard.dart';
 import 'project_workspace.dart';
 import 'runtime_setup_screen.dart';
 import 'app_licenses_button.dart';
+import 'product_acceptance_screen.dart';
 
 class StudioHome extends StatefulWidget {
   const StudioHome({super.key, required this.store, required this.projects});
@@ -96,6 +97,17 @@ class _StudioHomeState extends State<StudioHome> {
     appBar: AppBar(
       title: Text(controller.current?.name ?? 'Automated Software Generator'),
       actions: [
+        IconButton(
+          tooltip: 'Product acceptance evidence',
+          onPressed: controller.busy || workspacePending
+              ? null
+              : () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => const ProductAcceptanceScreen(),
+                  ),
+                ),
+          icon: const Icon(Icons.fact_check_outlined),
+        ),
         AppLicensesButton(enabled: !controller.busy && !workspacePending),
         IconButton(
           tooltip: 'Inspect existing Flutter project',
