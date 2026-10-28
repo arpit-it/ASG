@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "scope": "historical-web-ui-observation-only",
+  "issue": 265,
+  "sourceRevision": "8413e296101210d5dd532b550975e92eb91942cc",
+  "sourceTree": "6b4bc7d5410e53bd2d0e30d4d61f7b4d1f3a79cd",
+  "observedAt": "2026-10-28T10:23:15Z",
+  "environment": {
+    "host": "macos",
+    "hostVersion": "27.0.1",
+    "target": "web",
+    "flutterVersion": "3.47.6",
+    "dartVersion": "3.13.5",
+    "browser": "ChatGPT in-app browser",
+    "browserVersion": "unavailable",
+    "viewport": "1280x720",
+    "storageIsolation": "Fresh loopback origin with initially empty app UI; same origin retained across reloads. Separate browser profile not created.",
+    "backend": "none",
+    "model": "not invoked"
+  },
+  "checks": [
+    {
+      "scenarioId": "application-baseline",
+      "checkId": "platform-build",
+      "status": "passed",
+      "observation": "Fresh flutter build web succeeded with Wasm dry run."
+    },
+    {
+      "scenarioId": "application-baseline",
+      "checkId": "application-launch",
+      "status": "passed",
+      "observation": "Initial empty landing screen and complete app-led three-step wizard rendered."
+    },
+    {
+      "scenarioId": "create-reopen",
+      "checkId": "interactive-reopen",
+      "status": "passed",
+      "observation": "Acceptance 265 created; R265 title/acceptance and linked queued T265 survived reload and explicit Projects selection. Edited title and acceptance survived a second reload at board revision 3. Prototype item Durable item 265 and checked state survived second reload."
+    }
+  ],
+  "artifacts": {
+    "initialReopenedBoardScreenshotSha256": "19caaf409255a48dd745ebef7d20804758362f40340424572927e94f281bc411",
+    "editedReopenedBoardScreenshotSha256": "94bbfcf2111c33c70f4a895cebc46c8e26dc7b10b412fd5033a8b4adcc1e896e",
+    "checkedItemReopenedScreenshotSha256": "9b2881612b987aac8ae6191291567f915b94cb392577bd86351de5802e2aa83a",
+    "builtMainDartJsSha256": "9649c2e29769affc90c3f590392557ad7dd527ce60fd942ea24dc2ee735ca335"
+  },
+  "notEstablished": [
+    "Collector-compatible F10 requirement/input identity",
+    "Exact browser version",
+    "Separate browser profile",
+    "Native application launch or native storage isolation",
+    "Approved-plan invalidation",
+    "Real model proposal or repair",
+    "Confined generated-source checks or served generated-output interaction",
+    "Stop/timeout preservation",
+    "Rollback and archive interaction",
+    "Other native devices or broad support"
+  ],
+  "collectorInput": false,
+  "supportVerdict": false
+}
