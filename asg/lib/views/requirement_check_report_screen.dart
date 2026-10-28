@@ -103,6 +103,9 @@ class _RequirementCheckReportScreenState
                             'Declared check ${check.id} (${check.type.name})',
                           ),
                           Text(check.expectation),
+                          Text(
+                            report.directCheck(result.requirement, check).label,
+                          ),
                           if (check.target case final target?)
                             Text(
                               'Declared Flutter test: ${target.file}; exact name: ${target.name}.',

@@ -85,6 +85,57 @@ class RequirementCheckReport {
                   c.target?.name == value.result.target.name,
             ),
       );
+
+  /// Each authored declaration resolves only its own evidence kind and identity.
+  /// Generic operations never supply a direct result or acceptance verdict.
+  RequirementDirectCheckEvidence directCheck(
+    ProjectRequirement requirement,
+    AcceptanceCheckDefinition check,
+  ) {
+    if (check.type == AcceptanceCheckType.automated) {
+      final value = namedObservationFor(requirement.id, check.id);
+      return RequirementDirectCheckEvidence(
+        check,
+        value == null
+            ? 'missing'
+            : !namedObservationCurrent(value)
+            ? 'stale'
+            : value.result.passed
+            ? 'savedTargetPassed'
+            : 'savedTargetNotPassed',
+        value?.toJson(),
+      );
+    }
+    if (check.type == AcceptanceCheckType.manual) {
+      final value = observationFor(requirement.id, check.id);
+      return RequirementDirectCheckEvidence(
+        check,
+        value == null
+            ? 'missing'
+            : !observationCurrent(value)
+            ? 'stale'
+            : value.passed
+            ? 'manuallyReportedPassed'
+            : 'manuallyReportedFailed',
+        value?.toJson(),
+      );
+    }
+    return RequirementDirectCheckEvidence(check, 'advisoryOnly', null);
+  }
+
+  Map<String, Object?> acceptanceEvidence(RequirementCheckResult result) => {
+    ...result.acceptance.toJson(),
+    'declaredChecks': [
+      for (final check in result.requirement.checks)
+        directCheck(result.requirement, check).toJson(),
+    ],
+    'directChecks': [
+      for (final check in result.requirement.checks)
+        if (directCheck(result.requirement, check).result != null)
+          directCheck(result.requirement, check).toJson(),
+    ],
+  };
+
   final List<ManualCheckObservation> manualObservations;
   ManualCheckObservation? observationFor(
     String requirementId,
@@ -289,5 +340,33 @@ class RequirementRunIdentity {
     'savedInputSha256': savedInputSha256,
     'savedApprovalSha256': approvalSha256,
     'currentInputSha256': currentInputSha256,
+  };
+}
+
+/// Public bounded evidence attached to one authored declaration. A saved pass
+/// proves the selected check outcome only, never coverage of the whole block.
+class RequirementDirectCheckEvidence {
+  RequirementDirectCheckEvidence(
+    this.check,
+    this.status,
+    Map<String, Object>? result,
+  ) : result = result == null ? null : Map.unmodifiable(result);
+  final AcceptanceCheckDefinition check;
+  final String status;
+  final Map<String, Object>? result;
+  String get label => switch (status) {
+    'savedTargetPassed' => 'Automated check: saved target passed',
+    'savedTargetNotPassed' => 'Automated check: saved target did not pass',
+    'manuallyReportedPassed' => 'Manual check: self-reported pass',
+    'manuallyReportedFailed' => 'Manual check: self-reported failure',
+    'stale' => 'Direct check: stale evidence',
+    'advisoryOnly' => 'Advisory check: no acceptance verdict',
+    _ => 'Direct check: missing evidence',
+  };
+  Map<String, Object?> toJson() => {
+    ...check.toJson(),
+    'status': status,
+    'result': result,
+    'scope': 'Saved declaration-specific evidence only; acceptance remains unverified. Manual results are self-reported and advisory checks supply no verdict.',
   };
 }
