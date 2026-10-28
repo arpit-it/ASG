@@ -14,6 +14,8 @@ import '../models/app_definition.dart';
 import '../models/artifact_inspection.dart';
 import '../models/build_task.dart';
 import '../models/project.dart';
+import '../models/requirements_board.dart';
+import '../models/named_flutter_test_result.dart';
 import '../models/source_generation.dart';
 import 'flutter_source_template.dart';
 import 'generation_host.dart';
@@ -245,6 +247,7 @@ class NativeGenerationHost implements GenerationHost, ArtifactInspector {
     GenerationProgress progress, {
     bool resume = false,
   }) async {
+    if (_commandRunning) throw StateError('A command is already running.');
     _verificationCancelled = false;
     // Validate even programmatically constructed snapshots before trusting a prefix.
     if (resume) {
@@ -388,6 +391,62 @@ class NativeGenerationHost implements GenerationHost, ArtifactInspector {
     String operation, {
     Future<void> Function()? beforeStart,
   }) async {
+    final data = await _runFlutterCommand(
+      project,
+      operation,
+      beforeStart: beforeStart,
+    );
+    return GenerationStep.fromJson({...data, 'operation': operation});
+  }
+
+  /// Command evidence only; callers must bind it to durable inputs separately.
+  Future<NamedFlutterTestResult> runNamedFlutterTest(
+    GeneratedProject project,
+    FlutterTestTarget target, {
+    required Future<void> Function() beforeStart,
+  }) async {
+    target.validate();
+    if (!project.confined) {
+      throw StateError('Named tests require confined execution.');
+    }
+    final data = await _runFlutterCommand(
+      project,
+      'test',
+      target: target,
+      beforeStart: beforeStart,
+    );
+    checkVerification();
+    return NamedFlutterTestResult.fromCommand(data, target);
+  }
+
+  Future<Map<String, dynamic>> _runFlutterCommand(
+    GeneratedProject project,
+    String operation, {
+    FlutterTestTarget? target,
+    Future<void> Function()? beforeStart,
+  }) async {
+    if (_commandRunning) throw StateError('A command is already running.');
+    _commandRunning = true;
+    try {
+      return await _dispatchFlutterCommand(
+        project,
+        operation,
+        target: target,
+        beforeStart: beforeStart,
+      );
+    } finally {
+      _commandRunning = false;
+    }
+  }
+
+  bool _commandRunning = false;
+  Future<Map<String, dynamic>> _dispatchFlutterCommand(
+    GeneratedProject project,
+    String operation, {
+    FlutterTestTarget? target,
+    Future<void> Function()? beforeStart,
+  }) async {
+    checkVerification();
     if (!['resolve', 'analyze', 'test', 'build'].contains(operation)) {
       throw ArgumentError('Unapproved generation operation.');
     }
@@ -433,6 +492,12 @@ class NativeGenerationHost implements GenerationHost, ArtifactInspector {
         '--output-limit',
         '${project.limits.outputLimitBytes}',
         if (project.confined) '--confined',
+        if (target != null) ...[
+          '--test-file',
+          target.file,
+          '--test-name',
+          target.name,
+        ],
       ], runInShell: false);
       _activeProcess = process;
       if (_closed || _verificationCancelled) {
@@ -454,21 +519,20 @@ class NativeGenerationHost implements GenerationHost, ArtifactInspector {
       final out = await stdout;
       final error = await stderr;
       if (code != 0) {
-        return GenerationStep(
-          operation: operation,
-          exitCode: code,
-          output: error.substring(0, min(error.length, 65536)),
-        );
+        if (target != null) {
+          throw const FormatException(
+            'Named test helper did not return evidence.',
+          );
+        }
+        return {
+          'exitCode': code,
+          'output': error.substring(0, min(error.length, 65536)),
+          'timedOut': false,
+          'outputLimitExceeded': false,
+          'cancelled': false,
+        };
       }
-      final data = jsonDecode(out) as Map<String, dynamic>;
-      return GenerationStep(
-        operation: operation,
-        exitCode: data['exitCode'] as int,
-        output: data['output'] as String,
-        timedOut: data['timedOut'] as bool,
-        outputLimitExceeded: data['outputLimitExceeded'] as bool,
-        cancelled: data['cancelled'] as bool,
-      );
+      return jsonDecode(out) as Map<String, dynamic>;
     } finally {
       if (process != null) {
         process.kill(ProcessSignal.sigterm);
