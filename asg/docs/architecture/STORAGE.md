@@ -122,3 +122,10 @@ Model settings (`studio.localModel.v1`) optionally include integer `chatOutputTo
 `studio.manualChecks.v1.<projectId>` stores version 1 with a latest-observation list (maximum 1000 unique requirement/check pairs). Each entry has authored IDs, exact requirement and saved-run SHA-256, explicit human pass/fail and UTC time. These are human assertions, not automated execution, semantic acceptance verification or live disk inspection. Changed requirements or saved run/input/approval context makes observations stale. Explicitly replacing an observation updates that pair; no complete audit journal is promised.
 
 Writes require conditional transactions and compare the complete durable binding inputs plus prior observations. Corrupt records are retained and isolated to that project on reopen. Portable archives currently exclude these local observations; the observation UI discloses that limit before recording. Existing archive and execution schemas remain unchanged.
+
+
+## Named Flutter test observations (F10)
+
+`studio.namedChecks.v1.<projectId>` stores version 1 with the latest sanitized direct outcome per authored requirement/check pair (maximum 1000). Each entry retains the exact literal Flutter target, requirement SHA-256, saved-run SHA-256, UTC timestamp, exit/limit/cancellation flags and bounded result reason. Raw helper output and private machine paths are excluded. Publication requires transactional storage, a current successful saved run, an exact authored automated target and an unchanged selected snapshot; concurrent input/evidence edits and revoked authorization reject the write.
+
+Copied reports distinguish `savedTargetPassed`, `savedTargetNotPassed` and `stale`. These labels bind a direct result to saved content only; they do not inspect current files, prove execution provenance by themselves or verify semantic acceptance. Changed requirement/check/target, source/run, input or approval makes old evidence stale. Corrupt records are retained and isolated at database reopen; reading a report never runs commands. The app execution action and acceptance verdict remain unfinished F10 work.
