@@ -152,7 +152,7 @@ class _PortableArchiveScreenState extends State<PortableArchiveScreen> {
             'examples. Other secrets and private text may still be included; '
             'review the complete archive before sharing. Nothing is automatically redacted. '
             'Literal redaction changes only the export copy; saved records stay unchanged. '
-            'Identifiers and links cannot be redacted here.',
+            'Identifiers and links cannot be redacted here. If redaction matches a planned test file or exact test name, its entire test mapping is removed from the export copy; reselect it after restore.',
           ),
           const SizedBox(height: 16),
           FilledButton(

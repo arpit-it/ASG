@@ -57,6 +57,14 @@ class PortableExportRedaction {
                       id: c.id,
                       type: c.type,
                       expectation: redact(c.expectation),
+                      // Redaction changes literal selectors: remove the target
+                      // instead of retaining sensitive text or changing meaning.
+                      target:
+                          c.target == null ||
+                              redact(c.target!.file) != c.target!.file ||
+                              redact(c.target!.name) != c.target!.name
+                          ? null
+                          : c.target,
                     ),
                 ],
               ),
