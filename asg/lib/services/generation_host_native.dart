@@ -19,10 +19,12 @@ import '../models/named_flutter_test_result.dart';
 import '../models/source_generation.dart';
 import 'flutter_source_template.dart';
 import 'generation_host.dart';
+import 'named_test_session.dart';
 
 GenerationHost createGenerationHost() => NativeGenerationHost();
 
-class NativeGenerationHost implements GenerationHost, ArtifactInspector {
+class NativeGenerationHost
+    implements GenerationHost, ArtifactInspector, NamedTestSession {
   NativeGenerationHost({
     this.loadAsset = _loadAsset,
     Future<GenerationStep> Function(GeneratedProject, String)? runOperation,
@@ -406,7 +408,21 @@ class NativeGenerationHost implements GenerationHost, ArtifactInspector {
     );
   }
 
+  @override
+  Future<ArtifactInspection> inspectNamedTestInputs(
+    GeneratedProject project,
+  ) async {
+    try {
+      await checkSources(project);
+      await checkResolution(project);
+      return await inspectArtifacts(project);
+    } catch (_) {
+      return ArtifactInspection.unavailable;
+    }
+  }
+
   /// Command evidence only; callers must bind it to durable inputs separately.
+  @override
   Future<NamedFlutterTestResult> runNamedFlutterTest(
     GeneratedProject project,
     FlutterTestTarget target, {
