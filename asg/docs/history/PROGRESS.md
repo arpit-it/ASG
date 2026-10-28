@@ -3177,3 +3177,8 @@ Completion audit at that merged revision: parent79 focused tests passed (66 repo
 ### F17 isolated macOS launch — issue #271 (28 October 2026)
 
 Branch `271-native-launch` from `e8f6f444d82dabdd9c555ac2b11033cb8132f9d6`. Actual Flutter3.47.6/Dart3.13.5/Xcode27.0 arm64 debug build passed; native window and screenshot show fresh empty home. Temporary Runner product/bundle override isolates application support/preferences from stable identity; own86-byte database observed. Source override restored after build and is not shipped. Screenshot/executable/plist/configuration hashes recorded in bounded sanitized observation. Candidate asked to quit. Collector17fixtures passed. No inference, project interaction or full F17/current-support claim. Independent final review, required CI and merge pending. Prior PR270 verified merged as e8f6f44 and issue269 closed. Primary five unrelated files retained.
+
+
+### F17 native project restart observation — issue #273 (28 October 2026)
+
+Branch `273-native-project-reopen` from `fd55e45380c9e80ffc7a3fb71f85d3dd831870ce`. Reused issue271 exact uniquely identified native candidate compiled at e8f6f44. Actual app-led create, checked prototype item, R273/T273 board revision2, Quit/relaunch/reopen, requirement title edit and second Quit/relaunch with revision3 observed. Full bundle manifest, three screenshots and synthetic saved records bound by SHA-256; prior launch merge #272 reconciled. Collector17 and Flutter board/session22 passed; initial Python module invocation and sandbox SDK-cache denial corrected before passing runs. No application code change, model inference/download, stable-app replacement or current support claim. Independent final review/required CI/merge pending; full F17 In progress.

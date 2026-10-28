@@ -341,3 +341,40 @@ only. No exact F10 snapshots were created, so this is neither collector input
 nor a current-pass/support claim. It does not establish production-bundle launch,
 create/reopen, inference, plan approval, candidate interaction, repair, Stop,
 timeout or rollback. F17 remains In progress; other native targets remain untested.
+
+
+## Isolated native project persistence (issue #273)
+
+The [observation](acceptance/2026-10-28-macos-project-reopen/observation.json)
+extends issue #271 using its exact temporary candidate, compiled at `e8f6f44`.
+The [full bundle manifest](acceptance/2026-10-28-macos-project-reopen/bundle-manifest.json)
+binds the executable, debug application dylib, Flutter assets and frameworks.
+This is historical candidate evidence; no rebuild or current-main support is claimed.
+
+Starting from its empty home, the native three-step wizard created
+`My Task PlannerAcceptance 273` with no workspace folder. Through native UI,
+R273 and linked queued T273 were saved at board revision 2, and `Native item 273`
+was added and checked in the in-app prototype. After Quit and relaunch, the
+project reopened automatically with its checked item and board. R273 was then
+edited to `Native durable board edited`; a second Quit and relaunch retained
+revision 3 and the same task. Process absence was verified before that relaunch.
+The final candidate was asked to quit; the stable app was untouched.
+
+Screenshots show [before restart](acceptance/2026-10-28-macos-project-reopen/before-restart.png),
+[reopened prototype](acceptance/2026-10-28-macos-project-reopen/reopened-prototype.png)
+and [edited reopened board](acceptance/2026-10-28-macos-project-reopen/edited-reopened-board.png).
+The [saved disposable records](acceptance/2026-10-28-macos-project-reopen/saved-records.json)
+corroborate the selected project, checked item and revision 3. Only synthetic
+acceptance data from the uniquely identified candidate is included. Artifact
+SHA-256 values and database digest are in the observation.
+
+Repeat with a disposable unique-bundle candidate following issue #271's guide,
+create a project with the wizard, save board and prototype edits, Quit, verify
+the process exited and relaunch that exact bundle. Open the board and compare
+the actual saved revision and prototype state; edit and repeat. Never replace
+the installed stable bundle or reuse its support-directory identity.
+
+These observations have no exact F10 input snapshot and are not collector
+current-pass inputs. They establish neither inference, approved execution,
+generated external output, repairs, Stop, timeout, rollback nor full F17.
+Collector 17 fixtures and 22 board/session Flutter tests passed separately.
