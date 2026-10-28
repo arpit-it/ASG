@@ -105,7 +105,12 @@ class _RequirementCheckReportScreenState
                         for (final criterion
                             in result.requirement.criteria) ...[
                           Text('Criterion ${criterion.id}: ${criterion.text}'),
-                          const Text('Criterion acceptance: not verified'),
+                          Text(
+                            report.criterionVerdictLabel(
+                              result.requirement,
+                              criterion,
+                            ),
+                          ),
                           Text(
                             report
                                 .criterionCheckSummary(

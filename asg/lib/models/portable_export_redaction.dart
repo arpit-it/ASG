@@ -57,6 +57,7 @@ class PortableExportRedaction {
                       id: c.id,
                       text: redact(c.text),
                       checkIds: c.checkIds,
+                      verificationRule: c.verificationRule,
                     ),
                 ],
                 checks: [

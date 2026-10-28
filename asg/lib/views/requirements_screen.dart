@@ -367,6 +367,25 @@ class _BoardEditorState extends State<_BoardEditor> {
                                     'Criterion ${i + 1} check IDs (comma separated)',
                               ),
                             ),
+                            SwitchListTile(
+                              title: const Text(
+                                'Verify this criterion using all mapped named tests',
+                              ),
+                              subtitle: const Text(
+                                'Explicit test contract at the saved revision only. All mappings must select automated exact tests. This does not verify prose coverage or current files.',
+                              ),
+                              value:
+                                  criteria[i].verificationRule ==
+                                  CriterionVerificationRule.allMappedNamedTests,
+                              onChanged: busy
+                                  ? null
+                                  : (value) => setState(() {
+                                      criteria[i].verificationRule = value
+                                          ? CriterionVerificationRule
+                                                .allMappedNamedTests
+                                          : CriterionVerificationRule.none;
+                                    }),
+                            ),
                             TextButton(
                               onPressed: busy
                                   ? null
@@ -577,11 +596,15 @@ class _CriterionEditor {
   _CriterionEditor([AcceptanceCriterionDefinition? value])
     : id = TextEditingController(text: value?.id),
       text = TextEditingController(text: value?.text),
-      checkIds = TextEditingController(text: value?.checkIds.join(', '));
+      checkIds = TextEditingController(text: value?.checkIds.join(', ')),
+      verificationRule =
+          value?.verificationRule ?? CriterionVerificationRule.none;
   final TextEditingController id, text, checkIds;
+  CriterionVerificationRule verificationRule;
   AcceptanceCriterionDefinition get definition => AcceptanceCriterionDefinition(
     id: id.text.trim(),
     text: text.text.trim(),
+    verificationRule: verificationRule,
     checkIds: checkIds.text.trim().isEmpty
         ? []
         : checkIds.text.split(',').map((v) => v.trim()).toList(),

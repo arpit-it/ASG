@@ -96,21 +96,36 @@ class AcceptanceCheckDefinition {
 
 /// Explicit user-authored criterion and local check references. No prose parsing
 /// or inferred coverage: an empty mapping is allowed and visibly unmet.
+enum CriterionVerificationRule { none, allMappedNamedTests }
+
 class AcceptanceCriterionDefinition {
   AcceptanceCriterionDefinition({
     required this.id,
     required this.text,
     List<String> checkIds = const [],
+    this.verificationRule = CriterionVerificationRule.none,
   }) : checkIds = List.unmodifiable(checkIds);
   final String id, text;
   final List<String> checkIds;
+  final CriterionVerificationRule verificationRule;
   Map<String, Object> toJson() => {
     'id': id,
     'text': text,
     'checkIds': checkIds,
+    if (verificationRule != CriterionVerificationRule.none)
+      'verificationRule': verificationRule.name,
   };
   factory AcceptanceCriterionDefinition.fromJson(Map<String, dynamic> json) {
-    if (json.length != 3 ||
+    if ((json.length != 3 && json.length != 4) ||
+        json.keys.any(
+          (k) =>
+              !const ['id', 'text', 'checkIds', 'verificationRule'].contains(k),
+        ) ||
+        (json.containsKey('verificationRule') &&
+            (json['verificationRule'] is! String ||
+                !CriterionVerificationRule.values.any(
+                  (v) => v.name == json['verificationRule'],
+                ))) ||
         json['id'] is! String ||
         json['text'] is! String ||
         json['checkIds'] is! List ||
@@ -121,6 +136,11 @@ class AcceptanceCriterionDefinition {
       id: json['id'] as String,
       text: json['text'] as String,
       checkIds: (json['checkIds'] as List).cast<String>(),
+      verificationRule: json.containsKey('verificationRule')
+          ? CriterionVerificationRule.values.byName(
+              json['verificationRule'] as String,
+            )
+          : CriterionVerificationRule.none,
     );
   }
 }
@@ -279,6 +299,21 @@ class RequirementsBoard {
             'Map unique existing check IDs from this requirement to each criterion. Fix mappings before removing or renaming a check.',
           );
         }
+        if (criterion.verificationRule ==
+                CriterionVerificationRule.allMappedNamedTests &&
+            (criterion.checkIds.isEmpty ||
+                criterion.checkIds.any(
+                  (id) => !r.checks.any(
+                    (c) =>
+                        c.id == id &&
+                        c.type == AcceptanceCheckType.automated &&
+                        c.target != null,
+                  ),
+                ))) {
+          throw const FormatException(
+            'The named-test verification rule requires at least one mapping, all to automated checks with exact Flutter test targets.',
+          );
+        }
       }
       if (!ids.add(r.id)) {
         throw const FormatException('Requirement IDs must be unique.');
@@ -387,6 +422,9 @@ class RequirementsBoard {
       );
       for (final criterion in r.criteria) {
         out.writeln('Criterion ${criterion.id}: ${criterion.text}');
+        out.writeln(
+          'Verification rule: ${criterion.verificationRule.name}; verdict requires saved exact check evidence.',
+        );
         out.writeln(
           'Mapped checks: ${criterion.checkIds.isEmpty ? "none" : criterion.checkIds.join(", ")}; acceptance not verified.',
         );
