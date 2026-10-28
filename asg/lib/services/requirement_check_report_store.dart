@@ -355,7 +355,7 @@ class RequirementCheckReportStore {
               'id': r.requirement.id,
               'state': r.state.name,
               'acceptanceStatus': 'unverified',
-              'acceptanceEvidence': r.acceptance.toJson(),
+              'acceptanceEvidence': projection.acceptanceEvidence(r),
               'bindingContext': {
                 'requirementSha256': r.acceptance.requirementSha256,
                 'savedRunSha256': identity.savedRunSha256,

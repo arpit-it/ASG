@@ -231,7 +231,10 @@ void main() {
       expect(evidence['declaredChecks'], hasLength(3));
       expect(
         evidence['declaredChecks'].every(
-          (dynamic c) => c['status'] == 'missing' && c['result'] == null,
+          (dynamic c) =>
+              c['status'] ==
+                  (c['type'] == 'advisory' ? 'advisoryOnly' : 'missing') &&
+              c['result'] == null,
         ),
         isTrue,
       );
