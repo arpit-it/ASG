@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "records": [
+    {
+      "scenarioId": "create-reopen",
+      "checkId": "interactive-reopen",
+      "target": "web",
+      "status": "passed",
+      "observedAt": "2026-10-29T20:59:42Z",
+      "identity": {
+        "sourceRevision": "87d8cb4b7bdda9ad49327f00124731e29b7c55a3",
+        "requirementSha256": "2849a3d3c63dcce3c4bb0501ec26d242391aa741d5705cec259f8032956a4c26",
+        "inputSha256": "ba691ba042bcedd9a61a36f5969026bc95859dccdc7e47f24e6bce35673baf2f",
+        "configurationSha256": "a62866f6ba797b6e52602ea78dab07962cd97951d7d478eeb3702bece4834b58",
+        "modelSha256": "ba691ba042bcedd9a61a36f5969026bc95859dccdc7e47f24e6bce35673baf2f",
+        "deviceSha256": "f279f990e3a216cea9614606448eb6dbb5a4ac3c9e02c9198ee9869a5b35fd7b",
+        "sdkVersion": "3.47.6",
+        "runtimeVersion": "unavailable",
+        "browserVersion": "unavailable",
+        "backend": "none",
+        "host": "web"
+      },
+      "manifestSha256": "d61b84bb453d905d1219ca0de2e086422f44de30475635953c70dad03b2dbc35",
+      "artifactSha256": [
+        "214ae1165a868e9d327ecf4bcbc72fbf799700e6d98773ce111df016d3f31e93",
+        "a370424d15ae83a9e0ee5c9823172319241e27c0631b3c4777f3e672ce9c987e",
+        "ac7600edeafdadd0fa9c484cd8677874bfee83e475ebe8f5a9959aeb2471bd37",
+        "f96fcd56c61ff14b2421186da61b825f513eea35f2a073db5b58980cc612d64c"
+      ]
+    },
+    {
+      "scenarioId": "application-baseline",
+      "checkId": "platform-build",
+      "target": "web",
+      "status": "passed",
+      "observedAt": "2026-10-29T20:59:42Z",
+      "identity": {
+        "sourceRevision": "87d8cb4b7bdda9ad49327f00124731e29b7c55a3",
+        "requirementSha256": "2849a3d3c63dcce3c4bb0501ec26d242391aa741d5705cec259f8032956a4c26",
+        "inputSha256": "ba691ba042bcedd9a61a36f5969026bc95859dccdc7e47f24e6bce35673baf2f",
+        "configurationSha256": "a62866f6ba797b6e52602ea78dab07962cd97951d7d478eeb3702bece4834b58",
+        "modelSha256": "ba691ba042bcedd9a61a36f5969026bc95859dccdc7e47f24e6bce35673baf2f",
+        "deviceSha256": "f279f990e3a216cea9614606448eb6dbb5a4ac3c9e02c9198ee9869a5b35fd7b",
+        "sdkVersion": "3.47.6",
+        "runtimeVersion": "unavailable",
+        "browserVersion": "unavailable",
+        "backend": "none",
+        "host": "web"
+      },
+      "manifestSha256": "d61b84bb453d905d1219ca0de2e086422f44de30475635953c70dad03b2dbc35",
+      "artifactSha256": [
+        "f63d5b16638e73ebb55e1a9a43f7fa983c721cb77dee1f8790b3ca19a80e003e",
+        "9d0d4832773ae1c65b6becaaf528a7220853a4c69c5dda30e44149be5d518e85",
+        "f96fcd56c61ff14b2421186da61b825f513eea35f2a073db5b58980cc612d64c"
+      ]
+    },
+    {
+      "scenarioId": "application-baseline",
+      "checkId": "application-launch",
+      "target": "web",
+      "status": "passed",
+      "observedAt": "2026-10-29T20:59:42Z",
+      "identity": {
+        "sourceRevision": "87d8cb4b7bdda9ad49327f00124731e29b7c55a3",
+        "requirementSha256": "2849a3d3c63dcce3c4bb0501ec26d242391aa741d5705cec259f8032956a4c26",
+        "inputSha256": "ba691ba042bcedd9a61a36f5969026bc95859dccdc7e47f24e6bce35673baf2f",
+        "configurationSha256": "a62866f6ba797b6e52602ea78dab07962cd97951d7d478eeb3702bece4834b58",
+        "modelSha256": "ba691ba042bcedd9a61a36f5969026bc95859dccdc7e47f24e6bce35673baf2f",
+        "deviceSha256": "f279f990e3a216cea9614606448eb6dbb5a4ac3c9e02c9198ee9869a5b35fd7b",
+        "sdkVersion": "3.47.6",
+        "runtimeVersion": "unavailable",
+        "browserVersion": "unavailable",
+        "backend": "none",
+        "host": "web"
+      },
+      "manifestSha256": "d61b84bb453d905d1219ca0de2e086422f44de30475635953c70dad03b2dbc35",
+      "artifactSha256": [
+        "a370424d15ae83a9e0ee5c9823172319241e27c0631b3c4777f3e672ce9c987e",
+        "ac7600edeafdadd0fa9c484cd8677874bfee83e475ebe8f5a9959aeb2471bd37",
+        "f96fcd56c61ff14b2421186da61b825f513eea35f2a073db5b58980cc612d64c"
+      ]
+    }
+  ]
+}

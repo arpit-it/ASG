@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "scope": "caller-observed-browser-persistence-only",
+  "issue": 265,
+  "observedAt": "2026-10-29T20:59:42Z",
+  "sourceRevision": "87d8cb4b7bdda9ad49327f00124731e29b7c55a3",
+  "inputIdentityScope": "unavailable-approved-input; current unapproved F10 input retained in snapshot only",
+  "actualF10CurrentInputSha256": "422260838acb956f48b7d312ecefb8f349e0a73252aa36a8d5bc9f6b5f6e9394",
+  "actualF10BoardSha256": "2849a3d3c63dcce3c4bb0501ec26d242391aa741d5705cec259f8032956a4c26",
+  "observed": [
+    "app-led Web wizard creation",
+    "RBASE and linked queued TBASE saved at revision2",
+    "checked prototype item persisted across reload and explicit Projects reopen",
+    "edited RBASE title/acceptance saved with visible revision3 acknowledgment",
+    "second reload retained exact edited board/task and checked prototype",
+    "fresh current-source release bundle reload retained revision3 and checked prototype",
+    "actual displayed F10 JSON captured through rendered text control"
+  ],
+  "buildProvenance": {
+    "freshBuildSeconds": 16,
+    "retainedRuntimeFilesMatched": 181,
+    "bundleFiles": 44,
+    "priorBundleDifferences": [
+      ".last_build_id",
+      "flutter_bootstrap.js"
+    ],
+    "mainDartJsUnchanged": true
+  },
+  "limitations": [
+    "Fresh browser origin isolates storage, not a separate browser profile.",
+    "Numeric actual browser version unavailable; no version compatibility claim.",
+    "No approved input, source run or model request exists. Collector input/model identities use UTF-8 unavailable sentinel.",
+    "Only build, launch and manual create-reopen web observations are supplied; no full F17 support claim.",
+    "Initial immediate reload before save acknowledgement retained prior revision2; repeated edit awaited visible revision3 before successful reload.",
+    "Screenshots and report are caller observations, not authenticated automated acceptance."
+  ]
+}

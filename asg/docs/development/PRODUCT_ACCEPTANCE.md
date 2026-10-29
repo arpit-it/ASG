@@ -667,3 +667,44 @@ records and model-connection features remain distinct from the unavailable local
 filesystem/Flutter runner. Do not convert this result into passed generation
 cells in a collector report or invent F10 snapshot identities from fixture text.
 The complete exact-identity F17 macOS/web matrix remains pending.
+
+
+## Exact-snapshot web reopen extension (reused issue #265)
+
+The [observation](acceptance/2026-10-29-web-reopen-matrix/observation.json)
+and [displayed F10 snapshot](acceptance/2026-10-29-web-reopen-matrix/f10-snapshot.json)
+record actual isolated-origin Chrome create/reopen at source `87d8cb4b7bdda9ad49327f00124731e29b7c55a3`.
+The [saved report](acceptance/2026-10-29-web-reopen-matrix/report.json)
+contains only three supplied web observations: release build, application launch
+and manual create/reopen. It is historical caller-attested evidence, not current
+support. Browser numeric version is unavailable. Input/model hashes use the
+explicit UTF-8 `unavailable` sentinel because there was no approved run or model;
+the actual unapproved current F10 input digest is retained separately. Do not use
+this sentinel as approved-plan/build/inference provenance. The board hash comes
+unchanged from the displayed F10 snapshot. All other checks remain missing or
+unavailable; full F17 stays In progress.
+
+Repeat on a fresh loopback origin using a current release web build. Create a Web
+daily task planner named Exact web baseline; add RBASE with title Exact browser
+reopen and acceptance The saved board and checked prototype item survive reload
+and explicit reopen. Add queued TBASE, Verify browser persistence, linked to
+RBASE. Add and check Identity-bound saved item in the prototype. Reload, then
+Projects → explicitly reopen and verify board/task/item. Edit RBASE to Edited
+exact browser reopen with acceptance Edited acceptance and linked task survive
+reload; checked prototype remains intact. Await the visible revision3 save
+acknowledgment before reloading. Verify exact edited text/task/checked item.
+Open Requirement check report → Exact saved revision and results; capture that
+displayed JSON, retaining absent saved run/source/input/approval as absent.
+The fresh origin isolates storage, not a separate browser profile. Stop only the
+owned tab/server; the stable app remains untouched.
+
+Regenerate from Flutter root with the existing collector:
+
+```sh
+python3 -B tools/product_acceptance.py --manifest docs/development/product_acceptance_manifest.json --identity docs/development/acceptance/2026-10-29-web-reopen-matrix/identity.json --evidence docs/development/acceptance/2026-10-29-web-reopen-matrix/evidence.json --output /tmp/asg-web-reopen-report.json
+```
+
+The generatedAt value changes on regeneration; all other fields must match.
+Changing source, board, input, configuration or device identity makes allthree
+supplied records stale. The evidence revision deliberately remains the tested
+application source after these observation documents merge.
