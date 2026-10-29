@@ -1,0 +1,15 @@
+{
+  ".gitignore": "7eefa4b35df04deb84c72380b289f9d744eb9a07f5d9770b9d1f56cc797772d2",
+  "NOTICES": "0a051b41f7cd9924efb9055be9fdc27c6a20b33fc1d43745793129a5b94f4b8f",
+  "README.md": "0ba786e084d33765333010fc5580cea09bd59263759ce833b2a271973e016519",
+  "asg_project.json": "4b6c78dc064ff2c62fd39a4fa56b6f31ec654815c6e4745010626845c2f3ef13",
+  "assets/app.json": "5dfe5754a17d68414c3d380d36ea2f67e8063b0c6f8b21f1442cad3ec4a5c820",
+  "lib/controllers/generated_controller.dart": "e49f13c07b19ce86f7b23b6c6286d9b9a9bd21547f1f7759d2b071f60a0fd95f",
+  "lib/main.dart": "5a1908c7adf4b494e4eb761508e6d1a1c69519fb79c1edccb875996783ba0571",
+  "lib/models/app_definition.dart": "247940bea0300c767ac74c546c302abe88afd3ce0138d58ef6c7f611ecb9e76c",
+  "lib/views/generated_app.dart": "b2685bd51d3bfced33b00d1fb99937734a20a3b0da7a8cc3088aa0780211a2a4",
+  "pubspec.lock": "79e61992a1c93bf91b4d90e824da40a2b607b6f74a9c9dd330de8d849bb6bd1e",
+  "pubspec.yaml": "dff9eb99a9055fea5834797e23898f19afc3f530b5aa8309290b15576eb2f9a2",
+  "test/generated_app_test.dart": "297479deeae5ffc87db80b2fa9cc68ee1fc8d8a692c1d93fe89a514963d62683",
+  "web/index.html": "6c5d8241a9a3c260bf036bc3475447e6f2f2031107b73eaa90be1df08bd4cece"
+}
