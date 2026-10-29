@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "issue": 285,
+  "recordedAt": "2026-10-29T08:59:16.171962+00:00",
+  "scope": "historical isolated native selected rollback and prior external output preservation",
+  "compiledSourceRevision": "e8f6f444d82dabdd9c555ac2b11033cb8132f9d6",
+  "currentMainTestedRevision": "a43f0145d30f16d0919b614a485ce4dbe61d4f5e",
+  "bundleIdentifier": "com.arsinha.asg.acceptance271",
+  "bundleManifest": "../2026-10-28-macos-project-reopen/bundle-manifest.json",
+  "bundleManifestSha256": "2813501a9afe23c005ab1989ca9c97e9c94771b47c716518d88de86dc4298fa6",
+  "bundleFilesVerified": 43,
+  "observations": [
+    "Prior successful build source/artifacts matched native inspection before new generation.",
+    "Saved approved Plan reused with separate operation consent for a distinct disposable output.",
+    "Resolve/analyze/test passed; Stop during web build saved failed/cancelled outcome.",
+    "History retained earlier successful build; explicit Select for rollback showed selected version and distinct current work retained.",
+    "Explicit Restore selected build served the earlier verified output without rerunning build commands.",
+    "Actual restored browser output accepted a new synthetic task; its checkbox changed from 0 to 1 while original checked task remained.",
+    "Preview stopped, native menu Quit and inventory absence verified; relaunch retained prototype v1 and checked item.",
+    "Generate reopened ready with four passed outcomes and matching snapshot; history retained two failed entries and earlier successful entry.",
+    "Durable working record selects prior ready output; displaced failed record and its source files retained."
+  ],
+  "cancelledBuildChecks": [
+    {
+      "operation": "resolve",
+      "exitCode": 0,
+      "cancelled": false,
+      "timedOut": false
+    },
+    {
+      "operation": "analyze",
+      "exitCode": 0,
+      "cancelled": false,
+      "timedOut": false
+    },
+    {
+      "operation": "test",
+      "exitCode": 0,
+      "cancelled": false,
+      "timedOut": false
+    },
+    {
+      "operation": "build",
+      "exitCode": -1,
+      "cancelled": true,
+      "timedOut": false
+    }
+  ],
+  "verifiedFileCounts": {
+    "workingSources": 12,
+    "workingOutputs": 34,
+    "retainedFailedSources": 12
+  },
+  "historyPhases": [
+    "failed",
+    "ready",
+    "failed"
+  ],
+  "databaseSha256": "7f2168641783db4508868031fb0a1bda5b0e00724e6564969191756a906f77cc",
+  "interactionScreenshotSha256": "741a69c95ee40fdc5751fa6e9f7bebbf15d2edbb4e6bffec496c496044e93471",
+  "tests": {
+    "flutterPassed": 70,
+    "files": [
+      "build_rollback_test.dart",
+      "build_history_test.dart",
+      "source_generation_controller_test.dart"
+    ],
+    "collectorFixturesPassed": 17
+  },
+  "limitations": [
+    "Historical compiled candidate; current-main regression tests separate; no current support or F10 currentPass claim.",
+    "No exact F10 requirement/input provenance or generated-output timeout established.",
+    "No fresh inference, model source candidate or repair interaction in this run.",
+    "Browser changes verified in session only; browser persistence not assessed.",
+    "Raw database, screenshot, model/approval text, private paths and preview URL remain local."
+  ]
+}
