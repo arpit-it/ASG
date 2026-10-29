@@ -3360,3 +3360,6 @@ Validation: actual Chrome, formatter/analyzer, default suite and web build; inde
 
 
 Issue #293 extension validation: formatter256/analyzer passed,879 default Flutter tests passed(eight opt-in skips),allfive actual Chrome tests in the exact CI command passed,20 collector fixtures passed,release web build/Wasm dry run passed(16.5s). The production candidate path specifically returned native-filesystem UnsupportedError for current approval before and after IndexedDB reopen; withdrawn approval returned StateError and its exact bytes survived another reopen. No application behavior change or inference. Extension Awaiting independent exact-final review/required CI/merge; full F17 stays In progress.
+
+
+Delivery [PR #296](https://github.com/arpit-it/ASG/pull/296), initial tested local `bceda0f437091f1681e3074182cf07354571d45d` / published `eefda73a6fa7f31dc4a14952128aacb5418ffe14`, identical tree `a08b9533cd66ede2684b93b24b532bc1e5ac8765`. Final documentation-only revision records this link; actual final-head review/CI/merge evidence must be verified on the PR before closure. Extension Awaiting merge, full F17 In progress.
