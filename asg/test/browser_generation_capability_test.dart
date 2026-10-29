@@ -5,6 +5,15 @@
 library;
 
 import 'package:asg/controllers/source_generation_controller.dart';
+import 'package:asg/models/approved_source_proposal.dart';
+import 'package:asg/models/chat_message.dart';
+import 'package:asg/models/source_edit_proposal.dart';
+import 'package:asg/services/conversation_store.dart';
+import 'package:asg/services/generation_input.dart';
+import 'package:asg/services/plan_approval_store.dart';
+import 'package:asg/services/requirements_store.dart';
+import 'package:asg/services/source_candidate.dart';
+import 'package:asg/services/studio_store.dart';
 import 'package:asg/models/project.dart';
 import 'package:asg/models/app_definition.dart';
 import 'package:asg/models/source_generation.dart';
@@ -18,6 +27,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sembast_web/sembast_web.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'board_mapped_build_plan_test.dart' show boardContent, mappedBoard;
 
 const project = StudioProject(
   id: 'browser-capability',
@@ -78,6 +89,124 @@ void main() {
       await host.stopPreview();
       expect(writes, 0);
       expect(progress, 0);
+    },
+  );
+
+  test(
+    'production browser candidate refusal preserves valid approval and records',
+    () async {
+      final name = 'asg-candidate-${DateTime.now().microsecondsSinceEpoch}';
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+      var db = await databaseFactoryWeb.openDatabase(name);
+      try {
+        var records = await StudioDatabase.migrate(db, prefs);
+        await StudioStore(records).save([project]);
+        final requirements = RequirementsStore(records);
+        await requirements.save(
+          project.id,
+          requirements.load(project.id),
+          mappedBoard(),
+        );
+        final applications = ApplicationStore(records);
+        final definition = applications.load(project).definition;
+        await applications.save(
+          project.id,
+          ApplicationSnapshot(definition, const [], 7),
+        );
+        final approvals = PlanApprovalStore(records);
+        final messages = [
+          ChatMessage(
+            role: 'assistant',
+            content: boardContent(),
+            planContext: approvals.contextFor(project),
+          ),
+        ];
+        await ConversationStore(records).save(project.id, messages);
+        await approvals.save(project, messages, true);
+        final generated = GeneratedProject(
+          directory: '/retained-native-record',
+          sdk: '/not-used',
+          python: 'python3',
+          sources: GenerationInput(project, definition).fingerprints,
+        );
+        await SourceGenerationStore(records).save(project.id, generated);
+        final evidence = ApprovedSourceProposal(
+          projectId: project.id,
+          boardTaskId: 'Tanalyze',
+          approval: approvals.requireCurrentApproval(project),
+          proposal: SourceEditProposal.parse(
+            {
+              'summary': 'Greeting',
+              'changes': [
+                {
+                  'path': 'lib/main.dart',
+                  'before': 'void main() {}',
+                  'after': 'void main() { /* greeting */ }',
+                },
+              ],
+            },
+            originals: {'lib/main.dart': 'void main() {}'},
+          ),
+        );
+        final keys = [
+          'studio.projects.v1',
+          'studio.requirements.v1.${project.id}',
+          'studio.chat.v1.${project.id}',
+          'studio.planApproval.v1.${project.id}',
+          'studio.application.v1.${project.id}',
+          'studio.generation.v1.${project.id}',
+        ];
+        final before = {for (final key in keys) key: records.getString(key)};
+        expect(before.values, everyElement(isNotNull));
+        var activeChecks = 0;
+        Future<GeneratedProject> prepare() => prepareSourceCandidate(
+          project: project,
+          generated: generated,
+          evidence: evidence,
+          records: records,
+          parent: '/not-used',
+          checkActive: () => activeChecks++,
+        );
+        await expectLater(
+          prepare(),
+          throwsA(
+            isA<UnsupportedError>().having(
+              (error) => error.message,
+              'reason',
+              contains('native filesystem'),
+            ),
+          ),
+        );
+        expect(activeChecks, 1);
+        expect({for (final key in keys) key: records.getString(key)}, before);
+        await db.close();
+        db = await databaseFactoryWeb.openDatabase(name);
+        records = await StudioDatabase.migrate(db, prefs);
+        expect({for (final key in keys) key: records.getString(key)}, before);
+        expect(
+          PlanApprovalStore(records).requireCurrentApproval(project).approved,
+          isTrue,
+        );
+        await expectLater(prepare(), throwsUnsupportedError);
+        expect({for (final key in keys) key: records.getString(key)}, before);
+        await PlanApprovalStore(records).save(project, messages, false);
+        final withdrawn = {for (final key in keys) key: records.getString(key)};
+        await expectLater(prepare(), throwsStateError);
+        expect({
+          for (final key in keys) key: records.getString(key),
+        }, withdrawn);
+        await db.close();
+        db = await databaseFactoryWeb.openDatabase(name);
+        records = await StudioDatabase.migrate(db, prefs);
+        expect({
+          for (final key in keys) key: records.getString(key),
+        }, withdrawn);
+        expect(PlanApprovalStore(records).load(project.id)!.approved, isFalse);
+      } finally {
+        await db.close();
+        await databaseFactoryWeb.deleteDatabase(name);
+      }
     },
   );
 
