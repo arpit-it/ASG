@@ -3240,3 +3240,14 @@ issue closed. Five unrelated primary IDE/docs edits retained.
 Issue #279 validation at unchanged application source `48c5bf26`: 46 focused Flutter Plan/board/chat tests passed, one opt-in live-inference skip; 17 Python collector fixtures passed. Three observation JSON files parse; all43 bundle files/both raw database hashes/message-prefix and unchanged-record checks passed. No fresh live inference in this publication run.
 
 Issue #279 delivery: [PR #280](https://github.com/arpit-it/ASG/pull/280) targets main. Initial tested local `bedf32ec7cd01144714ca4b17cfd07d909cb640a`, published `b4d2b6f003e1b381c092556078ae52e3dbe74821`, identical tree `77bb47acb621e633b90e8715def2a984a5c4a629`. Final independent review and required CI/merge evidence will be recorded on the PR; current status Awaiting merge, full F17 In progress. Reviewer-requested stale #277 queue status reconciled with verified PR #278 merge. No application-source change.
+
+
+### F17 native runtime timeout evidence — issue #281 (29 October 2026)
+
+Branch `281-native-runtime-timeout` from verified main `ae205b89a688e847b0c6d457ad20533c88c4c83c`. Scope: publish prior historical native connection-test timeout observation, exact compiled revision/bundle linkage, sanitized repeat instructions and explicit limits. Acceptance: distinguish observed wait/timeout/idle recovery/visible prototype preservation from current regression tests; keep raw requests/storage private. All43 retained bundle files rehashed successfully. No application-source changes, fresh inference, generated-output timeout/rollback or F10 currentPass claim. F17 remains In progress; this increment Awaiting review/CI/merge.
+
+Prior #279 / PR #280 independently approved at `2b4d11f9d4c939f42443fd0a931f46fd259d014e`, review6490984277, required CI40836801873 passed, merged `ae205b89a688e847b0c6d457ad20533c88c4c83c` at2026-10-29T07:44:56Z; issue closed. Five primary IDE/docs edits preserved by isolated worktree; no later task started.
+
+Issue #281 validation: 70 focused Flutter runtime setup/settings/deadline tests and 17 Python acceptance collector fixtures passed on unchanged application source `ae205b89`; JSON, 43 bundle hashes and diff whitespace verified. No opt-in inference run or new platform build for this evidence-only increment. Final independent review, required CI and merge evidence belong to the linked PR before completion.
+
+Issue #281 delivery: [PR #282](https://github.com/arpit-it/ASG/pull/282) targets main; initial tested local `bc1e0ae401e0353bbb5024ae4b4819e539b5a34e`, published `abe53df8a397a9cba02a7ff2c2dc37b0f7fbff8a`, identical tree `47d30e96b93e251e4c3b6a9aa4b04930f8a4cc0a`. Final-revision independent review, actual required CI and verified merge SHA/date will be recorded on the PR before completion and reconciled here afterward. Status Awaiting merge; F17 In progress.

@@ -478,3 +478,36 @@ F17 remains In progress. Issue #277 / PR #278 was independently reviewed at
 `a6dcd4ebc533b0267475538f1b0d5a21c5c7f899`, required CI 40829818290 passed,
 and merged as `48c5bf26b12dbaf60835ecd374c31e10fe549b2c` on 29 October 2026;
 its earlier offline-refusal observation remains distinct.
+
+
+## Native runtime connection-test timeout (issue #281)
+
+The [sanitized timeout observation](acceptance/2026-10-29-native-runtime-timeout/observation.json)
+records the prior 29 October native interaction on isolated candidate
+`e8f6f444d82dabdd9c555ac2b11033cb8132f9d6`. All 43 files still match the
+linked bundle manifest. This is an operator-attested historical UI observation,
+separate from current-main deterministic regressions.
+
+An owned loopback-only HTTP fixture accepted the Test inference POST, discarded
+its body without logging it, and withheld the response for 40 seconds. The native
+form showed an active wait and Stop test, then displayed “Connection test timed
+out. Check the runtime and retry.” Idle controls returned. Connect & save was
+never invoked; the original unsaved URL was restored before leaving the form.
+Back in the workspace, prototype v1 and its checked item remained visible. The
+candidate was quit and its absence confirmed; the owned fixture exited cleanly.
+
+To repeat, use the disposable unique-bundle profile described above. Start an
+owned HTTP server bound only to `127.0.0.1` on an unused port: its POST handler
+reads and discards the request body, logs only that POST was accepted, waits 40
+seconds, then closes without a response. GET may return 503. In Runtime settings,
+replace the unsaved endpoint with that loopback address, verify the text actually
+changed, and select Test inference. Observe waiting, timeout guidance and restored
+controls. Restore the prior unsaved endpoint without Connect & save, return to
+the workspace and inspect the existing synthetic prototype. Quit the candidate,
+verify absence and stop only the fixture owned by the test.
+
+No fresh model inference occurred. The observation has no screenshot, raw
+persistence comparison, exact F10 input identity or current-support verdict.
+Transport startup timeout does not establish generated-output timeout, rollback,
+server-side inference cancellation or external last-working-output preservation.
+F17 stays In progress.

@@ -1,0 +1,36 @@
+{
+  "recordedAt": "2026-10-29T07:55:14.764531+00:00",
+  "compiledSourceRevision": "e8f6f444d82dabdd9c555ac2b11033cb8132f9d6",
+  "currentMainRegressionRevision": "ae205b89a688e847b0c6d457ad20533c88c4c83c",
+  "bundleFilesRehashed": 43,
+  "fixture": "Owned localhost-only HTTP server accepts POST, discards body and withholds response for 40 seconds; no model inference",
+  "observations": [
+    "Unsaved runtime connection form used alternate loopback port; Connect & save never invoked.",
+    "Native Test inference showed active waiting state and Stop test.",
+    "Server confirmed POST accepted; no body retained.",
+    "Native displayed Connection test timed out. Check the runtime and retry.",
+    "Restored original unsaved endpoint; navigated back to workspace; prototype v1 and checked item remained.",
+    "Quit requested through application menu; owned fixture stopped exit0."
+  ],
+  "limitations": [
+    "Historical isolated candidate only; no current support/F10 identity claim",
+    "Transport startup timeout only; not real inference or generated-output timeout/rollback",
+    "Prior operator-attested observation; no screenshot or raw persistent-state comparison captured for this timeout scenario.",
+    "Visible prototype preservation does not establish external last-working-output preservation."
+  ],
+  "schemaVersion": 1,
+  "issue": 281,
+  "scope": "historical-isolated-native-runtime-test-timeout",
+  "bundleIdentifier": "com.arsinha.asg.acceptance271",
+  "bundleManifest": "../2026-10-28-macos-project-reopen/bundle-manifest.json",
+  "bundleManifestSha256": "2813501a9afe23c005ab1989ca9c97e9c94771b47c716518d88de86dc4298fa6",
+  "validation": {
+    "flutterPassed": 70,
+    "collectorPassed": 17,
+    "regressionFiles": [
+      "runtime_setup_test.dart",
+      "model_settings_controller_test.dart",
+      "model_deadline_test.dart"
+    ]
+  }
+}
