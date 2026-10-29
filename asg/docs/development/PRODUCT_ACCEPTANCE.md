@@ -552,3 +552,35 @@ Historical #279 observations remain historical and are not promoted to current
 passes. The manifest digest changes, so prior saved records become stale against
 this manifest until their checks are rerun and collected. Historical reports and
 IDs are retained. This increment adds coverage, not new product-support evidence.
+
+
+### Native Plan and candidate interaction (issue #289)
+
+[Sanitized observations](acceptance/2026-10-29-native-plan-candidate/observation.json)
+record actual isolated0954 interactions compiled at `91262e8`, with all43 bundle
+files verified against the included manifest. A real offline MLX starter Plan was
+explicitly approved and remained approved after native restart. A saved acceptance
+edit invalidated it; old-draft reapproval was disabled and consented Build refused
+before output writes. No prior external working output existed during that refusal.
+A subsequent version4 mapped Plan produced a separate starter whose four checks
+passed. The first view-file model proposal failed safely; a main-file retry produced
+a reviewed formatting-only diff. Its claimed syntax fix was not established.
+
+The explicit separate candidate passed confined resolve/analyze/test/build; explicit
+promotion served actual add-item/checkbox interaction. Native restart restored the
+promoted ready directory and checked prototype item, with operation consent reset.
+The original starter's13source/34output files remained hash-identical. These are
+caller-attested observations, not exact F10 collector inputs or current support.
+Browser persistence, real repair and generated-output timeout remain unobserved.
+
+Repeat with the isolated unique-bundle/profile procedure above and existing offline
+model. Save a requirement/task, request/review/approve a starter Plan, restart, edit
+acceptance and attempt Build with valid paths and separate consent; verify no output
+writes. Request a fresh version4 Plan mapping every operation to an existing task.
+Generate into a new empty parent, run all checks, select a recorded small Dart file,
+request and inspect its full diff, choose a separate candidate parent, prepare,
+explicitly consent to confined checks, then separately promote. Interact with the
+served output beyond its title, restart native ASG and inspect its saved working
+selection. Compare original source/output hashes before and after; retain failed
+results honestly. Never interpret model summary text or generic builds as criterion
+verification. No source implementation changed in this evidence increment.

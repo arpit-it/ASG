@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-29T14:17:49.636650+00:00",
+  "sourceRevision": "91262e8ad477c8a808a3448f064e7f262b782a91",
+  "sourceTree": "51d23216570426e432f0329c6f9e4af571caf15d",
+  "scope": "isolated-native-plan-and-candidate",
+  "bundle": {
+    "manifestSha256": "9e176002091946ca2613014c1f888b7ce628b67745f13ff2b12e3a59213726cb",
+    "filesVerified": 43,
+    "mismatches": 0,
+    "freshBuild": false
+  },
+  "runtime": {
+    "backend": "mlx",
+    "modelId": "Qwen3.5-9B",
+    "quantization": "4-bit",
+    "offlineLocalWeights": true,
+    "downloadedModel": false,
+    "ownedRuntimeStoppedExitCode": 0
+  },
+  "observed": {
+    "requirementsCreated": true,
+    "taskCreated": true,
+    "realStarterPlan": true,
+    "explicitApproval": true,
+    "approvalSurvivedQuitAbsenceRelaunch": true,
+    "acceptanceEditAdvancedRevision": 3,
+    "oldApprovalOutdated": true,
+    "oldDraftReapprovalDisabled": true,
+    "separateOperationConsentStaleBuildRefused": true,
+    "staleAttemptCreatedOutput": false,
+    "freshVersion4PlanMappedAllOperations": true,
+    "freshPlanStarterChecks": {
+      "resolve": 0,
+      "analyze": 0,
+      "test": 0,
+      "build": 0
+    },
+    "viewSourceProposal": "failed safely; cause unconfirmed",
+    "mainSourceProposal": "reviewed formatting-only change",
+    "candidatePreparedSeparately": true,
+    "workingSourceFilesPreservedBeforePromotion": 13,
+    "workingOutputFilesPreservedBeforePromotion": 34,
+    "candidateChecks": {
+      "resolve": 0,
+      "analyze": 0,
+      "test": 0,
+      "build": 0
+    },
+    "explicitPromotion": true,
+    "previewAddItem": true,
+    "previewToggleNewCheckbox": true,
+    "previewRetainedOriginalCheckedItem": true,
+    "browserPersistenceAssessed": false,
+    "originalWorkingSourceFilesPreservedAfterPromotion": 13,
+    "originalWorkingOutputFilesPreservedAfterPromotion": 34,
+    "promotionSurvivedQuitAbsenceRelaunch": true,
+    "nativePrototypeCheckedItemRetainedAfterPromotionRestart": true,
+    "restoredCandidateAllFourChecksPassed": true,
+    "operationConsentResetAfterRestart": true,
+    "isolatedAppFinalQuitAbsenceVerified": true
+  },
+  "tests": {
+    "flutterPlanGeneration": 71,
+    "pythonCollector": 20,
+    "flutterCandidateSourceReview": 89
+  },
+  "limitations": [
+    "Caller-attested observations, not an exact F10 collector identity/currentPass or full support claim.",
+    "Stale Plan attempt had no previous external working build, so it does not establish prior-output preservation for that step.",
+    "Model summary claimed syntax fix, but reviewed diff only reformatted a cast; no functional improvement established.",
+    "Real repair and generated-output timeout interactions remain unobserved.",
+    "Full exact-identity macOS/web baseline remains incomplete."
+  ],
+  "issue": 289
+}
