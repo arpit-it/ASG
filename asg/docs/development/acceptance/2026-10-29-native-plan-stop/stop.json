@@ -1,0 +1,48 @@
+{
+  "recordedAt": "2026-10-29T07:28:13.037800+00:00",
+  "scope": "local historical native Discuss Stop observation",
+  "compiledSourceRevision": "e8f6f444d82dabdd9c555ac2b11033cb8132f9d6",
+  "currentMainRegressionRevision": "48c5bf26b12dbaf60835ecd374c31e10fe549b2c",
+  "bundleFilesVerified": 43,
+  "observations": [
+    "Focused composer with coordinate click, observed focus, then separate typeText succeeded; immediate paste after click had not entered text.",
+    "Existing offline MLX Qwen3.5-9B runtime Ready; submitted synthetic Discuss request; native Thinking and Stop displayed.",
+    "Clicked Stop during Thinking; idle composer returned; diagnostics Chat request stopped. Partial response discarded; saved messages retained.",
+    "Prototype v1 and checked item retained.",
+    "Menu Quit then inventory absence verified; relaunch retained prototype and submitted user request, no new assistant reply; diagnostics reset to No chat request active in this screen.",
+    "Final Quit requested; owned runtime stopped cleanly exit0."
+  ],
+  "storedRecords": {
+    "databaseSha256": "fecf916f6808cb3e86a344a1f83b2e03105c217779d44d0662f5de4f14c280bc",
+    "changedKeys": [
+      "studio.chat.v1.acceptance275"
+    ],
+    "previousChatMessagesRetained": 3,
+    "afterChatMessageRoles": [
+      "user",
+      "user",
+      "assistant",
+      "user"
+    ]
+  },
+  "validation": {
+    "flutterPassed": 20,
+    "flutterSkipped": 1,
+    "files": [
+      "chat_streaming_test.dart",
+      "chat_token_control_test.dart",
+      "planning_conversation_test.dart"
+    ]
+  },
+  "limitations": [
+    "Historical compiled candidate, no current-main support claim.",
+    "No completed model response or server-side cancellation proof.",
+    "No generated-output Stop, timeout, rollback or exact F10 currentPass identity.",
+    "Historical observation, not collector input or current support; no screenshots, raw requests, database or model files published."
+  ],
+  "schemaVersion": 1,
+  "issue": 279,
+  "bundleIdentifier": "com.arsinha.asg.acceptance271",
+  "bundleManifest": "../2026-10-28-macos-project-reopen/bundle-manifest.json",
+  "bundleManifestSha256": "2813501a9afe23c005ab1989ca9c97e9c94771b47c716518d88de86dc4298fa6"
+}

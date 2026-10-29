@@ -430,3 +430,51 @@ F17 remains In progress.
 The [sanitized observation](acceptance/2026-10-29-native-offline-plan/observation.json) records actual native UI execution on the existing isolated acceptance candidate compiled at e8f6f44. The loopback runtime was offline: Plan reported failure, discarded partial response and exposed no approvable model draft. A Build attempt with separate operation consent stopped with current Plan guidance; no output folder or approval record appeared. Restart retained the checked prototype and requirements revision3. All43 bundle files matched the previously delivered manifest; durable records changed only by the synthetic user request. Raw request/database are retained locally and are not shared artifacts.
 
 Run the existing Plan approval, diagnostic and planning conversation tests plus `tools/test_product_acceptance.py` for deterministic regressions (26 passed/one opt-in skipped and17 passed for this increment). The UI observation is historical caller-attested evidence, not an exact F10 collector input or current-main support claim. Blank SDK input means the generic Build error alone does not isolate Plan as the cause; matching controller gate ordering and absent approval/output corroborate the refusal boundary. No successful Plan, requirements-change invalidation, inference, generated output, repair, Stop, timeout, rollback or preexisting external last-working preservation is established. F17 remains In progress.
+
+
+## Native Plan approval and Discuss Stop observations (issue #279)
+
+The [Plan observation](acceptance/2026-10-29-native-plan-stop/plan.json)
+and [Stop observation](acceptance/2026-10-29-native-plan-stop/stop.json)
+record earlier real native interactions on the isolated candidate compiled at
+`e8f6f444d82dabdd9c555ac2b11033cb8132f9d6`, with its distinct
+`com.arsinha.asg.acceptance271` identity. These are operator observations, not a
+fresh current-main app build or collector inputs. All 43 existing bundle-manifest
+entries and both retained database hashes were rechecked for this delivery.
+
+With the already installed offline Qwen MLX runtime Ready, Plan visibly streamed
+and completed four validated fixed-starter tasks. Explicit approval survived Quit,
+verified process absence and relaunch. Editing the synthetic project's requirements
+made that approval outdated; a separate consented Build stopped with current Plan
+guidance and created no output. This establishes a historical refusal boundary,
+not successful generation or arbitrary source synthesis.
+
+In a later Discuss interaction, Thinking and Stop appeared. Clicking Stop restored
+the idle composer and displayed partial-response discard with saved messages
+retained. Quit/relaunch retained the previous three messages plus the submitted
+user request; no new assistant response was saved. The
+[digest-only persistence comparison](acceptance/2026-10-29-native-plan-stop/persistence.json)
+confirms that between the retained Plan and Stop snapshots only that chat record
+changed, its first three messages remained exact, and the appended message was a
+user message. The snapshots are Sembast JSON-lines records, not SQLite databases.
+Raw databases, approval/model response text and requests remain local.
+
+To repeat, use a disposable unique-bundle candidate/profile as in issue #271 and
+the existing offline runtime as described in QWEN_STREAMING.md. Complete Plan in
+the synthetic project, explicitly approve, Quit and verify process absence, then
+relaunch and inspect approval. Change project requirements and verify stale
+approval and Build refusal after separate operation consent. For Discuss Stop,
+focus the composer, observe focus, enter a synthetic request in a separate action,
+submit, wait for Thinking/Stop, and click Stop. Verify diagnostics, prototype and
+saved records after Quit/process absence/relaunch. Compare durable records and
+rehash the exact bundle; retain prompts and raw storage privately. Stop only the
+runtime owned by the test.
+
+Current-main regression tests are recorded separately from the historical UI
+source in these observations. Neither persistence hashes nor passing fixtures
+prove the earlier UI state independently. No server-side cancellation, generated
+output Stop, timeout, rollback, exact F10 identities or current support is claimed.
+F17 remains In progress. Issue #277 / PR #278 was independently reviewed at
+`a6dcd4ebc533b0267475538f1b0d5a21c5c7f899`, required CI 40829818290 passed,
+and merged as `48c5bf26b12dbaf60835ecd374c31e10fe549b2c` on 29 October 2026;
+its earlier offline-refusal observation remains distinct.

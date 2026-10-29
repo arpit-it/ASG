@@ -49,7 +49,8 @@ Update this document with task selection and delivery evidence, alongside [agent
   - Accept when failed, missing and stale evidence cannot yield a verified requirement, and reports link to exact revisions and test results.
   - Assessment clarification (28 October 2026): extend this existing task with acceptance-criterion-level check mappings and explicit automated, manual and advisory evidence types. A green generic build or manually completed task must never verify unrelated criteria. Bind each result to exact requirement content and source/input revision; edits invalidate affected results. Show unmet criteria and evidence links in the workspace and copied report, and retain the current honest “Acceptance criteria: not verified” state until criterion-specific checks actually establish the supported claim. Validate changed criteria/source, missing checks, failed checks and reopen behavior. This scope is delivered as the explicitly bounded authored-check contract below; free-form prose and live-file freshness remain outside its verdict.
 - [ ] F17 Reproducible product acceptance and support matrix — In progress; depends on F10
-  - Active bounded increment: [issue #277](https://github.com/arpit-it/ASG/issues/277), `277-native-offline-plan`: historical native offline Plan failure and Build refusal; Awaiting merge. No successful inference/current-support claim.
+  - Active bounded increment: [issue #279](https://github.com/arpit-it/ASG/issues/279), `279-native-plan-stop`, [PR #280](https://github.com/arpit-it/ASG/pull/280): sanitized historical native Plan approval/restart/stale refusal and Discuss Stop/restart observations. Prior raw records and all 43 candidate bundle files rechecked; current-main regressions remain distinct. Awaiting independent review, required CI and merge; full F17 stays In progress.
+  - Delivered native offline Plan increment: [issue #277](https://github.com/arpit-it/ASG/issues/277), `277-native-offline-plan`, [PR #278](https://github.com/arpit-it/ASG/pull/278), merge `48c5bf26b12dbaf60835ecd374c31e10fe549b2c` at2026-10-29T06:38:29Z. Final review6489808288 and CI40829818290 passed at `a6dcd4ebc533b0267475538f1b0d5a21c5c7f899`; issue closed. Historical offline refusal only; full F17 remains In progress.
   - Delivered native archive increment: [issue #275](https://github.com/arpit-it/ASG/issues/275), `275-native-archive`, [PR #276](https://github.com/arpit-it/ASG/pull/276), merge `76c02ede704d1f3e4a0e3e499917fd523d1b2384` at2026-10-29T06:03:40Z. Final independent approval5693517589 and required CI40826444985 passed at `798c318e67d03b578de7f03d777ff4ea8015b142`; issue closed. Historical archive observation only; F17 remains In progress.
   - Delivered native project restart: [issue #273](https://github.com/arpit-it/ASG/issues/273), `273-native-project-reopen`, [PR #274](https://github.com/arpit-it/ASG/pull/274), merge `203b5ee0d9032421336be034e41d133a107dc529` at 2026-10-28T18:50:54Z. Final independent approval6477724765 and required CI40747934112 passed at `408471781c2bd9d3ff0d8644c8a4f741d0f31f4d`; issue closed. Historical native create/edit/two restarts only; F17 stays In progress.
   - Delivered isolated macOS launch: [issue #271](https://github.com/arpit-it/ASG/issues/271), `271-native-launch`, [PR #272](https://github.com/arpit-it/ASG/pull/272), merge `fd55e45380c9e80ffc7a3fb71f85d3dd831870ce` at 2026-10-28T18:29:25Z. Independent final approval6477265691 and required CI40744759176 passed at `354397cefe3b437cf505669d7a5168157a387416`; issue closed. Historical unique-bundle native launch only; full F17 stays In progress.
@@ -4227,3 +4228,24 @@ Fresh26 Flutter Plan/diagnostic/conversation tests passed, one opt-in skip;17 co
 
 
 Issue #277 delivery: [PR #278](https://github.com/arpit-it/ASG/pull/278) targets main. Initial tested local `024d8e6`, published `dd6a4c40cb54244cad5531fd65dd03c224791095`, identical tree `38bc96a959a3343bf8ad33d7bef98d96e67f2dd0`; all five remote blobs match. Exact-final independent review, required CI and merge evidence are recorded on the PR before completion. This documentation follow-up only links delivery; F17 remains In progress and this increment Awaiting merge.
+
+
+### F17 native Plan approval and Discuss Stop evidence — issue #279
+
+Branch `279-native-plan-stop` from `48c5bf26b12dbaf60835ecd374c31e10fe549b2c`.
+Acceptance: record historical real Plan approval/restart/changed-requirements
+refusal and Discuss Stop/partial-discard/restart persistence with exact candidate
+revision, bundle linkage, UTC and honest limitations; keep raw prompts/storage
+local. No new F ID: this extends existing F17. Scope is evidence and repeat
+instructions only. Current source is unchanged. Verify scoped Plan/chat tests,
+collector fixtures, JSON/privacy and hashes; independent final review and required
+CI precede merge. Status: Awaiting merge; F17 remains In progress.
+
+Previous increment #277 / PR #278 is verified merged as
+`48c5bf26b12dbaf60835ecd374c31e10fe549b2c` on 2026-10-29T06:38:29Z,
+reviewed head `a6dcd4ebc533b0267475538f1b0d5a21c5c7f899`, final review
+6489808288, required CI 40829818290 passed, issue closed. No later task started.
+
+Issue #279 validation at unchanged application source `48c5bf26`: 46 focused Flutter Plan/board/chat tests passed, one opt-in live-inference skip; 17 Python collector fixtures passed. Three observation JSON files parse; all43 bundle files/both raw database hashes/message-prefix and unchanged-record checks passed. No fresh live inference in this publication run.
+
+Issue #279 delivery: [PR #280](https://github.com/arpit-it/ASG/pull/280) targets main. Initial tested local `bedf32ec7cd01144714ca4b17cfd07d909cb640a`, published `b4d2b6f003e1b381c092556078ae52e3dbe74821`, identical tree `77bb47acb621e633b90e8715def2a984a5c4a629`. Final independent review and required CI/merge evidence will be recorded on the PR; current status Awaiting merge, full F17 In progress. Reviewer-requested stale #277 queue status reconciled with verified PR #278 merge. No application-source change.
