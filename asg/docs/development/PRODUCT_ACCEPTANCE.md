@@ -708,3 +708,10 @@ The generatedAt value changes on regeneration; all other fields must match.
 Changing source, board, input, configuration or device identity makes allthree
 supplied records stale. The evidence revision deliberately remains the tested
 application source after these observation documents merge.
+
+
+## Browser source-candidate refusal extension (reused issue #293)
+
+The actual Chrome suite in `test/browser_generation_capability_test.dart` also exercises the public `prepareSourceCandidate` conditional import with current persisted approval and matching generated-input fingerprints. It must fail specifically because the browser lacks a native filesystem, after current-authority validation. It checks exact saved project/requirements/conversation/approval/prototype/working-generation records before and after refusal and IndexedDB reopen. Withdrawn approval must instead fail current-authority validation and retain its exact withdrawn record through reopen. The disposable database is removed afterward.
+
+This is automated unavailable-boundary coverage. No model request, candidate file creation, confined verification, promotion, served output interaction or manual acceptance pass is established. Full F17 remains In progress. Run the same required Chrome command documented above; no separate browser CI registration is needed.
