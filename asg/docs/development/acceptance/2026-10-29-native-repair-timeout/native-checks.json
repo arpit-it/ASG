@@ -1,0 +1,202 @@
+[
+  {
+    "number": 2,
+    "startedAt": "2026-10-29T19:58:39.762969Z",
+    "finished": true,
+    "phase": "failed",
+    "limits": {
+      "version": 1,
+      "commandTimeoutSeconds": 180,
+      "outputLimitBytes": 65536,
+      "maximumOperations": 4
+    },
+    "confinementVersion": 1,
+    "sourceSha256": {
+      "test/generated_app_test.dart": "d2f716851e6a53ab53808f1c4e3b399af7d89c9c0a1f5df5ecd23f69617e008b",
+      "web/index.html": "6c5d8241a9a3c260bf036bc3475447e6f2f2031107b73eaa90be1df08bd4cece",
+      "NOTICES": "0a051b41f7cd9924efb9055be9fdc27c6a20b33fc1d43745793129a5b94f4b8f",
+      "README.md": "0ba786e084d33765333010fc5580cea09bd59263759ce833b2a271973e016519",
+      "pubspec.yaml": "dff9eb99a9055fea5834797e23898f19afc3f530b5aa8309290b15576eb2f9a2",
+      ".gitignore": "7eefa4b35df04deb84c72380b289f9d744eb9a07f5d9770b9d1f56cc797772d2",
+      "asg_project.json": "4b6c78dc064ff2c62fd39a4fa56b6f31ec654815c6e4745010626845c2f3ef13",
+      "lib/models/app_definition.dart": "247940bea0300c767ac74c546c302abe88afd3ce0138d58ef6c7f611ecb9e76c",
+      "lib/main.dart": "6937e0c69859870235b38a5a31192ad1508bbbb537cbedd4483b2539d6765dbd",
+      "lib/controllers/generated_controller.dart": "e49f13c07b19ce86f7b23b6c6286d9b9a9bd21547f1f7759d2b071f60a0fd95f",
+      "lib/views/generated_app.dart": "b2685bd51d3bfced33b00d1fb99937734a20a3b0da7a8cc3088aa0780211a2a4",
+      "assets/app.json": "5dfe5754a17d68414c3d380d36ea2f67e8063b0c6f8b21f1442cad3ec4a5c820"
+    },
+    "steps": [
+      {
+        "operation": "resolve",
+        "exitCode": 0,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "cancelled": false
+      },
+      {
+        "operation": "analyze",
+        "exitCode": 0,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "cancelled": false
+      },
+      {
+        "operation": "test",
+        "exitCode": 1,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "cancelled": false
+      }
+    ]
+  },
+  {
+    "number": 3,
+    "startedAt": "2026-10-29T20:00:24.370093Z",
+    "finished": true,
+    "phase": "failed",
+    "limits": {
+      "version": 1,
+      "commandTimeoutSeconds": 180,
+      "outputLimitBytes": 65536,
+      "maximumOperations": 4
+    },
+    "confinementVersion": 1,
+    "sourceSha256": {
+      "test/generated_app_test.dart": "e8fc6575d5402e8fba76acbb89798088839e6b9fa5453c2dc68f4e624e8c749b",
+      "web/index.html": "6c5d8241a9a3c260bf036bc3475447e6f2f2031107b73eaa90be1df08bd4cece",
+      "NOTICES": "0a051b41f7cd9924efb9055be9fdc27c6a20b33fc1d43745793129a5b94f4b8f",
+      "README.md": "0ba786e084d33765333010fc5580cea09bd59263759ce833b2a271973e016519",
+      "pubspec.yaml": "dff9eb99a9055fea5834797e23898f19afc3f530b5aa8309290b15576eb2f9a2",
+      ".gitignore": "7eefa4b35df04deb84c72380b289f9d744eb9a07f5d9770b9d1f56cc797772d2",
+      "asg_project.json": "4b6c78dc064ff2c62fd39a4fa56b6f31ec654815c6e4745010626845c2f3ef13",
+      "lib/models/app_definition.dart": "247940bea0300c767ac74c546c302abe88afd3ce0138d58ef6c7f611ecb9e76c",
+      "lib/main.dart": "6937e0c69859870235b38a5a31192ad1508bbbb537cbedd4483b2539d6765dbd",
+      "lib/controllers/generated_controller.dart": "e49f13c07b19ce86f7b23b6c6286d9b9a9bd21547f1f7759d2b071f60a0fd95f",
+      "lib/views/generated_app.dart": "b2685bd51d3bfced33b00d1fb99937734a20a3b0da7a8cc3088aa0780211a2a4",
+      "assets/app.json": "5dfe5754a17d68414c3d380d36ea2f67e8063b0c6f8b21f1442cad3ec4a5c820"
+    },
+    "steps": [
+      {
+        "operation": "resolve",
+        "exitCode": 0,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "cancelled": false
+      },
+      {
+        "operation": "analyze",
+        "exitCode": 0,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "cancelled": false
+      },
+      {
+        "operation": "test",
+        "exitCode": -1,
+        "timedOut": true,
+        "outputLimitExceeded": false,
+        "cancelled": false
+      }
+    ]
+  },
+  {
+    "number": 4,
+    "startedAt": "2026-10-29T20:05:34.925471Z",
+    "finished": true,
+    "phase": "failed",
+    "limits": {
+      "version": 1,
+      "commandTimeoutSeconds": 180,
+      "outputLimitBytes": 65536,
+      "maximumOperations": 4
+    },
+    "confinementVersion": 1,
+    "sourceSha256": {
+      "test/generated_app_test.dart": "297479deeae5ffc87db80b2fa9cc68ee1fc8d8a692c1d93fe89a514963d62683",
+      "web/index.html": "6c5d8241a9a3c260bf036bc3475447e6f2f2031107b73eaa90be1df08bd4cece",
+      "NOTICES": "0a051b41f7cd9924efb9055be9fdc27c6a20b33fc1d43745793129a5b94f4b8f",
+      "README.md": "0ba786e084d33765333010fc5580cea09bd59263759ce833b2a271973e016519",
+      "pubspec.yaml": "dff9eb99a9055fea5834797e23898f19afc3f530b5aa8309290b15576eb2f9a2",
+      ".gitignore": "7eefa4b35df04deb84c72380b289f9d744eb9a07f5d9770b9d1f56cc797772d2",
+      "asg_project.json": "4b6c78dc064ff2c62fd39a4fa56b6f31ec654815c6e4745010626845c2f3ef13",
+      "lib/models/app_definition.dart": "247940bea0300c767ac74c546c302abe88afd3ce0138d58ef6c7f611ecb9e76c",
+      "lib/main.dart": "60125e205ba07b6fe7378bd14a9d5048f8cabf39d4bef00d9dbd33e3beb3a032",
+      "lib/controllers/generated_controller.dart": "e49f13c07b19ce86f7b23b6c6286d9b9a9bd21547f1f7759d2b071f60a0fd95f",
+      "lib/views/generated_app.dart": "b2685bd51d3bfced33b00d1fb99937734a20a3b0da7a8cc3088aa0780211a2a4",
+      "assets/app.json": "5dfe5754a17d68414c3d380d36ea2f67e8063b0c6f8b21f1442cad3ec4a5c820"
+    },
+    "steps": [
+      {
+        "operation": "resolve",
+        "exitCode": 0,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "cancelled": false
+      },
+      {
+        "operation": "analyze",
+        "exitCode": 1,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "cancelled": false
+      }
+    ]
+  },
+  {
+    "number": 5,
+    "startedAt": "2026-10-29T20:06:33.560420Z",
+    "finished": true,
+    "phase": "ready",
+    "limits": {
+      "version": 1,
+      "commandTimeoutSeconds": 180,
+      "outputLimitBytes": 65536,
+      "maximumOperations": 4
+    },
+    "confinementVersion": 1,
+    "sourceSha256": {
+      "test/generated_app_test.dart": "297479deeae5ffc87db80b2fa9cc68ee1fc8d8a692c1d93fe89a514963d62683",
+      "web/index.html": "6c5d8241a9a3c260bf036bc3475447e6f2f2031107b73eaa90be1df08bd4cece",
+      "NOTICES": "0a051b41f7cd9924efb9055be9fdc27c6a20b33fc1d43745793129a5b94f4b8f",
+      "README.md": "0ba786e084d33765333010fc5580cea09bd59263759ce833b2a271973e016519",
+      "pubspec.yaml": "dff9eb99a9055fea5834797e23898f19afc3f530b5aa8309290b15576eb2f9a2",
+      ".gitignore": "7eefa4b35df04deb84c72380b289f9d744eb9a07f5d9770b9d1f56cc797772d2",
+      "asg_project.json": "4b6c78dc064ff2c62fd39a4fa56b6f31ec654815c6e4745010626845c2f3ef13",
+      "lib/models/app_definition.dart": "247940bea0300c767ac74c546c302abe88afd3ce0138d58ef6c7f611ecb9e76c",
+      "lib/main.dart": "6937e0c69859870235b38a5a31192ad1508bbbb537cbedd4483b2539d6765dbd",
+      "lib/controllers/generated_controller.dart": "e49f13c07b19ce86f7b23b6c6286d9b9a9bd21547f1f7759d2b071f60a0fd95f",
+      "lib/views/generated_app.dart": "b2685bd51d3bfced33b00d1fb99937734a20a3b0da7a8cc3088aa0780211a2a4",
+      "assets/app.json": "5dfe5754a17d68414c3d380d36ea2f67e8063b0c6f8b21f1442cad3ec4a5c820"
+    },
+    "steps": [
+      {
+        "operation": "resolve",
+        "exitCode": 0,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "cancelled": false
+      },
+      {
+        "operation": "analyze",
+        "exitCode": 0,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "cancelled": false
+      },
+      {
+        "operation": "test",
+        "exitCode": 0,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "cancelled": false
+      },
+      {
+        "operation": "build",
+        "exitCode": 0,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "cancelled": false
+      }
+    ]
+  }
+]

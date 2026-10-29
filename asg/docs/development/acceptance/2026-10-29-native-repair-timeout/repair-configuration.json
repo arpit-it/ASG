@@ -1,0 +1,36 @@
+{
+  "runtime": {
+    "python": "3.12.8",
+    "mlx": "0.32.4",
+    "mlx_lm": "0.32.2",
+    "transformers": "5.20.2"
+  },
+  "sdk": {
+    "frameworkVersion": "3.47.6",
+    "channel": "stable",
+    "repositoryUrl": "https://github.com/flutter/flutter.git",
+    "frameworkRevision": "5fc346839b5d0eef006ed8404392afb4dfae428d",
+    "frameworkCommitDate": "2026-09-30 15:02:49 -0700",
+    "engineRevision": "692136cb6582dbfc5af3fb33c2515a069f2f66d0",
+    "engineCommitDate": "2026-09-30 00:56:59.000Z",
+    "engineContentHash": "b8c8d3d8d5d0095127057f8a29ca8cc53da2167c",
+    "engineBuildDate": "2026-09-30 06:49:13.915",
+    "dartSdkVersion": "3.13.5",
+    "devToolsVersion": "2.60.0",
+    "flutterVersion": "3.47.6"
+  },
+  "model": {
+    "backend": "mlx",
+    "id": "Qwen3.5-9B",
+    "quantization": "4-bit",
+    "localWeightsOnly": true
+  },
+  "transport": "loopback-only proxy forwards all corrective inference to existing MLX runtime",
+  "filesSha256": {
+    "test/automatic_repair_real_test.dart": "f710963119e2012a28b8a7f24eb999027551d975866fc0df90fadf860064b6f4",
+    "test/support/acceptance_provenance.dart": "896aee7bc3e281e70acd86aae0b5e9e376fbb477a552a3dd709453a7e3eb4447",
+    "tools/qwen_server.py": "cf18f4bfdba7812ce238c304f29e84b86b1dcdd05791b2b1bb6d2d4665b80025",
+    "tools/generation_command.py": "6be66cf7de5d2f16c5d6d2e589010081d75e600dfcf26f1f8b3dea3601a2ffaf",
+    "pubspec.lock": "dd10400f6c5a381aa0e53c727075d26707c63e8f77c142d3aa7f730e8cfa42ae"
+  }
+}

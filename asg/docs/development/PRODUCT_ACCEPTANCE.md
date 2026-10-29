@@ -584,3 +584,57 @@ served output beyond its title, restart native ASG and inspect its saved working
 selection. Compare original source/output hashes before and after; retain failed
 results honestly. Never interpret model summary text or generic builds as criterion
 verification. No source implementation changed in this evidence increment.
+
+
+## Native repair and generated-check deadline (issue #291)
+
+The [sanitized observation](acceptance/2026-10-29-native-repair-timeout/observation.json)
+and [saved command summaries](acceptance/2026-10-29-native-repair-timeout/native-checks.json)
+record actual isolated native UI interactions at compiled revision `91262e8`.
+All43 bundle hashes matched. Application/test/tool sources are unchanged through
+plugin-verified main `1f4b768`, the source used for the separate automated test.
+Raw database records, model prompts, private logs and preview capability URLs stay local.
+
+To reproduce on an isolated unique-bundle profile with a ready working build:
+
+1. Save original source/output hashes. Use an explicitly identified loopback fixture
+   to supply a full-file proposal adding a five-minute asynchronous test, with
+   `timeout: const Timeout(Duration(minutes: 10))`. Keep existing tests. Review and
+   prepare a separate candidate, then consent to confined verification. The longer
+   per-test timeout is necessary: without it Flutter stops at30seconds, which does
+   not establish ASG's command deadline.
+2. Observe resolve/analyze pass, followed by the180-second command deadline.
+   Confirm saved test exit-1/timedOut=true, no output-limit/cancel flag, intervention
+   diagnosis, no source-repair action and no promotion. Preserve this failed journal.
+3. Return to the unchanged working source. Supply a separately reviewed deterministic
+   main-file proposal inserting only `asgMissingFunction();` immediately before
+   `runApp`. Verify it separately and inspect the actual undefined-function analyzer
+   output. These faulty seed proposals are fixtures, not successful model inference.
+4. Restore real transport to the existing offline Qwen3.5-9B MLX runtime. Select a
+   separate parent folder, consent to bounded automatic repair for main only, and
+   start. Confirm actual model correction removes only the undefined call, one
+   analyze request is saved, and resolve/analyze/test/build all rerun and pass.
+5. Explicitly promote the verified candidate. Open its actual served app, add an
+   item and check it; verify the original checked item remains. Quit native ASG,
+   verify absence, relaunch and inspect restored ready directory, four passed checks
+   and saved analyze1/3 budget. Compare original source/output hashes again. Stop
+   owned app, fixture and runtime. Do not infer browser persistence from this test.
+
+A separate existing `automatic_repair_real_test.dart` run passed in61seconds at
+`1f4b768`, including saved failure, real correction, confined rerun, promotion,
+preservation and database reopen. Its [exact F10 linkage](acceptance/2026-10-29-native-repair-timeout/repair-provenance.json),
+[measured identity](acceptance/2026-10-29-native-repair-timeout/repair-identity.json),
+[configuration](acceptance/2026-10-29-native-repair-timeout/repair-configuration.json),
+[evidence](acceptance/2026-10-29-native-repair-timeout/repair-evidence.json) and
+[report](acceptance/2026-10-29-native-repair-timeout/repair-report.json) form a reproducible
+historical submitted observation. Use the existing collector command above with
+these identity/evidence files to regenerate; only generatedAt changes.
+The report supplies only the macOS bounded-repair cell. It does not relabel native
+UI interaction as F10-derived evidence or fill missing/unavailable cells.
+
+104focused Flutter regressions and20collector fixtures also passed. No application
+implementation changed or fresh platform build was needed locally; required CI
+still gates the evidence PR. Numeric browser version remains unavailable because
+browser policy refused version-page inspection. F17 remains In progress for the
+complete exact-identity macOS/web baseline; this closes the previously unobserved
+native repair/deadline slice only after independent review and verified merge.

@@ -1,0 +1,43 @@
+{
+  "model": {
+    "id": "Qwen3.5-9B",
+    "backend": "mlx",
+    "quantization": "4-bit",
+    "filesSha256": {
+      "README.md": "748c964f9b7e5f2c3770ce013bbc0153be7c54311d9692c343b6188eefe77ac6",
+      "chat_template.jinja": "a4aee8afcf2e0711942cf848899be66016f8d14a889ff9ede07bca099c28f715",
+      "config.json": "15303ca367065b31713bb4573030718cdf1fc31d5bca5b4a989a68ef20e9540d",
+      "model.safetensors": "e1f2a78750abdc4eeb4d41a49675dcf63667bda29b3144a93ea80dcc1c0a4f27",
+      "model.safetensors.index.json": "d50465249b0ec7eb602558c4d4b7d0c7516bc99548d8d2a3b3c3a3805a93e607",
+      "tokenizer.json": "a5cd9732badce41de57e6efce8302930ded1c1188c5f81feb2bd6c24c4a1941f",
+      "tokenizer_config.json": "86f01837a638275f2d3479804e79802aaff0e3ccef15e5f29dd6afbe6551daed"
+    }
+  },
+  "host": {
+    "system": "Darwin",
+    "version": "27.0.1",
+    "architecture": "arm64"
+  },
+  "sourceRevision": "1f4b7681d395a77aaeb81dce57a5edd99189daee",
+  "compiledRevision": "91262e8ad477c8a808a3448f064e7f262b782a91",
+  "sdk": {
+    "frameworkVersion": "3.47.6",
+    "channel": "stable",
+    "repositoryUrl": "https://github.com/flutter/flutter.git",
+    "frameworkRevision": "5fc346839b5d0eef006ed8404392afb4dfae428d",
+    "frameworkCommitDate": "2026-09-30 15:02:49 -0700",
+    "engineRevision": "692136cb6582dbfc5af3fb33c2515a069f2f66d0",
+    "engineCommitDate": "2026-09-30 00:56:59.000Z",
+    "engineContentHash": "b8c8d3d8d5d0095127057f8a29ca8cc53da2167c",
+    "engineBuildDate": "2026-09-30 06:49:13.915",
+    "dartSdkVersion": "3.13.5",
+    "devToolsVersion": "2.60.0",
+    "flutterVersion": "3.47.6"
+  },
+  "runtime": {
+    "python": "3.12.8",
+    "mlx": "0.32.4",
+    "mlx_lm": "0.32.2",
+    "transformers": "5.20.2"
+  }
+}
