@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-10-29T20:09:40Z",
+  "generatedAt": "2026-10-29T20:14:22Z",
   "manifestSha256": "d61b84bb453d905d1219ca0de2e086422f44de30475635953c70dad03b2dbc35",
   "identity": {
     "sourceRevision": "1f4b7681d395a77aaeb81dce57a5edd99189daee",
     "requirementSha256": "8f95025435e9a2d2db39224ba7d5f6f6f45373296ca2a68c301aeda43ee58e89",
     "inputSha256": "86eea591c8aac58c4fdb54df0037beb510819f1256ef9493e7e332f52da7323d",
-    "configurationSha256": "640245d80e750131607b13b18e5692756240b32837cf7f51dffd41aa1570c9e5",
+    "configurationSha256": "9faddf3078f5d819319c4ee55b6c2a8b008e1bde204f0ed0ae796999a098f29f",
     "modelSha256": "0a2474760815486856945bb3077daed472642af0476afe548d6397e326cba041",
     "deviceSha256": "7ae00df1c3136cf9126f08680b44f60176e2188149ad90b4017f4cf052e3510c",
     "sdkVersion": "3.47.6",
@@ -541,7 +541,7 @@
           "sourceRevision": "1f4b7681d395a77aaeb81dce57a5edd99189daee",
           "requirementSha256": "8f95025435e9a2d2db39224ba7d5f6f6f45373296ca2a68c301aeda43ee58e89",
           "inputSha256": "86eea591c8aac58c4fdb54df0037beb510819f1256ef9493e7e332f52da7323d",
-          "configurationSha256": "640245d80e750131607b13b18e5692756240b32837cf7f51dffd41aa1570c9e5",
+          "configurationSha256": "9faddf3078f5d819319c4ee55b6c2a8b008e1bde204f0ed0ae796999a098f29f",
           "modelSha256": "0a2474760815486856945bb3077daed472642af0476afe548d6397e326cba041",
           "deviceSha256": "7ae00df1c3136cf9126f08680b44f60176e2188149ad90b4017f4cf052e3510c",
           "sdkVersion": "3.47.6",
