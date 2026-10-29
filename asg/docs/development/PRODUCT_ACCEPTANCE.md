@@ -638,3 +638,32 @@ still gates the evidence PR. Numeric browser version remains unavailable because
 browser policy refused version-page inspection. F17 remains In progress for the
 complete exact-identity macOS/web baseline; this closes the previously unobserved
 native repair/deadline slice only after independent review and verified merge.
+
+
+## Web native-generation boundary (issue #293)
+
+Run from the Flutter root with the installed Chrome browser:
+
+```sh
+flutter test --no-pub --platform chrome test/browser_generation_capability_test.dart
+```
+
+This automated browser test compiles the production conditional host factory;
+it does not inject a fake native host. It verifies that generation, verification
+(including resume), preview startup and preview opening report unsupported without
+write-authorization or progress callbacks. The actual Build view shows the macOS
+host requirement, disables local directory pickers and keeps Generate disabled
+even after explicit operation consent. Controller calls cannot start generation,
+retry, resume or preview. A uniquely named disposable IndexedDB database retains
+exact saved prototype/build bytes and prototype revision across close/reopen,
+then is deleted. External IndexedDB work uses the widget tester's real async
+zone; simulated widget time must not stand in for durable completion.
+
+The required Chrome CI step runs this test alongside storage/archive checks.
+A passing browser regression establishes this unavailable-host boundary only.
+It is neither a manual browser workflow nor a native generation, live model,
+repair, served generated-output or current-support pass. Existing web prototype,
+records and model-connection features remain distinct from the unavailable local
+filesystem/Flutter runner. Do not convert this result into passed generation
+cells in a collector report or invent F10 snapshot identities from fixture text.
+The complete exact-identity F17 macOS/web matrix remains pending.
