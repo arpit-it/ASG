@@ -3200,3 +3200,8 @@ Issue #275 publication blocker: full local evidence commit `cb382808e5455a882674
 ### Native archive publication resumed — issue #275 (29 October 2026)
 
 Owner explicitly approved publishing reopened-prototype.png and restore-confirmation.png in direct response to the artifact-specific question. Prior publication blocker resolved. Resumed the existing 275-native-archive increment; no new task or application code change. Historical 98 Flutter archive/session and 17 collector passes remain evidence of that run; final independent review, required CI and verified merge will be recorded on the linked PR before completion. Full F17 remains In progress.
+
+
+### Native archive restore/reopen awaiting merge — issue #275 / PR #276 (29 October 2026)
+
+Branch `275-native-archive`; local `56286bf5a73d28678494dcd8199c64314dee0087`, initially published `d316029cb3f7a1200b3dbaeb9e4ec7d91554f1e3`, identical tree `6c451cb1e9ff03650dbe3b7d891d3b9e3aab6a39`. All eleven uploaded Git blobs matched local hashes. Owner explicitly approved all three screenshots, including the separately requested reopened-board.png. Fresh 98 Flutter archive/session tests and 17 collector fixtures passed on 29 October. [PR #276](https://github.com/arpit-it/ASG/pull/276) contains the scope, limitations, final revision, independent review, required CI and eventual merge evidence; review/checks/merge remain pending at this documentation revision. This follow-up only links delivery evidence; historical candidate and full F17 limitations remain unchanged. No application source change or later task.
