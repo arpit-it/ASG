@@ -3150,3 +3150,5 @@ merged `48c5bf26b12dbaf60835ecd374c31e10fe549b2c` at2026-10-29T06:38:29Z,
 issue closed. Five unrelated primary IDE/docs edits retained.
 
 Issue #279 validation at unchanged application source `48c5bf26`: 46 focused Flutter Plan/board/chat tests passed, one opt-in live-inference skip; 17 Python collector fixtures passed. Three observation JSON files parse; all43 bundle files/both raw database hashes/message-prefix and unchanged-record checks passed. No fresh live inference in this publication run.
+
+Issue #279 delivery: [PR #280](https://github.com/arpit-it/ASG/pull/280) targets main. Initial tested local `bedf32ec7cd01144714ca4b17cfd07d909cb640a`, published `b4d2b6f003e1b381c092556078ae52e3dbe74821`, identical tree `77bb47acb621e633b90e8715def2a984a5c4a629`. Final independent review and required CI/merge evidence will be recorded on the PR; current status Awaiting merge, full F17 In progress. Reviewer-requested stale #277 queue status reconciled with verified PR #278 merge. No application-source change.
