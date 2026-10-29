@@ -64,6 +64,51 @@ class AcceptanceTest(unittest.TestCase):
         self.assertEqual(passing[0]['savedEvidence'], record())
         self.assertEqual(json.loads(json.dumps(result)), result)
 
+    def test_plan_fixture_leaves_real_lifecycle_missing_on_each_target(self):
+        for target in ('macos', 'web'):
+            with self.subTest(target=target):
+                fixture = dict(record(), scenarioId='approved-plan',
+                               checkId='stale-plan-refusal', target=target)
+                cells = [c for c in self.evaluate(fixture)['cells']
+                         if c['scenarioId'] == 'approved-plan' and
+                         c['target'] == target]
+                self.assertEqual(len(cells), 2)
+                self.assertTrue(next(c for c in cells
+                                     if c['kind'] == 'fixture')['currentPass'])
+                manual = next(c for c in cells if c['kind'] == 'manual')
+                self.assertEqual(manual['checkId'], 'plan-lifecycle-interaction')
+                self.assertEqual(manual['status'], 'missing')
+                self.assertFalse(manual['currentPass'])
+
+    def test_plan_lifecycle_requires_matching_saved_identity(self):
+        manual = dict(record(), scenarioId='approved-plan',
+                      checkId='plan-lifecycle-interaction')
+        cells = self.evaluate(manual)['cells']
+        matching = next(c for c in cells if c['scenarioId'] == 'approved-plan'
+                        and c['target'] == 'macos' and c['kind'] == 'manual')
+        self.assertTrue(matching['currentPass'])
+        self.assertEqual(matching['savedEvidence'], manual)
+        changed = dict(identity(), inputSha256='1' * 64)
+        stale = next(c for c in self.evaluate(manual, current=changed)['cells']
+                     if c['scenarioId'] == 'approved-plan' and
+                     c['target'] == 'macos' and c['kind'] == 'manual')
+        self.assertEqual(stale['status'], 'stale')
+        self.assertFalse(stale['currentPass'])
+
+    def test_pre_lifecycle_manifest_cannot_keep_fixture_current(self):
+        previous = copy.deepcopy(SPEC)
+        plan = next(s for s in previous['scenarios'] if s['id'] == 'approved-plan')
+        plan['checks'] = [c for c in plan['checks']
+                          if c['id'] != 'plan-lifecycle-interaction']
+        fixture = dict(record(), scenarioId='approved-plan',
+                       checkId='stale-plan-refusal', manifestSha256=sha(previous))
+        cells = [c for c in self.evaluate(fixture)['cells']
+                 if c['scenarioId'] == 'approved-plan' and c['target'] == 'macos']
+        self.assertEqual({c['checkId']: c['status'] for c in cells},
+                         {'stale-plan-refusal': 'stale',
+                          'plan-lifecycle-interaction': 'missing'})
+        self.assertFalse(any(c['currentPass'] for c in cells))
+
     def test_every_identity_change_invalidates_pass(self):
         for field in IDENTITY_FIELDS:
             with self.subTest(field=field):
