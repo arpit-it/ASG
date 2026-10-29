@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "issue": 275,
+  "scope": "historical-isolated-macos-archive-restore-reopen",
+  "recordedAt": "2026-10-28T19:07:28.867447+00:00",
+  "compiledSourceRevision": "e8f6f444d82dabdd9c555ac2b11033cb8132f9d6",
+  "bundleIdentifier": "com.arsinha.asg.acceptance271",
+  "productName": "ASG Acceptance 271",
+  "bundleManifest": "../2026-10-28-macos-project-reopen/bundle-manifest.json",
+  "bundleManifestSha256": "2813501a9afe23c005ab1989ca9c97e9c94771b47c716518d88de86dc4298fa6",
+  "bundleFileCount": 43,
+  "databaseSha256": "dd136f1271a70f009beddbea09e88a1f6b482594255ea0a64e32587a526c13a0",
+  "databaseBytes": 4619,
+  "restoredProjectId": "acceptance275",
+  "restoredProjectName": "Native Archive 275",
+  "observations": [
+    "Loaded saved records for export through Portable records; observed board revision 3/prototype revision 1.",
+    "Native Save dialog wrote synthetic archive; mistaken colon-separated filename in Documents moved without modification to temporary evidence path.",
+    "Native Open dialog selected exported version7 archive; preview displayed matching records and no writes yet.",
+    "An initial restore submission with empty fields was refused; native typing supplied acceptance275 / Native Archive 275 and explicit Restore succeeded.",
+    "Projects UI exposed both original and restored workspace.",
+    "Opened restored workspace, Quit, app inventory omitted candidate, then relaunched exact bundle.",
+    "Reopened Native Archive 275 retained checked Native item 273, board revision3, edited R273 and queued T273.",
+    "Selected incompatible synthetic version999 archive; native UI displayed operation failed/existing records not replaced and exposed no restore preview.",
+    "Candidate-owned database after refusal retained exactly two projects, original records unchanged and restored board/prototype equal to source.",
+    "Final Quit requested; app inventory subsequently omitted candidate."
+  ],
+  "checks": {
+    "collectorFixtures": 17,
+    "flutterArchiveAndSessionTests": 98
+  },
+  "artifacts": {
+    "restore-confirmation.png": "a83db921f367163e9deefda3c5b44f9b10962acd6704ea607af5d2d8fcc353d7",
+    "reopened-prototype.png": "4f22b56e56751a3bd8ec18aa42e8429956ff37ed1267e619d1ab1b6c2607c738",
+    "reopened-board.png": "1d0bc397a8a1155fd4fdae86afa76befb9e2bed1b2413f07d52a0a1d064a6fe2",
+    "export.json": "62aada5e0fb65b0f33b1ed737ba1d87b501b50ce2b2f2559f535f168542a9066",
+    "invalid.json": "ce515078d4759c9edb484e1046d2e38f632b194cd42194dcd6feb0a7d3e5164f",
+    "saved-records.json": "4732b1f9adbcb2887d3773efd505f5a7f9430f1fee023656ec0159dcb0f4824b"
+  },
+  "limitations": [
+    "Historical temporary candidate only; no fresh build or current-main/production identity support claim.",
+    "No exact F10 snapshot: this observation is not current-pass collector input.",
+    "No model inference, source generation, approved execution, repair, Stop, timeout, rollback or other-platform acceptance.",
+    "The version999 input is incompatible and incomplete; this observation does not isolate a single parser error reason.",
+    "App inventory checked process absence before relaunch; sandbox pgrep unavailable.",
+    "F17 remains In progress."
+  ]
+}

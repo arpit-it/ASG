@@ -3094,3 +3094,21 @@ Branch `271-native-launch` from `e8f6f444d82dabdd9c555ac2b11033cb8132f9d6`. Actu
 ### F17 native project restart observation — issue #273 (28 October 2026)
 
 Branch `273-native-project-reopen` from `fd55e45380c9e80ffc7a3fb71f85d3dd831870ce`. Reused issue271 exact uniquely identified native candidate compiled at e8f6f44. Actual app-led create, checked prototype item, R273/T273 board revision2, Quit/relaunch/reopen, requirement title edit and second Quit/relaunch with revision3 observed. Full bundle manifest, three screenshots and synthetic saved records bound by SHA-256; prior launch merge #272 reconciled. Collector17 and Flutter board/session22 passed; initial Python module invocation and sandbox SDK-cache denial corrected before passing runs. No application code change, model inference/download, stable-app replacement or current support claim. Independent final review/required CI/merge pending; full F17 In progress.
+
+
+### Prior native restart merge verified — issue #273 / PR #274
+
+Connected repository API independently verifies PR #274 merged as `203b5ee0d9032421336be034e41d133a107dc529` at 2026-10-28T18:50:54Z and issue #273 closed/completed. Exact-final head `408471781c2bd9d3ff0d8644c8a4f741d0f31f4d`, independent approval6477724765 and required CI40747934112 passed per prior final evidence. Local main synchronized; five retained IDE/docs edits preserved. F17 remains In progress.
+
+
+### F17 native archive restore observation — issue #275 (28 October 2026)
+
+Branch `275-native-archive` from `203b5ee0d9032421336be034e41d133a107dc529`. Actual native Portable records export, separate acceptance275 restore, Quit/relaunch with checked prototype/R273/T273 revision3, and incompatible archive refusal observed on historical unique candidate e8f6f44. All43bundlefiles match prior manifest; original records unchanged, restored board/prototype identical. Three screenshots, export/invalid inputs and saved synthetic records bound by SHA-256. Flutter98 archive/session tests and collector17 passed. Prior #274 final review/CI/merge bookkeeping reconciled without including other retained primary edits. No app source change, inference, stable replacement or current-support/F10 pass claim; full F17 In progress. Independent final review/required CI/merge pending.
+
+
+Issue #275 publication blocker: full local evidence commit `cb382808e5455a882674737562698e6cecded7c0`, tree `14f0c40bd1ada1f100142d9e8658742536bd4721`. Automatic approval review rejected public screenshot blobs reopened-prototype.png and restore-confirmation.png for lack of artifact-specific disclosure approval, including after user-owned public repo metadata and visual safety checks. User approval requested; no bypass or alternate remote transport. Remote branch275-native-archive remains at base203b5ee; six earlier approved blobs exist but no complete remote commit/PR. Tests98+17 passed and candidate exited. Keep issue open and resume this work; no next task.
+
+
+### Native archive publication resumed — issue #275 (29 October 2026)
+
+Owner explicitly approved publishing reopened-prototype.png and restore-confirmation.png in direct response to the artifact-specific question. Prior publication blocker resolved. Resumed the existing 275-native-archive increment; no new task or application code change. Historical 98 Flutter archive/session and 17 collector passes remain evidence of that run; final independent review, required CI and verified merge will be recorded on the linked PR before completion. Full F17 remains In progress.
