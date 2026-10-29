@@ -378,3 +378,48 @@ These observations have no exact F10 input snapshot and are not collector
 current-pass inputs. They establish neither inference, approved execution,
 generated external output, repairs, Stop, timeout, rollback nor full F17.
 Collector 17 fixtures and 22 board/session Flutter tests passed separately.
+
+
+## Isolated native archive restore (issue #275)
+
+The [observation](acceptance/2026-10-28-macos-archive/observation.json) extends
+issue #273 using the same temporary unique-bundle candidate compiled at `e8f6f44`.
+All 43 files still match its [bundle manifest](acceptance/2026-10-28-macos-project-reopen/bundle-manifest.json).
+No new build or current-main support is claimed.
+
+Through **Portable records**, saved synthetic records were loaded for review and
+exported with the native Save dialog. The actual [version 7 archive](acceptance/2026-10-28-macos-archive/export.json)
+contains board revision 3 and prototype revision 1. The Save dialog's initial
+filename entry produced a colon-separated name in Documents; that synthetic file
+was moved unchanged into temporary storage before import. Use the native Go to
+Folder dialog to choose a temporary directory when repeating. Native typing was
+needed for Flutter text fields; the initial empty-field restore attempt refused
+without replacing records.
+
+Selecting that export with the native Open dialog produced a matching preview.
+Explicit restore with fresh ID `acceptance275` and name `Native Archive 275`
+[succeeded](acceptance/2026-10-28-macos-archive/restore-confirmation.png). Projects
+listed two workspaces. After opening the restored workspace, Quit and relaunch
+retained the [checked prototype item](acceptance/2026-10-28-macos-archive/reopened-prototype.png)
+and [revision 3 board](acceptance/2026-10-28-macos-archive/reopened-board.png),
+including edited R273 and queued T273. App inventory omitted the candidate before
+relaunch; sandbox process-list access was unavailable.
+
+The [incompatible input](acceptance/2026-10-28-macos-archive/invalid.json) was then
+selected through the native picker. UI displayed operation failed, existing
+records not replaced, and no import preview/restore controls. Its invalid version
+and missing fields were tested together; no single parser reason is inferred.
+The [saved synthetic records](acceptance/2026-10-28-macos-archive/saved-records.json)
+confirm exactly two projects, original project/records unchanged, and restored
+board/prototype identical to the export source. SHA-256 artifacts and isolated
+database identity are recorded in the observation. Final Quit was requested.
+
+Repeat on a disposable unique-bundle candidate following issue #271's guide,
+export a synthetic project, preview and restore with a fresh ID, reopen it after
+Quit/relaunch, compare the board/prototype and original project, then select an
+incompatible archive and verify no new workspace appears. Never reuse stable
+app storage or replace its bundle. These historical observations lack exact F10
+snapshots and are not collector current-pass input. No inference, generated
+external output, approved execution, repair, Stop, timeout or rollback is claimed.
+The 98 archive/session Flutter tests and 17 collector fixtures passed separately;
+F17 remains In progress.

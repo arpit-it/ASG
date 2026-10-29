@@ -1,0 +1,144 @@
+{
+  "studio.projects.v1": [
+    {
+      "id": "1793212427733005",
+      "name": "My Task PlannerAcceptance 273",
+      "description": "A daily task planner for Acceptance 273 native persistence verification\n\nSelected experience: Across all devices\nInitial features: Task list, Add and edit tasks",
+      "type": "Flutter",
+      "platforms": [
+        "Android",
+        "iOS",
+        "Web",
+        "macOS",
+        "Windows",
+        "Linux"
+      ],
+      "location": ""
+    },
+    {
+      "id": "acceptance275",
+      "name": "Native Archive 275",
+      "description": "A daily task planner for Acceptance 273 native persistence verification\n\nSelected experience: Across all devices\nInitial features: Task list, Add and edit tasks",
+      "type": "Flutter",
+      "platforms": [
+        "Android",
+        "iOS",
+        "Web",
+        "macOS",
+        "Windows",
+        "Linux"
+      ],
+      "location": ""
+    }
+  ],
+  "studio.lastProject.v1": "acceptance275",
+  "studio.application.v1.1793212427733005": {
+    "definition": {
+      "title": "My Task PlannerAcceptance 273",
+      "theme": "indigo",
+      "elements": [
+        {
+          "id": "welcome",
+          "type": "heading",
+          "label": "My Task PlannerAcceptance 273",
+          "items": [],
+          "completed": [],
+          "action": "message",
+          "target": "",
+          "value": ""
+        },
+        {
+          "id": "tasks",
+          "type": "taskList",
+          "label": "My items",
+          "items": [
+            "Native item 273"
+          ],
+          "completed": [
+            0
+          ],
+          "action": "message",
+          "target": "",
+          "value": ""
+        }
+      ]
+    },
+    "messages": [],
+    "revision": 1
+  },
+  "studio.requirements.v1.1793212427733005": {
+    "version": 1,
+    "revision": 3,
+    "requirements": [
+      {
+        "id": "R273",
+        "title": "Native durable board edited",
+        "acceptance": "Requirement and task survive native quit and relaunch."
+      }
+    ],
+    "tasks": [
+      {
+        "id": "T273",
+        "requirementId": "R273",
+        "title": "Observe native restart",
+        "dependencies": [],
+        "status": "queued"
+      }
+    ]
+  },
+  "studio.application.v1.acceptance275": {
+    "definition": {
+      "title": "My Task PlannerAcceptance 273",
+      "theme": "indigo",
+      "elements": [
+        {
+          "id": "welcome",
+          "type": "heading",
+          "label": "My Task PlannerAcceptance 273",
+          "items": [],
+          "completed": [],
+          "action": "message",
+          "target": "",
+          "value": ""
+        },
+        {
+          "id": "tasks",
+          "type": "taskList",
+          "label": "My items",
+          "items": [
+            "Native item 273"
+          ],
+          "completed": [
+            0
+          ],
+          "action": "message",
+          "target": "",
+          "value": ""
+        }
+      ]
+    },
+    "revision": 1,
+    "messages": []
+  },
+  "studio.chat.v1.acceptance275": [],
+  "studio.requirements.v1.acceptance275": {
+    "version": 1,
+    "revision": 3,
+    "requirements": [
+      {
+        "id": "R273",
+        "title": "Native durable board edited",
+        "acceptance": "Requirement and task survive native quit and relaunch."
+      }
+    ],
+    "tasks": [
+      {
+        "id": "T273",
+        "requirementId": "R273",
+        "title": "Observe native restart",
+        "dependencies": [],
+        "status": "queued"
+      }
+    ]
+  }
+}
