@@ -3220,3 +3220,21 @@ Fresh26 Flutter Plan/diagnostic/conversation tests passed, one opt-in skip;17 co
 
 
 Issue #277 delivery: [PR #278](https://github.com/arpit-it/ASG/pull/278) targets main. Initial tested local `024d8e6`, published `dd6a4c40cb54244cad5531fd65dd03c224791095`, identical tree `38bc96a959a3343bf8ad33d7bef98d96e67f2dd0`; all five remote blobs match. Exact-final independent review, required CI and merge evidence are recorded on the PR before completion. This documentation follow-up only links delivery; F17 remains In progress and this increment Awaiting merge.
+
+
+### F17 native Plan approval and Discuss Stop evidence — issue #279 (29 October 2026)
+
+Branch `279-native-plan-stop` from merged PR #278 main `48c5bf26`.
+Published scope: sanitized prior native Plan approval/restart/stale refusal and
+Discuss Stop/restart observations on isolated historical candidate `e8f6f44`.
+All 43 manifest files and both retained database hashes match. Between snapshots
+only the Discuss chat record changed: first three messages exact, one new user,
+no new assistant. Raw records/requests remain local. Current-main tests remain
+separate; no fresh native build/currentPass/server-side cancellation/generated
+output Stop/timeout/rollback claim. F17 stays In progress. Awaiting exact-final
+independent review, required CI and protected merge; no later feature started.
+Previous issue #277 / PR #278 independently reviewed and CI40829818290 passed,
+merged `48c5bf26b12dbaf60835ecd374c31e10fe549b2c` at2026-10-29T06:38:29Z,
+issue closed. Five unrelated primary IDE/docs edits retained.
+
+Issue #279 validation at unchanged application source `48c5bf26`: 46 focused Flutter Plan/board/chat tests passed, one opt-in live-inference skip; 17 Python collector fixtures passed. Three observation JSON files parse; all43 bundle files/both raw database hashes/message-prefix and unchanged-record checks passed. No fresh live inference in this publication run.

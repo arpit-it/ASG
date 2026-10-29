@@ -1,0 +1,38 @@
+{
+  "recordedAt": "2026-10-29T07:08:39.991706+00:00",
+  "scope": "local historical isolated native Plan approval/change refusal",
+  "compiledSourceRevision": "e8f6f444d82dabdd9c555ac2b11033cb8132f9d6",
+  "currentMainTestedRevision": "48c5bf26b12dbaf60835ecd374c31e10fe549b2c",
+  "bundleFilesVerified": 43,
+  "observations": [
+    "Real local Qwen Thinking and Writing response observed; completed saved Plan showed four validated fixed-starter tasks.",
+    "Explicit approval displayed latest saved Plan approved.",
+    "Menu Quit then app inventory absence confirmed before relaunch.",
+    "Relaunch Plan retained approval and four tasks.",
+    "Project details Requirements edited and saved on synthetic restored project.",
+    "Plan displayed earlier approval outdated and saved Plan outdated/replaced; attempted approval produced no change.",
+    "Separate operation consent and valid installed Flutter path supplied; Build displayed Generation stopped with current Plan approval guidance.",
+    "No generated_app destination exists; prototype checked item remained visible before Build.",
+    "Candidate menu Quit requested."
+  ],
+  "tests": {
+    "currentMainFlutterPassed": 26,
+    "files": [
+      "plan_approval_test.dart",
+      "requirements_board_test.dart",
+      "board_mapped_build_plan_test.dart"
+    ]
+  },
+  "databaseSha256": "11e2b30d594156fe428a650358f49f05177c9586234dcba26ce63410bdae4568",
+  "limitations": [
+    "Historical compiled candidate; no current-main support claim.",
+    "No exact F10 input/requirement identity.",
+    "No actual new generated output or Stop/timeout/rollback manual interactions this run.",
+    "Historical observation, not collector input or current support; no screenshots, raw requests, database or model files published."
+  ],
+  "schemaVersion": 1,
+  "issue": 279,
+  "bundleIdentifier": "com.arsinha.asg.acceptance271",
+  "bundleManifest": "../2026-10-28-macos-project-reopen/bundle-manifest.json",
+  "bundleManifestSha256": "2813501a9afe23c005ab1989ca9c97e9c94771b47c716518d88de86dc4298fa6"
+}
