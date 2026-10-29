@@ -511,3 +511,12 @@ persistence comparison, exact F10 input identity or current-support verdict.
 Transport startup timeout does not establish generated-output timeout, rollback,
 server-side inference cancellation or external last-working-output preservation.
 F17 stays In progress.
+
+
+## Native verification Stop and explicit retry (issue #283)
+
+The [sanitized observation](acceptance/2026-10-29-native-verification-stop/observation.json) records actual interaction on the historical isolated acceptance271 candidate compiled at `e8f6f44`. All43 retained bundle files matched. A real current fixed-starter Plan was explicitly approved; separate generation consent created a disposable starter. Resolve passed, Stop cancelled running analysis, and downstream test/build became blocked. The failed outcome retained files. Explicit full retry passed all four steps. The actual served output accepted a new task and checkbox change; after native Quit/absence/relaunch, the original prototype remained and expanded build history retained both failed and ready records.
+
+Repeat in an isolated profile/project: explicitly start the already installed local runtime, request/review/approve a current fixed-starter Plan, open Generate, supply a NEW disposable destination and installed SDK, and grant operation consent. After resolve passes and analysis starts, choose Stop verification and wait for the saved failure. Check cancelled/blocked results before choosing the explicit full retry. After all four checks pass, start the actual preview, open its loopback link, add/check a synthetic task, then stop preview and quit. Confirm application absence, relaunch, and inspect saved ready/check results plus both history entries. Never overwrite an existing output to reproduce this scenario.
+
+Current-main regressions:70Flutter generation/history/rollback tests and17collector fixtures passed separately. Native results remain historical observations, not current-main support or exact F10 evidence. There was no previous external successful build before Stop, so external last-working preservation is unverified; generated timeout, selected rollback and model candidate/repair interaction remain pending. Browser task persistence was not assessed. Raw requests, model text, storage, screenshot and private preview URL remain local; only digest linkage is published.
