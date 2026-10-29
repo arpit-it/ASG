@@ -41,6 +41,11 @@
           "testReferences": [
             "test/plan_approval_test.dart"
           ]
+        },
+        {
+          "id": "plan-lifecycle-interaction",
+          "kind": "manual",
+          "testReferences": []
         }
       ]
     },

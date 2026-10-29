@@ -525,3 +525,30 @@ Current-main regressions:70Flutter generation/history/rollback tests and17collec
 ### Historical native selected rollback (29 October 2026)
 
 Issue #285 adds [sanitized observations](acceptance/2026-10-29-native-selected-rollback/observation.json) for the same historical acceptance271 bundle. A distinct generation stopped during web build; the prior verified external output remained hash-identical. Explicit selected rollback served it, actual add/check interaction passed, and native restart retained ready selection plus failed history. Displaced source files and failed record remain. All43 bundle files matched;70 current-main Flutter regressions and17 collector fixtures passed separately. This does not establish current support, exact F10 provenance, generated timeout, model candidate/repair acceptance or browser persistence. Raw DB/screenshot remain local.
+
+
+### Real Plan lifecycle coverage (issue #287)
+
+The `approved-plan` scenario now includes manual check
+`plan-lifecycle-interaction` on macOS and web, alongside the existing
+`stale-plan-refusal` fixture. Fixture success covers only its own cell; it cannot
+cover actual approval or stale-approval refusal in the running application.
+
+In a disposable profile on each target, create requirements and tasks, request
+a real Plan, inspect the completed task mapping and explicitly approve it. Quit
+and relaunch (or reload the web app), then confirm approval remains current.
+Change requirements and confirm that the saved approval becomes outdated. With
+separate operation consent, attempt Build and observe refusal before any new
+generation writes; preserve existing source and last-working output. Record all
+of these observations before marking this manual check passed. Missing model,
+toolchain or any unobserved step means unavailable, skipped or failed evidence
+as appropriate, never a pass inferred from fixture results.
+
+Use the existing caller-attested provenance collector workflow to bind fresh
+observations to exact requirement/input/source and measured environment identity,
+UTC time and bounded sanitized artifact digests. The collector validates identity
+and freshness; it does not inspect artifacts or certify the operator's claim.
+Historical #279 observations remain historical and are not promoted to current
+passes. The manifest digest changes, so prior saved records become stale against
+this manifest until their checks are rerun and collected. Historical reports and
+IDs are retained. This increment adds coverage, not new product-support evidence.
