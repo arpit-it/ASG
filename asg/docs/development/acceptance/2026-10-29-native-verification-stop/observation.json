@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "issue": 283,
+  "recordedAt": "2026-10-29T08:40:17.240807+00:00",
+  "scope": "historical isolated native verification Stop and explicit retry",
+  "compiledSourceRevision": "e8f6f444d82dabdd9c555ac2b11033cb8132f9d6",
+  "currentMainTestedRevision": "65d5e5d2b9f89ceca987405b48ec20e0a7ba86b3",
+  "bundleIdentifier": "com.arsinha.asg.acceptance271",
+  "bundleManifest": "../2026-10-28-macos-project-reopen/bundle-manifest.json",
+  "bundleManifestSha256": "2813501a9afe23c005ab1989ca9c97e9c94771b47c716518d88de86dc4298fa6",
+  "bundleFilesVerified": 43,
+  "observations": [
+    "Existing offline local Qwen3.5-9B MLX runtime explicitly started; native UI reported ready.",
+    "Real Plan Thinking/Writing completed with four validated fixed-starter tasks; explicit approval recorded at 2026-10-29T08:36:39.878510Z.",
+    "Native Generate used a new disposable folder and installed Flutter SDK with separate operation consent.",
+    "Resolve passed; analyze running; Stop verification saved failed outcome, analyze cancelled and downstream test/build blocked. Existing generated files retained.",
+    "Explicit full retry reran resolve/analyze/test/build; all passed and saved outcome ready.",
+    "Actual generated preview opened in in-app browser; added a synthetic task and changed its checkbox from 0 to 1. Existing checked item retained.",
+    "Preview stopped; menu Quit followed by inventory absence confirmed; relaunch retained prototype v1 and original checked item.",
+    "Reopened Generate displayed ready, four passed outcomes and matching snapshot; expanded history showed failed and ready records.",
+    "Final menu Quit requested; runtime started by this run stopped."
+  ],
+  "tests": {
+    "flutterPassed": 70,
+    "files": [
+      "build_rollback_test.dart",
+      "build_history_test.dart",
+      "source_generation_controller_test.dart"
+    ],
+    "collectorFixturesPassed": 17
+  },
+  "databaseSha256": "ab1038cfe56c3df8abbe46cbeeaeddfa29307ffa4d127ff45f36229e88c249d4",
+  "generatedInteractionScreenshotSha256": "8c82ad682e97cd0fc88f00e9a02928aad7eb00b99726bb9bad7da3c7705052cd",
+  "limitations": [
+    "Historical compiled candidate; current-main regression tests are separate, no current-support or F10 currentPass claim.",
+    "No exact F10 requirement/input provenance.",
+    "No selected rollback, generated-output timeout, bounded model candidate or repair interaction established.",
+    "No previous external last-working build existed before Stop; prototype preservation and retained generated files do not establish external last-working preservation.",
+    "Generated browser task edits were session interactions; browser persistence was not assessed.",
+    "Raw request, approval/model text, database, local paths, preview URL and screenshot remain local."
+  ]
+}

@@ -3163,3 +3163,10 @@ Prior #279 / PR #280 independently approved at `2b4d11f9d4c939f42443fd0a931f46fd
 Issue #281 validation: 70 focused Flutter runtime setup/settings/deadline tests and 17 Python acceptance collector fixtures passed on unchanged application source `ae205b89`; JSON, 43 bundle hashes and diff whitespace verified. No opt-in inference run or new platform build for this evidence-only increment. Final independent review, required CI and merge evidence belong to the linked PR before completion.
 
 Issue #281 delivery: [PR #282](https://github.com/arpit-it/ASG/pull/282) targets main; initial tested local `bc1e0ae401e0353bbb5024ae4b4819e539b5a34e`, published `abe53df8a397a9cba02a7ff2c2dc37b0f7fbff8a`, identical tree `47d30e96b93e251e4c3b6a9aa4b04930f8a4cc0a`. Final-revision independent review, actual required CI and verified merge SHA/date will be recorded on the PR before completion and reconciled here afterward. Status Awaiting merge; F17 In progress.
+
+
+### F17 native verification Stop/retry — issue #283 (29 October 2026)
+
+Branch `283-native-verification-stop` from verified main `65d5e5d2b9f89ceca987405b48ec20e0a7ba86b3`; PR #282 merged at2026-10-29T08:12:42Z, final review5694604731 and required CI40839866499 passed; issue281 closed.
+
+Scope/acceptance: sanitized historical acceptance271 native Stop during analysis after resolve, saved cancellation/downstream blocking, explicit full retry, actual served add/check interaction and restart/history. Exact compiled `e8f6f44` and all43 bundle files verified. Current-main 70 generation/history/rollback Flutter tests and17collector fixtures passed; JSON/hash/privacy/diff checks. No application-source change or fresh platform build. Independent final review and required CI precede merge. Raw request/model response/database/screenshot stay local. F17 remains In progress: no generated timeout, selected rollback, previous external last-working preservation or full exact F10 support matrix. This increment Awaiting merge; no later task started.
