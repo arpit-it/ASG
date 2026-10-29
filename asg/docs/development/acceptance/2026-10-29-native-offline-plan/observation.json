@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "issue": 277,
+  "scope": "historical-isolated-macos-offline-plan-refusal",
+  "recordedAt": "2026-10-29T06:28:53.710273+00:00",
+  "compiledSourceRevision": "e8f6f444d82dabdd9c555ac2b11033cb8132f9d6",
+  "bundleIdentifier": "com.arsinha.asg.acceptance271",
+  "bundleManifest": "../2026-10-28-macos-project-reopen/bundle-manifest.json",
+  "bundleFilesVerified": 43,
+  "runtimeProbe": {
+    "endpoint": "loopback:8765/health",
+    "curlExit": 7,
+    "result": "connection refused"
+  },
+  "observations": [
+    "Selected Plan in the restored synthetic workspace; approval control visually disabled.",
+    "Sent a synthetic fixed-starter planning request; UI displayed model request failed with local runtime/model/connection guidance.",
+    "Diagnostics displayed Chat request failed. Partial response discarded; saved messages retained. No model draft or approval appeared.",
+    "Attempted disabled approval control; no state change.",
+    "Opened independent generation screen; supplied an existing temporary parent directory and selected operation consent. Start displayed Generation stopped; existing files were preserved with current Plan approval guidance.",
+    "No generated_app destination created. Controller source checks current Plan before host generation or toolchain calls.",
+    "Quit; app inventory confirmed candidate absent. Relaunched exact bundle; checked prototype item retained. Requirements UI retained revision3, R273 edited title and queued T273.",
+    "Final Quit requested."
+  ],
+  "storedRecords": {
+    "beforeBytes": 4619,
+    "beforeSha256": "dd136f1271a70f009beddbea09e88a1f6b482594255ea0a64e32587a526c13a0",
+    "afterBytes": 3016,
+    "afterSha256": "f8c6cf3d9e0e4d3dee4c16f7d306cb4843340d99bf488c6e1009b85ba163d31c",
+    "changedKeys": [
+      "studio.chat.v1.acceptance275"
+    ],
+    "planApprovalRecordPresent": false,
+    "assistantReplyCount": 0,
+    "unchangedRecordDigests": {
+      "studio.application.v1.1793212427733005": "752e28c4eac0e5e93e127a804bffe6fc20bcdf5f24a9f600c3775ad644267b64",
+      "studio.application.v1.acceptance275": "51d3ab8053009399f6b9c04072bd6bfafebe7fd8faba3a45d3d57d679d7d9bda",
+      "studio.lastProject.v1": "0ef0f72a813972455e90d495268086e56f03c9dfa8ba61c59c48f3be18ede6df",
+      "studio.projects.v1": "15bdec7b81179acd55710143da249e84cf756624a99c925c86324103f3bbb1e6",
+      "studio.requirements.v1.1793212427733005": "3626af1731a99a2e932c8ead39196bc96ddc95049905582ee9d01bfa5ff65da6",
+      "studio.requirements.v1.acceptance275": "3626af1731a99a2e932c8ead39196bc96ddc95049905582ee9d01bfa5ff65da6"
+    }
+  },
+  "validation": {
+    "flutterTestsPassed": 26,
+    "flutterTestsSkipped": 1,
+    "collectorTestsPassed": 17
+  },
+  "limitations": [
+    "Historical candidate compiled at e8f6f44; no fresh current-main build/support claim.",
+    "No successful inference, current Plan approval, requirements-change invalidation, generation, repair, Stop, timeout or rollback established.",
+    "Blank SDK field retained in UI; Build error alone is not unique evidence of its reason. Matching controller code gates Plan before host calls, approval store absent and destination absent provide supporting evidence.",
+    "No preexisting external last-working output existed in this synthetic workspace; only prototype/board/original archive project preservation was verified.",
+    "No exact F10 input/requirement identity; observation is not collector currentPass evidence.",
+    "Only digests and sanitized observations are published; raw database and synthetic request remain local. F17 remains In progress."
+  ]
+}

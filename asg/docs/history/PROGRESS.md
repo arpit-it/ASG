@@ -3205,3 +3205,15 @@ Owner explicitly approved publishing reopened-prototype.png and restore-confirma
 ### Native archive restore/reopen awaiting merge — issue #275 / PR #276 (29 October 2026)
 
 Branch `275-native-archive`; local `56286bf5a73d28678494dcd8199c64314dee0087`, initially published `d316029cb3f7a1200b3dbaeb9e4ec7d91554f1e3`, identical tree `6c451cb1e9ff03650dbe3b7d891d3b9e3aab6a39`. All eleven uploaded Git blobs matched local hashes. Owner explicitly approved all three screenshots, including the separately requested reopened-board.png. Fresh 98 Flutter archive/session tests and 17 collector fixtures passed on 29 October. [PR #276](https://github.com/arpit-it/ASG/pull/276) contains the scope, limitations, final revision, independent review, required CI and eventual merge evidence; review/checks/merge remain pending at this documentation revision. This follow-up only links delivery evidence; historical candidate and full F17 limitations remain unchanged. No application source change or later task.
+
+
+### Native archive final merge verified — issue #275 / PR #276
+
+PR #276 independently reviewed at `798c318e67d03b578de7f03d777ff4ea8015b142`, required CI40826444985 passed; protected merge `76c02ede704d1f3e4a0e3e499917fd523d1b2384` at2026-10-29T06:03:40Z, issue closed/completed. Independent approval5693517589 and parent verification recorded in the prior run. Full F17 remains In progress.
+
+
+### F17 native offline Plan boundary — issue #277 (29 October 2026)
+
+Branch `277-native-offline-plan` from `76c02ede704d1f3e4a0e3e499917fd523d1b2384`. Actual existing isolated candidate at e8f6f44 showed offline Plan failure/partial-response discard, disabled approval, and fixed Build refusal after operation consent. No destination created; no approval or assistant reply saved. Quit/absence/relaunch retained checked prototype and board revision3/R273/T273. All43 bundle manifest files rehashed. Before/after records differ only by the saved synthetic user chat request; prior project/board/prototype records unchanged. Raw database and request remain local; sanitized observation JSON and hashes published.
+
+Fresh26 Flutter Plan/diagnostic/conversation tests passed, one opt-in skip;17 collector fixtures passed. Documentation/evidence-only increment; no runtime code change or fresh app build. Awaiting exact-final independent review, required CI and protected PR merge; F17 remains In progress. No model download/inference, stable-app replacement, external deployment or schedule change.

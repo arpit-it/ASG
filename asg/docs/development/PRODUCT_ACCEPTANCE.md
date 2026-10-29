@@ -423,3 +423,10 @@ snapshots and are not collector current-pass input. No inference, generated
 external output, approved execution, repair, Stop, timeout or rollback is claimed.
 The 98 archive/session Flutter tests and 17 collector fixtures passed separately;
 F17 remains In progress.
+
+
+## Native offline Plan boundary, 29 October 2026 (issue #277)
+
+The [sanitized observation](acceptance/2026-10-29-native-offline-plan/observation.json) records actual native UI execution on the existing isolated acceptance candidate compiled at e8f6f44. The loopback runtime was offline: Plan reported failure, discarded partial response and exposed no approvable model draft. A Build attempt with separate operation consent stopped with current Plan guidance; no output folder or approval record appeared. Restart retained the checked prototype and requirements revision3. All43 bundle files matched the previously delivered manifest; durable records changed only by the synthetic user request. Raw request/database are retained locally and are not shared artifacts.
+
+Run the existing Plan approval, diagnostic and planning conversation tests plus `tools/test_product_acceptance.py` for deterministic regressions (26 passed/one opt-in skipped and17 passed for this increment). The UI observation is historical caller-attested evidence, not an exact F10 collector input or current-main support claim. Blank SDK input means the generic Build error alone does not isolate Plan as the cause; matching controller gate ordering and absent approval/output corroborate the refusal boundary. No successful Plan, requirements-change invalidation, inference, generated output, repair, Stop, timeout, rollback or preexisting external last-working preservation is established. F17 remains In progress.
