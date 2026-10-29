@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "issue": 291,
+  "scope": "isolated-native-repair-and-generated-check-timeout",
+  "recordedAt": "2026-10-29T20:09:40.562206+00:00",
+  "sourceRevision": "1f4b7681d395a77aaeb81dce57a5edd99189daee",
+  "compiledRevision": "91262e8ad477c8a808a3448f064e7f262b782a91",
+  "applicationSourceTestToolChangesBetweenRevisions": false,
+  "bundleFilesVerified": 43,
+  "bundleMismatches": 0,
+  "seed": {
+    "transport": "loopback-only controlled fixture",
+    "notModelInference": true,
+    "timeoutTest": "five-minute asynchronous delay; explicit ten-minute test timeout",
+    "analyzerFailure": "one undefined asgMissingFunction call in lib/main.dart"
+  },
+  "nativeObserved": {
+    "flutterTestTimeoutRecorded": true,
+    "asgCommandDeadlineRecorded": true,
+    "deadlineSeconds": 180,
+    "deadlineTestExit": -1,
+    "deadlineTimedOut": true,
+    "deadlineOutputLimitExceeded": false,
+    "deadlineCancelled": false,
+    "timeoutOfferedSourceRepair": false,
+    "failedCandidatesPromoted": false,
+    "actualAnalyzerUndefinedFunction": true,
+    "realMlxRepairRequests": 1,
+    "repairRemovedOnlyUndefinedCall": true,
+    "allFourConfinedRerunExitsZero": true,
+    "explicitPromotion": true,
+    "servedAddAndCheck": true,
+    "servedOriginalCheckedItemRetained": true,
+    "quitAbsenceRelaunch": true,
+    "promotedDirectoryReadyRestored": true,
+    "allFourPassedChecksRestored": true,
+    "savedRepairBudgetRestored": "analyze 1/3; test 0/3; build 0/3",
+    "originalWorkingFilesPreservedAfterPromotion": 43,
+    "browserPersistenceAssessed": false
+  },
+  "automatedValidation": {
+    "focusedFlutterPassed": 104,
+    "collectorFixturesPassed": 20,
+    "realQwenRepairPassed": 1,
+    "realQwenRepairSeconds": 61,
+    "realQwenRepairF10Provenance": true
+  },
+  "artifactsSha256": {
+    "native-deadline.png": "6ec069eb404011c5b262f7bd9096edf064773b031b9a54047320dd040047bab4",
+    "native-repair-ready.png": "f6dd63ecc650ef51c2050a40f359337968a7e9d85b8841e16839062669a1075b",
+    "native-repair-reopened.png": "35c50eabf9a27cea8d0884406a6090bac73238bb743d9d1040513d1f74f1f8ef",
+    "native-checks-reopened.png": "d8fa5e56c492ddac10629a3dc0ce933c9b5ba55f20af86f62d55def866c0a43f",
+    "repaired-interaction.png": "b1e74a933e4805711a1c1ed78aa32df2e19697a7aeb8e55d22717287615ade2d",
+    "fixture_proxy.py": "25b9de44e75b117769a2e807f859ceb44d1dbf98d0c9a4763b4d2d5374ce515a"
+  },
+  "limitations": [
+    "Native UI observation is caller-attested and separate from exact-F10 controller-test evidence.",
+    "Only the controller bounded-repair cell has an exact submitted F10 pass; other missing/unavailable cells are retained.",
+    "Numeric browser version unavailable; browser policy refused chrome version inspection.",
+    "Full F17 macOS/web baseline remains incomplete.",
+    "Control bridge responded during this session; no durable bridge fix is claimed."
+  ],
+  "cleanup": {
+    "modelDownloaded": false,
+    "stableAppReplaced": false,
+    "runtimeStoppedExit": 0,
+    "fixtureStopped": true
+  }
+}

@@ -1,0 +1,10 @@
+[
+  {
+    "number": 1,
+    "startedAt": "2026-10-29T20:06:26.118587Z",
+    "status": "proposed",
+    "failedRun": 4,
+    "category": "analyze",
+    "proposalSha256": "5b29667a69ce9326c607649f4aa21c8bbee68e9d508eb16df6a6172df9989af6"
+  }
+]
