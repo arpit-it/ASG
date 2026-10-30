@@ -49,7 +49,7 @@ Update this document with task selection and delivery evidence, alongside [agent
   - Accept when failed, missing and stale evidence cannot yield a verified requirement, and reports link to exact revisions and test results.
   - Assessment clarification (28 October 2026): extend this existing task with acceptance-criterion-level check mappings and explicit automated, manual and advisory evidence types. A green generic build or manually completed task must never verify unrelated criteria. Bind each result to exact requirement content and source/input revision; edits invalidate affected results. Show unmet criteria and evidence links in the workspace and copied report, and retain the current honest “Acceptance criteria: not verified” state until criterion-specific checks actually establish the supported claim. Validate changed criteria/source, missing checks, failed checks and reopen behavior. This scope is delivered as the explicitly bounded authored-check contract below; free-form prose and live-file freshness remain outside its verdict.
 - [ ] F17 Reproducible product acceptance and support matrix — In progress; depends on F10
-  - Active bounded collector extension: reopened [issue #283](https://github.com/arpit-it/ASG/issues/283), `283-stop-deadline-evidence`: separate Stop and generated-command deadline interaction coverage, retain historical combined records without inferring new passes. No fresh native execution or full-support claim.
+  - Delivered Stop/deadline collector extension: [PR #304](https://github.com/arpit-it/ASG/pull/304), reviewed `e07183f8`, required CI41030969692 passed; merged `8358708bed192b794ab3b3864a4738255ad72d6e` at2026-10-30T09:12:18Z. Reopened issue #283 now tracks actual native Stop/retry; branch `283-native-stop-retry`, exact compiled584c89c/current-manifest stop-interaction observed, Awaiting review/CI/merge. Deadline and full F17 remain unverified.
   - Active repair evidence separation: reused/reopened [issue #263](https://github.com/arpit-it/ASG/issues/263), `263-repair-evidence-checks`. Add separate generated-output/manual repair cells and explicit F10 generated-check import; no new actual workflow or full support claim. Scope/acceptance/validation recorded in delivery ledger below. In progress pending independent review, required CI and merge.
   - Delivered #289 native fingerprint-bound extension: [PR #302](https://github.com/arpit-it/ASG/pull/302), final `87c037018daff34a441c77c19ab45c700df71c02`, independent review5709718155/finalgate6518389158 and required CI41025253832 passed; merge `5e507d33ab485127cda6dea822051dae16a4e6e8` at2026-10-30T08:21:53Z; issue closed. Actual compiled584c89c native proposal/check/promotion/served/restart observations remain bounded historical evidence; full F17 In progress.
   - Active #289 runtime correction: `289-candidate-matrix` honors bounded 4096-token full-file requests; minimum requested view replacement measures2298 tokens against former2048 cap.26Python/31Flutter tests pass; actual retry still failed safely. Native candidate acceptance and full F17 remain In progress; no promotion/support claim.
@@ -4571,3 +4571,38 @@ report parser/controller/widget tests passed locally. All four 30 October
 evidence sets reevaluated successfully with 120 cells each and zero current
 passes against the expanded manifest; historical files unchanged. Diff-check
 passed. No Flutter runtime source changed; required CI provides full checks.
+
+
+### F17 native Stop/retry observed — reused #283 (30 October 2026 UTC)
+
+Reused open issue283; no open PR/competing active ASG owner at selection. Branch
+`283-native-stop-retry` starts at plugin-verified main8358708bed192b794ab3b3864a4738255ad72d6e.
+Primary five IDE/docs edits and prior local delivery notes preserved separately.
+Fresh session inventory10.4s/Finder5358ms, isolated snapshot selection291227ms despite
+20s timeout, separate populated AX6549ms. Completed selection followed by responsive
+workflow; no repeated launch queued. Low-level latency cause remains unknown.
+
+Actual existing current Plan15/revision10 authorized a new fixed starter in a new
+private folder. Stop during analyze after resolve0 saved analyze cancelled/-1 and
+test/build blocked. Explicit full retry ran resolve/analyze/test/build, all exit0.
+Prior candidate13source/34output hashes unchanged after Stop and retry. Actual
+served Chrome output accepted an added task and checkbox0to1. F10 displayed exact
+board/input/source/run/approval hashes, matching artifact inspection and unverified
+acceptance prose; board tasks remain queued. Tab closed, native Quit and independent
+inventory absence verified; stable app/original profile untouched. No restart, model
+request, generated-command deadline, selected rollback or fullF17 claim.
+
+Evidence `development/acceptance/2026-10-30-native-stop-retry/`: sanitized observation,
+transcribed displayedF10 linkage, source/output fingerprints, effective configuration,
+device/identity, evidence/report. Retained compiled revision584c89c4, not publication
+base; all300source/43bundle hashes rechecked against prior published manifests.
+No inference used; backendnone/model unavailable sentinel avoids model-health claims.
+Exactly one current-manifest macOS stop-interaction pass; timeout/combined cells
+remain missing. Folder-controller/AX text discrepancy documented; actual new folder
+has a duplicated prefix, no overwrite. Raw DB/paths/logs remain private.
+
+Validation:27Python collector/importer/CLI tests passed; collector regenerated
+successfully. Actual native-generated retry four checks0 and served interaction
+are separate from fixture results. Docs/evidence only; no runtime source changes.
+Awaiting exact-final independent review, requiredCI and verifiedmerge. Issue283/fullF17
+remain In progress until bounded acceptance review/merge; no later task selected.
