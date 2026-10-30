@@ -1,0 +1,38 @@
+Window: "ASG F17 Current", App: ASG F17 Current.
+0 standard window ASG F17 Current, Secondary Actions: Raise
+	1 container ASG F17 Current
+		2 container (settable)
+			3 button (settable)
+			4 container (settable) Generate Flutter app
+			5 container (settable)
+				6 text (settable) Create an independent Flutter web application
+				7 text (settable) Use the current saved prototype and reviewed requirements for Native archive restored. A fixed MVC starter is written to a NEW folder, then checked, tested and built. This does not generate arbitrary model-written source or replace an existing app.
+				8 text (settable) Review generation input
+				9 text (settable) Saved plan and Build authorization
+				10 text (settable) Build requires a current saved Plan approval in addition to the operation consent below. Return to the workspace and open Plan to draft, review or withdraw approval. Withdrawal prevents subsequent starts; it does not cancel a command already running.
+				11 text (settable) Starter verification always includes resolve, analyze, test and build. The validated saved Plan sets task IDs, dependencies and sequential order. These tasks verify the starter; they do not implement arbitrary Plan prose.
+				12 text field (settable) generated_app_
+				13 text field (settable) generated_app_287_after_change
+				14 text field (settable)
+				15 text field (settable)
+				16 text (settable) Approved operations: offline dependency resolution, Flutter analysis, tests, web build, and an optional loopback preview. At most four commands run, each with a 3-minute deadline and a 64 KiB combined output limit. These fixed limits are saved with verification evidence. Missing cached SDK packages cause a failure; no package/model installation is performed. These trusted tools run with your host permissions, not in a security sandbox.
+				17 checkbox (settable, integer) I approve creating this new project and running the listed verification steps, Value: 1
+				18 button (settable) Generate, test and build
+				19 text (settable) Generation stopped; existing files were preserved. Check project data, current Plan approval, folder access and toolchain availability. Reopen Build after correcting saved data; retry with a current approved structured starter Plan.
+				20 text (settable) Saved outcome: ready
+				21 text (settable) [temporary parent]/generated_app_287_working
+				22 button (settable) Review model source proposal
+				23 text (settable) Authorizing Plan: message 5, approved 2026-10-30T04:39:45.830044Z. Retry requires this exact approval and matching inputs.
+				24 text (settable) Plan that authorized this build
+	25 close button
+	26 full screen button Help: this button also has an action to zoom the window, Secondary Actions: zoom the window
+	27 minimize button
+	28 text ASG F17 Current
+29 menu bar
+	30 ASG F17 Current
+	31 Edit
+	32 View
+	33 Window
+	34 Help
+
+The focused UI element is 1 container ASG F17 Current

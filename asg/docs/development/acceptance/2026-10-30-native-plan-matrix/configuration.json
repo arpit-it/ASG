@@ -1,0 +1,36 @@
+{
+  "runtime": {
+    "python": "3.12.8",
+    "mlx": "0.32.4",
+    "mlx-lm": "0.32.2",
+    "transformers": "5.20.2"
+  },
+  "sdk": {
+    "frameworkVersion": "3.47.6",
+    "channel": "stable",
+    "repositoryUrl": "https://github.com/flutter/flutter.git",
+    "frameworkRevision": "5fc346839b5d0eef006ed8404392afb4dfae428d",
+    "frameworkCommitDate": "2026-09-30 15:02:49 -0700",
+    "engineRevision": "692136cb6582dbfc5af3fb33c2515a069f2f66d0",
+    "engineCommitDate": "2026-09-30 00:56:59.000Z",
+    "engineContentHash": "b8c8d3d8d5d0095127057f8a29ca8cc53da2167c",
+    "engineBuildDate": "2026-09-30 06:49:13.915",
+    "dartSdkVersion": "3.13.5",
+    "devToolsVersion": "2.60.0",
+    "flutterVersion": "3.47.6"
+  },
+  "bundleIdentifier": "com.arsinha.asg.f17current",
+  "productName": "ASG F17 Current",
+  "bundleManifestSha256": "a75f011fc9672dffc7bd9f5c0d2f1edba1f3ff057c2092fd2a96a11d68a2e789",
+  "sourceManifestSha256": "8cc8b171ae4de1949885cb5a9a2739fb525943115f89331012690616a0b7c636",
+  "appBuild": "debug",
+  "model": {
+    "id": "Qwen3.5-9B",
+    "backend": "mlx",
+    "localWeightsOnly": true,
+    "streaming": true
+  },
+  "transport": "loopback",
+  "workflow": "native-plan-approval-working-build-restart-edit-refusal-preservation",
+  "savedRunIdentity": "exact F10 ready working run and explicitly stale successor"
+}

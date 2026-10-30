@@ -1,0 +1,8 @@
+{
+  "status": "ready",
+  "phase": "idle",
+  "model": "Qwen3.5-9B",
+  "device": "metal",
+  "backend": "mlx",
+  "streaming": true
+}

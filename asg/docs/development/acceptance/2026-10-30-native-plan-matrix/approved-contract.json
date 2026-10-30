@@ -1,0 +1,36 @@
+{
+  "version": 4,
+  "adapter": "flutter-starter",
+  "tasks": [
+    {
+      "id": "starter-resolve",
+      "operation": "resolve",
+      "dependencies": [],
+      "boardTaskId": "TNATIVE"
+    },
+    {
+      "id": "starter-analyze",
+      "operation": "analyze",
+      "dependencies": [
+        "starter-resolve"
+      ],
+      "boardTaskId": "TNATIVE"
+    },
+    {
+      "id": "starter-test",
+      "operation": "test",
+      "dependencies": [
+        "starter-analyze"
+      ],
+      "boardTaskId": "TNATIVE"
+    },
+    {
+      "id": "starter-build",
+      "operation": "build",
+      "dependencies": [
+        "starter-test"
+      ],
+      "boardTaskId": "TNATIVE"
+    }
+  ]
+}
