@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-10-30T22:00:28Z",
+  "sourceRevision": "0b1e51f4cf364934f5d1610a92fc306c123fee1e",
+  "flutter": {
+    "testReferences": [
+      "test/browser_archive_file_test.dart"
+    ],
+    "platform": "chrome",
+    "passed": 1,
+    "skipped": 0,
+    "exitCode": 0
+  },
+  "python": {
+    "testReference": "tools/test_product_acceptance.py",
+    "passed": 27,
+    "exitCode": 0
+  },
+  "sourceFileCount": 301,
+  "verifiedAssertions": [
+    "Downloaded Blob has exact validated archive bytes and Unicode content",
+    "Controller download matches prepared export",
+    "Secret-bearing export blocked without replacing previous download or source records",
+    "Malformed JSON export refused",
+    "Explicit redacted download contains redacted content and original records unchanged"
+  ],
+  "limitations": [
+    "This is a browser fixture, not manual archive import/picker/restart acceptance.",
+    "No single F10 snapshot exists; requirement/input/model digests hash UTF8 unavailable.",
+    "No application build/launch, live inference or full F17 support is claimed."
+  ],
+  "environment": "Initial version-read cache denial resolved using authorized host-access read. Chrome fixture passed1 without skips and test process exited0. Final teardown log reports Flutter SIGKILL fallback after owned Chromium did not exit using SIGTERM; this is not an application Stop/cleanup acceptance claim."
+}
