@@ -1,0 +1,14 @@
+{
+  "scope": "native-flutter-fixture-suites-only",
+  "testReferences": [
+    "test/transactional_storage_test.dart",
+    "test/plan_approval_test.dart",
+    "test/build_rollback_test.dart",
+    "test/portable_project_archive_test.dart"
+  ],
+  "reporter": "expanded",
+  "flutterVersion": "3.47.6",
+  "dartVersion": "3.13.5",
+  "modelRequested": false,
+  "singleF10SnapshotAvailable": false
+}

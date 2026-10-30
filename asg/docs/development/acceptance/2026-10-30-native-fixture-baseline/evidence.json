@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "records": [
+    {
+      "scenarioId": "create-reopen",
+      "checkId": "durable-records",
+      "target": "macos",
+      "status": "passed",
+      "observedAt": "2026-10-30T21:30:30Z",
+      "identity": {
+        "sourceRevision": "35a9088b2b1d2e2df96c81805c65035899383de1",
+        "requirementSha256": "ba691ba042bcedd9a61a36f5969026bc95859dccdc7e47f24e6bce35673baf2f",
+        "inputSha256": "ba691ba042bcedd9a61a36f5969026bc95859dccdc7e47f24e6bce35673baf2f",
+        "configurationSha256": "7ea82ffd3620fa60551689a79603e3719183949977facedd58070ee94325f14a",
+        "modelSha256": "ba691ba042bcedd9a61a36f5969026bc95859dccdc7e47f24e6bce35673baf2f",
+        "deviceSha256": "bddc1b98fe68746465afc966dba454440a8a080809b02f47dd01b1f9ed833144",
+        "sdkVersion": "3.47.6",
+        "runtimeVersion": "unavailable",
+        "browserVersion": "unavailable",
+        "backend": "none",
+        "host": "macos"
+      },
+      "manifestSha256": "a388df73fcad2fd78ddd1d292d1567f15b6d7a475ff274d4859e7229e36dd126",
+      "artifactSha256": [
+        "c0c74ad4fb669665d0c784188e4977f564940fba12f01394791ff5e8a9a80086",
+        "dd53c3a0ef8c54e324de9d690bf88829b5a7b96dfd803cce72b8d9eac4e90423",
+        "448d0052550b5c7f7b9de354e504259d65ea9fc0448d4cfefe0c0052e679b18b",
+        "b2d30537fffac96b4546f853147b1bf7271033ce146951e4f318249d5f7c1e2b"
+      ]
+    },
+    {
+      "scenarioId": "approved-plan",
+      "checkId": "stale-plan-refusal",
+      "target": "macos",
+      "status": "passed",
+      "observedAt": "2026-10-30T21:30:30Z",
+      "identity": {
+        "sourceRevision": "35a9088b2b1d2e2df96c81805c65035899383de1",
+        "requirementSha256": "ba691ba042bcedd9a61a36f5969026bc95859dccdc7e47f24e6bce35673baf2f",
+        "inputSha256": "ba691ba042bcedd9a61a36f5969026bc95859dccdc7e47f24e6bce35673baf2f",
+        "configurationSha256": "7ea82ffd3620fa60551689a79603e3719183949977facedd58070ee94325f14a",
+        "modelSha256": "ba691ba042bcedd9a61a36f5969026bc95859dccdc7e47f24e6bce35673baf2f",
+        "deviceSha256": "bddc1b98fe68746465afc966dba454440a8a080809b02f47dd01b1f9ed833144",
+        "sdkVersion": "3.47.6",
+        "runtimeVersion": "unavailable",
+        "browserVersion": "unavailable",
+        "backend": "none",
+        "host": "macos"
+      },
+      "manifestSha256": "a388df73fcad2fd78ddd1d292d1567f15b6d7a475ff274d4859e7229e36dd126",
+      "artifactSha256": [
+        "c0c74ad4fb669665d0c784188e4977f564940fba12f01394791ff5e8a9a80086",
+        "dd53c3a0ef8c54e324de9d690bf88829b5a7b96dfd803cce72b8d9eac4e90423",
+        "448d0052550b5c7f7b9de354e504259d65ea9fc0448d4cfefe0c0052e679b18b",
+        "b2d30537fffac96b4546f853147b1bf7271033ce146951e4f318249d5f7c1e2b"
+      ]
+    },
+    {
+      "scenarioId": "history-rollback",
+      "checkId": "rollback-records",
+      "target": "macos",
+      "status": "passed",
+      "observedAt": "2026-10-30T21:30:30Z",
+      "identity": {
+        "sourceRevision": "35a9088b2b1d2e2df96c81805c65035899383de1",
+        "requirementSha256": "ba691ba042bcedd9a61a36f5969026bc95859dccdc7e47f24e6bce35673baf2f",
+        "inputSha256": "ba691ba042bcedd9a61a36f5969026bc95859dccdc7e47f24e6bce35673baf2f",
+        "configurationSha256": "7ea82ffd3620fa60551689a79603e3719183949977facedd58070ee94325f14a",
+        "modelSha256": "ba691ba042bcedd9a61a36f5969026bc95859dccdc7e47f24e6bce35673baf2f",
+        "deviceSha256": "bddc1b98fe68746465afc966dba454440a8a080809b02f47dd01b1f9ed833144",
+        "sdkVersion": "3.47.6",
+        "runtimeVersion": "unavailable",
+        "browserVersion": "unavailable",
+        "backend": "none",
+        "host": "macos"
+      },
+      "manifestSha256": "a388df73fcad2fd78ddd1d292d1567f15b6d7a475ff274d4859e7229e36dd126",
+      "artifactSha256": [
+        "c0c74ad4fb669665d0c784188e4977f564940fba12f01394791ff5e8a9a80086",
+        "dd53c3a0ef8c54e324de9d690bf88829b5a7b96dfd803cce72b8d9eac4e90423",
+        "448d0052550b5c7f7b9de354e504259d65ea9fc0448d4cfefe0c0052e679b18b",
+        "b2d30537fffac96b4546f853147b1bf7271033ce146951e4f318249d5f7c1e2b"
+      ]
+    },
+    {
+      "scenarioId": "archive-reopen",
+      "checkId": "archive-records",
+      "target": "macos",
+      "status": "passed",
+      "observedAt": "2026-10-30T21:30:30Z",
+      "identity": {
+        "sourceRevision": "35a9088b2b1d2e2df96c81805c65035899383de1",
+        "requirementSha256": "ba691ba042bcedd9a61a36f5969026bc95859dccdc7e47f24e6bce35673baf2f",
+        "inputSha256": "ba691ba042bcedd9a61a36f5969026bc95859dccdc7e47f24e6bce35673baf2f",
+        "configurationSha256": "7ea82ffd3620fa60551689a79603e3719183949977facedd58070ee94325f14a",
+        "modelSha256": "ba691ba042bcedd9a61a36f5969026bc95859dccdc7e47f24e6bce35673baf2f",
+        "deviceSha256": "bddc1b98fe68746465afc966dba454440a8a080809b02f47dd01b1f9ed833144",
+        "sdkVersion": "3.47.6",
+        "runtimeVersion": "unavailable",
+        "browserVersion": "unavailable",
+        "backend": "none",
+        "host": "macos"
+      },
+      "manifestSha256": "a388df73fcad2fd78ddd1d292d1567f15b6d7a475ff274d4859e7229e36dd126",
+      "artifactSha256": [
+        "c0c74ad4fb669665d0c784188e4977f564940fba12f01394791ff5e8a9a80086",
+        "dd53c3a0ef8c54e324de9d690bf88829b5a7b96dfd803cce72b8d9eac4e90423",
+        "448d0052550b5c7f7b9de354e504259d65ea9fc0448d4cfefe0c0052e679b18b",
+        "b2d30537fffac96b4546f853147b1bf7271033ce146951e4f318249d5f7c1e2b"
+      ]
+    }
+  ]
+}
