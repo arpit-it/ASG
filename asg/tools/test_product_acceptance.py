@@ -161,6 +161,52 @@ class AcceptanceTest(unittest.TestCase):
                           'repair-interaction': 'missing'})
         self.assertFalse(any(c['currentPass'] for c in cells))
 
+    def test_stop_deadline_and_combined_observations_do_not_imply_each_other(self):
+        check_ids = ('stop-and-timeout', 'stop-interaction', 'deadline-interaction')
+        for target in ('macos', 'web'):
+            for check_id in check_ids:
+                with self.subTest(target=target, check_id=check_id):
+                    observation = dict(record(), scenarioId='stop-preservation',
+                                       checkId=check_id, target=target)
+                    cells = [c for c in self.evaluate(observation)['cells']
+                             if c['scenarioId'] == 'stop-preservation' and
+                             c['target'] == target]
+                    self.assertEqual({c['checkId']: c['status'] for c in cells},
+                                     {key: 'passed' if key == check_id else 'missing'
+                                      for key in check_ids})
+                    self.assertEqual(sum(c['currentPass'] for c in
+                                         self.evaluate(observation)['cells']), 1)
+
+    def test_stop_deadline_observations_require_exact_current_identity(self):
+        observations = [dict(record(), scenarioId='stop-preservation', checkId=key)
+                        for key in ('stop-interaction', 'deadline-interaction')]
+        for field in IDENTITY_FIELDS:
+            with self.subTest(field=field):
+                current = identity()
+                current[field] = ('1' * (40 if field == 'sourceRevision' else 64)
+                                  if field.endswith('Sha256') or field == 'sourceRevision'
+                                  else 'linux' if field == 'host' else 'none'
+                                  if field == 'backend' else '1.0')
+                cells = [c for c in self.evaluate(*observations, current=current)['cells']
+                         if c['savedEvidence']]
+                self.assertEqual([c['status'] for c in cells], ['stale', 'stale'])
+                self.assertFalse(any(c['currentPass'] for c in cells))
+
+    def test_historical_combined_stop_manifest_is_readable_but_stale(self):
+        previous = copy.deepcopy(SPEC)
+        scenario = next(s for s in previous['scenarios']
+                        if s['id'] == 'stop-preservation')
+        scenario['checks'] = [c for c in scenario['checks']
+                              if c['id'] == 'stop-and-timeout']
+        old = dict(record(), scenarioId='stop-preservation',
+                   checkId='stop-and-timeout', manifestSha256=sha(previous))
+        cells = [c for c in self.evaluate(old)['cells']
+                 if c['scenarioId'] == 'stop-preservation' and c['target'] == 'macos']
+        self.assertEqual({c['checkId']: c['status'] for c in cells},
+                         {'stop-and-timeout': 'stale', 'stop-interaction': 'missing',
+                          'deadline-interaction': 'missing'})
+        self.assertFalse(any(c['currentPass'] for c in cells))
+
     def test_every_identity_change_invalidates_pass(self):
         for field in IDENTITY_FIELDS:
             with self.subTest(field=field):

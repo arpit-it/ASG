@@ -3399,3 +3399,59 @@ source changed, so local app build was not repeated. Independent exact-revision
 review and required CI/merge evidence pending.
 PR302 independently merged 5e507d33 at2026-10-30T08:21:53Z, issue289 closed; review
 5709718155/finalgate6518389158 and CI41025253832 passed at87c03701. Full F17 In progress.
+
+
+### F17 repair evidence separation verified merged — #263 / PR #303
+
+Bounded extension Done; full F17 remains In progress. Reused issue263 closed
+completed at2026-10-30T08:52:52Z. Branch `263-repair-evidence-checks`,
+[PR #303](https://github.com/arpit-it/ASG/pull/303), published final
+`9598c0ed2a5fea8b3ed93692522db31b71b2ca61` / tested local
+`acd1a60ccebde5c8c1a51b3bd79f1c2be75de636` share exact connector-verified tree
+`786c8c28cf5fe7421976c0a549c4a981eba07378`. Independent final-revision review
+5709990083 and final gate6518880859 approved unchanged revision, no blockers;
+reviewer reran24Python tests and reevaluated all four30October evidence sets,
+each108cells/zero inferred passes with old-manifest records stale.
+
+Required CI41028787419: Python123973235500 and Flutter123973235768 both passed.
+Actual Flutter checks: formatter256/analyzer/879default(eight opt-in skips),
+Chrome suite, web+Wasm build and real generated resolve/analyze/test/build/serve.
+Python suites24/2/6/14(one skip)/4(two skips). Parent local24Python/sevenFlutter
+report parser/controller/widget tests and diffcheck passed. No fresh live repair,
+native UI, model download or full-support claim from this collector increment.
+
+Independent reviewer ordinary protected squash merged
+`fe7ec875bcf2173e9bfe54b72c61f37045b8f05c` at2026-10-30T08:52:50Z; parent independently
+pluginverified merged PR, exact tree and issueclosure. Signed merge SHA verified
+before local import; main/origin-main synchronized0/0, index empty/diffcheckpassed.
+All five prior edits preserved: IDEbyteidentical, documentation bytes retained
+with insertion-only overlay. Backup `/private/tmp/asg-303-primary-before`, prepared
+overlay `/private/tmp/asg-303-sync-prepared`; isolated worktree retained. Final merge
+bookkeeping remains local for the next related reviewed increment. Earlier Active/
+Awaiting text is historical. No later task selected; schedule/notifications unchanged.
+
+
+### F17 Stop and command-deadline evidence separation — #283 extension
+
+Reused/reopened #283 after verifying PR303 merged as fe7ec875 and no open PR or
+competing active ASG run. Branch `283-stop-deadline-evidence` starts at that merge;
+primary IDE/docs edits remain preserved. The manifest combined Stop and timeout
+in one cell, hiding independent coverage gaps. Add manual `stop-interaction` and
+`deadline-interaction` checks; retain `stop-and-timeout` for historical readability
+and combined-workflow evidence, with no automatic propagation. Existing saved
+records remain unchanged and become stale against the expanded manifest.
+
+Acceptance: each target/check pass leaves the others missing; changed identity or
+manifest refuses current passes; record Stop cancellation, generated-command
+deadline and last-working preservation separately. Python collector/importer/CLI
+and Flutter report regressions validate this bounded collector change. No new
+native/model execution, fixture-derived manual pass or full F17 support claim.
+Full F17 remains In progress; independent exact-final review, required CI and
+verified merge pending. PR303 review5709990083/finalgate6518880859 and CI41028787419
+passed at9598c0ed; merged fe7ec875 at2026-10-30T08:52:50Z, issue263 closed.
+
+Validation: 27 Python collector/importer/CLI regressions and seven Flutter
+report parser/controller/widget tests passed locally. All four 30 October
+evidence sets reevaluated successfully with 120 cells each and zero current
+passes against the expanded manifest; historical files unchanged. Diff-check
+passed. No Flutter runtime source changed; required CI provides full checks.

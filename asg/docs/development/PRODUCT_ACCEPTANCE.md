@@ -833,3 +833,37 @@ The [sanitized observation](acceptance/2026-10-30-native-plan-matrix/observation
 Repeat in the disposable uniquely identified candidate: open Plan with the existing offline runtime, request a version4 fixed-starter contract mapping resolve/analyze/test/build to an existing task, inspect it and explicitly approve. Grant separate generation consent for an unused temporary destination with the installed SDK; require four real successful checks. Retain the exact F10 ready JSON, approval/generation records and generated source/output hashes. Explicitly Quit, independently confirm absence, relaunch the same bundle path and verify current approval. Edit requirements and save a new revision, retain expanded stale F10 JSON, then grant separate Build consent for a different unused destination. Require refusal, unchanged working records/source/output and absence of the new destination. Stop the owned runtime and Quit the candidate. Never replace the stable app.
 
 Reproduce the report from the Flutter root using `python3 tools/product_acceptance.py --manifest docs/development/product_acceptance_manifest.json --identity docs/development/acceptance/2026-10-30-native-plan-matrix/identity.json --evidence docs/development/acceptance/2026-10-30-native-plan-matrix/evidence.json --output /tmp/asg-plan-report.json`. The generatedAt value changes; all other data should match. Changed source/board/input/configuration/model/device makes this record stale. Source422363fc is the actual compiled snapshot;300selected tracked files match tested mainb52022d and all43bundle hashes match the retained build. This is historical supplied-identity manual evidence, not a current-main certification or full F17 completion. No served-output interaction or browser Plan lifecycle is claimed. Raw prompts, database and screenshots remain local; shared artifacts contain synthetic requirements/contracts and sanitized diagnostics only.
+
+
+## Separate Stop and generated-command deadline coverage (#283 extension)
+
+The `stop-preservation` scenario now requires separately saved manual
+`stop-interaction` and `deadline-interaction` records per target. Its retained
+`stop-and-timeout` check is combined-workflow evidence, not a source of inferred
+passes for either individual check. Record the combined check only after both
+behaviors and last-working preservation are observed under that exact identity.
+A Stop-only observation leaves the deadline and combined cells missing; a deadline
+observation leaves Stop and combined missing. No fixture or F10 importer maps to
+these manual checks. Historical JSON snapshots are unchanged; the expanded
+manifest makes their records stale until the affected workflow is observed again.
+
+For Stop, begin with a retained successful output and hashes, approve a disposable
+verification run, choose Stop while a generated command is running, and inspect
+its saved cancellation and blocked downstream results. Require no promotion,
+unchanged last-working source/output and a usable served previous output. Quit,
+confirm absence, reopen the same isolated bundle and inspect retained results.
+
+For the deadline, independently run an explicitly reviewed disposable candidate
+with a controlled test delay longer than ASG's generated-command deadline and a
+Flutter per-test timeout longer than that deadline (see the #291 instructions
+above). Wait for ASG's saved `timedOut` outcome; a Flutter test timeout, runtime
+connection timeout or user Stop cannot satisfy this check. Require blocked
+downstream work, no inappropriate repair/promotion, unchanged last-working
+source/output, usable served previous output and saved results after reopen.
+
+Retain separate bounded artifacts and UTC observations for each run, including
+actual command flags/results and preserved hashes. Bind every record to its own
+exact source, requirement/input, SDK/runtime/model/configuration and device/browser
+identity. Do not relabel historical observations as fresh or combine different
+snapshot identities into current support. This collector increment performs no
+new native/model workflow; full F17 remains In progress.
