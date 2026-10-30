@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "issue": 289,
+  "observedAt": "2026-10-30T08:13:15Z",
+  "compiledSourceRevision": "584c89c4cc98522b75b65d53ecbd52c5e21d6859",
+  "sourceFileCount": 300,
+  "bundleFileCount": 43,
+  "originalWorkingFilesUnchanged": 41,
+  "proposal": {
+    "task": "TCANDIDATE",
+    "requirementsRevision": 10,
+    "planMessage": 15,
+    "approvedAt": "2026-10-30T08:03:20.902045Z",
+    "selectedFile": "lib/views/generated_app.dart",
+    "completeDiff": "Exactly one added line: debugShowCheckedModeBanner: false, after MaterialApp title. No other differences.",
+    "originalSha256": "b2685bd51d3bfced33b00d1fb99937734a20a3b0da7a8cc3088aa0780211a2a4",
+    "replacementSha256": "8f984df04e8801976113f4d4ab95279cdaebc4a7ac66e1be426e0da288486777"
+  },
+  "verification": {
+    "runNumber": 5,
+    "operations": [
+      {
+        "operation": "resolve",
+        "exitCode": 0
+      },
+      {
+        "operation": "analyze",
+        "exitCode": 0
+      },
+      {
+        "operation": "test",
+        "exitCode": 0
+      },
+      {
+        "operation": "build",
+        "exitCode": 0
+      }
+    ],
+    "phase": "ready",
+    "confinementVersion": 1
+  },
+  "observations": [
+    "Fresh isolated debug app launched; copied existing synthetic revision10 database only into separate new bundle storage after Quit and absence. Original databases retained.",
+    "Fresh real mapped four-operation Plan validated and explicitly approved. Real native source request selected TCANDIDATE and generated_app.dart only.",
+    "Proposal ready; prepared separate unverified candidate. Full on-disk diff reviewed: only requested banner property added.",
+    "Explicit confined verification consent; resolve/analyze/test/build all exited0; all41prior working files unchanged before promotion.",
+    "Explicit promotion UI confirmed candidate now working; previous working folder retained unchanged.",
+    "Actual promoted output opened in Chrome. Added Fingerprint native promoted acceptance; new checkbox changed0to1. Browser screenshot retained.",
+    "Quit; separate app inventory absence; exact bundle relaunched. Original checked prototype, promoted candidate path, Plan15approval/current-input match and4/4TCANDIDATE mappings remained. Exact saved generation record unchanged after reopen.",
+    "Final Quit and separate inventory absence; owned offline runtime exited0; browser test tab closed."
+  ],
+  "limitations": [
+    "Caller-observed isolated synthetic workflow; collector cannot authenticate observations.",
+    "F10 free-form acceptance remains unverified and tasks queued; four operation passes do not prove semantic acceptance.",
+    "Browser task changes are in-memory generated output interactions; browser persistence after reload was not asserted.",
+    "No arbitrary software generation, full F17 baseline, other platform support or production certification.",
+    "Initial CUA launch approval/response took roughly74minutes; initial AX snapshot empty then application rendered. No launch-performance conclusion inferred.",
+    "Raw database/model prompts/logs and unredacted AX remain private. No downloads or stable-app replacement."
+  ]
+}

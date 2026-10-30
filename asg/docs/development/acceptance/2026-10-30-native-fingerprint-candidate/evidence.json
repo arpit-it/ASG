@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "records": [
+    {
+      "scenarioId": "reviewed-candidate",
+      "checkId": "model-proposal",
+      "target": "macos",
+      "status": "passed",
+      "observedAt": "2026-10-30T08:13:15Z",
+      "identity": {
+        "sourceRevision": "584c89c4cc98522b75b65d53ecbd52c5e21d6859",
+        "requirementSha256": "19837760eab1e582c528276d7c262f521baa0917f4d35179cdd7bd449ebf451f",
+        "inputSha256": "42f521f90e7736190adcb2df577cc5de665bb3dd15c7df476bff9c73b4c6f184",
+        "configurationSha256": "3eff30371234ddc69634c852d5a253f249c96e3198ec077a18880ab30547a439",
+        "modelSha256": "cfacacdcc4ff24a55108903b579d7a89a4bbe58bafc725872cf1ce27b7705644",
+        "deviceSha256": "e424126b360d0dbad43f862b227d1eda7d0e5c9c62d8c801c68196ce7a4b3726",
+        "sdkVersion": "3.47.6",
+        "runtimeVersion": "3.12.8",
+        "browserVersion": "156.0.8078.74",
+        "backend": "mlx",
+        "host": "macos"
+      },
+      "manifestSha256": "d61b84bb453d905d1219ca0de2e086422f44de30475635953c70dad03b2dbc35",
+      "artifactSha256": [
+        "e4ec7e82dafa20de853284e3db8268a32dc3f5d221bb382eabd87d017513c8be",
+        "e7ca13391797e49ff2ce2398dd7a552cefb65527d2ccd1656d80d34a92e738d4",
+        "56d199bb0c4aee10714500b19a8709bee29364519a2142dff952d0f231c8a81b",
+        "e6e920052caf6095e78cd54d146f623d09535f9126b7a468eeb654685b1660b9",
+        "fd7a3dbdd9469960b2b18f291fd32f2ddea2b45c5e241cdfe81c04da45b81be0"
+      ]
+    },
+    {
+      "scenarioId": "reviewed-candidate",
+      "checkId": "confined-checks",
+      "target": "macos",
+      "status": "passed",
+      "observedAt": "2026-10-30T08:13:15Z",
+      "identity": {
+        "sourceRevision": "584c89c4cc98522b75b65d53ecbd52c5e21d6859",
+        "requirementSha256": "19837760eab1e582c528276d7c262f521baa0917f4d35179cdd7bd449ebf451f",
+        "inputSha256": "42f521f90e7736190adcb2df577cc5de665bb3dd15c7df476bff9c73b4c6f184",
+        "configurationSha256": "3eff30371234ddc69634c852d5a253f249c96e3198ec077a18880ab30547a439",
+        "modelSha256": "cfacacdcc4ff24a55108903b579d7a89a4bbe58bafc725872cf1ce27b7705644",
+        "deviceSha256": "e424126b360d0dbad43f862b227d1eda7d0e5c9c62d8c801c68196ce7a4b3726",
+        "sdkVersion": "3.47.6",
+        "runtimeVersion": "3.12.8",
+        "browserVersion": "156.0.8078.74",
+        "backend": "mlx",
+        "host": "macos"
+      },
+      "manifestSha256": "d61b84bb453d905d1219ca0de2e086422f44de30475635953c70dad03b2dbc35",
+      "artifactSha256": [
+        "e4ec7e82dafa20de853284e3db8268a32dc3f5d221bb382eabd87d017513c8be",
+        "e7ca13391797e49ff2ce2398dd7a552cefb65527d2ccd1656d80d34a92e738d4",
+        "56d199bb0c4aee10714500b19a8709bee29364519a2142dff952d0f231c8a81b",
+        "e6e920052caf6095e78cd54d146f623d09535f9126b7a468eeb654685b1660b9",
+        "fd7a3dbdd9469960b2b18f291fd32f2ddea2b45c5e241cdfe81c04da45b81be0"
+      ]
+    },
+    {
+      "scenarioId": "reviewed-candidate",
+      "checkId": "served-interaction",
+      "target": "macos",
+      "status": "passed",
+      "observedAt": "2026-10-30T08:13:15Z",
+      "identity": {
+        "sourceRevision": "584c89c4cc98522b75b65d53ecbd52c5e21d6859",
+        "requirementSha256": "19837760eab1e582c528276d7c262f521baa0917f4d35179cdd7bd449ebf451f",
+        "inputSha256": "42f521f90e7736190adcb2df577cc5de665bb3dd15c7df476bff9c73b4c6f184",
+        "configurationSha256": "3eff30371234ddc69634c852d5a253f249c96e3198ec077a18880ab30547a439",
+        "modelSha256": "cfacacdcc4ff24a55108903b579d7a89a4bbe58bafc725872cf1ce27b7705644",
+        "deviceSha256": "e424126b360d0dbad43f862b227d1eda7d0e5c9c62d8c801c68196ce7a4b3726",
+        "sdkVersion": "3.47.6",
+        "runtimeVersion": "3.12.8",
+        "browserVersion": "156.0.8078.74",
+        "backend": "mlx",
+        "host": "macos"
+      },
+      "manifestSha256": "d61b84bb453d905d1219ca0de2e086422f44de30475635953c70dad03b2dbc35",
+      "artifactSha256": [
+        "e4ec7e82dafa20de853284e3db8268a32dc3f5d221bb382eabd87d017513c8be",
+        "e7ca13391797e49ff2ce2398dd7a552cefb65527d2ccd1656d80d34a92e738d4",
+        "56d199bb0c4aee10714500b19a8709bee29364519a2142dff952d0f231c8a81b",
+        "e6e920052caf6095e78cd54d146f623d09535f9126b7a468eeb654685b1660b9",
+        "fd7a3dbdd9469960b2b18f291fd32f2ddea2b45c5e241cdfe81c04da45b81be0"
+      ]
+    }
+  ]
+}
