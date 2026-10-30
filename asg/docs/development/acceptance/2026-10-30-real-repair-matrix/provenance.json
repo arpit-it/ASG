@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "scope": "f10-saved-snapshot-link-only",
+  "scenarioId": "bounded-repair",
+  "sourceRevision": "4c6c2e86c8e56392584a9a71e9895d2c828e61d6",
+  "requirementSha256": "8f95025435e9a2d2db39224ba7d5f6f6f45373296ca2a68c301aeda43ee58e89",
+  "inputSha256": "86eea591c8aac58c4fdb54df0037beb510819f1256ef9493e7e332f52da7323d",
+  "generatedSourceSha256": "5342105ec25ceb438d71dc862506ffeff231ecc8109b3bb3e616cb8517d7a5f3",
+  "approvalSha256": "11db47a24c0ba3ba5b565450015ebe11a9efbf5d7c70a1671dc3b69dd4a25178",
+  "savedRunSha256": "3d5f2dc3e279cfc85c6e386aa0f652cece3301dd8c58308b419b27ddb238df0c"
+}

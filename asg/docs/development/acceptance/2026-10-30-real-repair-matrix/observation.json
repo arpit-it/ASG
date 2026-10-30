@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "scope": "controller-service-real-model-test",
+  "issue": 263,
+  "sourceRevision": "4c6c2e86c8e56392584a9a71e9895d2c828e61d6",
+  "observedAt": "2026-10-30T20:02:21Z",
+  "test": {
+    "file": "test/automatic_repair_real_test.dart",
+    "passed": 1,
+    "durationSeconds": 58,
+    "rawOutputSha256": "46638cdfb537f052486b3f30818ba3e0115bc84997add176d10f644679a0dece",
+    "collectorRegressionsPassed": 27
+  },
+  "assertedResults": {
+    "actualFailure": "analyze: undefined asgMissingFunction",
+    "realModelAutomaticCorrection": true,
+    "repairAttempts": {
+      "minimum": 1,
+      "maximum": 3,
+      "category": "analyze",
+      "allHaveProposals": true
+    },
+    "confinedExitCodes": {
+      "resolve": 0,
+      "test": 0,
+      "analyze": 0,
+      "build": 0
+    },
+    "workingSourceAndServedJavaScriptPreservedBeforePromotion": true,
+    "explicitPromotion": true,
+    "refreshedPreviewJavaScriptHttpStatus": 200,
+    "savedAttemptsAndChecksEqualAfterDatabaseReopen": true,
+    "previousWorkingRecordRetained": true
+  },
+  "limitations": [
+    "Initial defect and approved Plan are deterministic test setup; only repair transport uses the real local model.",
+    "Controller/service test uses real confined processes and native database; it is not a launched native UI workflow.",
+    "No browser interaction beyond HTTP200 nonempty JavaScript retrieval, no output UI behavior or manual repair-interaction pass.",
+    "F10 provenance contains exact saved-snapshot digest linkage, not free-form acceptance criterion verification.",
+    "Source revision is the actual pre-publication tested revision; documentation publication does not relabel the tested source.",
+    "Report is caller-attested saved evidence, not independent execution or full F17 support.",
+    "Temporary generated project/database were removed by the test after assertions."
+  ]
+}
