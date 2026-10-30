@@ -1,0 +1,22 @@
+{
+  "bundleIdentifier": "com.arsinha.asg.f17snapshot.asg",
+  "compiledSourceRevision": "584c89c4cc98522b75b65d53ecbd52c5e21d6859",
+  "sourceManifestSha256": "e6e920052caf6095e78cd54d146f623d09535f9126b7a468eeb654685b1660b9",
+  "bundleManifestSha256": "fd7a3dbdd9469960b2b18f291fd32f2ddea2b45c5e241cdfe81c04da45b81be0",
+  "sourceFilesVerified": 300,
+  "bundleFilesVerified": 43,
+  "manifestLocation": "../2026-10-30-native-fingerprint-candidate",
+  "workflow": "Native explicit deterministic Plan and one-file undefined-call seed, separate real offline Qwen automatic repair consent, confined reruns, promotion, served add/check and process restart.",
+  "seedSha256": "4631e2b1ea7822c0d35468bd67564a6cb58b3a5fee62b554581f7780a70154a8",
+  "relaySha256": "06c1f1ba44196dd6f3ecaa27277d6607e09bb88ef20bbf2d6acbc2126d55b7a0",
+  "relay": "loopback8765 to existing offline Qwen loopback8766; real mode only during repair",
+  "limits": {
+    "version": 1,
+    "commandTimeoutSeconds": 180,
+    "outputLimitBytes": 65536,
+    "maximumOperations": 4
+  },
+  "isolationOverride": "Only unique AppInfo.xcconfig bundle identifier; stable app/original profile untouched.",
+  "executedSeedSha256": "b8bb76043d2fc5058d9afecb68f3fcea95f43e9e14dbee22456de2af10da3425",
+  "seedArtifactNormalization": "Removed one trailing space; actual executed seed digest retained separately."
+}

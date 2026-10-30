@@ -1,0 +1,13 @@
+{
+  "sourceRevision": "584c89c4cc98522b75b65d53ecbd52c5e21d6859",
+  "requirementSha256": "d2cd04bbb800552268c8226d51c6b940411abe544941f6151df17f79987379ff",
+  "inputSha256": "26e0c2ba761d889e3c0565886ac6fd4cf20fb62f70dfef9aca25e2ad01d80553",
+  "configurationSha256": "16262f3c7ecab8ca37241d01634309c649b7817513c76f3499136c16c36acfdf",
+  "modelSha256": "2350c12d363f794e32b6bbbe713ea5d0e3a07269c60178d80b08f8f132c429f2",
+  "deviceSha256": "f113ce0222a6ba6c91204ff6f63caf1c7620465272a39fe33a2b1352d70811ba",
+  "sdkVersion": "3.47.6",
+  "runtimeVersion": "3.12.8",
+  "browserVersion": "unavailable",
+  "backend": "mlx",
+  "host": "macos"
+}

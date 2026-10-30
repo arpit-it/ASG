@@ -1,0 +1,20 @@
+{
+  "digestMethod": "product_acceptance.sha sorted compact JSON SHA256",
+  "requirementDigestOf": "Exact saved requirement board revision2",
+  "inputDigestOf": "Exact current approval context",
+  "boardRevision": 2,
+  "requirementId": "RREPAIR",
+  "taskId": "TREPAIR",
+  "approvalMessageIndex": 1,
+  "approvedAt": "2026-10-30T20:31:38.735222Z",
+  "approvalSha256": "a3aa00d3e0dcfa45b1eba277424b1c145e5705e3e5a4196fd528187b1cefefee",
+  "requirementBoardSha256": "d2cd04bbb800552268c8226d51c6b940411abe544941f6151df17f79987379ff",
+  "approvalContextSha256": "26e0c2ba761d889e3c0565886ac6fd4cf20fb62f70dfef9aca25e2ad01d80553",
+  "failedRunSha256": "45e4b904373ed45858d95a8cc40c748b66d314ac72a75c985be68245dfee69fe",
+  "repairedRunSha256": "a50d430aa4e97c2eeb767925eee7273ae6fd417539f5e3feac1f04d5c52de89c",
+  "repairAttemptSha256": "71583cc66b68c38bf8033fd7eb2572ee25ab8d1cecae15837950482b4a724442",
+  "repairedSourcesSha256": "7a21111443f3e816e0804c7873da4c35a8f13bcae8edaa0c384d6ffc072814f6",
+  "workingGenerationSha256": "2ec73cc9736b45425437cd773d8346db6f5fd8cb1327b7986ab528cf9dfa1066",
+  "manualCallerAttested": true,
+  "notCriterionVerification": true
+}
