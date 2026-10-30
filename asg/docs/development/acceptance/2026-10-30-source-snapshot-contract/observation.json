@@ -1,0 +1,26 @@
+{
+  "issue": 289,
+  "recordedAt": "2026-10-30T06:27:31.666868+00:00",
+  "baseRevision": "36f3ad4ed939650c53aca5afb7499a74de01ac73",
+  "kind": "actual offline source proposal transport/parser observation",
+  "backend": "existing offline MLX Qwen3.5-9B 4bit",
+  "selectedSource": "lib/views/generated_app.dart",
+  "requirementsRevision": 10,
+  "outputTokenLimit": 4096,
+  "wireKeys": [
+    "path",
+    "beforeSha256",
+    "after"
+  ],
+  "originalCharacters": 4942,
+  "exactOriginalHydrated": true,
+  "originalSha256": "b2685bd51d3bfced33b00d1fb99937734a20a3b0da7a8cc3088aa0780211a2a4",
+  "returnedFingerprintMatches": true,
+  "requestedBannerSettingPresent": true,
+  "rawResponseSha256": "f46d8b37c82ce6ebf6bab15eabc558b78ad9324e4d13398b370406784a92e5d2",
+  "limitations": [
+    "Read-only saved synthetic task/source transport observation; no native UI interaction or full F17 collector pass.",
+    "Full replacement omits terminal newline; visible before/after review retains this difference.",
+    "Original working files and database never written. Raw prompts and responses remain private."
+  ]
+}
