@@ -787,3 +787,6 @@ python3 -B tools/product_acceptance.py --manifest docs/development/product_accep
 105 focused Flutter archive/store/controller/session/report tests and20 collector
 fixtures passed. All six identity changes stale the submitted observation. These
 are caller-attested records, not live health/authenticity or complete F17 acceptance.
+
+
+Delivery [PR #298](https://github.com/arpit-it/ASG/pull/298): initial published `382c0c50d52a34d29d7dca9f838e71f50759525d` / tested local `2984ba2091acd1fd258697c24e749b1a626af9fb`, identical tree `ca2c570796d1846e0a5f0103145408151ef2b6ff`. This delivery-link revision changes documentation only. Extension Awaiting independent exact-final review/required CI/merge; final head and merge evidence must be verified on the PR. Full F17 stays In progress.
