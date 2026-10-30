@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-10-30T22:15:05Z",
+  "sourceRevision": "0164df10a297c32b44421b863fe3294e10eff95a",
+  "flutter": {
+    "testReferences": [
+      "test/portable_project_archive_test.dart"
+    ],
+    "platform": "chrome",
+    "passed": 13,
+    "skipped": 0,
+    "exitCode": 0
+  },
+  "python": {
+    "testReference": "tools/test_product_acceptance.py",
+    "passed": 27,
+    "exitCode": 0
+  },
+  "sourceFileCount": 273,
+  "verifiedAssertions": [
+    "Exact browser integer-range requirements revisions",
+    "Versions 4/5/6 round trips with historical input metadata and immutable prototypes",
+    "Exact requirements board revision, dependencies, task statuses and Unicode content",
+    "Strict malformed/unknown/duplicate member, graph and version refusal",
+    "Message and UTF8 aggregate limits on import and export"
+  ],
+  "limitations": [
+    "Pure archive serialization/validation fixtures only; no real database durability or manual picker/import/restart acceptance.",
+    "No single F10 snapshot exists; requirement/input/model digests hash UTF8 unavailable.",
+    "No application build/launch, live inference, generated output or full F17 support is claimed."
+  ],
+  "environment": "Actual Chrome fixture passed13 without skips; test process exit0. No teardown fallback was reported in the retained log."
+}
