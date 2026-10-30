@@ -5,6 +5,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:crypto/crypto.dart';
 import 'package:asg/models/local_model_config.dart';
 import 'package:asg/models/source_edit_proposal.dart';
 import 'package:asg/services/model_provider.dart';
@@ -353,6 +354,137 @@ void main() {
     final result = await future;
     expect(result.changes.single.before, before);
     expect(result.changes.single.after, after);
+  });
+
+  test(
+    'fingerprint response hydrates exact newline and Unicode originals',
+    () async {
+      for (final before in [
+        'void main() {}\n',
+        '// café 😀\r\nvoid main() {}\r\n',
+        'void main() {}',
+      ]) {
+        final provider = FakeProvider();
+        final proposer = SourceEditProposer(createProvider: (_) => provider);
+        final mutable = {'lib/main.dart': before};
+        final future = proposer.propose(
+          config: const LocalModelConfig(),
+          instruction: 'Add greeting',
+          originals: mutable,
+        );
+        mutable['lib/main.dart'] = 'changed during request';
+        final fingerprint = sha256.convert(utf8.encode(before)).toString();
+        provider.stream.add(
+          jsonEncode({
+            'summary': 'Add greeting',
+            'changes': [
+              {
+                'path': 'lib/main.dart',
+                'beforeSha256': fingerprint,
+                'after': replacement,
+              },
+            ],
+          }),
+        );
+        await provider.stream.close();
+        final result = await future;
+        expect(result.changes.single.before, before);
+        expect(result.changes.single.after, replacement);
+        expect(provider.prompt, contains(fingerprint));
+        expect(provider.prompt, contains('Copy beforeSha256 verbatim'));
+        expect(provider.cancellations, 1);
+      }
+    },
+  );
+
+  test(
+    'fingerprints reject stale, ambiguous and out-of-scope responses',
+    () async {
+      const before = 'void main() {}\n';
+      final fingerprint = sha256.convert(utf8.encode(before)).toString();
+      final valid = <String, Object>{
+        'path': 'lib/main.dart',
+        'beforeSha256': fingerprint,
+        'after': replacement,
+      };
+      for (final entry in [
+        {
+          ...valid,
+          'beforeSha256': sha256.convert(utf8.encode(before.trim())).toString(),
+        },
+        {...valid, 'beforeSha256': fingerprint.toUpperCase()},
+        {...valid, 'beforeSha256': null},
+        {...valid, 'before': before},
+        {...valid, 'command': 'write'},
+        {...valid, 'path': 'lib/new.dart'},
+        {...valid, 'path': '../main.dart'},
+        {...valid, 'after': before},
+        {...valid, 'after': ''},
+        {...valid, 'after': 'x' * 32001},
+        {...valid}..remove('beforeSha256'),
+      ]) {
+        final provider = FakeProvider();
+        final proposer = SourceEditProposer(createProvider: (_) => provider);
+        final future = proposer.propose(
+          config: const LocalModelConfig(),
+          instruction: 'Add greeting',
+          originals: {'lib/main.dart': before},
+        );
+        final rejected = expectLater(future, throwsFormatException);
+        provider.stream.add(
+          jsonEncode({
+            'summary': 'Change',
+            'changes': [entry],
+          }),
+        );
+        await provider.stream.close();
+        await rejected;
+        expect(provider.cancellations, 1);
+      }
+    },
+  );
+
+  test('fingerprints retain duplicate-member and license protection', () async {
+    const before =
+        '// SPDX-License-Identifier: MPL-2.0\n'
+        '// Copyright 2026 Arpit Sinha\nvoid main() {}\n';
+    final fingerprint = sha256.convert(utf8.encode(before)).toString();
+    final change = jsonEncode({
+      'path': 'lib/main.dart',
+      'beforeSha256': fingerprint,
+      'after': '$before// Retained legal header.\n',
+    });
+    for (final raw in [
+      jsonEncode({
+        'summary': 'Change',
+        'changes': [
+          {
+            'path': 'lib/main.dart',
+            'beforeSha256': fingerprint,
+            'after': replacement,
+          },
+        ],
+      }),
+      '{"summary":"Change","changes":[{"beforeSha256":"wrong",'
+          '${change.substring(1)}]}',
+      '{"summary":"Change","changes":[{'
+          r'"beforeSha\u003256":"wrong",'
+          '${change.substring(1)}]}',
+      '{"summary":"Change","changes":[$change,$change]}',
+    ]) {
+      final provider = FakeProvider();
+      final proposer = SourceEditProposer(createProvider: (_) => provider);
+      final future = proposer.propose(
+        config: const LocalModelConfig(),
+        instruction: 'Change',
+        originals: {'lib/main.dart': before},
+      );
+      final rejected = expectLater(future, throwsFormatException);
+      provider.stream.add(raw);
+      await provider.stream.close();
+      await rejected;
+      expect(provider.cancellations, 1);
+    }
   });
 
   test('invalid inputs do not create a provider', () async {

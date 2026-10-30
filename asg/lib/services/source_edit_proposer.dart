@@ -3,6 +3,8 @@
 
 import 'dart:convert';
 
+import 'package:crypto/crypto.dart';
+
 import '../models/local_model_config.dart';
 import '../models/source_edit_proposal.dart';
 import '../models/structured_proposal_json.dart';
@@ -45,22 +47,25 @@ class SourceEditProposer {
     try {
       final provider = _createProvider(config);
       _provider = provider;
+      final fingerprints = {
+        for (final entry in snapshot.entries)
+          entry.key: sha256.convert(utf8.encode(entry.value)).toString(),
+      };
       final prompt =
           'Propose Flutter Dart replacements for review. Return JSON only '
           'with exactly summary (short string) and changes (1-8 entries). Each '
-          'change has exactly path, before (exact original text), after (full '
-          'replacement text). One entry per path. Both before and after MUST be COMPLETE FILES, '
-          'not snippets, search/replace fragments, diffs or individual lines. '
-          'Copy before verbatim from Originals including every import, blank line, space '
-          'and final newline. If an original ends in a newline, the before JSON '
-          'string MUST include the escaped \\n immediately before its closing quote '
-          '(for example: "before":"void main() {}\\n"). Omitting that newline '
-          'makes the proposal stale and it will be rejected. '
-          'after must contain the entire compiling file. '
+          'change has exactly path, beforeSha256, after (full replacement text). '
+          'Copy beforeSha256 verbatim from Fingerprints for that path; do not '
+          'compute it or return before text. One entry per path. '
+          'after MUST be the COMPLETE FILE, not a snippet, search/replace '
+          'fragment, diff or individual line. '
           'Preserve existing license identifiers and copyright headers verbatim '
           'at the beginning of after, including during build repairs. '
-          'Preserve unrelated code and imports. Only change supplied files. No commands or new files. '
-          'Instruction: ${jsonEncode(instruction)}. Originals: ${jsonEncode(snapshot)}';
+          'Preserve unrelated code and imports. Only change supplied files. '
+          'No commands or new files. '
+          'Instruction: ${jsonEncode(instruction)}. '
+          'Fingerprints: ${jsonEncode(fingerprints)}. '
+          'Originals: ${jsonEncode(snapshot)}';
       final buffer = StringBuffer();
       await for (final chunk in provider.generate(prompt)) {
         if (_cancelled) throw StateError('Source proposal cancelled.');
@@ -75,7 +80,10 @@ class SourceEditProposer {
       // Decode first so the member scanner only receives valid JSON. Reject
       // ambiguous keys before the decoder's last value can become a proposal.
       rejectDuplicateJsonMembers(json);
-      result = SourceEditProposal.parse(decoded, originals: snapshot);
+      result = SourceEditProposal.parse(
+        _hydrateOriginals(decoded, snapshot, fingerprints),
+        originals: snapshot,
+      );
     } finally {
       try {
         await _provider?.cancel();
@@ -86,6 +94,38 @@ class SourceEditProposer {
     }
     if (_cancelled) throw StateError('Source proposal cancelled.');
     return result;
+  }
+
+  /// Hydrate exact review text only after validating the model's snapshot token.
+  /// Legacy full-before responses still pass through the strict domain parser.
+  Object? _hydrateOriginals(
+    Object? decoded,
+    Map<String, String> snapshot,
+    Map<String, String> fingerprints,
+  ) {
+    if (decoded is! Map || decoded['changes'] is! List) return decoded;
+    final changes = <Object?>[];
+    for (final entry in decoded['changes'] as List) {
+      if (entry is! Map || !entry.containsKey('beforeSha256')) {
+        changes.add(entry);
+        continue;
+      }
+      final path = entry['path'];
+      if (entry.length != 3 ||
+          !entry.containsKey('after') ||
+          path is! String ||
+          !snapshot.containsKey(path) ||
+          entry['beforeSha256'] is! String ||
+          entry['beforeSha256'] != fingerprints[path]) {
+        throw const FormatException('Invalid or stale source fingerprint.');
+      }
+      changes.add({
+        'path': path,
+        'before': snapshot[path],
+        'after': entry['after'],
+      });
+    }
+    return {...decoded, 'changes': changes};
   }
 
   Future<void> cancel() async {
