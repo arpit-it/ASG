@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "issue": 275,
+  "observedAt": "2026-10-30T03:58:01Z",
+  "scope": "caller-observed-native-archive-only",
+  "sourceRevision": "422363fc04db6a20b6c515c25dc71f4becaafff6",
+  "actualF10BoardSha256": "a321c4728ecf0d853cf3e690133e8c8ace5a7aeb75598dd355882631d3467887",
+  "actualF10CurrentInputSha256": "42f521f90e7736190adcb2df577cc5de665bb3dd15c7df476bff9c73b4c6f184",
+  "originalCurrentInputSha256": "0c01f3a8f5fd69cfe868d106a416a4a977e7fbd75b027ca48ef4a901feba323b",
+  "observed": [
+    "Original My Task Planner has checked Native reopen acceptance item and revision-3 RNATIVE/TNATIVE.",
+    "Native portable-record export preview matched actual saved version-7 archive.",
+    "Selected the actual saved file, validated, restored separate ID native-archive-20261030 named Native archive restored.",
+    "Projects lists exactly two entries: original and restored.",
+    "Restored prototype retains checked item; board retains revision3 RNATIVE/TNATIVE.",
+    "Captured expanded exact F10 JSON before Quit; separate inventory verified process absent.",
+    "Explicit app path relaunch retained selected restored project, checked item and exact board/input snapshot.",
+    "Selected incompatible version999 fixture; app displayed Operation failed and Existing records have not been replaced; no restore controls offered.",
+    "Final Quit and separate inventory verified isolated app absent; stable app not running."
+  ],
+  "limitations": [
+    "Native Save dialog treated typed path as a filename and appended previous name; actual file selected from Documents and bytes independently read. No private path published.",
+    "AX navigation reports sometimes lagged; screenshots and fresh snapshots confirmed actual pages. AX text-field values sometimes lagged or duplicated another field; visible exact restore ID/name verified before action.",
+    "F10 snapshot files transcribe two independently displayed JSON documents using previous identical structure and the actual restored input digest. No screenshots retained in this extension.",
+    "Input digest differs from original because restored project has separate metadata. Only requirement-board snapshot is identical to original; restoration does not retain approval/source/run identity.",
+    "Approved input/model absent; collector uses explicit unavailable sentinel, preserving current unapproved input in F10 snapshots only.",
+    "No model request, new build, generated output, product-code change or complete F17 support claim.",
+    "Original listed and checked prototype observed before restore; no post-restore byte-for-byte original database comparison performed."
+  ]
+}
