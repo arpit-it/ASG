@@ -4606,3 +4606,12 @@ successfully. Actual native-generated retry four checks0 and served interaction
 are separate from fixture results. Docs/evidence only; no runtime source changes.
 Awaiting exact-final independent review, requiredCI and verifiedmerge. Issue283/fullF17
 remain In progress until bounded acceptance review/merge; no later task selected.
+
+
+### F17 native selected rollback — reused #285 — 2026-10-30T18:49:23Z
+
+Issue #285 reopened for current-manifest retained compiled584c89c rollback interaction. Branch `285-native-rollback-matrix` from verified main865dd2e. Actual native inspection matched artifacts; explicit selected-build confirmation restored prior candidate and retained displaced output. Chrome added task/checked0to1. Verified Quit/absence/relaunch retained selected candidate and Plan15; database retained all four history entries and displaced working record. All92selected/displaced source/output hashes unchanged. 300source/43bundle hashes matched published manifests. Evidence `development/acceptance/2026-10-30-native-rollback-matrix/` adds exactly one caller-attested macOS rollback-interaction cell; no inference/deadline/repair/fullF17 claim. Stable app/original profile untouched. Existing five IDE/docs edits retained in primary checkout. Awaiting independent final review, requiredCI and verifiedmerge; F17 In progress.
+
+Validation: 11 focused build_rollback Flutter tests and 27 Python collector/importer/CLI tests passed. Collector regenerated120cells with exactly one saved macOS rollback-interaction pass. No runtime code changed; source/bundle identities rechecked.
+
+Prior #283 delivery reconciled: PR #305 final9e65d2d independently approved COMMENT5716484247; CI41100841467 passed Python124217650980/Flutter124217651794; protected merge865dd2eae306cb23f64cdbad34fa2583771b1938 at2026-10-30T17:58:45Z, issue283closed. Earlier Awaiting text is historical; fullF17 stays In progress.
