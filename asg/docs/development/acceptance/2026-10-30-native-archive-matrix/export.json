@@ -1,0 +1,72 @@
+{
+  "format": "asg-portable-records",
+  "project": {
+    "description": "A daily task planner\n\nSelected experience: Across all devices\nInitial features: Task list, Add and edit tasks",
+    "type": "Flutter",
+    "platforms": [
+      "Android",
+      "iOS",
+      "Web",
+      "macOS",
+      "Windows",
+      "Linux"
+    ]
+  },
+  "version": 7,
+  "prototype": {
+    "definition": {
+      "title": "My Task Planner",
+      "theme": "indigo",
+      "elements": [
+        {
+          "id": "welcome",
+          "type": "heading",
+          "label": "My Task Planner",
+          "items": [],
+          "completed": [],
+          "action": "message",
+          "target": "",
+          "value": ""
+        },
+        {
+          "id": "tasks",
+          "type": "taskList",
+          "label": "My items",
+          "items": [
+            "Native reopen acceptance item"
+          ],
+          "completed": [
+            0
+          ],
+          "action": "message",
+          "target": "",
+          "value": ""
+        }
+      ]
+    },
+    "revision": 1
+  },
+  "revisions": [],
+  "decision": null,
+  "requirements": {
+    "version": 1,
+    "revision": 3,
+    "requirements": [
+      {
+        "id": "RNATIVE",
+        "title": "Native durable task itemNative durable task item revised",
+        "acceptance": "Checked prototype item and board survive native application restart."
+      }
+    ],
+    "tasks": [
+      {
+        "id": "TNATIVE",
+        "requirementId": "RNATIVE",
+        "title": "Verify native durable edits",
+        "dependencies": [],
+        "status": "queued"
+      }
+    ]
+  },
+  "messages": []
+}

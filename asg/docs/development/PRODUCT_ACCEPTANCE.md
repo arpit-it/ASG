@@ -750,3 +750,40 @@ python3 -B tools/product_acceptance.py --manifest docs/development/product_accep
 Only generatedAt changes on a later CLI run. Source, requirement, input, configuration
 or device identity mutation makes the supplied cell stale. All other cells stay
 missing or unavailable; saved caller observations are not authenticated acceptance.
+
+
+## Native exact-snapshot archive interaction (issue #275 extension)
+
+The [observation](acceptance/2026-10-30-native-archive-matrix/observation.json)
+records native export, separate restored workspace and retained revision3 board/
+checked prototype across explicit Quit, verified absence and path relaunch.
+The [export](acceptance/2026-10-30-native-archive-matrix/export.json) is synthetic
+version7 data. Version999 import was refused. Original remains listed; no
+post-restore database byte-equality check is claimed. Source422363fc bundle was
+reused, with all43 bundle hashes and300 selected source/test/tool/platform files
+verified against both source snapshot and reviewed branch. Only the unique
+app-name/bundle override differs. No new build, inference or support claim.
+
+The two F10 files transcribe separately expanded rendered JSON using the prior
+identical structure and actual restored current-input digest. They compare equal
+across restart. Their board matches the original, while restored project metadata
+changes current-input identity. Saved approved input/model remain unavailable;
+collector identities use explicit sentinel digests, not the unapproved input.
+No screenshots are retained by this extension. UI control lag and native Save
+filename behavior are documented in the observation rather than hidden.
+
+Repeat on the isolated bundle/profile: portable records → load/review/export;
+select actual saved file → restore a unique new ID/name; verify both Projects
+entries; open restored prototype/board/report and retain full displayed F10 JSON;
+Quit, separately verify absence, relaunch path and repeat; select incompatible
+fixture and verify no restore offered. Never use stable application storage.
+The saved report supplies only native archive-interaction. Regenerate from Flutter
+root (other scenarios remain missing/unavailable):
+
+```sh
+python3 -B tools/product_acceptance.py --manifest docs/development/product_acceptance_manifest.json --identity docs/development/acceptance/2026-10-30-native-archive-matrix/identity.json --evidence docs/development/acceptance/2026-10-30-native-archive-matrix/evidence.json --output /tmp/native-archive-report.json
+```
+
+105 focused Flutter archive/store/controller/session/report tests and20 collector
+fixtures passed. All six identity changes stale the submitted observation. These
+are caller-attested records, not live health/authenticity or complete F17 acceptance.

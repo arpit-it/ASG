@@ -1,0 +1,17 @@
+{
+  "host": "macos",
+  "storage": "unique-bundle-native-database",
+  "appBuild": "debug",
+  "bundleIdentifier": "com.arsinha.asg.f17current",
+  "productName": "ASG F17 Current",
+  "sourceRevision": "422363fc04db6a20b6c515c25dc71f4becaafff6",
+  "snapshotOverride": "asg/macos/Runner/Configs/AppInfo.xcconfig",
+  "bundleManifestSha256": "e6004cc3038a7b123fd85068504c55dfab25c0091b5c482884f17074af97e943",
+  "modelRequests": false,
+  "approvedRunPresent": false,
+  "inputIdentityScope": "unavailable-approved-input; current unapproved F10 input retained in snapshot only",
+  "sdkVersion": "3.47.6",
+  "dartVersion": "3.13.5",
+  "snapshotMatchingSelectedFiles": 300,
+  "workflow": "native-export-separate-restore-restart-invalid-refusal"
+}
