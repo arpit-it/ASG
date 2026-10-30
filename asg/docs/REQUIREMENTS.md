@@ -49,7 +49,8 @@ Update this document with task selection and delivery evidence, alongside [agent
   - Accept when failed, missing and stale evidence cannot yield a verified requirement, and reports link to exact revisions and test results.
   - Assessment clarification (28 October 2026): extend this existing task with acceptance-criterion-level check mappings and explicit automated, manual and advisory evidence types. A green generic build or manually completed task must never verify unrelated criteria. Bind each result to exact requirement content and source/input revision; edits invalidate affected results. Show unmet criteria and evidence links in the workspace and copied report, and retain the current honest “Acceptance criteria: not verified” state until criterion-specific checks actually establish the supported claim. Validate changed criteria/source, missing checks, failed checks and reopen behavior. This scope is delivered as the explicitly bounded authored-check contract below; free-form prose and live-file freshness remain outside its verdict.
 - [ ] F17 Reproducible product acceptance and support matrix — In progress; depends on F10
-  - Current #289 native fingerprint-bound extension: real native proposal/diff, confined four checks, explicit promotion, served add/check, restart and exact F10/collector identities observed at compiled584c89c; `289-native-fingerprint-acceptance` Awaiting independent review/CI/merge. Full F17 remains In progress.
+  - Active repair evidence separation: reused/reopened [issue #263](https://github.com/arpit-it/ASG/issues/263), `263-repair-evidence-checks`. Add separate generated-output/manual repair cells and explicit F10 generated-check import; no new actual workflow or full support claim. Scope/acceptance/validation recorded in delivery ledger below. In progress pending independent review, required CI and merge.
+  - Delivered #289 native fingerprint-bound extension: [PR #302](https://github.com/arpit-it/ASG/pull/302), final `87c037018daff34a441c77c19ab45c700df71c02`, independent review5709718155/finalgate6518389158 and required CI41025253832 passed; merge `5e507d33ab485127cda6dea822051dae16a4e6e8` at2026-10-30T08:21:53Z; issue closed. Actual compiled584c89c native proposal/check/promotion/served/restart observations remain bounded historical evidence; full F17 In progress.
   - Active #289 runtime correction: `289-candidate-matrix` honors bounded 4096-token full-file requests; minimum requested view replacement measures2298 tokens against former2048 cap.26Python/31Flutter tests pass; actual retry still failed safely. Native candidate acceptance and full F17 remain In progress; no promotion/support claim.
   - Active native Plan exact-snapshot extension: reopened [issue #287](https://github.com/arpit-it/ASG/issues/287), `287-plan-matrix`. Actual mapped Plan approval/restart/edit/refusal and external last-working preservation observed; 41 focused Flutter tests and 20 collector fixtures pass. Awaiting independent review, required CI and verified merge. Full F17 remains In progress.
   - Active exact-snapshot web reopen extension: reused/reopened [issue #265](https://github.com/arpit-it/ASG/issues/265), `265-web-reopen-matrix`; three bounded web saved observations, Awaiting review/CI/merge. Full F17 remains In progress.
@@ -4490,3 +4491,26 @@ Exact native F10 expanded JSON records revision10 board/input/source/approval/ru
 Evidence: `development/acceptance/2026-10-30-native-fingerprint-candidate/observation.json`, exact `f10-promoted.json`, source/bundle/model manifests, configuration/device/identity, evidence/report and served screenshot. 26Python streaming-HTTP/collector fixtures passed after fixing an initially mistyped test module and granting loopback fixture access; collector regeneration passed. Fresh macOS debug build passed. Docs/evidence-only publication adds no runtime changes; previous PR301 checks remain historical, not fresh-head claims. Initial CUA launch approval/response took roughly74minutes; initial empty AX later rendered normally, so no launch-performance conclusion inferred. No model downloads or stable-app replacement.
 
 Issue289 bounded extension Awaiting independent review, required CI and verified merge; fullF17 remains In progress. No later task or new issue selected. Final reviewer/head/CI/merge evidence belongs in this ledger after verification.
+
+
+### F17 repair evidence separation — issue #263 extension (30 October 2026)
+
+Source/gap: F17 requires real bounded repair, confined rerun and observable output
+behavior; the manifest currently provides only one live-inference repair check.
+Reopened existing bridge issue #263 after deduplication; no new F ID or issue.
+Prior #263/PR #264 delivery remains complete. No competing active run/open PR.
+Branch `263-repair-evidence-checks` starts from verified merged PR #302 at
+`5e507d33ab485127cda6dea822051dae16a4e6e8`; unrelated primary IDE/docs edits retained.
+
+Bounded acceptance: add `repair-confined-checks`/generatedOutput and
+`repair-interaction`/manual for macOS/web. An inference pass cannot fill either;
+explicit generated-output import cannot fill manual; unsupported manual import
+fails. Exact identity changes and old manifest digests invalidate saved passes.
+Retain all historical evidence unchanged. Document actual isolated rerun steps;
+execute no model/native workflow or unrestricted code in this collector change.
+
+Validation results: 24 Python collector/importer/CLI regressions and seven
+existing Flutter report parser/controller/widget tests passed; diff-check passed.
+No Flutter runtime source changed; no local app rebuild. Independent final-revision review and required CI
+must pass before protected merge. Full F17 remains In progress. This increment
+stays Awaiting merge until final review, CI, PR and merge evidence are verified.

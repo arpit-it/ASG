@@ -16,7 +16,7 @@ PROVENANCE_FIELDS = ('schemaVersion', 'scope', 'scenarioId', 'sourceRevision',
                      'requirementSha256', 'inputSha256', 'generatedSourceSha256',
                      'approvalSha256', 'savedRunSha256')
 CHECKS = {'reviewed-candidate': ('model-proposal', 'confined-checks'),
-          'bounded-repair': ('real-repair-rerun',)}
+          'bounded-repair': ('real-repair-rerun', 'repair-confined-checks')}
 
 
 def import_observation(spec, environment, evidence, provenance, *, check_id,

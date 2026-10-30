@@ -3468,3 +3468,22 @@ Exact native F10 expanded JSON records revision10 board/input/source/approval/ru
 Evidence: `development/acceptance/2026-10-30-native-fingerprint-candidate/observation.json`, exact `f10-promoted.json`, source/bundle/model manifests, configuration/device/identity, evidence/report and served screenshot. 26Python streaming-HTTP/collector fixtures passed after fixing an initially mistyped test module and granting loopback fixture access; collector regeneration passed. Fresh macOS debug build passed. Docs/evidence-only publication adds no runtime changes; previous PR301 checks remain historical, not fresh-head claims. Initial CUA launch approval/response took roughly74minutes; initial empty AX later rendered normally, so no launch-performance conclusion inferred. No model downloads or stable-app replacement.
 
 Issue289 bounded extension Awaiting independent review, required CI and verified merge; fullF17 remains In progress. No later task or new issue selected. Final reviewer/head/CI/merge evidence belongs in this ledger after verification.
+
+
+### 30 October 2026 — F17 repair evidence separation (#263 extension)
+
+Reused/reopened #263 after verifying no open PR/issue or competing active ASG run.
+Branch `263-repair-evidence-checks` from merged PR302/5e507d33 preserves all primary
+IDE/documentation edits in place. F17's repair manifest had only a live-inference
+check: add separate generated-output and manual interaction checks, plus explicit
+F10 import for generated checks. Manual mapping remains refused. Inference/check
+passes never imply an interaction; identity/manifest changes stale saved passes.
+Historical snapshots remain byte-identical. Added focused regressions and actual
+repair rerun instructions. No new model/native workflow or full F17 claim.
+
+24 Python collector/importer/CLI tests and seven existing Flutter report parser/
+controller/widget tests passed locally; diff-check passed. No Flutter runtime
+source changed, so local app build was not repeated. Independent exact-revision
+review and required CI/merge evidence pending.
+PR302 independently merged 5e507d33 at2026-10-30T08:21:53Z, issue289 closed; review
+5709718155/finalgate6518389158 and CI41025253832 passed at87c03701. Full F17 In progress.
