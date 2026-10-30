@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "feature": "F17",
+  "issue": 291,
+  "observedAt": "2026-10-30T23:17:39.836083+00:00",
+  "compiledSourceRevision": "584c89c4cc98522b75b65d53ecbd52c5e21d6859",
+  "publicationBaseRevision": "26c18c7fae4a069ec772f8bc77a83e43fc26c578",
+  "extends": "../2026-10-30-native-command-deadline/observation.json",
+  "historicalDeadlineRerun": false,
+  "controlTimingsMs": {
+    "finderBaseline": 96,
+    "isolatedLaunch": 1876,
+    "accessibilityRefresh": 54,
+    "relaunch": 1218
+  },
+  "observed": [
+    "Opened retained deadline disposable project; generator displayed ready baseline and current approval message4, TACTUAL and four passed operations.",
+    "Started actual built preview from native UI; Chrome rendered exact deadline project title. Added Deadline reopen verified and observed checkbox change0to1. Closed owned tab and stopped preview.",
+    "Source-review screen reopened without in-memory proposal; displayed no saved repair requests and zero usage. Prior candidate details are not exposed by this reopened screen.",
+    "Read durable journal: finished candidate failed after resolve0/analyze0/test-1 timedOut true, not cancelled; ready baseline retained.",
+    "Quit via native menu; independent app inventory omitted isolated bundle; relaunched exact retained bundle and re-opened generator: ready, exact current approval message4 and four passed operations retained.",
+    "Read durable records again: all values equal to pre-quit capture; all57 prior working source/output files unchanged; actual300source/43bundle manifest bytes reverified.",
+    "Quit via native menu for cleanup; stable application never launched."
+  ],
+  "limitations": [
+    "Supplement to historical PR307 deadline observation; no fresh deadline execution, model request, Stop or combined Stop/deadline claim.",
+    "No new acceptance matrix pass: prior evidence.json/identity/report remain unchanged; this supplement adds bounded restart/served-output facts only.",
+    "Retained compiled source differs from publication main; no current-main product certification or fullF17 completion.",
+    "Candidate failure inspected in durable journal, not visible reopened candidate details. No new candidate or repair requested.",
+    "Browser item persistence after reload not asserted; numeric browser version unavailable.",
+    "Manual observations are caller-attested; raw database, prompts, private paths and preview token excluded."
+  ]
+}

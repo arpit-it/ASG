@@ -966,3 +966,8 @@ older observations retain their historical manifest identity.
 ## Browser durable-records fixture — issue #253
 
 [Repeat instructions](acceptance/2026-10-30-web-durable-fixture/REPRODUCE.md) record five actual Chrome tests including one new edited-project/conversation/requirements persistence regression. Two IndexedDB reopens, unrelated-record isolation, malformed-write refusal and raw durable transaction-abort preservation supply one web create-reopen/durable-records fixture cell only. Manifest now references the browser suite alongside native storage coverage. No manual UI, application launch/build, inference or fullF17 acceptance is inferred.
+
+
+## Native deadline restart and served-output supplement
+
+The [follow-up observation](acceptance/2026-10-30-native-deadline-reopen/observation.json) adds actual preserved-preview add/check and Quit/independent absence/relaunch facts to PR307. All57 working files and all durable record values remained unchanged across restart. Retained compiled300source/43bundle manifests were checked. The failed timedOut candidate is present in durable records; reopened source-review UI does not expose its prior details. [Repeat instructions](acceptance/2026-10-30-native-deadline-reopen/REPRODUCE.md) preserve the distinction. No deadline rerun, new matrix pass, Stop/combined/model/current-main/fullF17 claim.
