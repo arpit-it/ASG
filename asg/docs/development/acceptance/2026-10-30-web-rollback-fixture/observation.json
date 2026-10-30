@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-10-30T22:46:20Z",
+  "sourceRevision": "98aeb6142fe0bd649f4ea383534100272aaa3401",
+  "flutter": {
+    "testReferences": [
+      "test/browser_build_history_test.dart"
+    ],
+    "platform": "chrome",
+    "passed": 2,
+    "skipped": 0,
+    "exitCode": 0
+  },
+  "python": {
+    "testReference": "tools/test_product_acceptance.py",
+    "passed": 27,
+    "exitCode": 0
+  },
+  "sourceFileCount": 274,
+  "verifiedAssertions": [
+    "Terminal successful/failed history and UTC timestamps survive IndexedDB reopen; repeated successful save is idempotent",
+    "Failed or forged history selection is refused",
+    "Atomic selection retains prior working record and exact journal across reopen",
+    "Independent durable update defeats stale cached compare-and-set without publishing backup",
+    "Withdrawn authorization refuses both record writes",
+    "Corrupt history remains raw, blocks store writes, and unrelated project is preserved"
+  ],
+  "limitations": [
+    "Storage fixtures only; no generated file execution, artifact validation, native preview, browser generation or manual rollback interaction.",
+    "Multiple synthetic snapshots have no single F10 identity; requirement/input/model use UTF8 unavailable.",
+    "No application build/launch, model request or full F17 support claim."
+  ],
+  "environment": "Initial synthetic ready fixture lacked main.dart.js digest and was rejected; corrected fixture passed actual Chrome2, zero skips, exit0. Retained successful log reports no teardown fallback."
+}

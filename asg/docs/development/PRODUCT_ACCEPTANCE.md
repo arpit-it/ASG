@@ -956,3 +956,8 @@ approval preservation. This supplies one web approved-plan fixture cell only.
 No manual Plan UI, model request, app launch or full F17 acceptance is inferred.
 The manifest now references the browser suite alongside native approval tests;
 older observations retain their historical manifest identity.
+
+
+## Browser rollback record fixtures — issue #253
+
+[Repeat instructions](acceptance/2026-10-30-web-rollback-fixture/REPRODUCE.md) record two actual Chrome IndexedDB tests for selected saved history, atomic previous/current pointer preservation, stale durable compare-and-set refusal, withdrawn authorization and corrupt raw history preservation. Only one web rollback-records fixture cell is supplied. Synthetic artifact hashes do not validate files, native preview or manual rollback; full F17 remains In progress.
