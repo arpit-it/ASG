@@ -1,0 +1,137 @@
+{
+  "schemaVersion": 1,
+  "issue": 289,
+  "recordedAt": "2026-10-30T05:35:55.483455+00:00",
+  "testedSourceRevision": "e3b76d09c623c355e59ab1c8084d0d4380a6444a",
+  "compiledSourceRevision": "422363fc04db6a20b6c515c25dc71f4becaafff6",
+  "selectedSourceFilesMatched": 300,
+  "bundleFilesMatched": 43,
+  "runtime": {
+    "backend": "mlx",
+    "model": "Qwen3.5-9B",
+    "existingOfflineWeights": true,
+    "downloaded": false,
+    "ownedRuntimeExitCode": 0
+  },
+  "observations": [
+    "Isolated app refused source proposals under stale Plan.",
+    "A new real mapped version4 starter Plan was requested, validated and explicitly approved for revision5 TNATIVE.",
+    "Real selected-main-file proposal replaced valid JSON decoding with an invalid UTF-8 decoder call. Reviewed diff, prepared separate candidate and consented to confined checks.",
+    "Initial candidate resolved successfully and failed actual analysis.",
+    "Each of three real repair proposals was reviewed, applied only into a separate candidate with explicit consent, and reran confined checks. All resolved successfully and failed analysis.",
+    "Native UI showed analyze budget exhausted at3/3, failed candidate and no verified promotion. No fourth request or promotion attempted.",
+    "All40 recorded working source/output files remained byte-identical. Original saved ready working build record unchanged across all repairs.",
+    "Explicit Quit and subsequent independent app inventory confirmed isolated app absent. Existing stable app was not launched/replaced."
+  ],
+  "runs": [
+    {
+      "number": 1,
+      "startedAt": "2026-10-30T05:29:38.257681Z",
+      "finished": true,
+      "phase": "failed",
+      "steps": [
+        {
+          "operation": "resolve",
+          "exitCode": 0,
+          "outputSha256": "266795da626cb9f2fd5c7a05239b799db8d669ebb11eef98bdac3b6996c42e11"
+        },
+        {
+          "operation": "analyze",
+          "exitCode": 1,
+          "outputSha256": "4585f766fd812d7fc2a54f06b4f6890a41ba5bff8d2290177af02f680df95d7d"
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "startedAt": "2026-10-30T05:31:03.541294Z",
+      "finished": true,
+      "phase": "failed",
+      "steps": [
+        {
+          "operation": "resolve",
+          "exitCode": 0,
+          "outputSha256": "266795da626cb9f2fd5c7a05239b799db8d669ebb11eef98bdac3b6996c42e11"
+        },
+        {
+          "operation": "analyze",
+          "exitCode": 1,
+          "outputSha256": "47431a8d6d3d19552d4807c4fa78974c3e8be77352688ae0c011fe6171419257"
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "startedAt": "2026-10-30T05:32:31.692016Z",
+      "finished": true,
+      "phase": "failed",
+      "steps": [
+        {
+          "operation": "resolve",
+          "exitCode": 0,
+          "outputSha256": "266795da626cb9f2fd5c7a05239b799db8d669ebb11eef98bdac3b6996c42e11"
+        },
+        {
+          "operation": "analyze",
+          "exitCode": 1,
+          "outputSha256": "b555dd22f964b0053500d59fb3c88f13250a9191a70e2a05debe5a7160a35ceb"
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "startedAt": "2026-10-30T05:33:38.477229Z",
+      "finished": true,
+      "phase": "failed",
+      "steps": [
+        {
+          "operation": "resolve",
+          "exitCode": 0,
+          "outputSha256": "266795da626cb9f2fd5c7a05239b799db8d669ebb11eef98bdac3b6996c42e11"
+        },
+        {
+          "operation": "analyze",
+          "exitCode": 1,
+          "outputSha256": "e125525a9c0ea073a1637cd29abcf40efddec532dfdfe6c6b2b774465d45a32c"
+        }
+      ]
+    }
+  ],
+  "repairAttempts": [
+    {
+      "number": 1,
+      "startedAt": "2026-10-30T05:30:09.353743Z",
+      "status": "proposed",
+      "proposalSha256": "205ad41af42dba5b32b66c73d19c7ec6fa6855c437631cf864ce0358292f1a7e"
+    },
+    {
+      "number": 2,
+      "startedAt": "2026-10-30T05:31:23.170799Z",
+      "status": "proposed",
+      "proposalSha256": "41b4b6bf8992dcfb9250d810d3848bf40c63ed901b100fe7d1d5251b9f7e4578"
+    },
+    {
+      "number": 3,
+      "startedAt": "2026-10-30T05:32:53.422452Z",
+      "status": "proposed",
+      "proposalSha256": "764f5575b1611076513e116d1d68f060c615d05efe1b4f3b1b4dae08759d2d21"
+    }
+  ],
+  "workingBuildRecordSha256": "88a1df51453fa4877207ca684913e68099bf33a154df327c0d7570eb13aba1ac",
+  "workingFilesPreserved": 40,
+  "validation": {
+    "focusedFlutterTestsPassed": 31,
+    "testFiles": [
+      "test/candidate_repair_proposer_test.dart",
+      "test/source_candidate_controller_test.dart",
+      "test/candidate_failure_test.dart"
+    ]
+  },
+  "limitations": [
+    "Failed model workflow, not a candidate/repair success or full F17 completion.",
+    "No promotion, served candidate interaction, restart verification, full exact F10/model collector identity or current support claim.",
+    "The selected task concerned native durable edits; it did not ask for a generated main-file behavior change. Resume with a purpose-specific synthetic candidate task after reviewing this failure, rather than reset the exhausted approval or infer a new product defect.",
+    "Historical compiled bundle matches all selected current runtime/test/tool files; no fresh native build performed.",
+    "No implementation change, publication, PR, independent review or merge yet."
+  ]
+}

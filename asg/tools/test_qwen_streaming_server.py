@@ -18,7 +18,10 @@ spec.loader.exec_module(module)
 
 class FakeBackend:
     kind = 'fixture'
+    def __init__(self):
+        self.tokens = None
     def generate(self, messages, tokens, publish, cancelled, deadline):
+        self.tokens = tokens
         if messages[0]['content'] == 'error':
             raise ValueError('Invalid fixture prompt')
         publish('token', 'Hello ')
@@ -28,7 +31,8 @@ class FakeBackend:
 class ServerTests(unittest.TestCase):
     def setUp(self):
         self.executor = ThreadPoolExecutor(max_workers=1)
-        self.server = ThreadingHTTPServer(('127.0.0.1', 0), module.create_handler(FakeBackend(), self.executor, 'fixture', Path('/fixture')))
+        self.backend = FakeBackend()
+        self.server = ThreadingHTTPServer(('127.0.0.1', 0), module.create_handler(self.backend, self.executor, 'fixture', Path('/fixture')))
         self.server.daemon_threads = True
         self.thread = Thread(target=self.server.serve_forever, daemon=True)
         self.thread.start()
@@ -37,8 +41,8 @@ class ServerTests(unittest.TestCase):
         self.server.shutdown()
         self.server.server_close()
         self.executor.shutdown()
-    def request(self, streaming=True, content='hello'):
-        body=json.dumps({'model':'fixture','messages':[{'role':'user','content':content}], 'stream':streaming}).encode()
+    def request(self, streaming=True, content='hello', **options):
+        body=json.dumps({'model':'fixture','messages':[{'role':'user','content':content}], 'stream':streaming, **options}).encode()
         return urllib.request.urlopen(urllib.request.Request(self.url+'/v1/chat/completions', data=body, headers={'Content-Type':'application/json'}), timeout=5)
     def test_sse_status_tokens_and_done(self):
         with self.request() as response:
@@ -64,6 +68,22 @@ class ServerTests(unittest.TestCase):
         with self.assertRaises(urllib.error.HTTPError) as error:
             urllib.request.urlopen(request)
         self.assertEqual(error.exception.code,403)
+    def test_source_proposal_budget_and_bounded_chat_limits(self):
+        for streaming in (True, False):
+            for requested, expected in ((4096, 4096), (9000, 4096),
+                                        (1536, 1536), (2048, 2048), (0, 1)):
+                with self.subTest(streaming=streaming, requested=requested):
+                    with self.request(streaming, max_tokens=requested) as response:
+                        response.read()
+                    self.assertEqual(self.backend.tokens, expected)
+            with self.request(streaming) as response:
+                response.read()
+            self.assertEqual(self.backend.tokens, 256)
+    def test_invalid_token_budget_is_rejected_before_inference(self):
+        with self.assertRaises(urllib.error.HTTPError) as error:
+            self.request(max_tokens='invalid')
+        self.assertEqual(error.exception.code, 400)
+        self.assertIsNone(self.backend.tokens)
 
 if __name__ == '__main__':
     unittest.main()
