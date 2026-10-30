@@ -3499,3 +3499,5 @@ Issue #285 reopened for current-manifest retained compiled584c89c rollback inter
 Validation: 11 focused build_rollback Flutter tests and 27 Python collector/importer/CLI tests passed. Collector regenerated120cells with exactly one saved macOS rollback-interaction pass. No runtime code changed; source/bundle identities rechecked.
 
 Prior #283 delivery reconciled: PR #305 final9e65d2d independently approved COMMENT5716484247; CI41100841467 passed Python124217650980/Flutter124217651794; protected merge865dd2eae306cb23f64cdbad34fa2583771b1938 at2026-10-30T17:58:45Z, issue283closed. Earlier Awaiting text is historical; fullF17 stays In progress.
+
+Published [PR #306](https://github.com/arpit-it/ASG/pull/306), branch `285-native-rollback-matrix`, initial tested locale5277818/remote9906355ad share exacttree2cec740d362f8234676f25d3a90622a3a3faef0a. This link-only revision retains the same observation/tests. Awaiting independent final-revision review, requiredCI and verifiedmerge; issue285/fullF17 remain In progress.
