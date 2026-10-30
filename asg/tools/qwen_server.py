@@ -145,7 +145,9 @@ def create_handler(backend, executor, model_id, model_path):
                 messages = request.get('messages')
                 if not isinstance(messages, list) or not 1 <= len(messages) <= 32 or any(not isinstance(m, dict) or m.get('role') not in ('user', 'assistant', 'system') or not isinstance(m.get('content'), str) for m in messages):
                     raise ValueError('Invalid text messages')
-                tokens = min(2048, max(1, int(request.get('max_tokens', 256))))
+                # Reviewed full-file source proposals request 4096 tokens. Chat
+                # retains its smaller caller-selected limit and 256 default.
+                tokens = min(4096, max(1, int(request.get('max_tokens', 256))))
                 streaming = request.get('stream') is True
             except (ValueError, TypeError, AttributeError):
                 self.respond(400, {'error': 'Invalid request or model ID'})

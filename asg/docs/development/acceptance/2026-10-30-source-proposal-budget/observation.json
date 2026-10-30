@@ -1,0 +1,32 @@
+{
+  "issue": 289,
+  "recordedAt": "2026-10-30T05:53:10.481800+00:00",
+  "requirementsRevision": 10,
+  "requirementId": "RCANDIDATE",
+  "taskId": "TCANDIDATE",
+  "selectedSource": "lib/views/generated_app.dart",
+  "requestedChange": "debugShowCheckedModeBanner: false only",
+  "minimumCompleteResponseTokens": 2298,
+  "tokenizer": "existing Qwen3.5-9B 4bit tokenizer.json",
+  "oldRuntimeTokenCap": 2048,
+  "proposerRequestedTokens": 4096,
+  "correctedRuntimeTokenCap": 4096,
+  "actualNativeResults": [
+    "Fresh real mapped four-operation Plan validated and explicitly approved.",
+    "Source proposal failed with original runtime; working output retained.",
+    "Source proposal also failed after corrected runtime restart; no proposal success, candidate verification or promotion established.",
+    "Three old approval repair attempts retained; current approval usage remains zero.",
+    "Explicit isolated app Quit; owned original and corrected runtime processes exited zero."
+  ],
+  "preservedWorkingFiles": 41,
+  "preservedWorkingRecordSha256": "88a1df51453fa4877207ca684913e68099bf33a154df327c0d7570eb13aba1ac",
+  "validation": {
+    "focusedFlutterTestsPassed": 31,
+    "pythonHttpAndCollectorTestsPassed": 26
+  },
+  "limitations": [
+    "Generic native error does not establish exact cause of either actual failure.",
+    "Token-budget mismatch independently proved by installed tokenizer minimum response measurement and real HTTP fixture tests.",
+    "No current full F17 collector/support claim, served-candidate interaction or completion claim."
+  ]
+}
