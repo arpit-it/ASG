@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "records": [
+    {
+      "scenarioId": "archive-reopen",
+      "checkId": "archive-interaction",
+      "target": "web",
+      "status": "passed",
+      "observedAt": "2026-10-30T21:08:18Z",
+      "identity": {
+        "sourceRevision": "4787d9442105f6f1e8c011098a491471d4c96136",
+        "requirementSha256": "4853544e4c4327a4e775e83a4912d6bc96f9383f9fe1edf1a42990f28352c49b",
+        "inputSha256": "ba691ba042bcedd9a61a36f5969026bc95859dccdc7e47f24e6bce35673baf2f",
+        "configurationSha256": "325dce593ad322c804bef1c5140562655063af0f0301c8a33c32ca9216743e29",
+        "modelSha256": "ba691ba042bcedd9a61a36f5969026bc95859dccdc7e47f24e6bce35673baf2f",
+        "deviceSha256": "971918236a11e3e601fe8ae10ada2b1499fdbeddb381d51a35698daa2cf26b83",
+        "sdkVersion": "3.47.6",
+        "runtimeVersion": "unavailable",
+        "browserVersion": "unavailable",
+        "backend": "none",
+        "host": "web"
+      },
+      "manifestSha256": "a388df73fcad2fd78ddd1d292d1567f15b6d7a475ff274d4859e7229e36dd126",
+      "artifactSha256": [
+        "44d5e48cff0dfce25a8dfe4af0cbee91053eb7c781453293b57c68027d22a8d0",
+        "80189956bd30de1ab43861cb4a77830026c7de7b6e124d6af0f9279ad4ad60fa",
+        "a359c769e7205d1a710a387ea61565088b58a50093b59425eae36c18c4781cae",
+        "a359c769e7205d1a710a387ea61565088b58a50093b59425eae36c18c4781cae",
+        "7cdb98c928dec152c1cd20f1cf8aa2774c4a112022234edfd5205cd6f1a0856a",
+        "2004ba422d4346f0d61aecccf686006bb82c9cd1ce05540265395f24a2a327df",
+        "f48e639d136c7bdf0ed2d99c4d45618d927c64692dfe42ceb5ea8494b8d8514e",
+        "044e67167fe8877653b227a99bc32dc73a368eeec34c46d1cdba2ae780ad2644",
+        "bca706adc1480163408e70680d85d1c70d2a2f436ef0ad70da492336fe0906ea"
+      ]
+    }
+  ]
+}

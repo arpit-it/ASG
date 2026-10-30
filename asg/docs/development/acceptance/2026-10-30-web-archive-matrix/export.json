@@ -1,0 +1,67 @@
+{
+  "format": "asg-portable-records",
+  "project": {
+    "description": "A daily task planner\n\nSelected experience: Web app\nInitial features: Task list, Add and edit tasks",
+    "type": "Flutter",
+    "platforms": [
+      "Web"
+    ]
+  },
+  "version": 7,
+  "prototype": {
+    "definition": {
+      "title": "Archive original 267",
+      "theme": "indigo",
+      "elements": [
+        {
+          "id": "welcome",
+          "type": "heading",
+          "label": "Archive original 267",
+          "items": [],
+          "completed": [],
+          "action": "message",
+          "target": "",
+          "value": ""
+        },
+        {
+          "id": "tasks",
+          "type": "taskList",
+          "label": "My items",
+          "items": [
+            "Archive durable item 267"
+          ],
+          "completed": [
+            0
+          ],
+          "action": "message",
+          "target": "",
+          "value": ""
+        }
+      ]
+    },
+    "revision": 1
+  },
+  "revisions": [],
+  "decision": null,
+  "requirements": {
+    "version": 1,
+    "revision": 2,
+    "requirements": [
+      {
+        "id": "RARCHIVE",
+        "title": "Portable records survive reload",
+        "acceptance": "Restore a separate project with the same board and checked prototype."
+      }
+    ],
+    "tasks": [
+      {
+        "id": "TARCHIVE",
+        "requirementId": "RARCHIVE",
+        "title": "Observe separate restore and reload",
+        "dependencies": [],
+        "status": "queued"
+      }
+    ]
+  },
+  "messages": []
+}

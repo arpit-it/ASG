@@ -1,0 +1,12 @@
+{
+  "host": "web",
+  "storage": "fresh-loopback-origin-indexeddb",
+  "appBuild": "release-javascript",
+  "sourceRevision": "4787d9442105f6f1e8c011098a491471d4c96136",
+  "sourceManifestSha256": "52858fd4843a6ba725b03744e55b1a02c848b31fc5f0419f8be954dca90c5cef",
+  "bundleManifestSha256": "ac67664274779d1b41f065dd99e0a501cabb85946d22185f77274f3515d8d6f9",
+  "modelRequests": false,
+  "approvedRunPresent": false,
+  "inputIdentityScope": "unavailable-approved-input; exact current unapproved F10 input retained separately",
+  "browserVersion": "unavailable"
+}
