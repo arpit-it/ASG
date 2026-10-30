@@ -1,0 +1,90 @@
+{
+  "savedEvidence": {
+    "scope": "Mapped checks passed describes saved command evidence, not acceptance criteria or current artifact availability. Inspect current artifacts separately to compare recorded source and output fingerprints. Inspection is read-only and reflects files only when inspected; it does not run commands or inference. Model Review remains advisory; manual task Done does not count as evidence.",
+    "requirementsRevision": 3,
+    "namedObservations": [],
+    "manualObservations": [],
+    "requirementsBoard": {
+      "version": 1,
+      "revision": 3,
+      "requirements": [
+        {
+          "id": "RNATIVE",
+          "title": "Native durable task itemNative durable task item revised",
+          "acceptance": "Checked prototype item and board survive native application restart."
+        }
+      ],
+      "tasks": [
+        {
+          "id": "TNATIVE",
+          "requirementId": "RNATIVE",
+          "title": "Verify native durable edits",
+          "dependencies": [],
+          "status": "queued"
+        }
+      ]
+    },
+    "requirementsBoardSha256": "a321c4728ecf0d853cf3e690133e8c8ace5a7aeb75598dd355882631d3467887",
+    "savedInputsCurrent": false,
+    "recordedAt": null,
+    "phase": null,
+    "approvalFingerprint": null,
+    "revisionIdentity": {
+      "schema": 1,
+      "scope": "Saved content identity only; not a direct check result or live artifact observation.",
+      "savedRunSha256": null,
+      "savedSourceSha256": null,
+      "savedInputSha256": null,
+      "savedApprovalSha256": null,
+      "currentInputSha256": "0c01f3a8f5fd69cfe868d106a416a4a977e7fbd75b027ca48ef4a901feba323b"
+    },
+    "sourceFingerprints": null,
+    "outputFingerprints": null,
+    "requirements": [
+      {
+        "id": "RNATIVE",
+        "state": "missing",
+        "acceptanceStatus": "unverified",
+        "acceptanceEvidence": {
+          "granularity": "authoredAcceptanceBlock",
+          "requirementId": "RNATIVE",
+          "requirementSha256": "54ee023e32833126e98b99d0d0a09c424a598e685de98a9e55f6866d0365a6ee",
+          "text": "Checked prototype item and board survive native application restart.",
+          "status": "unverified",
+          "reason": "No automated acceptance verdict is recorded for this acceptance block. Manual observations are self-reported. Generic operation results, manual task progress and advisory model Review do not verify acceptance.",
+          "declaredChecks": [],
+          "directChecks": [],
+          "authoredContract": {
+            "status": "unverified",
+            "criterionIds": [],
+            "unverifiedCriterionIds": [],
+            "requirementSha256": "54ee023e32833126e98b99d0d0a09c424a598e685de98a9e55f6866d0365a6ee",
+            "savedRunSha256": null,
+            "scope": "Only all explicitly authored named-test contracts at the saved revision. Empty criteria never verify. Free-form acceptance prose, semantic coverage and live files remain unverified."
+          },
+          "criteria": []
+        },
+        "bindingContext": {
+          "requirementSha256": "54ee023e32833126e98b99d0d0a09c424a598e685de98a9e55f6866d0365a6ee",
+          "savedRunSha256": null,
+          "savedInputsCurrent": false,
+          "scope": "Binding context only. Manual observations are separate from automated operation evidence."
+        },
+        "contextualEvidence": {
+          "type": "automatedOperation",
+          "criterionMapping": "none",
+          "operationIds": [],
+          "state": "missing"
+        },
+        "checks": [],
+        "boardTaskIds": [
+          "TNATIVE"
+        ],
+        "operationIds": []
+      }
+    ],
+    "operations": [],
+    "results": []
+  },
+  "artifactInspection": null
+}

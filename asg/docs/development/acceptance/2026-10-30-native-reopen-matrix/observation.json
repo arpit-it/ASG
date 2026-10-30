@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "scope": "caller-observed-native-persistence-only",
+  "issue": 273,
+  "observedAt": "2026-10-30T03:36:17Z",
+  "sourceRevision": "422363fc04db6a20b6c515c25dc71f4becaafff6",
+  "actualF10BoardSha256": "a321c4728ecf0d853cf3e690133e8c8ace5a7aeb75598dd355882631d3467887",
+  "actualF10CurrentInputSha256": "0c01f3a8f5fd69cfe868d106a416a4a977e7fbd75b027ca48ef4a901feba323b",
+  "exactSnapshotRetained": true,
+  "observed": [
+    "Existing isolated project My Task Planner reopened with checked Native reopen acceptance item.",
+    "RNATIVE title edited and revision 3 saved acknowledgment observed; TNATIVE queued linkage retained.",
+    "Exact displayed F10 revision-3 JSON captured before explicit Quit.",
+    "Separate app inventory confirmed isolated app absent and stable application not running.",
+    "Explicit isolated app path relaunch retained checked prototype item and revision-3 board/task.",
+    "Reopened displayed F10 JSON exactly equals before-restart snapshot.",
+    "Final Quit and separate inventory confirmed isolated app absent."
+  ],
+  "limitations": [
+    "Creation was observed by the preceding run; this run establishes edited board and prototype restart persistence, not a fresh creation.",
+    "AX click and Cmd-A did not replace the existing title; typing appended the requested suffix. The actual resulting title is retained verbatim. No product defect inferred from UI automation.",
+    "No saved approved run, source input or model request exists; collector input/model identities use the UTF-8 unavailable sentinel.",
+    "Only manual interactive-reopen evidence supplied. Earlier build/launch provenance is retained but no new build pass or inference is claimed.",
+    "504 tracked source files match the tested revision; the one app-name/bundle override isolates storage. Source snapshot is outside the stable installed application.",
+    "Caller-attested snapshots and screenshots do not authenticate semantic acceptance or establish complete F17 support."
+  ]
+}
