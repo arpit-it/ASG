@@ -943,3 +943,16 @@ Repeat from a clean checkout of the recorded source using Flutter3.47.6/Dart3.13
 The suites use multiple disposable project snapshots, so no single F10 requirement/input identity exists. Those fields and model use SHA256 of UTF8 `unavailable`; runtimeVersion denotes absent model runtime, with actual Dart version in configuration. No F10 criterion is verified by this fixture identity. Source manifest lists tracked runtime/test/platform/tool files and their exact SHA256 at the tested commit. Config/device hashes use the collector canonical JSON function; artifact hashes use exact file bytes.
 
 Regenerate with `python3 tools/product_acceptance.py --manifest docs/development/product_acceptance_manifest.json --identity docs/development/acceptance/2026-10-30-native-fixture-baseline/identity.json --evidence docs/development/acceptance/2026-10-30-native-fixture-baseline/evidence.json --output /tmp/asg-fixture-report.json`. Only generatedAt changes. Source, requirement, input, configuration, model or device identity changes make all four cells stale. Observations remain caller-attested saved results, not support certification.
+
+
+## Chrome Plan approval persistence fixtures — issue #287
+
+The [repeat instructions](acceptance/2026-10-30-web-plan-fixture/REPRODUCE.md) and
+[saved report](acceptance/2026-10-30-web-plan-fixture/report.json) record actual
+IndexedDB close/reopen approval validity and refusal after requirements,
+prototype revision or latest Plan changes. Four Chrome tests passed, including
+three new lifecycle regressions, plus durable withdrawal and raw corrupt
+approval preservation. This supplies one web approved-plan fixture cell only.
+No manual Plan UI, model request, app launch or full F17 acceptance is inferred.
+The manifest now references the browser suite alongside native approval tests;
+older observations retain their historical manifest identity.
