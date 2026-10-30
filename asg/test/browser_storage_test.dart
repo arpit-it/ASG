@@ -4,6 +4,12 @@
 @TestOn('browser')
 library;
 
+import 'package:asg/models/chat_message.dart';
+import 'package:asg/models/project.dart';
+import 'package:asg/services/application_store.dart';
+import 'package:asg/services/conversation_store.dart';
+import 'package:asg/services/plan_approval_store.dart';
+import 'package:asg/services/studio_store.dart';
 import 'package:asg/models/requirements_board.dart';
 import 'package:asg/models/source_generation.dart';
 import 'package:asg/models/build_task.dart';
@@ -151,4 +157,139 @@ void main() {
       }
     },
   );
+  for (final change in ['requirements', 'prototype', 'draft']) {
+    test('IndexedDB approval refuses stale $change after reopen', () async {
+      final name = 'asg-plan-$change-${DateTime.now().microsecondsSinceEpoch}';
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+      var db = await databaseFactoryWeb.openDatabase(name);
+      const project = StudioProject(
+        id: 'browser-plan',
+        name: 'Browser plan',
+        description: 'Track tasks',
+        type: 'Flutter',
+        platforms: ['Web'],
+        location: '',
+      );
+      try {
+        var records = await StudioDatabase.migrate(db, prefs);
+        await StudioStore(records).save([project]);
+        var approvals = PlanApprovalStore(records);
+        var messages = [
+          ChatMessage(
+            role: 'assistant',
+            content: 'Exact saved plan',
+            planContext: approvals.contextFor(project),
+          ),
+        ];
+        await ConversationStore(records).save(project.id, messages);
+        await approvals.save(project, messages, true);
+        final original = approvals.requireCurrentApproval(project).toJson();
+        await db.close();
+        db = await databaseFactoryWeb.openDatabase(name);
+        records = await StudioDatabase.migrate(db, prefs);
+        approvals = PlanApprovalStore(records);
+        expect(approvals.requireCurrentApproval(project).toJson(), original);
+        if (change == 'requirements') {
+          final store = RequirementsStore(records);
+          await store.save(
+            project.id,
+            store.load(project.id),
+            RequirementsBoard(
+              requirements: [
+                ProjectRequirement(
+                  id: 'R1',
+                  title: 'Changed task',
+                  acceptance: 'The changed task is retained',
+                ),
+              ],
+            ),
+          );
+        } else if (change == 'prototype') {
+          final apps = ApplicationStore(records);
+          final saved = apps.load(project);
+          await apps.save(
+            project.id,
+            ApplicationSnapshot(
+              saved.definition,
+              saved.messages,
+              saved.revision + 1,
+            ),
+          );
+        } else {
+          await ConversationStore(records).save(project.id, [
+            ...messages,
+            ChatMessage(
+              role: 'assistant',
+              content: 'New draft',
+              planContext: approvals.contextFor(project),
+            ),
+          ]);
+        }
+        await db.close();
+        db = await databaseFactoryWeb.openDatabase(name);
+        records = await StudioDatabase.migrate(db, prefs);
+        approvals = PlanApprovalStore(records);
+        expect(
+          () => approvals.requireCurrentApproval(project),
+          throwsStateError,
+        );
+        await expectLater(
+          approvals.save(project, messages, true),
+          throwsStateError,
+        );
+        expect(approvals.load(project.id)!.toJson(), original);
+        messages = [
+          ChatMessage(
+            role: 'assistant',
+            content: 'Fresh reviewed plan',
+            planContext: approvals.contextFor(project),
+          ),
+        ];
+        await ConversationStore(records).save(project.id, messages);
+        await approvals.save(project, messages, true);
+        expect(
+          approvals.requireCurrentApproval(project).content,
+          'Fresh reviewed plan',
+        );
+        await approvals.save(project, messages, false);
+        await db.close();
+        db = await databaseFactoryWeb.openDatabase(name);
+        records = await StudioDatabase.migrate(db, prefs);
+        approvals = PlanApprovalStore(records);
+        expect(approvals.load(project.id)!.approved, isFalse);
+        expect(
+          () => approvals.requireCurrentApproval(project),
+          throwsStateError,
+        );
+        expect(
+          ConversationStore(records).load(project.id).single.content,
+          'Fresh reviewed plan',
+        );
+        const key = 'studio.planApproval.v1.browser-plan';
+        final raw = StoreRef<String, String>('records');
+        await raw.record(key).put(db, 'broken approval');
+        await db.close();
+        db = await databaseFactoryWeb.openDatabase(name);
+        records = await StudioDatabase.migrate(db, prefs);
+        approvals = PlanApprovalStore(records);
+        expect(
+          () => approvals.requireCurrentApproval(project),
+          throwsFormatException,
+        );
+        await expectLater(
+          approvals.save(project, messages, true),
+          throwsFormatException,
+        );
+        expect(await raw.record(key).get(db), 'broken approval');
+        expect(
+          ConversationStore(records).load(project.id).single.content,
+          'Fresh reviewed plan',
+        );
+      } finally {
+        await db.close();
+        await databaseFactoryWeb.deleteDatabase(name);
+      }
+    });
+  }
 }
