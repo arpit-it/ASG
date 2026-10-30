@@ -1,0 +1,243 @@
+{
+  "savedEvidence": {
+    "scope": "Mapped checks passed describes saved command evidence, not acceptance criteria or current artifact availability. Inspect current artifacts separately to compare recorded source and output fingerprints. Inspection is read-only and reflects files only when inspected; it does not run commands or inference. Model Review remains advisory; manual task Done does not count as evidence.",
+    "requirementsRevision": 4,
+    "namedObservations": [],
+    "manualObservations": [],
+    "requirementsBoard": {
+      "version": 1,
+      "revision": 4,
+      "requirements": [
+        {
+          "id": "RNATIVE",
+          "title": "Native durable task itemNative dNative Plan lifecycle changed requirementurable task item revised",
+          "acceptance": "Checked prototype item and board survive native application restart."
+        }
+      ],
+      "tasks": [
+        {
+          "id": "TNATIVE",
+          "requirementId": "RNATIVE",
+          "title": "Verify native durable edits",
+          "dependencies": [],
+          "status": "queued"
+        }
+      ]
+    },
+    "requirementsBoardSha256": "57723730b260d3ad38638736fe4b4415d7babbc2027445727a21246f0626d0ee",
+    "savedInputsCurrent": true,
+    "recordedAt": "2026-10-30T04:40:17.724558Z",
+    "phase": "ready",
+    "approvalFingerprint": "25109ace2f8c870b71656e8b7c287ee09688578b4f2e5360cca3ce63c133c861",
+    "revisionIdentity": {
+      "schema": 1,
+      "scope": "Saved content identity only; not a direct check result or live artifact observation.",
+      "savedRunSha256": "79213f8d50d7356efb7a2b6ae6bade35f98e076bdc131a89cafcf7c178eb5d29",
+      "savedSourceSha256": "caa720e940ae5685c252ba2e14513caa666a7b189e50997664fdf99c8dc2a326",
+      "savedInputSha256": "42f521f90e7736190adcb2df577cc5de665bb3dd15c7df476bff9c73b4c6f184",
+      "savedApprovalSha256": "25109ace2f8c870b71656e8b7c287ee09688578b4f2e5360cca3ce63c133c861",
+      "currentInputSha256": "42f521f90e7736190adcb2df577cc5de665bb3dd15c7df476bff9c73b4c6f184"
+    },
+    "sourceFingerprints": {
+      "test/generated_app_test.dart": "297479deeae5ffc87db80b2fa9cc68ee1fc8d8a692c1d93fe89a514963d62683",
+      "web/index.html": "6c5d8241a9a3c260bf036bc3475447e6f2f2031107b73eaa90be1df08bd4cece",
+      "NOTICES": "0a051b41f7cd9924efb9055be9fdc27c6a20b33fc1d43745793129a5b94f4b8f",
+      "README.md": "0ba786e084d33765333010fc5580cea09bd59263759ce833b2a271973e016519",
+      "pubspec.yaml": "dff9eb99a9055fea5834797e23898f19afc3f530b5aa8309290b15576eb2f9a2",
+      ".gitignore": "7eefa4b35df04deb84c72380b289f9d744eb9a07f5d9770b9d1f56cc797772d2",
+      "asg_project.json": "952d1c2ab5722d6c45aa4c1b511e18fa6c70c32cbddc226ae8faec26a5deeab0",
+      "lib/models/app_definition.dart": "247940bea0300c767ac74c546c302abe88afd3ce0138d58ef6c7f611ecb9e76c",
+      "lib/main.dart": "5a1908c7adf4b494e4eb761508e6d1a1c69519fb79c1edccb875996783ba0571",
+      "lib/controllers/generated_controller.dart": "e49f13c07b19ce86f7b23b6c6286d9b9a9bd21547f1f7759d2b071f60a0fd95f",
+      "lib/views/generated_app.dart": "b2685bd51d3bfced33b00d1fb99937734a20a3b0da7a8cc3088aa0780211a2a4",
+      "assets/app.json": "c3b955a7826317b81bc81780259f6d66c928fc99d3cc3b6b477bc7ad76668d3f"
+    },
+    "outputFingerprints": {
+      "flutter_bootstrap.js": "6b721445cec2172348beeafe1e1a48e6d82848f0ac290d6d6874e57c5c0ddcdf",
+      "version.json": "59afee00574af86805be26a48f434f1b10a6274aaed04dd716421d7046022d48",
+      ".last_build_id": "6ee31fbdfd3a8dac910461f7950f7ac6339d2ef1abb0c42a6ece5e19d8c370b3",
+      "index.html": "2d9b1de2370de3ff7fc6f8388b85857d76f5200435f6a1d34f37c96f74865d13",
+      "main.dart.js": "8925df4fcdf2af77f8039b4b5728a9244cb0c4bf2a0e2679d423c208bf444acd",
+      "flutter.js": "2beb1ce6b159c71540aa66030af1d7964b6a92377cc78473745e02f97b74effe",
+      "flutter_service_worker.js": "a131df5ca46154cc4eb79044f7f5a14029c2f8bfccf8cef34e3ec3b5a9f5a88c",
+      "assets/NOTICES": "376a42b45f48dc9970153ba59740dca6108f464740c367d7bba4cd42a30da790",
+      "assets/FontManifest.json": "fc9ee87dd76174c0937f58e64b881d8a2c46968a386f9f9be60bc18b8a0bb0c6",
+      "assets/AssetManifest.bin.json": "771ec984c1d2b7b4939f8f2681faab9f61a8f530cffa4b973db0312b5b2ccf07",
+      "assets/shaders/ink_sparkle.frag": "2dca5ab93d4ec29e963f996f3916320ba60825e9537dfb149a68008c7a16b026",
+      "assets/shaders/stretch_effect.frag": "ab412f07a5b9b50b67a885b24dbe16929738ae28630407d6490c924caf0a3220",
+      "assets/AssetManifest.bin": "c139cf8317999fe7d328c74cc570ced1bad03c07eb236d00db4bec0e33122e81",
+      "assets/fonts/fallback/Roboto-Regular.ttf": "79e851404657dac2106b3d22ad256d47824a9a5765458edb72c9102a45816d95",
+      "assets/fonts/MaterialIcons-Regular.otf": "c9c6fda266a1ea8664267cd9daf1dd666588734789e4a1427effa414c946e271",
+      "assets/assets/app.json": "c3b955a7826317b81bc81780259f6d66c928fc99d3cc3b6b477bc7ad76668d3f",
+      "canvaskit/wimp.wasm": "e924eaafd801d41e017d178f3fd5cf8a417f641fe35c9ed34a4e1d7582283e0c",
+      "canvaskit/webparagraph/canvaskit.js.symbols": "44d6c47919106235cf32252252490cdf798d907ee874ba343ab53dc94bc2a9dc",
+      "canvaskit/webparagraph/canvaskit.js": "3110e3e4d9b7b5657d336f253aaca8acca5777cde9319fb69ac302d6ff5a8b23",
+      "canvaskit/webparagraph/canvaskit.wasm": "0ce1b05082efdc8529550e8a01f6ff0593972d55525035010e26f5600aa9f254",
+      "canvaskit/skwasm.js": "71d7d3e34bf71b52bdba3b588b103bba8148ba28de5754083e01b3398e7a6e1c",
+      "canvaskit/skwasm_heavy.js": "cec554b46ddcf4c0e63d799e0556d546f42d2c3f69316fb4f67ed776f6104558",
+      "canvaskit/skwasm.js.symbols": "9137f1a3ae744dea575043abfc6e063a047e910e6dab1ee53e496c975d1c033e",
+      "canvaskit/canvaskit.js.symbols": "384f80b392972c83fd4f262527e3d06215a297d33ed59732c726721e9d9311bd",
+      "canvaskit/skwasm_heavy.js.symbols": "b6b79ed497e11d4cd13cc46724f9e289eacc744d2d185e31c72d595cdf62772b",
+      "canvaskit/skwasm.wasm": "e540fd5e8303b7b68ec2718cb49e9c421f8ade3075b15e02a7059a62654df9a1",
+      "canvaskit/chromium/canvaskit.js.symbols": "31c86fac6042dd8b756150832c1d15495d0d07742e2718f75dbdde5a5a91455e",
+      "canvaskit/chromium/canvaskit.js": "6018b12bd8ed37e6952eee72d59c1cf7ad707ccdb74a0a45190010f77edd9068",
+      "canvaskit/chromium/canvaskit.wasm": "ae8ff1d858140f7b1300ced3fa89fb8c9dce0a400a0f4f1e11f6dcfb3315fdcf",
+      "canvaskit/canvaskit.js": "bb559f6080c7d312ac2a912b4abec9f68ff3d3022d4a603c7796b9b31460642b",
+      "canvaskit/wimp.js": "8fd8a47480c6eb0a374d159912d0b3fb15661b41f5c113ecdd39c2f01f2bee46",
+      "canvaskit/canvaskit.wasm": "fbed517a43e82452404446683f00f2e876d835aed84410695759e67b6bb01cd3",
+      "canvaskit/wimp.js.symbols": "b4907ebd33131302a8cd99f7c55f52357bdfde04f421b605a616ba8764ae1de4",
+      "canvaskit/skwasm_heavy.wasm": "565f5cc1cca6ab120f11934b105f01fec4b58b480c82e0889dca93af8e6f8635"
+    },
+    "requirements": [
+      {
+        "id": "RNATIVE",
+        "state": "mappedChecksPassed",
+        "acceptanceStatus": "unverified",
+        "acceptanceEvidence": {
+          "granularity": "authoredAcceptanceBlock",
+          "requirementId": "RNATIVE",
+          "requirementSha256": "9f9569bc4f024f19d5feedad2651f6033cb83246a0bf510a967c69ef1c38e423",
+          "text": "Checked prototype item and board survive native application restart.",
+          "status": "unverified",
+          "reason": "No automated acceptance verdict is recorded for this acceptance block. Manual observations are self-reported. Generic operation results, manual task progress and advisory model Review do not verify acceptance.",
+          "declaredChecks": [],
+          "directChecks": [],
+          "authoredContract": {
+            "status": "unverified",
+            "criterionIds": [],
+            "unverifiedCriterionIds": [],
+            "requirementSha256": "9f9569bc4f024f19d5feedad2651f6033cb83246a0bf510a967c69ef1c38e423",
+            "savedRunSha256": "79213f8d50d7356efb7a2b6ae6bade35f98e076bdc131a89cafcf7c178eb5d29",
+            "scope": "Only all explicitly authored named-test contracts at the saved revision. Empty criteria never verify. Free-form acceptance prose, semantic coverage and live files remain unverified."
+          },
+          "criteria": []
+        },
+        "bindingContext": {
+          "requirementSha256": "9f9569bc4f024f19d5feedad2651f6033cb83246a0bf510a967c69ef1c38e423",
+          "savedRunSha256": "79213f8d50d7356efb7a2b6ae6bade35f98e076bdc131a89cafcf7c178eb5d29",
+          "savedInputsCurrent": true,
+          "scope": "Binding context only. Manual observations are separate from automated operation evidence."
+        },
+        "contextualEvidence": {
+          "type": "automatedOperation",
+          "criterionMapping": "none",
+          "operationIds": [
+            "starter-resolve",
+            "starter-analyze",
+            "starter-test",
+            "starter-build"
+          ],
+          "state": "mappedChecksPassed"
+        },
+        "checks": [
+          {
+            "taskId": "starter-resolve",
+            "boardTaskId": "TNATIVE",
+            "operation": "resolve",
+            "status": "passed",
+            "exitCode": 0,
+            "timedOut": false,
+            "cancelled": false,
+            "outputLimitExceeded": false
+          },
+          {
+            "taskId": "starter-analyze",
+            "boardTaskId": "TNATIVE",
+            "operation": "analyze",
+            "status": "passed",
+            "exitCode": 0,
+            "timedOut": false,
+            "cancelled": false,
+            "outputLimitExceeded": false
+          },
+          {
+            "taskId": "starter-test",
+            "boardTaskId": "TNATIVE",
+            "operation": "test",
+            "status": "passed",
+            "exitCode": 0,
+            "timedOut": false,
+            "cancelled": false,
+            "outputLimitExceeded": false
+          },
+          {
+            "taskId": "starter-build",
+            "boardTaskId": "TNATIVE",
+            "operation": "build",
+            "status": "passed",
+            "exitCode": 0,
+            "timedOut": false,
+            "cancelled": false,
+            "outputLimitExceeded": false
+          }
+        ],
+        "boardTaskIds": [
+          "TNATIVE"
+        ],
+        "operationIds": [
+          "starter-resolve",
+          "starter-analyze",
+          "starter-test",
+          "starter-build"
+        ]
+      }
+    ],
+    "operations": [
+      {
+        "id": "starter-resolve",
+        "boardTaskId": "TNATIVE",
+        "operation": "resolve",
+        "status": "passed"
+      },
+      {
+        "id": "starter-analyze",
+        "boardTaskId": "TNATIVE",
+        "operation": "analyze",
+        "status": "passed"
+      },
+      {
+        "id": "starter-test",
+        "boardTaskId": "TNATIVE",
+        "operation": "test",
+        "status": "passed"
+      },
+      {
+        "id": "starter-build",
+        "boardTaskId": "TNATIVE",
+        "operation": "build",
+        "status": "passed"
+      }
+    ],
+    "results": [
+      {
+        "operation": "resolve",
+        "exitCode": 0,
+        "timedOut": false,
+        "cancelled": false,
+        "outputLimitExceeded": false
+      },
+      {
+        "operation": "analyze",
+        "exitCode": 0,
+        "timedOut": false,
+        "cancelled": false,
+        "outputLimitExceeded": false
+      },
+      {
+        "operation": "test",
+        "exitCode": 0,
+        "timedOut": false,
+        "cancelled": false,
+        "outputLimitExceeded": false
+      },
+      {
+        "operation": "build",
+        "exitCode": 0,
+        "timedOut": false,
+        "cancelled": false,
+        "outputLimitExceeded": false
+      }
+    ]
+  },
+  "artifactInspection": null
+}

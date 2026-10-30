@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "records": [
+    {
+      "scenarioId": "approved-plan",
+      "checkId": "plan-lifecycle-interaction",
+      "target": "macos",
+      "status": "passed",
+      "observedAt": "2026-10-30T04:42:22Z",
+      "identity": {
+        "sourceRevision": "422363fc04db6a20b6c515c25dc71f4becaafff6",
+        "requirementSha256": "57723730b260d3ad38638736fe4b4415d7babbc2027445727a21246f0626d0ee",
+        "inputSha256": "42f521f90e7736190adcb2df577cc5de665bb3dd15c7df476bff9c73b4c6f184",
+        "configurationSha256": "9cd821468b60c133cea531d9c5b69da6cda1eb46fc9469ddbb51435b49385dcf",
+        "modelSha256": "cfacacdcc4ff24a55108903b579d7a89a4bbe58bafc725872cf1ce27b7705644",
+        "deviceSha256": "f113ce0222a6ba6c91204ff6f63caf1c7620465272a39fe33a2b1352d70811ba",
+        "sdkVersion": "3.47.6",
+        "runtimeVersion": "3.12.8",
+        "browserVersion": "unavailable",
+        "backend": "mlx",
+        "host": "macos"
+      },
+      "manifestSha256": "d61b84bb453d905d1219ca0de2e086422f44de30475635953c70dad03b2dbc35",
+      "artifactSha256": [
+        "00513d3bacb013422908b93780a8bb22c6ff335b730877c68ded3cbadc477839",
+        "97878f4e3ff4ff496f3a67ee91699e37686a0da019a12b50e15aabe711100b4a",
+        "5c82f4d334debf33117a40203dadf2bf816b9281101adca83e25ee32a65fd0d8",
+        "1352b138cfebd6d96f53d42aaf09a5fae775d125acf0004cbe47f8b941576436",
+        "33818e407b4a5e44a3ed5ea4f23e10c5c2fe3a0eeeb656158625bf29801c6b85",
+        "ff0f1ac82b70225c9a47012b806a51bd93437a2206b52ef3a90d177bee87a42a",
+        "b05b95e34bc6600c8e4ef4f68226d53d4d7bab06634b6d7b6ef24e0379e3086a",
+        "a75f011fc9672dffc7bd9f5c0d2f1edba1f3ff057c2092fd2a96a11d68a2e789",
+        "8cc8b171ae4de1949885cb5a9a2739fb525943115f89331012690616a0b7c636",
+        "1d7b423e3af21745fd47d529c5d6555b19ee72671e0bb808fd80b6b58bee8bd0",
+        "6eae1a117f54bde5f499c7f816bcdd788b208c415785af5b08325d6a6b16bdaa"
+      ]
+    }
+  ]
+}
