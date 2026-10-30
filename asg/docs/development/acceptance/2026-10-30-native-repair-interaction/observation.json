@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "feature": "F17",
+  "issue": 291,
+  "observedAt": "2026-10-30T20:37:55Z",
+  "publicationBaseRevision": "b7aea7181188d81bae0db86568cea85eb4c54740",
+  "compiledSourceRevision": "584c89c4cc98522b75b65d53ecbd52c5e21d6859",
+  "controlTimingsMs": {
+    "finderBaseline": 104,
+    "isolatedLaunch": 1354,
+    "populatedAccessibilityRefresh": 83,
+    "restartLaunch": 1405
+  },
+  "observations": [
+    "Created disposable Web task planner with RREPAIR/TREPAIR at saved boardrevision2.",
+    "Explicit deterministic fixture Plan message2 approved; fixed baseline resolve/analyze/test/build all0.",
+    "Selected only lib/main.dart and inspected full source diff adding exactly asgMissingFunction before runApp.",
+    "Prepared separate candidate; explicit confined consent produced actual undefined_function analyzer exit1; downstream checks blocked, no promotion.",
+    "Selected temporary repair parent, relayed only to existing offline Qwen; separately consented bounded automatic repairs.",
+    "One saved analyze request removed only undefined call; separate candidate resolve/analyze/test/build all0.",
+    "44 baseline source/output files and18 prior records unchanged before promotion.",
+    "Explicitly promoted verified corrected candidate; native confirmation displayed refreshed loopback URL.",
+    "Opened actual served output in Chrome, enabled accessibility, added Native repaired workflow item and checked checkbox0to1.",
+    "Closed owned tab; native menuQuit then separate inventory absence; relaunched exact retained bundle path.",
+    "Reopened generator retained ready repaired directory, same Plan2 approval and4/4mapped checks. Fresh source review retained analyze1/3 budget.",
+    "Final menuQuit and independent inventoryabsence; stopped owned fixture, relay and model. Stable app remained stopped."
+  ],
+  "limitations": [
+    "Caller-attested manual observation; collector does not authenticate execution or establish current support.",
+    "Compiled584c89c is exact retained app identity, not a fresh current-main build.",
+    "Initial Plan and undefined-call seed are deterministic fixtures, not model inference. Corrective proposal uses real offline MLX.",
+    "Seed summary retained historical deadline wording; displayed full actual replacement contains only undefined-call insertion and no delayed test.",
+    "Native accessibility text can lag visible controller state; screenshot and saved records confirmed actual text. Project retained default My Task Planner name; unique durable ID distinguishes it.",
+    "Folder GoTo AXsetValue changed displayed text without actual navigation; actual selected parent/private/tmp confirmed and unique candidate created.",
+    "Repair attempt status says proposal unverified; separate saved ready check run establishes four exits0.",
+    "Browser numeric version unavailable; no browser item persistence across reload/restart asserted.",
+    "No Stop/deadline/rollback/combined/fullF17 or arbitrary acceptance-prose claim.",
+    "Initial regressions referenced nonexistent test module/file; canonical27Python and14Flutter reruns passed."
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "summary": "Removed undefined asgMissingFunction call",
+  "changes": [
+    {
+      "path": "lib/main.dart",
+      "before": "// SPDX-License-Identifier: MPL-2.0\n// Copyright 2026 Arpit Sinha\n\nimport 'dart:convert';\n\nimport 'package:flutter/material.dart';\nimport 'package:flutter/services.dart';\n\nimport 'models/app_definition.dart';\nimport 'views/generated_app.dart';\n\nFuture<void> main() async {\n  WidgetsFlutterBinding.ensureInitialized();\n  final definition = AppDefinition.fromJson(\n    jsonDecode(await rootBundle.loadString('assets/app.json'))\n        as Map<String, dynamic>,\n  );\n  asgMissingFunction();\n  runApp(GeneratedApp(definition: definition));\n}\n",
+      "after": "// SPDX-License-Identifier: MPL-2.0\n// Copyright 2026 Arpit Sinha\n\nimport 'dart:convert';\n\nimport 'package:flutter/material.dart';\nimport 'package:flutter/services.dart';\n\nimport 'models/app_definition.dart';\nimport 'views/generated_app.dart';\n\nFuture<void> main() async {\n  WidgetsFlutterBinding.ensureInitialized();\n  final definition = AppDefinition.fromJson(\n    jsonDecode(await rootBundle.loadString('assets/app.json'))\n        as Map<String, dynamic>,\n  );\n  runApp(GeneratedApp(definition: definition));\n}\n"
+    }
+  ],
+  "exactlyUndefinedCallRemoved": true,
+  "correctedMainEqualsOriginalBaseline": true
+}

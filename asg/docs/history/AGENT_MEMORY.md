@@ -3553,3 +3553,42 @@ IDE/docs edits preserved separately. Awaiting PR/finalreview/CI/verifiedmerge ev
 
 
 Published [PR #308](https://github.com/arpit-it/ASG/pull/308), branch `263-live-repair-evidence`. Initial local4b0eecfa31f7e7ad140ac2dfd953e18495491f30 / remote c95915973ae949a2792b6bd85ae68e3b542d4f4d share exact tree8e1dd9fc7231857f038e2fe9f33dfabd6d077621, all13blobs connector-verified. Link-only publication bookkeeping retains the same real test and observation identities. Bounded #263 Awaiting merge; fullF17 In progress. Independent exact-final review, requiredCI and verifiedmerge remain pending.
+
+
+### Real repair/check evidence verified merged — #263 / PR #308 — 2026-10-30T20:21:17.950767+00:00
+
+Bounded evidence increment Done; full F17 remains In progress. Branch
+`263-live-repair-evidence`; final reviewed80d75748927cd4411c2b662604268d48ab0a2365 /
+tested local3f54aaddfecee2fc26a3e7f3b7a349f7e0656187 share exact tree77aad64d86b92341461957ddc27630e003f324d3.
+Independent final approval COMMENT5718190396 (interim5718066336) found no blockers;
+independent27fixtures/exact120cellreport/two repair passes/manualabsence/273source/
+sevenmodel/artifact/rawprovenance hashes passed. Required CI41120646659 completed
+success: Python124286382528/Flutter124286382179; actual logs inspected: formatter256,
+analyzerclean,879default/eightoptinskips/fiveChrome/webbuild/generated-project1pass;
+Python27/2/6/14(oneskip)/4(twoskips). Reviewer protected squash merged
+b7aea7181188d81bae0db86568cea85eb4c54740 at2026-10-30T20:19:34Z.
+Parent pluginverified finalreview/head/merge/tree/main and issue263closedcompleted.
+Earlier queued/inprogress/Awaiting text is historical.
+
+Fresh realQwen automaticrepair test passed1/58seconds at source4c6c2e86: actual
+analyzerfailure, real offline MLXcorrection, fourconfined exits0, workingpreservation,
+explicitpromotion, refreshedHTTP200JS and durableattempts/checks onDBreopen.
+Deterministic initialdefect/Plan explicit; no native repairUI/browserbehavior/fullF17
+claim. Ownedruntime/nativeapp stopped/absenceverified. SHA-verifiedsignedmerge
+imported offline; main/origin-main synchronized0/0, indexempty/diffcheckpassed.
+Allfiveprior IDE/docs edits retained: IDEbyteexact/everypriordocline. Privatebackup
+`/private/tmp/asg-308-primary-before`; prepared `/private/tmp/asg-308-sync-prepared`.
+Final merge bookkeeping retained locally for next related reviewed increment; no later
+task selected, productruntime change, download or stableapp replacement. Remaining
+F17 manualrepair/affected scenario coverage needs reconciliation. Schedule15minutes
+and notification preferences unchanged.
+
+
+### F17 native manual repair interaction — reused #291 — 2026-10-30T20:29:51.508479+00:00
+
+In progress on `291-native-repair-interaction` from verified PR308 merge b7aea7181188d81bae0db86568cea85eb4c54740. Reopened existing issue291; no new task or duplicate issue. Current manifest repair-interaction remains missing after separately delivered real repair/check evidence. Scope: disposable native project/approved main-file repair Plan, explicit deterministic undefined-call seed, real offline Qwen bounded repair, actual confined reruns, explicit promotion, served add/check interaction and retained restart state, with exact identities and baseline preservation. Independent final review, required CI and verified merge gate delivery; full F17 remains In progress. Primary five IDE/docs edits preserved.
+
+
+Actual native workflow completed 30 October2026UTC at retained compiled584c89c. Explicit deterministic Plan2 bound boardrevision2 RREPAIR/TREPAIR; baselinefour0, reviewed only main undefined-call insertion, actual analyzer1/undefined_function. Separate realQwen MLX automaticrepair consent used oneanalyze request; separate candidatefour0, original44source/output hashes and18priorrecords unchanged. Explicitpromotion then actualChrome add/check0to1; menuQuit/independentabsence/relaunch retained ready repaired directory, Plan2/fourchecks andanalyze1/3budget. FinalQuit/absence, ownedfixture/relay/modelStop and8765/8766absenceverified. Stableapp/originalprojects untouched.
+
+Evidence `development/acceptance/2026-10-30-native-repair-interaction/` supplies exactly one current-manifest caller-attested macOS manual repair cell.300source43bundle andsevenexisting model hashes checked. Compiled584c identity differs intentionally from docs-only publicationbaseb7aea71. Deterministic seed/Plan not inference; actual repair is real offline Qwen. Attempt status retains unverified proposal wording; independent saved ready run records rerun success. Browserversionunavailable/no browserpersistence/fullF17claim. Nativecontroller/AXtext lag and folderGoTo discrepancy disclosed.27canonicalPython/14focusedFlutter passed after correcting nonexistent suite references. No runtimecode changed. Awaiting independent exact-final review, requiredCI and verifiedmerge; issue291/fullF17 In progress.

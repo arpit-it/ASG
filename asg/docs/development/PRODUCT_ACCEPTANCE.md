@@ -867,3 +867,39 @@ exact source, requirement/input, SDK/runtime/model/configuration and device/brow
 identity. Do not relabel historical observations as fresh or combine different
 snapshot identities into current support. This collector increment performs no
 new native/model workflow; full F17 remains In progress.
+
+
+## Native manual repair interaction — reused #291
+
+The [observation](acceptance/2026-10-30-native-repair-interaction/observation.json)
+records the retained compiled584c89c native workflow: explicitly reviewed deterministic
+Plan/undefined-call seed, actual analyzerfailure, separately consented real offline
+Qwen repair, four confined reruns, explicitpromotion, actual servedChrome add/check,
+Quit/independentabsence/relaunch and retained ready build/approval/repairbudget.
+Only `bounded-repair/repair-interaction` onmacOS is submitted. Baseline44source/output
+hashes and18priorrecords remain unchanged.300source/43bundle/sevenmodel hashes
+were verified. No runtimecode changed, fullF17 or current-main rebuild claim.
+
+Repeat in a new disposable isolated workspace: author RREPAIR/TREPAIR with acceptance
+removing only undefined asgMissingFunction inlib/main.dart while preserving all other
+code. Explicitly review/approve the clearly labeled fixture Plan; generate a fresh
+fixed starter and require four0checks. Select onlymain, review the deterministic
+undefined-call insertion, prepare separate candidate and consent confinedverification.
+Require actual undefined_function analyzer1; never promote. Select temporary repair
+parent, connect existing offlineQwen through the real-only loopbackrelay and explicitly
+consent bounded automaticrepair. Require exactly observed saved attempts andfour0checks,
+unchanged working files/records; explicitlypromote. Open actual servedapp, add/checkitem.
+Quit and independentlyconfirmabsence, relaunchexactbundle, inspect readyfolder/approval/
+fourchecks/repairbudget. Preserve originalprojects andstableapp; stopownedprocesses.
+
+The retained fixture summary says deadline because it was adapted from the prior
+workflow; the actual selected full diff contains only the undefined-call insertion.
+No delay or deadline acceptance is asserted. Standard native GoTo and Flutter AX text
+can differ from controller state; verify actual chosenparent and durablevalues rather
+than trusting a changed AXstring. Attemptstatus retains proposal-unverified wording;
+its separate finished ready run establishes reruns. Browserversionunavailable and
+browseritempersistence are not claimed. RawDB/prompt/logs remain private.
+
+Regenerate from Flutterroot using the existing collector with current manifest and
+this directory's identity/evidence; only generatedAt changes. The report is a saved
+caller-attested observation, not authentication or a support certification.
