@@ -903,3 +903,32 @@ browseritempersistence are not claimed. RawDB/prompt/logs remain private.
 Regenerate from Flutterroot using the existing collector with current manifest and
 this directory's identity/evidence; only generatedAt changes. The report is a saved
 caller-attested observation, not authentication or a support certification.
+
+
+## Current-manifest web archive interaction — issue #267 extension
+
+The [observation](acceptance/2026-10-30-web-archive-matrix/observation.json)
+records a fresh source4787d944 release build and actual browser workflow on a new
+loopback origin: app-led original creation, revision2 RARCHIVE/TARCHIVE, checked
+prototype, actual export/download, picker import and separate restore, reload,
+version999 refusal, second reload and original reopen. Both rendered F10 snapshots
+compare exactly. Source167files/bundle44files have SHA256 manifests. The original
+and restored projects remain distinct; no database byte-equality claim is made.
+
+Repeat with a fresh `flutter build web` at the recorded source, serve build/web
+on an unused loopback port and keep that origin across reloads. Use only synthetic
+records. Wait for visible revision/save acknowledgment. Export via Portable records,
+inspect the actual downloaded JSON, import through Select archive file, choose a
+new ID/name and explicitly restore. Open through Projects, reload, inspect checked
+prototype/board and expand the exact F10 report. Click the rendered selectable JSON
+if accessibility initially omits its text. Import version999 and verify refusal,
+then reload/reopen and compare the actual exact report; original must remain usable.
+Stop the owned server and close the owned tab.
+
+Regenerate with `python3 tools/product_acceptance.py --manifest docs/development/product_acceptance_manifest.json --identity docs/development/acceptance/2026-10-30-web-archive-matrix/identity.json --evidence docs/development/acceptance/2026-10-30-web-archive-matrix/evidence.json --output /tmp/web-archive-report.json`.
+Only generatedAt changes. The saved report has exactly one caller-observed manual
+web archive cell; other cells stay missing/unavailable. Model and approved-input
+identities use UTF8 unavailable; current unapproved input remains in exact F10 JSON.
+The host was remeasured macOS27.0.1/arm64; browser numeric version unavailable.
+A fresh origin separates storage, not browser profiles. No inference/native source
+generation, compatibility certification or full F17 completion follows.

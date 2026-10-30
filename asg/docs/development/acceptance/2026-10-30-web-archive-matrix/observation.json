@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "issue": 267,
+  "observedAt": "2026-10-30T21:08:18Z",
+  "sourceRevision": "4787d9442105f6f1e8c011098a491471d4c96136",
+  "scope": "caller-observed-web-archive-roundtrip-only",
+  "sourceFilesVerified": 167,
+  "bundleFiles": 44,
+  "actualF10CurrentInputSha256": "f89182fa52011d6ee32bc87de91e7c15db8c34e7b3ab14e5cbc6624b955b1a06",
+  "observations": [
+    "Fresh origin empty home; app-led Web project Archive original267 created.",
+    "Saved RARCHIVE/TARCHIVE at board revision2; added and checked Archive durable item267.",
+    "Loaded saved export, reviewed summary; actual 981-byte downloaded version7 archive inspected and uploaded through picker.",
+    "Restored separate archive267copy workspace named Archive restored267; Projects listed both original and restored.",
+    "Opened restored project, reloaded; checked prototype and exact revision2 requirement/task retained.",
+    "Expanded and captured actual rendered F10 JSON through accessibility.",
+    "Uploaded same archive with version999; visible operationfailed/existingrecordsnotreplaced refusal; no restore offered.",
+    "Reloaded restored workspace again; checked item and complete rendered F10 JSON unchanged.",
+    "Projects still2; explicitly reopened original and observed checked original item.",
+    "Closed owned tab; stable native app never launched or replaced."
+  ],
+  "validation": {
+    "archiveFlutterPassed": 85,
+    "collectorPythonPassed": 27,
+    "freshWebBuild": "passed;16seconds;Wasm dry run succeeded"
+  },
+  "limitations": [
+    "Fresh origin isolates storage, not a separate browser profile.",
+    "Browser numeric version unavailable; no compatibility certification.",
+    "No saved approved input/run/model exists; input/model use UTF8 unavailable sentinel.",
+    "Manual observation only; no source generation/inference/repair/support or fullF17claim.",
+    "Download event wait timedout124.8s despite actual file saved; recovered existing tab, verified file independently; no duplicate download. Later DOM chooserwait10s failed before navigation; fresh state plus native AX control succeeded.",
+    "Flutter selectable text/transition lag required subsequent fresh AX observations; full JSON captured from actual rendered control after click, not reconstructed.",
+    "No byte equality of browser database or fresh model execution asserted."
+  ]
+}

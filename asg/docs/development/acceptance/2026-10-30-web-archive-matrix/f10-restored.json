@@ -1,0 +1,90 @@
+{
+  "savedEvidence": {
+    "scope": "Mapped checks passed describes saved command evidence, not acceptance criteria or current artifact availability. Inspect current artifacts separately to compare recorded source and output fingerprints. Inspection is read-only and reflects files only when inspected; it does not run commands or inference. Model Review remains advisory; manual task Done does not count as evidence.",
+    "requirementsRevision": 2,
+    "namedObservations": [],
+    "manualObservations": [],
+    "requirementsBoard": {
+      "version": 1,
+      "revision": 2,
+      "requirements": [
+        {
+          "id": "RARCHIVE",
+          "title": "Portable records survive reload",
+          "acceptance": "Restore a separate project with the same board and checked prototype."
+        }
+      ],
+      "tasks": [
+        {
+          "id": "TARCHIVE",
+          "requirementId": "RARCHIVE",
+          "title": "Observe separate restore and reload",
+          "dependencies": [],
+          "status": "queued"
+        }
+      ]
+    },
+    "requirementsBoardSha256": "4853544e4c4327a4e775e83a4912d6bc96f9383f9fe1edf1a42990f28352c49b",
+    "savedInputsCurrent": false,
+    "recordedAt": null,
+    "phase": null,
+    "approvalFingerprint": null,
+    "revisionIdentity": {
+      "schema": 1,
+      "scope": "Saved content identity only; not a direct check result or live artifact observation.",
+      "savedRunSha256": null,
+      "savedSourceSha256": null,
+      "savedInputSha256": null,
+      "savedApprovalSha256": null,
+      "currentInputSha256": "f89182fa52011d6ee32bc87de91e7c15db8c34e7b3ab14e5cbc6624b955b1a06"
+    },
+    "sourceFingerprints": null,
+    "outputFingerprints": null,
+    "requirements": [
+      {
+        "id": "RARCHIVE",
+        "state": "missing",
+        "acceptanceStatus": "unverified",
+        "acceptanceEvidence": {
+          "granularity": "authoredAcceptanceBlock",
+          "requirementId": "RARCHIVE",
+          "requirementSha256": "69fc723814011171315aaa9907f292de5e75b51f3f97d945c79adafd49a4cc44",
+          "text": "Restore a separate project with the same board and checked prototype.",
+          "status": "unverified",
+          "reason": "No automated acceptance verdict is recorded for this acceptance block. Manual observations are self-reported. Generic operation results, manual task progress and advisory model Review do not verify acceptance.",
+          "declaredChecks": [],
+          "directChecks": [],
+          "authoredContract": {
+            "status": "unverified",
+            "criterionIds": [],
+            "unverifiedCriterionIds": [],
+            "requirementSha256": "69fc723814011171315aaa9907f292de5e75b51f3f97d945c79adafd49a4cc44",
+            "savedRunSha256": null,
+            "scope": "Only all explicitly authored named-test contracts at the saved revision. Empty criteria never verify. Free-form acceptance prose, semantic coverage and live files remain unverified."
+          },
+          "criteria": []
+        },
+        "bindingContext": {
+          "requirementSha256": "69fc723814011171315aaa9907f292de5e75b51f3f97d945c79adafd49a4cc44",
+          "savedRunSha256": null,
+          "savedInputsCurrent": false,
+          "scope": "Binding context only. Manual observations are separate from automated operation evidence."
+        },
+        "contextualEvidence": {
+          "type": "automatedOperation",
+          "criterionMapping": "none",
+          "operationIds": [],
+          "state": "missing"
+        },
+        "checks": [],
+        "boardTaskIds": [
+          "TARCHIVE"
+        ],
+        "operationIds": []
+      }
+    ],
+    "operations": [],
+    "results": []
+  },
+  "artifactInspection": null
+}
