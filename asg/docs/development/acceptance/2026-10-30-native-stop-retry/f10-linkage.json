@@ -1,0 +1,15 @@
+{
+  "requirementsBoardSha256": "19837760eab1e582c528276d7c262f521baa0917f4d35179cdd7bd449ebf451f",
+  "savedInputSha256": "42f521f90e7736190adcb2df577cc5de665bb3dd15c7df476bff9c73b4c6f184",
+  "currentInputSha256": "42f521f90e7736190adcb2df577cc5de665bb3dd15c7df476bff9c73b4c6f184",
+  "savedRunSha256": "7e005f6fe5c9b81b0f0ca07011710cfef52443891192170fcb357d83287aa8dc",
+  "savedSourceSha256": "caa720e940ae5685c252ba2e14513caa666a7b189e50997664fdf99c8dc2a326",
+  "savedApprovalSha256": "b62b1fef3ce75ba28e9bd69e198be8d8b950bfcdb50b89668e3c07c11e0f36ef",
+  "recordedAt": "2026-10-30T17:35:23.352361Z",
+  "artifactInspection": {
+    "outcome": "matching",
+    "observedAt": "2026-10-30T17:36:43.854579Z",
+    "savedEvidenceSha256": "15605c163208d69ff7c1a8defccee84af5ebcb0f28e00098858891b9e68ad12e"
+  },
+  "scope": "Transcribed exact displayed F10 linkage after explicit artifact inspection. Acceptance prose remains unverified; queued board tasks remain queued."
+}

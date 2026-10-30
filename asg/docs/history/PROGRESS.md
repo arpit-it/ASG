@@ -3543,3 +3543,38 @@ report parser/controller/widget tests passed locally. All four 30 October
 evidence sets reevaluated successfully with 120 cells each and zero current
 passes against the expanded manifest; historical files unchanged. Diff-check
 passed. No Flutter runtime source changed; required CI provides full checks.
+
+
+### F17 native Stop/retry observed — reused #283 (30 October 2026 UTC)
+
+Reused open issue283; no open PR/competing active ASG owner at selection. Branch
+`283-native-stop-retry` starts at plugin-verified main8358708bed192b794ab3b3864a4738255ad72d6e.
+Primary five IDE/docs edits and prior local delivery notes preserved separately.
+Fresh session inventory10.4s/Finder5358ms, isolated snapshot selection291227ms despite
+20s timeout, separate populated AX6549ms. Completed selection followed by responsive
+workflow; no repeated launch queued. Low-level latency cause remains unknown.
+
+Actual existing current Plan15/revision10 authorized a new fixed starter in a new
+private folder. Stop during analyze after resolve0 saved analyze cancelled/-1 and
+test/build blocked. Explicit full retry ran resolve/analyze/test/build, all exit0.
+Prior candidate13source/34output hashes unchanged after Stop and retry. Actual
+served Chrome output accepted an added task and checkbox0to1. F10 displayed exact
+board/input/source/run/approval hashes, matching artifact inspection and unverified
+acceptance prose; board tasks remain queued. Tab closed, native Quit and independent
+inventory absence verified; stable app/original profile untouched. No restart, model
+request, generated-command deadline, selected rollback or fullF17 claim.
+
+Evidence `development/acceptance/2026-10-30-native-stop-retry/`: sanitized observation,
+transcribed displayedF10 linkage, source/output fingerprints, effective configuration,
+device/identity, evidence/report. Retained compiled revision584c89c4, not publication
+base; all300source/43bundle hashes rechecked against prior published manifests.
+No inference used; backendnone/model unavailable sentinel avoids model-health claims.
+Exactly one current-manifest macOS stop-interaction pass; timeout/combined cells
+remain missing. Folder-controller/AX text discrepancy documented; actual new folder
+has a duplicated prefix, no overwrite. Raw DB/paths/logs remain private.
+
+Validation:27Python collector/importer/CLI tests passed; collector regenerated
+successfully. Actual native-generated retry four checks0 and served interaction
+are separate from fixture results. Docs/evidence only; no runtime source changes.
+Awaiting exact-final independent review, requiredCI and verifiedmerge. Issue283/fullF17
+remain In progress until bounded acceptance review/merge; no later task selected.

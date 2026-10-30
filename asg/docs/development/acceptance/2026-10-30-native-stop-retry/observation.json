@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "issue": 283,
+  "feature": "F17",
+  "compiledSourceRevision": "584c89c4cc98522b75b65d53ecbd52c5e21d6859",
+  "publicationBaseRevision": "8358708bed192b794ab3b3864a4738255ad72d6e",
+  "controlTimingsMs": {
+    "freshInventory": 10390,
+    "finderSelection": 5358,
+    "isolatedSelection": 291227,
+    "separateAccessibilityRefresh": 6549,
+    "quit": 10
+  },
+  "stopped": {
+    "phase": "failed",
+    "steps": [
+      {
+        "operation": "resolve",
+        "exitCode": 0,
+        "timedOut": false,
+        "cancelled": false,
+        "outputLimitExceeded": false
+      },
+      {
+        "operation": "analyze",
+        "exitCode": -1,
+        "timedOut": false,
+        "cancelled": true,
+        "outputLimitExceeded": false
+      }
+    ],
+    "visibleDownstreamStates": {
+      "test": "blocked",
+      "build": "blocked"
+    },
+    "message": "Verification stopped by user. Existing files and completed results are retained."
+  },
+  "retried": {
+    "phase": "ready",
+    "recordedAt": "2026-10-30T17:35:23.352361Z",
+    "steps": [
+      {
+        "operation": "resolve",
+        "exitCode": 0,
+        "timedOut": false,
+        "cancelled": false,
+        "outputLimitExceeded": false
+      },
+      {
+        "operation": "analyze",
+        "exitCode": 0,
+        "timedOut": false,
+        "cancelled": false,
+        "outputLimitExceeded": false
+      },
+      {
+        "operation": "test",
+        "exitCode": 0,
+        "timedOut": false,
+        "cancelled": false,
+        "outputLimitExceeded": false
+      },
+      {
+        "operation": "build",
+        "exitCode": 0,
+        "timedOut": false,
+        "cancelled": false,
+        "outputLimitExceeded": false
+      }
+    ],
+    "approvedPlanMessage": 15,
+    "requirementsRevision": 10,
+    "mappedBoardTask": "TCANDIDATE"
+  },
+  "preservation": {
+    "priorWorkingSourceFiles": 13,
+    "priorWorkingOutputFiles": 34,
+    "allHashesUnchangedAfterStopAndRetry": true,
+    "priorSourceManifestSha256": "5dc06398f30d817a5bb28803405c34fb8c16744ad32bf941c4cb6556d9b988c8",
+    "priorOutputManifestSha256": "620004aac21f240c34b226191e23e80e783799a65a2c3b348bced80ff32869ad"
+  },
+  "servedInteraction": {
+    "addedItem": "Stop retry verified item",
+    "checkboxBefore": 0,
+    "checkboxAfter": 1,
+    "observed": true,
+    "scope": "Actual generated compiled web output in Chrome; browser persistence after reload not asserted."
+  },
+  "cleanup": {
+    "previewTabClosed": true,
+    "nativeQuitThenIndependentInventoryAbsence": true,
+    "stableApplicationNotRunning": true
+  },
+  "limitations": [
+    "Retained compiled source revision is 584c89c4, not the publication base; exact 300 source and 43 bundle hashes rechecked against the previously published manifests.",
+    "No fresh model request, model availability, generated-command deadline, selected rollback, restart acceptance or full F17 support claim.",
+    "Generation was a new fixed starter using existing exact Plan consent; it does not implement the older candidate prose requirement or mark it verified.",
+    "Native field setValue updated AX text but did not replace the underlying Flutter folder controller; actual new folder retained a duplicated generated_app prefix. This synthetic destination was new and private; no existing output was overwritten.",
+    "Selection exceeded requested 20-second timeout, but completed with a populated workspace; later actions were responsive. Low-level cause remains unknown.",
+    "F10 linkage is transcribed from displayed JSON; raw project/storage/paths and command logs remain private."
+  ]
+}
