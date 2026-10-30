@@ -961,3 +961,8 @@ older observations retain their historical manifest identity.
 ## Browser rollback record fixtures — issue #253
 
 [Repeat instructions](acceptance/2026-10-30-web-rollback-fixture/REPRODUCE.md) record two actual Chrome IndexedDB tests for selected saved history, atomic previous/current pointer preservation, stale durable compare-and-set refusal, withdrawn authorization and corrupt raw history preservation. Only one web rollback-records fixture cell is supplied. Synthetic artifact hashes do not validate files, native preview or manual rollback; full F17 remains In progress.
+
+
+## Browser durable-records fixture — issue #253
+
+[Repeat instructions](acceptance/2026-10-30-web-durable-fixture/REPRODUCE.md) record five actual Chrome tests including one new edited-project/conversation/requirements persistence regression. Two IndexedDB reopens, unrelated-record isolation, malformed-write refusal and raw durable transaction-abort preservation supply one web create-reopen/durable-records fixture cell only. Manifest now references the browser suite alongside native storage coverage. No manual UI, application launch/build, inference or fullF17 acceptance is inferred.

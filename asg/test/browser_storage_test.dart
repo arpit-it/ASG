@@ -157,6 +157,135 @@ void main() {
       }
     },
   );
+  test(
+    'IndexedDB edited projects and conversations survive reopen and refusal',
+    () async {
+      final name = 'asg-durable-${DateTime.now().microsecondsSinceEpoch}';
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+      var db = await databaseFactoryWeb.openDatabase(name);
+      const original = StudioProject(
+        id: 'edited',
+        name: 'Original',
+        description: 'Before edit',
+        type: 'Flutter',
+        platforms: ['Web'],
+        location: '',
+      );
+      const edited = StudioProject(
+        id: 'edited',
+        name: 'Edited Ω',
+        description: 'Durable requirements',
+        type: 'Flutter',
+        platforms: ['Web'],
+        location: '',
+      );
+      const other = StudioProject(
+        id: 'unrelated',
+        name: 'Untouched',
+        description: 'Preserve me',
+        type: 'Flutter',
+        platforms: ['Web'],
+        location: '',
+      );
+      final messages = [
+        ChatMessage(
+          role: 'user',
+          content: 'Keep Unicode Ω and newlines\nexactly',
+        ),
+        ChatMessage(role: 'assistant', content: 'Saved response'),
+      ];
+      final otherMessages = [ChatMessage(role: 'user', content: 'Unrelated')];
+      try {
+        var records = await StudioDatabase.migrate(db, prefs);
+        await StudioStore(records).save([original, other]);
+        await ConversationStore(records).save(original.id, [messages.first]);
+        await ConversationStore(records).save(other.id, otherMessages);
+        await StudioStore(records).save([edited, other]);
+        await ConversationStore(records).save(edited.id, messages);
+        final requirements = RequirementsStore(records);
+        await requirements.save(
+          edited.id,
+          requirements.load(edited.id),
+          RequirementsBoard(
+            requirements: [
+              ProjectRequirement(
+                id: 'R1',
+                title: 'Edited requirement Ω',
+                acceptance: 'Reopen exact saved values',
+              ),
+            ],
+            tasks: [
+              DevelopmentTask(
+                id: 'T1',
+                requirementId: 'R1',
+                title: 'Durable task',
+              ),
+            ],
+          ),
+        );
+        final expectedBoard = requirements.load(edited.id).toJson();
+        final expectedMessages = messages.map((m) => m.toJson()).toList();
+        final expectedOther = otherMessages.map((m) => m.toJson()).toList();
+        for (var reopen = 0; reopen < 2; reopen++) {
+          await db.close();
+          db = await databaseFactoryWeb.openDatabase(name);
+          records = await StudioDatabase.migrate(db, prefs);
+          expect(StudioStore(records).load().map((p) => p.toJson()).toList(), [
+            edited.toJson(),
+            other.toJson(),
+          ]);
+          expect(
+            ConversationStore(records)
+                .load(edited.id)
+                .map((m) => m.toJson())
+                .toList(),
+            expectedMessages,
+          );
+          expect(
+            ConversationStore(records)
+                .load(other.id)
+                .map((m) => m.toJson())
+                .toList(),
+            expectedOther,
+          );
+          expect(
+            RequirementsStore(records).load(edited.id).toJson(),
+            expectedBoard,
+          );
+          await expectLater(
+            records.setString('studio.projects.v1', '{broken'),
+            throwsFormatException,
+          );
+          await expectLater(
+            records.setString('studio.chat.v1.edited', '{broken'),
+            throwsFormatException,
+          );
+          // Abort after durable writes have been staged; neither record may change.
+          final raw = StoreRef<String, String>('records');
+          await expectLater(
+            db.transaction((txn) async {
+              await raw.record('studio.projects.v1').put(txn, '[]');
+              await raw.record('studio.chat.v1.edited').put(txn, '[]');
+              throw StateError('Interrupted transaction');
+            }),
+            throwsStateError,
+          );
+          expect(
+            await raw.record('studio.projects.v1').get(db),
+            jsonEncode([edited.toJson(), other.toJson()]),
+          );
+          expect(
+            await raw.record('studio.chat.v1.edited').get(db),
+            jsonEncode(expectedMessages),
+          );
+        }
+      } finally {
+        await db.close();
+        await databaseFactoryWeb.deleteDatabase(name);
+      }
+    },
+  );
   for (final change in ['requirements', 'prototype', 'draft']) {
     test('IndexedDB approval refuses stale $change after reopen', () async {
       final name = 'asg-plan-$change-${DateTime.now().microsecondsSinceEpoch}';
