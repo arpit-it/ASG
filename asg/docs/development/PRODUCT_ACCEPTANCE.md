@@ -932,3 +932,14 @@ identities use UTF8 unavailable; current unapproved input remains in exact F10 J
 The host was remeasured macOS27.0.1/arm64; browser numeric version unavailable.
 A fresh origin separates storage, not browser profiles. No inference/native source
 generation, compatibility certification or full F17 completion follows.
+
+
+## Native fixture baseline — issue #253 extension
+
+The [observation](acceptance/2026-10-30-native-fixture-baseline/observation.json) records44 actual native VM fixture tests across the four manifest-referenced storage, Plan approval, rollback and archive suites at source35a9088b.27 Python collector/importer/CLI fixtures passed separately. These runs establish four saved macOS fixture cells only. They do not establish native app launch, generated output, model inference, browser behavior or manual acceptance. All other116cells remain missing/unavailable. FullF17 remains In progress.
+
+Repeat from a clean checkout of the recorded source using Flutter3.47.6/Dart3.13.5 on macOS: `flutter test test/transactional_storage_test.dart test/plan_approval_test.dart test/build_rollback_test.dart test/portable_project_archive_test.dart --reporter expanded`, then `python3 -B tools/test_product_acceptance.py`. Verify actual exits/totals before collecting new evidence; never relabel these observations after a source/toolchain/configuration change.
+
+The suites use multiple disposable project snapshots, so no single F10 requirement/input identity exists. Those fields and model use SHA256 of UTF8 `unavailable`; runtimeVersion denotes absent model runtime, with actual Dart version in configuration. No F10 criterion is verified by this fixture identity. Source manifest lists tracked runtime/test/platform/tool files and their exact SHA256 at the tested commit. Config/device hashes use the collector canonical JSON function; artifact hashes use exact file bytes.
+
+Regenerate with `python3 tools/product_acceptance.py --manifest docs/development/product_acceptance_manifest.json --identity docs/development/acceptance/2026-10-30-native-fixture-baseline/identity.json --evidence docs/development/acceptance/2026-10-30-native-fixture-baseline/evidence.json --output /tmp/asg-fixture-report.json`. Only generatedAt changes. Source, requirement, input, configuration, model or device identity changes make all four cells stale. Observations remain caller-attested saved results, not support certification.

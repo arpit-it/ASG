@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-10-30T21:30:30Z",
+  "sourceRevision": "35a9088b2b1d2e2df96c81805c65035899383de1",
+  "scope": "Four manifest-referenced native VM fixture suites; no single project F10 identity. Requirement/input/model identities use SHA256 of UTF8 unavailable. RuntimeVersion denotes model runtime, not Dart.",
+  "flutter": {
+    "version": "3.47.6",
+    "dartVersion": "3.13.5",
+    "passed": 44,
+    "skipped": 0,
+    "exitCode": 0,
+    "testReferences": [
+      "test/transactional_storage_test.dart",
+      "test/plan_approval_test.dart",
+      "test/build_rollback_test.dart",
+      "test/portable_project_archive_test.dart"
+    ]
+  },
+  "python": {
+    "testReference": "tools/test_product_acceptance.py",
+    "passed": 27,
+    "exitCode": 0
+  },
+  "sourceFileCount": 301,
+  "sourceManifestSha256": "dd53c3a0ef8c54e324de9d690bf88829b5a7b96dfd803cce72b8d9eac4e90423",
+  "limitations": [
+    "No native app launch, browser execution, platform build, live model, generated-project verification or manual interaction is established by these fixtures.",
+    "Fixture data spans multiple disposable project snapshots; there is no single F10 requirement or input hash.",
+    "Only four macOS fixture cells are submitted. Every other cell remains missing or unavailable.",
+    "Saved caller-attested observations do not certify support or complete F17."
+  ],
+  "initialEnvironmentFailure": "Sandbox denied installed Flutter cache write before tests started; authorized host-access retry passed."
+}

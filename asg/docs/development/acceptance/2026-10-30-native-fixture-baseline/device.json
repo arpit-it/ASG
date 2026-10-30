@@ -1,0 +1,8 @@
+{
+  "host": "macos",
+  "architecture": "arm64",
+  "osVersion": "27.0.1",
+  "execution": "flutter-test-vm",
+  "nativeApplicationLaunch": false,
+  "browser": "unavailable"
+}
