@@ -82,6 +82,40 @@ completeness or live-freshness check. Omitted scenarios are not assessed. Saved
 passes do not establish current support or replace the pending real baseline.
 
 
+## Separate repair observations (issue #263 extension)
+
+The current manifest records three independent `bounded-repair` checks:
+`real-repair-rerun` (`liveInference`), `repair-confined-checks`
+(`generatedOutput`), and `repair-interaction` (`manual`). A saved inference pass
+leaves the generated-output and interaction cells missing. A saved check pass
+also leaves interaction missing. This extends the collector contract; it adds no
+new observed repair run or product support claim.
+
+For a fresh isolated repair workflow, obtain explicit repair consent, observe the
+bounded failed-check diagnosis and actual model correction, and retain the exact
+F10 requirement/input/source/approval/run linkage. Record `real-repair-rerun`
+only for the observed model repair; record `repair-confined-checks` separately
+only after the corrected candidate's resolve/analyze/test/build outcomes have
+actually been checked. The provenance importer accepts either check with an
+explicit target, status and UTC time; it never derives a pass from F10 digests.
+Do not record downstream checks as passed when a prior check failed or stopped.
+
+Then explicitly promote the verified candidate, open its served output and
+exercise the repaired behavior, checking last-working preservation and restart
+state as required by F17. Submit `repair-interaction` separately with sanitized
+artifact digests only after observing it. The provenance importer rejects this
+manual check because snapshot linkage alone cannot establish interaction.
+Failures, skips and unavailable observations must retain their actual statuses.
+These instructions do not authorize executing unrestricted generated code.
+
+The added checks change the canonical manifest digest. Previously saved report
+files remain historical snapshots; do not rewrite their hashes or relabel old
+observations as new runs. Evaluating old records against the current manifest
+marks them stale, while the new checks remain missing until separately observed.
+Rerun affected workflows with exact identities before claiming current results.
+Full F17 remains In progress, including the outstanding real macOS/web baseline.
+
+
 ## Native live observations, 28 October 2026
 
 [Issue #257](https://github.com/arpit-it/ASG/issues/257) records two serial,

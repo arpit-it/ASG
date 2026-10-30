@@ -96,6 +96,18 @@
           "testReferences": [
             "test/automatic_repair_real_test.dart"
           ]
+        },
+        {
+          "id": "repair-confined-checks",
+          "kind": "generatedOutput",
+          "testReferences": [
+            "test/automatic_repair_real_test.dart"
+          ]
+        },
+        {
+          "id": "repair-interaction",
+          "kind": "manual",
+          "testReferences": []
         }
       ]
     },

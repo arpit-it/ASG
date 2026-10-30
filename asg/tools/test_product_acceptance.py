@@ -109,6 +109,58 @@ class AcceptanceTest(unittest.TestCase):
                           'plan-lifecycle-interaction': 'missing'})
         self.assertFalse(any(c['currentPass'] for c in cells))
 
+    def test_repair_inference_leaves_generated_and_manual_checks_missing(self):
+        for target in ('macos', 'web'):
+            with self.subTest(target=target):
+                inference = dict(record(), scenarioId='bounded-repair',
+                                 checkId='real-repair-rerun', target=target)
+                cells = [c for c in self.evaluate(inference)['cells']
+                         if c['scenarioId'] == 'bounded-repair' and
+                         c['target'] == target]
+                self.assertEqual({c['checkId']: (c['kind'], c['status']) for c in cells},
+                                 {'real-repair-rerun': ('liveInference', 'passed'),
+                                  'repair-confined-checks': ('generatedOutput', 'missing'),
+                                  'repair-interaction': ('manual', 'missing')})
+                self.assertEqual(sum(c['currentPass'] for c in cells), 1)
+
+    def test_repair_output_pass_does_not_imply_interaction_and_becomes_stale(self):
+        output = dict(record(), scenarioId='bounded-repair',
+                      checkId='repair-confined-checks')
+        cells = [c for c in self.evaluate(output)['cells']
+                 if c['scenarioId'] == 'bounded-repair' and c['target'] == 'macos']
+        self.assertEqual({c['checkId']: c['status'] for c in cells},
+                         {'real-repair-rerun': 'missing',
+                          'repair-confined-checks': 'passed',
+                          'repair-interaction': 'missing'})
+        manual = dict(output, checkId='repair-interaction')
+        self.assertEqual(sum(c['currentPass'] for c in
+                             self.evaluate(output, manual)['cells']), 2)
+        for field in IDENTITY_FIELDS:
+            with self.subTest(field=field):
+                changed = identity()
+                changed[field] = ('1' * (40 if field == 'sourceRevision' else 64)
+                                  if field.endswith('Sha256') or field == 'sourceRevision'
+                                  else 'linux' if field == 'host' else 'none'
+                                  if field == 'backend' else '1.0')
+                stale = [c for c in self.evaluate(output, manual, current=changed)['cells']
+                         if c['savedEvidence']]
+                self.assertEqual([c['status'] for c in stale], ['stale', 'stale'])
+                self.assertFalse(any(c['currentPass'] for c in stale))
+
+    def test_pre_repair_split_manifest_cannot_keep_inference_current(self):
+        previous = copy.deepcopy(SPEC)
+        repair = next(s for s in previous['scenarios'] if s['id'] == 'bounded-repair')
+        repair['checks'] = [c for c in repair['checks'] if c['id'] == 'real-repair-rerun']
+        inference = dict(record(), scenarioId='bounded-repair',
+                         checkId='real-repair-rerun', manifestSha256=sha(previous))
+        cells = [c for c in self.evaluate(inference)['cells']
+                 if c['scenarioId'] == 'bounded-repair' and c['target'] == 'macos']
+        self.assertEqual({c['checkId']: c['status'] for c in cells},
+                         {'real-repair-rerun': 'stale',
+                          'repair-confined-checks': 'missing',
+                          'repair-interaction': 'missing'})
+        self.assertFalse(any(c['currentPass'] for c in cells))
+
     def test_every_identity_change_invalidates_pass(self):
         for field in IDENTITY_FIELDS:
             with self.subTest(field=field):
@@ -272,6 +324,18 @@ class ProvenanceImportTest(unittest.TestCase):
                         changed['configurationSha256'] = '4' * 64
                         stale = report(SPEC, changed, result, NOW)
                         self.assertFalse(any(c['currentPass'] for c in stale['cells']))
+
+    def test_repair_output_import_leaves_manual_missing_and_refuses_manual_mapping(self):
+        p = self.provenance('bounded-repair')
+        evidence = self.assemble(p, check_id='repair-confined-checks')
+        cells = [c for c in report(SPEC, identity(), evidence, NOW)['cells']
+                 if c['scenarioId'] == 'bounded-repair' and c['target'] == 'macos']
+        self.assertEqual({c['checkId']: c['status'] for c in cells},
+                         {'real-repair-rerun': 'missing',
+                          'repair-confined-checks': 'passed',
+                          'repair-interaction': 'missing'})
+        with self.assertRaises(ValueError):
+            self.assemble(p, check_id='repair-interaction')
 
     def test_rejects_missing_extra_private_and_mismatched_provenance(self):
         for field in self.provenance():
