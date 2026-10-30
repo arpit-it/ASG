@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "issue": 285,
+  "feature": "F17",
+  "observedAt": "2026-10-30T18:49:23Z",
+  "compiledSourceRevision": "584c89c4cc98522b75b65d53ecbd52c5e21d6859",
+  "publicationBaseRevision": "865dd2eae306cb23f64cdbad34fa2583771b1938",
+  "controlTimingsMs": {
+    "freshInventory": 10378,
+    "textEditBaseline": 138115,
+    "isolatedLaunchAfterReset": 1418,
+    "populatedAccessibilityRefresh": 67,
+    "restart": 1231
+  },
+  "selectedRecordedAt": "2026-10-30T08:09:27.567266Z",
+  "displacedRecordedAt": "2026-10-30T17:35:23.352361Z",
+  "observations": [
+    "Selected Native archive restored project; other project has no generation history.",
+    "Native Inspect saved artifacts reported source/artifacts matched for selected earlier successful candidate.",
+    "Select for rollback displayed selected version and current work retained; explicitly confirmed Restore selected build.",
+    "Restore served actual selected built output. Chrome added Rollback acceptance 285 and checkbox changed0to1.",
+    "Quit followed by inventory absence; relaunch reopened same project. Generator displayed selected candidate directory, saved ready outcome and authorizing Plan15.",
+    "Read-only database after restart retained selected candidate, displaced current record and all four unchanged history entries.",
+    "All12source/34output fingerprints for selected and displaced outputs matched before/after (92 total file checks).",
+    "Browser tab closed; final native Quit/inventory absence verified; stable app remained stopped."
+  ],
+  "limitations": [
+    "Caller-attested manual observation of retained compiled584c89c; docs-only publication does not relabel binary as current main.",
+    "No model request, generated command execution, deadline or repair acceptance in this workflow.",
+    "Browser interaction is in-memory; generated task persistence across browser reload is not claimed.",
+    "No fullF17 support claim. Raw database, paths and AX remain private.",
+    "TextEdit baseline exceeded20second tool timeout; completed before safe reset. Fast ASG recovery does not establish low-level cause."
+  ]
+}
