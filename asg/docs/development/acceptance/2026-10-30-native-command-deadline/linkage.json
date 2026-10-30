@@ -1,0 +1,18 @@
+{
+  "digestMethod": "product_acceptance.sha: sorted compact JSON SHA256",
+  "requirementDigestOf": "Exact saved board revision5, including corrected RACTUAL/TACTUAL and superseded disposable filename assumption.",
+  "inputDigestOf": "Exact current approval context, including project details, board revision and prototype.",
+  "boardRevision": 5,
+  "approvedAt": "2026-10-30T19:36:57.200869Z",
+  "approvalMessageIndex": 3,
+  "approvalSha256": "47e06278194c3168bcf8434e7c1c92bfece3ee88293fef1f561f913e729f0e31",
+  "candidateSourcesSha256": "3cc4e494e37e7172e881cdfd03aa942abbda7f4dd56cfdf08c7a25675c8d76a8",
+  "workingSourcesSha256": "9a869155e34c03d4065992591eaf62694861dc4fc166784f000f5bc2687f89da",
+  "runSha256": "ed6d75d948baa65da86b75aa08afa63ee3f98627d574eedebe1786000fef89b3",
+  "modelDescriptor": {
+    "kind": "deterministic-fixture",
+    "inference": false,
+    "fixtureSha256": "42c890278fdc0706f323fdb92fa125b81bf9926eeddf2a140662a1a170690a4f"
+  },
+  "notF10CriterionVerification": true
+}

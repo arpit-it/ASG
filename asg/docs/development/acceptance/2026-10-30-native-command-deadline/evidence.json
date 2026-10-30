@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "records": [
+    {
+      "scenarioId": "stop-preservation",
+      "checkId": "deadline-interaction",
+      "target": "macos",
+      "status": "passed",
+      "observedAt": "2026-10-30T19:43:10Z",
+      "identity": {
+        "sourceRevision": "584c89c4cc98522b75b65d53ecbd52c5e21d6859",
+        "requirementSha256": "9909d89c7fcdfc68426ef1c90104638cd33960e374b980710e4e7bdac23ffcd1",
+        "inputSha256": "f251cddfc31218a76ba68c1377f5a269a7748d45403510876e61ed67661f7114",
+        "configurationSha256": "7bde5fd99b5fb3dd42b24099101ea4f5680f423eae88f0876021e713475ae798",
+        "modelSha256": "a57f6b237855d55cca09a149c9303583d80a40865927823ee0c77d9047c90cbc",
+        "deviceSha256": "f113ce0222a6ba6c91204ff6f63caf1c7620465272a39fe33a2b1352d70811ba",
+        "sdkVersion": "3.47.6",
+        "runtimeVersion": "3.12.8",
+        "browserVersion": "unavailable",
+        "backend": "none",
+        "host": "macos"
+      },
+      "manifestSha256": "a388df73fcad2fd78ddd1d292d1567f15b6d7a475ff274d4859e7229e36dd126",
+      "artifactSha256": [
+        "3b0b72eb485e24ad24e259e5a1734290efee945058b2c33d1312cda5100bfd1a",
+        "127526739b190ebd70fd2156ff240dc9e91a7a779de9f1ee1e796294fd4676f2",
+        "5bb2ab858b6bb6815872b9cfaa4b1586d0e4b4f0722d188d3ce04634dd3bb144",
+        "2dd1a5a49a78b9262f03297e49098230f2a9a8bf120302884971281b3e125a8a",
+        "5233e130814fecec25e80c14ba05cc955cc5089bb3e6367df815aac338f8cf30",
+        "42c890278fdc0706f323fdb92fa125b81bf9926eeddf2a140662a1a170690a4f"
+      ]
+    }
+  ]
+}
