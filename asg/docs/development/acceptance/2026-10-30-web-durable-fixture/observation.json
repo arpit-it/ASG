@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-10-30T23:00:54Z",
+  "sourceRevision": "bfcc8b2b463cb9334cf06cff3c3d57c96373ffdf",
+  "flutter": {
+    "testReferences": [
+      "test/browser_storage_test.dart"
+    ],
+    "platform": "chrome",
+    "passed": 5,
+    "skipped": 0,
+    "exitCode": 0
+  },
+  "python": {
+    "testReference": "tools/test_product_acceptance.py",
+    "passed": 27,
+    "exitCode": 0
+  },
+  "sourceFileCount": 281,
+  "verifiedAssertions": [
+    "Edited project, exact Unicode/newline conversation, requirements and tasks survive two IndexedDB close/reopens",
+    "Unrelated project and conversation remain exact",
+    "Malformed project and chat writes are rejected without durable changes",
+    "A transaction aborted after staging project/chat writes preserves both durable records; raw storage checked after each abort"
+  ],
+  "limitations": [
+    "Storage fixtures only; no application build/launch, manual create/edit/restart interaction, model or generated output is established.",
+    "Multiple synthetic projects have no single F10 identity; requirement/input/model use SHA256 of UTF8 unavailable. RuntimeVersion denotes absent model runtime; Dart version is in configuration.",
+    "Only one web create-reopen/durable-records fixture cell is submitted; full F17 remains In progress."
+  ],
+  "cleanup": "Successful retained Flutter Chrome log reports no teardown fallback; fixture closes and deletes its owned IndexedDB database."
+}
