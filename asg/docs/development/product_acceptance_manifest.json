@@ -15,7 +15,8 @@
           "id": "durable-records",
           "kind": "fixture",
           "testReferences": [
-            "test/transactional_storage_test.dart"
+            "test/transactional_storage_test.dart",
+            "test/browser_storage_test.dart"
           ]
         },
         {
