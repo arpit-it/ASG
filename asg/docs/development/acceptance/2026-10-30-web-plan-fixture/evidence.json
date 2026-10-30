@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "records": [
+    {
+      "scenarioId": "approved-plan",
+      "checkId": "stale-plan-refusal",
+      "target": "web",
+      "status": "passed",
+      "observedAt": "2026-10-30T22:31:38Z",
+      "identity": {
+        "sourceRevision": "f3c5d9b1bf0c0a162659d7f583f0f8862f9feef8",
+        "requirementSha256": "ba691ba042bcedd9a61a36f5969026bc95859dccdc7e47f24e6bce35673baf2f",
+        "inputSha256": "ba691ba042bcedd9a61a36f5969026bc95859dccdc7e47f24e6bce35673baf2f",
+        "configurationSha256": "f51bf95b816f30dc2c82d18f682a19f741dd7c86662d15b511439dbf5252fa76",
+        "modelSha256": "ba691ba042bcedd9a61a36f5969026bc95859dccdc7e47f24e6bce35673baf2f",
+        "deviceSha256": "9e3fc5852ed12444b4625fb87aa5bc8e4d1ade9566c5b00349b91baa153e0ae1",
+        "sdkVersion": "3.47.6",
+        "runtimeVersion": "unavailable",
+        "browserVersion": "156.0.8078.74",
+        "backend": "none",
+        "host": "macos"
+      },
+      "manifestSha256": "c59acf97c4d6d0fca9d3ff7317241d252cc7db8ab5c2e833aaae8c38540f438b",
+      "artifactSha256": [
+        "276bd41f83eaa698d3d7a5f66877197a30c3dd0021a693c8aac320486bb0acba",
+        "f51bf95b816f30dc2c82d18f682a19f741dd7c86662d15b511439dbf5252fa76",
+        "9e3fc5852ed12444b4625fb87aa5bc8e4d1ade9566c5b00349b91baa153e0ae1",
+        "cef864de98778b4d6b57d9d8d70cd2cd320e2e8a1c3268c8c15bdefd7f216bcc"
+      ]
+    }
+  ]
+}

@@ -39,7 +39,8 @@
           "id": "stale-plan-refusal",
           "kind": "fixture",
           "testReferences": [
-            "test/plan_approval_test.dart"
+            "test/plan_approval_test.dart",
+            "test/browser_storage_test.dart"
           ]
         },
         {

@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-10-30T22:31:38Z",
+  "sourceRevision": "f3c5d9b1bf0c0a162659d7f583f0f8862f9feef8",
+  "flutter": {
+    "testReferences": [
+      "test/browser_storage_test.dart"
+    ],
+    "platform": "chrome",
+    "passed": 4,
+    "skipped": 0,
+    "exitCode": 0
+  },
+  "python": {
+    "testReference": "tools/test_product_acceptance.py",
+    "passed": 27,
+    "exitCode": 0
+  },
+  "sourceFileCount": 273,
+  "verifiedAssertions": [
+    "Exact saved approval survives actual IndexedDB close/reopen",
+    "Requirements, prototype revision and latest draft changes each refuse execution-boundary approval and stale reapproval after reopen",
+    "Fresh reviewed consent succeeds and withdrawal survives reopen",
+    "Unreadable approval remains raw and cannot authorize or be replaced by approval save",
+    "Original migration/failed transaction/reopen regression passes"
+  ],
+  "limitations": [
+    "Browser storage/service fixtures only; no manual Plan UI, inference or generated output acceptance.",
+    "Requirement/input/model identities use UTF8 unavailable; multiple fixture project snapshots are not one F10 snapshot.",
+    "No application build/launch or full F17 support claim."
+  ],
+  "environment": "Initial sandbox SDK-cache denial required authorized host retry. Actual Chrome4/zero skips/exit0; retained log reports no teardown fallback. Python invocation corrected to direct script after module import path failure."
+}
