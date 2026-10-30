@@ -126,6 +126,16 @@
           "id": "stop-and-timeout",
           "kind": "manual",
           "testReferences": []
+        },
+        {
+          "id": "stop-interaction",
+          "kind": "manual",
+          "testReferences": []
+        },
+        {
+          "id": "deadline-interaction",
+          "kind": "manual",
+          "testReferences": []
         }
       ]
     },
