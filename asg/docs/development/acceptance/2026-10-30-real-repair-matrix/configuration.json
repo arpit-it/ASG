@@ -1,0 +1,35 @@
+{
+  "runtime": {
+    "backendSelection": "auto",
+    "resolvedBackend": "mlx",
+    "modelId": "Qwen3.5-9B",
+    "localWeightsOnly": true,
+    "host": "loopback",
+    "port": 8765,
+    "requestOutputTokenLimit": 4096,
+    "serverOutputTokenCap": 4096,
+    "samplerTemperature": 0
+  },
+  "test": {
+    "file": "test/automatic_repair_real_test.dart",
+    "realInference": true,
+    "acceptanceProvenance": true,
+    "deterministicInitialDefect": true,
+    "deterministicApprovedPlan": true,
+    "repairUsesRealTransport": true,
+    "manualInteraction": false
+  },
+  "sdk": {
+    "frameworkVersion": "3.47.6",
+    "frameworkRevision": "5fc346839b5d0eef006ed8404392afb4dfae428d",
+    "dartSdkVersion": "3.13.5"
+  },
+  "runtimeVersions": {
+    "python": "3.12.8",
+    "mlx": "0.32.4",
+    "mlx-lm": "0.32.2",
+    "transformers": "5.20.2"
+  },
+  "generatorPythonVersion": "3.12.8",
+  "sourceManifestSha256": "d6df8ca2657245bc3c61352d4b7eb281484ae1778901e824a719a0ed8fa797e5"
+}

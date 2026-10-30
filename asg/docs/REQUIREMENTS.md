@@ -49,9 +49,10 @@ Update this document with task selection and delivery evidence, alongside [agent
   - Accept when failed, missing and stale evidence cannot yield a verified requirement, and reports link to exact revisions and test results.
   - Assessment clarification (28 October 2026): extend this existing task with acceptance-criterion-level check mappings and explicit automated, manual and advisory evidence types. A green generic build or manually completed task must never verify unrelated criteria. Bind each result to exact requirement content and source/input revision; edits invalidate affected results. Show unmet criteria and evidence links in the workspace and copied report, and retain the current honest “Acceptance criteria: not verified” state until criterion-specific checks actually establish the supported claim. Validate changed criteria/source, missing checks, failed checks and reopen behavior. This scope is delivered as the explicitly bounded authored-check contract below; free-form prose and live-file freshness remain outside its verdict.
 - [ ] F17 Reproducible product acceptance and support matrix — In progress; depends on F10
-  - Active bounded current-manifest command-deadline evidence: reused [issue #291](https://github.com/arpit-it/ASG/issues/291), branch `291-native-deadline-current` from verified main339b055. Disposable deterministic seed, actual confined native command deadline and working preservation; full F17 remains In progress. Exact PR/review/CI/merge evidence follows in the delivery ledger.
-  - Delivered Stop/deadline collector extension: [PR #304](https://github.com/arpit-it/ASG/pull/304), reviewed `e07183f8`, required CI41030969692 passed; merged `8358708bed192b794ab3b3864a4738255ad72d6e` at2026-10-30T09:12:18Z. Reopened issue #283 now tracks actual native Stop/retry; branch `283-native-stop-retry`, exact compiled584c89c/current-manifest stop-interaction observed, Awaiting review/CI/merge. Deadline and full F17 remain unverified.
-  - Active repair evidence separation: reused/reopened [issue #263](https://github.com/arpit-it/ASG/issues/263), `263-repair-evidence-checks`. Add separate generated-output/manual repair cells and explicit F10 generated-check import; no new actual workflow or full support claim. Scope/acceptance/validation recorded in delivery ledger below. In progress pending independent review, required CI and merge.
+  - Active real repair/check evidence: reused [issue #263](https://github.com/arpit-it/ASG/issues/263), `263-live-repair-evidence` from verified main4c6c2e86. [PR #308](https://github.com/arpit-it/ASG/pull/308) records fresh actual Qwen correction and confined rerun; exactly two macOS saved cells, manual repair interaction still missing. Awaiting independent review, required CI and verified merge; full F17 In progress.
+  - Delivered bounded current-manifest command-deadline evidence: [issue #291](https://github.com/arpit-it/ASG/issues/291), `291-native-deadline-current`, [PR #307](https://github.com/arpit-it/ASG/pull/307). Final e4ec63d independently approved5717911832, requiredCI41117933227 passed; protected merge4c6c2e86c8e56392584a9a71e9895d2c828e61d6 at2026-10-30T19:51:46Z; issue291closed. Full F17 remains In progress.
+  - Delivered Stop/deadline collector extension: reused [issue #283](https://github.com/arpit-it/ASG/issues/283), `283-stop-deadline-evidence`, [PR #304](https://github.com/arpit-it/ASG/pull/304). Finale07183f8 independently approved review5710172809/finalgate6519201629; CI41030969692 passed; merge `8358708bed192b794ab3b3864a4738255ad72d6e` at2026-10-30T09:12:18Z, issue closed. Full F17 remains In progress for actual workflow coverage.
+  - Delivered repair evidence separation: reused [issue #263](https://github.com/arpit-it/ASG/issues/263), `263-repair-evidence-checks`, [PR #303](https://github.com/arpit-it/ASG/pull/303). Final9598c0ed independently approved review5709990083/finalgate6518880859; CI41028787419 passed; merge `fe7ec875bcf2173e9bfe54b72c61f37045b8f05c` at2026-10-30T08:52:50Z, issue closed. Bounded extension Done; real workflow coverage/full F17 remains In progress.
   - Delivered #289 native fingerprint-bound extension: [PR #302](https://github.com/arpit-it/ASG/pull/302), final `87c037018daff34a441c77c19ab45c700df71c02`, independent review5709718155/finalgate6518389158 and required CI41025253832 passed; merge `5e507d33ab485127cda6dea822051dae16a4e6e8` at2026-10-30T08:21:53Z; issue closed. Actual compiled584c89c native proposal/check/promotion/served/restart observations remain bounded historical evidence; full F17 In progress.
   - Active #289 runtime correction: `289-candidate-matrix` honors bounded 4096-token full-file requests; minimum requested view replacement measures2298 tokens against former2048 cap.26Python/31Flutter tests pass; actual retry still failed safely. Native candidate acceptance and full F17 remain In progress; no promotion/support claim.
   - Active native Plan exact-snapshot extension: reopened [issue #287](https://github.com/arpit-it/ASG/issues/287), `287-plan-matrix`. Actual mapped Plan approval/restart/edit/refusal and external last-working preservation observed; 41 focused Flutter tests and 20 collector fixtures pass. Awaiting independent review, required CI and verified merge. Full F17 remains In progress.
@@ -4630,3 +4631,43 @@ Prior #285/PR306 bounded rollback increment verified merged339b055503aaeec9eb359
 
 
 Published [PR #307](https://github.com/arpit-it/ASG/pull/307), branch `291-native-deadline-current`. Initial tested local64c539d/published914fc4c share exact tree11c928f874e5c41a86ae126848119e504ab69b9c; all13blobs verified through connected GitHub. This link-only revision retains the same observation/checks. Independent final-revision review, required CI and verified merge remain pending. Bounded issue291 Awaiting merge; fullF17 In progress.
+
+
+### Native command deadline verified merged — #291 / PR #307 — 2026-10-30T19:52:45.924612+00:00
+
+Bounded current-manifest deadline increment Done; full F17 remains In progress. Final reviewed head e4ec63d57041dc3387111aecd7873c5e03d1437f / tested local eb217e5144bd21df5b15bf6315c5a75d957fc4b6 share exact tree fa3576fe4c75ddfbf1ae47767ade61caa53d9cee. Independent final approval COMMENT5717911832 (interim5717859763) found no blockers; independent15Flutter/27Python and exactreport/rawrun/approval/board/context hashes/57workingfiles/sevenexistingrecords/300source43bundle checks passed. RequiredCI41117933227 Python124277105842/Flutter124277105549 passed: formatter/analyzer/879default(eightoptinskips)/fiveChrome/web+Wasmdryrun/actualgenerated resolve-analyze-test-build0+servedtest; Python27/2/6/14(oneskip)/4(twoskips). Reviewer protected squash merged4c6c2e86c8e56392584a9a71e9895d2c828e61d6 at2026-10-30T19:51:46Z; parent independently pluginverified merge/tree/issue291closedcompleted. Signedmerge SHA verified before offline local import. Main/origin-main synchronized0/0; indexempty/diffcheckpassed. AllfivepriorIDE/docs edits preserved (IDEbyteexact, every prior documentation line retained); backup/private/tmp/asg-307-primary-before and prepared/private/tmp/asg-307-sync-prepared. No productruntime changes/modeldownload/liveinference/realrepair/fullF17claim. Nativeapp/fixturestopped and ownedcandidate/fixtureprocessabsencechecked. Providerlabels were rejected by automaticapprovalreview under namingpreference; PR proceeded unlabeled, no workaround. Earlier Active/Awaiting text is historical. Final bookkeeping retained locally for next relatedreviewedincrement; no later task selected. Schedule15minutes/notificationpreferences unchanged.
+
+
+### F17 fresh real repair/check evidence — reused #263 — 30 October 2026 UTC
+
+Gap/scope: the current manifest separates bounded-repair live inference, confined
+checks and actual manual interaction. Existing historical repair evidence does not
+supply a current-source pair. Reused #263; no duplicate issue/task or later feature.
+Branch `263-live-repair-evidence` starts at plugin-verified main4c6c2e86c8e56392584a9a71e9895d2c828e61d6.
+
+Acceptance/validation: run the existing real-Qwen automatic repair test, retain exact
+F10 requirement/input/source/approval/run digests and measured model/toolchain/device
+identities, and submit only the observed liveInference/generatedOutput cells under
+the current manifest. Exactly two macOS passes; repair-interaction must stay missing.
+Independent final-revision review, required CI and verified merge gate delivery.
+
+Actual test passed1 in58seconds: deterministic approved Plan/undefined-call defect,
+real offline Qwen3.5-9B MLX correction, confined resolve/test/analyze/build all exit0,
+prior source/served JavaScript preserved before explicit promotion, refreshed HTTP200
+nonempty JavaScript and durable attempts/checks after database reopen. Test asserts
+one to three analyze repair attempts; it does not report an exact attempt count.
+27collector/importer/CLI regressions passed; exact120-cell report regenerated.
+Seven model files and273tracked source/test/runtime files hashed; SDK3.47.6,
+Python3.12.8/MLX0.32.4/MLX-LM0.32.2, arm64macOS27.0.1/Metal recorded.
+
+Sanitized artifacts: `development/acceptance/2026-10-30-real-repair-matrix/`.
+No native repair UI, browser interaction, arbitrary acceptance-prose verification,
+new model download, stable app replacement or fullF17 claim. Source identity is the
+actual tested pre-publication main revision; docs-only publication does not relabel it.
+Temporary test project removed by test cleanup; owned runtime stopped/portabsence
+verified. Fresh unrelated native control baseline66ms/isolatedlaunch1313ms/AX44ms,
+then Quit/independentabsence; this establishes responsiveness only. Primary five
+IDE/docs edits preserved separately. Awaiting PR/finalreview/CI/verifiedmerge evidence.
+
+
+Published [PR #308](https://github.com/arpit-it/ASG/pull/308), branch `263-live-repair-evidence`. Initial local4b0eecfa31f7e7ad140ac2dfd953e18495491f30 / remote c95915973ae949a2792b6bd85ae68e3b542d4f4d share exact tree8e1dd9fc7231857f038e2fe9f33dfabd6d077621, all13blobs connector-verified. Link-only publication bookkeeping retains the same real test and observation identities. Bounded #263 Awaiting merge; fullF17 In progress. Independent exact-final review, requiredCI and verifiedmerge remain pending.

@@ -1,0 +1,6 @@
+{
+  "os": "macos",
+  "version": "27.0.1",
+  "architecture": "arm64",
+  "device": "metal"
+}

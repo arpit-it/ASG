@@ -3601,3 +3601,43 @@ Prior #285/PR306 bounded rollback increment verified merged339b055503aaeec9eb359
 
 
 Published [PR #307](https://github.com/arpit-it/ASG/pull/307), branch `291-native-deadline-current`. Initial tested local64c539d/published914fc4c share exact tree11c928f874e5c41a86ae126848119e504ab69b9c; all13blobs verified through connected GitHub. This link-only revision retains the same observation/checks. Independent final-revision review, required CI and verified merge remain pending. Bounded issue291 Awaiting merge; fullF17 In progress.
+
+
+### Native command deadline verified merged — #291 / PR #307 — 2026-10-30T19:52:45.924612+00:00
+
+Bounded current-manifest deadline increment Done; full F17 remains In progress. Final reviewed head e4ec63d57041dc3387111aecd7873c5e03d1437f / tested local eb217e5144bd21df5b15bf6315c5a75d957fc4b6 share exact tree fa3576fe4c75ddfbf1ae47767ade61caa53d9cee. Independent final approval COMMENT5717911832 (interim5717859763) found no blockers; independent15Flutter/27Python and exactreport/rawrun/approval/board/context hashes/57workingfiles/sevenexistingrecords/300source43bundle checks passed. RequiredCI41117933227 Python124277105842/Flutter124277105549 passed: formatter/analyzer/879default(eightoptinskips)/fiveChrome/web+Wasmdryrun/actualgenerated resolve-analyze-test-build0+servedtest; Python27/2/6/14(oneskip)/4(twoskips). Reviewer protected squash merged4c6c2e86c8e56392584a9a71e9895d2c828e61d6 at2026-10-30T19:51:46Z; parent independently pluginverified merge/tree/issue291closedcompleted. Signedmerge SHA verified before offline local import. Main/origin-main synchronized0/0; indexempty/diffcheckpassed. AllfivepriorIDE/docs edits preserved (IDEbyteexact, every prior documentation line retained); backup/private/tmp/asg-307-primary-before and prepared/private/tmp/asg-307-sync-prepared. No productruntime changes/modeldownload/liveinference/realrepair/fullF17claim. Nativeapp/fixturestopped and ownedcandidate/fixtureprocessabsencechecked. Providerlabels were rejected by automaticapprovalreview under namingpreference; PR proceeded unlabeled, no workaround. Earlier Active/Awaiting text is historical. Final bookkeeping retained locally for next relatedreviewedincrement; no later task selected. Schedule15minutes/notificationpreferences unchanged.
+
+
+### F17 fresh real repair/check evidence — reused #263 — 30 October 2026 UTC
+
+Gap/scope: the current manifest separates bounded-repair live inference, confined
+checks and actual manual interaction. Existing historical repair evidence does not
+supply a current-source pair. Reused #263; no duplicate issue/task or later feature.
+Branch `263-live-repair-evidence` starts at plugin-verified main4c6c2e86c8e56392584a9a71e9895d2c828e61d6.
+
+Acceptance/validation: run the existing real-Qwen automatic repair test, retain exact
+F10 requirement/input/source/approval/run digests and measured model/toolchain/device
+identities, and submit only the observed liveInference/generatedOutput cells under
+the current manifest. Exactly two macOS passes; repair-interaction must stay missing.
+Independent final-revision review, required CI and verified merge gate delivery.
+
+Actual test passed1 in58seconds: deterministic approved Plan/undefined-call defect,
+real offline Qwen3.5-9B MLX correction, confined resolve/test/analyze/build all exit0,
+prior source/served JavaScript preserved before explicit promotion, refreshed HTTP200
+nonempty JavaScript and durable attempts/checks after database reopen. Test asserts
+one to three analyze repair attempts; it does not report an exact attempt count.
+27collector/importer/CLI regressions passed; exact120-cell report regenerated.
+Seven model files and273tracked source/test/runtime files hashed; SDK3.47.6,
+Python3.12.8/MLX0.32.4/MLX-LM0.32.2, arm64macOS27.0.1/Metal recorded.
+
+Sanitized artifacts: `development/acceptance/2026-10-30-real-repair-matrix/`.
+No native repair UI, browser interaction, arbitrary acceptance-prose verification,
+new model download, stable app replacement or fullF17 claim. Source identity is the
+actual tested pre-publication main revision; docs-only publication does not relabel it.
+Temporary test project removed by test cleanup; owned runtime stopped/portabsence
+verified. Fresh unrelated native control baseline66ms/isolatedlaunch1313ms/AX44ms,
+then Quit/independentabsence; this establishes responsiveness only. Primary five
+IDE/docs edits preserved separately. Awaiting PR/finalreview/CI/verifiedmerge evidence.
+
+
+Published [PR #308](https://github.com/arpit-it/ASG/pull/308), branch `263-live-repair-evidence`. Initial local4b0eecfa31f7e7ad140ac2dfd953e18495491f30 / remote c95915973ae949a2792b6bd85ae68e3b542d4f4d share exact tree8e1dd9fc7231857f038e2fe9f33dfabd6d077621, all13blobs connector-verified. Link-only publication bookkeeping retains the same real test and observation identities. Bounded #263 Awaiting merge; fullF17 In progress. Independent exact-final review, requiredCI and verifiedmerge remain pending.

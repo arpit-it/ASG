@@ -1,0 +1,2 @@
+F05_REAL_ACCEPTANCE: actual analyzer failure, real Qwen automatic correction, durable attempts, confined resolve=0, test=0, analyze=0, build=0, atomic promotion, refreshed HTTP200 preview.
+00:58 +1: All tests passed!
