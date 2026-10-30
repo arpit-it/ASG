@@ -3550,3 +3550,6 @@ Temporary test project removed by test cleanup; owned runtime stopped/portabsenc
 verified. Fresh unrelated native control baseline66ms/isolatedlaunch1313ms/AX44ms,
 then Quit/independentabsence; this establishes responsiveness only. Primary five
 IDE/docs edits preserved separately. Awaiting PR/finalreview/CI/verifiedmerge evidence.
+
+
+Published [PR #308](https://github.com/arpit-it/ASG/pull/308), branch `263-live-repair-evidence`. Initial local4b0eecfa31f7e7ad140ac2dfd953e18495491f30 / remote c95915973ae949a2792b6bd85ae68e3b542d4f4d share exact tree8e1dd9fc7231857f038e2fe9f33dfabd6d077621, all13blobs connector-verified. Link-only publication bookkeeping retains the same real test and observation identities. Bounded #263 Awaiting merge; fullF17 In progress. Independent exact-final review, requiredCI and verifiedmerge remain pending.
