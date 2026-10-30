@@ -1,0 +1,20 @@
+{
+  "bundleIdentifier": "com.arsinha.asg.f17snapshot.asg",
+  "compiledSourceRevision": "584c89c4cc98522b75b65d53ecbd52c5e21d6859",
+  "sourceManifestSha256": "e6e920052caf6095e78cd54d146f623d09535f9126b7a468eeb654685b1660b9",
+  "bundleManifestSha256": "fd7a3dbdd9469960b2b18f291fd32f2ddea2b45c5e241cdfe81c04da45b81be0",
+  "manifestLocation": "../2026-10-30-native-fingerprint-candidate",
+  "sourceFilesVerified": 300,
+  "bundleFilesVerified": 43,
+  "workflow": "Native disposable fixture Plan, fixed starter baseline, reviewed async test seed, actual confined180second command deadline and working preservation.",
+  "inference": "No model inference. Explicit loopback deterministic fixture supplied Plan and single selected test replacement.",
+  "isolationOverride": "Only AppInfo.xcconfig bundle identifier differs from compiled commit; stable app and original profile untouched.",
+  "fixtureSha256": "42c890278fdc0706f323fdb92fa125b81bf9926eeddf2a140662a1a170690a4f",
+  "pythonVersion": "3.12.8",
+  "limits": {
+    "version": 1,
+    "commandTimeoutSeconds": 180,
+    "outputLimitBytes": 65536,
+    "maximumOperations": 4
+  }
+}

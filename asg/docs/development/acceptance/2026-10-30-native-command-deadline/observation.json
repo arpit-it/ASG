@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "feature": "F17",
+  "issue": 291,
+  "observedAt": "2026-10-30T19:43:10Z",
+  "compiledSourceRevision": "584c89c4cc98522b75b65d53ecbd52c5e21d6859",
+  "publicationBaseRevision": "339b055503aaeec9eb3595f07632d23ef3b213fd",
+  "controlTimingsMs": {
+    "finderBaseline": 84,
+    "isolatedLaunch": 1335,
+    "populatedAccessibilityRefresh": 44
+  },
+  "nativeObservations": [
+    "Created new disposable project and structured scenario requirement/task.",
+    "Fixture Plan was explicitly marked deterministic, reviewed and approved.",
+    "Initial fixture assumed historical widget_test.dart; actual current starter uses generated_app_test.dart. Corrected scope recorded asRACTUAL/TACTUAL; fresh Plan/currentapproval and separate new baseline used. Prior superseded board entries remain queued, not verified.",
+    "Fresh fixed starter resolve/analyze/test/build all passed.",
+    "Selected only test/generated_app_test.dart and reviewed complete diff inserting one five-minute async test with explicit ten-minute test timeout.",
+    "Prepared separate unverified candidate and explicitly consented confined verification.",
+    "Candidate UI displayed failed test, exit-1 and command deadline exceeded diagnosis. Expanded output named the seeded test and SIGTERM during deadline finalization; Flutter also emitted temporary-listener cleanup diagnostics.",
+    "Promotion remained visibly disabled; no repair proposal or automatic repair action offered for this deadline. Saved repair usage stayed0/3 in each category.",
+    "Returned to generator: saved outcome ready at original baseline directory, Planmessage4/currentapproval and4/4 mapped operations passed.",
+    "Quit through native menu; subsequent independent app inventory omitted isolated bundle and stable app remained stopped."
+  ],
+  "limitations": [
+    "Manual observation is caller-attested; saved matrix report is not independent execution or live support certification.",
+    "Retained compiled584c89c source/bundle identity is explicit; docs-only publication is not a current-main rebuild.",
+    "Deterministic Plan/proposal fixture is not Qwen inference, model health, real repair or chat generation acceptance.",
+    "No served-browser interaction, native restart, Stop or combinedStop/timeout claim in this increment.",
+    "Native select-all/paste and AXsetValue did not replace controller text; attempted edits were discarded. New explicit corrected disposable scope was saved instead.",
+    "Initial second baseline retry failed safely because SDK text was appended; reopening retained valid SDK path, corrected request completed allfour checks.",
+    "Full F17 remains In progress."
+  ],
+  "cleanup": {
+    "ownedFixtureStopped": true,
+    "isolatedAppQuitAndAbsenceVerified": true,
+    "stableAppUntouched": true
+  }
+}
