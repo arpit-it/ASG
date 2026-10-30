@@ -154,7 +154,8 @@
           "id": "rollback-records",
           "kind": "fixture",
           "testReferences": [
-            "test/build_rollback_test.dart"
+            "test/build_rollback_test.dart",
+            "test/browser_build_history_test.dart"
           ]
         },
         {
