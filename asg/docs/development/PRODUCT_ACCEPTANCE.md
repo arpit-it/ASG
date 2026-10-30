@@ -715,3 +715,38 @@ application source after these observation documents merge.
 The actual Chrome suite in `test/browser_generation_capability_test.dart` also exercises the public `prepareSourceCandidate` conditional import with current persisted approval and matching generated-input fingerprints. It must fail specifically because the browser lacks a native filesystem, after current-authority validation. It checks exact saved project/requirements/conversation/approval/prototype/working-generation records before and after refusal and IndexedDB reopen. Withdrawn approval must instead fail current-authority validation and retain its exact withdrawn record through reopen. The disposable database is removed afterward.
 
 This is automated unavailable-boundary coverage. No model request, candidate file creation, confined verification, promotion, served output interaction or manual acceptance pass is established. Full F17 remains In progress. Run the same required Chrome command documented above; no separate browser CI registration is needed.
+
+
+## Exact-snapshot native reopen extension (issue #273)
+
+The [native evidence directory](acceptance/2026-10-30-native-reopen-matrix/observation.json)
+records a bounded current-source persistence observation, extending delivered PR #274.
+The uniquely identified debug bundle used source `422363fc04db6a20b6c515c25dc71f4becaafff6`:
+504 tracked files matched, with only the retained app-name/bundle configuration override.
+The bundle manifest, effective configuration and sanitized device identity are retained.
+This run reused the earlier build; it does not assert a fresh build pass.
+
+Using the isolated application, edit RNATIVE's title, wait for revision3 acknowledgement,
+expand Requirement check report → Exact saved revision and results, and capture the
+rendered JSON. Explicitly quit and verify absence, relaunch that same isolated app path,
+observe the checked prototype item, open the board and capture its exact report again.
+The retained before/reopened JSON documents compare equal. The actual title contains
+an appended suffix because the automation's select-all did not replace the original;
+no product defect or successful replacement is inferred. Final app exit was verified.
+
+Only native `create-reopen/interactive-reopen` is supplied as a caller-observed pass.
+Initial creation was observed by the preceding run; this run verifies durable edits
+and reopen of that project. There is no approved source run or model request; their
+collector identities use SHA-256 of UTF-8 `unavailable`, while the actual current
+unapproved input remains in the F10 snapshots. No full F17/support claim follows.
+
+From the Flutter root, regenerate the exact report (the original generatedAt is
+retained as the deterministic comparison time when using the Python API):
+
+```sh
+python3 -B tools/product_acceptance.py --manifest docs/development/product_acceptance_manifest.json --identity docs/development/acceptance/2026-10-30-native-reopen-matrix/identity.json --evidence docs/development/acceptance/2026-10-30-native-reopen-matrix/evidence.json --output /tmp/native-reopen-report.json
+```
+
+Only generatedAt changes on a later CLI run. Source, requirement, input, configuration
+or device identity mutation makes the supplied cell stale. All other cells stay
+missing or unavailable; saved caller observations are not authenticated acceptance.
