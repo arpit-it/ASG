@@ -29,7 +29,10 @@ class UnsupportedRuntimeHost implements RuntimeHost {
   @override
   Future<List<ModelCandidate>> scan(String path) async => _unsupported();
   @override
-  Future<void> prepare(String python) async => _unsupported();
+  Future<void> prepare(
+    String python, {
+    RuntimeBackend backend = RuntimeBackend.auto,
+  }) async => _unsupported();
   @override
   Future<RuntimeCapabilities> discover(String python) async => _unsupported();
   @override

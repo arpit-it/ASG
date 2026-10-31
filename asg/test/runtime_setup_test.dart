@@ -61,7 +61,10 @@ class FakeRuntimeHost implements RuntimeHost {
     ),
   ];
   @override
-  Future<void> prepare(String python) async {}
+  Future<void> prepare(
+    String python, {
+    RuntimeBackend backend = RuntimeBackend.auto,
+  }) async {}
   @override
   Future<RuntimeCapabilities> discover(String python) async =>
       throw UnimplementedError();
@@ -161,9 +164,14 @@ class PrepareRuntimeHost extends FakeRuntimeHost {
   bool fail = true;
   Completer<void>? gate;
   int preparations = 0;
+  RuntimeBackend? preparedBackend;
   @override
-  Future<void> prepare(String python) async {
+  Future<void> prepare(
+    String python, {
+    RuntimeBackend backend = RuntimeBackend.auto,
+  }) async {
     preparations++;
+    preparedBackend = backend;
     await gate?.future;
     if (fail) {
       throw ProcessException('/private/python', [
@@ -598,6 +606,86 @@ void main() {
       expect(c.error, isNull);
     });
   }
+
+  test(
+    'Prepare forwards unsaved backend without changing saved setup',
+    () async {
+      SharedPreferences.setMockInitialValues({});
+      final host = PrepareRuntimeHost()..fail = false;
+      final c = await controller(host);
+      addTearDown(c.dispose);
+      final saved = c.setup;
+      for (final backend in RuntimeBackend.values) {
+        await c.prepare('/python', backend: backend);
+        expect(host.preparedBackend, backend);
+        expect(c.status, contains(backend.label));
+        expect(c.status, contains('unverified'));
+        expect(c.setup, same(saved));
+        expect(host.ownsProcess, isFalse);
+        expect(host.downloads, 0);
+      }
+    },
+  );
+
+  testWidgets('Prepare uses current unsaved backend selection', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final host = PrepareRuntimeHost()..fail = false;
+    final c = await controller(host);
+    await tester.pumpWidget(
+      MaterialApp(home: RuntimeSetupScreen(controller: c)),
+    );
+    await tester.pumpAndSettle();
+    final dropdown = find.byType(DropdownButtonFormField<RuntimeBackend>);
+    await tester.scrollUntilVisible(
+      dropdown,
+      400,
+      maxScrolls: 40,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(dropdown);
+    await tester.pumpAndSettle();
+    await tester.tap(dropdown);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(RuntimeBackend.torch.label).last);
+    await tester.pumpAndSettle();
+    final prepare = find.text('Prepare runtime helper');
+    await tester.scrollUntilVisible(
+      prepare,
+      350,
+      maxScrolls: 40,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.ensureVisible(prepare);
+    await tester.tap(prepare);
+    await tester.pumpAndSettle();
+    expect(host.preparedBackend, RuntimeBackend.torch);
+    expect(c.setup.backend, RuntimeBackend.auto);
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  test('Native preparation forwards backend through extracted helper with spaced paths', () async {
+    final dir = await Directory.systemTemp.createTemp('asg prepare helper ');
+    addTearDown(() => dir.delete(recursive: true));
+    final host = NativeRuntimeHost(
+      supportDirectory: () async => dir,
+      loadAsset: (name) async {
+        expect(name, 'qwen_backends.py');
+        return "import json, pathlib, sys\npathlib.Path(__file__).with_name('args.json').write_text(json.dumps(sys.argv[1:]))\n";
+      },
+    );
+    for (final backend in RuntimeBackend.values) {
+      await host.prepare('/usr/bin/python3', backend: backend);
+      expect(jsonDecode(await File('${dir.path}/args.json').readAsString()), [
+        '--prepare',
+        backend.argument,
+        '--helper-target',
+        '${dir.path}/.runtime-deps',
+      ]);
+      expect(host.ownsProcess, isFalse);
+    }
+  }, skip: !Platform.isMacOS);
 
   test('Prepare failures are private, terminal and retryable', () async {
     SharedPreferences.setMockInitialValues({});

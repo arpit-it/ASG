@@ -329,7 +329,7 @@ class _RuntimeSetupScreenState extends State<RuntimeSetupScreen> {
               ]),
               section('2 · Prepare & start', [
                 const Text(
-                  'Choose a Python environment with mlx-lm for fast local 4-bit Qwen3.5 inference on Apple Silicon. Legacy PyTorch/Transformers is also supported. Prepare checks the environment; only the legacy backend needs the Accelerate helper. Your existing Python packages are not replaced.',
+                  'Choose a Python environment with mlx-lm for fast local 4-bit Qwen3.5 inference on Apple Silicon. Legacy PyTorch/Transformers is also supported. Prepare checks the selected backend environment; only the legacy backend needs the Accelerate helper. Your existing Python packages are not replaced.',
                 ),
                 const SizedBox(height: 16),
                 field(
@@ -396,7 +396,10 @@ class _RuntimeSetupScreenState extends State<RuntimeSetupScreen> {
                     OutlinedButton(
                       onPressed: controller.busy
                           ? null
-                          : () => controller.prepare(python.text.trim()),
+                          : () => controller.prepare(
+                              python.text.trim(),
+                              backend: backend,
+                            ),
                       child: const Text('Prepare runtime helper'),
                     ),
                     FilledButton.icon(

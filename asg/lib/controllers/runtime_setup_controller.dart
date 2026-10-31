@@ -280,12 +280,15 @@ class RuntimeSetupController extends BaseController {
     }
   });
 
-  Future<void> prepare(String python) => _action(() async {
+  Future<void> prepare(
+    String python, {
+    RuntimeBackend backend = RuntimeBackend.auto,
+  }) => _action(() async {
     invalidateCapabilities();
     _status = 'Checking Python and preparing the helper…';
     update();
     try {
-      await host.prepare(python.trim());
+      await host.prepare(python.trim(), backend: backend);
     } catch (_) {
       if (isDisposed) return;
       _status = 'Runtime helper preparation failed.';
@@ -296,7 +299,8 @@ class RuntimeSetupController extends BaseController {
       );
     }
     if (isDisposed) return;
-    _status = 'Runtime helper ready. You can start the selected model.';
+    _status =
+        'Runtime helper ready for ${backend.label}. Model loading and memory adequacy remain unverified.';
   });
   Future<void> saveSetup(RuntimeSetup values) => _action(() async {
     await _saveSetup(values);
