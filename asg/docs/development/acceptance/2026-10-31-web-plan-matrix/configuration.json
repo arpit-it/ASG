@@ -1,0 +1,29 @@
+{
+  "sdk": {
+    "frameworkVersion": "3.47.6",
+    "channel": "stable",
+    "repositoryUrl": "https://github.com/flutter/flutter.git",
+    "frameworkRevision": "5fc346839b5d0eef006ed8404392afb4dfae428d",
+    "frameworkCommitDate": "2026-09-30 15:02:49 -0700",
+    "engineRevision": "692136cb6582dbfc5af3fb33c2515a069f2f66d0",
+    "engineCommitDate": "2026-09-30 00:56:59.000Z",
+    "engineContentHash": "b8c8d3d8d5d0095127057f8a29ca8cc53da2167c",
+    "engineBuildDate": "2026-09-30 06:49:13.915",
+    "dartSdkVersion": "3.13.5",
+    "devToolsVersion": "2.60.0",
+    "flutterVersion": "3.47.6"
+  },
+  "runtime": {
+    "python": "3.12.8",
+    "mlx": "0.32.4",
+    "mlx-lm": "0.32.2",
+    "transformers": "5.20.2"
+  },
+  "sourceManifestSha256": "5b5d8d847174539ea814f3f552d9ad5fd28df5265dda7670e01c1e96fe0a6b88",
+  "bundleManifestSha256": "12e1864875b4eb94dc8160dccfdcd799e9a7abb854e97461914a4b9e48dffa81",
+  "build": "release web",
+  "transport": "loopback",
+  "storage": "fresh unique loopback origin IndexedDB",
+  "workflow": "real mapped Plan, explicit approval, reload, requirement edit, outdated refusal, second reload, web host limitation",
+  "inputScope": "Exact F10 currentInputSha256 of current prototype/project; saved generated-run input and approval are absent. Not generated-output or executed stale-plan gate evidence."
+}

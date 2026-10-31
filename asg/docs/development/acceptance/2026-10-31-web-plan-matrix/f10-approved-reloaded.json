@@ -1,0 +1,90 @@
+{
+  "savedEvidence": {
+    "scope": "Mapped checks passed describes saved command evidence, not acceptance criteria or current artifact availability. Inspect current artifacts separately to compare recorded source and output fingerprints. Inspection is read-only and reflects files only when inspected; it does not run commands or inference. Model Review remains advisory; manual task Done does not count as evidence.",
+    "requirementsRevision": 2,
+    "namedObservations": [],
+    "manualObservations": [],
+    "requirementsBoard": {
+      "version": 1,
+      "revision": 2,
+      "requirements": [
+        {
+          "id": "RWEB",
+          "title": "Browser Plan approval lifecycle",
+          "acceptance": "Saved Plan approval survives reload and becomes outdated after requirements change."
+        }
+      ],
+      "tasks": [
+        {
+          "id": "TWEB",
+          "requirementId": "RWEB",
+          "title": "Verify browser Plan lifecycle",
+          "dependencies": [],
+          "status": "queued"
+        }
+      ]
+    },
+    "requirementsBoardSha256": "7fd5d55b52ae3c142f11233605389a2e2bc3c22eae7836bb478c5824256fcba8",
+    "savedInputsCurrent": false,
+    "recordedAt": null,
+    "phase": null,
+    "approvalFingerprint": null,
+    "revisionIdentity": {
+      "schema": 1,
+      "scope": "Saved content identity only; not a direct check result or live artifact observation.",
+      "savedRunSha256": null,
+      "savedSourceSha256": null,
+      "savedInputSha256": null,
+      "savedApprovalSha256": null,
+      "currentInputSha256": "2a02d5fea933c40343ad5961231a04715ef93f61ffa9193e7d19d425b77e0871"
+    },
+    "sourceFingerprints": null,
+    "outputFingerprints": null,
+    "requirements": [
+      {
+        "id": "RWEB",
+        "state": "missing",
+        "acceptanceStatus": "unverified",
+        "acceptanceEvidence": {
+          "granularity": "authoredAcceptanceBlock",
+          "requirementId": "RWEB",
+          "requirementSha256": "b121fad7bbcab0b5225907546d84f8306e2eb07d3386e60c1ecc9f1585e24247",
+          "text": "Saved Plan approval survives reload and becomes outdated after requirements change.",
+          "status": "unverified",
+          "reason": "No automated acceptance verdict is recorded for this acceptance block. Manual observations are self-reported. Generic operation results, manual task progress and advisory model Review do not verify acceptance.",
+          "declaredChecks": [],
+          "directChecks": [],
+          "authoredContract": {
+            "status": "unverified",
+            "criterionIds": [],
+            "unverifiedCriterionIds": [],
+            "requirementSha256": "b121fad7bbcab0b5225907546d84f8306e2eb07d3386e60c1ecc9f1585e24247",
+            "savedRunSha256": null,
+            "scope": "Only all explicitly authored named-test contracts at the saved revision. Empty criteria never verify. Free-form acceptance prose, semantic coverage and live files remain unverified."
+          },
+          "criteria": []
+        },
+        "bindingContext": {
+          "requirementSha256": "b121fad7bbcab0b5225907546d84f8306e2eb07d3386e60c1ecc9f1585e24247",
+          "savedRunSha256": null,
+          "savedInputsCurrent": false,
+          "scope": "Binding context only. Manual observations are separate from automated operation evidence."
+        },
+        "contextualEvidence": {
+          "type": "automatedOperation",
+          "criterionMapping": "none",
+          "operationIds": [],
+          "state": "missing"
+        },
+        "checks": [],
+        "boardTaskIds": [
+          "TWEB"
+        ],
+        "operationIds": []
+      }
+    ],
+    "operations": [],
+    "results": []
+  },
+  "artifactInspection": null
+}

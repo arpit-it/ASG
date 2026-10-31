@@ -976,3 +976,46 @@ The [follow-up observation](acceptance/2026-10-30-native-deadline-reopen/observa
 ## Isolated native build/launch matrix — issue #271
 
 [Repeat instructions](acceptance/2026-10-31-native-launch-matrix/REPRODUCE.md) record an actual debug build at source6ea5f428 and observed fresh native home in a unique test bundle, migration-only storage and native Quit/independent absence.301source/43bundle file digests and measured identities accompany exactly two saved macOS application-baseline cells. Initial elapsed time included approval waiting; a single reset/reconnect succeeded. No startup-performance, full-workflow/model/current-support or fullF17 claim follows.
+
+
+## Exact F10-context web Plan lifecycle — issue #287
+
+The [observation](acceptance/2026-10-31-web-plan-matrix/observation.json) and
+[saved report](acceptance/2026-10-31-web-plan-matrix/report.json) record one actual
+web `approved-plan/plan-lifecycle-interaction` cell at compiled main aa79c4e3.
+A fresh release web build, unique loopback origin and existing offline MLX model
+produced a validated fixed-starter Plan with resolve/analyze/test/build all mapped
+to saved task TWEB. Explicit approval survived reload. Editing RWEB to revision3
+made it outdated, disabled reapproval and survived a second reload. Browser
+Generate remained disabled even after separate operation consent, then consent
+was cleared. This observes a UI boundary, not an executed native stale-plan gate.
+
+Repeat on a fresh loopback origin. Create a Web daily task planner named Exact web
+Plan baseline. Save RWEB, title Browser Plan approval lifecycle, acceptance Saved
+Plan approval survives reload and becomes outdated after requirements change.
+Save TWEB, title Verify browser Plan lifecycle, linked to RWEB. Request a version4
+fixed-starter contract mapping every operation to TWEB using the existing local
+Qwen runtime. Inspect all validated mappings, explicitly approve, reload, reopen
+Plan and confirm approval. In Requirements and tasks open Requirement check
+report, expand Exact saved revision and results and retain the actual JSON.
+Edit RWEB title to Browser Plan approval lifecycle revised, save, reopen Plan,
+confirm outdated/disabled reapproval, reload and verify again. Retain the second
+expanded F10 JSON. Observe the disabled native generator with and without consent;
+clear consent. Close only owned tabs/processes. Never replace the stable app.
+
+The exact [approved-context snapshot](acceptance/2026-10-31-web-plan-matrix/f10-approved-reloaded.json)
+and [changed-context snapshot](acceptance/2026-10-31-web-plan-matrix/f10-changed-reloaded.json)
+retain F10's null saved run/source/input/approval fields. The collector identity
+uses the initial board digest and exact displayed **currentInputSha256** of the
+prototype/project. It does not use a generated-run input or imply a saved
+verification. This manual Plan lifecycle needs no generated project in an
+unsupported browser host. Current input stays unchanged while board revision and
+digest change. No automated F10 criterion verdict is claimed.
+
+Regenerate using `python3 tools/product_acceptance.py --manifest docs/development/product_acceptance_manifest.json --identity docs/development/acceptance/2026-10-31-web-plan-matrix/identity.json --evidence docs/development/acceptance/2026-10-31-web-plan-matrix/evidence.json --output /tmp/web-plan-report.json`.
+Only generatedAt changes. Six source/board/input/config/model/device mutations
+make the sole saved pass stale. Source, bundle and remeasured model manifests
+bind the tested identities. Later source/manifest changes remain stale; do not
+relabel this as current-main support. Raw screenshots stay local; sanitized
+observation records expose only digests and synthetic F10 snapshots. No model
+weights/prompts/database/runtime paths are published. Full F17 remains In progress.
