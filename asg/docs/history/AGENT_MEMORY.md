@@ -4753,3 +4753,46 @@ asset restored exactly. Synthetic zero identities are UI fixtures, not acceptanc
 collector evidence. No model, runtime change, stable-app/data modification, new
 issue/FID or fullF17 completion. Bounded native follow-up Awaiting merge; final PR
 records tested revision, independent review, CI and merge. Prior primary edits kept.
+
+
+### Native viewer recovery verified merged — #255 / PR #325 — 2026-10-31T08:58:10.064054+00:00
+
+Bounded native follow-up Done; full F17 remains In progress. Branch255-native-viewer;
+local12fb18a/pluginfinal14ac7f1e94a4c1385d2d6f4cf68c80be372d07c8 share verified
+tree8afc1dda6c69e4ac0114c6f40c0bd11f02b3a076; reviewer checked all12remote blobs.
+Independent final approval5722060273/finalgate5722077042; stale current-status docs
+finding fixed before fresh review. Independent16Flutter/32Python passed. Required
+CI41186230146 succeeded: Flutter124493645830 formatter261zerochanges/analyzerclean/
+888tests8skips/11actualChrome/releasewebWasm/generated resolve-analyze-test-build
+plus renderedinteraction/serve; Python124493645649 suites32/2/6/14skip1/4skip2.
+Reviewer protected-plugin squashmerged PR325 as
+d512c64cb648a1fb7accd09c16e5a4c8980597f6 at2026-10-31T08:57:12Z. Parent verified
+mergedPR/exacthead/currentmain/signedmerge/tree and issue255closedcompleted.
+
+Actual isolated native comparison/retention/Clear/reopen/assetfailure→restore→Retry
+and nativeQuit/independentabsence passed. Synthetic zero identities/probe cells are
+UI inputs only; no collectorpass/live model/source freshness/support/fullF17claim.
+203source/44bundle hashes reverified after asset restoration; stableapp/data kept.
+Signed rawmerge SHA verified before offlineimport. Primarymain/origin-main0/0,
+indexempty/diffcheckclean; twoIDE edits byteidentical and prior docs retained.
+Backup /private/tmp/asg-325-primary-before, guarded /private/tmp/asg-325-sync.py.
+Bothrequestedlabels applied; no newissue/FID or subsequenttask.15minute cadence/
+notifications unchanged. Final merge bookkeeping retained locally for next related
+reviewed increment; no remoteCLI fallback. No useractionrequired.
+
+
+### Separate historical acceptance inventory — #253 — 2026-10-31T09:04:46.970116+00:00
+
+Reused/reopened issue253 after verifying PR325 merged d512c64 and no competing
+active ASG owner/open task. Branch253-baseline-inventory from exact current main.
+Read-only offline inventory validates21 separate report/evidence/identity records
+and maps historical observations to29configuredcells; no currentPass/support union.
+Eight reportfolders lack adjacent source manifests; changed/absent recordedfiles
+and unrecorded Dart runtimefiles explicit. Source equality is not binary or behavior
+equivalence; linked external artifacts not inferred absent. Original reports kept.
+Eight new trust-boundary/determinism/preservation tests and32existingcollector tests
+passed. Initial test-edit command used wrong working-directory prefix, made no edit;
+corrected command/tests passed. No Flutter runtime source, app/model/native launch
+or stableapp/data changes. RequiredCI/final independent review/verifiedmerge pending;
+fullF17 remains In progress. Prior five primary IDE/docs edits retained unchanged;
+priorPR325 merge bookkeeping included. No newissue/FID/subsequenttask.
