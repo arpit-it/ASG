@@ -50,6 +50,9 @@ class RuntimeConnection {
         },
         model: data['model'] as String?,
         modelPath: data['model_path'] as String?,
+        loadedDevice: ready
+            ? LoadedRuntimeDevice.reported(data['backend'], data['device'])
+            : null,
       );
     } on TimeoutException {
       return const RuntimeHealth(

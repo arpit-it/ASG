@@ -3,6 +3,40 @@
 
 enum ModelSource { local, remote }
 
+/// Auto preserves the original dependency-based choice; it is not a retry policy.
+enum RuntimeBackend {
+  auto('auto', 'Auto (legacy preference)'),
+  mlx('mlx', 'MLX / Metal'),
+  torch('torch', 'Torch / MPS');
+
+  const RuntimeBackend(this.argument, this.label);
+  final String argument, label;
+
+  static RuntimeBackend parse(Object? value) {
+    if (value == null) return RuntimeBackend.auto;
+    for (final backend in values) {
+      if (value == backend.argument) return backend;
+    }
+    throw const FormatException('Invalid saved runtime backend.');
+  }
+}
+
+/// An allowlisted server report, never a local device probe or adequacy claim.
+enum LoadedRuntimeDevice {
+  mlxMetal('MLX / Metal'),
+  torchMps('Torch / MPS');
+
+  const LoadedRuntimeDevice(this.label);
+  final String label;
+
+  static LoadedRuntimeDevice? reported(Object? backend, Object? device) =>
+      switch ((backend, device)) {
+        ('mlx', 'metal') => mlxMetal,
+        ('torch', 'mps') => torchMps,
+        _ => null,
+      };
+}
+
 class RuntimeSetup {
   const RuntimeSetup({
     this.python = 'python3',
@@ -10,14 +44,17 @@ class RuntimeSetup {
     this.repository = '',
     this.downloadParent = '',
     this.revision = 'main',
+    this.backend = RuntimeBackend.auto,
   });
   final String python, modelPath, repository, downloadParent, revision;
+  final RuntimeBackend backend;
   Map<String, String> toJson() => {
     'python': python,
     'modelPath': modelPath,
     'repository': repository,
     'downloadParent': downloadParent,
     'revision': revision,
+    'backend': backend.argument,
   };
   factory RuntimeSetup.fromJson(Map<String, dynamic> value) => RuntimeSetup(
     python: value['python'] as String,
@@ -25,6 +62,7 @@ class RuntimeSetup {
     repository: value['repository'] as String,
     downloadParent: value['downloadParent'] as String,
     revision: value['revision'] as String? ?? 'main',
+    backend: RuntimeBackend.parse(value['backend']),
   );
 }
 
@@ -45,10 +83,12 @@ class RuntimeHealth {
     required this.detail,
     this.model,
     this.modelPath,
+    this.loadedDevice,
   });
   final bool ready;
   final String detail;
   final String? model, modelPath;
+  final LoadedRuntimeDevice? loadedDevice;
 }
 
 class ModelRepository {

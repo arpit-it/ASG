@@ -335,6 +335,8 @@ else:
     final process = await Process.start(setup.python, [
       '-B',
       script,
+      '--backend',
+      setup.backend.argument,
       '--model',
       setup.modelPath,
       '--port',

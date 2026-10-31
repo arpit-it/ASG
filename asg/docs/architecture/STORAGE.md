@@ -132,3 +132,8 @@ Copied reports distinguish `savedTargetPassed`, `savedTargetNotPassed` and `stal
 
 
 Standalone Ask stores a versioned conversation library in `studio.ask.v1`, independently of project chat/approval keys. AskStore validates bounded identities/messages and uses conditional atomic publication through StudioDatabase. Corruption is retained and isolated from project records; stale concurrent saves are refused. See [Ask](../development/ASK.md) for limits and unsaved-answer recovery.
+
+
+## Explicit managed backend selection — issue #332 / F15
+
+`studio.runtimeSetup.v1` gains additive string `backend`: `auto`, `mlx` or `torch`. Missing/null values read as the legacy `auto` preference; unknown/non-string values fail validation without overwriting the original record. No key migration, implicit profile rewrite or active-connection switch occurs. Setup's explicit save action publishes state only after storage succeeds; overlapping actions and late disposed-controller publication are blocked. Already dispatched writes may finish after the setup view closes. A failed settings load requires restoring valid records and reopening setup before saving; defaults must not replace a corrupt record. Loaded backend/device identity is transient health state and is never saved as a capability or inference-verification claim.

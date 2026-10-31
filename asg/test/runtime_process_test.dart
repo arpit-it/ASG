@@ -9,6 +9,48 @@ import 'package:asg/models/runtime_setup.dart';
 import 'package:asg/services/runtime_host_native.dart';
 
 void main() {
+  test('native launch forwards exact backend and paths with spaces', () async {
+    final support = await Directory.systemTemp.createTemp(
+      'asg backend arguments ',
+    );
+    addTearDown(() => support.delete(recursive: true));
+    for (final backend in RuntimeBackend.values) {
+      final socket = await ServerSocket.bind(InternetAddress.loopbackIPv4, 0);
+      final port = socket.port;
+      await socket.close();
+      final marker = File('${support.path}/arguments-${backend.argument}');
+      final host = NativeRuntimeHost(
+        port: port,
+        supportDirectory: () async => support,
+        loadAsset: (name) async => name == 'qwen_backends.py'
+            ? '# fixture\n'
+            : "import sys, pathlib, time\n"
+                  "args = sys.argv[1:]\n"
+                  "assert args[args.index('--backend') + 1] == '${backend.argument}'\n"
+                  "assert args[args.index('--model') + 1] == '/unused model with spaces'\n"
+                  "assert args[args.index('--model-id') + 1] == 'fixture model'\n"
+                  "pathlib.Path(r'${marker.path}').write_text('validated')\n"
+                  "print('validated', flush=True)\ntime.sleep(60)\n",
+      );
+      addTearDown(() async {
+        if (host.ownsProcess) await host.stop();
+      });
+      final activity = host.events.firstWhere(
+        (line) => line.contains('output received'),
+      );
+      await host.start(
+        RuntimeSetup(
+          python: '/usr/bin/python3',
+          modelPath: '/unused model with spaces',
+          backend: backend,
+        ),
+        'fixture model',
+      );
+      await activity.timeout(const Duration(seconds: 10));
+      expect(await marker.readAsString(), 'validated');
+      await host.stop();
+    }
+  }, skip: !Platform.isMacOS);
   test(
     'process diagnostics omit raw stdout, stderr and malformed bytes',
     () async {

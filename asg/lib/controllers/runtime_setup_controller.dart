@@ -46,7 +46,7 @@ class RuntimeSetupController extends BaseController {
     detail: 'Checking runtime…',
   );
   RuntimeHealth get health => _health;
-  bool _busy = false, _stopRequested = false;
+  bool _busy = false, _stopRequested = false, _settingsLoadFailed = false;
   Object? _healthCheck;
   bool get busy => _busy || host.working;
   String? _error;
@@ -71,6 +71,7 @@ class RuntimeSetupController extends BaseController {
       _setup = store.load();
       _connectionConfig = modelStore.load();
     } catch (_) {
+      _settingsLoadFailed = true;
       _error = 'Saved runtime settings could not be loaded. Records have not been overwritten. Restore valid settings before continuing.';
     }
     _subscription = host.events.listen((line) {
@@ -204,6 +205,13 @@ class RuntimeSetupController extends BaseController {
     if (isDisposed) return;
     _status = 'Runtime helper ready. You can start the selected model.';
   });
+  Future<void> saveSetup(RuntimeSetup values) => _action(() async {
+    await _saveSetup(values);
+    if (isDisposed) return;
+    _setup = values;
+    _status = 'Runtime setup saved for the next launch. The connected runtime is unchanged.';
+  });
+
   Future<void> download(RuntimeSetup values) => _action(() async {
     ModelRepository.parse(values.repository);
     await _saveSetup(values);
@@ -264,6 +272,7 @@ class RuntimeSetupController extends BaseController {
       repository: values.repository,
       downloadParent: values.downloadParent,
       revision: values.revision,
+      backend: values.backend,
     );
     await _saveSetup(saved);
     if (_startupCancelled) return;
@@ -371,6 +380,11 @@ class RuntimeSetupController extends BaseController {
     _status = 'Connected. Project chat uses ${config.model}.';
   });
   Future<void> _saveSetup(RuntimeSetup values) async {
+    if (_settingsLoadFailed) {
+      throw StateError(
+        'Saved runtime settings are invalid. Restore valid settings and reopen setup before saving. Records have not been overwritten.',
+      );
+    }
     try {
       await store.save(values);
     } catch (_) {
