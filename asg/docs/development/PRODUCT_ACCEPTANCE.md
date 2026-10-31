@@ -1033,8 +1033,9 @@ The current browser has no native generated-project host. Candidate proposal
 and verification, repair, generated-output Stop/deadline and selected rollback
 interaction checks therefore target macOS only. Browser Plan lifecycle,
 create/reopen, archive, rollback record fixtures and application checks remain
-configured. With no evidence the 120-cell matrix has 20 missing macOS cells,
-10 missing web cells and 90 unavailable cells; none pass. Browser chat Stop is
+configured. With the browser-only archive fixture scope below, the empty120-cell
+matrix has19 missing macOS cells,10 missing web cells and91 unavailable cells;
+none pass. Browser chat Stop is
 not generated-output Stop, and a generated web preview served by a native host
 is not browser-hosted source execution.
 
@@ -1045,3 +1046,18 @@ full F17 remains In progress. Existing actual browser refusal evidence is in
 issue #293 and the PR #319 Plan observation. Run
 `python3 -B tools/test_product_acceptance.py` to check scope validation,
 legacy defaults, provenance refusal and freshness.
+
+
+## Browser-only archive fixture scope — issue #293 extension
+
+`archive-reopen/archive-browser` targets only web. Its referenced
+`browser_archive_file_test.dart` declares `@TestOn('browser')` and uses
+`dart:js_interop` to verify browser download behavior; this fixture is unavailable
+on native targets. Native archive-records and archive-interaction remain eligible,
+with missing evidence until supplied. This scope does not remove native archive
+export/import support or establish a new acceptance pass.
+
+The empty matrix contains120 cells:29 missing,91 unavailable,zero passes.
+Excluded native archive-browser evidence rejects every saved status. Eligible web
+evidence can pass only its own fixture cell; prior-manifest web evidence is stale.
+Historical reports are retained unchanged. Full F17 remains In progress.

@@ -72,7 +72,35 @@ class AcceptanceTest(unittest.TestCase):
                         self.evaluate(observation)
         native = [c for c in self.evaluate()['cells'] if c['target'] == 'macos']
         self.assertEqual(len(native), 20)
-        self.assertTrue(all(c['status'] == 'missing' for c in native))
+        self.assertEqual(sum(c['status'] == 'missing' for c in native), 19)
+        self.assertEqual([c['checkId'] for c in native if c['status'] == 'unavailable'],
+                         ['archive-browser'])
+
+    def test_browser_archive_scope_refuses_native_evidence_without_promoting_archive(self):
+        for status in ('passed', 'failed', 'skipped', 'unavailable'):
+            observation = dict(record(), scenarioId='archive-reopen',
+                               checkId='archive-browser', target='macos', status=status)
+            with self.subTest(status=status), self.assertRaisesRegex(
+                    ValueError, 'Unconfigured target'):
+                self.evaluate(observation)
+        browser = dict(record(), scenarioId='archive-reopen',
+                       checkId='archive-browser', target='web')
+        cells = self.evaluate(browser)['cells']
+        passing = [c for c in cells if c['currentPass']]
+        self.assertEqual([(c['scenarioId'], c['checkId'], c['target']) for c in passing],
+                         [('archive-reopen', 'archive-browser', 'web')])
+        native_archive = [c for c in cells if c['scenarioId'] == 'archive-reopen'
+                          and c['target'] == 'macos']
+        self.assertEqual({c['checkId']: c['status'] for c in native_archive},
+                         {'archive-records': 'missing', 'archive-browser': 'unavailable',
+                          'archive-interaction': 'missing'})
+        old_spec = copy.deepcopy(SPEC)
+        archive = next(s for s in old_spec['scenarios'] if s['id'] == 'archive-reopen')
+        next(c for c in archive['checks'] if c['id'] == 'archive-browser').pop('targets')
+        stale = dict(browser, manifestSha256=sha(old_spec))
+        cell = next(c for c in self.evaluate(stale)['cells'] if c['savedEvidence'])
+        self.assertEqual(cell['status'], 'stale')
+        self.assertFalse(cell['currentPass'])
 
     def test_omitted_check_targets_preserve_legacy_manifest_behavior(self):
         legacy = copy.deepcopy(SPEC)

@@ -4571,3 +4571,28 @@ Next run verify PR319merge and preserve primary edits; continue F17's remaining 
 ### F17 browser native-check availability — reused #293
 
 Branch `293-check-targets` from verified PR319 merge97a57887. Added optional per-check platform targets because native-only candidate/repair/generated Stop/rollback interactions were incorrectly shown missing on web. Ten browser execution cells now unavailable; browser Plan/storage/archive/application remain eligible. No evidence/pass/runtime capability invented; historical reports unchanged.31 collector/provenance tests and seven Flutter report/controller/widget tests passed; actual generated120cell report parsed successfully. Final checks and exact revision/review/merge belong to linked PR. Awaiting review/CI/merge, fullF17 In progress. Existing five primary IDE/docs edits preserved. No new issue/F ID, model download, stable-app replacement or schedule change.
+
+
+### Browser native-check availability verified merged — #293 / PR #320 — 2026-10-31T02:08:50.460956+00:00
+
+Bounded increment Done; full F17 remains In progress. Branch `293-check-targets`; tested local910ae551f65e9792c4fa0761cb35dd67d65821ec and published finalba98126f5afeb2ae62d01e4ef3737e92166cf692 share plugin-verified tree6d107fe955450e25da2c92183e1baba7c367eed0. Independent review5720496657/finalgate5720514453 approved exact final with no blockers/unresolved threads; reviewer reproduced31Python/sevenFlutter, all7remote patches and120cell/90unavailable/30missing/zero-pass collector result. Existing historical browser observations remain eligible; no runtime/manual/fullF17 claim.
+
+Required CI41158127598 success: decoded Flutter124409365111 formatter257/analyzer clean/879default8opt-inskips/11Chrome/releasewebWasm/actualgenerated resolve0-analyze0-test0-build0 plus renderedinteraction/serve; Python124409365338 suites31/2/6/14skip1/4skip2. Independent reviewer protected-plugin squashmerged [PR #320](https://github.com/arpit-it/ASG/pull/320) as539324ef0ea4fea317047ff02029dd6bed175d08 at2026-10-31T02:08:04Z. Parent independently verified currentmain/signedmerge/exacthead/tree and issue293closedcompleted.
+
+Signedmerge raw object SHA verified before local offline import from isolated tested clone; primary main/origin-main synchronized0/0, indexempty/diffcheckclean. Five prior IDE/docs edits retained: twoIDEbyteidentical/every prior added docline included in reviewedtree. Backup `/private/tmp/asg-320-primary-before`; prepared `/private/tmp/asg-320-sync-prepared`. Initial sandbox metadata-write refusals resolved through authorized escalation; no remote CLI fallback. Bothrequestedlabels applied. Stableapp/data preserved, no model download/newissue/FID/later task;15minute cadence/notifications unchanged.
+
+Next run verify PR320merge and retain primary edits; continue remaining actual F17 baseline gaps. Do not rerun delivered fixtures only because documentation/manifest identity changed or relabel historical reports. Reporting correction does not complete native/web manual baseline. Tested clone `/private/tmp/asg-293-check-targets`; actual collector `/private/tmp/asg-293-current-report.json`, compatibility probe `/private/tmp/asg-293-parse.dart`. Final merge bookkeeping remains local for the next related reviewed increment. No user action required.
+
+
+### F17 browser archive fixture scope — reused #293
+
+Branch `293-archive-browser-scope` from verified PR320 merge539324ef. Browser-only
+archive download fixture now targets web only; native archive records/manual reopen
+remain eligible. Regression rejects every excluded native saved status, isolates
+eligible web pass and keeps prior-manifest evidence stale. No new runtime/manual
+acceptance, historical report rewrite or full F17 completion. Prior primary doc
+bookkeeping retained; IDE edits untouched.32 Python collector/provenance tests and
+seven Flutter report/controller/widget tests passed. Actual120-cell collector JSON
+parsed by the existing Dart model:91 unavailable,29 missing,zero passes. Initial
+SDK-cache sandbox denial resolved through authorized test escalation. No model or
+app launched. Awaiting independent final review/CI/merge.
