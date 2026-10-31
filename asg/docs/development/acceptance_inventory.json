@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "claim": "separate-historical-observations-only",
   "manifestSha256": "0505c640aa4a9170a73946648bd6205062942bcc3a2a37704e7a37fa0cbcbe1c",
-  "comparisonRuntimeSha256": "8b3803fe7ad18bd06bbde5643e2d5924d3e50250d438919a8435a709746dab48",
+  "comparisonRuntimeSha256": "050ad456d6ed243ad3394a9d6f4d0fc8ad0bfe4f1a1bc6b0b1c74ac55d468b77",
   "limitations": [
     "No combined identity, current pass, support verdict or authenticated observation.",
     "Recorded source hashes do not prove bundle equivalence or unaffected behavior.",
@@ -560,9 +560,11 @@
           "test/runtime_process_test.dart",
           "test/runtime_setup_test.dart",
           "test/source_edit_proposer_test.dart",
+          "tools/download_model.py",
           "tools/import_acceptance_provenance.py",
           "tools/product_acceptance.py",
           "tools/qwen_server.py",
+          "tools/test_download_model.py",
           "tools/test_product_acceptance.py",
           "tools/test_qwen_streaming_server.py"
         ],
@@ -570,11 +572,15 @@
         "unrecordedRuntimeFiles": [
           "lib/controllers/ask_controller.dart",
           "lib/models/ask_conversation.dart",
+          "lib/models/model_download.dart",
           "lib/models/product_acceptance_manifest.dart",
           "lib/models/runtime_capabilities.dart",
           "lib/services/ask_store.dart",
+          "lib/services/model_download_host.dart",
+          "lib/services/model_downloader_native.dart",
           "lib/services/product_acceptance_manifest_service.dart",
           "lib/views/ask_screen.dart",
+          "lib/views/model_download_panel.dart",
           "lib/views/runtime_capability_panel.dart"
         ]
       }
@@ -759,9 +765,11 @@
           "test/browser_storage_test.dart",
           "test/runtime_process_test.dart",
           "test/runtime_setup_test.dart",
+          "tools/download_model.py",
           "tools/import_acceptance_provenance.py",
           "tools/product_acceptance.py",
           "tools/qwen_server.py",
+          "tools/test_download_model.py",
           "tools/test_product_acceptance.py",
           "tools/test_qwen_streaming_server.py"
         ],
@@ -769,11 +777,15 @@
         "unrecordedRuntimeFiles": [
           "lib/controllers/ask_controller.dart",
           "lib/models/ask_conversation.dart",
+          "lib/models/model_download.dart",
           "lib/models/product_acceptance_manifest.dart",
           "lib/models/runtime_capabilities.dart",
           "lib/services/ask_store.dart",
+          "lib/services/model_download_host.dart",
+          "lib/services/model_downloader_native.dart",
           "lib/services/product_acceptance_manifest_service.dart",
           "lib/views/ask_screen.dart",
+          "lib/views/model_download_panel.dart",
           "lib/views/runtime_capability_panel.dart"
         ]
       }
@@ -928,8 +940,10 @@
           "test/browser_storage_test.dart",
           "test/runtime_process_test.dart",
           "test/runtime_setup_test.dart",
+          "tools/download_model.py",
           "tools/product_acceptance.py",
           "tools/qwen_server.py",
+          "tools/test_download_model.py",
           "tools/test_product_acceptance.py",
           "tools/test_qwen_streaming_server.py"
         ],
@@ -937,11 +951,15 @@
         "unrecordedRuntimeFiles": [
           "lib/controllers/ask_controller.dart",
           "lib/models/ask_conversation.dart",
+          "lib/models/model_download.dart",
           "lib/models/product_acceptance_manifest.dart",
           "lib/models/runtime_capabilities.dart",
           "lib/services/ask_store.dart",
+          "lib/services/model_download_host.dart",
+          "lib/services/model_downloader_native.dart",
           "lib/services/product_acceptance_manifest_service.dart",
           "lib/views/ask_screen.dart",
+          "lib/views/model_download_panel.dart",
           "lib/views/runtime_capability_panel.dart"
         ]
       }
@@ -1024,9 +1042,11 @@
           "test/runtime_process_test.dart",
           "test/runtime_setup_test.dart",
           "test/source_edit_proposer_test.dart",
+          "tools/download_model.py",
           "tools/import_acceptance_provenance.py",
           "tools/product_acceptance.py",
           "tools/qwen_server.py",
+          "tools/test_download_model.py",
           "tools/test_product_acceptance.py",
           "tools/test_qwen_streaming_server.py"
         ],
@@ -1034,11 +1054,15 @@
         "unrecordedRuntimeFiles": [
           "lib/controllers/ask_controller.dart",
           "lib/models/ask_conversation.dart",
+          "lib/models/model_download.dart",
           "lib/models/product_acceptance_manifest.dart",
           "lib/models/runtime_capabilities.dart",
           "lib/services/ask_store.dart",
+          "lib/services/model_download_host.dart",
+          "lib/services/model_downloader_native.dart",
           "lib/services/product_acceptance_manifest_service.dart",
           "lib/views/ask_screen.dart",
+          "lib/views/model_download_panel.dart",
           "lib/views/runtime_capability_panel.dart"
         ]
       }
@@ -1363,8 +1387,10 @@
           "test/browser_storage_test.dart",
           "test/runtime_process_test.dart",
           "test/runtime_setup_test.dart",
+          "tools/download_model.py",
           "tools/product_acceptance.py",
           "tools/qwen_server.py",
+          "tools/test_download_model.py",
           "tools/test_product_acceptance.py",
           "tools/test_qwen_streaming_server.py"
         ],
@@ -1372,11 +1398,15 @@
         "unrecordedRuntimeFiles": [
           "lib/controllers/ask_controller.dart",
           "lib/models/ask_conversation.dart",
+          "lib/models/model_download.dart",
           "lib/models/product_acceptance_manifest.dart",
           "lib/models/runtime_capabilities.dart",
           "lib/services/ask_store.dart",
+          "lib/services/model_download_host.dart",
+          "lib/services/model_downloader_native.dart",
           "lib/services/product_acceptance_manifest_service.dart",
           "lib/views/ask_screen.dart",
+          "lib/views/model_download_panel.dart",
           "lib/views/runtime_capability_panel.dart"
         ]
       }
@@ -1450,8 +1480,10 @@
           "test/browser_storage_test.dart",
           "test/runtime_process_test.dart",
           "test/runtime_setup_test.dart",
+          "tools/download_model.py",
           "tools/product_acceptance.py",
           "tools/qwen_server.py",
+          "tools/test_download_model.py",
           "tools/test_product_acceptance.py",
           "tools/test_qwen_streaming_server.py"
         ],
@@ -1459,11 +1491,15 @@
         "unrecordedRuntimeFiles": [
           "lib/controllers/ask_controller.dart",
           "lib/models/ask_conversation.dart",
+          "lib/models/model_download.dart",
           "lib/models/product_acceptance_manifest.dart",
           "lib/models/runtime_capabilities.dart",
           "lib/services/ask_store.dart",
+          "lib/services/model_download_host.dart",
+          "lib/services/model_downloader_native.dart",
           "lib/services/product_acceptance_manifest_service.dart",
           "lib/views/ask_screen.dart",
+          "lib/views/model_download_panel.dart",
           "lib/views/runtime_capability_panel.dart"
         ]
       }
@@ -1544,11 +1580,15 @@
         "unrecordedRuntimeFiles": [
           "lib/controllers/ask_controller.dart",
           "lib/models/ask_conversation.dart",
+          "lib/models/model_download.dart",
           "lib/models/product_acceptance_manifest.dart",
           "lib/models/runtime_capabilities.dart",
           "lib/services/ask_store.dart",
+          "lib/services/model_download_host.dart",
+          "lib/services/model_downloader_native.dart",
           "lib/services/product_acceptance_manifest_service.dart",
           "lib/views/ask_screen.dart",
+          "lib/views/model_download_panel.dart",
           "lib/views/runtime_capability_panel.dart"
         ]
       }
@@ -1621,8 +1661,10 @@
           "pubspec.yaml",
           "test/runtime_process_test.dart",
           "test/runtime_setup_test.dart",
+          "tools/download_model.py",
           "tools/product_acceptance.py",
           "tools/qwen_server.py",
+          "tools/test_download_model.py",
           "tools/test_product_acceptance.py",
           "tools/test_qwen_streaming_server.py"
         ],
@@ -1630,11 +1672,15 @@
         "unrecordedRuntimeFiles": [
           "lib/controllers/ask_controller.dart",
           "lib/models/ask_conversation.dart",
+          "lib/models/model_download.dart",
           "lib/models/product_acceptance_manifest.dart",
           "lib/models/runtime_capabilities.dart",
           "lib/services/ask_store.dart",
+          "lib/services/model_download_host.dart",
+          "lib/services/model_downloader_native.dart",
           "lib/services/product_acceptance_manifest_service.dart",
           "lib/views/ask_screen.dart",
+          "lib/views/model_download_panel.dart",
           "lib/views/runtime_capability_panel.dart"
         ]
       }
@@ -1708,8 +1754,10 @@
           "test/browser_storage_test.dart",
           "test/runtime_process_test.dart",
           "test/runtime_setup_test.dart",
+          "tools/download_model.py",
           "tools/product_acceptance.py",
           "tools/qwen_server.py",
+          "tools/test_download_model.py",
           "tools/test_product_acceptance.py",
           "tools/test_qwen_streaming_server.py"
         ],
@@ -1717,11 +1765,15 @@
         "unrecordedRuntimeFiles": [
           "lib/controllers/ask_controller.dart",
           "lib/models/ask_conversation.dart",
+          "lib/models/model_download.dart",
           "lib/models/product_acceptance_manifest.dart",
           "lib/models/runtime_capabilities.dart",
           "lib/services/ask_store.dart",
+          "lib/services/model_download_host.dart",
+          "lib/services/model_downloader_native.dart",
           "lib/services/product_acceptance_manifest_service.dart",
           "lib/views/ask_screen.dart",
+          "lib/views/model_download_panel.dart",
           "lib/views/runtime_capability_panel.dart"
         ]
       }
@@ -1795,8 +1847,10 @@
           "test/browser_storage_test.dart",
           "test/runtime_process_test.dart",
           "test/runtime_setup_test.dart",
+          "tools/download_model.py",
           "tools/product_acceptance.py",
           "tools/qwen_server.py",
+          "tools/test_download_model.py",
           "tools/test_product_acceptance.py",
           "tools/test_qwen_streaming_server.py"
         ],
@@ -1804,11 +1858,15 @@
         "unrecordedRuntimeFiles": [
           "lib/controllers/ask_controller.dart",
           "lib/models/ask_conversation.dart",
+          "lib/models/model_download.dart",
           "lib/models/product_acceptance_manifest.dart",
           "lib/models/runtime_capabilities.dart",
           "lib/services/ask_store.dart",
+          "lib/services/model_download_host.dart",
+          "lib/services/model_downloader_native.dart",
           "lib/services/product_acceptance_manifest_service.dart",
           "lib/views/ask_screen.dart",
+          "lib/views/model_download_panel.dart",
           "lib/views/runtime_capability_panel.dart"
         ]
       }
@@ -1882,8 +1940,10 @@
           "test/browser_storage_test.dart",
           "test/runtime_process_test.dart",
           "test/runtime_setup_test.dart",
+          "tools/download_model.py",
           "tools/product_acceptance.py",
           "tools/qwen_server.py",
+          "tools/test_download_model.py",
           "tools/test_product_acceptance.py",
           "tools/test_qwen_streaming_server.py"
         ],
@@ -1891,11 +1951,15 @@
         "unrecordedRuntimeFiles": [
           "lib/controllers/ask_controller.dart",
           "lib/models/ask_conversation.dart",
+          "lib/models/model_download.dart",
           "lib/models/product_acceptance_manifest.dart",
           "lib/models/runtime_capabilities.dart",
           "lib/services/ask_store.dart",
+          "lib/services/model_download_host.dart",
+          "lib/services/model_downloader_native.dart",
           "lib/services/product_acceptance_manifest_service.dart",
           "lib/views/ask_screen.dart",
+          "lib/views/model_download_panel.dart",
           "lib/views/runtime_capability_panel.dart"
         ]
       }
@@ -1967,7 +2031,11 @@
         ],
         "absentRecordedFiles": [],
         "unrecordedRuntimeFiles": [
+          "lib/models/model_download.dart",
           "lib/models/runtime_capabilities.dart",
+          "lib/services/model_download_host.dart",
+          "lib/services/model_downloader_native.dart",
+          "lib/views/model_download_panel.dart",
           "lib/views/runtime_capability_panel.dart"
         ]
       }
@@ -2035,7 +2103,11 @@
         ],
         "absentRecordedFiles": [],
         "unrecordedRuntimeFiles": [
+          "lib/models/model_download.dart",
           "lib/models/runtime_capabilities.dart",
+          "lib/services/model_download_host.dart",
+          "lib/services/model_downloader_native.dart",
+          "lib/views/model_download_panel.dart",
           "lib/views/runtime_capability_panel.dart"
         ]
       }
@@ -2103,7 +2175,11 @@
         ],
         "absentRecordedFiles": [],
         "unrecordedRuntimeFiles": [
+          "lib/models/model_download.dart",
           "lib/models/runtime_capabilities.dart",
+          "lib/services/model_download_host.dart",
+          "lib/services/model_downloader_native.dart",
+          "lib/views/model_download_panel.dart",
           "lib/views/runtime_capability_panel.dart"
         ]
       }
@@ -2207,8 +2283,10 @@
           "pubspec.yaml",
           "test/runtime_process_test.dart",
           "test/runtime_setup_test.dart",
+          "tools/download_model.py",
           "tools/product_acceptance.py",
           "tools/qwen_server.py",
+          "tools/test_download_model.py",
           "tools/test_product_acceptance.py",
           "tools/test_qwen_streaming_server.py"
         ],
@@ -2216,11 +2294,15 @@
         "unrecordedRuntimeFiles": [
           "lib/controllers/ask_controller.dart",
           "lib/models/ask_conversation.dart",
+          "lib/models/model_download.dart",
           "lib/models/product_acceptance_manifest.dart",
           "lib/models/runtime_capabilities.dart",
           "lib/services/ask_store.dart",
+          "lib/services/model_download_host.dart",
+          "lib/services/model_downloader_native.dart",
           "lib/services/product_acceptance_manifest_service.dart",
           "lib/views/ask_screen.dart",
+          "lib/views/model_download_panel.dart",
           "lib/views/runtime_capability_panel.dart"
         ]
       }
@@ -2344,8 +2426,10 @@
           "pubspec.yaml",
           "test/runtime_process_test.dart",
           "test/runtime_setup_test.dart",
+          "tools/download_model.py",
           "tools/product_acceptance.py",
           "tools/qwen_server.py",
+          "tools/test_download_model.py",
           "tools/test_product_acceptance.py",
           "tools/test_qwen_streaming_server.py"
         ],
@@ -2353,11 +2437,15 @@
         "unrecordedRuntimeFiles": [
           "lib/controllers/ask_controller.dart",
           "lib/models/ask_conversation.dart",
+          "lib/models/model_download.dart",
           "lib/models/product_acceptance_manifest.dart",
           "lib/models/runtime_capabilities.dart",
           "lib/services/ask_store.dart",
+          "lib/services/model_download_host.dart",
+          "lib/services/model_downloader_native.dart",
           "lib/services/product_acceptance_manifest_service.dart",
           "lib/views/ask_screen.dart",
+          "lib/views/model_download_panel.dart",
           "lib/views/runtime_capability_panel.dart"
         ]
       }

@@ -7,6 +7,7 @@ import '../controllers/runtime_setup_controller.dart';
 import '../controllers/model_catalog_controller.dart';
 import '../models/model_catalog.dart';
 import 'model_catalog_screen.dart';
+import 'model_download_panel.dart';
 import '../models/local_model_config.dart';
 import '../models/runtime_setup.dart';
 import 'runtime_capability_panel.dart';
@@ -287,9 +288,17 @@ class _RuntimeSetupScreenState extends State<RuntimeSetupScreen> {
                     icon: const Icon(Icons.download),
                     label: const Text('Download model & validate'),
                   ),
+                  if (controller.transferControls)
+                    ModelDownloadPanel(
+                      progress: controller.downloadProgress,
+                      busy: controller.busy,
+                      onPause: controller.pauseDownload,
+                      onStop: controller.stopDownload,
+                      onResume: () => controller.download(values, resume: true),
+                    ),
                   const SizedBox(height: 8),
                   const Text(
-                    'Creates a new repository-named folder. Existing folders are never overwritten. Hugging Face downloads fetch model artifacts; other Git hosts need actual committed weights, not LFS pointers.',
+                    'Download starts a new repository-named folder. Resume reuses only a matching ASG partial transfer. Other existing folders are never overwritten. Hugging Face downloads fetch model artifacts; other Git hosts need actual committed weights, not LFS pointers.',
                   ),
                 ],
                 const SizedBox(height: 16),
