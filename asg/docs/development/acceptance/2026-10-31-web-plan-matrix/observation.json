@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-31T01:49:10Z",
+  "sourceRevision": "aa79c4e3e1c60bc730b8e249292ed8cf4ac4126c",
+  "scope": "one actual web Plan manual cell only",
+  "observed": {
+    "freshEmptyOrigin": true,
+    "appLedProjectAndBoardTaskCreation": true,
+    "boardRevision2AtApproval": true,
+    "realMLXThinkingAndWriting": true,
+    "validatedResolveAnalyzeTestBuildMappedTWEB": true,
+    "explicitApproval": true,
+    "approvalSurvivedReload": true,
+    "requirementEditRevision3": true,
+    "oldApprovalOutdatedAndReapprovalDisabled": true,
+    "outdatedSurvivedSecondReload": true,
+    "webNativeGenerationDisabledEvenWithConsent": true,
+    "temporaryConsentCleared": true,
+    "exactExpandedF10CapturedTwice": true,
+    "ownedTabClosed": true,
+    "ownedModelAndWebServersStopped": true
+  },
+  "artifactSha256": {
+    "approved-reloaded.png": "ffa1408f30f56a68965f45379b4beb18d839a84d1dbc3c17477586951c0739b9",
+    "f10-approved-reloaded.json": "08ab2ac87167de573a062726f49ed94518fe9c210c2f64edabcc81d6f3406b42",
+    "f10-changed-reloaded.json": "b2186cb2a14f03f7eb81c9434c9305bf2d95c7668b72089153da72967a1f5f73",
+    "outdated-reloaded.png": "4d5378fa9e2cb6574e2af63a5bf5ae6e3249f3deb21176566a578199f3eea23d",
+    "outdated.png": "4d5378fa9e2cb6574e2af63a5bf5ae6e3249f3deb21176566a578199f3eea23d",
+    "web-host-unavailable.png": "b891bbbadaced9c2087743219d844875b026b07abd9c02f3e50114356e78fe62"
+  },
+  "validation": {
+    "releaseWebBuildExit": 0,
+    "collectorTests": 27,
+    "sourceFilesComparedWithGit": 310,
+    "bundleFiles": 44,
+    "modelFilesRemeasured": 7
+  },
+  "limits": [
+    "No native app launch/control claim. Stable app and original data preserved.",
+    "Browser host unsupported; disabled Generate is not an executed stale-plan native gate.",
+    "F10 saved run/source/input/approval fields are null; collector input is exact displayed current prototype/project input, not a generated run. Board snapshot identifies the requirement context.",
+    "No candidate, promotion, repair, Stop/deadline, rollback, output interaction, automated criterion verdict or full F17/support claim.",
+    "Saved source revision is exact compiled main before this evidence/docs-only change; later revision/identity/manifest changes make evidence stale.",
+    "No raw prompts, database, runtime paths or model weights published. Screenshots remain local; only digests shared."
+  ]
+}

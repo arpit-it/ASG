@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "records": [
+    {
+      "scenarioId": "approved-plan",
+      "checkId": "plan-lifecycle-interaction",
+      "target": "web",
+      "status": "passed",
+      "observedAt": "2026-10-31T01:49:10Z",
+      "identity": {
+        "sourceRevision": "aa79c4e3e1c60bc730b8e249292ed8cf4ac4126c",
+        "requirementSha256": "7fd5d55b52ae3c142f11233605389a2e2bc3c22eae7836bb478c5824256fcba8",
+        "inputSha256": "2a02d5fea933c40343ad5961231a04715ef93f61ffa9193e7d19d425b77e0871",
+        "configurationSha256": "e37c578813c851bb29613c4eeeaafa543ecb298777e2e2142c6f1c57eb94c4d0",
+        "modelSha256": "cfacacdcc4ff24a55108903b579d7a89a4bbe58bafc725872cf1ce27b7705644",
+        "deviceSha256": "fe8fae7bff22fe0ee80602c7566030cd7e74ef826f49ad26b447dc315e3ab046",
+        "sdkVersion": "3.47.6",
+        "runtimeVersion": "3.12.8",
+        "browserVersion": "156.0.8078.74",
+        "backend": "mlx",
+        "host": "web"
+      },
+      "manifestSha256": "345220be0745c6f710ac7105ff8bc402d40a65fed70bac3094169c257e3e3f71",
+      "artifactSha256": [
+        "b578664f54d0de94c0c20ad4d45bbfa163e5f654a9aeda9c7e286ef1bdb49d3c",
+        "08ab2ac87167de573a062726f49ed94518fe9c210c2f64edabcc81d6f3406b42",
+        "b2186cb2a14f03f7eb81c9434c9305bf2d95c7668b72089153da72967a1f5f73"
+      ]
+    }
+  ]
+}
