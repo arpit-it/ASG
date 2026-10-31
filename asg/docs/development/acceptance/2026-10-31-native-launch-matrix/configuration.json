@@ -1,0 +1,12 @@
+{
+  "configuration": "debug",
+  "bundleIdentifier": "com.arsinha.asg.acceptance271matrix20261031",
+  "productName": "ASG Acceptance 271 Matrix",
+  "overrideSha256": "10eb214b5f4aa8bede6121083afa8bac51f05dff5447bed5d6cfbb573520f1f3",
+  "originalAppInfoSha256": "bfb777c6eff553ef75dba2500279c14afaa9c0f6f0e98ea308ba2f37760dbe28",
+  "flutterVersion": "3.47.6",
+  "dartVersion": "3.13.5",
+  "xcodeVersion": "27.0",
+  "xcodeBuild": "27A266a",
+  "scope": "isolated-home-build-launch-only"
+}
