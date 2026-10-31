@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "issue": 271,
+  "observedAt": "2026-10-31T01:13:06Z",
+  "sourceRevision": "6ea5f42801b6aeb2937b3b4d8abf12b7e6c32432",
+  "sourceTree": "a2c64ed999e30fda38ae55ae62ca73c0c3543c84",
+  "scope": "isolated-native-debug-build-and-fresh-home-launch",
+  "build": {
+    "command": "flutter build macos --debug",
+    "exitCode": 0,
+    "override": "build-override.xcconfig",
+    "sourceFileCount": 301,
+    "bundleFileCount": 43
+  },
+  "launch": {
+    "actualNativeWindow": true,
+    "windowTitle": "ASG Acceptance 271 Matrix",
+    "visibleText": [
+      "Automated Software Generator",
+      "What would you like to create?",
+      "Let\u2019s create something",
+      "Application preview",
+      "Create a project to start its live application. Your current project will reopen here next time."
+    ],
+    "freshEmptyHome": true,
+    "uniqueSupportDirectoryAbsentBeforeLaunch": true,
+    "databaseBytes": 86,
+    "databaseSha256": "aafb5960e8542655fc7beb7a2041c56e702c930da334a01c31b697625229cb52",
+    "databaseContainsOnlyMigrationMetadata": true,
+    "quitViaNativeMenu": true,
+    "independentProcessAbsenceVerified": true,
+    "stableAppNotRunningInBeforeAndAfterInventory": true
+  },
+  "control": {
+    "freshFinderBaselineMs": 92,
+    "initialGetAppElapsedMs": 5813444,
+    "firstAXElapsedMs": 262513,
+    "initialElapsedIncludesApprovalWaiting": true,
+    "processAgeSecondsNearFirstReturn": 18,
+    "singleResetReconnectWallMs": 10629,
+    "menuMs": 8180,
+    "quitActionMs": 7281,
+    "interpretation": "elapsed wall times include tool/approval waiting; they are not app startup performance or proof of a native stall"
+  },
+  "limitations": [
+    "Temporary bundle/name differs from production bundle.",
+    "No F10 project requirement/input snapshot; explicit unavailable sentinels.",
+    "No model, project creation, durable edits, Plan, candidate, output, repair, Stop, deadline or rollback scenario executed.",
+    "No stable-app replacement, compatibility certification or full F17 completion.",
+    "Saved observations bound to recorded source and manifest; not a current main support claim after changes."
+  ]
+}

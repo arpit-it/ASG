@@ -971,3 +971,8 @@ older observations retain their historical manifest identity.
 ## Native deadline restart and served-output supplement
 
 The [follow-up observation](acceptance/2026-10-30-native-deadline-reopen/observation.json) adds actual preserved-preview add/check and Quit/independent absence/relaunch facts to PR307. All57 working files and all durable record values remained unchanged across restart. Retained compiled300source/43bundle manifests were checked. The failed timedOut candidate is present in durable records; reopened source-review UI does not expose its prior details. [Repeat instructions](acceptance/2026-10-30-native-deadline-reopen/REPRODUCE.md) preserve the distinction. No deadline rerun, new matrix pass, Stop/combined/model/current-main/fullF17 claim.
+
+
+## Isolated native build/launch matrix — issue #271
+
+[Repeat instructions](acceptance/2026-10-31-native-launch-matrix/REPRODUCE.md) record an actual debug build at source6ea5f428 and observed fresh native home in a unique test bundle, migration-only storage and native Quit/independent absence.301source/43bundle file digests and measured identities accompany exactly two saved macOS application-baseline cells. Initial elapsed time included approval waiting; a single reset/reconnect succeeded. No startup-performance, full-workflow/model/current-support or fullF17 claim follows.
