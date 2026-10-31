@@ -218,6 +218,9 @@
           "kind": "fixture",
           "testReferences": [
             "test/browser_archive_file_test.dart"
+          ],
+          "targets": [
+            "web"
           ]
         },
         {
