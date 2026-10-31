@@ -49,6 +49,7 @@ jobs:
         with:
           python-version: '3.12'
       - run: python -B tools/test_product_acceptance.py
+      - run: python -B tools/test_acceptance_inventory.py
       - run: python -B tools/test_download_model.py
       - run: python -B tools/test_qwen_streaming_server.py
       - run: python -B tools/test_generation_command.py

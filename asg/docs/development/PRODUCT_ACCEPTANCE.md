@@ -1107,3 +1107,43 @@ this directory's `identity.json` and `evidence.json`. Only `generatedAt` changes
 ### Actual web report-viewer retry recovery (issue #255)
 
 [Reproduction and limits](acceptance/2026-10-31-web-viewer/REPRODUCE.md) and [observations](acceptance/2026-10-31-web-viewer/observation.json) record real releaseweb inspection of historical/matching reports, six omitted checks, invalid replacement retention, Clear/reopen and controlled503→restored200 asset retry. This revealed and fixed a cached failed string-load Future. Runtime/build/report hashes and corrected screenshots are retained. Existing reports/statuses stay unchanged; no new collector cell, native launch, inference or fullF17/support claim.
+
+
+## Separate historical observation inventory — issue #253
+
+Run from the Flutter root:
+
+```sh
+python3 -B tools/acceptance_inventory.py --output /tmp/acceptance-inventory.json
+python3 -B tools/test_acceptance_inventory.py
+```
+
+The checked-in [inventory](acceptance_inventory.json) references 21 separate saved
+reports and observations for all 29 configured cells. This is an inventory of
+caller-supplied historical observations, not a combined passing matrix. Each report
+retains its complete identity and exact evidence/report digests. The existing
+collector validates records; historical rendering is checked for metadata, status,
+identity, six-target groups and evidence consistency. Older omitted checks and
+historical target availability remain distinct from today's configuration.
+
+Recorded source manifests are normalized from repository/Flutter-relative paths
+and compared with files in the selected app checkout. Changed/absent recorded
+files and unrecorded Dart runtime files are explicit. Eight report directories
+lack an adjacent source manifest; this does not assert their linked artifacts are
+absent. Neither file equality nor an absent difference establishes unchanged
+behavior, binary equivalence or authenticated provenance. The inventory contains
+no aggregate currentPass, verified or support verdict; all original reports stay
+unchanged. Viewer interactions without collector reports remain separate evidence.
+
+Output is deterministic for the same inputs and checkout. No scenario, model,
+build or native launch is run. Inputs are bounded by the existing JSON reader;
+escaping/symlink/duplicate references and inconsistent reports are refused before
+atomic output replacement. Output cannot overwrite app inputs (the dedicated
+inventory artifact is the sole allowed destination inside the app). Diagnostics
+omit paths and input content.
+
+F17 remains In progress. Before its initial-baseline acceptance, independently
+inspect the per-workflow artifacts, resolve source differences by affected-workflow
+analysis and actual reruns where needed, and assess the real macOS/web baseline.
+Do not rerun unchanged workflows just to refresh manifest metadata, combine
+incompatible identities, or reinterpret this inventory as current support.

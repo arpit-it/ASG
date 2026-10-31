@@ -49,7 +49,8 @@ Update this document with task selection and delivery evidence, alongside [agent
   - Accept when failed, missing and stale evidence cannot yield a verified requirement, and reports link to exact revisions and test results.
   - Assessment clarification (28 October 2026): extend this existing task with acceptance-criterion-level check mappings and explicit automated, manual and advisory evidence types. A green generic build or manually completed task must never verify unrelated criteria. Bind each result to exact requirement content and source/input revision; edits invalidate affected results. Show unmet criteria and evidence links in the workspace and copied report, and retain the current honest “Acceptance criteria: not verified” state until criterion-specific checks actually establish the supported claim. Validate changed criteria/source, missing checks, failed checks and reopen behavior. This scope is delivered as the explicitly bounded authored-check contract below; free-form prose and live-file freshness remain outside its verdict.
 - [ ] F17 Reproducible product acceptance and support matrix — In progress; depends on F10
-  - Active bounded native viewer follow-up — Awaiting merge: reused/reopened [issue #255](https://github.com/arpit-it/ASG/issues/255), branch `255-native-viewer`, [PR #325](https://github.com/arpit-it/ASG/pull/325). Actual native historical/matching comparison, 29 omissions, invalid replacement retention, Clear/home/reopen and missing-asset restore/Retry passed; native Quit followed by independent process absence. Synthetic UI probe inputs establish no collector pass or current source/model/support claim. All 203 source/44 bundle hashes reverified; 16 focused Flutter/32 Python passed. Published tested tree `3814f28d6050e916708cc6e30467b310a82fad48` preceded documentation-only review correction; final revision, independent review, required CI and merge evidence are recorded in PR #325. Full F17 remains In progress.
+  - Active bounded inventory: reused [issue #253](https://github.com/arpit-it/ASG/issues/253), `253-baseline-inventory`. Offline repeatable inventory validates separate historical report/evidence records, lists configured references and partial recorded-source differences without combining identities or promoting saved passes. Accept on deterministic output, malformed/unsafe-input refusal and artifact preservation, actual negative tests, independent final review, required CI and verified merge. Full F17 remains In progress; no app/model run or support claim.
+  - Delivered bounded native viewer follow-up — Done: [issue #255](https://github.com/arpit-it/ASG/issues/255), `255-native-viewer`, [PR #325](https://github.com/arpit-it/ASG/pull/325). Final14ac7f1e independently approved5722060273/finalgate5722077042; requiredCI41186230146 passed; verified protectedmerge `d512c64cb648a1fb7accd09c16e5a4c8980597f6` at2026-10-31T08:57:12Z, issue closed. Actual native comparison/retention/Clear/reopen/assetRetry/Quit; synthetic UI inputs only, no collector/model/support/full F17 claim.
   - Delivered actual viewer recovery: reused [issue #255](https://github.com/arpit-it/ASG/issues/255), `255-viewer-interaction`, [PR #324](https://github.com/arpit-it/ASG/pull/324). Actual web503→Retry found cached failed asset Future; real caching-bundle regression and actual200 recovery/report retention passed. Finaldb36945 independently approved5720960664/finalgate5720988042, requiredCI41165147786 passed; verified protectedmergef0fdbd00b63b51ad60ab6223cc65001cce4fe1ba at2026-10-31T03:43:12Z, issue255closed. Bounded increment Done; fullF17 In progress.
   - Delivered bounded viewer comparison: reused [issue #255](https://github.com/arpit-it/ASG/issues/255), `255-manifest-visibility`. Compare reports with this app’s bundled canonical manifest; surface historical digest mismatch and omitted/mismatched configured checks without changing saved statuses or claiming live source/model freshness. Actual audit: 29 configured cells have historical observations, but 20 of 21 reports use older manifests; only the combined Stop/deadline report matches the current manifest. Full F17 remains In progress; no historical union/support claim. Delivered through [PR #323](https://github.com/arpit-it/ASG/pull/323), independent approval verdict5720889577, requiredCI41163915696 passed; verified protectedmerge1fc912e6b0b7f55bc1bdc0cc7194d6c5b34899e2 at2026-10-31T03:25:19Z, issue255closed.
   - Delivered paired native Stop/deadline increment: [issue #283](https://github.com/arpit-it/ASG/issues/283), `283-paired-native-stop-deadline`, [PR #322](https://github.com/arpit-it/ASG/pull/322). Final `f38454fa` independently approved5720700789/finalgate5720723471; required CI41161996540 passed; verified merge `f31065dcdd1b28a715d1b2dcfb8af59ad14daa82` at2026-10-31T02:59:33Z, issue closed. Actual same-candidate Stop/deadline, retained working output/served interaction/reopen; no model inference or full F17 completion.
@@ -5650,3 +5651,29 @@ asset restored exactly. Synthetic zero identities are UI fixtures, not acceptanc
 collector evidence. No model, runtime change, stable-app/data modification, new
 issue/FID or fullF17 completion. Bounded native follow-up Awaiting merge; final PR
 records tested revision, independent review, CI and merge. Prior primary edits kept.
+
+
+### Native viewer recovery verified merged — #255 / PR #325 — 2026-10-31T08:58:10.064054+00:00
+
+Bounded native follow-up Done; full F17 remains In progress. Branch255-native-viewer;
+local12fb18a/pluginfinal14ac7f1e94a4c1385d2d6f4cf68c80be372d07c8 share verified
+tree8afc1dda6c69e4ac0114c6f40c0bd11f02b3a076; reviewer checked all12remote blobs.
+Independent final approval5722060273/finalgate5722077042; stale current-status docs
+finding fixed before fresh review. Independent16Flutter/32Python passed. Required
+CI41186230146 succeeded: Flutter124493645830 formatter261zerochanges/analyzerclean/
+888tests8skips/11actualChrome/releasewebWasm/generated resolve-analyze-test-build
+plus renderedinteraction/serve; Python124493645649 suites32/2/6/14skip1/4skip2.
+Reviewer protected-plugin squashmerged PR325 as
+d512c64cb648a1fb7accd09c16e5a4c8980597f6 at2026-10-31T08:57:12Z. Parent verified
+mergedPR/exacthead/currentmain/signedmerge/tree and issue255closedcompleted.
+
+Actual isolated native comparison/retention/Clear/reopen/assetfailure→restore→Retry
+and nativeQuit/independentabsence passed. Synthetic zero identities/probe cells are
+UI inputs only; no collectorpass/live model/source freshness/support/fullF17claim.
+203source/44bundle hashes reverified after asset restoration; stableapp/data kept.
+Signed rawmerge SHA verified before offlineimport. Primarymain/origin-main0/0,
+indexempty/diffcheckclean; twoIDE edits byteidentical and prior docs retained.
+Backup /private/tmp/asg-325-primary-before, guarded /private/tmp/asg-325-sync.py.
+Bothrequestedlabels applied; no newissue/FID or subsequenttask.15minute cadence/
+notifications unchanged. Final merge bookkeeping retained locally for next related
+reviewed increment; no remoteCLI fallback. No useractionrequired.
