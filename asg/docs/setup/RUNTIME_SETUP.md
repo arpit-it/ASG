@@ -70,3 +70,10 @@ These results apply to the original runtime-setup increment. Current default che
 - A full new multi-gigabyte remote model download and a new Qwen launch from the packaged UI have not been exercised end to end. Existing Qwen inference was previously verified; it remains available.
 
 See [Hugging Face download documentation](https://huggingface.co/docs/huggingface_hub/guides/download) for snapshot downloads and revisions.
+
+
+### Device availability inspection (F15)
+
+**Inspect capabilities** now queries MLX Metal or Torch MPS availability through the chosen Python, after host/dependency checks. It imports only the device backend module, never model loaders or weights. The owned helper retains its ten-second deadline, bounded output and cleanup. Missing dependencies or unsupported hosts skip device imports; API/import failures show device availability as unverified with retry/environment guidance. A false API result shows unavailable without trying a fallback. Inspection preserves saved choices and any running model process.
+
+The dependency-only CLI remains `--capabilities`; opt into device APIs with `--capabilities --probe-devices`. Legacy reports with unknown device availability remain valid. A detected device does not establish model loading, memory adequacy or successful inference. CPU/CUDA remain unavailable. Launch independently rechecks device availability.

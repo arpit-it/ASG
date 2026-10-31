@@ -98,7 +98,7 @@ void main() {
         loadAsset: (name) async => name == 'qwen_backends.py'
             ? '# unused fixture'
             : '''import sys
-assert sys.argv[1:] == ['--capabilities']
+assert sys.argv[1:] == ['--capabilities', '--probe-devices']
 print('PRIVATE token=secret /private', file=sys.stderr)
 print(${jsonEncode(jsonEncode(fixture.report()))})
 ''',

@@ -1,12 +1,16 @@
 # SPDX-License-Identifier: MPL-2.0
 # Copyright 2026 Arpit Sinha
 
-"""Dependency-light backend discovery; inference imports occur only on load.
+"""Backend discovery; model loaders are imported only on load.
 
-Discovery reports installed modules, never successful device/model readiness.
+Default discovery reports installed modules; an explicit probe queries device APIs.
+Neither establishes successful model loading or memory adequacy.
 CPU/CUDA execution remains unsupported until independently delivered.
 """
+import contextlib
+import importlib
 import importlib.util
+import os
 import platform
 import time
 
@@ -15,7 +19,26 @@ class GenerationCancelled(Exception):
     pass
 
 
-def discover_capabilities(system=None, machine=None, available=None):
+def probe_device(kind):
+    """Query only the backend device API; never import model loaders or weights.
+
+    The caller owns a bounded helper process. Suppress optional dependency output;
+    neither diagnostic strings nor import exceptions belong in a public report.
+    """
+    try:
+        with open(os.devnull, 'w') as sink, contextlib.redirect_stdout(sink), contextlib.redirect_stderr(sink):
+            if kind == 'mlx':
+                ready = importlib.import_module('mlx.core').metal.is_available()
+            elif kind == 'torch':
+                ready = importlib.import_module('torch').backends.mps.is_available()
+            else:
+                return None
+        return ready if isinstance(ready, bool) else None
+    except Exception:
+        return None
+
+
+def discover_capabilities(system=None, machine=None, available=None, probe_devices=False):
     system = platform.system() if system is None else system
     machine = platform.machine() if machine is None else machine
     available = available or (lambda name: importlib.util.find_spec(name) is not None)
@@ -26,14 +49,15 @@ def discover_capabilities(system=None, machine=None, available=None):
         ('torch', 'mps', ('torch', 'transformers', 'accelerate'), system == 'Darwin'),
     ):
         missing = [name for name in dependencies if not available(name)]
+        ready = probe_device(kind) if probe_devices and host_supported and not missing else None
         entries.append({'backend': kind, 'device': device,
                         'host_supported': host_supported,
                         'missing_dependencies': missing,
-                        'device_ready': None, 'model_compatible': None,
-                        'readiness': 'unverified' if host_supported and not missing else 'unavailable'})
+                        'device_ready': ready, 'model_compatible': None,
+                        'readiness': 'unverified' if host_supported and not missing and ready is not False else 'unavailable'})
     return {'schema_version': 1, 'host': {'system': system, 'machine': machine},
             'backends': entries, 'unsupported_devices': ['cpu', 'cuda'],
-            'scope': 'Dependency discovery only; no device probe, weight load or memory adequacy check.'}
+            'scope': ('Dependency and device discovery; no weight load or memory adequacy check.' if probe_devices else 'Dependency discovery only; no device probe, weight load or memory adequacy check.')}
 
 
 def select_backend(requested, config, capabilities=None):

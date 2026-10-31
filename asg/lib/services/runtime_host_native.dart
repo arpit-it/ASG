@@ -276,6 +276,7 @@ class NativeRuntimeHost implements RuntimeHost {
       '-B',
       script,
       '--capabilities',
+      '--probe-devices',
     ], runInShell: false);
     var exited = false;
     final exit = process.exitCode.then((code) {

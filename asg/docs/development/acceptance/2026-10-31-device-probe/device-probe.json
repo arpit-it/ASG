@@ -1,0 +1,44 @@
+{
+  "recorded_at": "2026-10-31T11:33:14.503187+00:00",
+  "duration_ms": 289,
+  "scope": "Actual existing MLX environment device API inspection only. No model loaders, weights, inference, memory adequacy, installation or download. UI checks are injected fixtures, not manual acceptance.",
+  "sources": {
+    "tools/qwen_server.py": "e0044986c6b7fc391098738fd7be92ec93d85e0af1b71a1f94a3c5f005209dc3",
+    "tools/qwen_backends.py": "56326eb8a7d03d457a1dde8012182e9d100627e7e15e0dbc52e41ab77b1e3178"
+  },
+  "report": {
+    "backends": [
+      {
+        "backend": "mlx",
+        "device": "metal",
+        "device_ready": true,
+        "host_supported": true,
+        "missing_dependencies": [],
+        "model_compatible": null,
+        "readiness": "unverified"
+      },
+      {
+        "backend": "torch",
+        "device": "mps",
+        "device_ready": null,
+        "host_supported": true,
+        "missing_dependencies": [
+          "torch",
+          "accelerate"
+        ],
+        "model_compatible": null,
+        "readiness": "unavailable"
+      }
+    ],
+    "host": {
+      "machine": "arm64",
+      "system": "Darwin"
+    },
+    "schema_version": 1,
+    "scope": "Dependency and device discovery; no weight load or memory adequacy check.",
+    "unsupported_devices": [
+      "cpu",
+      "cuda"
+    ]
+  }
+}
