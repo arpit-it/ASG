@@ -12,6 +12,9 @@ import 'package:path_provider/path_provider.dart';
 import '../models/runtime_setup.dart';
 import '../models/runtime_capabilities.dart';
 import 'runtime_host.dart';
+import 'model_download_host.dart';
+import 'model_downloader_native.dart';
+import '../models/model_download.dart';
 
 RuntimeHost createRuntimeHost() => _host;
 final _host = NativeRuntimeHost();
@@ -20,7 +23,7 @@ class _ExternalCheckpointMetadata implements Exception {
   const _ExternalCheckpointMetadata();
 }
 
-class NativeRuntimeHost implements RuntimeHost {
+class NativeRuntimeHost implements RuntimeHost, ModelDownloadHost {
   NativeRuntimeHost({
     this.port = 8765,
     this.supportDirectory,
@@ -31,6 +34,18 @@ class NativeRuntimeHost implements RuntimeHost {
   final int port;
   final Future<Directory> Function()? supportDirectory;
   final Future<String> Function(String)? loadAsset;
+  final _downloader = NativeModelDownloader();
+  @override
+  ModelDownloadProgress get downloadProgress => _downloader.progress;
+  @override
+  Stream<ModelDownloadProgress> get downloadEvents => _downloader.events;
+  @override
+  Future<void> pauseDownload() => _downloader.interrupt(pause: true);
+  @override
+  Future<void> stopDownload() => _downloader.interrupt(pause: false);
+  @override
+  Future<String> resumeDownload(RuntimeSetup setup) =>
+      _download(setup, resume: true);
   final _events = StreamController<String>.broadcast();
   Process? _process;
   bool _loading = false, _working = false;
@@ -396,62 +411,71 @@ else:
     _log('Runtime environment checked. Existing packages were not replaced.');
   });
   @override
-  Future<String> download(RuntimeSetup setup) => _job(() async {
-    final repo = ModelRepository.parse(setup.repository);
-    if (setup.downloadParent.trim().isEmpty ||
-        !await Directory(setup.downloadParent).exists()) {
-      throw const FormatException('Choose an existing download destination.');
-    }
-    if (setup.revision.trim().isEmpty || setup.revision.startsWith('-')) {
-      throw const FormatException('Enter a revision or branch.');
-    }
-    final parent = await Directory(setup.downloadParent).resolveSymbolicLinks();
-    final destination = Directory('$parent/${repo.name}');
-    if (await destination.exists()) {
-      throw StateError(
-        'Destination already exists. Choose its files using Local files, or select a different parent. Existing folders are never overwritten.',
-      );
-    }
-    if (repo.huggingFace) {
-      final script = await _script('download_model.py');
-      await _run(setup.python, [
-        script,
-        '--repository',
-        repo.location,
-        '--revision',
-        setup.revision,
-        '--destination',
-        destination.path,
-      ], timeout: const Duration(hours: 6));
-    } else {
-      await _run(
-        'git',
-        [
-          '-c',
-          'core.hooksPath=/dev/null',
-          'clone',
-          '--depth',
-          '1',
-          '--branch',
-          setup.revision,
-          '--',
+  Future<String> download(RuntimeSetup setup) => _download(setup);
+
+  Future<String> _download(RuntimeSetup setup, {bool resume = false}) => _job(
+    () async {
+      final repo = ModelRepository.parse(setup.repository);
+      if (setup.downloadParent.trim().isEmpty ||
+          !await Directory(setup.downloadParent).exists()) {
+        throw const FormatException('Choose an existing download destination.');
+      }
+      if (setup.revision.trim().isEmpty || setup.revision.startsWith('-')) {
+        throw const FormatException('Enter a revision or branch.');
+      }
+      final parent = await Directory(setup.downloadParent)
+          .resolveSymbolicLinks();
+      final destination = Directory('$parent/${repo.name}');
+      if (!resume && await destination.exists()) {
+        throw StateError(
+          'Destination already exists. Choose its files using Local files, or select a different parent. Existing folders are never overwritten.',
+        );
+      }
+      if (repo.huggingFace) {
+        final script = await _script('download_model.py');
+        await _downloader.run(
+          setup.python,
+          script,
           repo.location,
+          setup.revision,
           destination.path,
-        ],
-        timeout: const Duration(hours: 6),
-        environment: {
-          'GIT_TERMINAL_PROMPT': '0',
-          'GIT_CONFIG_GLOBAL': '/dev/null',
-          'GIT_CONFIG_SYSTEM': '/dev/null',
-        },
-      );
-      _log(
-        'Git clone finished. LFS pointers will be rejected during validation; use the Hugging Face URL for LFS-hosted models.',
-      );
-    }
-    _log('Download finished. Validating local checkpoint next.');
-    return destination.path;
-  });
+          resume: resume,
+        );
+      } else {
+        if (resume) {
+          throw const FormatException(
+            'Resume is available for Hugging Face artifact downloads only.',
+          );
+        }
+        await _run(
+          'git',
+          [
+            '-c',
+            'core.hooksPath=/dev/null',
+            'clone',
+            '--depth',
+            '1',
+            '--branch',
+            setup.revision,
+            '--',
+            repo.location,
+            destination.path,
+          ],
+          timeout: const Duration(hours: 6),
+          environment: {
+            'GIT_TERMINAL_PROMPT': '0',
+            'GIT_CONFIG_GLOBAL': '/dev/null',
+            'GIT_CONFIG_SYSTEM': '/dev/null',
+          },
+        );
+        _log(
+          'Git clone finished. LFS pointers will be rejected during validation; use the Hugging Face URL for LFS-hosted models.',
+        );
+      }
+      _log('Download finished. Validating local checkpoint next.');
+      return destination.path;
+    },
+  );
   @override
   Future<void> start(RuntimeSetup setup, String modelId) => _job(() async {
     if (_process != null) {
