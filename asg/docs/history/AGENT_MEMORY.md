@@ -5124,3 +5124,10 @@ Corrected local checks:958macOSFluttertests/nineoptinskips,18focusedfilesystem/b
 Recorded 2026-10-31T13:21:37.175987+00:00
 
 Corrected source releaseweb and macOSdebug builds also passed before publication; no stable application launch/replacement. Fresh independent final revision review required.
+
+
+### Owner-requested preferred model picker — issue #348
+
+Default catalog now uses one curated choice across Ask/planning/coding/review, with explicit public source checks and supported runtime, total memory and current headroom gates. Qwen3.5 27B is preferred when estimated fit, otherwise 9B; failed/unknown/unsupported/oversized candidates and arbitrary discovery results excluded. Advanced discovery remains explicit. No device-universal, benchmark, download or inference claim. Validation and independent review pending; F22 remains In progress. Existing unrelated IDE/requirements/history changes preserved.
+
+Validation: 31 focused catalog tests and clean-copy full suite 961 passed (nine opt-in skips); analysis/formatter, web and macOS debug builds, nine acceptance inventory checks passed. Primary checkout full suite hit unrelated license scan of tools/.mlx-venv third-party Python; clean tracked-source copy passed. No weights/inference/stable-app replacement. Independent review/CI/merge pending.

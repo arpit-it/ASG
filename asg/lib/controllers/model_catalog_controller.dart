@@ -26,13 +26,54 @@ class ModelCatalogController extends BaseController {
   String? _searchError;
   String? get searchError => _searchError;
   bool _initializing = false;
-  bool get busy => _initializing || _checking != null || _discovering;
+  bool get busy =>
+      _refreshing || _initializing || _checking != null || _discovering;
   String? get checking => _checking;
   String _query = '';
+  bool _preferredOnly = true;
+  bool get preferredOnly => _preferredOnly;
+  bool _refreshing = false;
+  bool get refreshing => _refreshing;
+
+  // Deliberate quality tiers for the currently enabled architecture, not a
+  // parameter-count ranking of arbitrary public search results.
+  static const preferredRepositories = [
+    'mlx-community/Qwen3.5-27B-4bit',
+    'mlx-community/Qwen3.5-9B-4bit',
+  ];
+  List<ModelCatalogEntry> get preferredEntries {
+    for (final repository in preferredRepositories) {
+      final entry = _entries.firstWhere((e) => e.repository == repository);
+      if (assessment(entry).fit == ModelFit.estimatedFit) return [entry];
+    }
+    return const [];
+  }
+
+  void showPreferredOnly(bool value) {
+    _preferredOnly = value;
+    update();
+  }
+
+  Future<void> refreshPreferred() async {
+    if (isDisposed || busy) return;
+    _refreshing = true;
+    update();
+    try {
+      for (final repository in preferredRepositories) {
+        if (isDisposed) return;
+        final entry = _entries.firstWhere((e) => e.repository == repository);
+        await _checkEntry(entry);
+      }
+    } finally {
+      _refreshing = false;
+      update();
+    }
+  }
+
   bool _compatibleOnly = true;
   bool get compatibleOnly => _compatibleOnly;
   List<ModelCatalogEntry> get entries => List.unmodifiable(
-    _entries.where((entry) {
+    (_preferredOnly ? preferredEntries : _entries).where((entry) {
       final model = _metadata[entry.repository];
       return (!_compatibleOnly || model == null || model.runtimeCompatible) &&
           '${entry.name} ${entry.repository} ${entry.description}'
@@ -77,6 +118,10 @@ class ModelCatalogController extends BaseController {
 
   Future<void> check(ModelCatalogEntry entry) async {
     if (isDisposed || busy) return;
+    await _checkEntry(entry);
+  }
+
+  Future<void> _checkEntry(ModelCatalogEntry entry) async {
     _checking = entry.repository;
     _metadata.remove(entry.repository);
     _errors.remove(entry.repository);

@@ -44,3 +44,25 @@ Explicit `dart run tools/check_model_catalog.dart` performs public metadata and
 native hardware checks only; it does not fetch weights or run inference.
 
 The native macOS memory inspection runs fixed read-only `sysctl` and `vm_stat` helpers with a three-second deadline per helper and a combined 64 KiB stdout/stderr limit. On timeout or excess output, ASG terminates and awaits the owned helper (up to two additional seconds for cleanup); stderr is discarded. A failed headroom probe retains detected total RAM with unknown headroom. These OS observations are estimates, never successful model loading or inference evidence. The helper owns only the fixed process; it is not a process-tree execution sandbox.
+
+
+## Preferred choices (issue #348)
+
+The default picker shows one curated model covering Ask, planning, coding and
+review, rather than every size variant or public search result. Press **Check
+preferred models** to validate public metadata for Qwen3.5 27B and 9B. The policy
+prioritizes 27B only when its supported 4-bit MLX metadata, total memory budget
+and current available-memory estimate pass; otherwise it considers 9B. The
+same model serves all four roles; ASG does not claim specialized measured winners
+for each role. Unknown memory, current pressure, unsupported hosts, failed
+checks and arbitrary discovery results never become preferred recommendations.
+Reopen the page to refresh hardware estimates after freeing memory.
+
+This ordering is an explicit curation policy, not a throughput benchmark or
+inference certification. Upstream capability evidence is available at
+https://github.com/QwenLM/Qwen3.5; larger/newer and specialist models remain
+excluded from preferred choices until their architecture and application behavior
+are supported. No model is promised to run on every device: managed loading here
+still requires Apple Silicon macOS. Other ASG platforms use compatible runtime
+connections. Turn off **Preferred models only** for existing advanced discovery
+and manual source inspection. No model is downloaded or switched by checks.

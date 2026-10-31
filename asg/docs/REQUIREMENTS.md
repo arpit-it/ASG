@@ -6013,3 +6013,10 @@ Corrected local checks:958macOSFluttertests/nineoptinskips,18focusedfilesystem/b
 Recorded 2026-10-31T13:21:37.175987+00:00
 
 Corrected source releaseweb and macOSdebug builds also passed before publication; no stable application launch/replacement. Fresh independent final revision review required.
+
+
+### F22 owner-requested preferred catalog — issue #348
+
+In progress: default role-based curation with one compatible, checked, currently memory-fit model covering Ask/planning/coding/review; no redundant size variants, unsupported or unchecked candidates. Preserve explicit advanced discovery. Validate fallback/unknown/unsupported/failure/disposal and narrow-layout/handoff behavior, full analysis/tests/builds; independent review and verified PR merge required before completion. This does not complete F22 live per-model profiles or cross-platform backend support.
+
+Validation: 31 focused catalog tests and clean-copy full suite 961 passed (nine opt-in skips); analysis/formatter, web and macOS debug builds, nine acceptance inventory checks passed. Primary checkout full suite hit unrelated license scan of tools/.mlx-venv third-party Python; clean tracked-source copy passed. No weights/inference/stable-app replacement. Independent review/CI/merge pending.
