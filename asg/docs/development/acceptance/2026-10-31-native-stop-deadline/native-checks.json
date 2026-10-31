@@ -1,0 +1,97 @@
+{
+  "stopped": {
+    "number": 2,
+    "startedAt": "2026-10-31T02:45:30.063478Z",
+    "finished": true,
+    "phase": "failed",
+    "steps": [
+      {
+        "operation": "resolve",
+        "exitCode": 0,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "cancelled": false
+      },
+      {
+        "operation": "analyze",
+        "exitCode": 0,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "cancelled": false
+      },
+      {
+        "operation": "test",
+        "exitCode": -1,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "cancelled": true
+      }
+    ]
+  },
+  "deadline": {
+    "number": 3,
+    "startedAt": "2026-10-31T02:45:58.603886Z",
+    "finished": true,
+    "phase": "failed",
+    "steps": [
+      {
+        "operation": "resolve",
+        "exitCode": 0,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "cancelled": false
+      },
+      {
+        "operation": "analyze",
+        "exitCode": 0,
+        "timedOut": false,
+        "outputLimitExceeded": false,
+        "cancelled": false
+      },
+      {
+        "operation": "test",
+        "exitCode": -1,
+        "timedOut": true,
+        "outputLimitExceeded": false,
+        "cancelled": false
+      }
+    ]
+  },
+  "buildDispatched": false,
+  "failedCandidatePromoted": false,
+  "workingGenerationRecordUnchanged": true,
+  "workingFilesUnchanged": 42,
+  "recordedSourceFilesVerified": 12,
+  "recordedOutputFilesVerified": 34,
+  "workingFileManifestSha256": "f2f20db5d1a34bd9d221e6b87d91d246c5c323a5412770de4e5b3e374b124efc",
+  "workingBaselineSteps": [
+    {
+      "operation": "resolve",
+      "exitCode": 0,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "cancelled": false
+    },
+    {
+      "operation": "analyze",
+      "exitCode": 0,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "cancelled": false
+    },
+    {
+      "operation": "test",
+      "exitCode": 0,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "cancelled": false
+    },
+    {
+      "operation": "build",
+      "exitCode": 0,
+      "timedOut": false,
+      "outputLimitExceeded": false,
+      "cancelled": false
+    }
+  ]
+}

@@ -1061,3 +1061,37 @@ The empty matrix contains120 cells:29 missing,91 unavailable,zero passes.
 Excluded native archive-browser evidence rejects every saved status. Eligible web
 evidence can pass only its own fixture cell; prior-manifest web evidence is stale.
 Historical reports are retained unchanged. Full F17 remains In progress.
+
+## Paired native Stop and command deadline — reused #283
+
+The [paired observation](acceptance/2026-10-31-native-stop-deadline/observation.json)
+records a fresh native pair on the retained isolated `584c89c4` candidate. It is
+separate from the earlier Stop-only and deadline-only deliveries. The same new
+candidate folder, approval, requirements/input snapshot, recorded sources,
+tasks, SDK and limits bind both runs. The pinned lock and package configuration
+also match; regenerated package-graph bytes differ and both exact resolution
+digests are retained separately without an equivalence claim. A deterministic loopback fixture
+provided the explicitly reviewed test seed; no model inference is asserted.
+
+On the ready disposable deadline project, reopen Build and source review. Select
+only the approved `test/generated_app_test.dart`, review the single five-minute
+async test addition with its ten-minute Flutter test timeout, then prepare a new
+candidate under a temporary parent. Grant confined-verification consent. After
+resolve and analysis pass and the test starts, choose Stop; inspect saved test
+exit -1 with cancellation true, timeout false and no build dispatch. Explicitly
+verify that same candidate again. Let the test reach ASG's 180-second command
+deadline; require timeout true, cancellation false, no build, no automatic repair
+and no promotion. Retain both journals and compare exact linkage before submitting
+combined evidence. Keep the last working source/output and ready pointer intact.
+Serve that retained output and exercise add/check interaction. Quit, independently
+confirm absence, reopen and inspect the ready build/current approval; compare the
+board, approval, working record and full candidate journal after reopen. The UI
+reopens the working baseline; prior failed candidate details are verified from the
+retained durable journal, not a restored source-review session.
+
+The supplied report records only the combined macOS manual cell. It does not infer
+individual check passes, live-model health, current-main build support, criterion
+verification or completion of F17. Source/bundle manifests remain the referenced
+historical compiled identity, remeasured for this run; prior reports are unchanged.
+Regenerate from the Flutter root with the collector command above, substituting
+this directory's `identity.json` and `evidence.json`. Only `generatedAt` changes.
