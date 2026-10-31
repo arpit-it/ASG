@@ -47,3 +47,10 @@ The debug-only Android network policy permits local HTTP to localhost and the An
 The checkpoint loaded on Apple Metal. A real request returned `Ready to plan software.` in 15.64 seconds (single cold request, not a throughput benchmark). No 16K context, tool-use, quantization, or memory peak benchmark is claimed. Bridge limits: 32 KB request body, 4096 input tokens, 256 output tokens, one generation at a time, generation max-time 90 seconds checked by Transformers between steps. Client timeout is 120 seconds. Cancelling the UI request disconnects the client; it does not interrupt an already running server generation. The API currently returns completed responses rather than token streaming.
 
 API shape reference: [llama.cpp server documentation](https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md). This project uses a small Transformers bridge, not an installed llama.cpp runtime.
+
+
+### Advisory checkpoint memory estimate
+
+After scanning/selecting a complete local checkpoint, Inspect capabilities shows a conservative new-load budget on an inspected available Apple unified-memory backend. Working memory is estimated as 1.25 times measured weight bytes plus 4 GiB for runtime/cache, with another 6 GiB reserved for OS/apps. Total-budget limits, current free/reclaimable memory pressure and unknown observations are separate. Auto uses the existing dependency preference; incompatible Torch/MPS quantized weights and unavailable/unverified devices cannot yield an estimated-fit result.
+
+This heuristic is not architecture/context-specific peak measurement or successful inference. Context/activation/cache needs can exceed it; an existing loaded model gives no RAM credit. Inspect again after memory changes and rescan after checkpoint changes. The estimate does not start, block, switch or unload a runtime, change settings or download weights. CPU/CUDA milestones remain unavailable.
