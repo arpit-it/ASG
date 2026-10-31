@@ -33,8 +33,9 @@ class InventoryTest(unittest.TestCase):
         value = inventory(ROOT, paths, NOW)
         self.assertEqual(value, inventory(ROOT, list(reversed(paths)), '2026-11-02T00:00:00Z'))
         self.assertEqual(value['claim'], CLAIM)
-        self.assertEqual(len(value['configuredCells']), 29)
-        self.assertTrue(all(c['observationDirectories'] for c in value['configuredCells']))
+        self.assertEqual(len(value['configuredCells']), 32)
+        self.assertTrue(all(c['observationDirectories'] for c in value['configuredCells']
+                            if c['scenarioId'] != 'standalone-ask'))
         self.assertGreater(len({r['identity']['sourceRevision'] for r in value['reports']}), 1)
         self.assertNotIn('currentPass', json.dumps(value))
         self.assertEqual(before, {p: (ROOT / p / 'report.json').read_bytes() for p in paths})

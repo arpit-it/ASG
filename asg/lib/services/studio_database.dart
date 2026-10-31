@@ -17,6 +17,7 @@ import '../models/project.dart';
 import '../models/plan_approval.dart';
 import '../models/source_generation.dart';
 import 'application_store.dart';
+import 'ask_store.dart';
 import 'manual_check_observation_store.dart';
 import 'named_check_observation_store.dart';
 import 'portable_decision_store.dart';
@@ -92,7 +93,8 @@ class StudioDatabase implements ConditionalRecordStorage {
       try {
         validate(record.key, record.value);
       } catch (_) {
-        if (!record.key.startsWith('studio.historicalRevisions.v1.') &&
+        if (record.key != AskStore.key &&
+            !record.key.startsWith('studio.historicalRevisions.v1.') &&
             !record.key.startsWith('studio.historicalDecision.v1.') &&
             !record.key.startsWith('studio.archive.v1.') &&
             record.key != InspectedFolderStore.key &&
@@ -136,7 +138,9 @@ class StudioDatabase implements ConditionalRecordStorage {
     if (key == 'studio.lastProject.v1') return;
     final decoded = jsonDecode(value);
     final source = _SingleRecord(key, value);
-    if (key.startsWith('studio.historicalRevisions.v1.')) {
+    if (key == AskStore.key) {
+      AskStore.decode(value);
+    } else if (key.startsWith('studio.historicalRevisions.v1.')) {
       PortableRevisionStore.decode(value);
     } else if (key.startsWith('studio.historicalDecision.v1.')) {
       PortableDecisionStore.decode(value);

@@ -48,8 +48,9 @@ Update this document with task selection and delivery evidence, alongside [agent
   - Map each requirement to concrete checks and saved evidence; distinguish automated verification from advisory model feedback.
   - Accept when failed, missing and stale evidence cannot yield a verified requirement, and reports link to exact revisions and test results.
   - Assessment clarification (28 October 2026): extend this existing task with acceptance-criterion-level check mappings and explicit automated, manual and advisory evidence types. A green generic build or manually completed task must never verify unrelated criteria. Bind each result to exact requirement content and source/input revision; edits invalidate affected results. Show unmet criteria and evidence links in the workspace and copied report, and retain the current honest “Acceptance criteria: not verified” state until criterion-specific checks actually establish the supported claim. Validate changed criteria/source, missing checks, failed checks and reopen behavior. This scope is delivered as the explicitly bounded authored-check contract below; free-form prose and live-file freshness remain outside its verdict.
-- [ ] F17 Reproducible product acceptance and support matrix — Awaiting merge; depends on F10
-  - Initial baseline adjudication: reused [issue #253](https://github.com/arpit-it/ASG/issues/253), `253-baseline-adjudication`. [Clause-by-clause assessment](development/F17_BASELINE_ADJUDICATION.md) maps actual separate workflows and linked provenance, reviews affected source changes and explicit unavailable platforms. No identity union, new execution or current support claim. Awaiting exact-final independent adjudication, required CI and verified merge; F17 remains unchecked until all gates pass.
+- [x] F17 Reproducible product acceptance and support matrix — Done (initial macOS/web baseline); depends on F10
+  - Verified initial baseline: [PR #327](https://github.com/arpit-it/ASG/pull/327), finala37de701/treeb6c99ddc, independent approval5722192777/finalgate5722205595 and requiredCI41189201083 passed. Reviewer protectedmerge `1a4251c992ce32921880fdc5395605ac189f79e3` at2026-10-31T09:38:29Z; parent verified merge/currentmain/issue253closed. Initialbaseline Done; historical identities remain separate and later platforms/hosts explicitly unavailable.
+  - Historical pre-merge initial baseline adjudication: reused [issue #253](https://github.com/arpit-it/ASG/issues/253), `253-baseline-adjudication`. [Clause-by-clause assessment](development/F17_BASELINE_ADJUDICATION.md) maps actual separate workflows and linked provenance, reviews affected source changes and explicit unavailable platforms. No identity union, new execution or current support claim. Awaiting exact-final independent adjudication, required CI and verified merge; F17 remains unchecked until all gates pass.
   - Delivered bounded inventory — Done: reused [issue #253](https://github.com/arpit-it/ASG/issues/253), `253-baseline-inventory`, [PR #326](https://github.com/arpit-it/ASG/pull/326). Final6c0d020c independently approved5722111731/finalgate5722124838; requiredCI41187496696 passed; verified protectedmerge `2c61072c2902c788e21fdd5a4a4d04ab4fee36ed` at2026-10-31T09:14:48Z, issue closed. Separate21historicalreports/29configuredcells, partial source differences/eightmissingadjacentmanifests; no identity union/currentPass/support. Full F17 remains In progress.
   - Delivered bounded native viewer follow-up — Done: [issue #255](https://github.com/arpit-it/ASG/issues/255), `255-native-viewer`, [PR #325](https://github.com/arpit-it/ASG/pull/325). Final14ac7f1e independently approved5722060273/finalgate5722077042; requiredCI41186230146 passed; verified protectedmerge `d512c64cb648a1fb7accd09c16e5a4c8980597f6` at2026-10-31T08:57:12Z, issue closed. Actual native comparison/retention/Clear/reopen/assetRetry/Quit; synthetic UI inputs only, no collector/model/support/full F17 claim.
   - Delivered actual viewer recovery: reused [issue #255](https://github.com/arpit-it/ASG/issues/255), `255-viewer-interaction`, [PR #324](https://github.com/arpit-it/ASG/pull/324). Actual web503→Retry found cached failed asset Future; real caching-bundle regression and actual200 recovery/report retention passed. Finaldb36945 independently approved5720960664/finalgate5720988042, requiredCI41165147786 passed; verified protectedmergef0fdbd00b63b51ad60ab6223cc65001cce4fe1ba at2026-10-31T03:43:12Z, issue255closed. Bounded increment Done; fullF17 In progress.
@@ -117,7 +118,8 @@ Update this document with task selection and delivery evidence, alongside [agent
   - Acceptance: repeatable real workflows cover create/reopen and durable edits; approved Plan and refusal after requirements changes; real model proposal → reviewed diff → confined candidate checks → explicit promotion → served output interaction; bounded failed-build repair with rerun; Stop/timeout and last-working preservation; history rollback and archive restore/reopen. Confirm observable output behavior beyond HTTP 200/title changes. Each result records scenario/check ID, exact revision and requirement digest, SDK/runtime/backend/model identity, host/device/browser, UTC time, passed/failed/skipped/unavailable status and bounded sanitized artifacts. Never include prompts, credentials, private paths or model weights in shared diagnostics.
   - Freshness/reporting: require rerunning affected scenarios after source/toolchain/model/configuration changes; stale, skipped, missing and unavailable evidence cannot become a verified/current support claim. UI distinguishes saved evidence from a live health result and exposes unmet coverage. The initial verified matrix must identify untested iOS/Windows/Linux/physical-device coverage explicitly rather than imply support from included runners.
   - Validation/delivery: deterministic schema/freshness/reopen/privacy regressions plus real macOS/web scenario execution and observed UI interactions on an isolated test profile/project. Record actual native launch/device results per later platform increment. Keep F17 unchecked until the initial real baseline and honest unavailable cells, independent final review, required CI and verified merge are complete; expanding the matrix later requires its own evidence.
-- [ ] F18 Standalone engineering Ask mode — Queued; depends on F09
+- [ ] F18 Standalone engineering Ask mode — Awaiting merge; depends on F09
+  - Active: [issue #328](https://github.com/arpit-it/ASG/issues/328), branch `328-standalone-ask`: standalone advisory streaming conversations, separate transactional history, bounded context and recovery. Initial F17 baseline verified merged through PR #327; no other active issue/PR at selection. Acceptance and real-model validation remain pending.
   - Source/value/priority: owner request on 28 October 2026 for engineering questions and code suggestions without creating a project. Select after active F10 and the initial F17 baseline, before F15; this is distinct from project-bound Discuss/Plan/Review.
   - Scope/acceptance: expose Ask on the landing screen and workspace, accept free-form engineering questions and pasted code, stream model answers with formatted code/explanations and follow-up context, and persist/reopen standalone conversations. Clearly distinguish model suggestions and uncertainty from executed/tested results. No repository writes, commands or network tools follow merely from asking; moving a suggestion into Code Lab or an approved project workflow is explicit.
   - Validation: provider-injected controller/widget/native/browser persistence tests for no-project use, follow-ups, empty/oversized input, cancellation, offline/timeout, failed final-save retry, responsive keyboard/text layout and switching context without leaking another project's conversation. At least one real configured-model question/answer smoke is required; record it separately from deterministic fixtures. Normal independent review/CI/verified merge gates apply.
@@ -5722,3 +5724,61 @@ rerununchangedscenarios merely for manifestmetadata or claim fullF17Done.
 ### F17 initial baseline adjudication — 31 October 2026
 
 Issue #253; branch `253-baseline-adjudication`; publication base2c61072. Scope/acceptance and per-clause evidence: [assessment](development/F17_BASELINE_ADJUDICATION.md). Separate29configuredcells/21reports remain historical; linked source/bundle manifests resolve absent-adjacent-file flags without promoting status. Source changes after584c89c are viewer-only and later actual viewer follow-ups cover them; earlier no-inference persistence/archive paths are unaffected by proposal corrections.32collector/9inventory tests passed; deterministic inventory regeneration and artifact preservation checked. No new app/model execution. Awaiting PR, independent final-revision adjudication, required CI and verified merge; F17 not Done.
+
+
+### Initial F17 baseline verified complete — #253 / PR #327
+
+Independent final-revision review approved initial F17 macOS/web baseline
+acceptance, not a union of report identities or a blanket current-support claim.
+PR https://github.com/arpit-it/ASG/pull/327; branch253-baseline-adjudication;
+tested local6764c9a037a1395e9541a9ed72fcf97b295c9d3f and published
+head a37de701637a3289710113da6b1c498bacd8d140 share exact verified tree
+b6c99ddc153141cca5c2d9735dc94099939ddb59. All four published blobs matched,
+including >1MiBrequirements read in bounded chunks without truncation.
+
+Independent approval5722192777/finalgate5722205595 inspected actual workflow
+artifacts/F10 limits/linked manifests and semantic affected-source partition;
+32collector/9inventory passed independently and inventory was byte-identical.
+Same-owner GitHub APPROVE restriction used explicit independent COMMENT verdict;
+no protection bypass. Reviewer protected-plugin squashmerged PR327 as
+1a4251c992ce32921880fdc5395605ac189f79e3 at2026-10-31T09:38:29Z;
+issue253closed/completed09:38:30Z. Parent independently verified exact mergedhead,
+current main, signed merge SHA/tree and issue closure before completion.
+
+RequiredCI41189201083 succeeded: Flutter124502284605 formatter261/zerochanges,
+analyzerclean,888defaulttests/eightskips,11actualChrome,releaseweb/Wasm dryrun,
+real independentgenerated resolve/analyze/test/build plus interaction/serve;
+Python12450228483432collector/9inventory/2download/6streaming/14command(skip1)/
+4confinement(skip2). Local32collector/9inventory and artifact-preservation checks
+passed. No new live inference/native workflow/model download; skips are not
+inference. Existing actual per-workflow observations retain exact separate
+historical identities/statuses. Source review found no need to rerun unaffected
+workflows merely for metadata; later actual viewer interactions cover affectedUI.
+
+F17 Done is the explicitly scoped initial macOS/web baseline required by its
+completion rule. Native Android/iOS/Windows/Linux/physical devices, unsupported
+browser generation operations and later backend/host/adapter support remain
+unavailable/unverified until their own real delivery. This is no production
+certification, semantic free-form acceptance verdict or live freshness claim.
+
+Guarded /private/tmp/asg-327-sync.py verified signed raw commit before offline
+import and synchronized primarymain/origin-main0/0 with emptyindex. Backup
+/private/tmp/asg-327-primary-before preserved all five prior edits; twoIDEfiles
+byteidentical and prior documentation bookkeeping included in reviewedtree.
+Final status/evidence edits retained locally for the next normal reviewed task.
+No newissue/FID or subsequenttask started. Next run verifyPR327 and select F18
+Standalone engineering Ask mode, unless new active work exists. Fifteen-minute
+cadence/notification preferences unchanged; no useractionrequired.
+
+Recorded 2026-10-31T09:39:39.180852+00:00
+
+
+### F18 standalone Ask implementation — issue #328, 31 October 2026
+
+Branch `328-standalone-ask` starts from verified main `1a4251c992ce32921880fdc5395605ac189f79e3` (PR #327); no overlapping ASG owner/open issue/PR at selection. Dedicated MVC Ask supports no-project landing/workspace entry, streamed advisory text/fenced code, saved independent conversations, selected follow-up context, bounds and no tool execution. Transactional `studio.ask.v1` preserves question-before-inference ordering, corrupt-data isolation and stale-write refusal. Stop/deadline/disposal discard partial output; offline retry reuses the saved question; failed final save retains the answer for storage-only retry or explicit discard. See development/ASK.md for limits and acceptance coverage.
+
+Actual configured Qwen3.5-9B MLX smoke: 4846ms/278 streamed updates/1284 answer characters and exact saved-answer reopen; separate from injected fixtures. Existing offline runtime was started and its owned session stopped, no model download/stable app replacement. Native disk and actual Chrome IndexedDB two-reopen/rollback/corruption tests passed. Formatter271/zerochanges, analyzer clean, full907defaulttests/nineskips, web build and macOS debug build passed; final manifest-aware checks rerun before publication. Separate F17 Ask fixture/live observation identities and source manifests added; canonical matrix32cells. Historical artifacts remain unchanged; no combined currentPass/manual app interaction or additional platform support claim.
+
+F18 remains unchecked/Awaiting merge until linked PR publication, exact-final independent review, actual required CI and verified protected merge. Prior F17 final merge bookkeeping is included in this normal reviewed increment. The primary checkout's unrelated IDE/documentation edits remain preserved. No next feature selected.
+
+Final issue328 validation after matrix changes: formatter271/zerochanges, analyzer clean,907defaulttests/nineskips,12actualChrome tests and release web build passed;41Python acceptance collector/inventory tests passed. macOS debug build passed with unchanged runtime Dart sources. Matrix-count/digest assertions were updated for the three new Ask cells and full checks rerun successfully. Independent review/required remote CI/verified merge are pending; F18 remains unchecked/Awaitingmerge.

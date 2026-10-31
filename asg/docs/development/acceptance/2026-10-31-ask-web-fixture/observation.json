@@ -1,0 +1,10 @@
+{
+  "observedAt": "2026-10-31T09:52:52Z",
+  "target": "web",
+  "check": "durable-ask",
+  "kind": "fixture",
+  "status": "passed",
+  "scope": "actual Chrome IndexedDB two reopens, transaction rollback and corrupt-record isolation",
+  "sourceRevision": "c6bf31f55358996a6e23c507eb6f12e922e7845e",
+  "manualApplicationInteraction": false
+}

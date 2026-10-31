@@ -1,0 +1,10 @@
+{
+  "observedAt": "2026-10-31T09:52:52Z",
+  "target": "macos",
+  "check": "durable-ask",
+  "kind": "fixture",
+  "status": "passed",
+  "scope": "provider-injected workflow and real disk database reopen",
+  "sourceRevision": "c6bf31f55358996a6e23c507eb6f12e922e7845e",
+  "manualApplicationInteraction": false
+}

@@ -4,6 +4,9 @@
 import '../controllers/project_inspection_controller.dart';
 import '../services/inspected_folder_store.dart';
 import 'project_inspection_screen.dart';
+import '../controllers/ask_controller.dart';
+import '../services/ask_store.dart';
+import 'ask_screen.dart';
 
 import 'package:flutter/material.dart';
 
@@ -56,6 +59,13 @@ class _StudioHomeState extends State<StudioHome> {
     super.dispose();
   }
 
+  void ask() => Navigator.of(context).push(
+    MaterialPageRoute<void>(
+      builder: (_) =>
+          AskScreen(controller: AskController(AskStore(widget.store.records))),
+    ),
+  );
+
   Future<void> create() async {
     final project = await showDialog<StudioProject>(
       context: context,
@@ -97,6 +107,11 @@ class _StudioHomeState extends State<StudioHome> {
     appBar: AppBar(
       title: Text(controller.current?.name ?? 'Automated Software Generator'),
       actions: [
+        IconButton(
+          tooltip: 'Ask engineering questions',
+          onPressed: controller.busy || workspacePending ? null : ask,
+          icon: const Icon(Icons.question_answer_outlined),
+        ),
         IconButton(
           tooltip: 'Product acceptance evidence',
           onPressed: controller.busy || workspacePending
@@ -219,6 +234,14 @@ class _StudioHomeState extends State<StudioHome> {
                                 'Describe your idea. I’ll suggest options and guide the project setup, then your instructions can update its live prototype.',
                               ),
                               const SizedBox(height: 20),
+                              OutlinedButton.icon(
+                                onPressed: ask,
+                                icon: const Icon(
+                                  Icons.question_answer_outlined,
+                                ),
+                                label: const Text('Ask without a project'),
+                              ),
+                              const SizedBox(height: 12),
                               FilledButton.icon(
                                 onPressed: controller.savedCreation != null
                                     ? null

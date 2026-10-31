@@ -26,6 +26,7 @@ The [user-owned Hugging Face cloud direction](REQUIREMENTS.md#user-owned-hugging
 - [SDLC](development/SDLC.md)
 - [Test Strategy](development/TEST_STRATEGY.md)
 - [Product acceptance evidence](development/PRODUCT_ACCEPTANCE.md)
+- [Standalone engineering Ask](development/ASK.md)
 - [Dependencies](development/DEPENDENCIES.md)
 - [Security](development/SECURITY.md)
 

@@ -251,6 +251,38 @@
           "testReferences": []
         }
       ]
+    },
+    {
+      "id": "standalone-ask",
+      "requirementIds": [
+        "F18"
+      ],
+      "targets": [
+        "macos",
+        "web"
+      ],
+      "checks": [
+        {
+          "id": "durable-ask",
+          "kind": "fixture",
+          "testReferences": [
+            "test/ask_controller_test.dart",
+            "test/ask_screen_test.dart",
+            "test/ask_persistence_test.dart",
+            "test/browser_ask_storage_test.dart"
+          ]
+        },
+        {
+          "id": "model-answer",
+          "kind": "liveInference",
+          "targets": [
+            "macos"
+          ],
+          "testReferences": [
+            "test/ask_live_test.dart"
+          ]
+        }
+      ]
     }
   ]
 }
