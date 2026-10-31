@@ -198,7 +198,10 @@ void main() {
         ),
         findsNWidgets(2),
       );
-      expect(find.textContaining('No memory adequacy check'), findsOneWidget);
+      expect(
+        find.textContaining('No measured memory adequacy check'),
+        findsOneWidget,
+      );
       expect(tester.takeException(), isNull);
     }
   });

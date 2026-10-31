@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 
 import '../models/runtime_capabilities.dart';
+import '../models/checkpoint_memory.dart';
 import '../models/model_catalog.dart';
 import '../models/runtime_setup.dart';
 
@@ -36,6 +37,12 @@ class RuntimeCapabilityPanel extends StatelessWidget {
         ),
       );
     }
+    final estimate = CheckpointMemory.assess(
+      capabilities: current,
+      backend: backend,
+      model: selected,
+      memory: memory,
+    );
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Column(
@@ -57,8 +64,22 @@ class RuntimeCapabilityPanel extends StatelessWidget {
           ),
           const Text(
             'File sizes only; runtime peak memory also needs cache, activations and overhead. '
-            'This is not a model-fit estimate or inference-readiness verdict. Rescan after changing files.',
+            'Disk size alone is not a model-fit estimate or inference-readiness verdict. Rescan after changing files.',
           ),
+          const SizedBox(height: 8),
+          const Text('Selected checkpoint memory estimate'),
+          Text(estimate.detail),
+          if (estimate.workingBytes != null) ...[
+            Text(
+              'Estimated working memory: ${memorySize(estimate.workingBytes!)}; '
+              'plus ${memorySize(CheckpointMemory.reserveBytes)} reserved for OS/apps.',
+            ),
+            const Text(
+              'Heuristic: 1.25 × measured weight bytes + 4 GiB for runtime/cache. '
+              'Context and architecture can require more. No loaded-model RAM credit; '
+              'this snapshot does not gate launch or verify inference.',
+            ),
+          ],
           for (final item in current.backends) ...[
             const SizedBox(height: 8),
             Text('${item.backend.label}: ${item.availability}'),
@@ -71,7 +92,7 @@ class RuntimeCapabilityPanel extends StatelessWidget {
                 : 'Selected: ${backend.label}. No fallback retry.',
           ),
           const Text(
-            'CPU/CUDA unavailable. No memory adequacy check or successful inference is implied. Launch validates the actual device and model load.',
+            'CPU/CUDA unavailable. No measured memory adequacy check or successful inference is implied. Launch validates the actual device and model load.',
           ),
         ],
       ),
