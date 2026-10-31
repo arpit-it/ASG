@@ -218,6 +218,10 @@ void main() {
     await c.discover(' /python with spaces ');
     expect(host.python, '/python with spaces');
     expect(c.capabilities, isNotNull);
+    expect(
+      c.status,
+      'Host, dependency and device inspection complete. Model loading and memory adequacy remain unverified.',
+    );
     expect(c.setup, same(saved));
     expect(prefs.getString('studio.runtimeSetup.v1'), raw);
     expect(jsonEncode(prefs.getKeys().toList()..sort()), keys);
@@ -258,6 +262,7 @@ void main() {
       await c.discover('/other');
       expect(host.calls, 1);
       expect(c.busy, true);
+      expect(c.status, contains('device availability without loading weights'));
       if (dispose) {
         c.dispose();
       } else {
