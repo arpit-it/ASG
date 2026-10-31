@@ -5,6 +5,7 @@ import 'dart:async';
 
 import '../models/local_model_config.dart';
 import '../models/runtime_setup.dart';
+import '../models/runtime_capabilities.dart';
 import '../services/model_provider.dart';
 import '../services/model_settings_store.dart';
 import '../services/runtime_setup_store.dart';
@@ -168,6 +169,7 @@ class RuntimeSetupController extends BaseController {
   }
 
   Future<void> inspect(String path) => _action(() async {
+    invalidateCapabilities();
     final found = await _scan(path);
     if (isDisposed) return;
     _candidates = found;
@@ -183,12 +185,44 @@ class RuntimeSetupController extends BaseController {
   });
   void select(ModelCandidate value) {
     if (!busy && value.supported) {
+      invalidateCapabilities();
       _selected = value;
       update();
     }
   }
 
+  RuntimeCapabilities? _capabilities;
+  RuntimeCapabilities? get capabilities => _capabilities;
+  int _discoveryEpoch = 0;
+
+  void invalidateCapabilities() {
+    _discoveryEpoch++;
+    _capabilities = null;
+    update();
+  }
+
+  Future<void> discover(String python) => _action(() async {
+    invalidateCapabilities();
+    final epoch = _discoveryEpoch;
+    _status =
+        'Inspecting host and Python dependencies without loading weights…';
+    update();
+    try {
+      final report = await host.discover(python.trim());
+      if (isDisposed || epoch != _discoveryEpoch) return;
+      _capabilities = report;
+      _status = 'Dependency discovery complete. Device and memory readiness remain unverified.';
+    } catch (_) {
+      if (isDisposed || epoch != _discoveryEpoch) return;
+      _status = 'Capability discovery failed.';
+      throw StateError(
+        'Could not inspect runtime capabilities. Check the selected Python interpreter and installed packages, then retry. No weights were loaded or settings changed.',
+      );
+    }
+  });
+
   Future<void> prepare(String python) => _action(() async {
+    invalidateCapabilities();
     _status = 'Checking Python and preparing the helper…';
     update();
     try {
@@ -213,6 +247,7 @@ class RuntimeSetupController extends BaseController {
   });
 
   Future<void> download(RuntimeSetup values) => _action(() async {
+    invalidateCapabilities();
     ModelRepository.parse(values.repository);
     await _saveSetup(values);
     _setup = values;
@@ -233,6 +268,7 @@ class RuntimeSetupController extends BaseController {
       );
     }
     if (isDisposed) return;
+    invalidateCapabilities();
     final found = await _scan(path);
     if (isDisposed) return;
     _candidates = found;

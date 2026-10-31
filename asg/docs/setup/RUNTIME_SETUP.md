@@ -24,7 +24,11 @@ Downloads can be many gigabytes. Check the repository's model license and disk n
 
 **Backend for next launch** offers Auto (the legacy MLX-first dependency preference), MLX / Metal and Torch / MPS. **Save runtime setup** persists this choice and the form without starting/downloading a model or changing the active chat connection. Reopening setup restores the saved choice. Starting passes the exact choice; an explicit choice never retries another backend. Torch/MPS requires compatible unquantized weights; MLX quantized folders cannot be assumed compatible. CPU/CUDA remain unavailable. Selection alone does not inspect dependencies, devices, model compatibility or memory adequacy; the bridge validates before loading. Prepare retains its existing automatic dependency check, so its success does not prove the explicitly selected backend is ready.
 
-The health panel displays only recognized ready-server backend/device pairs, labeled as a runtime report. Missing, unfamiliar or inconsistent pairs remain unknown; loading, failures and unreachable health do not retain a loaded identity. These are server reports, not independent device probes or memory adequacy verification. Existing HTTP connection controls remain usable on other platforms. F15 capability discovery UI and non-Apple CPU/CUDA milestones remain outstanding.
+**Inspect capabilities** explicitly runs dependency-only discovery in the chosen Python. It shows a sanitized detected host, MLX/Metal and Torch/MPS dependency availability, and the scanned checkpoint metadata restriction (Torch rejects quantized checkpoints). Missing packages and unsupported hosts are actionable; dependency presence and a passing metadata restriction are not successful device probing, model loading, inference or memory adequacy checks. Auto's displayed preference follows the same legacy dependency rule as launch; an unavailable preference is not silently replaced. Launch still revalidates the current files/environment. Scanned metadata is a snapshot, not a live file watcher.
+
+Discovery does not install packages, load weights, download, save settings, change chat or stop a running model. Python/backend edits, a new scan/selection, preparation and download invalidate the prior result. Inspect again after changing files or packages externally. Output is bounded to 64 KiB and the helper has a ten-second deadline with owned-process cleanup; raw stderr/invalid output are hidden. Failed discovery supports retry. Closing setup ignores late results; a dispatched helper finishes or is killed within its bounded deadline. Other platforms keep connection controls and do not advertise managed discovery.
+
+The health panel displays only recognized ready-server backend/device pairs, labeled as a runtime report. Missing, unfamiliar or inconsistent pairs remain unknown; loading, failures and unreachable health do not retain a loaded identity. These are server reports, not independent device probes or memory adequacy verification. Existing HTTP connection controls remain usable on other platforms. F15 real device/memory readiness and non-Apple CPU/CUDA milestones remain outstanding.
 
 
 Choose an existing Python environment with compatible Torch and Transformers. On this machine, the previously verified interpreter is `/Users/arpitsinha/ComfyUI-Installs/mac_instance/ComfyUI/.venv/bin/python`; enter it or select it with the executable picker. The application has no hardcoded interpreter path.
@@ -34,6 +38,17 @@ Choose an existing Python environment with compatible Torch and Transformers. On
 Select a compatible checkpoint and press **Start selected model**. The bundled trusted bridge is extracted into application support and launched with argument arrays, not a shell. It binds only to localhost:8765. Chat settings are saved only after /health reports the expected model ID and path. The runtime model ID is derived from the selected folder name, and is passed explicitly to the bridge.
 
 A running external runtime is shown as external: the app will not kill or replace it. **Connect & save** connects project chat to the model ID/URL you enter. **Test inference** requests a real model response. **Stop runtime** targets only a process launched and owned by this app. A bridge launched by the app watches the parent PID and exits when the app exits. Closing the setup page does not stop an already running managed runtime. If setup is closed during loading, reopen the page to inspect its status and connect after it is ready.
+
+## Discovery evidence and limits — issue #334
+
+| Client/host | Managed dependency discovery | Evidence and limit |
+| --- | --- | --- |
+| macOS Apple Silicon | Implemented | Actual shipped-helper subprocess and existing MLX environment dependency JSON; automated injected setup interaction at 320px/text scale 1.5. No new manual native setup acceptance or inference. |
+| Web | Unavailable in production | Connection controls retained. Actual Chrome exercises injected setup UI; that does not enable web process execution. |
+| Android/iOS/Windows/Linux clients | Unavailable in production | Existing-runtime connection controls remain. Portable subprocess fixtures do not advertise managed host support. |
+| CPU/CUDA backend | Unavailable | No device inference or adequacy claim. F15 remains In progress. |
+
+The source-bound no-weight observation is `development/acceptance/2026-10-31-backend-discovery/discovery.json`. It is separate from earlier actual MLX generation evidence and the per-identity F17 reports. No historical report is relabeled as current support.
 
 ## Platforms and security
 

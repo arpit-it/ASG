@@ -1,0 +1,50 @@
+{
+  "recorded_at": "2026-10-31T10:52:45.925058+00:00",
+  "scope": "Actual existing Python environment dependency discovery only; no model argument, inference package import, device probe, weight load, inference, installation or download. UI interaction tests are injected fixtures, not manual acceptance.",
+  "duration_ms": 374,
+  "capabilities": {
+    "backends": [
+      {
+        "backend": "mlx",
+        "device": "metal",
+        "device_ready": null,
+        "host_supported": true,
+        "missing_dependencies": [],
+        "model_compatible": null,
+        "readiness": "unverified"
+      },
+      {
+        "backend": "torch",
+        "device": "mps",
+        "device_ready": null,
+        "host_supported": true,
+        "missing_dependencies": [
+          "torch",
+          "accelerate"
+        ],
+        "model_compatible": null,
+        "readiness": "unavailable"
+      }
+    ],
+    "host": {
+      "machine": "arm64",
+      "system": "Darwin"
+    },
+    "schema_version": 1,
+    "scope": "Dependency discovery only; no device probe, weight load or memory adequacy check.",
+    "unsupported_devices": [
+      "cpu",
+      "cuda"
+    ]
+  },
+  "sources": {
+    "asg/lib/models/runtime_capabilities.dart": "4ecec7c9b4c15747a711a17f12c160b41ed94390e26e8d052ff075d68ab6ed08",
+    "asg/lib/models/runtime_setup.dart": "ff7b98b37fff132173ae70741c16030b6ac4f519814799ff61484f87c464e96c",
+    "asg/lib/controllers/runtime_setup_controller.dart": "ce4338d76f336478c86cef2384c4bba3dfb62b39f8ad2d67892e144fc4a6aa68",
+    "asg/lib/services/runtime_host_native.dart": "7754066c312828bea24ce3e3e683273f00b66811e685bf7b4f5fae46f96794b6",
+    "asg/lib/views/runtime_capability_panel.dart": "e516b842efce212e851adc7615de8a544c2b20ef3948db5cfbe8fe6640956465",
+    "asg/lib/views/runtime_setup_screen.dart": "02a5d6154a54b7da358fbd171331cb87886cb61a83de67f76ced7049b8ce3a4a",
+    "asg/tools/qwen_server.py": "0443c888f45529b40ca8c749a6867f339f4cc92d66fb8c1f02c5042a23d9ebe4",
+    "asg/tools/qwen_backends.py": "2c16987950c7dd995b005a58f59dade136cd684c62c8f4ee7ad9171aae731eea"
+  }
+}

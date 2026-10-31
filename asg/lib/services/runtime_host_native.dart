@@ -10,13 +10,20 @@ import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../models/runtime_setup.dart';
+import '../models/runtime_capabilities.dart';
 import 'runtime_host.dart';
 
 RuntimeHost createRuntimeHost() => _host;
 final _host = NativeRuntimeHost();
 
 class NativeRuntimeHost implements RuntimeHost {
-  NativeRuntimeHost({this.port = 8765, this.supportDirectory, this.loadAsset});
+  NativeRuntimeHost({
+    this.port = 8765,
+    this.supportDirectory,
+    this.loadAsset,
+    this.discoveryTimeout = const Duration(seconds: 10),
+  });
+  final Duration discoveryTimeout;
   final int port;
   final Future<Directory> Function()? supportDirectory;
   final Future<String> Function(String)? loadAsset;
@@ -168,7 +175,8 @@ class NativeRuntimeHost implements RuntimeHost {
         final architecture = data['architectures'];
         final known =
             architecture is List &&
-            architecture.contains('Qwen3_5ForConditionalGeneration');
+            architecture.length == 1 &&
+            architecture.single == 'Qwen3_5ForConditionalGeneration';
         String? problem;
         if (!known) problem = 'Unsupported architecture. Initial managed runtime supports Qwen3.5 Transformers checkpoints.';
         final indexFile = File('$folder/model.safetensors.index.json');
@@ -216,6 +224,9 @@ class NativeRuntimeHost implements RuntimeHost {
             path: folder,
             name: folder.split(Platform.pathSeparator).last,
             supported: problem == null && known,
+            quantized:
+                data['quantization'] != null ||
+                data['quantization_config'] != null,
             detail:
                 problem ?? 'Qwen3.5 · complete local Safetensors checkpoint',
           ),
@@ -237,6 +248,82 @@ class NativeRuntimeHost implements RuntimeHost {
       );
     }
     return result;
+  });
+  @override
+  Future<RuntimeCapabilities> discover(String python) => _job(() async {
+    if (python.trim().isEmpty) {
+      throw const FormatException('Choose a Python interpreter.');
+    }
+    await _script('qwen_backends.py');
+    final script = await _script('qwen_server.py');
+    final process = await Process.start(python.trim(), [
+      '-B',
+      script,
+      '--capabilities',
+    ], runInShell: false);
+    var exited = false;
+    final exit = process.exitCode.then((code) {
+      exited = true;
+      return code;
+    });
+    final bytes = <int>[];
+    var overflow = false;
+    var outputFailed = false;
+    final outputDone = Completer<void>();
+    final errorsDone = Completer<void>();
+    final output = process.stdout.listen(
+      (chunk) {
+        if (bytes.length + chunk.length > 65536) {
+          overflow = true;
+          process.kill(ProcessSignal.sigkill);
+        } else if (!overflow) {
+          bytes.addAll(chunk);
+        }
+      },
+      onDone: () {
+        if (!outputDone.isCompleted) outputDone.complete();
+      },
+      onError: (_) {
+        outputFailed = true;
+        process.kill(ProcessSignal.sigkill);
+        if (!outputDone.isCompleted) outputDone.complete();
+      },
+    );
+    // Consume without retaining stderr, which can contain private environment data.
+    final errors = process.stderr.listen(
+      (_) {},
+      onDone: () {
+        if (!errorsDone.isCompleted) errorsDone.complete();
+      },
+      onError: (_) {
+        outputFailed = true;
+        if (!errorsDone.isCompleted) errorsDone.complete();
+      },
+    );
+    try {
+      final result = await Future.wait<Object?>([
+        exit,
+        outputDone.future,
+        errorsDone.future,
+      ]).timeout(discoveryTimeout);
+      final code = result.first;
+      if (code != 0 || overflow || outputFailed) {
+        throw StateError(
+          'Capability discovery failed. Check the Python environment and retry.',
+        );
+      }
+      return RuntimeCapabilities.fromJson(jsonDecode(utf8.decode(bytes)));
+    } finally {
+      try {
+        if (!exited) {
+          process.kill(ProcessSignal.sigkill);
+          await exit.timeout(const Duration(seconds: 2));
+        }
+      } finally {
+        await output.cancel();
+        await errors.cancel();
+      }
+    }
   });
   @override
   Future<void> prepare(String python) => _job(() async {

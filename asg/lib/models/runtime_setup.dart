@@ -72,9 +72,13 @@ class ModelCandidate {
     required this.name,
     required this.supported,
     required this.detail,
+    this.quantized,
   });
   final String path, name, detail;
   final bool supported;
+
+  /// Null for checkpoints that have not had their metadata inspected.
+  final bool? quantized;
 }
 
 class RuntimeHealth {
