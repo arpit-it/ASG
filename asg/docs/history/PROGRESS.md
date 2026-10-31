@@ -4893,3 +4893,47 @@ validation fixed it. Final9inventory/32collector tests pass; checked-in inventor
 regenerates byte-identically. Invalid unknownfields/malformed scenarios now exit2
 and retainoutput without private-pathdiagnostics. Fresh exact-final independent
 review/newrequiredCI pending; no merge/fullF17claim.
+
+
+### Separate historical inventory verified merged — #253 / PR #326 — 2026-10-31T09:15:55.526114+00:00
+
+Bounded inventory Done; fullF17 remains In progress. Branch253-baseline-inventory;
+local6e20de65/pluginfinal6c0d020cd2ec0ed5b52864a57109babc4c3b5ea4 share exacttree
+ec92b36f15bc20a01b96662262ac714a48adf260. All8remote blobs independently matched.
+Reviewer5722108496 found empty-corpus invalidmanifest bypass; red reproduced,
+unconditional validation plus negativeCLI regression fixed it. Fresh independent
+approval5722111731/finalgate5722124838 verified9inventory/32collector and original
+probe, resolvedP2thread, then protected-plugin squashmergedPR326 as
+2c61072c2902c788e21fdd5a4a4d04ab4fee36ed at2026-10-31T09:14:48Z. Parent verified
+mergedPR/exacthead/tree/currentmain/signedmerge/issue253closedcompleted.
+
+RequiredCI41187496696 succeeded: Flutter124497346407 formatter261/zerochanges,
+analyzerclean,888tests/eightskips,11actualChrome,releaseweb/Wasm dryrun and real
+independentgenerated resolve/analyze/test/build plus renderedinteraction/serve;
+Python124497346641 suites32/9/2/6/14(skip1)/4(skip2). Local9inventory/32collector/
+2download/6streaming/14command(skip1)/4actualmacOSconfinement passed; outer sandbox
+socket/Seatbelt denials resolved via authorizedreruns. Skips are not inference.
+
+Inventory preserves21separatehistoricalreport identities and29configuredcell
+references, eightmissingadjacentmanifest flags and partial recordedsource changes.
+No authenticatedobservation/currentPassunion/liveinference/nativeworkflow/support
+or fullF17claim. Originalreports/stableapp/data unchanged. No newissue/FID/task.
+Detected>1MiBrequirements transporttruncation corrected beforebranch publication;
+allpublishedblobs and finaltree matched testedlocal contents.
+
+Signedmerge rawSHA verified beforeofflineimport. Guarded /private/tmp/asg-326-sync.py
+synchronized primarymain/origin-main0/0/indexempty, backup
+/private/tmp/asg-326-primary-before preserved5priorIDE/docs edits; twoIDEfiles
+byteidentical, prior docs includedin reviewedtree. Finalmergebookkeeping retained
+locally for nextrelatedreviewedincrement; no remoteCLI fallback. Bothrequested
+labels applied,15minutecadence/notificationpreference unchanged, no useraction.
+
+Next run verifyPR326 then inspect affected-workflow differences and linked
+per-identity artifacts for initialF17baseline acceptance. Do not infer absent
+externalartifacts from missingadjacentmanifests, combine incompatibleidentities,
+rerununchangedscenarios merely for manifestmetadata or claim fullF17Done.
+
+
+### F17 initial baseline adjudication — 31 October 2026
+
+Reused issue #253, branch253-baseline-adjudication at main2c61072. Independent read-only audit found actual separate workflow evidence for initial29configuredcells; source-delta review distinguishes unaffected workflows from later viewer follow-up. Added clause-by-clause development/F17_BASELINE_ADJUDICATION.md with linked manifests and unavailable-platform limits.32collector/9inventory passed; exact inventory regeneration/artifact preservation checked. No new model/native run or support/currentPass union. F17 Awaiting merge and unchecked until exact-final independent review, required CI and verified protected merge. Prior local merge bookkeeping retained; unrelated IDE edits preserved.

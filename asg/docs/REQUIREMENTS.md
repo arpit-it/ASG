@@ -48,8 +48,9 @@ Update this document with task selection and delivery evidence, alongside [agent
   - Map each requirement to concrete checks and saved evidence; distinguish automated verification from advisory model feedback.
   - Accept when failed, missing and stale evidence cannot yield a verified requirement, and reports link to exact revisions and test results.
   - Assessment clarification (28 October 2026): extend this existing task with acceptance-criterion-level check mappings and explicit automated, manual and advisory evidence types. A green generic build or manually completed task must never verify unrelated criteria. Bind each result to exact requirement content and source/input revision; edits invalidate affected results. Show unmet criteria and evidence links in the workspace and copied report, and retain the current honest “Acceptance criteria: not verified” state until criterion-specific checks actually establish the supported claim. Validate changed criteria/source, missing checks, failed checks and reopen behavior. This scope is delivered as the explicitly bounded authored-check contract below; free-form prose and live-file freshness remain outside its verdict.
-- [ ] F17 Reproducible product acceptance and support matrix — In progress; depends on F10
-  - Active bounded inventory: reused [issue #253](https://github.com/arpit-it/ASG/issues/253), `253-baseline-inventory`. Offline repeatable inventory validates separate historical report/evidence records, lists configured references and partial recorded-source differences without combining identities or promoting saved passes. Accept on deterministic output, malformed/unsafe-input refusal and artifact preservation, actual negative tests, independent final review, required CI and verified merge. Full F17 remains In progress; no app/model run or support claim.
+- [ ] F17 Reproducible product acceptance and support matrix — Awaiting merge; depends on F10
+  - Initial baseline adjudication: reused [issue #253](https://github.com/arpit-it/ASG/issues/253), `253-baseline-adjudication`. [Clause-by-clause assessment](development/F17_BASELINE_ADJUDICATION.md) maps actual separate workflows and linked provenance, reviews affected source changes and explicit unavailable platforms. No identity union, new execution or current support claim. Awaiting exact-final independent adjudication, required CI and verified merge; F17 remains unchecked until all gates pass.
+  - Delivered bounded inventory — Done: reused [issue #253](https://github.com/arpit-it/ASG/issues/253), `253-baseline-inventory`, [PR #326](https://github.com/arpit-it/ASG/pull/326). Final6c0d020c independently approved5722111731/finalgate5722124838; requiredCI41187496696 passed; verified protectedmerge `2c61072c2902c788e21fdd5a4a4d04ab4fee36ed` at2026-10-31T09:14:48Z, issue closed. Separate21historicalreports/29configuredcells, partial source differences/eightmissingadjacentmanifests; no identity union/currentPass/support. Full F17 remains In progress.
   - Delivered bounded native viewer follow-up — Done: [issue #255](https://github.com/arpit-it/ASG/issues/255), `255-native-viewer`, [PR #325](https://github.com/arpit-it/ASG/pull/325). Final14ac7f1e independently approved5722060273/finalgate5722077042; requiredCI41186230146 passed; verified protectedmerge `d512c64cb648a1fb7accd09c16e5a4c8980597f6` at2026-10-31T08:57:12Z, issue closed. Actual native comparison/retention/Clear/reopen/assetRetry/Quit; synthetic UI inputs only, no collector/model/support/full F17 claim.
   - Delivered actual viewer recovery: reused [issue #255](https://github.com/arpit-it/ASG/issues/255), `255-viewer-interaction`, [PR #324](https://github.com/arpit-it/ASG/pull/324). Actual web503→Retry found cached failed asset Future; real caching-bundle regression and actual200 recovery/report retention passed. Finaldb36945 independently approved5720960664/finalgate5720988042, requiredCI41165147786 passed; verified protectedmergef0fdbd00b63b51ad60ab6223cc65001cce4fe1ba at2026-10-31T03:43:12Z, issue255closed. Bounded increment Done; fullF17 In progress.
   - Delivered bounded viewer comparison: reused [issue #255](https://github.com/arpit-it/ASG/issues/255), `255-manifest-visibility`. Compare reports with this app’s bundled canonical manifest; surface historical digest mismatch and omitted/mismatched configured checks without changing saved statuses or claiming live source/model freshness. Actual audit: 29 configured cells have historical observations, but 20 of 21 reports use older manifests; only the combined Stop/deadline report matches the current manifest. Full F17 remains In progress; no historical union/support claim. Delivered through [PR #323](https://github.com/arpit-it/ASG/pull/323), independent approval verdict5720889577, requiredCI41163915696 passed; verified protectedmerge1fc912e6b0b7f55bc1bdc0cc7194d6c5b34899e2 at2026-10-31T03:25:19Z, issue255closed.
@@ -5677,3 +5678,47 @@ Backup /private/tmp/asg-325-primary-before, guarded /private/tmp/asg-325-sync.py
 Bothrequestedlabels applied; no newissue/FID or subsequenttask.15minute cadence/
 notifications unchanged. Final merge bookkeeping retained locally for next related
 reviewed increment; no remoteCLI fallback. No useractionrequired.
+
+
+### Separate historical inventory verified merged — #253 / PR #326 — 2026-10-31T09:15:55.526114+00:00
+
+Bounded inventory Done; fullF17 remains In progress. Branch253-baseline-inventory;
+local6e20de65/pluginfinal6c0d020cd2ec0ed5b52864a57109babc4c3b5ea4 share exacttree
+ec92b36f15bc20a01b96662262ac714a48adf260. All8remote blobs independently matched.
+Reviewer5722108496 found empty-corpus invalidmanifest bypass; red reproduced,
+unconditional validation plus negativeCLI regression fixed it. Fresh independent
+approval5722111731/finalgate5722124838 verified9inventory/32collector and original
+probe, resolvedP2thread, then protected-plugin squashmergedPR326 as
+2c61072c2902c788e21fdd5a4a4d04ab4fee36ed at2026-10-31T09:14:48Z. Parent verified
+mergedPR/exacthead/tree/currentmain/signedmerge/issue253closedcompleted.
+
+RequiredCI41187496696 succeeded: Flutter124497346407 formatter261/zerochanges,
+analyzerclean,888tests/eightskips,11actualChrome,releaseweb/Wasm dryrun and real
+independentgenerated resolve/analyze/test/build plus renderedinteraction/serve;
+Python124497346641 suites32/9/2/6/14(skip1)/4(skip2). Local9inventory/32collector/
+2download/6streaming/14command(skip1)/4actualmacOSconfinement passed; outer sandbox
+socket/Seatbelt denials resolved via authorizedreruns. Skips are not inference.
+
+Inventory preserves21separatehistoricalreport identities and29configuredcell
+references, eightmissingadjacentmanifest flags and partial recordedsource changes.
+No authenticatedobservation/currentPassunion/liveinference/nativeworkflow/support
+or fullF17claim. Originalreports/stableapp/data unchanged. No newissue/FID/task.
+Detected>1MiBrequirements transporttruncation corrected beforebranch publication;
+allpublishedblobs and finaltree matched testedlocal contents.
+
+Signedmerge rawSHA verified beforeofflineimport. Guarded /private/tmp/asg-326-sync.py
+synchronized primarymain/origin-main0/0/indexempty, backup
+/private/tmp/asg-326-primary-before preserved5priorIDE/docs edits; twoIDEfiles
+byteidentical, prior docs includedin reviewedtree. Finalmergebookkeeping retained
+locally for nextrelatedreviewedincrement; no remoteCLI fallback. Bothrequested
+labels applied,15minutecadence/notificationpreference unchanged, no useraction.
+
+Next run verifyPR326 then inspect affected-workflow differences and linked
+per-identity artifacts for initialF17baseline acceptance. Do not infer absent
+externalartifacts from missingadjacentmanifests, combine incompatibleidentities,
+rerununchangedscenarios merely for manifestmetadata or claim fullF17Done.
+
+
+### F17 initial baseline adjudication — 31 October 2026
+
+Issue #253; branch `253-baseline-adjudication`; publication base2c61072. Scope/acceptance and per-clause evidence: [assessment](development/F17_BASELINE_ADJUDICATION.md). Separate29configuredcells/21reports remain historical; linked source/bundle manifests resolve absent-adjacent-file flags without promoting status. Source changes after584c89c are viewer-only and later actual viewer follow-ups cover them; earlier no-inference persistence/archive paths are unaffected by proposal corrections.32collector/9inventory tests passed; deterministic inventory regeneration and artifact preservation checked. No new app/model execution. Awaiting PR, independent final-revision adjudication, required CI and verified merge; F17 not Done.
