@@ -1,24 +1,33 @@
 // SPDX-License-Identifier: MPL-2.0
 // Copyright 2026 Arpit Sinha
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+
+import '../models/product_acceptance_manifest.dart';
 
 import '../controllers/product_acceptance_controller.dart';
 
 class ProductAcceptanceScreen extends StatefulWidget {
-  const ProductAcceptanceScreen({super.key});
+  const ProductAcceptanceScreen({super.key, this.manifestLoader});
+  final Future<ProductAcceptanceManifest> Function()? manifestLoader;
   @override
   State<ProductAcceptanceScreen> createState() =>
       _ProductAcceptanceScreenState();
 }
 
 class _ProductAcceptanceScreenState extends State<ProductAcceptanceScreen> {
-  final controller = ProductAcceptanceController();
+  late final ProductAcceptanceController controller;
   final input = TextEditingController();
   @override
   void initState() {
     super.initState();
+    controller = ProductAcceptanceController(
+      manifestLoader: widget.manifestLoader,
+    );
     controller.addListener(refresh);
+    unawaited(controller.loadManifest());
   }
 
   void refresh() {
@@ -36,6 +45,7 @@ class _ProductAcceptanceScreenState extends State<ProductAcceptanceScreen> {
   @override
   Widget build(BuildContext context) {
     final report = controller.report;
+    final comparison = controller.comparison;
     return Scaffold(
       appBar: AppBar(title: const Text('Product acceptance evidence')),
       body: ListView(
@@ -74,6 +84,15 @@ class _ProductAcceptanceScreenState extends State<ProductAcceptanceScreen> {
               controller.error!,
               style: TextStyle(color: Theme.of(context).colorScheme.error),
             ),
+          if (controller.manifestLoading)
+            const Text('Loading bundled manifest comparison…'),
+          if (controller.manifestError != null) ...[
+            Text(controller.manifestError!),
+            TextButton(
+              onPressed: controller.loadManifest,
+              child: const Text('Retry manifest comparison'),
+            ),
+          ],
           if (report == null)
             const Text(
               'No report loaded. Generate a report with tools/product_acceptance.py, then paste it above. Reports are session-only; reopen by pasting again.',
@@ -83,6 +102,30 @@ class _ProductAcceptanceScreenState extends State<ProductAcceptanceScreen> {
             Text(
               '${report.cells.where((c) => c.status != 'passed').length} cells without a saved pass. Coverage is limited to cells in this report; omitted scenarios are not assessed.',
             ),
+            if (comparison != null) ...[
+              Text(
+                comparison.manifestMatches
+                    ? 'Report manifest matches this app’s bundled manifest. This does not verify current source, model, device or product support.'
+                    : 'Historical manifest: this report differs from this app’s bundled manifest. Saved statuses below retain their original meaning; they do not establish current coverage.',
+              ),
+              Text(
+                '${comparison.configuredCount} configured checks in the bundled manifest; ${comparison.absentChecks.length} omitted, ${comparison.mismatchedChecks.length} with different metadata or target availability. Presence alone is not a pass.',
+              ),
+              if (comparison.absentChecks.isNotEmpty ||
+                  comparison.mismatchedChecks.isNotEmpty)
+                ExpansionTile(
+                  title: const Text('Bundled coverage gaps'),
+                  children: [
+                    for (final label in comparison.absentChecks)
+                      Text('Omitted: $label'),
+                    for (final label in comparison.mismatchedChecks)
+                      Text('Different metadata or target availability: $label'),
+                  ],
+                ),
+              SelectableText(
+                'Bundled manifest SHA-256: ${controller.bundledManifestSha256}',
+              ),
+            ],
             ExpansionTile(
               title: const Text('Report identity and manifest'),
               children: [

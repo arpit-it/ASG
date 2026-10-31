@@ -4723,3 +4723,44 @@ platform-build claim. Stableapp/originaldata preserved; owned tab/preview/fixtur
 nativeapp stopped. Prior primary IDE/docs edits retained. Awaiting independent
 exact-final review, required CI and verified merge; final PR records authoritative
 head/tree/review/check/merge evidence. No newissue/FID or subsequent task.
+
+
+### Paired native Stop/deadline verified merged — #283 / PR #322 — 2026-10-31T03:00:43.266286+00:00
+
+Bounded increment Done; full F17 remains In progress. Branch `283-paired-native-stop-deadline`; tested local `906a1b2d6533f676353b518937b068818da14070` and published final `f38454faa5817a93e49dfc93579ada4a38c305e5` share plugin-verified tree `bb62ee4d806e7b1f65cb65c4fdee71cfca4aa31a`. Independent approval5720700789/finalgate5720723471 found no blockers/unresolvedthreads, reproduced32collector/38Flutter, all12remote patches, raw-journal/identity/digest/preservation checks and six staleness probes. Generated package_graph digests differ and remain explicitly separate; common lock/package_config/source/approval identity is verified without graph equivalence or support claim.
+
+Required CI41161996540 success. Flutter124421360560: formatter257/zerochanges, analyzerclean,879default/eightopt-inskips,11realChrome, releasewebWasm, realgenerated resolve0/analyze0/test0/build0 plus renderedinteraction/serve. Python124421360780 suites32/2/6/14(skip1)/4(skip2). Skips are not live inference evidence. Reviewer protected-plugin squashmerged [PR #322](https://github.com/arpit-it/ASG/pull/322) as `f31065dcdd1b28a715d1b2dcfb8af59ad14daa82` at2026-10-31T02:59:33Z; parent independently verified mergedPR/exacthead/tree/currentmain/signedcommit and issue283closedcompleted.
+
+Actual retained584c89c native Stop cancelledtest afterresolve/analyzepassed; explicit samecandidate retry reached real180s commanddeadline. Buildabsent/no repair/promotion;12source/34output journal hashes plus42measuredfiles preserved. Actual retained served add/check and nativeQuit/absence/reopen retained board/approval/working/candidatejournal. Before/reopened database differs only in prepared candidate pointer and verification journal; every other record byte-identical. FreshFinder baseline toolwall809.8ms, isolatedlaunch2438ms/AX52ms, Stop559ms/reopen2466ms.300source/43bundle remeasured. One suppliedcombinedmacOSmanual cell only:120cells/onepass/28missing/91unavailable; individualcells not inferred. No freshmodel/currentmainbuild/F10criterion/fullF17claim. Ownedapp/tab/preview/fixturestopped, stableapp/data preserved. Bothrequestedlabels applied; no newissue/FID.
+
+Signedmerge rawobject SHA verified before local offlineimport; primary main/origin-main synchronized0/0, indexempty/diffcheckclean. Prior twoIDE edits byte-identical; all prior documentation additions retained in reviewedtree. Backup `/private/tmp/asg-322-primary-before`; guarded sync `/private/tmp/asg-322-sync.py`. Finalmerge bookkeeping retained locally for next related reviewedincrement; no remoteCLI fallback.15minute cadence/notificationpreferences unchanged.
+
+Next run verify PR322merge and preserve primary edits, then inspect remaining actual F17 matrix gaps and reuse matching existing tasks. Do not repeat delivered Stop/deadline pair, combine incompatible identities, or rerun delivered fixtures solely for documentation identity. No subsequent task selected and no useractionrequired.
+
+
+### Bundled acceptance-manifest comparison — reused #255 — 2026-10-31T03:19:18.693745+00:00
+
+Branch `255-manifest-visibility` from verified current main `f31065dcdd1b28a715d1b2dcfb8af59ad14daa82`.
+Read-only independent audit confirmed all29 configured cells have historical saved
+observations, but20of21 reports have an older manifest; only the paired Stop/deadline
+report matches current digestd14e0d2b. This is inventory, not a union/current-support
+claim. No scenario was rerun solely for metadata.
+
+The app now bundles the one canonical manifest, loads it through an injectable
+service and compares digest/configured scenario/check/target plus kind/requirements.
+It labels historical manifests and lists omitted/mismatched configured checks;
+original report cells, identities and saved statuses remain unchanged. Matching
+manifest/present cells do not establish current source/model/device freshness or
+support. Loading/error/retry, invalid replacement retention, clear and async disposal
+are covered. No model/app launch or stable-app change; no native-control blocker.
+
+Validation: final formatter260files/zerochanges and analyzer clean; full Flutter
+suite888passed/eightopt-inskips before two additional test-only regressions; final
+15focused tests including all eight new regressions passed.32Python collector tests
+passed. Releaseweb/Wasm and macOSdebug builds passed. Early test expectations and
+lazy-list finder assumptions were corrected, then affected checks rerun. Actual
+canonical asset digest matches Python collector; retained historical report tested.
+No new manual/model/product-support evidence or fullF17 completion. RequiredCI,
+exact-final independent review and verified protectedmerge remain pending. Related
+primary prior merge bookkeeping retained; two unrelated IDE edits untouched. PR
+will carry authoritative tested-tree, review, CI and merge evidence. No newissue/FID.
