@@ -156,3 +156,39 @@ def load_backend(folder, kind):
     if kind == 'torch':
         return TorchMPSBackend(folder)
     raise ValueError('Unsupported backend')
+
+
+def prepare_backend(requested, helper_target):
+    """Check the exact requested environment; never load weights or fall back.
+
+    Auto retains the historical module preference. Only legacy Torch prepares
+    its pinned helper in the app-owned target; installed packages stay intact.
+    """
+    if requested not in ('auto', 'mlx', 'torch'):
+        raise ValueError('Unsupported preparation backend')
+    kind = ('mlx' if importlib.util.find_spec('mlx_lm') else 'torch') if requested == 'auto' else requested
+    if kind == 'mlx':
+        import mlx.core as mx
+        if not mx.metal.is_available():
+            raise RuntimeError('MLX Metal unavailable; no fallback was started')
+        from mlx_lm import load, stream_generate
+    else:
+        import torch
+        from transformers import Qwen3_5ForConditionalGeneration
+        if not torch.backends.mps.is_available():
+            raise RuntimeError('Apple Metal MPS unavailable; no fallback was started')
+        import subprocess
+        import sys
+        subprocess.run([sys.executable, '-m', 'pip', 'install', '--no-deps',
+                        '--target', helper_target, 'accelerate==1.15.0'], check=True)
+    return kind
+
+
+if __name__ == '__main__':
+    import argparse
+    parser = argparse.ArgumentParser(description='Prepare the explicitly selected runtime environment; no weights loaded.')
+    parser.add_argument('--prepare', choices=('auto', 'mlx', 'torch'), required=True)
+    parser.add_argument('--helper-target', required=True)
+    args = parser.parse_args()
+    prepared = prepare_backend(args.prepare, args.helper_target)
+    print(f'{prepared} runtime dependencies checked; model loading and memory adequacy remain unverified.')

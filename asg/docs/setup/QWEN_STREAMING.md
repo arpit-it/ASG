@@ -95,7 +95,7 @@ unquantized compatible weights; an MLX quantized folder cannot be reused there.
 Health identifies the loaded backend/device; discovery alone never reports ready.
 
 The managed app extracts both `qwen_server.py` and its sibling `qwen_backends.py`.
-Existing setup records/defaults are unchanged. The discovery CLI is a bounded
+Existing setup records/defaults are unchanged. Helper preparation honors the explicit backend selection without fallback; Auto retains the legacy preference. Preparation never loads weights and does not establish model or memory readiness. The discovery CLI is a bounded
 foundation: app capability display, persisted explicit backend/device selection,
 consented fallback and CPU/CUDA delivery still require later F15 increments.
 Actual MLX generation/restart evidence is saved separately in

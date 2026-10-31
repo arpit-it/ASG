@@ -13,7 +13,10 @@ abstract interface class RuntimeHost {
   Future<String?> chooseDirectory();
   Future<String?> choosePython();
   Future<List<ModelCandidate>> scan(String path);
-  Future<void> prepare(String python);
+  Future<void> prepare(
+    String python, {
+    RuntimeBackend backend = RuntimeBackend.auto,
+  });
   Future<RuntimeCapabilities> discover(String python);
   Future<String> download(RuntimeSetup setup);
   Future<void> start(RuntimeSetup setup, String modelId);

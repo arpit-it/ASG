@@ -141,6 +141,43 @@ class BackendTests(unittest.TestCase):
                                     cwd='/', capture_output=True, text=True, timeout=10, check=True)
             self.assertEqual(json.loads(result.stdout)['schema_version'], 1)
 
+    def test_preparation_honors_explicit_backend_and_auto_without_model_load(self):
+        from types import SimpleNamespace, ModuleType
+        mlx = ModuleType('mlx')
+        mlx.__path__ = []
+        core = ModuleType('mlx.core')
+        core.metal = SimpleNamespace(is_available=lambda: True)
+        mlx.core = core
+        modules = {'mlx': mlx, 'mlx.core': core,
+                   'mlx_lm': SimpleNamespace(load=lambda: self.fail('weight load'), stream_generate=None),
+                   'torch': SimpleNamespace(backends=SimpleNamespace(mps=SimpleNamespace(is_available=lambda: True))),
+                   'transformers': SimpleNamespace(Qwen3_5ForConditionalGeneration=None)}
+        for requested, installed, expected in [('mlx', False, 'mlx'), ('torch', True, 'torch'),
+                                                ('auto', True, 'mlx'), ('auto', False, 'torch')]:
+            with self.subTest(requested=requested, installed=installed), patch.dict(sys.modules, modules), patch.object(backends.importlib.util, 'find_spec', return_value=installed), patch('subprocess.run') as run:
+                self.assertEqual(backends.prepare_backend(requested, '/target with spaces'), expected)
+                if expected == 'mlx':
+                    run.assert_not_called()
+                else:
+                    run.assert_called_once_with([sys.executable, '-m', 'pip', 'install', '--no-deps', '--target', '/target with spaces', 'accelerate==1.15.0'], check=True)
+
+    def test_missing_or_unavailable_explicit_backend_never_falls_back_or_installs(self):
+        from types import SimpleNamespace
+        for requested in ('mlx', 'torch'):
+            modules = {'mlx': None, 'mlx.core': None, 'mlx_lm': None} if requested == 'mlx' else {'torch': None}
+            with self.subTest(requested=requested), patch.dict(sys.modules, modules), patch('subprocess.run') as run:
+                with self.assertRaises(ImportError):
+                    backends.prepare_backend(requested, '/target')
+                run.assert_not_called()
+        with patch.dict(sys.modules, {'torch': SimpleNamespace(backends=SimpleNamespace(mps=SimpleNamespace(is_available=lambda: False))), 'transformers': SimpleNamespace(Qwen3_5ForConditionalGeneration=None)}), patch('subprocess.run') as run:
+            with self.assertRaisesRegex(RuntimeError, 'unavailable; no fallback'):
+                backends.prepare_backend('torch', '/target')
+            run.assert_not_called()
+        with patch('subprocess.run') as run:
+            with self.assertRaises(ValueError):
+                backends.prepare_backend('cuda', '/target')
+            run.assert_not_called()
+
     def test_real_cli_needs_no_model_and_outputs_only_json(self):
         command = [sys.executable, '-B', str(Path(__file__).with_name('qwen_server.py'))]
         result = subprocess.run([*command, '--capabilities'], capture_output=True, text=True, timeout=10, check=True)

@@ -387,25 +387,20 @@ class NativeRuntimeHost implements RuntimeHost, ModelDownloadHost {
     }
   });
   @override
-  Future<void> prepare(String python) => _job(() async {
+  Future<void> prepare(
+    String python, {
+    RuntimeBackend backend = RuntimeBackend.auto,
+  }) => _job(() async {
     if (python.trim().isEmpty) {
       throw const FormatException('Choose a Python interpreter.');
     }
     final support = await _support();
+    final script = await _script('qwen_backends.py');
     await _run(python, [
-      '-c',
-      r'''import importlib.util, sys, subprocess
-if importlib.util.find_spec("mlx_lm"):
-    import mlx.core as mx
-    from mlx_lm import load, stream_generate
-    print("MLX streaming runtime ready; no helper installation needed.")
-else:
-    import torch
-    from transformers import Qwen3_5ForConditionalGeneration
-    assert torch.backends.mps.is_available(), "Apple Metal unavailable"
-    subprocess.run([sys.executable, "-m", "pip", "install", "--no-deps", "--target", sys.argv[1], "accelerate==1.15.0"], check=True)
-    print("Legacy Torch runtime prepared. A local 4-bit MLX model is recommended for lower memory and faster inference.")
-''',
+      script,
+      '--prepare',
+      backend.argument,
+      '--helper-target',
       '${support.path}/.runtime-deps',
     ]);
     _log('Runtime environment checked. Existing packages were not replaced.');
