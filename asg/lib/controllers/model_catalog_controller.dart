@@ -67,9 +67,8 @@ class ModelCatalogController extends BaseController {
       final hardware = await _probe();
       if (isDisposed) return;
       _hardware = hardware;
-      final running = await inspectRunning?.call();
+      await _observeRunning();
       if (isDisposed) return;
-      _running = running;
       for (final repository in preferredRepositories) {
         if (isDisposed) return;
         final entry = _entries.firstWhere((e) => e.repository == repository);
@@ -125,24 +124,55 @@ class ModelCatalogController extends BaseController {
     update();
   }
 
+  /// The current connection is observed independently of public source checks.
   Future<void> initialize() async {
-    if (isDisposed || _initializing) return;
+    if (isDisposed || busy) return;
     _initializing = true;
+    _running = null;
     update();
     try {
-      final value = await _probe();
-      if (!isDisposed) _hardware = value;
-    } catch (_) {
-      if (!isDisposed) {
+      try {
+        final value = await _probe();
+        if (isDisposed) return;
+        _hardware = value;
+      } catch (_) {
+        if (isDisposed) return;
         _hardware = const ModelHardware(
           appleSilicon: false,
-          detail: 'Hardware detection failed. Retry by reopening the catalog.',
+          detail: 'Hardware detection failed. Retry the runtime check.',
         );
       }
+      await _observeRunning();
     } finally {
       _initializing = false;
       update();
     }
+  }
+
+  Future<void> _observeRunning() async {
+    _running = null;
+    try {
+      final value = await inspectRunning?.call();
+      if (!isDisposed) _running = value;
+    } catch (_) {
+      // Offline/stale observations must not retain a previous model identity.
+    }
+  }
+
+  ModelCatalogEntry? get preferredRunningEntry {
+    final entry = runningEntry;
+    if (entry == null ||
+        entry.repository != preferredRepositories.first ||
+        !_hardware.appleSilicon ||
+        _hardware.memoryBytes == null) {
+      return null;
+    }
+    final model = metadata(entry);
+    if (model != null &&
+        (!model.runtimeCompatible || assessment(entry).fitsMemory != true)) {
+      return null;
+    }
+    return entry;
   }
 
   Future<void> check(ModelCatalogEntry entry) async {

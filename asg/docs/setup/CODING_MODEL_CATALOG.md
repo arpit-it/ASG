@@ -56,8 +56,9 @@ supported 4-bit MLX metadata, conservative total-memory budget and current
 available-memory estimates. Unknown memory, pressure, unsupported hosts, failed
 source checks and arbitrary discovery results cannot become recommendations.
 
-A separate **Current local runtime** observation keeps a known curated model
-visible when the local MLX runtime freshly reports it ready and idle, even when
+A separate **Currently in use** observation loads automatically when the picker
+opens. **Refresh current model** rechecks this local snapshot without public
+metadata requests. It keeps a known curated model visible when the local MLX runtime freshly reports it ready and idle, even when
 no new load fits. It matches the configured model ID and selected path and uses
 only known labels; private arbitrary server IDs are not rendered. This is a
 snapshot of a reported identity, not proof of repository, loaded revision,
@@ -81,3 +82,13 @@ Managed loading here requires Apple Silicon macOS; no model is promised to run
 on every device. Other ASG platforms use compatible runtime connections. Turn
 off **Preferred models only** for advanced discovery and manual source inspection.
 Checks never download weights, change settings or switch the model.
+
+
+Issue #354 improves initial visibility: on a known Apple Silicon host, the running
+Qwen3.8 27B family receives **Preferred model · Currently in use**. This identifies
+the highest curated family already serving the configured connection; it does
+not certify its loaded bytes/revision or grant memory credit for a new load.
+An older active family keeps its own accurate current label. Failed, busy or
+unavailable runtime observations clear stale identity and display **Current
+model: Not confirmed**. Source-check failures and known incompatible/oversized
+metadata cannot enable downloads or override the new-load assessment.

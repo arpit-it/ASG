@@ -52,16 +52,36 @@ class _ModelCatalogScreenState extends State<ModelCatalogScreen> {
               Text(
                 'Total memory: ${host.memoryBytes == null ? 'unknown' : memorySize(host.memoryBytes!)} · available estimate: ${host.availableBytes == null ? 'unknown' : memorySize(host.availableBytes!)}',
               ),
-              if (controller.runningEntry case final running?) ...[
-                const SizedBox(height: 12),
-                Text(
-                  'Current local runtime: ${running.name}',
-                  style: Theme.of(context).textTheme.titleMedium,
+              const SizedBox(height: 12),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (controller.preferredRunningEntry != null)
+                        const Text('Preferred model · Currently in use'),
+                      Text(switch (controller.runningEntry) {
+                        final running? => 'Currently in use: ${running.name}',
+                        null => 'Current model: Not confirmed',
+                      }, style: Theme.of(context).textTheme.titleMedium),
+                      const SizedBox(height: 8),
+                      Text(
+                        controller.runningEntry != null
+                            ? 'The configured local runtime reported this model ready and idle. Keep using this connection; a new download or model switch is not needed. This identity check does not verify the loaded revision or memory adequacy.'
+                            : 'The configured local runtime may be unavailable or busy. Refresh to check which model is currently connected.',
+                      ),
+                      TextButton.icon(
+                        onPressed: controller.busy
+                            ? null
+                            : controller.initialize,
+                        icon: const Icon(Icons.refresh),
+                        label: const Text('Refresh current model'),
+                      ),
+                    ],
+                  ),
                 ),
-                const Text(
-                  'At the last check, the local MLX runtime reported this model ready and idle. The loaded source revision, memory fit and a new load are unverified. You can keep using the current connection; no download or switch is needed.',
-                ),
-              ],
+              ),
               const SizedBox(height: 12),
               const Text(
                 'Check preferred models to find one suitable choice for Ask, planning, coding and review on this device. Selection only prepares the download form.',
@@ -134,7 +154,9 @@ class _ModelCatalogScreenState extends State<ModelCatalogScreen> {
                   padding: const EdgeInsets.all(20),
                   child: Text(
                     controller.preferredOnly
-                        ? 'No preferred model yet. Check preferred models; unsupported hosts, unknown memory, memory pressure or failed source checks cannot produce a recommendation. Free memory and reopen this page to refresh device estimates, or use advanced discovery by turning off Preferred models only.'
+                        ? controller.preferredRunningEntry != null
+                              ? 'The preferred model is already running. No additional model needs to be loaded. Public source checks below apply only to preparing a new download.'
+                              : 'No preferred model yet. Check preferred models; unsupported hosts, unknown memory, memory pressure or failed source checks cannot produce a recommendation. Free memory and reopen this page to refresh device estimates, or use advanced discovery by turning off Preferred models only.'
                         : 'No matching candidates. Change the search or architecture filter.',
                   ),
                 ),
