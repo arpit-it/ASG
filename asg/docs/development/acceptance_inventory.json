@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "claim": "separate-historical-observations-only",
   "manifestSha256": "0505c640aa4a9170a73946648bd6205062942bcc3a2a37704e7a37fa0cbcbe1c",
-  "comparisonRuntimeSha256": "307e118911caa9b6cfb99a4560af22175a339fe990a9a2a63636578cce2276e0",
+  "comparisonRuntimeSha256": "499c0c7af5604a85cdf0ff313448779bc038914a5252883245d0e030c89fd039",
   "limitations": [
     "No combined identity, current pass, support verdict or authenticated observation.",
     "Recorded source hashes do not prove bundle equivalence or unaffected behavior.",
@@ -542,6 +542,7 @@
         "recordedFiles": 300,
         "changedRecordedFiles": [
           "lib/controllers/product_acceptance_controller.dart",
+          "lib/services/runtime_host_native.dart",
           "lib/services/source_edit_proposer.dart",
           "lib/services/studio_database.dart",
           "lib/views/product_acceptance_screen.dart",
@@ -549,6 +550,7 @@
           "lib/views/studio_home.dart",
           "pubspec.yaml",
           "test/browser_storage_test.dart",
+          "test/runtime_process_test.dart",
           "test/source_edit_proposer_test.dart",
           "tools/import_acceptance_provenance.py",
           "tools/product_acceptance.py",
@@ -730,6 +732,7 @@
         "recordedFiles": 300,
         "changedRecordedFiles": [
           "lib/controllers/product_acceptance_controller.dart",
+          "lib/services/runtime_host_native.dart",
           "lib/services/studio_database.dart",
           "lib/views/product_acceptance_screen.dart",
           "lib/views/project_workspace.dart",
@@ -737,9 +740,12 @@
           "macos/Runner/Configs/AppInfo.xcconfig",
           "pubspec.yaml",
           "test/browser_storage_test.dart",
+          "test/runtime_process_test.dart",
           "tools/import_acceptance_provenance.py",
           "tools/product_acceptance.py",
-          "tools/test_product_acceptance.py"
+          "tools/qwen_server.py",
+          "tools/test_product_acceptance.py",
+          "tools/test_qwen_streaming_server.py"
         ],
         "absentRecordedFiles": [],
         "unrecordedRuntimeFiles": [
@@ -886,14 +892,18 @@
         "recordedFiles": 301,
         "changedRecordedFiles": [
           "lib/controllers/product_acceptance_controller.dart",
+          "lib/services/runtime_host_native.dart",
           "lib/services/studio_database.dart",
           "lib/views/product_acceptance_screen.dart",
           "lib/views/project_workspace.dart",
           "lib/views/studio_home.dart",
           "pubspec.yaml",
           "test/browser_storage_test.dart",
+          "test/runtime_process_test.dart",
           "tools/product_acceptance.py",
-          "tools/test_product_acceptance.py"
+          "tools/qwen_server.py",
+          "tools/test_product_acceptance.py",
+          "tools/test_qwen_streaming_server.py"
         ],
         "absentRecordedFiles": [],
         "unrecordedRuntimeFiles": [
@@ -966,6 +976,7 @@
         "recordedFiles": 300,
         "changedRecordedFiles": [
           "lib/controllers/product_acceptance_controller.dart",
+          "lib/services/runtime_host_native.dart",
           "lib/services/source_edit_proposer.dart",
           "lib/services/studio_database.dart",
           "lib/views/product_acceptance_screen.dart",
@@ -973,6 +984,7 @@
           "lib/views/studio_home.dart",
           "pubspec.yaml",
           "test/browser_storage_test.dart",
+          "test/runtime_process_test.dart",
           "test/source_edit_proposer_test.dart",
           "tools/import_acceptance_provenance.py",
           "tools/product_acceptance.py",
@@ -1295,14 +1307,18 @@
         "recordedFiles": 273,
         "changedRecordedFiles": [
           "lib/controllers/product_acceptance_controller.dart",
+          "lib/services/runtime_host_native.dart",
           "lib/services/studio_database.dart",
           "lib/views/product_acceptance_screen.dart",
           "lib/views/project_workspace.dart",
           "lib/views/studio_home.dart",
           "pubspec.yaml",
           "test/browser_storage_test.dart",
+          "test/runtime_process_test.dart",
           "tools/product_acceptance.py",
-          "tools/test_product_acceptance.py"
+          "tools/qwen_server.py",
+          "tools/test_product_acceptance.py",
+          "tools/test_qwen_streaming_server.py"
         ],
         "absentRecordedFiles": [],
         "unrecordedRuntimeFiles": [
@@ -1368,14 +1384,18 @@
         "recordedFiles": 301,
         "changedRecordedFiles": [
           "lib/controllers/product_acceptance_controller.dart",
+          "lib/services/runtime_host_native.dart",
           "lib/services/studio_database.dart",
           "lib/views/product_acceptance_screen.dart",
           "lib/views/project_workspace.dart",
           "lib/views/studio_home.dart",
           "pubspec.yaml",
           "test/browser_storage_test.dart",
+          "test/runtime_process_test.dart",
           "tools/product_acceptance.py",
-          "tools/test_product_acceptance.py"
+          "tools/qwen_server.py",
+          "tools/test_product_acceptance.py",
+          "tools/test_qwen_streaming_server.py"
         ],
         "absentRecordedFiles": [],
         "unrecordedRuntimeFiles": [
@@ -1446,6 +1466,7 @@
         "recordedFiles": 167,
         "changedRecordedFiles": [
           "lib/controllers/product_acceptance_controller.dart",
+          "lib/services/runtime_host_native.dart",
           "lib/services/studio_database.dart",
           "lib/views/product_acceptance_screen.dart",
           "lib/views/project_workspace.dart",
@@ -1516,13 +1537,17 @@
         "recordedFiles": 281,
         "changedRecordedFiles": [
           "lib/controllers/product_acceptance_controller.dart",
+          "lib/services/runtime_host_native.dart",
           "lib/services/studio_database.dart",
           "lib/views/product_acceptance_screen.dart",
           "lib/views/project_workspace.dart",
           "lib/views/studio_home.dart",
           "pubspec.yaml",
+          "test/runtime_process_test.dart",
           "tools/product_acceptance.py",
-          "tools/test_product_acceptance.py"
+          "tools/qwen_server.py",
+          "tools/test_product_acceptance.py",
+          "tools/test_qwen_streaming_server.py"
         ],
         "absentRecordedFiles": [],
         "unrecordedRuntimeFiles": [
@@ -1588,14 +1613,18 @@
         "recordedFiles": 273,
         "changedRecordedFiles": [
           "lib/controllers/product_acceptance_controller.dart",
+          "lib/services/runtime_host_native.dart",
           "lib/services/studio_database.dart",
           "lib/views/product_acceptance_screen.dart",
           "lib/views/project_workspace.dart",
           "lib/views/studio_home.dart",
           "pubspec.yaml",
           "test/browser_storage_test.dart",
+          "test/runtime_process_test.dart",
           "tools/product_acceptance.py",
-          "tools/test_product_acceptance.py"
+          "tools/qwen_server.py",
+          "tools/test_product_acceptance.py",
+          "tools/test_qwen_streaming_server.py"
         ],
         "absentRecordedFiles": [],
         "unrecordedRuntimeFiles": [
@@ -1661,14 +1690,18 @@
         "recordedFiles": 273,
         "changedRecordedFiles": [
           "lib/controllers/product_acceptance_controller.dart",
+          "lib/services/runtime_host_native.dart",
           "lib/services/studio_database.dart",
           "lib/views/product_acceptance_screen.dart",
           "lib/views/project_workspace.dart",
           "lib/views/studio_home.dart",
           "pubspec.yaml",
           "test/browser_storage_test.dart",
+          "test/runtime_process_test.dart",
           "tools/product_acceptance.py",
-          "tools/test_product_acceptance.py"
+          "tools/qwen_server.py",
+          "tools/test_product_acceptance.py",
+          "tools/test_qwen_streaming_server.py"
         ],
         "absentRecordedFiles": [],
         "unrecordedRuntimeFiles": [
@@ -1734,14 +1767,18 @@
         "recordedFiles": 274,
         "changedRecordedFiles": [
           "lib/controllers/product_acceptance_controller.dart",
+          "lib/services/runtime_host_native.dart",
           "lib/services/studio_database.dart",
           "lib/views/product_acceptance_screen.dart",
           "lib/views/project_workspace.dart",
           "lib/views/studio_home.dart",
           "pubspec.yaml",
           "test/browser_storage_test.dart",
+          "test/runtime_process_test.dart",
           "tools/product_acceptance.py",
-          "tools/test_product_acceptance.py"
+          "tools/qwen_server.py",
+          "tools/test_product_acceptance.py",
+          "tools/test_qwen_streaming_server.py"
         ],
         "absentRecordedFiles": [],
         "unrecordedRuntimeFiles": [
@@ -1804,10 +1841,12 @@
         "manifestSha256": "d1129fab9a2fa06711eb8e26b0b4062653d54a1be78ed5bfe421201bf7b0d407",
         "recordedFiles": 271,
         "changedRecordedFiles": [
+          "lib/services/runtime_host_native.dart",
           "lib/views/project_workspace.dart",
           "lib/views/studio_home.dart",
           "test/ask_screen_test.dart",
-          "test/product_acceptance_asset_retry_test.dart"
+          "test/product_acceptance_asset_retry_test.dart",
+          "test/runtime_process_test.dart"
         ],
         "absentRecordedFiles": [],
         "unrecordedRuntimeFiles": []
@@ -1862,7 +1901,10 @@
         "status": "compared-recorded-files-only",
         "manifestSha256": "4c22d3ee4310cea3d0d6241aa89071216060d2f6c06894c9c3044822376c34ff",
         "recordedFiles": 271,
-        "changedRecordedFiles": [],
+        "changedRecordedFiles": [
+          "lib/services/runtime_host_native.dart",
+          "test/runtime_process_test.dart"
+        ],
         "absentRecordedFiles": [],
         "unrecordedRuntimeFiles": []
       }
@@ -1916,7 +1958,10 @@
         "status": "compared-recorded-files-only",
         "manifestSha256": "4c22d3ee4310cea3d0d6241aa89071216060d2f6c06894c9c3044822376c34ff",
         "recordedFiles": 271,
-        "changedRecordedFiles": [],
+        "changedRecordedFiles": [
+          "lib/services/runtime_host_native.dart",
+          "test/runtime_process_test.dart"
+        ],
         "absentRecordedFiles": [],
         "unrecordedRuntimeFiles": []
       }
@@ -2005,13 +2050,17 @@
         "recordedFiles": 301,
         "changedRecordedFiles": [
           "lib/controllers/product_acceptance_controller.dart",
+          "lib/services/runtime_host_native.dart",
           "lib/services/studio_database.dart",
           "lib/views/product_acceptance_screen.dart",
           "lib/views/project_workspace.dart",
           "lib/views/studio_home.dart",
           "pubspec.yaml",
+          "test/runtime_process_test.dart",
           "tools/product_acceptance.py",
-          "tools/test_product_acceptance.py"
+          "tools/qwen_server.py",
+          "tools/test_product_acceptance.py",
+          "tools/test_qwen_streaming_server.py"
         ],
         "absentRecordedFiles": [],
         "unrecordedRuntimeFiles": [
@@ -2128,13 +2177,17 @@
         "recordedFiles": 310,
         "changedRecordedFiles": [
           "lib/controllers/product_acceptance_controller.dart",
+          "lib/services/runtime_host_native.dart",
           "lib/services/studio_database.dart",
           "lib/views/product_acceptance_screen.dart",
           "lib/views/project_workspace.dart",
           "lib/views/studio_home.dart",
           "pubspec.yaml",
+          "test/runtime_process_test.dart",
           "tools/product_acceptance.py",
-          "tools/test_product_acceptance.py"
+          "tools/qwen_server.py",
+          "tools/test_product_acceptance.py",
+          "tools/test_qwen_streaming_server.py"
         ],
         "absentRecordedFiles": [],
         "unrecordedRuntimeFiles": [

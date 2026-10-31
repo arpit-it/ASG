@@ -68,6 +68,7 @@ flutter:
     - docs/development/product_acceptance_manifest.json
     - assets/legal/ASG_NOTICES.txt
     - tools/qwen_server.py
+    - tools/qwen_backends.py
     - tools/download_model.py
     - tools/generation_command.py
     - lib/models/app_definition.dart

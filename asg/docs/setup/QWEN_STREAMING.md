@@ -72,3 +72,27 @@ Opt-in real planning verification (run alone, with the existing local runtime):
 ```sh
 flutter test test/planning_conversation_test.dart --dart-define=ASG_REAL_INFERENCE=true --plain-name 'real local Qwen planning'
 ```
+
+
+## Backend capability discovery (F15 foundation)
+
+Run `python -B tools/qwen_server.py --capabilities` with the selected runtime
+Python executable. This prints versioned JSON without requiring `--model`,
+importing inference frameworks, loading weights, probing devices or downloading.
+Host support and missing dependencies are distinct from readiness: null device
+and model readiness mean unverified, even when all modules are installed. Memory
+adequacy is not measured. CPU/CUDA execution remains unsupported.
+
+Existing `--backend auto|mlx|torch` launch arguments remain available. Auto retains
+the legacy MLX-module preference and does not retry another backend after a load
+failure. Explicit incompatible hosts, missing dependencies and quantized Torch
+folders fail before weight loading. Torch currently means legacy Apple MPS with
+unquantized compatible weights; an MLX quantized folder cannot be reused there.
+Health identifies the loaded backend/device; discovery alone never reports ready.
+
+The managed app extracts both `qwen_server.py` and its sibling `qwen_backends.py`.
+Existing setup records/defaults are unchanged. The discovery CLI is a bounded
+foundation: app capability display, persisted explicit backend/device selection,
+consented fallback and CPU/CUDA delivery still require later F15 increments.
+Actual MLX generation/restart evidence is saved separately in
+[the bounded regression record](../development/acceptance/2026-10-31-backend-contract/mlx-smoke.json).

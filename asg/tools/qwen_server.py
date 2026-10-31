@@ -3,7 +3,6 @@
 
 """Local Qwen inference bridge: MLX (preferred) or legacy Torch, with SSE."""
 import argparse
-import importlib.util
 import json
 import os
 import queue
@@ -19,59 +18,8 @@ sys.path.insert(0, str(Path(__file__).parent / '.runtime-deps'))
 os.environ['HF_HUB_OFFLINE'] = '1'
 os.environ['TRANSFORMERS_OFFLINE'] = '1'
 
+from qwen_backends import GenerationCancelled, discover_capabilities, load_backend, select_backend
 
-class GenerationCancelled(Exception):
-    pass
-
-
-class Backend:
-    def __init__(self, folder, kind):
-        self.kind = kind
-        if kind == 'mlx':
-            from mlx_lm import load
-            self.model, self.tokenizer = load(str(folder))
-        else:
-            import torch
-            from transformers import AutoTokenizer, Qwen3_5ForConditionalGeneration
-            if not torch.backends.mps.is_available():
-                raise RuntimeError('Apple Metal unavailable')
-            self.tokenizer = AutoTokenizer.from_pretrained(folder, local_files_only=True, trust_remote_code=False)
-            self.model = Qwen3_5ForConditionalGeneration.from_pretrained(folder, local_files_only=True, trust_remote_code=False, dtype=torch.bfloat16, device_map='mps').eval()
-
-    def generate(self, messages, tokens, publish, cancelled, deadline):
-        def check(*_):
-            if cancelled.is_set():
-                raise GenerationCancelled()
-            if time.monotonic() > deadline:
-                raise TimeoutError('Generation deadline exceeded')
-        check()
-        prompt = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True, enable_thinking=False)
-        if len(self.tokenizer.encode(prompt)) > 4096:
-            raise ValueError('Input exceeds 4096-token limit')
-        if self.kind == 'mlx':
-            from mlx_lm import stream_generate
-            from mlx_lm.sample_utils import make_sampler
-            result = None
-            for result in stream_generate(self.model, self.tokenizer, prompt=prompt, max_tokens=tokens, sampler=make_sampler(temp=0), prefill_step_size=256, prompt_progress_callback=check):
-                check()
-                if result.text:
-                    publish('token', result.text)
-            return {'finish_reason': result.finish_reason if result else 'stop', 'tokens_per_second': result.generation_tps if result else 0, 'peak_memory_gb': result.peak_memory if result else 0}
-        import torch
-        from transformers import TextStreamer, StoppingCriteria, StoppingCriteriaList
-        class TokenStreamer(TextStreamer):
-            def on_finalized_text(self, text, stream_end=False):
-                if text:
-                    publish('token', text)
-        class Stop(StoppingCriteria):
-            def __call__(self, *_args, **_kwargs):
-                return cancelled.is_set() or time.monotonic() > deadline
-        inputs = self.tokenizer(prompt, return_tensors='pt').to('mps')
-        with torch.inference_mode():
-            output = self.model.generate(**inputs, max_new_tokens=tokens, do_sample=False, streamer=TokenStreamer(self.tokenizer, skip_prompt=True, skip_special_tokens=True), stopping_criteria=StoppingCriteriaList([Stop()]))
-        check()
-        reason = 'length' if output.shape[-1] - inputs.input_ids.shape[-1] >= tokens else 'stop'
-        return {'finish_reason': reason}
 
 
 def create_handler(backend, executor, model_id, model_path):
@@ -120,7 +68,7 @@ def create_handler(backend, executor, model_id, model_path):
 
         def do_GET(self):
             if self.path == '/health':
-                self.respond(200, {'status': 'ready', 'phase': phase['value'], 'model': model_id, 'model_path': str(model_path), 'device': 'metal', 'backend': backend.kind, 'streaming': True})
+                self.respond(200, {'status': 'ready', 'phase': phase['value'], 'model': model_id, 'model_path': str(model_path), 'device': getattr(backend, 'device', 'unknown'), 'backend': backend.kind, 'streaming': True})
             elif self.path == '/v1/models':
                 self.respond(200, {'data': [{'id': model_id, 'object': 'model'}]})
             else:
@@ -241,12 +189,18 @@ def create_handler(backend, executor, model_id, model_path):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--model', type=Path, required=True)
+    parser.add_argument('--model', type=Path)
+    parser.add_argument('--capabilities', action='store_true', help='Report dependencies without loading weights or probing devices')
     parser.add_argument('--port', type=int, default=8765)
     parser.add_argument('--model-id', default='Qwen3.5-9B')
     parser.add_argument('--backend', choices=['auto', 'mlx', 'torch'], default='auto')
     parser.add_argument('--parent-pid', type=int)
     args = parser.parse_args()
+    if args.capabilities:
+        print(json.dumps(discover_capabilities(), sort_keys=True))
+        return
+    if args.model is None:
+        parser.error('--model is required unless --capabilities is used')
     folder = args.model.resolve(strict=True)
     config = json.loads((folder / 'config.json').read_text())
     if 'Qwen3_5ForConditionalGeneration' not in config.get('architectures', []):
@@ -265,10 +219,10 @@ def main():
                     os._exit(0)
                 time.sleep(2)
         Thread(target=watch_parent, daemon=True).start()
-    kind = ('mlx' if importlib.util.find_spec('mlx_lm') else 'torch') if args.backend == 'auto' else args.backend
+    kind = select_backend(args.backend, config)
     executor = ThreadPoolExecutor(max_workers=1, thread_name_prefix='qwen-inference')
     print(f'Loading {args.model_id} using {kind}. Local weights only.', flush=True)
-    backend = executor.submit(Backend, folder, kind).result()
+    backend = executor.submit(load_backend, folder, kind).result()
     server = ThreadingHTTPServer(('127.0.0.1', args.port), create_handler(backend, executor, args.model_id, folder))
     server.daemon_threads = True
     print(f'Ready at http://127.0.0.1:{args.port}/v1 ({kind}, streaming)', flush=True)

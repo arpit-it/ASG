@@ -329,6 +329,8 @@ else:
     // Reserve/check the fixed managed port before loading any large weights.
     final socket = await ServerSocket.bind(InternetAddress.loopbackIPv4, port);
     await socket.close();
+    // The inference bridge imports this sibling module after asset extraction.
+    await _script('qwen_backends.py');
     final script = await _script('qwen_server.py');
     final process = await Process.start(setup.python, [
       '-B',
