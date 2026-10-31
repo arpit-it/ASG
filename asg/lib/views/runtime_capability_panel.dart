@@ -51,6 +51,14 @@ class RuntimeCapabilityPanel extends StatelessWidget {
             'Memory changes as other apps run; inspect again to refresh. '
             'Unknown values require a supported native host and readable OS probes.',
           ),
+          Text(
+            'Selected checkpoint weights on disk: '
+            '${_size(selected?.supported == true ? selected?.weightBytes : null, positive: true)}.',
+          ),
+          const Text(
+            'File sizes only; runtime peak memory also needs cache, activations and overhead. '
+            'This is not a model-fit estimate or inference-readiness verdict. Rescan after changing files.',
+          ),
           for (final item in current.backends) ...[
             const SizedBox(height: 8),
             Text('${item.backend.label}: ${item.availability}'),

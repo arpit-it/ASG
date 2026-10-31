@@ -73,12 +73,16 @@ class ModelCandidate {
     required this.supported,
     required this.detail,
     this.quantized,
+    this.weightBytes,
   });
   final String path, name, detail;
   final bool supported;
 
   /// Null for checkpoints that have not had their metadata inspected.
   final bool? quantized;
+
+  /// Distinct validated weight files on disk, not runtime memory or model fit.
+  final int? weightBytes;
 }
 
 class RuntimeHealth {
