@@ -117,6 +117,23 @@ class InventoryTest(unittest.TestCase):
         self.assertEqual(read_json(ROOT / 'docs/development/acceptance_inventory.json'),
                          inventory(ROOT, paths, NOW))
 
+    def test_empty_corpus_still_validates_manifest_before_output_replacement(self):
+        with tempfile.TemporaryDirectory() as folder:
+            app = Path(folder) / 'app'
+            spec_path = app / 'docs/development/product_acceptance_manifest.json'
+            spec_path.parent.mkdir(parents=True)
+            (app / 'lib').mkdir()
+            output = Path(folder) / 'output.json'
+            for value in (dict(read_json(ROOT / 'docs/development/product_acceptance_manifest.json'),
+                               unexpected='invalid'), {'schemaVersion': 1, 'scenarios': None}):
+                spec_path.write_text(json.dumps(value))
+                output.write_text('retained')
+                result = subprocess.run([sys.executable, '-B', str(ROOT / 'tools/acceptance_inventory.py'),
+                                         '--app', str(app), '--output', str(output)], capture_output=True)
+                self.assertEqual(result.returncode, 2)
+                self.assertEqual(output.read_text(), 'retained')
+                self.assertNotIn(str(app).encode(), result.stderr)
+
 
 if __name__ == '__main__':
     unittest.main()

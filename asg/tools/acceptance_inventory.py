@@ -9,7 +9,7 @@ from pathlib import Path, PurePosixPath
 import tempfile
 from datetime import datetime, timezone
 
-from product_acceptance import read_json, report, require, sha, digest, shape, utc, TARGETS
+from product_acceptance import read_json, report, require, sha, digest, shape, utc, TARGETS, manifest
 
 CLAIM = 'separate-historical-observations-only'
 
@@ -107,7 +107,7 @@ def inventory(app, directories, now):
     app = Path(app).resolve()
     require(type(directories) is list and len(directories) <= 128
             and len(set(directories)) == len(directories), 'Invalid references')
-    spec = read_json(app / 'docs/development/product_acceptance_manifest.json')
+    spec = manifest(read_json(app / 'docs/development/product_acceptance_manifest.json'))
     cells = {}
     entries = []
     for relative in sorted(directories):

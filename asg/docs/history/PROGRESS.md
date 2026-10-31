@@ -4884,3 +4884,12 @@ corrected command/tests passed. No Flutter runtime source, app/model/native laun
 or stableapp/data changes. RequiredCI/final independent review/verifiedmerge pending;
 fullF17 remains In progress. Prior five primary IDE/docs edits retained unchanged;
 priorPR325 merge bookkeeping included. No newissue/FID/subsequenttask.
+
+
+Review correction 2026-10-31T09:08:41.252980+00:00: independent PR326
+review5722108496 found malformed manifest accepted when report corpus empty. New
+CLI regression reproduced red(exit0/overwrittenoutput), then unconditional manifest
+validation fixed it. Final9inventory/32collector tests pass; checked-in inventory
+regenerates byte-identically. Invalid unknownfields/malformed scenarios now exit2
+and retainoutput without private-pathdiagnostics. Fresh exact-final independent
+review/newrequiredCI pending; no merge/fullF17claim.
