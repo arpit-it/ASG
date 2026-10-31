@@ -1,0 +1,31 @@
+{
+  "runAt": "2026-10-31T08:47:26.575002+00:00",
+  "issue": 255,
+  "sourceRevision": "f0fdbd00b63b51ad60ab6223cc65001cce4fe1ba",
+  "finderToolMs": 360,
+  "isolatedLaunchMs": 1230,
+  "axMs": 58,
+  "sourceHashesVerified": 203,
+  "bundleHashesVerified": 44,
+  "results": [
+    "complete 1748-character historical fixture parsed after deferred text delivery",
+    "historical warning, 29 omitted configured checks, six missing cells",
+    "invalid replacement retained report and comparison",
+    "Clear removed report and input",
+    "home/reopen showed empty viewer",
+    "isolated bundled asset temporarily renamed; new viewer showed comparison unavailable",
+    "report parsed while comparison unavailable",
+    "asset restored; Retry recovered comparison and retained report",
+    "matching-digest fixture displayed explicit source/model/device/support limitation",
+    "native app menu Quit followed by independent process inventory: viewer and model processes absent"
+  ],
+  "limits": [
+    "synthetic zero identities and probe cells are UI input fixtures, not collector evidence",
+    "no collector pass or full F17 completion",
+    "no live model inference",
+    "no production runtime source changed",
+    "paste AX value did not establish rendered/controller input",
+    "typeText returned before all native text events delivered; verify complete field before Inspect"
+  ],
+  "nextAction": "independent exact-final review and required CI before merge"
+}

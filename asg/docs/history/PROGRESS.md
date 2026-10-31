@@ -4810,3 +4810,34 @@ Branch `255-viewer-interaction` from verified main1fc912e6. Independent affected
 Actual corrected releaseweb interaction passed503→restore→Retry200 without reload, historical fixture/six visible omissions, invalid replacement retention, historical native fixture and matching paired report, Clear and home/reopen empty.169runtime source/45build hashes and two corrected screenshots retained at development/acceptance/2026-10-31-web-viewer. Original reports unchanged; no new matrix/support/model/native launch claim. FullF17 remains In progress.
 
 Final analyzer/formatter261zerochanges,16focusedFlutter, full891/eightopt-inskips,32Python, releaseweb/Wasm dry run and macOSdebug build passed. Initial unused-import analyzer finding fixed and checks rerun. Prior PR323 merge bookkeeping retained; primary IDE/docs edits untouched. Awaiting independent exact-final review, requiredCI and verified protectedmerge; not Done yet. No newissue/FID.
+
+
+### Actual viewer retry recovery verified merged — #255 / PR #324 — 2026-10-31T03:44:00.469453+00:00
+
+Bounded increment Done; full F17 remains In progress. Branch `255-viewer-interaction`; tested local40f0e9d02a5c482bdec3b91b2f2a00114c2d469f/plugin finaldb36945d18e1b459b3f45a29c7e99bd4e784e567 share verifiedtree97f1d7e098831bd70485420fa035d2c095836a28; all12publishedblobs matched. Independent exact-final approval5720960664/finalgate5720988042 found no blockers, reproduced cache:true red(expected2reads/actual1), restored finalbytes and passed16Flutter/32Python.169runtime/45build/report/screenshot hashes checked. Reviewer protected-plugin squashmerged [PR #324](https://github.com/arpit-it/ASG/pull/324) as `f0fdbd00b63b51ad60ab6223cc65001cce4fe1ba` at2026-10-31T03:43:12Z; parent verified exacthead/tree/signedmerge/currentmain and issue255closedcompleted.
+
+RequiredCI41165147786 passed: Flutter124430983209 formatter/analyzer,888tests/eightopt-inskips on Linux,11actualChrome, releaseweb/Wasm, realgenerated resolve/analyze/test/build+renderedinteraction/serve; Python124430982847 suites32/2/6/14(skip1)/4(skip2). Local891/eightopt-inskips,16focused,32Python, formatter261/analyzer/web/Wasm/macOSdebug passed. Skips are not inference. Actual corrected web503→restore→Retry200 retainedreport, sixomissions/historical/matchingreport/invalidretention/Clear/reopen passed. Originalreports unchanged; no newmatrix/native/model/fullF17/support claim. Ownedtab/server stopped, stableapp/data untouched. Bothrequestedlabels applied; no newissue/FID.
+
+Signedmerge rawobjectSHA verified before offlineimport. Primarymain/origin-main synchronized0/0, indexempty/diffcheckclean; prior twoIDE edits byte-identical and all prior docs additions included in reviewedtree. Backup `/private/tmp/asg-324-primary-before`; guarded sync `/private/tmp/asg-324-sync.py`. Finalmerge bookkeeping retained locally for next related reviewedincrement. No remoteCLI fallback.15minute cadence/notificationpreferences unchanged. Next run reconcile PR324 then continue affected actual F17 workflows; do not rerun unchanged core workflows solely for metadata, union historical identities or mark umbrellaDone. No later task selected and no useractionrequired.
+
+
+### Native viewer follow-up incomplete — #255 — 2026-10-31T08:22:10.766938+00:00
+
+Reopened existing issue255 for actual affected native viewer interaction after verified PR324 mergef0fdbd00. Isolated branch255-native-viewer at /private/tmp/asg-255-native-viewer; unique-bundle debugbuild passed,15focusedFlutter/32Python passed. Finder95ms; first getApp wall15378554ms included substantial prelaunch waiting (fresh process age31s). One reset/reconnect toolwall353ms, AX53ms, actual emptyhome/viewer opened. Native AX paste value did not establish rendered input/parsed report; activated short keyboard input worked. Long keyboard input20s timeout/reset, following reconnect20s timeout. Private sample shows Flutter/NS keyboard-event processing and systemlog TextInputUI cursor activity; no lowlevel rootcause established. Sample retained, owned PID61839 SIGTERM cleanup; original app/data preserved.
+
+No native report comparison/retention/Clear/reopen/asset-retry/Quit acceptance, collector pass, model or fullF17 claim. No PR/review/CI/merge for incomplete work; issue staysopen. Exactsource/bundle/override/sanitized observation retained in isolated evidence directory. Next action: compact complete six-target report input after active-window focus, inspect rendered result; avoid full-report keystroke flood/repeated launches. Source audit normalized repository/Flutter-relative manifests: only viewer controller/screen changed and manifest model/service added versus retained candidate/repair snapshots; no unrelated core reruns for metadata. Primary fiveIDE/docs edits retained.15minute cadence/notificationpreference unchanged.
+
+
+### Native viewer interaction recovered — #255 — 2026-10-31T08:47:26.575002+00:00
+
+Fresh isolated launch1230ms/AX58ms. Native typeText returns before all events
+are delivered; verify complete field before Inspect. Actual six-target synthetic
+probe parsed: historical warning/29 omissions, invalid replacement retention,
+Clear and empty home/reopen passed. Missing isolated bundled asset caused visible
+comparison-unavailable; restore plus Retry recovered with report retained. Matching
+digest explicitly disclaimed current source/model/device/support. Native menu Quit
+followed by independent process absence. All203source/44bundle hashes reverified;
+asset restored exactly. Synthetic zero identities are UI fixtures, not acceptance
+collector evidence. No model, runtime change, stable-app/data modification, new
+issue/FID or fullF17 completion. Bounded native follow-up Awaiting merge; final PR
+records tested revision, independent review, CI and merge. Prior primary edits kept.

@@ -1,0 +1,35 @@
+{
+  "recordedAt": "2026-10-31T08:22:10.766938+00:00",
+  "sourceRevision": "f0fdbd00b63b51ad60ab6223cc65001cce4fe1ba",
+  "status": "incomplete",
+  "bundleIdentifier": "com.arsinha.asg.acceptance255native20261031",
+  "build": "macOS debug exit0; explicit saved AppInfo override",
+  "tests": {
+    "focusedFlutter": 15,
+    "pythonCollector": 32
+  },
+  "durationsMs": {
+    "finderBaseline": 95,
+    "firstGetAppWall": 15378554,
+    "resetReconnectToolWall": 353,
+    "freshAX": 53,
+    "longKeyboardTimeout": 20000,
+    "followingReconnectTimeout": 20000
+  },
+  "observations": [
+    "First native window shell only; independent process age31seconds after return excludes interpreting long wall time as app startup.",
+    "One reset/reconnect showed full empty home. Actual native acceptance screen opened; saved-observation warning and no report loaded visible.",
+    "AX paste value differed from rendered field; no parsed report result established. Title-bar activation and actual short keyboard input rendered.",
+    "Long native keyboard report input hit timeout and reset; subsequent reconnect also timed out.",
+    "Bounded sample shows main-thread runloop and FlutterTextInputPlugin/NS keyboard event processing; TextInputUI cursor activity. No root cause proved.",
+    "Owned disposable process received SIGTERM after sample; original app/storage untouched."
+  ],
+  "limits": [
+    "No native historical/matching comparison, invalid replacement retention, Clear/reopen, asset retry, native Quit, model or fullF17 acceptance claimed.",
+    "No collector pass or historical report rewritten."
+  ],
+  "privateDiagnosticsSha256": {
+    "asg-255-native-viewer-system.log": "5d7448fe52177c7a37b4af3f063c022d00d5b0d5455544018a644ce6a92a1203",
+    "asg-255-native-viewer-sample.txt": "ece5b8a4028145a26d4d253b3d8e82be4265315a454aa61253f56aa0d272a003"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "runAt": "2026-10-31T08:31:23.322793+00:00",
+  "issue": 255,
+  "launchMs": 1421,
+  "axMs": 100,
+  "reconnectToolMs": 449,
+  "compactTypeMs": 6948,
+  "chunkedInputTimeoutMs": 20000,
+  "acceptance": "incomplete",
+  "sample": "private local process sample retained; no deadlock established",
+  "nextAction": "capture isolated app stdout and compare actual native field bytes before Inspect"
+}
