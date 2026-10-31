@@ -78,7 +78,14 @@ def manifest(value):
         require(type(checks) is list and 0 < len(checks) <= 32, 'Invalid checks')
         check_ids = set()
         for check in checks:
-            shape(check, ('id', 'kind', 'testReferences'))
+            require(type(check) is dict, 'Invalid check')
+            fields = ('id', 'kind', 'testReferences')
+            shape(check, (*fields, 'targets') if 'targets' in check else fields)
+            if 'targets' in check:
+                scoped = check['targets']
+                require(type(scoped) is list and 0 < len(scoped) <= len(targets)
+                        and all(type(x) is str and x in targets for x in scoped)
+                        and len(set(scoped)) == len(scoped), 'Invalid check targets')
             identifier(check['id'])
             require(check['id'] not in check_ids, 'Duplicate check')
             check_ids.add(check['id'])
@@ -125,7 +132,9 @@ def report(spec, current, saved, now):
         require(scenario is not None, 'Unknown scenario')
         require(record['checkId'] in {c['id'] for c in scenario['checks']},
                 'Unknown check')
-        require(record['target'] in scenario['targets'], 'Unconfigured target')
+        check = next(c for c in scenario['checks'] if c['id'] == record['checkId'])
+        require(record['target'] in check.get('targets', scenario['targets']),
+                'Unconfigured target')
         require(record['status'] in STATUSES, 'Invalid status')
         require(utc(record['observedAt']) <= utc(now), 'Future evidence')
         identity(record['identity'])
@@ -143,7 +152,8 @@ def report(spec, current, saved, now):
         for check in scenario['checks']:
             for target in TARGETS:
                 record = index.get((scenario['id'], check['id'], target))
-                status = ('missing' if target in scenario['targets'] else 'unavailable')
+                status = ('missing' if target in check.get('targets', scenario['targets'])
+                          else 'unavailable')
                 if record:
                     status = record['status']
                     if record['identity'] != current or record['manifestSha256'] != manifest_sha:

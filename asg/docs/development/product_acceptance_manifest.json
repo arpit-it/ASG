@@ -66,6 +66,9 @@
           "kind": "liveInference",
           "testReferences": [
             "test/candidate_real_test.dart"
+          ],
+          "targets": [
+            "macos"
           ]
         },
         {
@@ -73,12 +76,18 @@
           "kind": "generatedOutput",
           "testReferences": [
             "test/candidate_real_test.dart"
+          ],
+          "targets": [
+            "macos"
           ]
         },
         {
           "id": "served-interaction",
           "kind": "manual",
-          "testReferences": []
+          "testReferences": [],
+          "targets": [
+            "macos"
+          ]
         }
       ]
     },
@@ -97,6 +106,9 @@
           "kind": "liveInference",
           "testReferences": [
             "test/automatic_repair_real_test.dart"
+          ],
+          "targets": [
+            "macos"
           ]
         },
         {
@@ -104,12 +116,18 @@
           "kind": "generatedOutput",
           "testReferences": [
             "test/automatic_repair_real_test.dart"
+          ],
+          "targets": [
+            "macos"
           ]
         },
         {
           "id": "repair-interaction",
           "kind": "manual",
-          "testReferences": []
+          "testReferences": [],
+          "targets": [
+            "macos"
+          ]
         }
       ]
     },
@@ -127,17 +145,26 @@
         {
           "id": "stop-and-timeout",
           "kind": "manual",
-          "testReferences": []
+          "testReferences": [],
+          "targets": [
+            "macos"
+          ]
         },
         {
           "id": "stop-interaction",
           "kind": "manual",
-          "testReferences": []
+          "testReferences": [],
+          "targets": [
+            "macos"
+          ]
         },
         {
           "id": "deadline-interaction",
           "kind": "manual",
-          "testReferences": []
+          "testReferences": [],
+          "targets": [
+            "macos"
+          ]
         }
       ]
     },
@@ -162,7 +189,10 @@
         {
           "id": "rollback-interaction",
           "kind": "manual",
-          "testReferences": []
+          "testReferences": [],
+          "targets": [
+            "macos"
+          ]
         }
       ]
     },

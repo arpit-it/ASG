@@ -52,9 +52,58 @@ class AcceptanceTest(unittest.TestCase):
         result = self.evaluate()
         self.assertEqual(result['claim'], 'saved-evidence-only')
         for cell in result['cells']:
+            scenario = next(s for s in SPEC['scenarios'] if s['id'] == cell['scenarioId'])
+            check = next(c for c in scenario['checks'] if c['id'] == cell['checkId'])
             self.assertEqual(cell['status'], 'missing' if cell['target'] in
-                             ('macos', 'web') else 'unavailable')
+                             check.get('targets', scenario['targets']) else 'unavailable')
             self.assertFalse(cell['currentPass'])
+
+    def test_native_only_web_cells_are_unavailable_and_refuse_all_saved_statuses(self):
+        cells = [c for c in self.evaluate()['cells'] if c['target'] == 'web']
+        unavailable = [c for c in cells if c['status'] == 'unavailable']
+        self.assertEqual(len(unavailable), 10)
+        self.assertEqual(len(cells) - len(unavailable), 10)
+        for cell in unavailable:
+            for status in ('passed', 'failed', 'skipped', 'unavailable'):
+                with self.subTest(check=cell['checkId'], status=status):
+                    observation = dict(record(), scenarioId=cell['scenarioId'],
+                                       checkId=cell['checkId'], target='web', status=status)
+                    with self.assertRaisesRegex(ValueError, 'Unconfigured target'):
+                        self.evaluate(observation)
+        native = [c for c in self.evaluate()['cells'] if c['target'] == 'macos']
+        self.assertEqual(len(native), 20)
+        self.assertTrue(all(c['status'] == 'missing' for c in native))
+
+    def test_omitted_check_targets_preserve_legacy_manifest_behavior(self):
+        legacy = copy.deepcopy(SPEC)
+        for scenario in legacy['scenarios']:
+            for check in scenario['checks']:
+                check.pop('targets', None)
+        evidence = dict(record(), scenarioId='reviewed-candidate',
+                        checkId='model-proposal', target='web', manifestSha256=sha(legacy))
+        result = report(legacy, identity(), saved(evidence), NOW)
+        self.assertEqual(sum(c['currentPass'] for c in result['cells']), 1)
+
+    def test_check_targets_reject_invalid_scope_and_do_not_mutate_inputs(self):
+        for targets in ([], ['web', 'web'], ['ios'], ['unknown'], 'macos', None, [1], [[]]):
+            spec = copy.deepcopy(SPEC)
+            spec['scenarios'][0]['checks'][0]['targets'] = targets
+            before = copy.deepcopy(spec)
+            with self.subTest(targets=targets), self.assertRaises(ValueError):
+                report(spec, identity(), saved(), NOW)
+            self.assertEqual(spec, before)
+
+    def test_old_manifest_evidence_is_stale_for_still_eligible_targets(self):
+        legacy = copy.deepcopy(SPEC)
+        for scenario in legacy['scenarios']:
+            for check in scenario['checks']:
+                check.pop('targets', None)
+        observation = dict(record(), scenarioId='reviewed-candidate',
+                           checkId='model-proposal', manifestSha256=sha(legacy))
+        result = self.evaluate(observation)
+        cell = next(c for c in result['cells'] if c['savedEvidence'])
+        self.assertEqual(cell['status'], 'stale')
+        self.assertFalse(cell['currentPass'])
 
     def test_fixture_pass_does_not_promote_other_kinds_targets_or_scenarios(self):
         result = self.evaluate(record())
@@ -110,7 +159,7 @@ class AcceptanceTest(unittest.TestCase):
         self.assertFalse(any(c['currentPass'] for c in cells))
 
     def test_repair_inference_leaves_generated_and_manual_checks_missing(self):
-        for target in ('macos', 'web'):
+        for target in ('macos',):
             with self.subTest(target=target):
                 inference = dict(record(), scenarioId='bounded-repair',
                                  checkId='real-repair-rerun', target=target)
@@ -163,7 +212,7 @@ class AcceptanceTest(unittest.TestCase):
 
     def test_stop_deadline_and_combined_observations_do_not_imply_each_other(self):
         check_ids = ('stop-and-timeout', 'stop-interaction', 'deadline-interaction')
-        for target in ('macos', 'web'):
+        for target in ('macos',):
             for check_id in check_ids:
                 with self.subTest(target=target, check_id=check_id):
                     observation = dict(record(), scenarioId='stop-preservation',
@@ -310,6 +359,13 @@ class AcceptanceTest(unittest.TestCase):
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertEqual(read_json(output)['cells'][0]['status'], 'passed')
             before = output.read_bytes()
+            unsupported = dict(record(), scenarioId='reviewed-candidate',
+                               checkId='model-proposal', target='web')
+            paths[2].write_text(json.dumps(saved(unsupported)))
+            result = subprocess.run(command, capture_output=True, text=True)
+            self.assertEqual(result.returncode, 2)
+            self.assertNotIn(directory, result.stderr)
+            self.assertEqual(output.read_bytes(), before)
             paths[2].write_text('{"PRIVATE":')
             result = subprocess.run(command, capture_output=True, text=True)
             self.assertEqual(result.returncode, 2)
@@ -409,7 +465,7 @@ class ProvenanceImportTest(unittest.TestCase):
     def test_rejects_unrelated_checks_invalid_status_time_and_duplicates(self):
         from import_acceptance_provenance import import_observation
         for options in (dict(check_id='served-interaction'), dict(check_id=[]),
-                        dict(target='ios'), dict(status='verified'), dict(status=None),
+                        dict(target='ios'), dict(target='web'), dict(status='verified'), dict(status=None),
                         dict(observed_at='2027-01-01T00:00:00Z'),
                         dict(observed_at='2026-02-30T00:00:00Z')):
             with self.assertRaises(ValueError):
