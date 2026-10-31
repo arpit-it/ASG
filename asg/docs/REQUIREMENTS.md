@@ -49,7 +49,8 @@ Update this document with task selection and delivery evidence, alongside [agent
   - Accept when failed, missing and stale evidence cannot yield a verified requirement, and reports link to exact revisions and test results.
   - Assessment clarification (28 October 2026): extend this existing task with acceptance-criterion-level check mappings and explicit automated, manual and advisory evidence types. A green generic build or manually completed task must never verify unrelated criteria. Bind each result to exact requirement content and source/input revision; edits invalidate affected results. Show unmet criteria and evidence links in the workspace and copied report, and retain the current honest “Acceptance criteria: not verified” state until criterion-specific checks actually establish the supported claim. Validate changed criteria/source, missing checks, failed checks and reopen behavior. This scope is delivered as the explicitly bounded authored-check contract below; free-form prose and live-file freshness remain outside its verdict.
 - [ ] F17 Reproducible product acceptance and support matrix — In progress; depends on F10
-  - Active bounded viewer comparison: reused [issue #255](https://github.com/arpit-it/ASG/issues/255), `255-manifest-visibility`. Compare reports with this app’s bundled canonical manifest; surface historical digest mismatch and omitted/mismatched configured checks without changing saved statuses or claiming live source/model freshness. Actual audit: 29 configured cells have historical observations, but 20 of 21 reports use older manifests; only the combined Stop/deadline report matches the current manifest. Full F17 remains In progress; no historical union/support claim. Independent exact-final review, required CI and verified merge gate this increment.
+  - Active actual viewer recovery: reused [issue #255](https://github.com/arpit-it/ASG/issues/255), `255-viewer-interaction`. Actual web503→Retry revealed cached failed asset Future; fixed with real caching-bundle regression and actual200 recovery/report retention. Bounded increment Awaiting review/CI/merge; fullF17 In progress.
+  - Delivered bounded viewer comparison: reused [issue #255](https://github.com/arpit-it/ASG/issues/255), `255-manifest-visibility`. Compare reports with this app’s bundled canonical manifest; surface historical digest mismatch and omitted/mismatched configured checks without changing saved statuses or claiming live source/model freshness. Actual audit: 29 configured cells have historical observations, but 20 of 21 reports use older manifests; only the combined Stop/deadline report matches the current manifest. Full F17 remains In progress; no historical union/support claim. Delivered through [PR #323](https://github.com/arpit-it/ASG/pull/323), independent approval verdict5720889577, requiredCI41163915696 passed; verified protectedmerge1fc912e6b0b7f55bc1bdc0cc7194d6c5b34899e2 at2026-10-31T03:25:19Z, issue255closed.
   - Delivered paired native Stop/deadline increment: [issue #283](https://github.com/arpit-it/ASG/issues/283), `283-paired-native-stop-deadline`, [PR #322](https://github.com/arpit-it/ASG/pull/322). Final `f38454fa` independently approved5720700789/finalgate5720723471; required CI41161996540 passed; verified merge `f31065dcdd1b28a715d1b2dcfb8af59ad14daa82` at2026-10-31T02:59:33Z, issue closed. Actual same-candidate Stop/deadline, retained working output/served interaction/reopen; no model inference or full F17 completion.
   - Delivered browser archive fixture scope: [issue #293](https://github.com/arpit-it/ASG/issues/293), `293-archive-browser-scope`, [PR #321](https://github.com/arpit-it/ASG/pull/321). Final `1988d6e7` independently approved (5720594754/final gate 5720611475), required CI 41160331837 passed, verified merge `5af325731805dbe21f20d3265203b65df94aa0d5` at 2026-10-31T02:36:30Z; issue closed. Browser-only fixture unavailable on native; full F17 In progress.
   - Delivered platform-scope correction: [issue #293](https://github.com/arpit-it/ASG/issues/293), `293-check-targets`, [PR #320](https://github.com/arpit-it/ASG/pull/320). Finalba98126f independently approved5720496657/finalgate5720514453; requiredCI41158127598 passed; protectedmerge539324ef0ea4fea317047ff02029dd6bed175d08 at2026-10-31T02:08:04Z verified, issue293closed. Ten unsupported browser execution cells now unavailable; fullF17 In progress.
@@ -5578,3 +5579,49 @@ No new manual/model/product-support evidence or fullF17 completion. RequiredCI,
 exact-final independent review and verified protectedmerge remain pending. Related
 primary prior merge bookkeeping retained; two unrelated IDE edits untouched. PR
 will carry authoritative tested-tree, review, CI and merge evidence. No newissue/FID.
+
+
+### Bundled acceptance manifest viewer verified merged — #255 / PR #323 — 2026-10-31T03:26:13.364548+00:00
+
+Bounded increment Done; full F17 remains In progress. Branch `255-manifest-visibility`;
+tested local `d7ce199fa5248db2c92e35edb058e8f38b0055bf` and plugin-published final
+`3d035327a5dc59498b57883e8cc080cc0d32a58a` share verified tree
+`1546df62df1ca339f2a44e8602557a70747e7aac`; all10remote blobs/patches matched.
+Independent final approval verdict review5720889577 found no blockers, independently
+passed15focusedFlutter/32Python and checked acceptance/actualCI. Formal APPROVE is
+unavailable for the shared owner account; independent approved verdict is in the
+COMMENT review, followed by normal protected merge. RequiredCI41163915696 succeeded:
+Flutterjob124427249049 formatter260/zerochanges, analyzer, fulltests, actualChrome,
+releaseweb/Wasm and actual independent generated resolve/analyze/test/build plus
+rendered interaction/serve; Pythonjob124427249171 all runtime suites passed. Local
+full888/eightopt-inskips preceded two added test-only regressions; final15focused
+includes all8new tests. Local web/macOSdebug builds passed. Skips are not inference.
+
+Reviewer protected-plugin squashmerged [PR #323](https://github.com/arpit-it/ASG/pull/323)
+as `1fc912e6b0b7f55bc1bdc0cc7194d6c5b34899e2` at2026-10-31T03:25:19Z; parent verified
+mergedPR/exacthead/tree/currentmain/signedcommit and issue255closedcompleted. Viewer
+compares bundled canonical manifest only; historical statuses/identities stay
+unchanged, omitted/different checks visible, loadfailure/retry/disposal safe. Audit
+29historical cells/20of21oldmanifest reports is not current support/union evidence.
+No scenario rerun for metadata, app/model launch, native stall or fullF17 claim.
+Fresh authorized executable-name inventory found no ASG/qwen_server/mlx_bridge
+matches. Stableapp/data preserved; bothrequestedlabels applied, no newissue/FID.
+
+Signedmerge rawobjectSHA verified before local import. Primary main/origin-main
+synchronized0/0, indexempty/diffcheckclean. Two prior IDE edits byte-identical; all
+prior documentation additions retained in reviewedtree. Backup
+`/private/tmp/asg-323-primary-before`; guarded sync `/private/tmp/asg-323-sync.py`.
+Final merge bookkeeping retained locally for next related reviewed increment;
+no remoteCLI fallback.15minute cadence/notificationpreferences unchanged. No later
+task selected. Next run reconcile PR323 then inspect remaining F17 real baseline
+freshness/affected workflows; never union incompatible historical identities,
+relabel reports or rerun unchanged workflows solely for documentation identity.
+
+
+### F17 actual viewer retry recovery — reused #255 — 2026-10-31
+
+Branch `255-viewer-interaction` from verified main1fc912e6. Independent affected-source audit found all29 configured cells historically observed and unchanged core generation/Plan/repair/Stop code; no metadata-only reruns justified. Actual reviewed web viewer revealed cached failed asset Future: after controlled503 and restored server, Retry never issued a GET. Service disables redundant string caching; real CachingAssetBundle regression proves second read/recovery with prior report retained.
+
+Actual corrected releaseweb interaction passed503→restore→Retry200 without reload, historical fixture/six visible omissions, invalid replacement retention, historical native fixture and matching paired report, Clear and home/reopen empty.169runtime source/45build hashes and two corrected screenshots retained at development/acceptance/2026-10-31-web-viewer. Original reports unchanged; no new matrix/support/model/native launch claim. FullF17 remains In progress.
+
+Final analyzer/formatter261zerochanges,16focusedFlutter, full891/eightopt-inskips,32Python, releaseweb/Wasm dry run and macOSdebug build passed. Initial unused-import analyzer finding fixed and checks rerun. Prior PR323 merge bookkeeping retained; primary IDE/docs edits untouched. Awaiting independent exact-final review, requiredCI and verified protectedmerge; not Done yet. No newissue/FID.

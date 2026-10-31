@@ -4764,3 +4764,49 @@ No new manual/model/product-support evidence or fullF17 completion. RequiredCI,
 exact-final independent review and verified protectedmerge remain pending. Related
 primary prior merge bookkeeping retained; two unrelated IDE edits untouched. PR
 will carry authoritative tested-tree, review, CI and merge evidence. No newissue/FID.
+
+
+### Bundled acceptance manifest viewer verified merged — #255 / PR #323 — 2026-10-31T03:26:13.364548+00:00
+
+Bounded increment Done; full F17 remains In progress. Branch `255-manifest-visibility`;
+tested local `d7ce199fa5248db2c92e35edb058e8f38b0055bf` and plugin-published final
+`3d035327a5dc59498b57883e8cc080cc0d32a58a` share verified tree
+`1546df62df1ca339f2a44e8602557a70747e7aac`; all10remote blobs/patches matched.
+Independent final approval verdict review5720889577 found no blockers, independently
+passed15focusedFlutter/32Python and checked acceptance/actualCI. Formal APPROVE is
+unavailable for the shared owner account; independent approved verdict is in the
+COMMENT review, followed by normal protected merge. RequiredCI41163915696 succeeded:
+Flutterjob124427249049 formatter260/zerochanges, analyzer, fulltests, actualChrome,
+releaseweb/Wasm and actual independent generated resolve/analyze/test/build plus
+rendered interaction/serve; Pythonjob124427249171 all runtime suites passed. Local
+full888/eightopt-inskips preceded two added test-only regressions; final15focused
+includes all8new tests. Local web/macOSdebug builds passed. Skips are not inference.
+
+Reviewer protected-plugin squashmerged [PR #323](https://github.com/arpit-it/ASG/pull/323)
+as `1fc912e6b0b7f55bc1bdc0cc7194d6c5b34899e2` at2026-10-31T03:25:19Z; parent verified
+mergedPR/exacthead/tree/currentmain/signedcommit and issue255closedcompleted. Viewer
+compares bundled canonical manifest only; historical statuses/identities stay
+unchanged, omitted/different checks visible, loadfailure/retry/disposal safe. Audit
+29historical cells/20of21oldmanifest reports is not current support/union evidence.
+No scenario rerun for metadata, app/model launch, native stall or fullF17 claim.
+Fresh authorized executable-name inventory found no ASG/qwen_server/mlx_bridge
+matches. Stableapp/data preserved; bothrequestedlabels applied, no newissue/FID.
+
+Signedmerge rawobjectSHA verified before local import. Primary main/origin-main
+synchronized0/0, indexempty/diffcheckclean. Two prior IDE edits byte-identical; all
+prior documentation additions retained in reviewedtree. Backup
+`/private/tmp/asg-323-primary-before`; guarded sync `/private/tmp/asg-323-sync.py`.
+Final merge bookkeeping retained locally for next related reviewed increment;
+no remoteCLI fallback.15minute cadence/notificationpreferences unchanged. No later
+task selected. Next run reconcile PR323 then inspect remaining F17 real baseline
+freshness/affected workflows; never union incompatible historical identities,
+relabel reports or rerun unchanged workflows solely for documentation identity.
+
+
+### F17 actual viewer retry recovery — reused #255 — 2026-10-31
+
+Branch `255-viewer-interaction` from verified main1fc912e6. Independent affected-source audit found all29 configured cells historically observed and unchanged core generation/Plan/repair/Stop code; no metadata-only reruns justified. Actual reviewed web viewer revealed cached failed asset Future: after controlled503 and restored server, Retry never issued a GET. Service disables redundant string caching; real CachingAssetBundle regression proves second read/recovery with prior report retained.
+
+Actual corrected releaseweb interaction passed503→restore→Retry200 without reload, historical fixture/six visible omissions, invalid replacement retention, historical native fixture and matching paired report, Clear and home/reopen empty.169runtime source/45build hashes and two corrected screenshots retained at development/acceptance/2026-10-31-web-viewer. Original reports unchanged; no new matrix/support/model/native launch claim. FullF17 remains In progress.
+
+Final analyzer/formatter261zerochanges,16focusedFlutter, full891/eightopt-inskips,32Python, releaseweb/Wasm dry run and macOSdebug build passed. Initial unused-import analyzer finding fixed and checks rerun. Prior PR323 merge bookkeeping retained; primary IDE/docs edits untouched. Awaiting independent exact-final review, requiredCI and verified protectedmerge; not Done yet. No newissue/FID.

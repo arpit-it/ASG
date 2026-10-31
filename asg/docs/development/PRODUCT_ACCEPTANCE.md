@@ -1102,3 +1102,8 @@ verification or completion of F17. Source/bundle manifests remain the referenced
 historical compiled identity, remeasured for this run; prior reports are unchanged.
 Regenerate from the Flutter root with the collector command above, substituting
 this directory's `identity.json` and `evidence.json`. Only `generatedAt` changes.
+
+
+### Actual web report-viewer retry recovery (issue #255)
+
+[Reproduction and limits](acceptance/2026-10-31-web-viewer/REPRODUCE.md) and [observations](acceptance/2026-10-31-web-viewer/observation.json) record real releaseweb inspection of historical/matching reports, six omitted checks, invalid replacement retention, Clear/reopen and controlled503→restored200 asset retry. This revealed and fixed a cached failed string-load Future. Runtime/build/report hashes and corrected screenshots are retained. Existing reports/statuses stay unchanged; no new collector cell, native launch, inference or fullF17/support claim.
