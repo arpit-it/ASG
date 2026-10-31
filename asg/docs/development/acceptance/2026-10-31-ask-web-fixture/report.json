@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-10-31T09:52:52Z",
+  "generatedAt": "2026-10-31T10:02:53Z",
   "manifestSha256": "0505c640aa4a9170a73946648bd6205062942bcc3a2a37704e7a37fa0cbcbe1c",
   "identity": {
-    "sourceRevision": "c6bf31f55358996a6e23c507eb6f12e922e7845e",
-    "requirementSha256": "c68890501c8c010ba2e078575116bcd2e9bde6936ababbc4e25f34ec1d3be094",
-    "inputSha256": "687e2a1bcdc915557e4793abe2ab50499d43d6bb1b3706c27d687aee2c4b8477",
+    "sourceRevision": "3967d247f8984d2377961c0307e4446885f5ed28",
+    "requirementSha256": "b1da3d1898263147cf8bc56773188dcaf86e36ad4542452dd1d8ff77b850b569",
+    "inputSha256": "3f9eb4f7f8f5ab59ba50da96228add27c019037531940cfa3835f8870a6c465b",
     "configurationSha256": "970db95e6aaff0cc4c5984f2b0dbef1cb3926666a5b2bcb057d56d3f20fcddca",
     "modelSha256": "98de24afe3d54793cedb367a1adcc947079b5a1368d5d67a7a20fbb7a7a3a18a",
     "deviceSha256": "f9a81661d7ac162b1e08b837d94d5cbd236a4cc1856ef0d4493e92ca0bdc64df",
@@ -1502,11 +1502,11 @@
         "checkId": "durable-ask",
         "target": "web",
         "status": "passed",
-        "observedAt": "2026-10-31T09:52:52Z",
+        "observedAt": "2026-10-31T10:02:53Z",
         "identity": {
-          "sourceRevision": "c6bf31f55358996a6e23c507eb6f12e922e7845e",
-          "requirementSha256": "c68890501c8c010ba2e078575116bcd2e9bde6936ababbc4e25f34ec1d3be094",
-          "inputSha256": "687e2a1bcdc915557e4793abe2ab50499d43d6bb1b3706c27d687aee2c4b8477",
+          "sourceRevision": "3967d247f8984d2377961c0307e4446885f5ed28",
+          "requirementSha256": "b1da3d1898263147cf8bc56773188dcaf86e36ad4542452dd1d8ff77b850b569",
+          "inputSha256": "3f9eb4f7f8f5ab59ba50da96228add27c019037531940cfa3835f8870a6c465b",
           "configurationSha256": "970db95e6aaff0cc4c5984f2b0dbef1cb3926666a5b2bcb057d56d3f20fcddca",
           "modelSha256": "98de24afe3d54793cedb367a1adcc947079b5a1368d5d67a7a20fbb7a7a3a18a",
           "deviceSha256": "f9a81661d7ac162b1e08b837d94d5cbd236a4cc1856ef0d4493e92ca0bdc64df",
@@ -1518,8 +1518,8 @@
         },
         "manifestSha256": "0505c640aa4a9170a73946648bd6205062942bcc3a2a37704e7a37fa0cbcbe1c",
         "artifactSha256": [
-          "b81a20c85a5033c2a2bb34b504072ce9ff055d065c8cd850a190541a7146583a",
-          "d1129fab9a2fa06711eb8e26b0b4062653d54a1be78ed5bfe421201bf7b0d407"
+          "1366146839933c8ecb0d92bb3e7a502d49eab170562bc83a9ac44131cd0fc051",
+          "4c22d3ee4310cea3d0d6241aa89071216060d2f6c06894c9c3044822376c34ff"
         ]
       }
     },

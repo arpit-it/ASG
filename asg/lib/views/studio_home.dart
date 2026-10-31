@@ -38,6 +38,7 @@ class StudioHome extends StatefulWidget {
 
 class _StudioHomeState extends State<StudioHome> {
   bool workspacePending = false;
+  final toolbarScroll = ScrollController();
   late final controller = StudioSessionController(
     StudioSessionStore(widget.store),
     widget.projects,
@@ -56,6 +57,7 @@ class _StudioHomeState extends State<StudioHome> {
   void dispose() {
     controller.removeListener(refresh);
     controller.dispose();
+    toolbarScroll.dispose();
     super.dispose();
   }
 
@@ -107,58 +109,83 @@ class _StudioHomeState extends State<StudioHome> {
     appBar: AppBar(
       title: Text(controller.current?.name ?? 'Automated Software Generator'),
       actions: [
-        IconButton(
-          tooltip: 'Ask engineering questions',
-          onPressed: controller.busy || workspacePending ? null : ask,
-          icon: const Icon(Icons.question_answer_outlined),
-        ),
-        IconButton(
-          tooltip: 'Product acceptance evidence',
-          onPressed: controller.busy || workspacePending
-              ? null
-              : () => Navigator.of(context).push(
-                  MaterialPageRoute<void>(
-                    builder: (_) => const ProductAcceptanceScreen(),
+        SizedBox(
+          width: (MediaQuery.sizeOf(context).width * 0.6).clamp(0.0, 336.0),
+          child: Scrollbar(
+            controller: toolbarScroll,
+            thumbVisibility: true,
+            child: SingleChildScrollView(
+              key: const ValueKey('studio-toolbar-actions'),
+              controller: toolbarScroll,
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    tooltip: 'Ask engineering questions',
+                    onPressed: controller.busy || workspacePending ? null : ask,
+                    icon: const Icon(Icons.question_answer_outlined),
                   ),
-                ),
-          icon: const Icon(Icons.fact_check_outlined),
-        ),
-        AppLicensesButton(enabled: !controller.busy && !workspacePending),
-        IconButton(
-          tooltip: 'Inspect existing Flutter project',
-          onPressed: controller.busy || workspacePending
-              ? null
-              : () => Navigator.of(context).push(
-                  MaterialPageRoute<void>(
-                    builder: (_) => ProjectInspectionScreen(
-                      controller: ProjectInspectionController(
-                        store: InspectedFolderStore(widget.store.records),
-                      ),
+                  IconButton(
+                    tooltip: 'Product acceptance evidence',
+                    onPressed: controller.busy || workspacePending
+                        ? null
+                        : () => Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                              builder: (_) => const ProductAcceptanceScreen(),
+                            ),
+                          ),
+                    icon: const Icon(Icons.fact_check_outlined),
+                  ),
+                  AppLicensesButton(
+                    enabled: !controller.busy && !workspacePending,
+                  ),
+                  IconButton(
+                    tooltip: 'Inspect existing Flutter project',
+                    onPressed: controller.busy || workspacePending
+                        ? null
+                        : () => Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                              builder: (_) => ProjectInspectionScreen(
+                                controller: ProjectInspectionController(
+                                  store: InspectedFolderStore(
+                                    widget.store.records,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                    icon: const Icon(Icons.find_in_page_outlined),
+                  ),
+                  if (controller.current != null)
+                    IconButton(
+                      tooltip: 'Edit project details',
+                      onPressed: controller.busy || workspacePending
+                          ? null
+                          : editDetails,
+                      icon: const Icon(Icons.edit_note),
                     ),
+                  IconButton(
+                    tooltip: 'Projects',
+                    onPressed: controller.busy || workspacePending
+                        ? null
+                        : projects,
+                    icon: const Icon(Icons.folder_open),
                   ),
-                ),
-          icon: const Icon(Icons.find_in_page_outlined),
-        ),
-        if (controller.current != null)
-          IconButton(
-            tooltip: 'Edit project details',
-            onPressed: controller.busy || workspacePending ? null : editDetails,
-            icon: const Icon(Icons.edit_note),
+                  IconButton(
+                    tooltip: 'New project',
+                    onPressed:
+                        controller.busy ||
+                            workspacePending ||
+                            controller.savedCreation != null
+                        ? null
+                        : create,
+                    icon: const Icon(Icons.add),
+                  ),
+                ],
+              ),
+            ),
           ),
-        IconButton(
-          tooltip: 'Projects',
-          onPressed: controller.busy || workspacePending ? null : projects,
-          icon: const Icon(Icons.folder_open),
-        ),
-        IconButton(
-          tooltip: 'New project',
-          onPressed:
-              controller.busy ||
-                  workspacePending ||
-                  controller.savedCreation != null
-              ? null
-              : create,
-          icon: const Icon(Icons.add),
         ),
       ],
     ),

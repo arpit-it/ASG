@@ -5,10 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:asg/controllers/ask_controller.dart';
+import 'package:asg/models/project.dart';
 import 'package:asg/services/ask_store.dart';
 import 'package:asg/services/studio_store.dart';
 import 'package:asg/views/ask_screen.dart';
 import 'package:asg/views/studio_app.dart';
+import 'package:asg/views/studio_home.dart';
 
 import 'ask_controller_test.dart' show AskRecords, AskProvider;
 
@@ -30,6 +32,62 @@ void main() {
     expect(StudioStore(records).load(), isEmpty);
     expect(records.writes, 0);
   });
+  testWidgets(
+    'selected narrow workspace reaches Ask and scrolls all toolbar actions',
+    (tester) async {
+      tester.view.physicalSize = const Size(320, 600);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final records = AskRecords();
+      final store = StudioStore(records);
+      const project = StudioProject(
+        id: 'p',
+        name: 'Demo',
+        description: 'test',
+        type: 'Flutter',
+        platforms: ['Web'],
+        location: '',
+      );
+      await store.save([project]);
+      await tester.pumpWidget(
+        MaterialApp(
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(context)
+                .copyWith(textScaler: const TextScaler.linear(1.5)),
+            child: child!,
+          ),
+          home: StudioHome(store: store, projects: const [project]),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+      expect(
+        find.byTooltip('Ask engineering questions').hitTestable(),
+        findsOneWidget,
+      );
+      final toolbar = find.byKey(const ValueKey('studio-toolbar-actions'));
+      await tester.drag(toolbar, const Offset(-350, 0));
+      await tester.pumpAndSettle();
+      expect(find.byTooltip('New project').hitTestable(), findsOneWidget);
+      // Focus traversal calls showOnScreen for offscreen toolbar controls.
+      await tester.ensureVisible(find.byTooltip('Ask engineering questions'));
+      await tester.pumpAndSettle();
+      expect(
+        find.byTooltip('Ask engineering questions').hitTestable(),
+        findsOneWidget,
+      );
+      await tester.tap(find.byTooltip('Ask engineering questions'));
+      await tester.pumpAndSettle();
+      expect(
+        find.text('Engineering questions · no project required'),
+        findsOneWidget,
+      );
+      expect(store.load().single.id, project.id);
+      expect(AskStore(records).load(), isEmpty);
+      expect(tester.takeException(), isNull);
+    },
+  );
   testWidgets(
     'narrow scaled keyboard send, streamed code, save recovery and new context',
     (tester) async {
