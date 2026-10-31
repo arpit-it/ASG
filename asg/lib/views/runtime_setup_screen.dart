@@ -361,6 +361,7 @@ class _RuntimeSetupScreenState extends State<RuntimeSetupScreen> {
                 const SizedBox(height: 12),
                 RuntimeCapabilityPanel(
                   report: controller.capabilities,
+                  memory: controller.memory,
                   selected: controller.selected,
                   backend: backend,
                 ),
