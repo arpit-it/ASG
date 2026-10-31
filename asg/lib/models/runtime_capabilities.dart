@@ -3,7 +3,7 @@
 
 import 'runtime_setup.dart';
 
-/// Dependency discovery is not a device probe, model load or memory check.
+/// Device availability is distinct from model loading and memory adequacy.
 class RuntimeCapabilities {
   RuntimeCapabilities._(this.host, this.backends);
   final String host;
@@ -45,6 +45,7 @@ class RuntimeCapabilities {
       };
       final missing = entry['missing_dependencies'];
       final supported = entry['host_supported'];
+      final deviceReady = entry['device_ready'];
       final allowed = backend == RuntimeBackend.mlx
           ? const ['mlx_lm', 'mlx']
           : const ['torch', 'transformers', 'accelerate'];
@@ -52,10 +53,13 @@ class RuntimeCapabilities {
           missing is! List ||
           missing.any((name) => !allowed.contains(name)) ||
           missing.toSet().length != missing.length ||
-          entry['device_ready'] != null ||
+          (deviceReady != null && deviceReady is! bool) ||
+          (deviceReady != null && (supported != true || missing.isNotEmpty)) ||
           entry['model_compatible'] != null ||
           entry['readiness'] !=
-              (supported && missing.isEmpty ? 'unverified' : 'unavailable') ||
+              (supported && missing.isEmpty && deviceReady != false
+                  ? 'unverified'
+                  : 'unavailable') ||
           parsed.any((item) => item.backend == backend)) {
         throw invalid;
       }
@@ -64,6 +68,7 @@ class RuntimeCapabilities {
           backend,
           supported,
           List<String>.unmodifiable(missing),
+          deviceReady,
         ),
       );
     }
@@ -90,16 +95,22 @@ class BackendCapability {
     this.backend,
     this.hostSupported,
     this.missingDependencies,
+    this.deviceReady,
   );
   final RuntimeBackend backend;
   final bool hostSupported;
   final List<String> missingDependencies;
+  final bool? deviceReady;
 
   String get availability => !hostSupported
       ? 'Unavailable on this host. Choose a compatible local runtime connection.'
       : missingDependencies.isNotEmpty
       ? 'Missing dependencies: ${missingDependencies.join(', ')}. Choose an environment with these packages installed.'
-      : 'Dependencies found. Device availability remains unverified until launch.';
+      : deviceReady == false
+      ? 'Device unavailable. Choose a compatible local runtime connection; no fallback was started.'
+      : deviceReady == true
+      ? 'Device available. Model loading and memory adequacy remain unverified.'
+      : 'Dependencies found. Device availability remains unverified. Inspect again or check the Python environment; launch revalidates.';
 
   String modelCompatibility(ModelCandidate? model) {
     if (model == null) {
@@ -111,6 +122,6 @@ class BackendCapability {
     if (backend == RuntimeBackend.torch && model.quantized!) {
       return 'Incompatible metadata: Torch/MPS requires unquantized weights. Select compatible weights or explicitly choose MLX.';
     }
-    return 'Model metadata passes the backend format restriction. Actual load, device readiness and memory adequacy remain unverified.';
+    return 'Model metadata passes the backend format restriction. Actual model load and memory adequacy remain unverified.';
   }
 }

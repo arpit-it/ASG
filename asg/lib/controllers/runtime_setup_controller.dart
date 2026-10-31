@@ -204,14 +204,13 @@ class RuntimeSetupController extends BaseController {
   Future<void> discover(String python) => _action(() async {
     invalidateCapabilities();
     final epoch = _discoveryEpoch;
-    _status =
-        'Inspecting host and Python dependencies without loading weights…';
+    _status = 'Inspecting host, dependencies and device availability without loading weights…';
     update();
     try {
       final report = await host.discover(python.trim());
       if (isDisposed || epoch != _discoveryEpoch) return;
       _capabilities = report;
-      _status = 'Dependency discovery complete. Device and memory readiness remain unverified.';
+      _status = 'Host, dependency and device inspection complete. Model loading and memory adequacy remain unverified.';
     } catch (_) {
       if (isDisposed || epoch != _discoveryEpoch) return;
       _status = 'Capability discovery failed.';

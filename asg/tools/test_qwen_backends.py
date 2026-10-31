@@ -42,6 +42,55 @@ class BackendTests(unittest.TestCase):
         self.assertEqual(missing['missing_dependencies'], ['mlx_lm'])
         self.assertIsNone(missing['device_ready'])
 
+    def test_opt_in_device_probe_skips_unsupported_and_missing_dependencies(self):
+        with patch.object(backends, 'probe_device', side_effect=AssertionError('probe')):
+            self.capabilities()
+            backends.discover_capabilities('Linux', 'x86_64', lambda _: True, True)
+            backends.discover_capabilities('Darwin', 'arm64', lambda _: False, True)
+
+    def test_device_probe_distinguishes_available_unavailable_and_error(self):
+        for ready in (True, False, None):
+            with self.subTest(ready=ready), patch.object(backends, 'probe_device', return_value=ready) as probe:
+                result = backends.discover_capabilities('Darwin', 'arm64', lambda _: True, True)
+                self.assertEqual(probe.call_count, 2)
+                for entry in result['backends']:
+                    self.assertIs(entry['device_ready'], ready)
+                    self.assertIsNone(entry['model_compatible'])
+                    self.assertEqual(entry['readiness'], 'unavailable' if ready is False else 'unverified')
+
+    def test_device_api_imports_never_load_models_and_suppress_private_output(self):
+        from types import SimpleNamespace
+        from contextlib import redirect_stdout, redirect_stderr
+        from io import StringIO
+        def status():
+            print('PRIVATE /secret')
+            print('PRIVATE token', file=sys.stderr)
+            return True
+        for kind, module in [('mlx', SimpleNamespace(metal=SimpleNamespace(is_available=status))),
+                             ('torch', SimpleNamespace(backends=SimpleNamespace(mps=SimpleNamespace(is_available=status))))]:
+            output, error = StringIO(), StringIO()
+            with patch.object(backends.importlib, 'import_module', return_value=module) as imported, redirect_stdout(output), redirect_stderr(error):
+                self.assertTrue(backends.probe_device(kind))
+            imported.assert_called_once_with('mlx.core' if kind == 'mlx' else 'torch')
+            self.assertEqual(output.getvalue(), '')
+            self.assertEqual(error.getvalue(), '')
+        for failure in (ImportError('PRIVATE /secret'), RuntimeError('PRIVATE token')):
+            with patch.object(backends.importlib, 'import_module', side_effect=failure):
+                self.assertIsNone(backends.probe_device('mlx'))
+        with patch.object(backends.importlib, 'import_module', return_value=SimpleNamespace(metal=SimpleNamespace(is_available=lambda: 'PRIVATE'))):
+            self.assertIsNone(backends.probe_device('mlx'))
+
+    def test_real_cli_device_probe_is_opt_in_and_needs_no_weights(self):
+        command = [sys.executable, '-B', str(Path(__file__).with_name('qwen_server.py'))]
+        result = subprocess.run([*command, '--capabilities', '--probe-devices'], capture_output=True, text=True, timeout=10, check=True)
+        data = json.loads(result.stdout)
+        self.assertEqual(data['schema_version'], 1)
+        self.assertEqual(result.stderr, '')
+        self.assertTrue(all(entry['model_compatible'] is None for entry in data['backends']))
+        invalid = subprocess.run([*command, '--probe-devices'], capture_output=True, text=True, timeout=10)
+        self.assertNotEqual(invalid.returncode, 0)
+        self.assertIn('--probe-devices requires --capabilities', invalid.stderr)
+
     def test_explicit_selection_and_auto_do_not_load_or_retry(self):
         caps = self.capabilities()
         with patch.object(backends, 'load_backend', side_effect=AssertionError('load')):

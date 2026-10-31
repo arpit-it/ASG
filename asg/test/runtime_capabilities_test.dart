@@ -10,6 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:asg/models/runtime_capabilities.dart';
 import 'package:asg/models/runtime_setup.dart';
 import 'package:asg/views/runtime_setup_screen.dart';
+import 'package:asg/views/runtime_capability_panel.dart';
 
 import 'runtime_setup_test.dart' as fixture;
 
@@ -60,7 +61,7 @@ void main() {
       (v) => v['schema_version'] = 2,
       (v) => v['backends'][0]['missing_dependencies'] = ['PRIVATE'],
       (v) => v['backends'][0]['device'] = 'cuda',
-      (v) => v['backends'][0]['device_ready'] = true,
+      (v) => v['backends'][0]['device_ready'] = 'PRIVATE',
       (v) => v['backends'][0]['model_compatible'] = true,
       (v) => v['backends'][0]['readiness'] = 'ready',
       (v) => v['backends'][0]['host_supported'] = 'true',
@@ -113,6 +114,94 @@ void main() {
       );
     },
   );
+  test(
+    'device observations remain distinct from model and memory readiness',
+    () {
+      for (final ready in [true, false, null]) {
+        final value = report();
+        value['backends'][0]['device_ready'] = ready;
+        value['backends'][0]['readiness'] = ready == false
+            ? 'unavailable'
+            : 'unverified';
+        final backend = RuntimeCapabilities.fromJson(value).backends.first;
+        expect(backend.deviceReady, ready);
+        expect(
+          backend.availability,
+          contains(
+            ready == true
+                ? 'Device available'
+                : ready == false
+                ? 'Device unavailable'
+                : 'unverified',
+          ),
+        );
+        if (ready == true) {
+          expect(
+            backend.availability,
+            contains('memory adequacy remain unverified'),
+          );
+        }
+      }
+      final inconsistent = report(missing: true);
+      inconsistent['backends'][0]['device_ready'] = true;
+      expect(
+        () => RuntimeCapabilities.fromJson(inconsistent),
+        throwsFormatException,
+      );
+      final unsupported = report();
+      unsupported['backends'][0]['host_supported'] = false;
+      unsupported['backends'][0]['readiness'] = 'unavailable';
+      unsupported['backends'][0]['device_ready'] = false;
+      expect(
+        () => RuntimeCapabilities.fromJson(unsupported),
+        throwsFormatException,
+      );
+    },
+  );
+  testWidgets('device availability is readable at 320px with enlarged text', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(320, 700);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    for (final ready in [true, false, null]) {
+      final value = report();
+      for (final entry in value['backends']) {
+        entry['device_ready'] = ready;
+        entry['readiness'] = ready == false ? 'unavailable' : 'unverified';
+      }
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: MediaQuery(
+              data: const MediaQueryData(textScaler: TextScaler.linear(1.5)),
+              child: SingleChildScrollView(
+                child: RuntimeCapabilityPanel(
+                  report: RuntimeCapabilities.fromJson(value),
+                  selected: null,
+                  backend: RuntimeBackend.auto,
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(
+        find.textContaining(
+          ready == true
+              ? 'Device available'
+              : ready == false
+              ? 'Device unavailable'
+              : 'Device availability remains unverified',
+        ),
+        findsNWidgets(2),
+      );
+      expect(find.textContaining('No memory adequacy check'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    }
+  });
   test('discovery preserves saved setup, chat and running runtime', () async {
     final host = DiscoveryHost()..ownsProcess = true;
     final c = await fixture.controller(host);
@@ -129,6 +218,10 @@ void main() {
     await c.discover(' /python with spaces ');
     expect(host.python, '/python with spaces');
     expect(c.capabilities, isNotNull);
+    expect(
+      c.status,
+      'Host, dependency and device inspection complete. Model loading and memory adequacy remain unverified.',
+    );
     expect(c.setup, same(saved));
     expect(prefs.getString('studio.runtimeSetup.v1'), raw);
     expect(jsonEncode(prefs.getKeys().toList()..sort()), keys);
@@ -169,6 +262,7 @@ void main() {
       await c.discover('/other');
       expect(host.calls, 1);
       expect(c.busy, true);
+      expect(c.status, contains('device availability without loading weights'));
       if (dispose) {
         c.dispose();
       } else {

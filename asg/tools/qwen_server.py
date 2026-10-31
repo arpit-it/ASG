@@ -191,14 +191,17 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--model', type=Path)
     parser.add_argument('--capabilities', action='store_true', help='Report dependencies without loading weights or probing devices')
+    parser.add_argument('--probe-devices', action='store_true', help='With --capabilities, query device APIs without loading weights')
     parser.add_argument('--port', type=int, default=8765)
     parser.add_argument('--model-id', default='Qwen3.5-9B')
     parser.add_argument('--backend', choices=['auto', 'mlx', 'torch'], default='auto')
     parser.add_argument('--parent-pid', type=int)
     args = parser.parse_args()
     if args.capabilities:
-        print(json.dumps(discover_capabilities(), sort_keys=True))
+        print(json.dumps(discover_capabilities(probe_devices=args.probe_devices), sort_keys=True))
         return
+    if args.probe_devices:
+        parser.error('--probe-devices requires --capabilities')
     if args.model is None:
         parser.error('--model is required unless --capabilities is used')
     folder = args.model.resolve(strict=True)

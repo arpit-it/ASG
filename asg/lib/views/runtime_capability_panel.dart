@@ -24,7 +24,7 @@ class RuntimeCapabilityPanel extends StatelessWidget {
       return const Padding(
         padding: EdgeInsets.only(bottom: 12),
         child: Text(
-          'Capabilities not inspected for this selection. Inspect uses the chosen Python without loading weights, probing devices or installing packages.',
+          'Capabilities not inspected for this selection. Inspect uses the chosen Python to check dependencies and device availability without loading weights or installing packages.',
         ),
       );
     }
