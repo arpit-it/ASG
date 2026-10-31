@@ -77,8 +77,15 @@ inconsistent statuses/identities, incomplete target groups and invalid timestamp
 are refused with a sanitized error; an invalid replacement retains the previous
 report. **Clear report** removes the session report and input. Nothing is saved
 to project storage; reopen a report by pasting it again. Reports are limited to
-1 MiB. This is a supplied-report reader, not an independent authenticity, manifest
-completeness or live-freshness check. Omitted scenarios are not assessed. Saved
+1 MiB. This is a supplied-report reader, not an independent authenticity or live-freshness check. The viewer also compares
+the report with the canonical manifest bundled in this app. Historical digest
+mismatches are labeled explicitly; omitted configured scenario/check/target cells
+and mismatched kind/requirement/target availability are listed separately. This
+comparison neither rewrites saved statuses nor verifies source/model/device
+freshness. A matching manifest or present cell is not a pass or support claim.
+Loading failures show comparison unavailable with retry; original saved evidence
+remains readable. The bundled specification can differ from a later repository
+manifest until the app is rebuilt. Saved
 passes do not establish current support or replace the pending real baseline.
 
 
