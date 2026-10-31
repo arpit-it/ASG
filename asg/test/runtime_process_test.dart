@@ -84,8 +84,12 @@ time.sleep(60)
     final host = NativeRuntimeHost(
       port: port,
       supportDirectory: () async => support,
-      loadAsset: (_) async =>
-          'import time\nprint("fixture ready", flush=True)\ntime.sleep(60)\n',
+      loadAsset: (name) async => name == 'qwen_backends.py'
+          ? File('tools/qwen_backends.py').readAsString()
+          : 'from qwen_backends import discover_capabilities\n'
+                'import time\n'
+                'assert discover_capabilities()["schema_version"] == 1\n'
+                'print("fixture ready", flush=True)\ntime.sleep(60)\n',
     );
     expect(host.ownsProcess, false);
     await expectLater(host.stop(), throwsStateError);
@@ -100,6 +104,7 @@ time.sleep(60)
     );
     await ready.timeout(const Duration(seconds: 10));
     expect(host.ownsProcess, true);
+    expect(await File('${support.path}/qwen_backends.py').exists(), isTrue);
     await host.stop();
     expect(host.ownsProcess, false);
   }, skip: !Platform.isMacOS);

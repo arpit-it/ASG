@@ -18,6 +18,7 @@ spec.loader.exec_module(module)
 
 class FakeBackend:
     kind = 'fixture'
+    device = 'fixture-device'
     def __init__(self):
         self.tokens = None
     def generate(self, messages, tokens, publish, cancelled, deadline):
@@ -57,7 +58,9 @@ class ServerTests(unittest.TestCase):
             data=json.load(response)
         self.assertEqual(data['choices'][0]['message']['content'], 'Hello world')
         with urllib.request.urlopen(self.url+'/health') as response:
-            self.assertTrue(json.load(response)['streaming'])
+            health = json.load(response)
+            self.assertTrue(health['streaming'])
+            self.assertEqual(health['device'], 'fixture-device')
     def test_errors_are_not_successful_completions(self):
         with self.request(content='error') as response:
             text=response.read().decode()

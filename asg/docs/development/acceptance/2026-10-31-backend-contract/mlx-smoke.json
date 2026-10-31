@@ -1,0 +1,62 @@
+{
+  "capabilities": {
+    "backends": [
+      {
+        "backend": "mlx",
+        "device": "metal",
+        "device_ready": null,
+        "host_supported": true,
+        "missing_dependencies": [],
+        "model_compatible": null,
+        "readiness": "unverified"
+      },
+      {
+        "backend": "torch",
+        "device": "mps",
+        "device_ready": null,
+        "host_supported": true,
+        "missing_dependencies": [
+          "torch",
+          "accelerate"
+        ],
+        "model_compatible": null,
+        "readiness": "unavailable"
+      }
+    ],
+    "host": {
+      "machine": "arm64",
+      "system": "Darwin"
+    },
+    "schema_version": 1,
+    "scope": "Dependency discovery only; no device probe, weight load or memory adequacy check.",
+    "unsupported_devices": [
+      "cpu",
+      "cuda"
+    ]
+  },
+  "host": "macOS Apple Silicon",
+  "model_format": "MLX affine 4-bit local Qwen3.5-9B",
+  "downloaded": false,
+  "runs": [
+    {
+      "startup_ms": 3363,
+      "backend": "mlx",
+      "device": "metal",
+      "generation_ms": 927,
+      "answer_characters": 110,
+      "stream_updates": 22,
+      "completed": true
+    },
+    {
+      "startup_ms": 2067,
+      "backend": "mlx",
+      "device": "metal"
+    }
+  ],
+  "recorded_at": "2026-10-31T10:16:39.813344+00:00",
+  "scope": "Actual offline MLX HTTP generation and process restart only; no CPU/CUDA inference, app setup UI or whole F15 milestone claim.",
+  "sources": {
+    "asg/tools/qwen_server.py": "0443c888f45529b40ca8c749a6867f339f4cc92d66fb8c1f02c5042a23d9ebe4",
+    "asg/tools/qwen_backends.py": "2c16987950c7dd995b005a58f59dade136cd684c62c8f4ee7ad9171aae731eea"
+  }
+}
