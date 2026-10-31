@@ -1,0 +1,28 @@
+{
+  "bundleIdentifier": "com.arsinha.asg.f17snapshot.asg",
+  "appBuild": "debug",
+  "compiledSourceRevision": "584c89c4cc98522b75b65d53ecbd52c5e21d6859",
+  "sourceManifestSha256": "e6e920052caf6095e78cd54d146f623d09535f9126b7a468eeb654685b1660b9",
+  "bundleManifestSha256": "fd7a3dbdd9469960b2b18f291fd32f2ddea2b45c5e241cdfe81c04da45b81be0",
+  "isolationOverride": "Only AppInfo.xcconfig bundle identifier differs from compiled commit. Original product name retained.",
+  "manifests": "../2026-10-30-native-fingerprint-candidate/",
+  "workflow": "One reviewed deterministic five-minute test seed; Stop actual candidate test, explicitly retry same candidate to actual180second command deadline; preserve working source/output; no promotion.",
+  "fixtureSha256": "42c890278fdc0706f323fdb92fa125b81bf9926eeddf2a140662a1a170690a4f",
+  "limits": {
+    "version": 1,
+    "commandTimeoutSeconds": 180,
+    "outputLimitBytes": 65536,
+    "maximumOperations": 4
+  },
+  "confinementVersion": 1,
+  "pythonVersion": "3.12.8",
+  "pinnedLockSha256": "79e61992a1c93bf91b4d90e824da40a2b607b6f74a9c9dd330de8d849bb6bd1e",
+  "packageConfigSha256": "e3670ca2f12f7a544113248e9375c4379445d1ab7697522c8ca9cedc03d09409",
+  "packageGraphHandling": "Each offline resolve regenerated package_graph.json with a distinct byte digest. Both exact digests are retained separately; graph byte equality is not asserted.",
+  "inference": false,
+  "modelDescriptor": {
+    "kind": "deterministic-fixture",
+    "inference": false,
+    "fixtureSha256": "42c890278fdc0706f323fdb92fa125b81bf9926eeddf2a140662a1a170690a4f"
+  }
+}

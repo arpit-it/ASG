@@ -1,0 +1,28 @@
+{
+  "digestMethod": "product_acceptance.sha sorted compact JSON SHA256",
+  "boardRevision": 5,
+  "approvalMessageIndex": 3,
+  "approvedAt": "2026-10-30T19:36:57.200869Z",
+  "approvalSha256": "47e06278194c3168bcf8434e7c1c92bfece3ee88293fef1f561f913e729f0e31",
+  "sourceManifestSha256": "3cc4e494e37e7172e881cdfd03aa942abbda7f4dd56cfdf08c7a25675c8d76a8",
+  "stoppedResolutionSha256": "f433f5385c5043e28bb9b53a391f79f7b25d3bce0def0648688fdba5bf134b26",
+  "deadlineResolutionSha256": "c3dfa7a01bd640b28b37dff294a89b44b2c88e62f4d0214ddc4dc776423828af",
+  "stoppedResolutionFiles": {
+    "pubspec.lock": "79e61992a1c93bf91b4d90e824da40a2b607b6f74a9c9dd330de8d849bb6bd1e",
+    ".dart_tool/package_config.json": "e3670ca2f12f7a544113248e9375c4379445d1ab7697522c8ca9cedc03d09409",
+    ".dart_tool/package_graph.json": "176261e603c64838add96f6fd7feccb95cfd7b6df22020fe1b964092a05a6e98"
+  },
+  "deadlineResolutionFiles": {
+    "pubspec.lock": "79e61992a1c93bf91b4d90e824da40a2b607b6f74a9c9dd330de8d849bb6bd1e",
+    ".dart_tool/package_config.json": "e3670ca2f12f7a544113248e9375c4379445d1ab7697522c8ca9cedc03d09409",
+    ".dart_tool/package_graph.json": "56466ab8ad15abf0c94a3eea4876b01caa11bee0a3976b9c579767ec159d2a30"
+  },
+  "stoppedRunSha256": "68c6133eddb07a988653574badc10bf35009937bf844a569623e024c7a409b4f",
+  "deadlineRunSha256": "6ee1a8062283c8805645e864df5b073653d07d3462a6562713c963499d8e622e",
+  "requirementsAndApprovalUnchanged": true,
+  "sameCandidateApprovalSourcesTasksLimitsSdkPython": true,
+  "samePinnedLockAndPackageConfig": true,
+  "generatedPackageGraphBytesDiffer": true,
+  "rawSnapshotsRetainedLocally": true,
+  "notF10CriterionVerification": true
+}

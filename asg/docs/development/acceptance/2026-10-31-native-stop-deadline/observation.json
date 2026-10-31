@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "issue": 283,
+  "feature": "F17",
+  "observedAt": "2026-10-31T02:51:25Z",
+  "compiledSourceRevision": "584c89c4cc98522b75b65d53ecbd52c5e21d6859",
+  "publicationBaseRevision": "5af325731805dbe21f20d3265203b65df94aa0d5",
+  "controlTimingsMs": {
+    "isolatedLaunch": 2438,
+    "accessibilityRefresh": 52,
+    "stopActionAndRefresh": 559,
+    "reopen": 2466
+  },
+  "observed": [
+    "Native existing mapped approval/ready baseline opened; selected only approved test file.",
+    "Reviewed deterministic single-line async five-minute test addition with ten-minute Flutter test timeout; prepared separate candidate via native picker.",
+    "Explicit verification consent; resolve/analyze passed; actual test stopped through native Stop. Saved exit-1/cancelled=true/timedOut=false; build absent.",
+    "Explicit retry of same candidate; resolve/analyze passed; actual test reached ASG180second command deadline. Saved exit-1/timedOut=true/cancelled=false; build absent.",
+    "Working ready record and42 source/output files unchanged; no promotion or automatic repair."
+  ],
+  "limitations": [
+    "Retained compiled584c89c source and43bundle hashes remeasured; this is not a current-main rebuild.",
+    "Deterministic fixture, no model inference or health claim.",
+    "Offline resolve regenerated package_graph.json with different bytes. Exact resolution digests are separate; lock and package_config hashes match. No graph byte or semantic equivalence claim.",
+    "Caller-attested native manual pair; collector does not independently execute or authenticate it.",
+    "No new successful full retry, rollback, F10 criterion verification or fullF17 completion.",
+    "Reopen UI displays working baseline; older failed candidate details are confirmed from unchanged durable journal, not a reopened source-review view."
+  ],
+  "servedInteraction": {
+    "addedItem": "Paired Stop deadline preserved item",
+    "checkboxBefore": 0,
+    "checkboxAfter": 1,
+    "actualCompiledWorkingOutput": true,
+    "browserReloadPersistenceAsserted": false
+  },
+  "reopen": {
+    "workingReadyWithCurrentPlan": true,
+    "exactBoardApprovalWorkingAndCandidateJournalUnchanged": true
+  },
+  "cleanup": {
+    "nativeQuitAndIndependentAbsence": true,
+    "ownedFixtureStopped": true,
+    "stableAppNotLaunchedOrReplaced": true
+  }
+}

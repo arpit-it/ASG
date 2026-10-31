@@ -4684,3 +4684,42 @@ seven Flutter report/controller/widget tests passed. Actual120-cell collector JS
 parsed by the existing Dart model:91 unavailable,29 missing,zero passes. Initial
 SDK-cache sandbox denial resolved through authorized test escalation. No model or
 app launched. Awaiting independent final review/CI/merge.
+
+
+### Browser archive fixture scope verified merged — #293 / PR #321 — 2026-10-31T02:37:13.139026+00:00
+
+Bounded increment Done; full F17 remains In progress. Branch `293-archive-browser-scope`; tested local `8f6dc978b7e9f7a7f78fb80ba34c0b47905bafba` and published final `1988d6e7159bdf2208e2bcf2b8fbed019469e0f0` share verified tree `e722409d50a2f4ed860806a83424d1021c8192b2`. Independent approval 5720594754 and final gate 5720611475 found no blockers or unresolved threads; reviewer independently reproduced 32 Python and seven Flutter tests, actual collector JSON parsing and all six remote patches.
+
+Required CI 41160331837 passed. Flutter job 124416270216: formatter/analyzer clean, 879 default tests passed with eight opt-in skips, 11 real Chrome tests, release web/Wasm build, generated-project resolve/analyze/test/build plus actual interaction/serve passed. Python job 124416269997: suites 32/2/6/14 (one skip)/4 (two skips) passed. Skipped checks are not live inference evidence. Independent reviewer protected-plugin squash merged [PR #321](https://github.com/arpit-it/ASG/pull/321) as `5af325731805dbe21f20d3265203b65df94aa0d5` at 2026-10-31T02:36:30Z; parent independently verified current main, exact PR head and issue #293 closed/completed.
+
+Browser-only archive download fixture now targets web; native archive records and manual reopen remain eligible. Empty matrix: 120 cells, 29 missing, 91 unavailable, zero passes. Historical reports unchanged; no new manual/model/runtime/support or full F17 claim. Stable app/data preserved; no app or model launched. Both requested labels applied; no new issue/F ID.
+
+Verified signed merge object SHA before local offline import. Primary main/origin-main synchronized with no divergence, index empty and whitespace checks clean. Two prior IDE edits remain byte-identical; every prior documentation addition was retained in the reviewed tree. Backup `/private/tmp/asg-321-primary-before`; guarded sync `/private/tmp/asg-321-sync.py`. Final merge bookkeeping retained locally for the next related reviewed increment. No remote CLI fallback.
+
+Next run verify PR #321 merge and retain primary edits, then resume F17's remaining actual native Stop/deadline combined exact-identity acceptance using existing #283 where justified. Do not combine incompatible historical observations or rerun delivered fixtures solely for documentation identity. Fresh native control recovery is required before claiming a stall. No subsequent task started; 15 minute cadence and notification preferences unchanged. No user action required.
+
+
+### F17 paired native Stop/deadline — reused #283 — 2026-10-31
+
+Branch `283-paired-native-stop-deadline` from verified PR321 merge5af32573.
+Fresh native launch2438ms/AX52ms, Stop559ms, reopen2466ms; actual Stop cancelled
+test after resolve/analyze passed. Explicit same-candidate retry reached ASG180s
+deadline; build absent in both, no promotion/repair. Exact approval/board/input/
+source/tasks/limits/SDK, lock/package_config match. Generated package_graph bytes
+differ between offline resolves; separate resolution digests retained, no graph
+equivalence claim. Retained ready output served actual add/check; Quit/independent
+absence/reopen retained exact board/approval/working/candidate journal.300source/
+43bundle hashes remeasured;42 measured workingfiles plus12source/34output recorded
+hashes preserved. Explicit deterministic fixture; no model inference.
+
+Sanitized artifacts `development/acceptance/2026-10-31-native-stop-deadline/`
+submit only combined macOS manual cell:120cells/one pass/28missing/91unavailable;
+six identity mutations stale the pass. Separate individual cells remain missing.
+Historical reports unchanged; fullF17 In progress.32collector,38focusedFlutter,
+14generation-runner (one skip),four actualmacOSconfinement tests passed. Initial
+outer sandbox/cache denials resolved through authorized escalation; offline
+dependencies resolved for isolated checkout. No runtime source change or new
+platform-build claim. Stableapp/originaldata preserved; owned tab/preview/fixture/
+nativeapp stopped. Prior primary IDE/docs edits retained. Awaiting independent
+exact-final review, required CI and verified merge; final PR records authoritative
+head/tree/review/check/merge evidence. No newissue/FID or subsequent task.
