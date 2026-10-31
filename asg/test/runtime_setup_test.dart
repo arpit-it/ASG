@@ -322,6 +322,66 @@ class SetupProbe implements ModelProvider {
 }
 
 void main() {
+  test('resident observation requires fresh idle local MLX and exact persisted identity', () async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    final store = RuntimeSetupStore.fromPreferences(prefs);
+    final modelStore = ModelSettingsStore.fromPreferences(prefs);
+    final revision = 'a' * 40;
+    await store.save(
+      RuntimeSetup(
+        modelPath: '/models/current',
+        repository: 'mlx-community/Qwen3.8-27B-4bit',
+        revision: revision,
+      ),
+    );
+    await modelStore.save(const LocalModelConfig(model: 'current'));
+    final data = <String, Object?>{
+      'status': 'ready',
+      'phase': 'idle',
+      'model': 'current',
+      'model_path': '/models/current',
+      'backend': 'mlx',
+      'device': 'metal',
+    };
+    final c = RuntimeSetupController(
+      store: store,
+      modelStore: modelStore,
+      host: FakeRuntimeHost(),
+      connection: RuntimeConnection(
+        client: MockClient((_) async => http.Response(jsonEncode(data), 200)),
+      ),
+    );
+    c.initialize();
+    final observed = await c.inspectRunningCatalogModel();
+    expect(observed?.model, 'current');
+    await c.saveSetup(
+      RuntimeSetup(
+        modelPath: '/models/current',
+        repository: 'mlx-community/another-model',
+        revision: 'b' * 40,
+      ),
+    );
+    expect((await c.inspectRunningCatalogModel())?.model, 'current');
+    for (final mismatch in [
+      <String, Object?>{'phase': 'writing'},
+      {'phase': null},
+      {'model': 'other'},
+      {'model_path': '/other'},
+      {'backend': 'torch'},
+      {'status': 'loading'},
+    ]) {
+      final original = Map<String, Object?>.of(data);
+      data.addAll(mismatch);
+      expect(await c.inspectRunningCatalogModel(), isNull);
+      data
+        ..clear()
+        ..addAll(original);
+    }
+    c.dispose();
+    expect(await c.inspectRunningCatalogModel(), isNull);
+  });
+
   test('Download failure is private, terminal and retryable', () async {
     SharedPreferences.setMockInitialValues({});
     final host = DownloadRuntimeHost()..gate = Completer<void>();

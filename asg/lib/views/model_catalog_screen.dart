@@ -44,7 +44,7 @@ class _ModelCatalogScreenState extends State<ModelCatalogScreen> {
             padding: const EdgeInsets.all(20),
             children: [
               Text(
-                'Models for this computer',
+                'Preferred models for this device',
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
               const SizedBox(height: 12),
@@ -52,9 +52,19 @@ class _ModelCatalogScreenState extends State<ModelCatalogScreen> {
               Text(
                 'Total memory: ${host.memoryBytes == null ? 'unknown' : memorySize(host.memoryBytes!)} · available estimate: ${host.availableBytes == null ? 'unknown' : memorySize(host.availableBytes!)}',
               ),
+              if (controller.runningEntry case final running?) ...[
+                const SizedBox(height: 12),
+                Text(
+                  'Current local runtime: ${running.name}',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const Text(
+                  'At the last check, the local MLX runtime reported this model ready and idle. The loaded source revision, memory fit and a new load are unverified. You can keep using the current connection; no download or switch is needed.',
+                ),
+              ],
               const SizedBox(height: 12),
               const Text(
-                'Check a source to see its size and compatibility. Choosing a model only prepares the download form.',
+                'Check preferred models to find one suitable choice for Ask, planning, coding and review on this device. Selection only prepares the download form.',
               ),
               const ExpansionTile(
                 tilePadding: EdgeInsets.zero,
@@ -65,10 +75,30 @@ class _ModelCatalogScreenState extends State<ModelCatalogScreen> {
                   ),
                   SizedBox(height: 8),
                   Text(
-                    'Memory estimates include all weights (including MoE), 25% overhead plus 4 GiB for runtime/cache, with 6 GiB reserved for OS/apps. Context and workloads can need more. Catalog candidates have not been verified by live inference. No downloads or model switching happen here.',
+                    'Memory estimates include all weights (including MoE), 25% overhead plus 4 GiB for runtime/cache, with 6 GiB reserved for OS/apps. Context and workloads can need more. Catalog checks do not verify live inference. A small owner-run comparison on one Mac favored Qwen3.8 coding correctness over Qwen3.5; speed varied. This is not a device-wide benchmark. No downloads or model switching happen here.',
                   ),
                 ],
               ),
+              SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                title: const Text('Preferred models only'),
+                subtitle: const Text(
+                  'One curated choice covering Ask, planning, coding and review. Requires checked compatibility and estimated available memory fit for a new load.',
+                ),
+                value: controller.preferredOnly,
+                onChanged: controller.showPreferredOnly,
+              ),
+              if (controller.preferredOnly) ...[
+                OutlinedButton(
+                  onPressed: controller.busy
+                      ? null
+                      : controller.refreshPreferred,
+                  child: const Text('Check preferred models'),
+                ),
+                const Text(
+                  'ASG prioritizes Qwen3.8 27B, Qwen3.5 27B, then 9B when estimated memory fits a new load. This is a curated policy, not a measured quality or speed guarantee. Other platforms require a compatible runtime connection; no local model is recommended here.',
+                ),
+              ],
               const SizedBox(height: 16),
               TextField(
                 decoration: const InputDecoration(
@@ -77,31 +107,35 @@ class _ModelCatalogScreenState extends State<ModelCatalogScreen> {
                 ),
                 onChanged: controller.search,
               ),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: OutlinedButton.icon(
-                  onPressed: controller.busy ? null : controller.discover,
-                  icon: const Icon(Icons.search),
-                  label: const Text('Search Hugging Face · MLX 4-bit'),
+              if (!controller.preferredOnly)
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: OutlinedButton.icon(
+                    onPressed: controller.busy ? null : controller.discover,
+                    icon: const Icon(Icons.search),
+                    label: const Text('Search Hugging Face · MLX 4-bit'),
+                  ),
                 ),
-              ),
               if (controller.searchError != null) Text(controller.searchError!),
-              SwitchListTile(
-                contentPadding: EdgeInsets.zero,
-                title: const Text('Only architectures enabled in ASG'),
-                subtitle: const Text(
-                  'Unchecked sources remain visible until checked. Other architectures need a runtime adapter.',
+              if (!controller.preferredOnly)
+                SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: const Text('Only architectures enabled in ASG'),
+                  subtitle: const Text(
+                    'Unchecked sources remain visible until checked. Other architectures need a runtime adapter.',
+                  ),
+                  value: controller.compatibleOnly,
+                  onChanged: controller.showCompatibleOnly,
                 ),
-                value: controller.compatibleOnly,
-                onChanged: controller.showCompatibleOnly,
-              ),
               Text('${controller.entries.length} candidates shown'),
               if (controller.busy) const LinearProgressIndicator(),
               if (controller.entries.isEmpty)
-                const Padding(
-                  padding: EdgeInsets.all(20),
+                Padding(
+                  padding: const EdgeInsets.all(20),
                   child: Text(
-                    'No matching candidates. Change the search or architecture filter.',
+                    controller.preferredOnly
+                        ? 'No preferred model yet. Check preferred models; unsupported hosts, unknown memory, memory pressure or failed source checks cannot produce a recommendation. Free memory and reopen this page to refresh device estimates, or use advanced discovery by turning off Preferred models only.'
+                        : 'No matching candidates. Change the search or architecture filter.',
                   ),
                 ),
               for (final entry in controller.entries) card(context, entry),
@@ -125,6 +159,8 @@ class _ModelCatalogScreenState extends State<ModelCatalogScreen> {
             Text(entry.name, style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(height: 8),
             Text(entry.description),
+            if (controller.preferredOnly)
+              const Text('Roles: Ask · Planning · Coding · Review'),
             const SizedBox(height: 8),
             SelectableText(
               'Weights: https://huggingface.co/${entry.repository}',

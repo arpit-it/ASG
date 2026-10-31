@@ -92,8 +92,10 @@ class RuntimeHealth {
     this.model,
     this.modelPath,
     this.loadedDevice,
+    this.idle = false,
   });
   final bool ready;
+  final bool idle;
   final String detail;
   final String? model, modelPath;
   final LoadedRuntimeDevice? loadedDevice;

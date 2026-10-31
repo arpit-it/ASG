@@ -42,6 +42,7 @@ class RuntimeConnection {
       };
       return RuntimeHealth(
         ready: ready,
+        idle: ready && data['phase'] == 'idle',
         detail: switch (data['status']) {
           'ready' => 'Runtime reports ready. $phase',
           'loading' =>

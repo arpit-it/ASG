@@ -24,8 +24,7 @@ const codingModelCatalog = [
   ModelCatalogEntry(
     repository: 'mlx-community/Qwen3.8-27B-4bit',
     name: 'Qwen3.8 27B · 4-bit',
-    description:
-        'Newer coding-capable candidate; no local inference verification.',
+    description: 'Newer same-architecture candidate; one-Mac coding comparison favored correctness, with variable speed. Validate your workload.',
     github: 'https://github.com/AlibabaCloud-Official/Qwen3.8-27B',
   ),
   ModelCatalogEntry(

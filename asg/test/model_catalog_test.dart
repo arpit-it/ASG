@@ -79,7 +79,7 @@ ModelCatalogService service({
 class WidgetCatalogService extends ModelCatalogService {
   @override
   Future<ModelCatalogMetadata> check(ModelCatalogEntry entry) async =>
-      metadata();
+      metadata(bytes: entry.repository.contains('27B') ? 22 * gib : 5 * gib);
   @override
   void close() {}
 }
@@ -93,7 +93,264 @@ Future<void> reveal(WidgetTester tester, Finder target) async {
   await tester.pumpAndSettle();
 }
 
+class PreferredCatalogService extends ModelCatalogService {
+  PreferredCatalogService(this.values);
+  final Map<String, ModelCatalogMetadata?> values;
+  @override
+  Future<ModelCatalogMetadata> check(ModelCatalogEntry entry) async {
+    final value = values[entry.repository];
+    if (value == null) throw const ModelCatalogFailure('Offline');
+    return value;
+  }
+}
+
+class PendingPreferredService extends ModelCatalogService {
+  final gate = Completer<ModelCatalogMetadata>();
+  int calls = 0;
+  @override
+  Future<ModelCatalogMetadata> check(ModelCatalogEntry entry) {
+    calls++;
+    return gate.future;
+  }
+}
+
 void main() {
+  test(
+    'current runtime remains visible without giving any model memory credit',
+    () async {
+      final repos = ModelCatalogController.preferredRepositories;
+      RunningCatalogModel? resident = const RunningCatalogModel(
+        'Qwen3.5-27B-4bit',
+      );
+      final service = PreferredCatalogService({
+        for (final repo in repos) repo: metadata(bytes: 16 * gib),
+      });
+      final c = ModelCatalogController(
+        service: service,
+        probe: () async => const ModelHardware(
+          appleSilicon: true,
+          memoryBytes: 36 * gib,
+          availableBytes: 2 * gib,
+        ),
+        inspectRunning: () async => resident,
+      );
+      addTearDown(c.dispose);
+      await c.initialize();
+      await c.refreshPreferred();
+      expect(c.entries, isEmpty);
+      expect(c.runningEntry?.repository, repos[1]);
+      expect(c.assessment(c.runningEntry!).fit, ModelFit.memoryPressure);
+      expect(
+        c
+            .assessment(
+              codingModelCatalog.firstWhere((e) => e.repository == repos[0]),
+            )
+            .fit,
+        ModelFit.memoryPressure,
+      );
+      resident = const RunningCatalogModel('private-sentinel');
+      await c.refreshPreferred();
+      expect(c.entries, isEmpty);
+      expect(c.runningEntry, isNull);
+      resident = null;
+      await c.refreshPreferred();
+      expect(c.entries, isEmpty);
+    },
+  );
+
+  test('resident cannot override incompatible metadata, total budget or failed recheck', () async {
+    final repo = ModelCatalogController.preferredRepositories.first;
+    for (final value in [
+      metadata(bytes: 30 * gib),
+      metadata(architecture: 'Other'),
+      null,
+    ]) {
+      final c = ModelCatalogController(
+        service: PreferredCatalogService({repo: value}),
+        probe: () async => host,
+        inspectRunning: () async =>
+            const RunningCatalogModel('Qwen3.8-27B-4bit'),
+      );
+      await c.initialize();
+      await c.refreshPreferred();
+      expect(c.entries, isEmpty);
+      c.dispose();
+    }
+  });
+
+  test(
+    'newer compatible candidate is checked with ordinary pinned metadata gates',
+    () async {
+      final newer = codingModelCatalog.firstWhere(
+        (e) => e.repository.contains('3.8'),
+      );
+      final s = service(modelApi: api(repo: newer.repository));
+      addTearDown(s.close);
+      final checked = await s.check(newer);
+      expect(checked.runtimeCompatible, isTrue);
+      expect(checked.revision, revision);
+      final c = ModelCatalogController(
+        service: PreferredCatalogService({newer.repository: checked}),
+        probe: () async => host,
+      );
+      addTearDown(c.dispose);
+      await c.initialize();
+      await c.refreshPreferred();
+      expect(c.entries.single.repository, newer.repository);
+    },
+  );
+
+  test('failed observation clears previous resident snapshot and later retry recovers', () async {
+    var fail = false;
+    final repo = ModelCatalogController.preferredRepositories.first;
+    final c = ModelCatalogController(
+      service: PreferredCatalogService({repo: metadata(bytes: 16 * gib)}),
+      probe: () async => const ModelHardware(
+        appleSilicon: true,
+        memoryBytes: 36 * gib,
+        availableBytes: 2 * gib,
+      ),
+      inspectRunning: () async {
+        if (fail) throw StateError('private-sentinel');
+        return const RunningCatalogModel('Qwen3.8-27B-4bit');
+      },
+    );
+    addTearDown(c.dispose);
+    await c.initialize();
+    await c.refreshPreferred();
+    expect(c.entries, isEmpty);
+    expect(c.runningEntry, isNotNull);
+    fail = true;
+    await c.refreshPreferred();
+    expect(c.entries, isEmpty);
+    expect(c.hardware.detail, isNot(contains('sentinel')));
+    expect(c.runningEntry, isNull);
+    fail = false;
+    await c.refreshPreferred();
+    expect(c.entries, isEmpty);
+    expect(c.runningEntry, isNotNull);
+  });
+
+  testWidgets('current runtime remains visible when no new load fits', (
+    tester,
+  ) async {
+    final c = ModelCatalogController(
+      service: PreferredCatalogService({}),
+      probe: () async => const ModelHardware(
+        appleSilicon: true,
+        memoryBytes: 36 * gib,
+        availableBytes: 0,
+      ),
+      inspectRunning: () async => const RunningCatalogModel('Qwen3.8-27B-4bit'),
+    );
+    await c.initialize();
+    await c.refreshPreferred();
+    await tester.pumpWidget(
+      MaterialApp(home: ModelCatalogScreen(controller: c)),
+    );
+    await tester.pumpAndSettle();
+    expect(c.entries, isEmpty);
+    expect(
+      find.text('Current local runtime: Qwen3.8 27B · 4-bit'),
+      findsOneWidget,
+    );
+    expect(
+      find.textContaining(
+        'loaded source revision, memory fit and a new load are unverified',
+      ),
+      findsOneWidget,
+    );
+  });
+
+  test(
+    'preferred batch excludes duplicate actions and stops after disposal',
+    () async {
+      final s = PendingPreferredService();
+      final c = ModelCatalogController(service: s, probe: () async => host);
+      await c.initialize();
+      var notifications = 0;
+      c.addListener(() => notifications++);
+      final pending = c.refreshPreferred();
+      await c.refreshPreferred();
+      await c.check(entry);
+      await c.discover();
+      expect(s.calls, 1);
+      expect(c.choose(entry), null);
+      c.dispose();
+      final count = notifications;
+      s.gate.complete(metadata());
+      await pending;
+      expect(s.calls, 1);
+      expect(c.entries, isEmpty);
+      expect(notifications, count);
+    },
+  );
+
+  test('preferred selects one model, falls back under pressure and removes stale failures', () async {
+    final repositories = ModelCatalogController.preferredRepositories;
+    final s = PreferredCatalogService({
+      repositories[0]: metadata(bytes: 16 * gib),
+      repositories[1]: metadata(),
+    });
+    final c = ModelCatalogController(service: s, probe: () async => host);
+    addTearDown(c.dispose);
+    await c.initialize();
+    expect(c.entries, isEmpty);
+    await c.refreshPreferred();
+    expect(c.entries.single.repository, repositories[0]);
+    c.search('9B');
+    expect(c.entries, isEmpty);
+    c.search('');
+    s.values[repositories[0]] = metadata(bytes: 22 * gib);
+    await c.refreshPreferred();
+    expect(c.entries.single.repository, repositories[1]);
+    s.values[repositories[1]] = null;
+    await c.refreshPreferred();
+    expect(c.entries, isEmpty);
+    expect(c.error(entry), isNotNull);
+  });
+  test(
+    'preferred excludes unsupported, oversized and unknown device results',
+    () async {
+      for (final hardware in [
+        const ModelHardware(
+          appleSilicon: false,
+          memoryBytes: 64 * gib,
+          availableBytes: 60 * gib,
+        ),
+        const ModelHardware(appleSilicon: true),
+        const ModelHardware(
+          appleSilicon: true,
+          memoryBytes: 8 * gib,
+          availableBytes: 6 * gib,
+        ),
+        const ModelHardware(appleSilicon: true, memoryBytes: 36 * gib),
+      ]) {
+        final s = PreferredCatalogService({
+          for (final r in ModelCatalogController.preferredRepositories)
+            r: metadata(),
+        });
+        final c = ModelCatalogController(
+          service: s,
+          probe: () async => hardware,
+        );
+        await c.initialize();
+        await c.refreshPreferred();
+        expect(c.entries, isEmpty);
+        c.dispose();
+      }
+      final s = PreferredCatalogService({
+        for (final r in ModelCatalogController.preferredRepositories)
+          r: metadata(architecture: 'Qwen2ForCausalLM'),
+      });
+      final c = ModelCatalogController(service: s, probe: () async => host);
+      addTearDown(c.dispose);
+      await c.initialize();
+      await c.refreshPreferred();
+      expect(c.entries, isEmpty);
+    },
+  );
+
   test(
     'memory estimates include all weights, cache/runtime and OS allowance',
     () {
@@ -392,6 +649,7 @@ void main() {
     final c = ModelCatalogController(service: s, probe: () async => host);
     addTearDown(c.dispose);
     await c.initialize();
+    c.showPreferredOnly(false);
     c.search('Coder');
     await c.discover();
     expect(c.searchError, isNotNull);
@@ -440,7 +698,7 @@ void main() {
           'quantization': {'bits': 4, 'group_size': 0},
         },
         {
-          'quantization': {'bits': 4, 'group_size': 64.0},
+          'quantization': {'bits': 4, 'group_size': 64.5},
         },
         {
           'quantization': {'bits': 4, 'group_size': 64, 'quant_method': 'gptq'},
@@ -527,6 +785,9 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+    await reveal(tester, find.text('Preferred models only'));
+    await tester.tap(find.text('Preferred models only'));
+    await tester.pumpAndSettle();
     expect(find.text('Choose a coding model'), findsOneWidget);
     expect(tester.takeException(), null);
     await reveal(tester, find.byType(TextField));
@@ -572,8 +833,8 @@ void main() {
       await tester.ensureVisible(browse);
       await tester.tap(browse);
       await tester.pumpAndSettle();
-      await reveal(tester, find.byKey(ValueKey('check-${entry.repository}')));
-      await tester.tap(find.byKey(ValueKey('check-${entry.repository}')));
+      await reveal(tester, find.text('Check preferred models'));
+      await tester.tap(find.text('Check preferred models'));
       await tester.pumpAndSettle();
       expect(
         c.metadata(entry),

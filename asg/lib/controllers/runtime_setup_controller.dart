@@ -111,6 +111,30 @@ class RuntimeSetupController extends BaseController {
     );
   }
 
+  /// Observe a known runtime identity without assigning repository provenance.
+  /// Download source fields describe the next launch and may have changed.
+  Future<RunningCatalogModel?> inspectRunningCatalogModel() async {
+    final setup = _setup;
+    final config = _connectionConfig;
+    if (isDisposed || busy || _settingsLoadFailed) return null;
+    final endpoint = config.endpoint;
+    if (!['localhost', '127.0.0.1', '::1'].contains(endpoint.host)) return null;
+    final result = await connection.check(config);
+    if (isDisposed ||
+        busy ||
+        !identical(setup, _setup) ||
+        !identical(config, _connectionConfig) ||
+        !result.ready ||
+        !result.idle ||
+        result.loadedDevice != LoadedRuntimeDevice.mlxMetal ||
+        setup.modelPath.isEmpty ||
+        result.modelPath != setup.modelPath ||
+        result.model != config.model) {
+      return null;
+    }
+    return RunningCatalogModel(config.model);
+  }
+
   Future<void> refresh() async {
     if (_healthCheck != null || isDisposed) return;
     final check = Object();

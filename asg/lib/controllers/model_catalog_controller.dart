@@ -9,8 +9,11 @@ class ModelCatalogController extends BaseController {
   ModelCatalogController({
     ModelCatalogService? service,
     Future<ModelHardware> Function()? probe,
+    this.inspectRunning,
   }) : service = service ?? ModelCatalogService(),
        _probe = probe ?? probeModelHardware;
+  final Future<RunningCatalogModel?> Function()? inspectRunning;
+  RunningCatalogModel? _running;
   final ModelCatalogService service;
   final Future<ModelHardware> Function() _probe;
   ModelHardware _hardware = const ModelHardware(
@@ -26,13 +29,68 @@ class ModelCatalogController extends BaseController {
   String? _searchError;
   String? get searchError => _searchError;
   bool _initializing = false;
-  bool get busy => _initializing || _checking != null || _discovering;
+  bool get busy =>
+      _refreshing || _initializing || _checking != null || _discovering;
   String? get checking => _checking;
   String _query = '';
+  bool _preferredOnly = true;
+  bool get preferredOnly => _preferredOnly;
+  bool _refreshing = false;
+  bool get refreshing => _refreshing;
+
+  // Deliberate quality tiers for the currently enabled architecture, not a
+  // parameter-count ranking of arbitrary public search results.
+  static const preferredRepositories = [
+    'mlx-community/Qwen3.8-27B-4bit',
+    'mlx-community/Qwen3.5-27B-4bit',
+    'mlx-community/Qwen3.5-9B-4bit',
+  ];
+  List<ModelCatalogEntry> get preferredEntries {
+    for (final repository in preferredRepositories) {
+      final entry = _entries.firstWhere((e) => e.repository == repository);
+      if (assessment(entry).fit == ModelFit.estimatedFit) return [entry];
+    }
+    return const [];
+  }
+
+  void showPreferredOnly(bool value) {
+    _preferredOnly = value;
+    update();
+  }
+
+  Future<void> refreshPreferred() async {
+    if (isDisposed || busy) return;
+    _refreshing = true;
+    update();
+    try {
+      _running = null;
+      final hardware = await _probe();
+      if (isDisposed) return;
+      _hardware = hardware;
+      final running = await inspectRunning?.call();
+      if (isDisposed) return;
+      _running = running;
+      for (final repository in preferredRepositories) {
+        if (isDisposed) return;
+        final entry = _entries.firstWhere((e) => e.repository == repository);
+        await _checkEntry(entry);
+      }
+    } catch (_) {
+      _running = null;
+      _hardware = const ModelHardware(
+        appleSilicon: false,
+        detail: 'Device inspection failed. Retry the preferred check.',
+      );
+    } finally {
+      _refreshing = false;
+      update();
+    }
+  }
+
   bool _compatibleOnly = true;
   bool get compatibleOnly => _compatibleOnly;
   List<ModelCatalogEntry> get entries => List.unmodifiable(
-    _entries.where((entry) {
+    (_preferredOnly ? preferredEntries : _entries).where((entry) {
       final model = _metadata[entry.repository];
       return (!_compatibleOnly || model == null || model.runtimeCompatible) &&
           '${entry.name} ${entry.repository} ${entry.description}'
@@ -43,8 +101,20 @@ class ModelCatalogController extends BaseController {
   ModelCatalogMetadata? metadata(ModelCatalogEntry entry) =>
       _metadata[entry.repository];
   String? error(ModelCatalogEntry entry) => _errors[entry.repository];
+  // Render only known catalog labels, never arbitrary server-provided text.
+  ModelCatalogEntry? get runningEntry {
+    final id = _running?.model;
+    for (final entry in _entries) {
+      if (!preferredRepositories.contains(entry.repository)) continue;
+      final name = entry.repository.split('/').last;
+      if (id == name || id == name.replaceFirst('-4bit', '')) return entry;
+    }
+    return null;
+  }
+
   ModelAssessment assessment(ModelCatalogEntry entry) =>
       ModelAssessment.assess(_hardware, metadata(entry));
+
   void search(String query) {
     _query = query.trim().toLowerCase();
     update();
@@ -77,6 +147,10 @@ class ModelCatalogController extends BaseController {
 
   Future<void> check(ModelCatalogEntry entry) async {
     if (isDisposed || busy) return;
+    await _checkEntry(entry);
+  }
+
+  Future<void> _checkEntry(ModelCatalogEntry entry) async {
     _checking = entry.repository;
     _metadata.remove(entry.repository);
     _errors.remove(entry.repository);

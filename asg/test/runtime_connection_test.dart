@@ -55,6 +55,7 @@ void main() {
         );
         final health = await connection.check(const LocalModelConfig());
         expect(health.ready, isTrue);
+        expect(health.idle, phase == 'idle');
         expect(
           health.detail,
           contains(switch (phase) {
@@ -73,6 +74,7 @@ void main() {
       );
       final health = await connection.check(const LocalModelConfig());
       expect(health.ready, isFalse);
+      expect(health.idle, isFalse);
       expect(health.detail, contains('model loading'));
       expect(health.detail, isNot(contains('ready')));
       connection.close();

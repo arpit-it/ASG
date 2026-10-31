@@ -124,6 +124,12 @@ class ModelAssessment {
   }
 }
 
+/// A runtime-reported model ID, never proof of repository/revision or memory fit.
+class RunningCatalogModel {
+  const RunningCatalogModel(this.model);
+  final String model;
+}
+
 class ModelCatalogChoice {
   const ModelCatalogChoice(this.entry, this.metadata);
   final ModelCatalogEntry entry;
