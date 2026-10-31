@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-31T14:04:08.660617+00:00",
+  "scope": "Bounded owner-session observations, not F17 support acceptance or a current all-scenarios pass.",
+  "downloadUi": {
+    "app": "Isolated macOS development preview, distinct bundle/profile",
+    "sourceTree": "00dfe37c7a352e21b93ac9c82c440bf49930be2b",
+    "sourceStatus": "Observed before independent retry/pipe corrections; normal-path panel layout and controls unchanged.",
+    "transport": "Synthetic local 20 MiB transfer via actual packaged helper and native downloader; no network or inference claim.",
+    "observations": [
+      {
+        "action": "Start",
+        "bytesMiB": 3.5,
+        "totalMiB": 20,
+        "percent": 17.5,
+        "speedKiBPerSecond": 255.0,
+        "placement": "Immediately below Download model & validate"
+      },
+      {
+        "action": "Pause",
+        "bytesMiB": 5.0,
+        "percent": 25.0,
+        "partialRetained": true
+      },
+      {
+        "action": "Resume",
+        "bytesMiB": 7.8,
+        "percent": 38.7,
+        "speedKiBPerSecond": 253.4
+      },
+      {
+        "action": "Stop",
+        "bytesMiB": 7.8,
+        "partialRetained": true
+      }
+    ],
+    "limitations": [
+      "Normal path observations are separate from shipped signed-rollback and inherited-pipe regressions.",
+      "Fixture payload is not valid inference weights.",
+      "Native observations do not replace independent exact-final-revision review."
+    ]
+  },
+  "modelSwitch": {
+    "repository": "mlx-community/Qwen3.5-27B-4bit",
+    "revision": "45797d2985a12c55e6473686e9ea91b95e959553",
+    "download": "Owner approved, selected from compatible catalog, downloaded through Model Setup.",
+    "shards": 3,
+    "loadedModel": "Qwen3.5-27B-4bit",
+    "backend": "mlx",
+    "device": "metal",
+    "health": "ready/idle",
+    "settingsUi": "Runtime ready. Project chat now uses Qwen3.5-27B-4bit.",
+    "streamingSmoke": {
+      "completionMatchesSyntheticExpected": true,
+      "chunks": 5,
+      "finishReason": "stop",
+      "elapsedSeconds": 2.49
+    },
+    "limitations": [
+      "Single bounded smoke, not throughput benchmark.",
+      "Peak memory, full context, candidate editing/repair/cancellation remain unverified for27B.",
+      "Original9Bweights and installed stablebundle retained."
+    ]
+  }
+}
