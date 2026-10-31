@@ -4,8 +4,10 @@
 import 'dart:async';
 
 import '../models/local_model_config.dart';
+import '../models/model_catalog.dart';
 import '../models/runtime_setup.dart';
 import '../models/runtime_capabilities.dart';
+import '../services/model_hardware.dart';
 import '../services/model_provider.dart';
 import '../services/model_settings_store.dart';
 import '../services/runtime_setup_store.dart';
@@ -21,7 +23,9 @@ class RuntimeSetupController extends BaseController {
     required this.host,
     RuntimeConnection? connection,
     ProviderFactory? createProvider,
-  }) : connection = connection ?? RuntimeConnection(),
+    Future<ModelHardware> Function()? inspectMemory,
+  }) : inspectMemory = inspectMemory ?? probeModelHardware,
+       connection = connection ?? RuntimeConnection(),
        _probe = ModelSettingsController(
          modelStore,
          createProvider: createProvider,
@@ -31,6 +35,7 @@ class RuntimeSetupController extends BaseController {
   final RuntimeSetupStore store;
   final ModelSettingsStore modelStore;
   final RuntimeHost host;
+  final Future<ModelHardware> Function() inspectMemory;
   final RuntimeConnection connection;
   RuntimeSetup _setup = const RuntimeSetup();
   RuntimeSetup get setup => _setup;
@@ -191,6 +196,8 @@ class RuntimeSetupController extends BaseController {
     }
   }
 
+  ModelHardware? _memory;
+  ModelHardware? get memory => _memory;
   RuntimeCapabilities? _capabilities;
   RuntimeCapabilities? get capabilities => _capabilities;
   int _discoveryEpoch = 0;
@@ -198,6 +205,7 @@ class RuntimeSetupController extends BaseController {
   void invalidateCapabilities() {
     _discoveryEpoch++;
     _capabilities = null;
+    _memory = null;
     update();
   }
 
@@ -209,7 +217,16 @@ class RuntimeSetupController extends BaseController {
     try {
       final report = await host.discover(python.trim());
       if (isDisposed || epoch != _discoveryEpoch) return;
+      // A memory-only failure must not discard useful dependency/device results.
+      ModelHardware memory;
+      try {
+        memory = await inspectMemory();
+      } catch (_) {
+        memory = const ModelHardware(appleSilicon: false);
+      }
+      if (isDisposed || epoch != _discoveryEpoch) return;
       _capabilities = report;
+      _memory = memory;
       _status = 'Host, dependency and device inspection complete. Model loading and memory adequacy remain unverified.';
     } catch (_) {
       if (isDisposed || epoch != _discoveryEpoch) return;

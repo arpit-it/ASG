@@ -2,6 +2,9 @@
 // Copyright 2026 Arpit Sinha
 
 import 'dart:async';
+
+import 'package:asg/models/model_catalog.dart';
+
 import 'dart:convert';
 import 'dart:io';
 
@@ -257,12 +260,15 @@ Future<RuntimeSetupController> controller(
   FakeRuntimeHost host, {
   RuntimeConnection? api,
   ProviderFactory? createProvider,
+  Future<ModelHardware> Function()? inspectMemory,
 }) async {
   final prefs = await SharedPreferences.getInstance();
   return RuntimeSetupController(
     store: RuntimeSetupStore.fromPreferences(prefs),
     modelStore: ModelSettingsStore.fromPreferences(prefs),
     host: host,
+    inspectMemory:
+        inspectMemory ?? () async => const ModelHardware(appleSilicon: false),
     createProvider: createProvider,
     connection: api ?? connection(ready: () => false),
   );
