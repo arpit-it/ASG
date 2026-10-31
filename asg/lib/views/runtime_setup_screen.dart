@@ -32,6 +32,7 @@ class _RuntimeSetupScreenState extends State<RuntimeSetupScreen> {
       endpoint = TextEditingController(),
       model = TextEditingController();
   ModelSource source = ModelSource.local;
+  RuntimeBackend backend = RuntimeBackend.auto;
   LocalModelConfig? lastConnection;
   @override
   void initState() {
@@ -40,6 +41,7 @@ class _RuntimeSetupScreenState extends State<RuntimeSetupScreen> {
     controller.addListener(refresh);
     final saved = controller.setup;
     python.text = saved.python;
+    backend = saved.backend;
     folder.text = saved.modelPath;
     repository.text = saved.repository;
     destination.text = saved.downloadParent;
@@ -67,6 +69,7 @@ class _RuntimeSetupScreenState extends State<RuntimeSetupScreen> {
     repository: repository.text.trim(),
     downloadParent: destination.text.trim(),
     revision: revision.text.trim(),
+    backend: backend,
   );
   LocalModelConfig get connection =>
       LocalModelConfig(baseUrl: endpoint.text.trim(), model: model.text.trim());
@@ -159,6 +162,12 @@ class _RuntimeSetupScreenState extends State<RuntimeSetupScreen> {
               ),
               const SizedBox(height: 12),
               Text(controller.health.detail),
+              const SizedBox(height: 8),
+              Text(
+                controller.health.loadedDevice == null
+                    ? 'Loaded backend/device: unknown. No device or memory adequacy check.'
+                    : 'Runtime reports loaded backend/device: ${controller.health.loadedDevice!.label}. Memory adequacy is not verified.',
+              ),
               const SizedBox(height: 12),
               Wrap(
                 spacing: 12,
@@ -323,10 +332,37 @@ class _RuntimeSetupScreenState extends State<RuntimeSetupScreen> {
                     icon: const Icon(Icons.folder_open),
                   ),
                 ),
+                DropdownButtonFormField<RuntimeBackend>(
+                  initialValue: backend,
+                  isExpanded: true,
+                  decoration: const InputDecoration(
+                    labelText: 'Backend for next launch',
+                  ),
+                  items: [
+                    for (final value in RuntimeBackend.values)
+                      DropdownMenuItem(value: value, child: Text(value.label)),
+                  ],
+                  onChanged: controller.busy
+                      ? null
+                      : (value) {
+                          if (value != null) setState(() => backend = value);
+                        },
+                ),
+                const SizedBox(height: 12),
+                const Text(
+                  'Auto keeps the legacy MLX-first dependency preference. Explicit choices never fall back to another backend. Torch/MPS needs compatible unquantized weights; MLX quantized weights cannot be reused by Torch. CPU/CUDA are unavailable. Selection does not verify dependencies, devices or model compatibility; launch validates them. Changing this choice leaves the active connection unchanged.',
+                ),
+                const SizedBox(height: 12),
                 Wrap(
                   spacing: 12,
                   runSpacing: 8,
                   children: [
+                    OutlinedButton(
+                      onPressed: controller.busy
+                          ? null
+                          : () => controller.saveSetup(values),
+                      child: const Text('Save runtime setup'),
+                    ),
                     OutlinedButton(
                       onPressed: controller.busy
                           ? null

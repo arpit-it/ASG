@@ -22,6 +22,11 @@ Downloads can be many gigabytes. Check the repository's model license and disk n
 
 ## Prepare and launch
 
+**Backend for next launch** offers Auto (the legacy MLX-first dependency preference), MLX / Metal and Torch / MPS. **Save runtime setup** persists this choice and the form without starting/downloading a model or changing the active chat connection. Reopening setup restores the saved choice. Starting passes the exact choice; an explicit choice never retries another backend. Torch/MPS requires compatible unquantized weights; MLX quantized folders cannot be assumed compatible. CPU/CUDA remain unavailable. Selection alone does not inspect dependencies, devices, model compatibility or memory adequacy; the bridge validates before loading. Prepare retains its existing automatic dependency check, so its success does not prove the explicitly selected backend is ready.
+
+The health panel displays only recognized ready-server backend/device pairs, labeled as a runtime report. Missing, unfamiliar or inconsistent pairs remain unknown; loading, failures and unreachable health do not retain a loaded identity. These are server reports, not independent device probes or memory adequacy verification. Existing HTTP connection controls remain usable on other platforms. F15 capability discovery UI and non-Apple CPU/CUDA milestones remain outstanding.
+
+
 Choose an existing Python environment with compatible Torch and Transformers. On this machine, the previously verified interpreter is `/Users/arpitsinha/ComfyUI-Installs/mac_instance/ComfyUI/.venv/bin/python`; enter it or select it with the executable picker. The application has no hardcoded interpreter path.
 
 **Prepare runtime helper** first recognizes an installed MLX runtime and verifies its imports without helper installation. For the legacy Torch path it verifies Torch/Transformers and Apple Metal, then installs only Accelerate 1.15.0 into the app-support runtime directory. It does not install or replace Torch/Transformers or modify the selected Python environment. Downloading from Hugging Face additionally requires huggingface_hub in that environment; other Git hosts require Git.
