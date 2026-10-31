@@ -1,0 +1,30 @@
+{
+  "observedAt": "2026-10-31T03:34:39.755681+00:00",
+  "sourceRevision": "68fe0d37e9b94c552a6c9b2691976a2722ecd2b9",
+  "runtimeSourceMatchesFinalCode": true,
+  "target": "web",
+  "browser": "Google Chrome through connected UI control; exact browser version not remeasured",
+  "build": "flutter build web --release: exit 0, Wasm dry run succeeded",
+  "origin": "disposable loopback origin, no model/runtime connection or project created",
+  "reports": {
+    "test/fixtures/product_acceptance_report.json": "0eca97be100eaf6f690f9e287772d9597be80b881bb83f38a0c08accf38d5985",
+    "docs/development/acceptance/2026-10-30-native-fixture-baseline/report.json": "22f9acfe737bc2a74bfbe224f68f965d7bcacd0b69619c5f06cac2ebd44cdc2a",
+    "docs/development/acceptance/2026-10-31-native-stop-deadline/report.json": "e49eab5bf5d4d5644ac257e4c0316be35c1013076715bbd1c5bb31a709feb171"
+  },
+  "observations": [
+    "Pre-fix reviewed PR323 build: controlled HTTP503 manifest failure shows sanitized unavailable message; restoring asset and clicking Retry produces no GET and does not recover.",
+    "Corrected build: controlled HTTP503 shows unavailable; compatibility report remains inspectable while comparison unavailable. After restoring asset, Retry makes a successful HTTP200 manifest GET and shows historical mismatch,29 configured checks,6 omitted,0 mismatched; previous report retained.",
+    "Compatibility report omitted checks expanded and visible; invalid replacement retains report and comparison.",
+    "Retained native fixture report: historical mismatch;116 cells without saved pass;29 configured,0 omitted,0 mismatched. No original report changed.",
+    "Paired native Stop/deadline report: matching manifest warning explicitly denies current source/model/device/support verification;119 cells without saved pass;29 configured,0 omitted,0 mismatched.",
+    "Clear returns No report loaded. Back/home/reopen shows empty session-only viewer."
+  ],
+  "limits": [
+    "Actual web viewer interaction only; no native launch, model inference, generation, new full matrix or support certification.",
+    "No new collector pass claimed; existing reports unchanged; observations are not a union of historical identities."
+  ],
+  "screenshots": {
+    "retry-recovered.png": "51be4c18ea765cf2180b63e00141193732e2ac97dc973bfc50b36e9c2ed6d5ff",
+    "matching-manifest.png": "14875c26e0e268c73f33196845fdffa35044e3530a4c368dc36b08439e155c38"
+  }
+}
