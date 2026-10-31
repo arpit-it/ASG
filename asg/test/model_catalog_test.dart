@@ -115,6 +115,112 @@ class PendingPreferredService extends ModelCatalogService {
 }
 
 void main() {
+  test('resident exact source remains visible without giving another model memory credit', () async {
+    final repos = ModelCatalogController.preferredRepositories;
+    ResidentCatalogModel? resident = ResidentCatalogModel(repos[1], revision);
+    final service = PreferredCatalogService({
+      for (final repo in repos) repo: metadata(bytes: 16 * gib),
+    });
+    final c = ModelCatalogController(
+      service: service,
+      probe: () async => const ModelHardware(
+        appleSilicon: true,
+        memoryBytes: 36 * gib,
+        availableBytes: 2 * gib,
+      ),
+      inspectResident: () async => resident,
+    );
+    addTearDown(c.dispose);
+    await c.initialize();
+    await c.refreshPreferred();
+    expect(c.entries.single.repository, repos[1]);
+    expect(c.assessment(c.entries.single).fit, ModelFit.alreadyLoaded);
+    expect(c.choose(c.entries.single), isNotNull);
+    expect(
+      c
+          .assessment(
+            codingModelCatalog.firstWhere((e) => e.repository == repos[0]),
+          )
+          .fit,
+      ModelFit.memoryPressure,
+    );
+    resident = ResidentCatalogModel(repos[1], 'b' * 40);
+    await c.refreshPreferred();
+    expect(c.entries, isEmpty);
+    resident = null;
+    await c.refreshPreferred();
+    expect(c.entries, isEmpty);
+  });
+
+  test('resident cannot override incompatible metadata, total budget or failed recheck', () async {
+    final repo = ModelCatalogController.preferredRepositories.first;
+    for (final value in [
+      metadata(bytes: 30 * gib),
+      metadata(architecture: 'Other'),
+      null,
+    ]) {
+      final c = ModelCatalogController(
+        service: PreferredCatalogService({repo: value}),
+        probe: () async => host,
+        inspectResident: () async => ResidentCatalogModel(repo, revision),
+      );
+      await c.initialize();
+      await c.refreshPreferred();
+      expect(c.entries, isEmpty);
+      c.dispose();
+    }
+  });
+
+  test(
+    'newer compatible candidate is checked with ordinary pinned metadata gates',
+    () async {
+      final newer = codingModelCatalog.firstWhere(
+        (e) => e.repository.contains('3.8'),
+      );
+      final s = service(modelApi: api(repo: newer.repository));
+      addTearDown(s.close);
+      final checked = await s.check(newer);
+      expect(checked.runtimeCompatible, isTrue);
+      expect(checked.revision, revision);
+      final c = ModelCatalogController(
+        service: PreferredCatalogService({newer.repository: checked}),
+        probe: () async => host,
+      );
+      addTearDown(c.dispose);
+      await c.initialize();
+      await c.refreshPreferred();
+      expect(c.entries.single.repository, newer.repository);
+    },
+  );
+
+  test('failed observation clears previous resident snapshot and later retry recovers', () async {
+    var fail = false;
+    final repo = ModelCatalogController.preferredRepositories.first;
+    final c = ModelCatalogController(
+      service: PreferredCatalogService({repo: metadata(bytes: 16 * gib)}),
+      probe: () async => const ModelHardware(
+        appleSilicon: true,
+        memoryBytes: 36 * gib,
+        availableBytes: 2 * gib,
+      ),
+      inspectResident: () async {
+        if (fail) throw StateError('private-sentinel');
+        return ResidentCatalogModel(repo, revision);
+      },
+    );
+    addTearDown(c.dispose);
+    await c.initialize();
+    await c.refreshPreferred();
+    expect(c.entries, hasLength(1));
+    fail = true;
+    await c.refreshPreferred();
+    expect(c.entries, isEmpty);
+    expect(c.hardware.detail, isNot(contains('sentinel')));
+    fail = false;
+    await c.refreshPreferred();
+    expect(c.entries, hasLength(1));
+  });
+
   test(
     'preferred batch excludes duplicate actions and stops after disposal',
     () async {
@@ -551,7 +657,7 @@ void main() {
           'quantization': {'bits': 4, 'group_size': 0},
         },
         {
-          'quantization': {'bits': 4, 'group_size': 64.0},
+          'quantization': {'bits': 4, 'group_size': 64.5},
         },
         {
           'quantization': {'bits': 4, 'group_size': 64, 'quant_method': 'gptq'},

@@ -9,8 +9,11 @@ class ModelCatalogController extends BaseController {
   ModelCatalogController({
     ModelCatalogService? service,
     Future<ModelHardware> Function()? probe,
+    this.inspectResident,
   }) : service = service ?? ModelCatalogService(),
        _probe = probe ?? probeModelHardware;
+  final Future<ResidentCatalogModel?> Function()? inspectResident;
+  ResidentCatalogModel? _resident;
   final ModelCatalogService service;
   final Future<ModelHardware> Function() _probe;
   ModelHardware _hardware = const ModelHardware(
@@ -38,10 +41,19 @@ class ModelCatalogController extends BaseController {
   // Deliberate quality tiers for the currently enabled architecture, not a
   // parameter-count ranking of arbitrary public search results.
   static const preferredRepositories = [
+    'mlx-community/Qwen3.8-27B-4bit',
     'mlx-community/Qwen3.5-27B-4bit',
     'mlx-community/Qwen3.5-9B-4bit',
   ];
   List<ModelCatalogEntry> get preferredEntries {
+    final resident = _resident;
+    if (resident != null &&
+        preferredRepositories.contains(resident.repository)) {
+      final entry = _entries.firstWhere(
+        (e) => e.repository == resident.repository,
+      );
+      if (assessment(entry).fit == ModelFit.alreadyLoaded) return [entry];
+    }
     for (final repository in preferredRepositories) {
       final entry = _entries.firstWhere((e) => e.repository == repository);
       if (assessment(entry).fit == ModelFit.estimatedFit) return [entry];
@@ -59,11 +71,24 @@ class ModelCatalogController extends BaseController {
     _refreshing = true;
     update();
     try {
+      _resident = null;
+      final hardware = await _probe();
+      if (isDisposed) return;
+      _hardware = hardware;
+      final resident = await inspectResident?.call();
+      if (isDisposed) return;
+      _resident = resident;
       for (final repository in preferredRepositories) {
         if (isDisposed) return;
         final entry = _entries.firstWhere((e) => e.repository == repository);
         await _checkEntry(entry);
       }
+    } catch (_) {
+      _resident = null;
+      _hardware = const ModelHardware(
+        appleSilicon: false,
+        detail: 'Device inspection failed. Retry the preferred check.',
+      );
     } finally {
       _refreshing = false;
       update();
@@ -84,8 +109,25 @@ class ModelCatalogController extends BaseController {
   ModelCatalogMetadata? metadata(ModelCatalogEntry entry) =>
       _metadata[entry.repository];
   String? error(ModelCatalogEntry entry) => _errors[entry.repository];
-  ModelAssessment assessment(ModelCatalogEntry entry) =>
-      ModelAssessment.assess(_hardware, metadata(entry));
+  ModelAssessment assessment(ModelCatalogEntry entry) {
+    final info = metadata(entry);
+    final result = ModelAssessment.assess(_hardware, info);
+    if ((result.fit == ModelFit.memoryPressure ||
+            result.fit == ModelFit.estimatedFit) &&
+        result.fitsMemory == true &&
+        info != null &&
+        _resident?.repository == entry.repository &&
+        _resident?.revision == info.revision) {
+      return ModelAssessment(
+        ModelFit.alreadyLoaded,
+        'This exact pinned model reports loaded and idle in the local MLX runtime. Its existing allocation is not a new-load headroom requirement. This observation does not verify a new load, larger context or another model.',
+        estimatedBytes: result.estimatedBytes,
+        fitsMemory: true,
+      );
+    }
+    return result;
+  }
+
   void search(String query) {
     _query = query.trim().toLowerCase();
     update();

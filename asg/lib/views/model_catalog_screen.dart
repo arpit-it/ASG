@@ -65,7 +65,7 @@ class _ModelCatalogScreenState extends State<ModelCatalogScreen> {
                   ),
                   SizedBox(height: 8),
                   Text(
-                    'Memory estimates include all weights (including MoE), 25% overhead plus 4 GiB for runtime/cache, with 6 GiB reserved for OS/apps. Context and workloads can need more. Catalog candidates have not been verified by live inference. No downloads or model switching happen here.',
+                    'Memory estimates include all weights (including MoE), 25% overhead plus 4 GiB for runtime/cache, with 6 GiB reserved for OS/apps. Context and workloads can need more. Catalog checks do not verify live inference. A small owner-run comparison on one Mac favored Qwen3.8 coding correctness over Qwen3.5; speed varied. This is not a device-wide benchmark. No downloads or model switching happen here.',
                   ),
                 ],
               ),
@@ -73,7 +73,7 @@ class _ModelCatalogScreenState extends State<ModelCatalogScreen> {
                 contentPadding: EdgeInsets.zero,
                 title: const Text('Preferred models only'),
                 subtitle: const Text(
-                  'One curated choice covering Ask, planning, coding and review. Requires checked runtime compatibility and estimated available memory fit.',
+                  'One curated choice covering Ask, planning, coding and review. Requires checked compatibility and estimated headroom, or an exact pinned idle local load.',
                 ),
                 value: controller.preferredOnly,
                 onChanged: controller.showPreferredOnly,
@@ -86,7 +86,7 @@ class _ModelCatalogScreenState extends State<ModelCatalogScreen> {
                   child: const Text('Check preferred models'),
                 ),
                 const Text(
-                  'ASG prioritizes Qwen3.5 27B when it fits current memory, otherwise 9B. This is a curated policy, not a measured quality or speed guarantee. Other platforms require a compatible runtime connection; no local model is recommended here.',
+                  'ASG keeps an exact checked idle local model visible; otherwise it prioritizes Qwen3.8 27B, Qwen3.5 27B, then 9B when estimated memory fits. This is a curated policy, not a measured quality or speed guarantee. Other platforms require a compatible runtime connection; no local model is recommended here.',
                 ),
               ],
               const SizedBox(height: 16),

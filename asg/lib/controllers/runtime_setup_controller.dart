@@ -111,6 +111,31 @@ class RuntimeSetupController extends BaseController {
     );
   }
 
+  /// Recheck exact saved identity. Remote/emulated or unknown observations do
+  /// not justify treating app-host memory as already occupied by this model.
+  Future<ResidentCatalogModel?> inspectResidentCatalogModel() async {
+    final setup = _setup;
+    final config = _connectionConfig;
+    if (isDisposed || busy || _settingsLoadFailed) return null;
+    final endpoint = config.endpoint;
+    if (!['localhost', '127.0.0.1', '::1'].contains(endpoint.host)) return null;
+    final result = await connection.check(config);
+    if (isDisposed ||
+        busy ||
+        !identical(setup, _setup) ||
+        !identical(config, _connectionConfig) ||
+        !result.ready ||
+        !result.idle ||
+        result.loadedDevice != LoadedRuntimeDevice.mlxMetal ||
+        setup.modelPath.isEmpty ||
+        result.modelPath != setup.modelPath ||
+        result.model != config.model ||
+        !RegExp(r'^[a-f0-9]{40}$').hasMatch(setup.revision)) {
+      return null;
+    }
+    return ResidentCatalogModel(setup.repository, setup.revision);
+  }
+
   Future<void> refresh() async {
     if (_healthCheck != null || isDisposed) return;
     final check = Object();
