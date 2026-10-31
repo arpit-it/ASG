@@ -4990,3 +4990,29 @@ Actual existing MLX-environment no-weight dependency discovery374ms, source-hash
 Bounded increment awaits linked PR, independent exact-final review, required CI and verified protected merge. F15 remains unchecked/Inprogress for actual device/memory capability readiness and CPU/CUDA-host milestones; this is not full milestone1 acceptance. No second task/issue or FID started. Final tested tree, review/CI/merge identifiers will be recorded after actual verification.
 
 Recorded 2026-10-31T10:56:43.020688+00:00
+
+
+### F15 capability inspection verified merged — #334 / PR #335
+
+Branch `334-backend-discovery`; tested local `9468c075941e788a6116f311ae9ee06b302581c9` and published final `45efc515e1f1fe9228ae86a78cd507a31adc99b3` share exact verified tree `e6f2815745bf39f46b71c3340a54321ac8a4f1d3`. All17publishedblobSHAs matched; >1MiBrequirements and other large docs were read in bounded chunks. Plugin raw commit metadata confirmed exact tree/parent. Independent approval5722448524/finalgate5722456671 approved finalhead with no blockers/unresolved threads; same-owner APPROVE422 used explicit independent COMMENT verdict without changing protection.
+
+Reviewer independently passed14focused tests (13new capability/process checks plus an external actual-native owned-fixture preservation probe),6actualChrome tests,8backend/9inventory. Actual requiredCI41194882739 succeeded at exact45efc515: Flutter124518950877 formatter276zero/cleananalysis/927Linuxdefaulttests10skips/15Chrome/releaseweb+Wasm/realindependentgenerated resolve-analyze-test-build-renderedinteraction-serve; Python12451895104932collector/9inventory/2download/8backend/6HTTP/14command(skip1)/4confinement(skip2Linux). Reviewer inspected actual logs. LocalmacOS931defaulttests9skips,75focused,21Chrome,format276zero/analyzerclean/web+macOSdebugbuilds and Python32/9/2/8/6/14(skip1)/4actualmacOSconfinement passed. Platform counts remain separate; skips do not verify inference.
+
+Source-hash-bound actual existing-environment discovery374ms records only dependency availability (MLX present; Torch/Accelerate missing), with unknown device/model readiness. Injected native/Chrome UI and actual subprocess fixtures are distinct from real inference/manual device acceptance. Original24historicalreportfiles retained; only inventory source comparison metadata refreshed. No new model inference/load/download, package installation, stableapp/data replacement or CPU/CUDA claim. Existing localhost8765endpoint was unavailable(URLError) on fresh inspection; no process started to mask that state.
+
+Independent reviewer protected-plugin squashmerged https://github.com/arpit-it/ASG/pull/335 as `28059a5c7b92e5f1f90bd5badd98ad69f921b455` at2026-10-31T11:03:56Z; issue334closed/completed11:03:57Z. Parent independently verified mergedPR/exacthead, issueclosure, currentmain, signedmergetree/parent, exact-head review and bothrequiredCIsuccesses. Guarded `/private/tmp/asg-335-sync.py` imported the SHA-verified signed merge and synchronized primarymain/origin-main0/0 with emptyindex. Backup `/private/tmp/asg-334-primary-before` preserved all five previous edits; reviewed docs incorporate previous bookkeeping, and twoIDEfiles remain byte-identical. Both requested automationlabels applied; connected plugin exclusively used for remote access.
+
+Bounded issue334 complete; F15 remains unchecked/Inprogress for real device/memory readiness and CPU/CUDA-host milestones. Discovery is not full milestone1 acceptance. Final merge bookkeeping retained locally for the next normal reviewed increment. No second task/issue/FID started. Fifteen-minute cadence and existing notification preference unchanged; no user action required.
+
+Recorded 2026-10-31T11:05:29.943071+00:00
+
+
+### F15 checkpoint metadata containment — issue #336
+
+After plugin verification of PR335 merge28059a5 and empty open-issue/PR searches, selected a real scanner defect under existing F15 (no new F ID). Isolated `336-checkpoint-metadata` at `/private/tmp/asg-336-metadata`; primary five IDE/docs edits preserved in `/private/tmp/asg-metadata-primary-before`. Config/index links outside a checkpoint were accepted at baseline despite weight/tokenizer boundary checks. Actual pre-fix regressions failed both external metadata cases and misleading no-checkpoint MLX guidance; internal controls passed.
+
+Canonical config/index containment now precedes read/parse, with private actionable refusal. Ordinary/internal links remain usable; existing external weight/tokenizer refusal stays intact. Eleven actual filesystem checks cover all five file types, sibling-prefix containment, unchanged external bytes/links, no runtime start and corrected MLX guidance. This is snapshot validation of user-selected local files, not race-proof isolation against concurrent malicious filesystem changes. No source execution or model load is added.
+
+Final runtime sources: clean analysis; full942macOSFluttertests/nineoptinskips; releaseweb and macOSdebugbuilds pass. Formatter277files; nine inventory/eight backend Python tests pass. Earlier focused77passed before the six extra weight/tokenizer cases; the full final suite includes all11newchecks. Source comparison inventory regenerated; historical acceptance artifacts unchanged. Existing localhost8765health unavailable(URLError), no inference/start/download/install/stableapp/data replacement. Prior PR335 exact-review/CI/merge bookkeeping carried forward. PR publication, exact-final independent review and required CI/verified protected merge pending; F15 remains unchecked/Inprogress.
+
+Recorded 2026-10-31T11:18:54.764249+00:00

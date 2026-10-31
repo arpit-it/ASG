@@ -16,6 +16,10 @@ import 'runtime_host.dart';
 RuntimeHost createRuntimeHost() => _host;
 final _host = NativeRuntimeHost();
 
+class _ExternalCheckpointMetadata implements Exception {
+  const _ExternalCheckpointMetadata();
+}
+
 class NativeRuntimeHost implements RuntimeHost {
   NativeRuntimeHost({
     this.port = 8765,
@@ -167,6 +171,11 @@ class NativeRuntimeHost implements RuntimeHost {
       final config = File('$folder/config.json');
       if (!await config.exists()) continue;
       try {
+        // Metadata follows the same checkpoint boundary as weights/tokenizers.
+        // Check before reading: even valid external JSON is not this checkpoint.
+        if (!(await config.resolveSymbolicLinks()).startsWith('$folder/')) {
+          throw const _ExternalCheckpointMetadata();
+        }
         if (await config.length() > 1024 * 1024) {
           throw const FormatException('Configuration file too large.');
         }
@@ -182,6 +191,11 @@ class NativeRuntimeHost implements RuntimeHost {
         final indexFile = File('$folder/model.safetensors.index.json');
         final files = <String>[];
         if (await indexFile.exists()) {
+          if (!(await indexFile.resolveSymbolicLinks()).startsWith(
+            '$folder/',
+          )) {
+            throw const _ExternalCheckpointMetadata();
+          }
           if (await indexFile.length() > 8 * 1024 * 1024) {
             throw const FormatException('Weight index too large.');
           }
@@ -231,20 +245,22 @@ class NativeRuntimeHost implements RuntimeHost {
                 problem ?? 'Qwen3.5 · complete local Safetensors checkpoint',
           ),
         );
-      } catch (_) {
+      } catch (error) {
         result.add(
           ModelCandidate(
             path: folder,
             name: folder.split(Platform.pathSeparator).last,
             supported: false,
-            detail: 'Model metadata could not be validated. Check config.json and the weight index, then select a complete compatible checkpoint.',
+            detail: error is _ExternalCheckpointMetadata
+                ? 'Linked model metadata outside the checkpoint folder is not supported. Select a self-contained downloaded checkpoint.'
+                : 'Model metadata could not be validated. Check config.json and the weight index, then select a complete compatible checkpoint.',
           ),
         );
       }
     }
     if (result.isEmpty) {
       throw const FormatException(
-        'No Transformers config.json found. Choose the complete checkpoint folder; a standalone weight file is insufficient. GGUF/MLX runtimes are not yet supported.',
+        'No checkpoint config.json found. Choose a complete supported Qwen3.5 checkpoint, including MLX Safetensors metadata; a standalone weight file or GGUF file is insufficient.',
       );
     }
     return result;
