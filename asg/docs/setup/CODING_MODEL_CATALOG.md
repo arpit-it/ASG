@@ -42,3 +42,5 @@ revision/license changes, estimates, unsupported/unknown hosts, retry, busy and
 disposal behavior, responsive UI and selection without downloads/settings writes.
 Explicit `dart run tools/check_model_catalog.dart` performs public metadata and
 native hardware checks only; it does not fetch weights or run inference.
+
+The native macOS memory inspection runs fixed read-only `sysctl` and `vm_stat` helpers with a three-second deadline per helper and a combined 64 KiB stdout/stderr limit. On timeout or excess output, ASG terminates and awaits the owned helper (up to two additional seconds for cleanup); stderr is discarded. A failed headroom probe retains detected total RAM with unknown headroom. These OS observations are estimates, never successful model loading or inference evidence. The helper owns only the fixed process; it is not a process-tree execution sandbox.
