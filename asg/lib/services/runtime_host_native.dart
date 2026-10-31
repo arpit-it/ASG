@@ -209,6 +209,25 @@ class NativeRuntimeHost implements RuntimeHost {
           files.add('model.safetensors');
         }
         if (files.isEmpty) problem = 'Weight index contains no shards.';
+        if (files.any((name) => !name.endsWith('.safetensors'))) {
+          throw const FormatException(
+            'Weight index must reference Safetensors shards.',
+          );
+        }
+        final metadataPaths = <String>{};
+        for (final name in [
+          'config.json',
+          'model.safetensors.index.json',
+          'tokenizer.json',
+          'tokenizer_config.json',
+        ]) {
+          final metadata = File('$folder/$name');
+          if (await metadata.exists()) {
+            metadataPaths.add(await metadata.resolveSymbolicLinks());
+          }
+        }
+        final weightPaths = <String>{};
+        var weightBytes = 0;
         for (final name in [
           ...files,
           'tokenizer.json',
@@ -228,9 +247,18 @@ class NativeRuntimeHost implements RuntimeHost {
             problem = 'Linked model files outside the checkpoint folder are not supported. Select a self-contained downloaded checkpoint.';
             break;
           }
-          if (await file.length() < 512 && name.endsWith('.safetensors')) {
+          if (files.contains(name) && metadataPaths.contains(resolved)) {
+            throw const FormatException(
+              'Weight shard aliases checkpoint metadata.',
+            );
+          }
+          final length = await file.length();
+          if (length < 512 && name.endsWith('.safetensors')) {
             problem = 'Weights are empty or Git LFS pointers. Download actual model weights.';
             break;
+          }
+          if (files.contains(name) && weightPaths.add(resolved)) {
+            weightBytes += length;
           }
         }
         result.add(
@@ -238,6 +266,7 @@ class NativeRuntimeHost implements RuntimeHost {
             path: folder,
             name: folder.split(Platform.pathSeparator).last,
             supported: problem == null && known,
+            weightBytes: problem == null && known ? weightBytes : null,
             quantized:
                 data['quantization'] != null ||
                 data['quantization_config'] != null,

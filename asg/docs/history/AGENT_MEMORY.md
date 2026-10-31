@@ -5088,3 +5088,39 @@ Validation: 954 macOS Flutter tests passed/nine opt-in skips,77focused capabilit
 Recorded 2026-10-31T12:47:10.528404+00:00
 
 PR [#343](https://github.com/arpit-it/ASG/pull/343) published on `342-setup-memory` — Awaiting merge. Tested local115ed9e and remotee21253bb share tree7470c58d; all10publishedblobSHAs verified. This documentation-only followup records publication; independent exact-final review, required CI and verified merge remain gates.
+
+
+### F15 host RAM observations verified merged — #342 / PR #343
+
+Bounded issue342 Done. Branch `342-setup-memory`; final local4c778d99414133805bc3f2fe014c3eff0b160f1d and remote3c5f9ad50ddf30a4e23e210eab3745321cc27988 share exact tree992105cd471cf70a21d820a369770c3eac28101f. All10initial and3documentation-followupblobSHAs matched tested local contents, with bounded reads for large documents; raw remote commit tree/parent verified. Independent approval5722775161/finalgate5722787686 inspected all10files and found no blockers/unresolved threads. Reviewer independently passed77focused Flutter tests, an extra actual default-controller macOS RAM wiring check,11actualChrome and9inventory fixtures. Same-owner APPROVE422 was recorded as explicit independent COMMENT approval under unchanged zero-required-approval protection; no bypass or protection change.
+
+Actual requiredCI41202849020 passed Flutter124541993303/Python124541993277; reviewer inspected actual logs: formatter279zero/cleananalyzer/949Linuxdefaulttests11skips/15actualChrome/releaseweb+Wasm/realindependentgenerated resolve-analyze-test-build-renderedinteraction-serve; Python32collector/9inventory/2download/12backend/6HTTP/14command(skip1)/4confinement(skip2Linux). CI testmerge2dcb05ed has exact reviewedtree/expectedparents. Local954macOSFluttertests9skips,77focused,11actualChrome,analysis/format279/web/macOSdebugbuilds and9inventory passed. Platform counts remain distinct; opt-in skips establish no inference.
+
+Independent reviewer protected-plugin squashmerged [PR #343](https://github.com/arpit-it/ASG/pull/343) as8f60751e68f0c758aac6ad117921f3fadaea5111 at2026-10-31T12:55:17Z; issue342closed/completed12:55:18Z. Parent independently verified mergedPR/exacthead, issueclosure, currentmain, signedmerge tree/soleparent90a1a69c and exactfinalreviews/requiredCIsuccess. Guarded /private/tmp/asg-343-sync.py imported SHA-verified signedmerge and synchronized primarymain/origin-main0/0 with emptyindex. Backup /private/tmp/asg-342-primary-before preserved allfive previous edits; reviewed docs retain their additions (staleCurrentstatus reconciled) and twoIDEfiles remain byte-identical. Both requested automationlabels applied; connectedplugin exclusively used for remote access.
+
+Setup now shows explicit transient app-host total/free-reclaimable RAM with private unknown/failure/retry and stale/disposal protection. This is not remote/GPU memory, selected-model fit or successful inference. Full F15 remains unchecked/Inprogress for selected-checkpoint budgeting and real non-AppleCPU/CUDA milestones. Historical acceptance reports retained; only sourcecomparisoninventory refreshed. Fresh existing localhost8765health unavailable(URLError); no modelprocess/load/request/download, installation, stableapp/data replacement or deployment. Final merge bookkeeping retained locally for the next reviewed increment. No second issue/task/FID started;15minute cadence/notification preference unchanged. No user action required.
+
+Recorded 2026-10-31T12:56:23.307415+00:00
+
+
+### F15 measured checkpoint footprint — issue #344
+
+Branch `344-checkpoint-size` at `/private/tmp/asg-344-size`, based on plugin-verified main8f60751e/PR343. No open issue/PR or competing active owner; prior run completed. Primary five IDE/docs edits remain untouched; their prior verified merge bookkeeping is carried forward. Scanner records total distinct canonical validated weight-file lengths, excluding tokenizer/index metadata and ignoring untrusted declared total_size. Rejected/incomplete candidates retain unknown, old candidates default unknown. Setup presents disk bytes with explicit cache/activation/overhead and rescan caveats, never memory fit or inference readiness. This is a snapshot, not a guarantee against concurrent file changes. No new tensor reads, model load, fallback, settings/process changes, installs or stable app/data replacement.
+
+Validation: 957macOSFluttertests/nineoptinskips;17focused filesystem/boundary/memory checks;3actualChrome memory/controller/responsive checks;formatter280zero/cleananalyzer;releaseweb/macOSdebugbuilds and9inventoryfixtures passed. New actual filesystem cases cover single/sharded weights, repeated index entries, canonical aliases, incomplete/external refusals; 320px enlarged-text interaction checks selection sizes/legacyunknown/privacy. Sourcecomparisoninventory refreshed; historical report artifacts retained. Fresh localhost8765health unavailable(URLError); no inference claimed. Initial formatter needed normal SDK cache access; authorized retry passed. Independent exact-final review, required CI and verified protected merge still gate completion. F15 remains In progress for full budgeting and real CPU/CUDA milestones.
+
+Recorded 2026-10-31T13:16:57.929674+00:00
+
+
+PR [#345](https://github.com/arpit-it/ASG/pull/345) published on `344-checkpoint-size` — Awaiting merge. Tested localb9535891a0fb3c02bfa0118dc6a0ec5ef2c62c86 and published49a3e78b70485b6a43929cd7475ba05fed215bd0 share treed24506735644c162e00dec360a570316c6ced1c2; all8blobSHAs verified. This documentation-only publication followup requires independent review of final head and required CI before protected merge. Full F15 remains In progress.
+
+
+### PR345 independent review correction
+
+Independent blocking review5722869981 at df7ac594 reproduced metadata-only weight_map -> tokenizer.json as supported/2bytes, and a .safetensors alias to padded tokenizer metadata as supported/1024bytes. Parent actual pre-fix regression also failed. Scanner now refuses non-Safetensors shard names and canonical aliases to config/index/tokenizer metadata before counting. Four metadata-name cases and padded internal-metadata alias are covered; ordinary internal weight aliases remain supported. This is bounded filesystem metadata validation, not tensor-content integrity or raceproof isolation.
+
+Corrected local checks:958macOSFluttertests/nineoptinskips,18focusedfilesystem/boundary/memory,cleananalyzer,formatter280zero and9inventory pass; prior3actualChrome remains valid for unchanged panel/controller. Historical acceptance artifacts unchanged. Exact-final publication/re-review/requiredCI/verifiedmerge remain gates; full F15 remains Inprogress.
+
+Recorded 2026-10-31T13:21:37.175987+00:00
+
+Corrected source releaseweb and macOSdebug builds also passed before publication; no stable application launch/replacement. Fresh independent final revision review required.
