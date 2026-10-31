@@ -115,6 +115,91 @@ class PendingPreferredService extends ModelCatalogService {
 }
 
 void main() {
+  test('opening observes current model without public metadata checks and refresh clears stale identity', () async {
+    var fail = false;
+    final service = PreferredCatalogService({});
+    final c = ModelCatalogController(
+      service: service,
+      probe: () async => const ModelHardware(
+        appleSilicon: true,
+        memoryBytes: 36 * gib,
+        availableBytes: 0,
+      ),
+      inspectRunning: () async {
+        if (fail) throw StateError('PRIVATE');
+        return const RunningCatalogModel('Qwen3.8-27B-4bit');
+      },
+    );
+    addTearDown(c.dispose);
+    await c.initialize();
+    expect(c.runningEntry?.name, 'Qwen3.8 27B · 4-bit');
+    expect(c.preferredRunningEntry, c.runningEntry);
+    expect(c.metadata(c.runningEntry!), isNull);
+    expect(c.entries, isEmpty);
+    fail = true;
+    await c.initialize();
+    expect(c.runningEntry, isNull);
+    expect(c.preferredRunningEntry, isNull);
+    expect(c.hardware.memoryBytes, 36 * gib);
+  });
+  test('disposed initial runtime observation cannot publish and duplicate initialization is excluded', () async {
+    final gate = Completer<RunningCatalogModel?>();
+    var calls = 0;
+    final c = ModelCatalogController(
+      probe: () async => host,
+      inspectRunning: () {
+        calls++;
+        return gate.future;
+      },
+    );
+    final pending = c.initialize();
+    await Future<void>.delayed(Duration.zero);
+    await c.initialize();
+    expect(calls, 1);
+    c.dispose();
+    gate.complete(const RunningCatalogModel('Qwen3.8-27B-4bit'));
+    await pending;
+    expect(c.runningEntry, isNull);
+  });
+  testWidgets(
+    'preferred current model is visible on open at narrow enlarged width and refresh can show older active model',
+    (tester) async {
+      tester.view.physicalSize = const Size(360, 900);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      var model = 'Qwen3.8-27B-4bit';
+      final c = ModelCatalogController(
+        service: PreferredCatalogService({}),
+        probe: () async => host,
+        inspectRunning: () async => RunningCatalogModel(model),
+      );
+      await tester.pumpWidget(
+        MaterialApp(
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(context)
+                .copyWith(textScaler: const TextScaler.linear(2)),
+            child: child!,
+          ),
+          home: ModelCatalogScreen(controller: c),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await reveal(tester, find.text('Preferred model · Currently in use'));
+      expect(
+        find.text('Currently in use: Qwen3.8 27B · 4-bit'),
+        findsOneWidget,
+      );
+      model = 'Qwen3.5-27B-4bit';
+      await reveal(tester, find.text('Refresh current model'));
+      await tester.tap(find.text('Refresh current model'));
+      await tester.pumpAndSettle();
+      expect(c.runningEntry?.name, 'Qwen3.5 27B · 4-bit');
+      expect(c.preferredRunningEntry, isNull);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
   test(
     'current runtime remains visible without giving any model memory credit',
     () async {
@@ -250,13 +335,10 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(c.entries, isEmpty);
-    expect(
-      find.text('Current local runtime: Qwen3.8 27B · 4-bit'),
-      findsOneWidget,
-    );
+    expect(find.text('Currently in use: Qwen3.8 27B · 4-bit'), findsOneWidget);
     expect(
       find.textContaining(
-        'loaded source revision, memory fit and a new load are unverified',
+        'does not verify the loaded revision or memory adequacy',
       ),
       findsOneWidget,
     );
