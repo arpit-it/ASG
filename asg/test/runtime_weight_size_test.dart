@@ -53,6 +53,36 @@ void main() {
     },
   );
 
+  test('non-weight index entries never become trusted weight bytes', () async {
+    final root = await Directory.systemTemp.createTemp('asg malformed index ');
+    addTearDown(() => root.delete(recursive: true));
+    await File('${root.path}/config.json').writeAsString(
+      jsonEncode({
+        'architectures': ['Qwen3_5ForConditionalGeneration'],
+      }),
+    );
+    for (final name in ['tokenizer.json', 'tokenizer_config.json']) {
+      await File('${root.path}/$name').writeAsString('{}');
+    }
+    final index = File('${root.path}/model.safetensors.index.json');
+    final host = ScanningRuntimeHost();
+    for (final name in [
+      'tokenizer.json',
+      'tokenizer_config.json',
+      'config.json',
+      'model.safetensors.index.json',
+    ]) {
+      await index.writeAsString(
+        jsonEncode({
+          'weight_map': {'a': name},
+        }),
+      );
+      final candidate = (await host.scan(root.path)).single;
+      expect(candidate.supported, isFalse, reason: name);
+      expect(candidate.weightBytes, isNull, reason: name);
+    }
+  });
+
   test('internal aliases counted once, external links never trusted', () async {
     final root = await Directory.systemTemp.createTemp('asg weight alias ');
     addTearDown(() => root.delete(recursive: true));
@@ -85,6 +115,14 @@ void main() {
     expect(rejected.weightBytes, isNull);
     expect(rejected.detail, isNot(contains(external.path)));
     expect(await external.length(), 4096);
+    await alias.delete();
+    final tokenizer = File('${checkpoint.path}/tokenizer.json');
+    await tokenizer.writeAsString(' ' * 1024);
+    await alias.create(tokenizer.path);
+    final metadataAlias = (await host.scan(checkpoint.path)).single;
+    expect(metadataAlias.supported, isFalse);
+    expect(metadataAlias.weightBytes, isNull);
+    expect(await tokenizer.length(), 1024);
   }, skip: Platform.isWindows);
 
   testWidgets('selected disk footprint is honest, private and responsive', (

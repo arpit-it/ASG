@@ -286,7 +286,7 @@ Requirements changes: existing F10 acceptance guidance and F15 backend milestone
 
 ## Active task and delivery ledger
 
-Current: F15 In progress. Issue #344 / `344-checkpoint-size`, PR #345 Awaiting merge. Selected checkpoint disk footprint implemented and locally validated; 957macOSFluttertests/nineskips,17focused,3actualChrome,format280/analysis/web/macOSbuilds and9inventory passed. Tested localb9535891 and published49a3e78b have identical treed2450673/all8blobs. Independent final-revision review and required CI/verified merge pending. Prior issue342/PR343 verified merged8f60751e with finalreview5722787686/CI41202849020. Full runtime budgeting and actual non-AppleCPU/CUDA milestones remain; disk bytes never establish fit/inference readiness.
+Current: F15 In progress. Issue #344 / `344-checkpoint-size`, PR #345 Awaiting merge. Selected checkpoint disk footprint implemented and locally validated; 958macOSFluttertests/nineskips,18focused,3actualChrome,format280/analysis/web/macOSbuilds and9inventory passed. Tested localb9535891 and published49a3e78b have identical treed2450673/all8blobs. Independent final-revision review and required CI/verified merge pending. Prior issue342/PR343 verified merged8f60751e with finalreview5722787686/CI41202849020. Full runtime budgeting and actual non-AppleCPU/CUDA milestones remain; disk bytes never establish fit/inference readiness.
 
 Historical pre-F17 selection: F10 In progress/unchecked. PR #248 verified merged as `c54c9b7b120d88531a0013705801d6babf0c7af9` at 2026-10-28T05:29:19Z after independent final review 5678169248 of `274bb3fd` and required CI 40637890903; tested tree `61f985bc`. Explicit opt-in named-test criterion contracts delivered. Full acceptance reconciliation, including whole-requirement supported verdicts, remains; no later task selected.
 
@@ -6002,3 +6002,14 @@ Recorded 2026-10-31T13:16:57.929674+00:00
 
 
 PR [#345](https://github.com/arpit-it/ASG/pull/345) published on `344-checkpoint-size` — Awaiting merge. Tested localb9535891a0fb3c02bfa0118dc6a0ec5ef2c62c86 and published49a3e78b70485b6a43929cd7475ba05fed215bd0 share treed24506735644c162e00dec360a570316c6ced1c2; all8blobSHAs verified. This documentation-only publication followup requires independent review of final head and required CI before protected merge. Full F15 remains In progress.
+
+
+### PR345 independent review correction
+
+Independent blocking review5722869981 at df7ac594 reproduced metadata-only weight_map -> tokenizer.json as supported/2bytes, and a .safetensors alias to padded tokenizer metadata as supported/1024bytes. Parent actual pre-fix regression also failed. Scanner now refuses non-Safetensors shard names and canonical aliases to config/index/tokenizer metadata before counting. Four metadata-name cases and padded internal-metadata alias are covered; ordinary internal weight aliases remain supported. This is bounded filesystem metadata validation, not tensor-content integrity or raceproof isolation.
+
+Corrected local checks:958macOSFluttertests/nineoptinskips,18focusedfilesystem/boundary/memory,cleananalyzer,formatter280zero and9inventory pass; prior3actualChrome remains valid for unchanged panel/controller. Historical acceptance artifacts unchanged. Exact-final publication/re-review/requiredCI/verifiedmerge remain gates; full F15 remains Inprogress.
+
+Recorded 2026-10-31T13:21:37.175987+00:00
+
+Corrected source releaseweb and macOSdebug builds also passed before publication; no stable application launch/replacement. Fresh independent final revision review required.

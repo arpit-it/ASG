@@ -209,6 +209,23 @@ class NativeRuntimeHost implements RuntimeHost {
           files.add('model.safetensors');
         }
         if (files.isEmpty) problem = 'Weight index contains no shards.';
+        if (files.any((name) => !name.endsWith('.safetensors'))) {
+          throw const FormatException(
+            'Weight index must reference Safetensors shards.',
+          );
+        }
+        final metadataPaths = <String>{};
+        for (final name in [
+          'config.json',
+          'model.safetensors.index.json',
+          'tokenizer.json',
+          'tokenizer_config.json',
+        ]) {
+          final metadata = File('$folder/$name');
+          if (await metadata.exists()) {
+            metadataPaths.add(await metadata.resolveSymbolicLinks());
+          }
+        }
         final weightPaths = <String>{};
         var weightBytes = 0;
         for (final name in [
@@ -229,6 +246,11 @@ class NativeRuntimeHost implements RuntimeHost {
           if (!resolved.startsWith('$folder/')) {
             problem = 'Linked model files outside the checkpoint folder are not supported. Select a self-contained downloaded checkpoint.';
             break;
+          }
+          if (files.contains(name) && metadataPaths.contains(resolved)) {
+            throw const FormatException(
+              'Weight shard aliases checkpoint metadata.',
+            );
           }
           final length = await file.length();
           if (length < 512 && name.endsWith('.safetensors')) {
