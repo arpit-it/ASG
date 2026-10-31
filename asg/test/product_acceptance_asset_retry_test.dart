@@ -53,7 +53,7 @@ void main() {
       expect(controller.manifestError, isNull);
       expect(controller.report, same(report));
       expect(controller.comparison!.manifestMatches, isFalse);
-      expect(controller.comparison!.absentChecks.length, 6);
+      expect(controller.comparison!.absentChecks.length, 9);
     },
   );
 }

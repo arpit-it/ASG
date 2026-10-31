@@ -27,9 +27,9 @@ void main() {
       final manifest = await ProductAcceptanceManifestService().load();
       expect(
         manifest.sha256Digest,
-        'd14e0d2b405bed7a8c36491d7d15f63f96a08dda536c11aff57e4905f3d9f8b0',
+        '0505c640aa4a9170a73946648bd6205062942bcc3a2a37704e7a37fa0cbcbe1c',
       );
-      expect(manifest.checks.length, 29);
+      expect(manifest.checks.length, 32);
       expect(
         manifest.checks
             .where((c) => c.checkId == 'archive-browser')
@@ -71,7 +71,14 @@ void main() {
     final comparison = ProductAcceptanceManifest.parse(spec()).compare(report);
     expect(comparison.manifestMatches, isFalse);
     expect(report.cells.where((c) => c.status == 'passed').length, 4);
-    expect(comparison.absentChecks, isEmpty);
+    expect(
+      comparison.absentChecks,
+      containsAll([
+        'standalone-ask / durable-ask / macos',
+        'standalone-ask / durable-ask / web',
+        'standalone-ask / model-answer / macos',
+      ]),
+    );
   });
   test('newly configured target cannot hide behind old unavailable cells', () {
     final raw = jsonDecode(spec()) as Map<String, dynamic>;

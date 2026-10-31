@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "claim": "separate-historical-observations-only",
-  "manifestSha256": "d14e0d2b405bed7a8c36491d7d15f63f96a08dda536c11aff57e4905f3d9f8b0",
-  "comparisonRuntimeSha256": "dfbbf7023932a412c96eefb633786b22c9793058157345cf05ec30e2717eb0fc",
+  "manifestSha256": "0505c640aa4a9170a73946648bd6205062942bcc3a2a37704e7a37fa0cbcbe1c",
+  "comparisonRuntimeSha256": "307e118911caa9b6cfb99a4560af22175a339fe990a9a2a63636578cce2276e0",
   "limitations": [
     "No combined identity, current pass, support verdict or authenticated observation.",
     "Recorded source hashes do not prove bundle equivalence or unaffected behavior.",
@@ -272,6 +272,33 @@
       "observationDirectories": [
         "docs/development/acceptance/2026-10-29-web-reopen-matrix"
       ]
+    },
+    {
+      "scenarioId": "standalone-ask",
+      "checkId": "durable-ask",
+      "target": "macos",
+      "kind": "fixture",
+      "observationDirectories": [
+        "docs/development/acceptance/2026-10-31-ask-native-fixture"
+      ]
+    },
+    {
+      "scenarioId": "standalone-ask",
+      "checkId": "durable-ask",
+      "target": "web",
+      "kind": "fixture",
+      "observationDirectories": [
+        "docs/development/acceptance/2026-10-31-ask-web-fixture"
+      ]
+    },
+    {
+      "scenarioId": "standalone-ask",
+      "checkId": "model-answer",
+      "target": "macos",
+      "kind": "liveInference",
+      "observationDirectories": [
+        "docs/development/acceptance/2026-10-31-ask-live"
+      ]
     }
   ],
   "reports": [
@@ -516,7 +543,10 @@
         "changedRecordedFiles": [
           "lib/controllers/product_acceptance_controller.dart",
           "lib/services/source_edit_proposer.dart",
+          "lib/services/studio_database.dart",
           "lib/views/product_acceptance_screen.dart",
+          "lib/views/project_workspace.dart",
+          "lib/views/studio_home.dart",
           "pubspec.yaml",
           "test/browser_storage_test.dart",
           "test/source_edit_proposer_test.dart",
@@ -528,8 +558,12 @@
         ],
         "absentRecordedFiles": [],
         "unrecordedRuntimeFiles": [
+          "lib/controllers/ask_controller.dart",
+          "lib/models/ask_conversation.dart",
           "lib/models/product_acceptance_manifest.dart",
-          "lib/services/product_acceptance_manifest_service.dart"
+          "lib/services/ask_store.dart",
+          "lib/services/product_acceptance_manifest_service.dart",
+          "lib/views/ask_screen.dart"
         ]
       }
     },
@@ -696,7 +730,10 @@
         "recordedFiles": 300,
         "changedRecordedFiles": [
           "lib/controllers/product_acceptance_controller.dart",
+          "lib/services/studio_database.dart",
           "lib/views/product_acceptance_screen.dart",
+          "lib/views/project_workspace.dart",
+          "lib/views/studio_home.dart",
           "macos/Runner/Configs/AppInfo.xcconfig",
           "pubspec.yaml",
           "test/browser_storage_test.dart",
@@ -706,8 +743,12 @@
         ],
         "absentRecordedFiles": [],
         "unrecordedRuntimeFiles": [
+          "lib/controllers/ask_controller.dart",
+          "lib/models/ask_conversation.dart",
           "lib/models/product_acceptance_manifest.dart",
-          "lib/services/product_acceptance_manifest_service.dart"
+          "lib/services/ask_store.dart",
+          "lib/services/product_acceptance_manifest_service.dart",
+          "lib/views/ask_screen.dart"
         ]
       }
     },
@@ -845,7 +886,10 @@
         "recordedFiles": 301,
         "changedRecordedFiles": [
           "lib/controllers/product_acceptance_controller.dart",
+          "lib/services/studio_database.dart",
           "lib/views/product_acceptance_screen.dart",
+          "lib/views/project_workspace.dart",
+          "lib/views/studio_home.dart",
           "pubspec.yaml",
           "test/browser_storage_test.dart",
           "tools/product_acceptance.py",
@@ -853,8 +897,12 @@
         ],
         "absentRecordedFiles": [],
         "unrecordedRuntimeFiles": [
+          "lib/controllers/ask_controller.dart",
+          "lib/models/ask_conversation.dart",
           "lib/models/product_acceptance_manifest.dart",
-          "lib/services/product_acceptance_manifest_service.dart"
+          "lib/services/ask_store.dart",
+          "lib/services/product_acceptance_manifest_service.dart",
+          "lib/views/ask_screen.dart"
         ]
       }
     },
@@ -919,7 +967,10 @@
         "changedRecordedFiles": [
           "lib/controllers/product_acceptance_controller.dart",
           "lib/services/source_edit_proposer.dart",
+          "lib/services/studio_database.dart",
           "lib/views/product_acceptance_screen.dart",
+          "lib/views/project_workspace.dart",
+          "lib/views/studio_home.dart",
           "pubspec.yaml",
           "test/browser_storage_test.dart",
           "test/source_edit_proposer_test.dart",
@@ -931,8 +982,12 @@
         ],
         "absentRecordedFiles": [],
         "unrecordedRuntimeFiles": [
+          "lib/controllers/ask_controller.dart",
+          "lib/models/ask_conversation.dart",
           "lib/models/product_acceptance_manifest.dart",
-          "lib/services/product_acceptance_manifest_service.dart"
+          "lib/services/ask_store.dart",
+          "lib/services/product_acceptance_manifest_service.dart",
+          "lib/views/ask_screen.dart"
         ]
       }
     },
@@ -1240,7 +1295,10 @@
         "recordedFiles": 273,
         "changedRecordedFiles": [
           "lib/controllers/product_acceptance_controller.dart",
+          "lib/services/studio_database.dart",
           "lib/views/product_acceptance_screen.dart",
+          "lib/views/project_workspace.dart",
+          "lib/views/studio_home.dart",
           "pubspec.yaml",
           "test/browser_storage_test.dart",
           "tools/product_acceptance.py",
@@ -1248,8 +1306,12 @@
         ],
         "absentRecordedFiles": [],
         "unrecordedRuntimeFiles": [
+          "lib/controllers/ask_controller.dart",
+          "lib/models/ask_conversation.dart",
           "lib/models/product_acceptance_manifest.dart",
-          "lib/services/product_acceptance_manifest_service.dart"
+          "lib/services/ask_store.dart",
+          "lib/services/product_acceptance_manifest_service.dart",
+          "lib/views/ask_screen.dart"
         ]
       }
     },
@@ -1306,7 +1368,10 @@
         "recordedFiles": 301,
         "changedRecordedFiles": [
           "lib/controllers/product_acceptance_controller.dart",
+          "lib/services/studio_database.dart",
           "lib/views/product_acceptance_screen.dart",
+          "lib/views/project_workspace.dart",
+          "lib/views/studio_home.dart",
           "pubspec.yaml",
           "test/browser_storage_test.dart",
           "tools/product_acceptance.py",
@@ -1314,8 +1379,12 @@
         ],
         "absentRecordedFiles": [],
         "unrecordedRuntimeFiles": [
+          "lib/controllers/ask_controller.dart",
+          "lib/models/ask_conversation.dart",
           "lib/models/product_acceptance_manifest.dart",
-          "lib/services/product_acceptance_manifest_service.dart"
+          "lib/services/ask_store.dart",
+          "lib/services/product_acceptance_manifest_service.dart",
+          "lib/views/ask_screen.dart"
         ]
       }
     },
@@ -1377,13 +1446,20 @@
         "recordedFiles": 167,
         "changedRecordedFiles": [
           "lib/controllers/product_acceptance_controller.dart",
+          "lib/services/studio_database.dart",
           "lib/views/product_acceptance_screen.dart",
+          "lib/views/project_workspace.dart",
+          "lib/views/studio_home.dart",
           "pubspec.yaml"
         ],
         "absentRecordedFiles": [],
         "unrecordedRuntimeFiles": [
+          "lib/controllers/ask_controller.dart",
+          "lib/models/ask_conversation.dart",
           "lib/models/product_acceptance_manifest.dart",
-          "lib/services/product_acceptance_manifest_service.dart"
+          "lib/services/ask_store.dart",
+          "lib/services/product_acceptance_manifest_service.dart",
+          "lib/views/ask_screen.dart"
         ]
       }
     },
@@ -1440,15 +1516,22 @@
         "recordedFiles": 281,
         "changedRecordedFiles": [
           "lib/controllers/product_acceptance_controller.dart",
+          "lib/services/studio_database.dart",
           "lib/views/product_acceptance_screen.dart",
+          "lib/views/project_workspace.dart",
+          "lib/views/studio_home.dart",
           "pubspec.yaml",
           "tools/product_acceptance.py",
           "tools/test_product_acceptance.py"
         ],
         "absentRecordedFiles": [],
         "unrecordedRuntimeFiles": [
+          "lib/controllers/ask_controller.dart",
+          "lib/models/ask_conversation.dart",
           "lib/models/product_acceptance_manifest.dart",
-          "lib/services/product_acceptance_manifest_service.dart"
+          "lib/services/ask_store.dart",
+          "lib/services/product_acceptance_manifest_service.dart",
+          "lib/views/ask_screen.dart"
         ]
       }
     },
@@ -1505,7 +1588,10 @@
         "recordedFiles": 273,
         "changedRecordedFiles": [
           "lib/controllers/product_acceptance_controller.dart",
+          "lib/services/studio_database.dart",
           "lib/views/product_acceptance_screen.dart",
+          "lib/views/project_workspace.dart",
+          "lib/views/studio_home.dart",
           "pubspec.yaml",
           "test/browser_storage_test.dart",
           "tools/product_acceptance.py",
@@ -1513,8 +1599,12 @@
         ],
         "absentRecordedFiles": [],
         "unrecordedRuntimeFiles": [
+          "lib/controllers/ask_controller.dart",
+          "lib/models/ask_conversation.dart",
           "lib/models/product_acceptance_manifest.dart",
-          "lib/services/product_acceptance_manifest_service.dart"
+          "lib/services/ask_store.dart",
+          "lib/services/product_acceptance_manifest_service.dart",
+          "lib/views/ask_screen.dart"
         ]
       }
     },
@@ -1571,7 +1661,10 @@
         "recordedFiles": 273,
         "changedRecordedFiles": [
           "lib/controllers/product_acceptance_controller.dart",
+          "lib/services/studio_database.dart",
           "lib/views/product_acceptance_screen.dart",
+          "lib/views/project_workspace.dart",
+          "lib/views/studio_home.dart",
           "pubspec.yaml",
           "test/browser_storage_test.dart",
           "tools/product_acceptance.py",
@@ -1579,8 +1672,12 @@
         ],
         "absentRecordedFiles": [],
         "unrecordedRuntimeFiles": [
+          "lib/controllers/ask_controller.dart",
+          "lib/models/ask_conversation.dart",
           "lib/models/product_acceptance_manifest.dart",
-          "lib/services/product_acceptance_manifest_service.dart"
+          "lib/services/ask_store.dart",
+          "lib/services/product_acceptance_manifest_service.dart",
+          "lib/views/ask_screen.dart"
         ]
       }
     },
@@ -1637,7 +1734,10 @@
         "recordedFiles": 274,
         "changedRecordedFiles": [
           "lib/controllers/product_acceptance_controller.dart",
+          "lib/services/studio_database.dart",
           "lib/views/product_acceptance_screen.dart",
+          "lib/views/project_workspace.dart",
+          "lib/views/studio_home.dart",
           "pubspec.yaml",
           "test/browser_storage_test.dart",
           "tools/product_acceptance.py",
@@ -1645,9 +1745,180 @@
         ],
         "absentRecordedFiles": [],
         "unrecordedRuntimeFiles": [
+          "lib/controllers/ask_controller.dart",
+          "lib/models/ask_conversation.dart",
           "lib/models/product_acceptance_manifest.dart",
-          "lib/services/product_acceptance_manifest_service.dart"
+          "lib/services/ask_store.dart",
+          "lib/services/product_acceptance_manifest_service.dart",
+          "lib/views/ask_screen.dart"
         ]
+      }
+    },
+    {
+      "directory": "docs/development/acceptance/2026-10-31-ask-live",
+      "identity": {
+        "sourceRevision": "c6bf31f55358996a6e23c507eb6f12e922e7845e",
+        "requirementSha256": "c68890501c8c010ba2e078575116bcd2e9bde6936ababbc4e25f34ec1d3be094",
+        "inputSha256": "d961c6ff13ec52f2f9b8c44bb53b3e498a368deda6d20eff4773b8bca5b7964e",
+        "configurationSha256": "970db95e6aaff0cc4c5984f2b0dbef1cb3926666a5b2bcb057d56d3f20fcddca",
+        "modelSha256": "7640088c8fb23d2a0fb19f5c73bfa8007e162ef42285800b7c331c0ba8c566d2",
+        "deviceSha256": "534ec05557dfe566243cb0bc1bfb189c3e7c97e7b2611d6c901cc621eed93b99",
+        "sdkVersion": "3.47.6",
+        "runtimeVersion": "3.12.8",
+        "browserVersion": "unavailable",
+        "backend": "mlx",
+        "host": "macos"
+      },
+      "evidenceSha256": "689bc4c97dc08111643dec411dc397d10f2634285e956468512a19c2d23ecdbc",
+      "identitySha256": "e91108ed22de006457ec1f51d011fb87cd186425bab8be41a4eb9d3cfc452d20",
+      "savedReportSha256": "20bdf07b669560f9af6cfaf377ff4c65a2d2bd1b194fba5ea60cc760f3ad7186",
+      "observations": [
+        {
+          "scenarioId": "standalone-ask",
+          "checkId": "model-answer",
+          "target": "macos",
+          "status": "passed",
+          "observedAt": "2026-10-31T09:52:52Z",
+          "identity": {
+            "sourceRevision": "c6bf31f55358996a6e23c507eb6f12e922e7845e",
+            "requirementSha256": "c68890501c8c010ba2e078575116bcd2e9bde6936ababbc4e25f34ec1d3be094",
+            "inputSha256": "d961c6ff13ec52f2f9b8c44bb53b3e498a368deda6d20eff4773b8bca5b7964e",
+            "configurationSha256": "970db95e6aaff0cc4c5984f2b0dbef1cb3926666a5b2bcb057d56d3f20fcddca",
+            "modelSha256": "7640088c8fb23d2a0fb19f5c73bfa8007e162ef42285800b7c331c0ba8c566d2",
+            "deviceSha256": "534ec05557dfe566243cb0bc1bfb189c3e7c97e7b2611d6c901cc621eed93b99",
+            "sdkVersion": "3.47.6",
+            "runtimeVersion": "3.12.8",
+            "browserVersion": "unavailable",
+            "backend": "mlx",
+            "host": "macos"
+          },
+          "manifestSha256": "0505c640aa4a9170a73946648bd6205062942bcc3a2a37704e7a37fa0cbcbe1c",
+          "artifactSha256": [
+            "d4e3520579aa12b827dc407a9d3fe2877a2c9817a5f56f9273359bf8e5c8e66d",
+            "d1129fab9a2fa06711eb8e26b0b4062653d54a1be78ed5bfe421201bf7b0d407"
+          ]
+        }
+      ],
+      "sourceComparison": {
+        "status": "compared-recorded-files-only",
+        "manifestSha256": "d1129fab9a2fa06711eb8e26b0b4062653d54a1be78ed5bfe421201bf7b0d407",
+        "recordedFiles": 271,
+        "changedRecordedFiles": [
+          "lib/views/project_workspace.dart",
+          "lib/views/studio_home.dart",
+          "test/ask_screen_test.dart",
+          "test/product_acceptance_asset_retry_test.dart"
+        ],
+        "absentRecordedFiles": [],
+        "unrecordedRuntimeFiles": []
+      }
+    },
+    {
+      "directory": "docs/development/acceptance/2026-10-31-ask-native-fixture",
+      "identity": {
+        "sourceRevision": "3967d247f8984d2377961c0307e4446885f5ed28",
+        "requirementSha256": "b1da3d1898263147cf8bc56773188dcaf86e36ad4542452dd1d8ff77b850b569",
+        "inputSha256": "3f9eb4f7f8f5ab59ba50da96228add27c019037531940cfa3835f8870a6c465b",
+        "configurationSha256": "970db95e6aaff0cc4c5984f2b0dbef1cb3926666a5b2bcb057d56d3f20fcddca",
+        "modelSha256": "98de24afe3d54793cedb367a1adcc947079b5a1368d5d67a7a20fbb7a7a3a18a",
+        "deviceSha256": "534ec05557dfe566243cb0bc1bfb189c3e7c97e7b2611d6c901cc621eed93b99",
+        "sdkVersion": "3.47.6",
+        "runtimeVersion": "unavailable",
+        "browserVersion": "unavailable",
+        "backend": "none",
+        "host": "macos"
+      },
+      "evidenceSha256": "fa64072c9400f67b47a5b5b1d9748cedc3d4780d2a3a1b2a6949cc338acc09d7",
+      "identitySha256": "e358453685ac7e61768fed7ffcf0eefaaef6f0363d07c771b026f652cb4a387b",
+      "savedReportSha256": "0a9c282bb6b511e13669f3ba4e62e2b143f97329dd82525a3ffd488f9a99fb7e",
+      "observations": [
+        {
+          "scenarioId": "standalone-ask",
+          "checkId": "durable-ask",
+          "target": "macos",
+          "status": "passed",
+          "observedAt": "2026-10-31T10:02:53Z",
+          "identity": {
+            "sourceRevision": "3967d247f8984d2377961c0307e4446885f5ed28",
+            "requirementSha256": "b1da3d1898263147cf8bc56773188dcaf86e36ad4542452dd1d8ff77b850b569",
+            "inputSha256": "3f9eb4f7f8f5ab59ba50da96228add27c019037531940cfa3835f8870a6c465b",
+            "configurationSha256": "970db95e6aaff0cc4c5984f2b0dbef1cb3926666a5b2bcb057d56d3f20fcddca",
+            "modelSha256": "98de24afe3d54793cedb367a1adcc947079b5a1368d5d67a7a20fbb7a7a3a18a",
+            "deviceSha256": "534ec05557dfe566243cb0bc1bfb189c3e7c97e7b2611d6c901cc621eed93b99",
+            "sdkVersion": "3.47.6",
+            "runtimeVersion": "unavailable",
+            "browserVersion": "unavailable",
+            "backend": "none",
+            "host": "macos"
+          },
+          "manifestSha256": "0505c640aa4a9170a73946648bd6205062942bcc3a2a37704e7a37fa0cbcbe1c",
+          "artifactSha256": [
+            "61f034dda5de8f01c3f8aa153e5ca3669052ce0c5cc22ada2557ba891318b07e",
+            "4c22d3ee4310cea3d0d6241aa89071216060d2f6c06894c9c3044822376c34ff"
+          ]
+        }
+      ],
+      "sourceComparison": {
+        "status": "compared-recorded-files-only",
+        "manifestSha256": "4c22d3ee4310cea3d0d6241aa89071216060d2f6c06894c9c3044822376c34ff",
+        "recordedFiles": 271,
+        "changedRecordedFiles": [],
+        "absentRecordedFiles": [],
+        "unrecordedRuntimeFiles": []
+      }
+    },
+    {
+      "directory": "docs/development/acceptance/2026-10-31-ask-web-fixture",
+      "identity": {
+        "sourceRevision": "3967d247f8984d2377961c0307e4446885f5ed28",
+        "requirementSha256": "b1da3d1898263147cf8bc56773188dcaf86e36ad4542452dd1d8ff77b850b569",
+        "inputSha256": "3f9eb4f7f8f5ab59ba50da96228add27c019037531940cfa3835f8870a6c465b",
+        "configurationSha256": "970db95e6aaff0cc4c5984f2b0dbef1cb3926666a5b2bcb057d56d3f20fcddca",
+        "modelSha256": "98de24afe3d54793cedb367a1adcc947079b5a1368d5d67a7a20fbb7a7a3a18a",
+        "deviceSha256": "f9a81661d7ac162b1e08b837d94d5cbd236a4cc1856ef0d4493e92ca0bdc64df",
+        "sdkVersion": "3.47.6",
+        "runtimeVersion": "unavailable",
+        "browserVersion": "156.0.8078.74",
+        "backend": "none",
+        "host": "web"
+      },
+      "evidenceSha256": "dd7896df870252a36b20f0a15ac5169f2f91402b3bb754ef7c63e8f449d943c6",
+      "identitySha256": "c43be2ace02f09dab0a4eac761325aad3aac5a630b0bd673609274dcd595ce69",
+      "savedReportSha256": "c121a34ac02fa82a65f7b0de63660205b2945c1fa89b0affdf3e7b0406ce33d8",
+      "observations": [
+        {
+          "scenarioId": "standalone-ask",
+          "checkId": "durable-ask",
+          "target": "web",
+          "status": "passed",
+          "observedAt": "2026-10-31T10:02:53Z",
+          "identity": {
+            "sourceRevision": "3967d247f8984d2377961c0307e4446885f5ed28",
+            "requirementSha256": "b1da3d1898263147cf8bc56773188dcaf86e36ad4542452dd1d8ff77b850b569",
+            "inputSha256": "3f9eb4f7f8f5ab59ba50da96228add27c019037531940cfa3835f8870a6c465b",
+            "configurationSha256": "970db95e6aaff0cc4c5984f2b0dbef1cb3926666a5b2bcb057d56d3f20fcddca",
+            "modelSha256": "98de24afe3d54793cedb367a1adcc947079b5a1368d5d67a7a20fbb7a7a3a18a",
+            "deviceSha256": "f9a81661d7ac162b1e08b837d94d5cbd236a4cc1856ef0d4493e92ca0bdc64df",
+            "sdkVersion": "3.47.6",
+            "runtimeVersion": "unavailable",
+            "browserVersion": "156.0.8078.74",
+            "backend": "none",
+            "host": "web"
+          },
+          "manifestSha256": "0505c640aa4a9170a73946648bd6205062942bcc3a2a37704e7a37fa0cbcbe1c",
+          "artifactSha256": [
+            "1366146839933c8ecb0d92bb3e7a502d49eab170562bc83a9ac44131cd0fc051",
+            "4c22d3ee4310cea3d0d6241aa89071216060d2f6c06894c9c3044822376c34ff"
+          ]
+        }
+      ],
+      "sourceComparison": {
+        "status": "compared-recorded-files-only",
+        "manifestSha256": "4c22d3ee4310cea3d0d6241aa89071216060d2f6c06894c9c3044822376c34ff",
+        "recordedFiles": 271,
+        "changedRecordedFiles": [],
+        "absentRecordedFiles": [],
+        "unrecordedRuntimeFiles": []
       }
     },
     {
@@ -1734,15 +2005,22 @@
         "recordedFiles": 301,
         "changedRecordedFiles": [
           "lib/controllers/product_acceptance_controller.dart",
+          "lib/services/studio_database.dart",
           "lib/views/product_acceptance_screen.dart",
+          "lib/views/project_workspace.dart",
+          "lib/views/studio_home.dart",
           "pubspec.yaml",
           "tools/product_acceptance.py",
           "tools/test_product_acceptance.py"
         ],
         "absentRecordedFiles": [],
         "unrecordedRuntimeFiles": [
+          "lib/controllers/ask_controller.dart",
+          "lib/models/ask_conversation.dart",
           "lib/models/product_acceptance_manifest.dart",
-          "lib/services/product_acceptance_manifest_service.dart"
+          "lib/services/ask_store.dart",
+          "lib/services/product_acceptance_manifest_service.dart",
+          "lib/views/ask_screen.dart"
         ]
       }
     },
@@ -1850,15 +2128,22 @@
         "recordedFiles": 310,
         "changedRecordedFiles": [
           "lib/controllers/product_acceptance_controller.dart",
+          "lib/services/studio_database.dart",
           "lib/views/product_acceptance_screen.dart",
+          "lib/views/project_workspace.dart",
+          "lib/views/studio_home.dart",
           "pubspec.yaml",
           "tools/product_acceptance.py",
           "tools/test_product_acceptance.py"
         ],
         "absentRecordedFiles": [],
         "unrecordedRuntimeFiles": [
+          "lib/controllers/ask_controller.dart",
+          "lib/models/ask_conversation.dart",
           "lib/models/product_acceptance_manifest.dart",
-          "lib/services/product_acceptance_manifest_service.dart"
+          "lib/services/ask_store.dart",
+          "lib/services/product_acceptance_manifest_service.dart",
+          "lib/views/ask_screen.dart"
         ]
       }
     }

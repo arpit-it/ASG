@@ -2,7 +2,7 @@
 
 31 October 2026; F17; [issue #253](https://github.com/arpit-it/ASG/issues/253).
 Publication base: `2c61072c2902c788e21fdd5a4a4d04ab4fee36ed`.
-Status: Awaiting independent final-revision review, required CI and merge.
+Status: Initial baseline accepted after independent final-revision approval5722192777/finalgate5722205595, required CI41189201083 and reviewer protected merge [PR #327](https://github.com/arpit-it/ASG/pull/327) as `1a4251c992ce32921880fdc5395605ac189f79e3` at2026-10-31T09:38:29Z. Later platform/host coverage remains explicitly unavailable. The remaining future-tense gate text records the pre-merge proposal; all gates were subsequently verified as recorded in the requirements ledger.
 
 The initial baseline is ready for an acceptance decision using the actual
 separate workflow observations below. This is a review of previously observed

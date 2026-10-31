@@ -354,34 +354,38 @@ class _ProjectWorkspaceState extends State<ProjectWorkspace> {
           onStop: controller.cancelGeneration,
         ),
 
-      Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            TextField(
-              controller: input,
-              enabled: !controller.busy && controller.definition != null,
-              minLines: 2,
-              maxLines: 5,
-              maxLength: 2000,
-              decoration: const InputDecoration(
-                hintText:
-                    'For example: add a counter and change the theme to green',
-                border: OutlineInputBorder(),
-              ),
+      Flexible(
+        flex: 2,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                TextField(
+                  controller: input,
+                  enabled: !controller.busy && controller.definition != null,
+                  minLines: 2,
+                  maxLines: 5,
+                  maxLength: 2000,
+                  decoration: const InputDecoration(
+                    hintText: 'For example: add a counter and change the theme to green',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: FilledButton.icon(
+                    onPressed: controller.busy || controller.definition == null
+                        ? null
+                        : send,
+                    icon: const Icon(Icons.auto_awesome),
+                    label: const Text('Apply instruction'),
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 8),
-            Align(
-              alignment: Alignment.centerRight,
-              child: FilledButton.icon(
-                onPressed: controller.busy || controller.definition == null
-                    ? null
-                    : send,
-                icon: const Icon(Icons.auto_awesome),
-                label: const Text('Apply instruction'),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     ],

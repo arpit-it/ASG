@@ -4937,3 +4937,66 @@ rerununchangedscenarios merely for manifestmetadata or claim fullF17Done.
 ### F17 initial baseline adjudication — 31 October 2026
 
 Reused issue #253, branch253-baseline-adjudication at main2c61072. Independent read-only audit found actual separate workflow evidence for initial29configuredcells; source-delta review distinguishes unaffected workflows from later viewer follow-up. Added clause-by-clause development/F17_BASELINE_ADJUDICATION.md with linked manifests and unavailable-platform limits.32collector/9inventory passed; exact inventory regeneration/artifact preservation checked. No new model/native run or support/currentPass union. F17 Awaiting merge and unchecked until exact-final independent review, required CI and verified protected merge. Prior local merge bookkeeping retained; unrelated IDE edits preserved.
+
+
+### Initial F17 baseline verified complete — #253 / PR #327
+
+Independent final-revision review approved initial F17 macOS/web baseline
+acceptance, not a union of report identities or a blanket current-support claim.
+PR https://github.com/arpit-it/ASG/pull/327; branch253-baseline-adjudication;
+tested local6764c9a037a1395e9541a9ed72fcf97b295c9d3f and published
+head a37de701637a3289710113da6b1c498bacd8d140 share exact verified tree
+b6c99ddc153141cca5c2d9735dc94099939ddb59. All four published blobs matched,
+including >1MiBrequirements read in bounded chunks without truncation.
+
+Independent approval5722192777/finalgate5722205595 inspected actual workflow
+artifacts/F10 limits/linked manifests and semantic affected-source partition;
+32collector/9inventory passed independently and inventory was byte-identical.
+Same-owner GitHub APPROVE restriction used explicit independent COMMENT verdict;
+no protection bypass. Reviewer protected-plugin squashmerged PR327 as
+1a4251c992ce32921880fdc5395605ac189f79e3 at2026-10-31T09:38:29Z;
+issue253closed/completed09:38:30Z. Parent independently verified exact mergedhead,
+current main, signed merge SHA/tree and issue closure before completion.
+
+RequiredCI41189201083 succeeded: Flutter124502284605 formatter261/zerochanges,
+analyzerclean,888defaulttests/eightskips,11actualChrome,releaseweb/Wasm dryrun,
+real independentgenerated resolve/analyze/test/build plus interaction/serve;
+Python12450228483432collector/9inventory/2download/6streaming/14command(skip1)/
+4confinement(skip2). Local32collector/9inventory and artifact-preservation checks
+passed. No new live inference/native workflow/model download; skips are not
+inference. Existing actual per-workflow observations retain exact separate
+historical identities/statuses. Source review found no need to rerun unaffected
+workflows merely for metadata; later actual viewer interactions cover affectedUI.
+
+F17 Done is the explicitly scoped initial macOS/web baseline required by its
+completion rule. Native Android/iOS/Windows/Linux/physical devices, unsupported
+browser generation operations and later backend/host/adapter support remain
+unavailable/unverified until their own real delivery. This is no production
+certification, semantic free-form acceptance verdict or live freshness claim.
+
+Guarded /private/tmp/asg-327-sync.py verified signed raw commit before offline
+import and synchronized primarymain/origin-main0/0 with emptyindex. Backup
+/private/tmp/asg-327-primary-before preserved all five prior edits; twoIDEfiles
+byteidentical and prior documentation bookkeeping included in reviewedtree.
+Final status/evidence edits retained locally for the next normal reviewed task.
+No newissue/FID or subsequenttask started. Next run verifyPR327 and select F18
+Standalone engineering Ask mode, unless new active work exists. Fifteen-minute
+cadence/notification preferences unchanged; no useractionrequired.
+
+Recorded 2026-10-31T09:39:39.180852+00:00
+
+
+### F18 standalone engineering Ask — issue #328
+
+Implemented on `328-standalone-ask` from verified PR327/main1a4251c in isolated worktree. No duplicate issue/open PR/active owner found; primary IDE/docs edits preserved. Ask is accessible without a project and from workspace toolbar, with independent transactional conversations, selected-only bounded follow-ups, advisory streamed explanations/selectable fenced code and no model tools. Save-ordering, Stop/deadline/disposal, offline retry, corrupt/stale history and failed-final-save storage-only retry/discard are covered.
+
+Actual existing Qwen3.5-9B MLX smoke4846ms/278updates/1284chars passed and exact answer reopened; owned offline runtime stopped afterward. Native disk and actualChrome two-reopen/rollback/corruption tests pass. Formatter271zerochanges/analyzerclean/full907tests9skips/web+macOSdebugbuild pass; final manifest-aware checks rerun. F17 adds three Ask cells with separate fixture/live identities, recorded sources and bounded sanitized observations; historical reports remain separate, with no manual interaction/current support union. Implementation runtime source is c6bf31f55358996a6e23c507eb6f12e922e7845e; later docs/test bookkeeping does not rerun or invent inference. F18 Awaitingmerge unchecked; exact PR/final review/requiredCI/merge gates remain. No next feature selected.
+
+Final issue328 validation after matrix changes: formatter271/zerochanges, analyzer clean,907defaulttests/nineskips,12actualChrome tests and release web build passed;41Python acceptance collector/inventory tests passed. macOS debug build passed with unchanged runtime Dart sources. Matrix-count/digest assertions were updated for the three new Ask cells and full checks rerun successfully. Independent review/required remote CI/verified merge are pending; F18 remains unchecked/Awaitingmerge.
+
+
+### PR #329 independent review correction — issue #328
+
+Independent reviewer found P2 selected-project320px toolbar overflow16px (review5722262274 at da6dd6b5). Added an owned/disposed scroll controller and bounded horizontal action region with visible scrollbar, Ask first; all controls remain reachable. Enlarged-text regression additionally exposed project composer bottom overflow16px; made composer flexible/scrollable. New selected320×600/text1.5 regression verifies no overflow, reachability of rightmost action, showOnScreen restore to Ask, actual Ask opening and unchanged project/history. Original empty-home/composer tests retained.
+
+Final local formatter271/zerochanges, analyzer clean,908defaulttests/nineskips,15actualChrome tests (three Ask UI interactions plus12storage/capability tests),41Python collector/inventory tests, web and macOSdebug builds passed. Refreshed only the two injected fixture observations at runtime source3967d247f8984d2377961c0307e4446885f5ed28; actual MLX observation remains unchanged historical atc6bf31f. Ask controller/prompt/store/model transport unchanged; no new inference claimed. Inventory regenerated without altering earlier historical reports. PR329 requires fresh corrected-head independent review and actual required CI; F18 remains unchecked/Awaitingmerge.

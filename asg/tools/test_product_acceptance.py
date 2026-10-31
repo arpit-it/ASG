@@ -61,8 +61,8 @@ class AcceptanceTest(unittest.TestCase):
     def test_native_only_web_cells_are_unavailable_and_refuse_all_saved_statuses(self):
         cells = [c for c in self.evaluate()['cells'] if c['target'] == 'web']
         unavailable = [c for c in cells if c['status'] == 'unavailable']
-        self.assertEqual(len(unavailable), 10)
-        self.assertEqual(len(cells) - len(unavailable), 10)
+        self.assertEqual(len(unavailable), 11)
+        self.assertEqual(len(cells) - len(unavailable), 11)
         for cell in unavailable:
             for status in ('passed', 'failed', 'skipped', 'unavailable'):
                 with self.subTest(check=cell['checkId'], status=status):
@@ -71,8 +71,8 @@ class AcceptanceTest(unittest.TestCase):
                     with self.assertRaisesRegex(ValueError, 'Unconfigured target'):
                         self.evaluate(observation)
         native = [c for c in self.evaluate()['cells'] if c['target'] == 'macos']
-        self.assertEqual(len(native), 20)
-        self.assertEqual(sum(c['status'] == 'missing' for c in native), 19)
+        self.assertEqual(len(native), 22)
+        self.assertEqual(sum(c['status'] == 'missing' for c in native), 21)
         self.assertEqual([c['checkId'] for c in native if c['status'] == 'unavailable'],
                          ['archive-browser'])
 

@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "records": [
+    {
+      "scenarioId": "standalone-ask",
+      "checkId": "model-answer",
+      "target": "macos",
+      "status": "passed",
+      "observedAt": "2026-10-31T09:52:52Z",
+      "identity": {
+        "sourceRevision": "c6bf31f55358996a6e23c507eb6f12e922e7845e",
+        "requirementSha256": "c68890501c8c010ba2e078575116bcd2e9bde6936ababbc4e25f34ec1d3be094",
+        "inputSha256": "d961c6ff13ec52f2f9b8c44bb53b3e498a368deda6d20eff4773b8bca5b7964e",
+        "configurationSha256": "970db95e6aaff0cc4c5984f2b0dbef1cb3926666a5b2bcb057d56d3f20fcddca",
+        "modelSha256": "7640088c8fb23d2a0fb19f5c73bfa8007e162ef42285800b7c331c0ba8c566d2",
+        "deviceSha256": "534ec05557dfe566243cb0bc1bfb189c3e7c97e7b2611d6c901cc621eed93b99",
+        "sdkVersion": "3.47.6",
+        "runtimeVersion": "3.12.8",
+        "browserVersion": "unavailable",
+        "backend": "mlx",
+        "host": "macos"
+      },
+      "manifestSha256": "0505c640aa4a9170a73946648bd6205062942bcc3a2a37704e7a37fa0cbcbe1c",
+      "artifactSha256": [
+        "d4e3520579aa12b827dc407a9d3fe2877a2c9817a5f56f9273359bf8e5c8e66d",
+        "d1129fab9a2fa06711eb8e26b0b4062653d54a1be78ed5bfe421201bf7b0d407"
+      ]
+    }
+  ]
+}

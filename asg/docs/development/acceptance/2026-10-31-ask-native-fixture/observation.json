@@ -1,0 +1,10 @@
+{
+  "observedAt": "2026-10-31T10:02:53Z",
+  "target": "macos",
+  "check": "durable-ask",
+  "kind": "fixture",
+  "status": "passed",
+  "scope": "provider-injected controller/widget workflow including selected 320px enlarged toolbar recovery, and real disk database reopen",
+  "sourceRevision": "3967d247f8984d2377961c0307e4446885f5ed28",
+  "manualApplicationInteraction": false
+}

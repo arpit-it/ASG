@@ -1,0 +1,21 @@
+{
+  "observedAt": "2026-10-31T09:52:52Z",
+  "target": "macos",
+  "check": "model-answer",
+  "kind": "liveInference",
+  "status": "passed",
+  "scope": "actual local ModelProvider streaming and exact saved-answer reopen",
+  "sourceRevision": "c6bf31f55358996a6e23c507eb6f12e922e7845e",
+  "manualApplicationInteraction": false,
+  "elapsedMilliseconds": 4846,
+  "streamedUpdates": 278,
+  "answerCharacters": 1284,
+  "model": "Qwen3.5-9B",
+  "modelIdentityScope": "SHA256 of existing local model JSON config/index metadata; weights not freshly rehashed",
+  "modelMetadataDigests": {
+    "tokenizer_config.json": "86f01837a638275f2d3479804e79802aaff0e3ccef15e5f29dd6afbe6551daed",
+    "config.json": "15303ca367065b31713bb4573030718cdf1fc31d5bca5b4a989a68ef20e9540d",
+    "tokenizer.json": "a5cd9732badce41de57e6efce8302930ded1c1188c5f81feb2bd6c24c4a1941f",
+    "model.safetensors.index.json": "d50465249b0ec7eb602558c4d4b7d0c7516bc99548d8d2a3b3c3a3805a93e607"
+  }
+}
