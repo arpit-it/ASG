@@ -13,6 +13,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:asg/controllers/runtime_setup_controller.dart';
 import 'package:asg/models/local_model_config.dart';
 import 'package:asg/models/runtime_setup.dart';
+import 'package:asg/models/runtime_capabilities.dart';
 import 'package:asg/services/model_settings_store.dart';
 import 'package:asg/services/model_provider.dart';
 import 'package:asg/services/runtime_connection.dart';
@@ -58,6 +59,9 @@ class FakeRuntimeHost implements RuntimeHost {
   ];
   @override
   Future<void> prepare(String python) async {}
+  @override
+  Future<RuntimeCapabilities> discover(String python) async =>
+      throw UnimplementedError();
   @override
   Future<String> download(RuntimeSetup setup) async {
     downloads++;

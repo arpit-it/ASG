@@ -2,6 +2,7 @@
 // Copyright 2026 Arpit Sinha
 
 import '../models/runtime_setup.dart';
+import '../models/runtime_capabilities.dart';
 import 'runtime_host.dart';
 
 RuntimeHost createRuntimeHost() => _host;
@@ -29,6 +30,8 @@ class UnsupportedRuntimeHost implements RuntimeHost {
   Future<List<ModelCandidate>> scan(String path) async => _unsupported();
   @override
   Future<void> prepare(String python) async => _unsupported();
+  @override
+  Future<RuntimeCapabilities> discover(String python) async => _unsupported();
   @override
   Future<String> download(RuntimeSetup setup) async => _unsupported();
   @override

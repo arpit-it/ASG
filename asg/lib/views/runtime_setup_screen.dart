@@ -9,6 +9,7 @@ import '../models/model_catalog.dart';
 import 'model_catalog_screen.dart';
 import '../models/local_model_config.dart';
 import '../models/runtime_setup.dart';
+import 'runtime_capability_panel.dart';
 
 class RuntimeSetupScreen extends StatefulWidget {
   const RuntimeSetupScreen({
@@ -49,6 +50,7 @@ class _RuntimeSetupScreenState extends State<RuntimeSetupScreen> {
     lastConnection = controller.connectionConfig;
     endpoint.text = controller.connectionConfig.baseUrl;
     model.text = controller.connectionConfig.model;
+    python.addListener(controller.invalidateCapabilities);
   }
 
   void refresh() {
@@ -75,6 +77,7 @@ class _RuntimeSetupScreenState extends State<RuntimeSetupScreen> {
       LocalModelConfig(baseUrl: endpoint.text.trim(), model: model.text.trim());
   @override
   void dispose() {
+    python.removeListener(controller.invalidateCapabilities);
     controller.removeListener(refresh);
     controller.dispose();
     for (final input in [
@@ -345,7 +348,10 @@ class _RuntimeSetupScreenState extends State<RuntimeSetupScreen> {
                   onChanged: controller.busy
                       ? null
                       : (value) {
-                          if (value != null) setState(() => backend = value);
+                          if (value != null) {
+                            controller.invalidateCapabilities();
+                            setState(() => backend = value);
+                          }
                         },
                 ),
                 const SizedBox(height: 12),
@@ -353,10 +359,21 @@ class _RuntimeSetupScreenState extends State<RuntimeSetupScreen> {
                   'Auto keeps the legacy MLX-first dependency preference. Explicit choices never fall back to another backend. Torch/MPS needs compatible unquantized weights; MLX quantized weights cannot be reused by Torch. CPU/CUDA are unavailable. Selection does not verify dependencies, devices or model compatibility; launch validates them. Changing this choice leaves the active connection unchanged.',
                 ),
                 const SizedBox(height: 12),
+                RuntimeCapabilityPanel(
+                  report: controller.capabilities,
+                  selected: controller.selected,
+                  backend: backend,
+                ),
                 Wrap(
                   spacing: 12,
                   runSpacing: 8,
                   children: [
+                    OutlinedButton(
+                      onPressed: controller.busy
+                          ? null
+                          : () => controller.discover(python.text),
+                      child: const Text('Inspect capabilities'),
+                    ),
                     OutlinedButton(
                       onPressed: controller.busy
                           ? null

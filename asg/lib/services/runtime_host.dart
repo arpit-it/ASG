@@ -2,6 +2,7 @@
 // Copyright 2026 Arpit Sinha
 
 import '../models/runtime_setup.dart';
+import '../models/runtime_capabilities.dart';
 
 abstract interface class RuntimeHost {
   bool get supported;
@@ -13,6 +14,7 @@ abstract interface class RuntimeHost {
   Future<String?> choosePython();
   Future<List<ModelCandidate>> scan(String path);
   Future<void> prepare(String python);
+  Future<RuntimeCapabilities> discover(String python);
   Future<String> download(RuntimeSetup setup);
   Future<void> start(RuntimeSetup setup, String modelId);
   Future<void> stop();
