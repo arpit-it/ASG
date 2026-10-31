@@ -61,12 +61,17 @@ class DownloadTests(unittest.TestCase):
             with self.assertRaises(ValueError): module.prepare_destination(target,'a','b',True)
             self.assertTrue((target/'link').is_symlink())
 
-    def test_cache_counts_only_incomplete_transfer_payload(self):
+    def test_hub_range_retry_rolls_back_reconstructed_bytes(self):
         with tempfile.TemporaryDirectory() as root:
-            target=Path(root); cache=target/'.cache/huggingface/download';cache.mkdir(parents=True)
-            (cache/'x.incomplete').write_bytes(b'x'*500)
-            (cache/'x.metadata').write_bytes(b'x'*1000)
-            self.assertEqual(module.measured_bytes(target,{'model.safetensors':1024}),500)
+            events=[]
+            def retry(**kw):
+                bar=kw['tqdm_class'](desc='Reconstructing',disable=True)
+                bar.update(60);bar.update(-60);bar.update(1)
+                time.sleep(.04)
+                raise OSError('fixture retry')
+            with self.assertRaises(OSError):
+                module.transfer('owner/model','pin',Path(root)/'model',False,self.hub(retry),emit=lambda s,**kw:events.append(json.loads(s)),interval=.01)
+            self.assertEqual(events[-1]['bytes'],1)
 
     def test_actual_helper_process_pause_and_restart_resume(self):
         import subprocess

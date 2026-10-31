@@ -15,6 +15,7 @@ class NativeModelDownloader {
   Future<void>? _finished;
   DownloadPhase? _interruption;
   bool _reserved = false;
+  Future<void> Function()? _closeOutput;
   void _publish(ModelDownloadProgress value) {
     progress = value;
     _events.add(value);
@@ -30,6 +31,7 @@ class NativeModelDownloader {
     Duration timeout = const Duration(hours: 6),
   }) async {
     if (_reserved) throw StateError('A model transfer is already active.');
+    final elapsed = Stopwatch()..start();
     _reserved = true;
     _interruption = null;
     _publish(const ModelDownloadProgress(phase: DownloadPhase.starting));
@@ -86,6 +88,12 @@ class NativeModelDownloader {
         onError: (_) {},
         onDone: errorsDone.complete,
       );
+      _closeOutput = () async {
+        await output?.cancel();
+        await errors?.cancel();
+        if (!outputDone.isCompleted) outputDone.complete();
+        if (!errorsDone.isCompleted) errorsDone.complete();
+      };
       if (_interruption != null) process.kill(ProcessSignal.sigterm);
       int code;
       try {
@@ -94,7 +102,19 @@ class NativeModelDownloader {
         await _terminate(process);
         rethrow;
       }
-      await Future.wait([outputDone.future, errorsDone.future]);
+      // A descendant may inherit pipes after the helper exits. Neither normal
+      // completion nor Stop may wait indefinitely for those unrelated handles.
+      final remaining = timeout - elapsed.elapsed;
+      final drainLimit = remaining < const Duration(seconds: 2)
+          ? (remaining.isNegative ? Duration.zero : remaining)
+          : const Duration(seconds: 2);
+      try {
+        await Future.wait([outputDone.future, errorsDone.future])
+            .timeout(drainLimit);
+      } on TimeoutException {
+        await _closeOutput?.call();
+        if (_interruption == null) rethrow;
+      }
       if (_interruption != null) {
         _publish(progress.withPhase(_interruption!));
         throw const DownloadInterrupted();
@@ -124,6 +144,7 @@ class NativeModelDownloader {
     } finally {
       await output?.cancel();
       await errors?.cancel();
+      _closeOutput = null;
       _process = null;
       _reserved = false;
       done.complete();
@@ -150,6 +171,7 @@ class NativeModelDownloader {
     );
     final process = _process;
     if (process != null) await _terminate(process);
+    await _closeOutput?.call();
     await _finished;
   }
 }

@@ -209,6 +209,59 @@ while n<100:
     await third;
     expect(d.progress.phase, DownloadPhase.stopped);
   }, skip: Platform.isWindows);
+  test(
+    'deadline and Stop bound inherited pipe cleanup after helper exit',
+    () async {
+      final root = await Directory.systemTemp.createTemp('asg inherited pipe ');
+      addTearDown(() => root.delete(recursive: true));
+      final script = File('${root.path}/pipe.py');
+      await script.writeAsString('''import subprocess,sys,json
+from pathlib import Path
+child=subprocess.Popen([sys.executable,'-c','import time;time.sleep(20)'])
+Path('${root.path}/pid').write_text(str(child.pid))
+print(json.dumps(dict(v=1,event='progress',bytes=1,total=10,speed=1)),flush=True)
+''');
+      Future<void> clean() async {
+        final file = File('${root.path}/pid');
+        if (await file.exists()) {
+          Process.killPid(
+            int.parse(await file.readAsString()),
+            ProcessSignal.sigkill,
+          );
+        }
+      }
+
+      addTearDown(clean);
+      final first = NativeModelDownloader();
+      final result = expectLater(
+        first.run(
+          'python3',
+          script.path,
+          'owner/model',
+          'pin',
+          root.path,
+          timeout: const Duration(milliseconds: 300),
+        ),
+        throwsA(isA<TimeoutException>()),
+      );
+      await result.timeout(const Duration(seconds: 3));
+      expect(first.progress.phase, DownloadPhase.failed);
+      await clean();
+      final second = NativeModelDownloader();
+      final stopped = expectLater(
+        second.run('python3', script.path, 'owner/model', 'pin', root.path),
+        throwsA(isA<DownloadInterrupted>()),
+      );
+      await second.events
+          .firstWhere((e) => e.bytes == 1)
+          .timeout(const Duration(seconds: 3));
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+      await second.interrupt(pause: false).timeout(const Duration(seconds: 1));
+      await stopped;
+      expect(second.progress.phase, DownloadPhase.stopped);
+    },
+    skip: Platform.isWindows,
+  );
   testWidgets('narrow enlarged text shows progress speed and usable controls', (
     tester,
   ) async {

@@ -1,5 +1,9 @@
 # Qwen timeout fix and streamed chat
 
+## Selected local model — 31 October 2026
+
+The owner's saved local setup now selects `Qwen3.5-27B-4bit` from `mlx-community/Qwen3.5-27B-4bit`, pinned revision `45797d2985a12c55e6473686e9ea91b95e959553`. The existing compatible-model catalog supplied the pinned download form; all three shards downloaded and validated, then managed startup saved the new project-chat connection. Real health reported MLX/Metal ready and a bounded synthetic streaming smoke completed in 2.49 seconds with five chunks and a normal stop. This single smoke does not verify all chat-to-preview, repair, context, cancellation or peak-memory behavior. Existing 9B files remain available; code defaults and earlier 9B measurements below describe the prior verified profile. No installed stable app was replaced.
+
 ## Current runtime
 
 ASG is a Flutter application targeting Android, iOS, web, macOS, Windows and Linux. Included platform runners do not establish tested device support. Managed MLX setup and the current independent Flutter web generator host are macOS-specific; other platforms retain supported app features and runtime connection controls.

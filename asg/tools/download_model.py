@@ -46,22 +46,6 @@ def prepare_destination(destination, repository, revision, resume):
         (destination / MARKER).write_text(json.dumps(identity))
 
 
-def measured_bytes(destination, files):
-    result = 0
-    for name, size in files.items():
-        path = destination / name
-        if path.is_file() and not path.is_symlink():
-            result += min(size, path.stat().st_size)
-    cache = destination / '.cache' / 'huggingface' / 'download'
-    if cache.exists():
-        for root, _, names in os.walk(cache, followlinks=False):
-            for name in names:
-                path = Path(root) / name
-                if name.endswith('.incomplete') and not path.is_symlink():
-                    result += path.stat().st_size
-    return min(sum(files.values()), result)
-
-
 def transfer(repository, revision, destination, resume, hub, emit=print, interval=0.5):
     # Resolve a branch once and pin the whole transfer to that immutable revision.
     info = hub.HfApi().model_info(repository, revision=revision, files_metadata=True)
@@ -91,7 +75,11 @@ def transfer(repository, revision, destination, resume, hub, emit=print, interva
         def update(self, n=1):
             if self.kind and n is not None:
                 with lock:
-                    counters[self.kind] += max(0, int(n))
+                    # Hub rolls reconstruction back when a server ignores Range.
+                    if self.kind == 'logical':
+                        counters['logical'] = max(baseline, counters['logical'] + int(n))
+                    else:
+                        counters['network'] += max(0, int(n))
             return super().update(n)
 
     def report(final=False):

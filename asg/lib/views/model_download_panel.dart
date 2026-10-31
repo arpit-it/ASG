@@ -57,7 +57,7 @@ class ModelDownloadPanel extends StatelessWidget {
           if (progress.phase != DownloadPhase.idle) ...[
             const SizedBox(height: 8),
             LinearProgressIndicator(
-              value: fraction,
+              value: fraction ?? (active ? null : 0),
               semanticsLabel: 'Model download progress',
             ),
             const SizedBox(height: 8),
@@ -65,7 +65,7 @@ class ModelDownloadPanel extends StatelessWidget {
               '${size(progress.bytes)} / ${progress.total == null ? 'unknown size' : size(progress.total!)}${fraction == null ? '' : ' · ${(fraction * 100).toStringAsFixed(1)}%'}',
             ),
             Text(
-              active && progress.bytesPerSecond > 0
+              progress.phase == DownloadPhase.downloading
                   ? '${size(progress.bytesPerSecond)}/s'
                   : active
                   ? 'Speed: calculating…'
