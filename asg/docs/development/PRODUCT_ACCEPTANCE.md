@@ -1019,3 +1019,29 @@ bind the tested identities. Later source/manifest changes remain stale; do not
 relabel this as current-main support. Raw screenshots stay local; sanitized
 observation records expose only digests and synthetic F10 snapshots. No model
 weights/prompts/database/runtime paths are published. Full F17 remains In progress.
+
+
+## Per-check platform scope — issue #293
+
+A check may optionally declare `targets`, a nonempty unique subset of its
+scenario targets. Omission preserves the version-1 scenario-wide default. The
+collector marks every other target unavailable and rejects supplied evidence for
+it, including passed observations. This is configured execution scope, not an
+observed test pass or automatic hardware detection.
+
+The current browser has no native generated-project host. Candidate proposal
+and verification, repair, generated-output Stop/deadline and selected rollback
+interaction checks therefore target macOS only. Browser Plan lifecycle,
+create/reopen, archive, rollback record fixtures and application checks remain
+configured. With no evidence the 120-cell matrix has 20 missing macOS cells,
+10 missing web cells and 90 unavailable cells; none pass. Browser chat Stop is
+not generated-output Stop, and a generated web preview served by a native host
+is not browser-hosted source execution.
+
+The report JSON format and Flutter viewer are unchanged. Historical reports and
+observations remain immutable; earlier manifest hashes do not become current.
+This correction adds no runtime capability or manual acceptance evidence, and
+full F17 remains In progress. Existing actual browser refusal evidence is in
+issue #293 and the PR #319 Plan observation. Run
+`python3 -B tools/test_product_acceptance.py` to check scope validation,
+legacy defaults, provenance refusal and freshness.
