@@ -291,7 +291,7 @@ Requirements changes: existing F10 acceptance guidance and F15 backend milestone
 
 ## Active task and delivery ledger
 
-Current: Issue #348 / PR #349 draft corrections implemented in isolated checkout: exact pinned idle local-runtime visibility and checked Qwen3.8 candidate. Final validation/publication, independent final-revision review, required CI and verified merge remain gates. F24 Done; full F15/F22 In progress.
+Current: Issue #348 / PR #349 Awaiting merge (draft until fresh independent review): separate current-runtime observation without source provenance or memory credit, checked Qwen3.8 new-load candidate.973macOSFlutter/100focused/40Chrome/analyzer/format/web/macOSbuilds/9inventory pass. Exact-final review, required CI and verified protected merge remain gates. F24 Done; full F15/F22 In progress.
 
 Historical pre-F17 selection: F10 In progress/unchecked. PR #248 verified merged as `c54c9b7b120d88531a0013705801d6babf0c7af9` at 2026-10-28T05:29:19Z after independent final review 5678169248 of `274bb3fd` and required CI 40637890903; tested tree `61f985bc`. Explicit opt-in named-test criterion contracts delivered. Full acceptance reconciliation, including whole-requirement supported verdicts, remains; no later task selected.
 
@@ -6076,3 +6076,12 @@ Five new regressions plus extended health assertions cover resident memory disti
 Recorded 2026-10-31T15:16:51.391219+00:00
 
 Final corrected validation:972macOSFluttertests/nineoptinskips,99focusednative,39actualChrome catalog/connection,formatter285zero/cleananalyzer,releaseweb/Wasm/macOSdebugbuilds and9inventory passed. Browser run exposed an existing fixture assuming JSON64.0 remains a non-int on JavaScript; use genuinely nonintegral64.5 to test invalid group size, then reran full39Chrome/99native. Only test data changed after full suite; no runtime-source change. Historical acceptance artifacts retained, current source-comparison inventory regenerated. No new inference/modelload/download/settings or stableapp mutation. Exact-final publication/review/requiredCI/verifiedmerge remain gates.
+
+
+### PR349 independent identity correction — supersedes prior resident-fit design
+
+Independent blocking review5723530088/inline136 reproduced changing next-launch repository/revision while retaining the old loaded model path/ID, which falsely credited the old runtime as a newly selected source. The earlier resident-fit exception and its exact-pinned-loaded claim are withdrawn. Corrected design gives no model RAM credit: strict checked new-load recommendation gates remain, while a separate Current local runtime observation shows only a known catalog label from fresh ready+idle local MLX model/path matching. Loaded repository/revision/fit/new-load are explicitly unverified. Changing saved source intent cannot relabel the current observation. A regression covers that exact saveSetup flow; a widget regression proves the runtime remains visible with no preferred new-load result. Catalog setup documentation now matches Qwen3.8/3.5 fallback ordering and the bounded historical comparison. FullF15/F22 remain Inprogress; fresh exact-final review/CI/merge required.
+
+Corrected-final local validation:973macOSFluttertests/nineoptinskips,100focusednative,40actualChrome catalog/connection,cleananalyzer,formatter285 and9inventoryfixtures passed. A new widget test initially used a real network service under the fake clock; the owned stalled test processes were identified/stopped and a deterministic injected service fixed it before focused/full/Chrome reruns. This was a test fixture stall, not native app-control failure. No fixture substitutes for inference; current ready/idleQwen3.8 health remains a separate read-only observation. Final web/macOS builds and exact-final publication/review/requiredCI/verifiedmerge remain gates.
+
+Corrected-source releaseweb/Wasm and macOSdebug builds passed. PR349 remains draft/Awaitingmerge until reviewer approves corrected final revision and requiredCI succeeds. No next issue/task selected.

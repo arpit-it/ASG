@@ -52,7 +52,6 @@ enum ModelFit {
   runtimeUnsupported,
   estimatedFit,
   memoryPressure,
-  alreadyLoaded,
 }
 
 class ModelAssessment {
@@ -67,9 +66,7 @@ class ModelAssessment {
   final int? estimatedBytes;
   final bool? fitsMemory;
   bool get canChoose =>
-      fit == ModelFit.estimatedFit ||
-      fit == ModelFit.memoryPressure ||
-      fit == ModelFit.alreadyLoaded;
+      fit == ModelFit.estimatedFit || fit == ModelFit.memoryPressure;
 
   static ModelAssessment assess(
     ModelHardware host,
@@ -127,11 +124,10 @@ class ModelAssessment {
   }
 }
 
-/// Exact pinned source matched to a fresh idle local MLX runtime observation.
-/// This identifies an existing load; it never supplies memory credit to another.
-class ResidentCatalogModel {
-  const ResidentCatalogModel(this.repository, this.revision);
-  final String repository, revision;
+/// A runtime-reported model ID, never proof of repository/revision or memory fit.
+class RunningCatalogModel {
+  const RunningCatalogModel(this.model);
+  final String model;
 }
 
 class ModelCatalogChoice {

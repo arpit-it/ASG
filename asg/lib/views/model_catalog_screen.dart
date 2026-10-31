@@ -52,6 +52,16 @@ class _ModelCatalogScreenState extends State<ModelCatalogScreen> {
               Text(
                 'Total memory: ${host.memoryBytes == null ? 'unknown' : memorySize(host.memoryBytes!)} · available estimate: ${host.availableBytes == null ? 'unknown' : memorySize(host.availableBytes!)}',
               ),
+              if (controller.runningEntry case final running?) ...[
+                const SizedBox(height: 12),
+                Text(
+                  'Current local runtime: ${running.name}',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const Text(
+                  'At the last check, the local MLX runtime reported this model ready and idle. The loaded source revision, memory fit and a new load are unverified. You can keep using the current connection; no download or switch is needed.',
+                ),
+              ],
               const SizedBox(height: 12),
               const Text(
                 'Check preferred models to find one suitable choice for Ask, planning, coding and review on this device. Selection only prepares the download form.',
@@ -73,7 +83,7 @@ class _ModelCatalogScreenState extends State<ModelCatalogScreen> {
                 contentPadding: EdgeInsets.zero,
                 title: const Text('Preferred models only'),
                 subtitle: const Text(
-                  'One curated choice covering Ask, planning, coding and review. Requires checked compatibility and estimated headroom, or an exact pinned idle local load.',
+                  'One curated choice covering Ask, planning, coding and review. Requires checked compatibility and estimated available memory fit for a new load.',
                 ),
                 value: controller.preferredOnly,
                 onChanged: controller.showPreferredOnly,
@@ -86,7 +96,7 @@ class _ModelCatalogScreenState extends State<ModelCatalogScreen> {
                   child: const Text('Check preferred models'),
                 ),
                 const Text(
-                  'ASG keeps an exact checked idle local model visible; otherwise it prioritizes Qwen3.8 27B, Qwen3.5 27B, then 9B when estimated memory fits. This is a curated policy, not a measured quality or speed guarantee. Other platforms require a compatible runtime connection; no local model is recommended here.',
+                  'ASG prioritizes Qwen3.8 27B, Qwen3.5 27B, then 9B when estimated memory fits a new load. This is a curated policy, not a measured quality or speed guarantee. Other platforms require a compatible runtime connection; no local model is recommended here.',
                 ),
               ],
               const SizedBox(height: 16),

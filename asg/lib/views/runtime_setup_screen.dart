@@ -212,8 +212,8 @@ class _RuntimeSetupScreenState extends State<RuntimeSetupScreen> {
                                     controller:
                                         widget.createCatalog?.call() ??
                                         ModelCatalogController(
-                                          inspectResident: controller
-                                              .inspectResidentCatalogModel,
+                                          inspectRunning: controller
+                                              .inspectRunningCatalogModel,
                                         ),
                                   ),
                                 ),

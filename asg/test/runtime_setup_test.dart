@@ -353,9 +353,16 @@ void main() {
       ),
     );
     c.initialize();
-    final observed = await c.inspectResidentCatalogModel();
-    expect(observed?.repository, 'mlx-community/Qwen3.8-27B-4bit');
-    expect(observed?.revision, revision);
+    final observed = await c.inspectRunningCatalogModel();
+    expect(observed?.model, 'current');
+    await c.saveSetup(
+      RuntimeSetup(
+        modelPath: '/models/current',
+        repository: 'mlx-community/another-model',
+        revision: 'b' * 40,
+      ),
+    );
+    expect((await c.inspectRunningCatalogModel())?.model, 'current');
     for (final mismatch in [
       <String, Object?>{'phase': 'writing'},
       {'phase': null},
@@ -366,13 +373,13 @@ void main() {
     ]) {
       final original = Map<String, Object?>.of(data);
       data.addAll(mismatch);
-      expect(await c.inspectResidentCatalogModel(), isNull);
+      expect(await c.inspectRunningCatalogModel(), isNull);
       data
         ..clear()
         ..addAll(original);
     }
     c.dispose();
-    expect(await c.inspectResidentCatalogModel(), isNull);
+    expect(await c.inspectRunningCatalogModel(), isNull);
   });
 
   test('Download failure is private, terminal and retryable', () async {

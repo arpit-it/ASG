@@ -115,42 +115,48 @@ class PendingPreferredService extends ModelCatalogService {
 }
 
 void main() {
-  test('resident exact source remains visible without giving another model memory credit', () async {
-    final repos = ModelCatalogController.preferredRepositories;
-    ResidentCatalogModel? resident = ResidentCatalogModel(repos[1], revision);
-    final service = PreferredCatalogService({
-      for (final repo in repos) repo: metadata(bytes: 16 * gib),
-    });
-    final c = ModelCatalogController(
-      service: service,
-      probe: () async => const ModelHardware(
-        appleSilicon: true,
-        memoryBytes: 36 * gib,
-        availableBytes: 2 * gib,
-      ),
-      inspectResident: () async => resident,
-    );
-    addTearDown(c.dispose);
-    await c.initialize();
-    await c.refreshPreferred();
-    expect(c.entries.single.repository, repos[1]);
-    expect(c.assessment(c.entries.single).fit, ModelFit.alreadyLoaded);
-    expect(c.choose(c.entries.single), isNotNull);
-    expect(
-      c
-          .assessment(
-            codingModelCatalog.firstWhere((e) => e.repository == repos[0]),
-          )
-          .fit,
-      ModelFit.memoryPressure,
-    );
-    resident = ResidentCatalogModel(repos[1], 'b' * 40);
-    await c.refreshPreferred();
-    expect(c.entries, isEmpty);
-    resident = null;
-    await c.refreshPreferred();
-    expect(c.entries, isEmpty);
-  });
+  test(
+    'current runtime remains visible without giving any model memory credit',
+    () async {
+      final repos = ModelCatalogController.preferredRepositories;
+      RunningCatalogModel? resident = const RunningCatalogModel(
+        'Qwen3.5-27B-4bit',
+      );
+      final service = PreferredCatalogService({
+        for (final repo in repos) repo: metadata(bytes: 16 * gib),
+      });
+      final c = ModelCatalogController(
+        service: service,
+        probe: () async => const ModelHardware(
+          appleSilicon: true,
+          memoryBytes: 36 * gib,
+          availableBytes: 2 * gib,
+        ),
+        inspectRunning: () async => resident,
+      );
+      addTearDown(c.dispose);
+      await c.initialize();
+      await c.refreshPreferred();
+      expect(c.entries, isEmpty);
+      expect(c.runningEntry?.repository, repos[1]);
+      expect(c.assessment(c.runningEntry!).fit, ModelFit.memoryPressure);
+      expect(
+        c
+            .assessment(
+              codingModelCatalog.firstWhere((e) => e.repository == repos[0]),
+            )
+            .fit,
+        ModelFit.memoryPressure,
+      );
+      resident = const RunningCatalogModel('private-sentinel');
+      await c.refreshPreferred();
+      expect(c.entries, isEmpty);
+      expect(c.runningEntry, isNull);
+      resident = null;
+      await c.refreshPreferred();
+      expect(c.entries, isEmpty);
+    },
+  );
 
   test('resident cannot override incompatible metadata, total budget or failed recheck', () async {
     final repo = ModelCatalogController.preferredRepositories.first;
@@ -162,7 +168,8 @@ void main() {
       final c = ModelCatalogController(
         service: PreferredCatalogService({repo: value}),
         probe: () async => host,
-        inspectResident: () async => ResidentCatalogModel(repo, revision),
+        inspectRunning: () async =>
+            const RunningCatalogModel('Qwen3.8-27B-4bit'),
       );
       await c.initialize();
       await c.refreshPreferred();
@@ -203,22 +210,56 @@ void main() {
         memoryBytes: 36 * gib,
         availableBytes: 2 * gib,
       ),
-      inspectResident: () async {
+      inspectRunning: () async {
         if (fail) throw StateError('private-sentinel');
-        return ResidentCatalogModel(repo, revision);
+        return const RunningCatalogModel('Qwen3.8-27B-4bit');
       },
     );
     addTearDown(c.dispose);
     await c.initialize();
     await c.refreshPreferred();
-    expect(c.entries, hasLength(1));
+    expect(c.entries, isEmpty);
+    expect(c.runningEntry, isNotNull);
     fail = true;
     await c.refreshPreferred();
     expect(c.entries, isEmpty);
     expect(c.hardware.detail, isNot(contains('sentinel')));
+    expect(c.runningEntry, isNull);
     fail = false;
     await c.refreshPreferred();
-    expect(c.entries, hasLength(1));
+    expect(c.entries, isEmpty);
+    expect(c.runningEntry, isNotNull);
+  });
+
+  testWidgets('current runtime remains visible when no new load fits', (
+    tester,
+  ) async {
+    final c = ModelCatalogController(
+      service: PreferredCatalogService({}),
+      probe: () async => const ModelHardware(
+        appleSilicon: true,
+        memoryBytes: 36 * gib,
+        availableBytes: 0,
+      ),
+      inspectRunning: () async => const RunningCatalogModel('Qwen3.8-27B-4bit'),
+    );
+    await c.initialize();
+    await c.refreshPreferred();
+    await tester.pumpWidget(
+      MaterialApp(home: ModelCatalogScreen(controller: c)),
+    );
+    await tester.pumpAndSettle();
+    expect(c.entries, isEmpty);
+    expect(
+      find.text('Current local runtime: Qwen3.8 27B · 4-bit'),
+      findsOneWidget,
+    );
+    expect(
+      find.textContaining(
+        'loaded source revision, memory fit and a new load are unverified',
+      ),
+      findsOneWidget,
+    );
   });
 
   test(

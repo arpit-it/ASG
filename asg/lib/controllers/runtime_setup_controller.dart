@@ -111,9 +111,9 @@ class RuntimeSetupController extends BaseController {
     );
   }
 
-  /// Recheck exact saved identity. Remote/emulated or unknown observations do
-  /// not justify treating app-host memory as already occupied by this model.
-  Future<ResidentCatalogModel?> inspectResidentCatalogModel() async {
+  /// Observe a known runtime identity without assigning repository provenance.
+  /// Download source fields describe the next launch and may have changed.
+  Future<RunningCatalogModel?> inspectRunningCatalogModel() async {
     final setup = _setup;
     final config = _connectionConfig;
     if (isDisposed || busy || _settingsLoadFailed) return null;
@@ -129,11 +129,10 @@ class RuntimeSetupController extends BaseController {
         result.loadedDevice != LoadedRuntimeDevice.mlxMetal ||
         setup.modelPath.isEmpty ||
         result.modelPath != setup.modelPath ||
-        result.model != config.model ||
-        !RegExp(r'^[a-f0-9]{40}$').hasMatch(setup.revision)) {
+        result.model != config.model) {
       return null;
     }
-    return ResidentCatalogModel(setup.repository, setup.revision);
+    return RunningCatalogModel(config.model);
   }
 
   Future<void> refresh() async {
