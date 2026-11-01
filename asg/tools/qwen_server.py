@@ -282,6 +282,8 @@ def watch_pipe():
     sys.stdin.buffer.read(1)
     finished.set()
 threading.Thread(target=watch_pipe, daemon=True).start()
+os.write(1, b'armed\n')
+os.close(1)
 if not finished.wait(seconds) and os.getppid() == parent:
     try:
         os.set_blocking(2, False)
@@ -306,19 +308,42 @@ def cpu_load_deadline(seconds):
     Expiration terminates this process with a platform kill signal, rather than
     pretending to cancel a Future. It does not bound RAM or library descendants.
     """
-    watcher = subprocess.Popen(
-        [sys.executable, '-I', '-S', '-c', _CPU_LOAD_WATCHDOG,
-         str(os.getpid()), str(seconds)],
-        stdin=subprocess.PIPE, stdout=subprocess.DEVNULL)
     try:
+        watcher = subprocess.Popen(
+            [sys.executable, '-I', '-S', '-c', _CPU_LOAD_WATCHDOG,
+             str(os.getpid()), str(seconds)],
+            stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+    except OSError:
+        raise RuntimeError('CPU load watchdog could not start; no model was loaded') from None
+    acknowledgement = []
+    def read_acknowledgement():
+        try:
+            acknowledgement.append(watcher.stdout.read(6))
+        except OSError:
+            pass
+    reader = Thread(target=read_acknowledgement, daemon=True)
+    try:
+        reader.start()
+        reader.join(timeout=5)
+        if reader.is_alive() or acknowledgement != [b'armed\n'] or watcher.poll() is not None:
+            raise RuntimeError('CPU load watchdog did not arm; no model was loaded')
         yield
     finally:
-        watcher.stdin.close()
+        # Close the disarm pipe even on failed startup. A helper that never
+        # acknowledges must be terminated/reaped before returning the failure.
+        try:
+            watcher.stdin.close()
+        except OSError:
+            pass
+        if reader.is_alive():
+            watcher.kill()
         try:
             watcher.wait(timeout=5)
         except subprocess.TimeoutExpired:
             watcher.kill()
             watcher.wait()
+        reader.join(timeout=1)
+        watcher.stdout.close()
 
 
 def main():

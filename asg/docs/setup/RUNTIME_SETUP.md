@@ -213,3 +213,5 @@ ASG_CPU_API_FIXTURE=1 python -B tools/test_qwen_backends.py CPUAPIFixtureTests
 It constructs and deletes a tiny random local checkpoint and tokenizer, verifies
 CPU/float32 placement and streams two generated tokens. This is library API
 coverage, not pretrained-model correctness, performance or F15 live acceptance.
+
+Experimental CPU loading requires a private watchdog armed acknowledgement within five seconds before submitting the loader. Failed helper startup refuses loading and reaps the helper; the acknowledgement is not continuous helper health supervision.

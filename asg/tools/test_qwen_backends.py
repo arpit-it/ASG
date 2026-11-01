@@ -84,6 +84,55 @@ print('WATCHDOG_REAPED', flush=True)
             self.assertLess(time.monotonic() - start, 8)
             return result
 
+    def test_watchdog_startup_failure_refuses_loader_and_reaps_helper(self):
+        # Real isolated interpreters cover EOF, invalid output, a partial
+        # acknowledgement and an alive helper that never acknowledges.
+        for mode in ('exit', 'invalid', 'partial', 'stall', 'launch-error'):
+            with self.subTest(mode=mode), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary)
+                for name in ('qwen_server.py', 'qwen_backends.py'):
+                    shutil.copyfile(Path(__file__).with_name(name), root / name)
+                script = root / 'fixture.py'
+                script.write_text("""
+import sys, time
+import qwen_server as server
+mode = sys.argv[1]
+server._CPU_LOAD_WATCHDOG = {
+    'exit': 'raise SystemExit(3)',
+    'invalid': "import os; os.write(1, b'wrong!')",
+    'partial': "import os,time; os.write(1, b'ar'); time.sleep(60)",
+    'stall': 'import time; time.sleep(60)',
+}.get(mode, '')
+children = []
+original = server.subprocess.Popen
+def start(*a, **k):
+    if mode == 'launch-error': raise OSError('PRIVATE executable path')
+    child = original(*a, **k)
+    children.append(child)
+    return child
+server.subprocess.Popen = start
+try:
+    with server.cpu_load_deadline(60):
+        raise AssertionError('LOADER_REACHED')
+except RuntimeError as error:
+    print(str(error), flush=True)
+else:
+    raise AssertionError('watchdog failure was accepted')
+assert all(c.returncode is not None and c.stdin.closed and c.stdout.closed for c in children)
+assert not any(t.name != 'MainThread' and t.is_alive() for t in __import__('threading').enumerate())
+print('HELPER_REAPED_PIPES_CLOSED', flush=True)
+""")
+                start = time.monotonic()
+                result = subprocess.run([sys.executable, '-B', '-S', str(script), mode],
+                                        capture_output=True, text=True, timeout=12)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertLess(time.monotonic() - start, 12)
+                self.assertIn('no model was loaded', result.stdout)
+                self.assertIn('HELPER_REAPED_PIPES_CLOSED', result.stdout)
+                self.assertNotIn('PRIVATE', result.stdout + result.stderr)
+                self.assertNotIn('LOADER_REACHED', result.stdout + result.stderr)
+                self.assertEqual(result.stderr, '')
+
     def test_hung_loader_process_exits_and_never_reports_ready(self):
         result = self.run_cli_fixture('hang')
         self.assertNotEqual(result.returncode, 0)

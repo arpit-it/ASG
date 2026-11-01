@@ -5638,3 +5638,48 @@ Status: Awaiting merge. Independent final-revision review, actual required CI
 and verified protected merge still required; final PR/review/merge identities
 will be recorded in the PR and reconciled into this ledger next increment.
 Recorded 2026-11-01T06:49:45.195858+00:00
+
+
+### CPU model-load deadline verified merged — issue #369 / PR #370
+
+Independent final-revision verdict [5726896060](https://github.com/arpit-it/ASG/pull/370#pullrequestreview-5726896060) APPROVED exacthead3e3097c84125bd3cb57743bfaba3d8e777fe2dde/tree63dae7685ccf2dbe79ade11613bf91843beb1141, all six files and acceptance, no blockers. GitHub's shared-author APPROVE422 restriction was recorded transparently; explicit independent approval is in the COMMENT review, as documented zero-count protection permits. No protection bypass. Independent58backend/actualHTTP cases57passes/oneskip plus sixdeadlinecases three repeated runs/18passes. RequiredCI41282483650 Python124777052902/Flutter124777053063 succeeded; reviewer inspected full actual logs:32collector/9inventory/4download/49backend(oneskip)/9HTTP/14command(oneskip)/4confinement(twoLinuxskips),formatter287/analyzer/977LinuxFlutterpasses12skips/15Chrome/web+Wasm and real generated-project resolve/analyze/renderedinteraction/tests/build/serve. Parent121macOSPython/twoskips,983Flutter/nineskips/web/macOSdebug finalassetbuilds remain separately scoped; none establishes live inference.
+
+Reviewer protected-plugin squashmerged [PR #370](https://github.com/arpit-it/ASG/pull/370) as `2217e993d0f753dc9b9bbe0816ade6c94e922a09` at2026-11-01T06:58:32Z; issue369closed/completed06:58:34Z. Parent independently verified mergedstate/finalhead/issueclosure/currentmain and signed rawmerge with exactreviewedtree/soleparent7f51cd4c. Guarded local-only object import/sync passed; main/origin-main0/0,indexempty,both unrelated IDEfiles byte-identical. Backup `/private/tmp/asg369-primary-before-sync`; guard `/private/tmp/asg370-safe-sync.py`. All GitHub access/publication/review/merge used connectedplugin; PR attached/bothautomationlabels applied. Prior doc edits carried into reviewedtree.
+
+Bounded issue369 Done; fullF15 remains unchecked/Inprogress, CPUexperimental. Managed CPU integration and non-Apple pretrainedCPU/separateCUDA live acceptance remain outstanding. No models/packages/downloads/inference/settings/data/stableapp replacement. No secondissue/task started; finalmerge bookkeeping retained locally for next normal reviewed increment. Fifteen-minute cadence/notification preference unchanged.
+Recorded 2026-11-01T06:59:22.115761+00:00
+Current run time 2026-11-01T06:59:22.115761+00:00
+
+
+### CPU watchdog startup acknowledgement — reopened issue #369
+
+Verified PR #370 merged2217e993; no open issue/PR or competing active ASG run.
+Reused issue #369, branch `369-cpu-watchdog-handshake`, isolated
+`/private/tmp/asg-cpu-watchdog-handshake`. F15 remains In progress.
+Evidence: the independent watchdog yielded to CPU loading immediately after
+Popen, so interpreter startup failure could leave the loader unguarded.
+Acceptance: bounded private six-byte armed acknowledgement before loader
+submission; refuse launch errors, EOF, invalid/partial output and stalled startup;
+terminate/reap the owned helper and close both pipes on failure. Existing actual
+hang, native GIL, full-stderr and disarm regressions must remain green. This
+bounds helper startup only; no continuous helper health supervision, memory
+quota, descendant sandbox or real-inference acceptance. Auto/MLX/MPS and normal
+app choices remain unchanged; CPU remains explicit experimental only.
+Non-Apple CPU/CUDA host milestones remain pending and do not block this
+Mac-verifiable F15 correction. No new issue/F ID, downloads or installs.
+Status: In progress; publication, final independent review, required checks and
+verified protected merge pending.
+Recorded 2026-11-01T07:15:19.612450+00:00
+
+Validation:122 Python cases/two opt-in skips passed, including49 backend
+passes/one skip and9 actual HTTP cases. The new subprocess regression exercises
+five helper-startup failures and verifies no loader entry, helper reaping, closed
+pipes and no remaining reader threads. Formatter287 unchanged, analyzer clean,
+983 Flutter tests/nine opt-in skips, release web/Wasm and macOS debug builds
+passed. Existing runtime read-only health ready/idle/MLX/Metal/Qwen3.8-27B-4bit
+(initial outer-sandbox access denied; authorized read succeeded). No inference,
+models/packages/downloads/installations/settings/data/stable-app replacement.
+Status: Awaiting merge; independent final-revision review, actual required CI
+and verified protected merge remain mandatory. Exact final PR/review/merge
+evidence will be retained in the PR and next normal ledger reconciliation.
+Recorded 2026-11-01T07:16:50.415106+00:00
