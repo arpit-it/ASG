@@ -133,7 +133,8 @@ Unavailable hardware blocks only the corresponding real-host acceptance, not imp
   - Delivery: [PR #347](https://github.com/arpit-it/ASG/pull/347). Initial independent review found retry rollback overcount and inherited-pipe completion hang; both corrected with actual regressions. Native isolated UI observed below-button progress/speed, Pause at 5 MiB, Resume through 7.8 MiB and Stop retaining partial bytes. Final head d583ccbb/tree031725f4 approved in reviews5723106296/finalgate5723151483; requiredCI41208499529 passed. Protectedmerge07018365f0399d7047286baf01154fbd33a3890d at2026-10-31T14:12:20Z verified; issue346 closed. Full delivery evidence below.
   - Validation: deterministic local transfer/process fixtures, Python ownership/filter/telemetry regressions, Flutter protocol/controller/responsive UI tests, full format/analyze/test, web/macOS builds and independent exact-final review/required CI/protected merge. Mark Done only after verified merge; larger-model switch remains separately subject to actual inference.
 - [ ] F15 Hardware-aware inference backends — In progress (CPU implementation; non-Apple CPU/CUDA live validation pending); depends on F09
-  - Active CPU launch view — Awaiting merge: reused [issue #356](https://github.com/arpit-it/ASG/issues/356), `356-cpu-launch-view`; optional delivered host/controller support this Mac-verifiable opt-in integration. Full F15 and non-Apple CPU/CUDA live inference remain pending. Scope and acceptance in ledger below.
+  - Active CPU launch disk-ceiling view: reopened [issue #365](https://github.com/arpit-it/ASG/issues/365), `365-cpu-launch-ceiling`; optional exact-byte limit uses delivered controller/host. Mac-verifiable integration; full F15/live platform milestones remain pending. Acceptance and validation in ledger below.
+  - Delivered CPU launch view — Done after verified [PR #384](https://github.com/arpit-it/ASG/pull/384) merge3c05328d (2026-11-01T13:25:47Z), finalreview5728255927/requiredCI41310704303 passed: reused [issue #356](https://github.com/arpit-it/ASG/issues/356), `356-cpu-launch-view`; optional delivered host/controller support this Mac-verifiable opt-in integration. Full F15 and non-Apple CPU/CUDA live inference remain pending. Scope and acceptance in ledger below.
   - Delivered CPU dependency-check view — Done after verified [PR #383](https://github.com/arpit-it/ASG/pull/383) merge2f65060a (2026-11-01T12:54:58Z), finalreview5728140205/requiredCI41308233057 passed: reused [issue #358](https://github.com/arpit-it/ASG/issues/358), `358-cpu-preparation-view`; explicit session consent gates dependency-only preparation via delivered controller/host. Full F15 and non-Apple CPU/CUDA inference remain pending. Acceptance and validation in delivery ledger below.
   - Delivered CPU no-load inspection view — Done after verified [PR #382](https://github.com/arpit-it/ASG/pull/382) merge42e5e051 (2026-11-01T12:26:04Z), finalreview5728000707/requiredCI41305959228 passed: reused [issue #367](https://github.com/arpit-it/ASG/issues/367), `367-cpu-inspection-view`; explicit experimental consent and structural disk observations only. Normal CPU choices and real-host acceptance remain unavailable; full F15 stays unchecked. Scope/tests in delivery ledger below.
   - CPU checkpoint inspection controller — Done through verified [PR #381](https://github.com/arpit-it/ASG/pull/381), merge87f44313 (2026-11-01), independent finalreview5727903611/finalgate5727915424 and requiredCI41303519922 passed: reopened [issue #367](https://github.com/arpit-it/ASG/issues/367), `367-cpu-inspection-controller` from verified main `03b04bde`. Delivered optional no-load host API is the technical prerequisite for this Mac-verifiable increment. Explicit per-call consent/input bounds, typed structure/disk observations, shared busy exclusion, private retry and stale/disposed-result suppression. No normal CPU choice or inference/readiness claim; full F15 and non-Apple CPU/CUDA live acceptance remain pending. Acceptance and checks in the delivery ledger below.
@@ -7327,3 +7328,62 @@ byte-identical between isolated validation and checkout. No actual CPU inference
 claimed. Status Awaiting merge; exact-tree publication, independent final revision
 review and required CI/protected reviewer merge remain gates.
 Recorded 2026-11-01T13:18:22.802573+00:00
+
+
+### CPU launch view verified merged — issue #356 / PR #384
+
+Independent review5728255927 and finalgate5728271610 approved exact
+`a9b6dd4ae352277fbd035630acb1e524e5083694` / tree
+`3d5313a38c12bf5adee67d6334edef527d42abe7` (local36dfbbb identical), no blockers.
+Independent86 focused UI/controller/actual launch-process/MVC tests and two probes
+passed: every missing input disables launch; valid inputs/consent remain blocked
+by ready or owned runtime. RequiredCI41310704303 success; reviewer inspected actual
+Flutter124860275640 logs: formatter301/analyzer,Ubuntu1042pass12skip,Chrome15,web/Wasm
+and real generated-project resolve/analyze/test/build/serve. Python124860275810 all
+seven suites passed with explicit live/platform skips. ParentMac1048/nineskips,
+web/macOSdebug and Python95(one live skip) remain separate evidence, never inference.
+
+Reviewer protected-plugin squash merged [PR #384](https://github.com/arpit-it/ASG/pull/384)
+as `3c05328d1b30eb45797040645bf04918c4810efc` at2026-11-01T13:25:47Z;
+issue356 closed/completed13:25:49Z. Shared-owner COMMENT records independent approval
+without bypass. Parent fresh plugin verification confirmed PR/issue/CI and signed
+merge matching reviewedtree/soleparent2f65060. Guarded local-only sync passed: main/
+origin-main0/0,indexempty,both IDEfiles byte-identical. Backup
+`/private/tmp/asg356-launch-before-sync`; guard `/private/tmp/asg384-safe-sync.py`.
+Plugin-only publication/review/merge; both automation labels applied. Bounded CPU
+launch view Done; fullF15 unchecked/Inprogress,CPUexperimental/outside supported
+choices,non-AppleCPU/CUDA live acceptance pending. No actual model load/inference,
+install/download/settings/data/stableapp/runtime replacement or cadence/notification
+change. No newissue/FID. Finalmerge bookkeeping retained for next normal reviewed PR.
+Recorded 2026-11-01T13:26:58.514273+00:00
+
+
+### Experimental CPU launch disk ceiling — issue #365
+
+Reopened matching issue #365 after verifying PR #384 merge3c05328d and issue356
+closed/completed. No competing active ASG chat or open PR at selection. Branch
+`365-cpu-launch-ceiling` retains unrelated IDE edits and prior final-merge evidence.
+F15 continuation: delivered controller/host already accept maxWeightBytes, but the
+launch view always omitted it. Expose a session-only optional exact decimal ceiling
+1..9007199254740991; blank retains no ceiling. Invalid input disables launch with
+private guidance, busy disables editing; retry/scroll retains input, fresh session
+resets it. Preserve consent, two threads/180-second defaults and lifecycle gates.
+Disk observations are not a RAM quota, fit or inference claim. Mac-verifiable view
+uses delivered CPU APIs; full F15 and non-Apple CPU/CUDA live inference stay pending,
+CPU outside normal supported choices. No download/install/model load/stable app or
+settings/connection mutation. Six widget tests pass including exact boundaries,
+invalid forms, forwarding/retry/busy/session, 320px enlarged validation and launch.
+Full validation, independent final-head review, required CI and protected merge
+remain gates; no completion claim. No new issue/F ID or cadence/notification change.
+Recorded 2026-11-01T13:30:34.025941+00:00
+
+Final local validation: formatter301 unchanged, analyzer clean, isolated tracked-source
+Flutter1049 passed/nine opt-in skips, six launch widget tests passed; release web/
+Wasm and macOS debug builds passed. Python backend/product/inventory95 tests
+passed with one explicit live-inference skip. All relevant source/test/build inputs
+byte-identical to isolated validation. Inventory comparison metadata refreshed;
+historical reports unchanged. Initial SDK sandbox cache denial rerun with approved
+access; an inventory-copy path typo corrected before suite completion. Status
+Awaiting merge: exact-tree plugin publication, independent final-head review,
+required CI and protected reviewer merge remain gates. No actual CPU inference.
+Recorded 2026-11-01T13:32:15.847796+00:00

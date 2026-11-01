@@ -26,13 +26,23 @@ class _CpuRuntimeLaunchPanelState extends State<CpuRuntimeLaunchPanel>
   bool get wantKeepAlive => true;
   final checkpoint = TextEditingController();
   final model = TextEditingController();
+  final ceiling = TextEditingController();
   bool consent = false;
+
+  int? get maxBytes => int.tryParse(ceiling.text.trim());
+  bool get validCeiling =>
+      ceiling.text.trim().isEmpty ||
+      (RegExp(r'^[0-9]+$').hasMatch(ceiling.text.trim()) &&
+          maxBytes != null &&
+          maxBytes! > 0 &&
+          maxBytes! <= 9007199254740991);
 
   @override
   void initState() {
     super.initState();
     checkpoint.addListener(refresh);
     model.addListener(refresh);
+    ceiling.addListener(refresh);
   }
 
   void refresh() => setState(() {});
@@ -41,6 +51,7 @@ class _CpuRuntimeLaunchPanelState extends State<CpuRuntimeLaunchPanel>
   void dispose() {
     checkpoint.dispose();
     model.dispose();
+    ceiling.dispose();
     super.dispose();
   }
 
@@ -77,7 +88,22 @@ class _CpuRuntimeLaunchPanelState extends State<CpuRuntimeLaunchPanel>
           ),
           const SizedBox(height: 12),
           const Text(
-            'Limits: 2 threads; 180-second server load deadline; no disk-byte ceiling. These are not a RAM quota or proof that the model fits.',
+            'Limits: 2 threads; 180-second server load deadline. These are not a RAM quota or proof that the model fits.',
+          ),
+          const SizedBox(height: 12),
+          TextField(
+            controller: ceiling,
+            enabled: !c.busy,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+              labelText: 'CPU launch maximum weight bytes on disk (optional)',
+              helperText:
+                  'Blank means no disk-byte ceiling. This is not a RAM limit.',
+              helperMaxLines: 3,
+              errorText: validCeiling ? null : 'Enter whole bytes from 1 to 9007199254740991, or leave blank.',
+              errorMaxLines: 3,
+              border: const OutlineInputBorder(),
+            ),
           ),
           CheckboxListTile(
             contentPadding: EdgeInsets.zero,
@@ -98,6 +124,7 @@ class _CpuRuntimeLaunchPanelState extends State<CpuRuntimeLaunchPanel>
                     c.health.ready ||
                     c.host.ownsProcess ||
                     !consent ||
+                    !validCeiling ||
                     widget.python.text.trim().isEmpty ||
                     checkpoint.text.trim().isEmpty ||
                     model.text.trim().isEmpty
@@ -109,6 +136,7 @@ class _CpuRuntimeLaunchPanelState extends State<CpuRuntimeLaunchPanel>
                     ),
                     model.text,
                     experimentalCpu: consent,
+                    maxWeightBytes: maxBytes,
                   ),
             icon: const Icon(Icons.play_arrow),
             label: const Text('Launch experimental CPU'),

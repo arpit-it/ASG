@@ -6430,3 +6430,62 @@ byte-identical between isolated validation and checkout. No actual CPU inference
 claimed. Status Awaiting merge; exact-tree publication, independent final revision
 review and required CI/protected reviewer merge remain gates.
 Recorded 2026-11-01T13:18:22.802573+00:00
+
+
+### CPU launch view verified merged — issue #356 / PR #384
+
+Independent review5728255927 and finalgate5728271610 approved exact
+`a9b6dd4ae352277fbd035630acb1e524e5083694` / tree
+`3d5313a38c12bf5adee67d6334edef527d42abe7` (local36dfbbb identical), no blockers.
+Independent86 focused UI/controller/actual launch-process/MVC tests and two probes
+passed: every missing input disables launch; valid inputs/consent remain blocked
+by ready or owned runtime. RequiredCI41310704303 success; reviewer inspected actual
+Flutter124860275640 logs: formatter301/analyzer,Ubuntu1042pass12skip,Chrome15,web/Wasm
+and real generated-project resolve/analyze/test/build/serve. Python124860275810 all
+seven suites passed with explicit live/platform skips. ParentMac1048/nineskips,
+web/macOSdebug and Python95(one live skip) remain separate evidence, never inference.
+
+Reviewer protected-plugin squash merged [PR #384](https://github.com/arpit-it/ASG/pull/384)
+as `3c05328d1b30eb45797040645bf04918c4810efc` at2026-11-01T13:25:47Z;
+issue356 closed/completed13:25:49Z. Shared-owner COMMENT records independent approval
+without bypass. Parent fresh plugin verification confirmed PR/issue/CI and signed
+merge matching reviewedtree/soleparent2f65060. Guarded local-only sync passed: main/
+origin-main0/0,indexempty,both IDEfiles byte-identical. Backup
+`/private/tmp/asg356-launch-before-sync`; guard `/private/tmp/asg384-safe-sync.py`.
+Plugin-only publication/review/merge; both automation labels applied. Bounded CPU
+launch view Done; fullF15 unchecked/Inprogress,CPUexperimental/outside supported
+choices,non-AppleCPU/CUDA live acceptance pending. No actual model load/inference,
+install/download/settings/data/stableapp/runtime replacement or cadence/notification
+change. No newissue/FID. Finalmerge bookkeeping retained for next normal reviewed PR.
+Recorded 2026-11-01T13:26:58.514273+00:00
+
+
+### Experimental CPU launch disk ceiling — issue #365
+
+Reopened matching issue #365 after verifying PR #384 merge3c05328d and issue356
+closed/completed. No competing active ASG chat or open PR at selection. Branch
+`365-cpu-launch-ceiling` retains unrelated IDE edits and prior final-merge evidence.
+F15 continuation: delivered controller/host already accept maxWeightBytes, but the
+launch view always omitted it. Expose a session-only optional exact decimal ceiling
+1..9007199254740991; blank retains no ceiling. Invalid input disables launch with
+private guidance, busy disables editing; retry/scroll retains input, fresh session
+resets it. Preserve consent, two threads/180-second defaults and lifecycle gates.
+Disk observations are not a RAM quota, fit or inference claim. Mac-verifiable view
+uses delivered CPU APIs; full F15 and non-Apple CPU/CUDA live inference stay pending,
+CPU outside normal supported choices. No download/install/model load/stable app or
+settings/connection mutation. Six widget tests pass including exact boundaries,
+invalid forms, forwarding/retry/busy/session, 320px enlarged validation and launch.
+Full validation, independent final-head review, required CI and protected merge
+remain gates; no completion claim. No new issue/F ID or cadence/notification change.
+Recorded 2026-11-01T13:30:34.025941+00:00
+
+Final local validation: formatter301 unchanged, analyzer clean, isolated tracked-source
+Flutter1049 passed/nine opt-in skips, six launch widget tests passed; release web/
+Wasm and macOS debug builds passed. Python backend/product/inventory95 tests
+passed with one explicit live-inference skip. All relevant source/test/build inputs
+byte-identical to isolated validation. Inventory comparison metadata refreshed;
+historical reports unchanged. Initial SDK sandbox cache denial rerun with approved
+access; an inventory-copy path typo corrected before suite completion. Status
+Awaiting merge: exact-tree plugin publication, independent final-head review,
+required CI and protected reviewer merge remain gates. No actual CPU inference.
+Recorded 2026-11-01T13:32:15.847796+00:00
