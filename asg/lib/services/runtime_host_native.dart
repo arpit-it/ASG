@@ -13,6 +13,7 @@ import '../models/runtime_setup.dart';
 import '../models/runtime_capabilities.dart';
 import 'runtime_host.dart';
 import 'cpu_checkpoint_inspection_host.dart';
+import 'cpu_environment_preparation_host.dart';
 import '../models/cpu_checkpoint_inspection.dart';
 import 'model_download_host.dart';
 import 'model_downloader_native.dart';
@@ -26,7 +27,11 @@ class _ExternalCheckpointMetadata implements Exception {
 }
 
 class NativeRuntimeHost
-    implements RuntimeHost, ModelDownloadHost, CpuCheckpointInspectionHost {
+    implements
+        RuntimeHost,
+        ModelDownloadHost,
+        CpuCheckpointInspectionHost,
+        CpuEnvironmentPreparationHost {
   NativeRuntimeHost({
     this.port = 8765,
     this.supportDirectory,
@@ -381,7 +386,42 @@ class NativeRuntimeHost
     }
   });
 
+  @override
+  Future<void> prepareCpuEnvironment(
+    String python, {
+    required bool experimentalCpu,
+  }) => _job(() async {
+    if (!experimentalCpu || python.trim().isEmpty) {
+      throw const FormatException(
+        'Choose Python and explicitly consent to experimental CPU preparation.',
+      );
+    }
+    try {
+      final script = await _script('qwen_backends.py');
+      final output = await _inspectionOutput(python.trim(), [
+        '-B',
+        script,
+        '--prepare',
+        'cpu',
+        '--experimental-cpu',
+      ]);
+      if (output.trim() !=
+          'cpu runtime dependencies checked; model loading and memory adequacy remain unverified.') {
+        throw const FormatException('Invalid CPU preparation report.');
+      }
+    } catch (_) {
+      throw StateError(
+        'CPU environment check failed. Check installed Torch, Transformers and safetensors in the selected Python environment, then retry. Model loading and memory adequacy remain unverified.',
+      );
+    }
+  });
+
   Future<Object?> _inspectionReport(
+    String python,
+    List<String> arguments,
+  ) async => jsonDecode(await _inspectionOutput(python, arguments));
+
+  Future<String> _inspectionOutput(
     String python,
     List<String> arguments,
   ) async {
@@ -437,7 +477,7 @@ class NativeRuntimeHost
           'Capability discovery failed. Check the Python environment and retry.',
         );
       }
-      return jsonDecode(utf8.decode(bytes));
+      return utf8.decode(bytes);
     } finally {
       try {
         if (!exited) {
