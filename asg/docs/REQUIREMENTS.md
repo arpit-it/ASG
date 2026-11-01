@@ -8377,3 +8377,16 @@ failures were test setup serialization and an offscreen finder; corrected and
 retested. No fresh inference, stable-app replacement or external-platform support
 is claimed. Status: Awaiting merge; exact-final independent review, required CI
 and protected reviewer merge remain gates. Logs /private/tmp/asg396-ask-*.log.
+
+Independent review5730205321 at d961c22b found no implementation defect after
+30 focused tests, but required CI41348777687 Python inventory check failed.
+Parent reproduced the stale comparison fingerprint and regenerated only the
+acceptance inventory: changed source files are now recorded as differing from
+historical observations, preserving their separate identities and verdict limits.
+Fresh final-revision review and required CI are mandatory after this correction.
+
+Correction validation: all seven required Python fixture scripts passed (141 tests,
+two explicit live/platform skips), including nine inventory regeneration tests.
+No Dart/runtime source changed after the passing full Flutter suite and builds.
+Historical observations remain historical; this is no new inference/support claim.
+Awaiting fresh exact-final review, new required CI and protected reviewer merge.
