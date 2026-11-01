@@ -133,7 +133,8 @@ Unavailable hardware blocks only the corresponding real-host acceptance, not imp
   - Delivery: [PR #347](https://github.com/arpit-it/ASG/pull/347). Initial independent review found retry rollback overcount and inherited-pipe completion hang; both corrected with actual regressions. Native isolated UI observed below-button progress/speed, Pause at 5 MiB, Resume through 7.8 MiB and Stop retaining partial bytes. Final head d583ccbb/tree031725f4 approved in reviews5723106296/finalgate5723151483; requiredCI41208499529 passed. Protectedmerge07018365f0399d7047286baf01154fbd33a3890d at2026-10-31T14:12:20Z verified; issue346 closed. Full delivery evidence below.
   - Validation: deterministic local transfer/process fixtures, Python ownership/filter/telemetry regressions, Flutter protocol/controller/responsive UI tests, full format/analyze/test, web/macOS builds and independent exact-final review/required CI/protected merge. Mark Done only after verified merge; larger-model switch remains separately subject to actual inference.
 - [ ] F15 Hardware-aware inference backends — In progress (CPU implementation; non-Apple CPU/CUDA live validation pending); depends on F09
-  - Active CPU dependency-check view — Awaiting merge: reused [issue #358](https://github.com/arpit-it/ASG/issues/358), `358-cpu-preparation-view`; explicit session consent gates dependency-only preparation via delivered controller/host. Full F15 and non-Apple CPU/CUDA inference remain pending. Acceptance and validation in delivery ledger below.
+  - Active CPU launch view — Awaiting merge: reused [issue #356](https://github.com/arpit-it/ASG/issues/356), `356-cpu-launch-view`; optional delivered host/controller support this Mac-verifiable opt-in integration. Full F15 and non-Apple CPU/CUDA live inference remain pending. Scope and acceptance in ledger below.
+  - Delivered CPU dependency-check view — Done after verified [PR #383](https://github.com/arpit-it/ASG/pull/383) merge2f65060a (2026-11-01T12:54:58Z), finalreview5728140205/requiredCI41308233057 passed: reused [issue #358](https://github.com/arpit-it/ASG/issues/358), `358-cpu-preparation-view`; explicit session consent gates dependency-only preparation via delivered controller/host. Full F15 and non-Apple CPU/CUDA inference remain pending. Acceptance and validation in delivery ledger below.
   - Delivered CPU no-load inspection view — Done after verified [PR #382](https://github.com/arpit-it/ASG/pull/382) merge42e5e051 (2026-11-01T12:26:04Z), finalreview5728000707/requiredCI41305959228 passed: reused [issue #367](https://github.com/arpit-it/ASG/issues/367), `367-cpu-inspection-view`; explicit experimental consent and structural disk observations only. Normal CPU choices and real-host acceptance remain unavailable; full F15 stays unchecked. Scope/tests in delivery ledger below.
   - CPU checkpoint inspection controller — Done through verified [PR #381](https://github.com/arpit-it/ASG/pull/381), merge87f44313 (2026-11-01), independent finalreview5727903611/finalgate5727915424 and requiredCI41303519922 passed: reopened [issue #367](https://github.com/arpit-it/ASG/issues/367), `367-cpu-inspection-controller` from verified main `03b04bde`. Delivered optional no-load host API is the technical prerequisite for this Mac-verifiable increment. Explicit per-call consent/input bounds, typed structure/disk observations, shared busy exclusion, private retry and stale/disposed-result suppression. No normal CPU choice or inference/readiness claim; full F15 and non-Apple CPU/CUDA live acceptance remain pending. Acceptance and checks in the delivery ledger below.
   - CPU launch controller continuation — Done through verified [PR #380](https://github.com/arpit-it/ASG/pull/380), merge03b04bde (2026-11-01), independent finalreview5727815889/finalgate5727830861 and requiredCI41301289153 passed: reopened [issue #356](https://github.com/arpit-it/ASG/issues/356), `356-cpu-launch-controller` from `8c52534e`. Delivered optional host launch is the technical prerequisite; unavailable non-Apple CPU/CUDA inference does not block this Mac-verifiable API-only orchestration. Explicit per-call consent/validated inputs, busy exclusion, existing-runtime rejection, private retry, stale-observation invalidation and late-process Stop/disposal cleanup. Launch only: no saved settings/connection or normal CPU choice changes. Acceptance and evidence in delivery ledger below; full F15/live milestones remain pending.
@@ -7260,3 +7261,69 @@ Inventory was regenerated after formatting to bind current source. Retained runt
 health observed MLX/Metal/Qwen3.8-27B-4bit; no CPU inference or weights loaded.
 Status Awaiting merge: exact-tree publication, independent final review, required CI
 and verified protected merge remain gates. No install/download/stable-app replacement.
+
+
+### CPU dependency-check view verified merged — issue #358 / PR #383
+
+Independent final review [5728140205](https://github.com/arpit-it/ASG/pull/383#pullrequestreview-5728140205)
+approved exact `a7e6e9a1e4444b495bf09d08dc44e9e92c41456a` /
+tree `de82b14a0e9b7c4608ab6b4a495e855eb03cc3df` (local3a04bb7 identical).
+No blockers; independent95 focused tests and two extra unsupported-optional-host/
+saved-Python-no-consent probes passed. Finalgate5728162577 confirmed required
+CI41308233057 success: Flutter124852967608 formatter299/analyzer,Ubuntu1037passes/
+12skips,actualChrome15,web/Wasm and independent generated-project resolve/analyze/
+test/build/serve; Python124852967441 all seven suites passed with explicit skips.
+Parent isolatedMac1043passes/nineskips,95focused,web/macOSdebug and Pythoninventory9/
+product32 remain separate evidence. No fixture/build/health observation establishes
+CPU inference.
+
+Reviewer normally protected-merged [PR #383](https://github.com/arpit-it/ASG/pull/383)
+as `2f65060a4183e131dc942665382727192114c8eb` at2026-11-01T12:54:58Z;
+issue358closed/completed12:54:59Z. Shared-owner COMMENT records independent approval
+without bypass. Parent freshly verified PR/issue/currentCI and signed rawmerge with
+reviewedtree/soleparent42e5e051. Guarded local-only sync passed: main/origin-main0/0,
+indexempty,both IDEfiles byte-identical. Backup `/private/tmp/asg358-view-before-sync`;
+guard `/private/tmp/asg383-safe-sync.py`. Plugin-only publication/review/merge; both
+automation labels applied. Bounded dependency-check view Done; fullF15 unchecked/
+Inprogress,CPUexperimental/outside normal supported choices; non-AppleCPU/CUDA live
+acceptance remains pending. No install/download/model-load/stableapp/settings/runtime
+replacement or cadence/notification change. No newissue/FID. Final merge bookkeeping
+retained locally for the next normal reviewed development increment.
+Recorded 2026-11-01T12:55:45.987335+00:00
+
+
+### Experimental CPU launch view — issue #356
+
+Reopened existing issue #356, branch `356-cpu-launch-view` from plugin-verified
+main `2f65060a4183e131dc942665382727192114c8eb`. No competing active ASG chat
+or open PR/issue at selection. Preserve prior PR #383 merge reconciliation and IDE
+edits. Delivered optional CPU host/controller are actual technical prerequisites;
+this bounded F15 continuation is Mac-verifiable under the owner exception. Full F15
+and non-Apple CPU/CUDA real inference remain pending, CPU outside supported choices.
+
+Acceptance: collapsed optional-host-only launch panel; explicit session consent to
+weight loading/RAM use, independent checkpoint/model ID and shared Python input.
+Visible fixed limits two threads/180-second server load deadline/no disk-byte ceiling,
+no RAM quota claim. Busy/ready/owned-runtime exclusion, private failure/retry, Stop
+during pending acquisition and disposal cleanup. No saved setup/connection changes,
+automatic connection, install/download or normal CPU choice. Separate health check
+required; launch does not establish readiness/inference. Five new widget regressions
+cover forwarding/defaults, consent, busy/private retry, Stop/late ownership cleanup,
+fresh-session reset, unsupported hosts and 320px enlarged text. Keep view state alive
+while scrolling. Initial helper scroll direction and fake Stop-count assumptions
+corrected; interim PageStorage experiment removed after TextField key collision.
+Five widget tests pass. Full isolated-source validation pending at this entry;
+independent final-head review, required CI and protected reviewer merge remain gates.
+Read-only retained loopback health returned connection failure; no inference claim,
+launch, weight loading or stable-app/settings/runtime replacement performed.
+No new issue/F ID, cadence or notification changes.
+Recorded 2026-11-01T13:17:41.878552+00:00
+
+Final local validation: formatter301 unchanged, analyzer clean; isolated tracked-source
+full Flutter suite1048 passed/nine opt-in skips; five new widget tests passed. Web
+release/Wasm dry-run and macOS debug builds passed. Python backend/product/inventory
+95 passed with one explicit live-inference skip. 356 source/test/build inputs
+byte-identical between isolated validation and checkout. No actual CPU inference
+claimed. Status Awaiting merge; exact-tree publication, independent final revision
+review and required CI/protected reviewer merge remain gates.
+Recorded 2026-11-01T13:18:22.802573+00:00

@@ -1,0 +1,130 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright 2026 Arpit Sinha
+
+import 'package:flutter/material.dart';
+
+import '../controllers/runtime_setup_controller.dart';
+import '../models/runtime_setup.dart';
+
+/// Session-only consent to a controlled CPU launch, separate from saved setup.
+class CpuRuntimeLaunchPanel extends StatefulWidget {
+  const CpuRuntimeLaunchPanel({
+    super.key,
+    required this.controller,
+    required this.python,
+  });
+  final RuntimeSetupController controller;
+  final TextEditingController python;
+
+  @override
+  State<CpuRuntimeLaunchPanel> createState() => _CpuRuntimeLaunchPanelState();
+}
+
+class _CpuRuntimeLaunchPanelState extends State<CpuRuntimeLaunchPanel>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+  final checkpoint = TextEditingController();
+  final model = TextEditingController();
+  bool consent = false;
+
+  @override
+  void initState() {
+    super.initState();
+    checkpoint.addListener(refresh);
+    model.addListener(refresh);
+  }
+
+  void refresh() => setState(() {});
+
+  @override
+  void dispose() {
+    checkpoint.dispose();
+    model.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    final c = widget.controller;
+    return Card(
+      child: ExpansionTile(
+        title: const Text('Experimental CPU launch'),
+        childrenPadding: const EdgeInsets.all(24),
+        expandedCrossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Start an experimental local Torch CPU process using the Python executable above and an existing compatible checkpoint. This can load weights and consume substantial RAM. MLX quantized weights cannot be reused. No packages or models are downloaded. Saved setup and connection remain unchanged.',
+          ),
+          const SizedBox(height: 16),
+          TextField(
+            controller: checkpoint,
+            enabled: !c.busy,
+            decoration: const InputDecoration(
+              labelText: 'CPU launch checkpoint folder',
+              border: OutlineInputBorder(),
+            ),
+          ),
+          const SizedBox(height: 16),
+          TextField(
+            controller: model,
+            enabled: !c.busy,
+            decoration: const InputDecoration(
+              labelText: 'CPU launch model ID',
+              border: OutlineInputBorder(),
+            ),
+          ),
+          const SizedBox(height: 12),
+          const Text(
+            'Limits: 2 threads; 180-second server load deadline; no disk-byte ceiling. These are not a RAM quota or proof that the model fits.',
+          ),
+          CheckboxListTile(
+            contentPadding: EdgeInsets.zero,
+            title: const Text(
+              'Allow experimental CPU weight loading and launch',
+            ),
+            subtitle: const Text(
+              'Session only. CPU inference support remains unverified.',
+            ),
+            value: consent,
+            onChanged: c.busy
+                ? null
+                : (v) => setState(() => consent = v ?? false),
+          ),
+          OutlinedButton.icon(
+            onPressed:
+                c.busy ||
+                    c.health.ready ||
+                    c.host.ownsProcess ||
+                    !consent ||
+                    widget.python.text.trim().isEmpty ||
+                    checkpoint.text.trim().isEmpty ||
+                    model.text.trim().isEmpty
+                ? null
+                : () => c.startCpuRuntime(
+                    RuntimeSetup(
+                      python: widget.python.text,
+                      modelPath: checkpoint.text,
+                    ),
+                    model.text,
+                    experimentalCpu: consent,
+                  ),
+            icon: const Icon(Icons.play_arrow),
+            label: const Text('Launch experimental CPU'),
+          ),
+          if (c.cpuLaunching)
+            OutlinedButton.icon(
+              onPressed: c.stop,
+              icon: const Icon(Icons.stop),
+              label: const Text('Stop CPU launch'),
+            ),
+          if (c.busy) const LinearProgressIndicator(),
+          const Text(
+            'Launch is not readiness confirmation. Refresh status separately before connecting. Memory adequacy and real-host CPU inference remain unverified.',
+          ),
+        ],
+      ),
+    );
+  }
+}
