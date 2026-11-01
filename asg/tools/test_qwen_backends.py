@@ -18,6 +18,141 @@ import qwen_backends as backends
 CONFIG = {'architectures': ['Qwen3_5ForConditionalGeneration']}
 
 
+class CPULoadDeadlineTests(unittest.TestCase):
+    def run_cli_fixture(self, mode):
+        # Execute the real main/worker/watchdog in a dedicated process, replacing
+        # only optional loader and HTTP serving. No tensors/inference involved.
+        with tempfile.TemporaryDirectory(prefix='PRIVATE CPU load deadline ') as temporary:
+            root = Path(temporary)
+            for name in ('qwen_server.py', 'qwen_backends.py'):
+                shutil.copyfile(Path(__file__).with_name(name), root / name)
+            folder = root / 'model with spaces'; folder.mkdir()
+            (folder / 'config.json').write_text(json.dumps(CONFIG))
+            (folder / 'model.safetensors').write_bytes(b'fixture')
+            script = root / 'fixture.py'
+            script.write_text("""
+import os, sys, time
+from types import SimpleNamespace
+import qwen_server as server
+mode = sys.argv.pop(1)
+server.select_backend = lambda *a, **k: 'cpu'
+def load(*a, **k):
+    if mode == 'gil':
+        import ctypes
+        ctypes.PyDLL(None).sleep(60)
+    if mode == 'hang' or mode == 'full-stderr':
+        if mode == 'full-stderr':
+            os.set_blocking(2, False)
+            try:
+                while True: os.write(2, b'x' * 4096)
+            except BlockingIOError: pass
+        time.sleep(60)
+    if mode == 'failure': raise RuntimeError('controlled loader failure')
+    return SimpleNamespace(kind='torch', device='cpu')
+server.load_backend = load
+watchers = []
+original_popen = server.subprocess.Popen
+def record_watchdog(*a, **k):
+    child = original_popen(*a, **k)
+    watchers.append(child)
+    return child
+server.subprocess.Popen = record_watchdog
+class HTTP:
+    def __init__(self, *a): pass
+    def serve_forever(self): time.sleep(.5); print('SERVED_BEYOND_LOAD_DEADLINE', flush=True)
+    def server_close(self): pass
+server.ThreadingHTTPServer = HTTP
+if mode == 'failure':
+    try: server.main()
+    except RuntimeError:
+        time.sleep(.5)
+        print('FAILURE_DISARMED', flush=True)
+else: server.main()
+assert len(watchers) == 1 and watchers[0].returncode == 0
+print('WATCHDOG_REAPED', flush=True)
+""")
+            command = [sys.executable, '-B', '-S', str(script), mode, '--backend', 'cpu', '--experimental-cpu', '--model', str(folder), '--cpu-load-timeout-seconds', '.15']
+            start = time.monotonic()
+            if mode == 'full-stderr':
+                # Deliberately don't consume the pipe until after process exit.
+                with subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE) as process:
+                    process.wait(timeout=8)
+                    stdout, stderr = process.communicate(timeout=1)
+                    result = subprocess.CompletedProcess(command, process.returncode, stdout.decode(), stderr.decode())
+            else:
+                result = subprocess.run(command, capture_output=True, text=True, timeout=8)
+            self.assertLess(time.monotonic() - start, 8)
+            return result
+
+    def test_hung_loader_process_exits_and_never_reports_ready(self):
+        result = self.run_cli_fixture('hang')
+        self.assertNotEqual(result.returncode, 0)
+        if os.name == 'posix':
+            self.assertEqual(result.returncode, -9, result.stderr)
+        self.assertIn('CPU model loading deadline exceeded', result.stderr)
+        self.assertNotIn('Ready at', result.stdout)
+        self.assertNotIn('PRIVATE', result.stderr)
+        self.assertNotIn('Traceback', result.stderr)
+
+    @unittest.skipUnless(os.name == 'posix', 'POSIX native GIL-holding sleep fixture')
+    def test_native_gil_holding_loader_is_terminated_by_independent_watchdog(self):
+        result = self.run_cli_fixture('gil')
+        self.assertEqual(result.returncode, -9, result.stderr)
+        self.assertIn('CPU model loading deadline exceeded', result.stderr)
+        self.assertNotIn('Ready at', result.stdout)
+
+    def test_full_unread_stderr_does_not_prevent_process_exit(self):
+        result = self.run_cli_fixture('full-stderr')
+        self.assertNotEqual(result.returncode, 0)
+        self.assertNotIn('Ready at', result.stdout)
+
+    def test_success_and_failure_disarm_before_later_activity(self):
+        for mode, marker in (('success', 'SERVED_BEYOND_LOAD_DEADLINE'), ('failure', 'FAILURE_DISARMED')):
+            with self.subTest(mode=mode):
+                result = self.run_cli_fixture(mode)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertIn(marker, result.stdout)
+                self.assertIn('WATCHDOG_REAPED', result.stdout)
+                self.assertEqual(result.stderr, '')
+
+    def test_default_explicit_bound_and_legacy_load_guard_selection(self):
+        import qwen_server
+        from unittest.mock import Mock
+        from contextlib import redirect_stdout
+        from io import StringIO
+        with tempfile.TemporaryDirectory() as temporary:
+            folder = Path(temporary)
+            (folder / 'config.json').write_text(json.dumps(CONFIG))
+            (folder / 'model.safetensors').write_bytes(b'fixture')
+            for kind, flags, seconds in (
+                    ('cpu', [], 180), ('cpu', ['--cpu-load-timeout-seconds', '3600'], 3600),
+                    ('mlx', [], None), ('torch', [], None)):
+                with self.subTest(kind=kind, seconds=seconds):
+                    backend = Mock(kind=kind)
+                    server = Mock()
+                    server.serve_forever.side_effect = KeyboardInterrupt()
+                    arguments = ['qwen_server.py', '--model', str(folder), '--backend', kind, *flags]
+                    if kind == 'cpu': arguments.append('--experimental-cpu')
+                    with patch.object(sys, 'argv', arguments), patch.object(qwen_server, 'select_backend', return_value=kind), patch.object(qwen_server, 'load_backend', return_value=backend), patch.object(qwen_server, 'ThreadingHTTPServer', return_value=server), patch.object(qwen_server, 'cpu_load_deadline') as guard, redirect_stdout(StringIO()):
+                        qwen_server.main()
+                    if seconds is None: guard.assert_not_called()
+                    else: guard.assert_called_once_with(seconds)
+
+    def test_invalid_deadline_options_fail_before_optional_imports_or_model_access(self):
+        command = [sys.executable, '-B', '-S', str(Path(__file__).with_name('qwen_server.py'))]
+        consent = ['--backend', 'cpu', '--experimental-cpu']
+        invalid = [[*consent, '--cpu-load-timeout-seconds', value] for value in ('0', '-1', 'nan', 'inf', '-inf', '3601', 'x')]
+        invalid += [['--backend', kind, '--cpu-load-timeout-seconds', '1'] for kind in ('auto', 'mlx', 'torch')]
+        invalid += [[*consent, '--cpu-load-timeout-seconds', '1', mode] for mode in ('--capabilities', '--inspect-cpu-checkpoint')]
+        for flags in invalid:
+            with self.subTest(flags=flags):
+                result = subprocess.run([*command, *flags], capture_output=True, text=True, timeout=5)
+                self.assertEqual(result.returncode, 2)
+                self.assertEqual(result.stdout, '')
+                self.assertIn('--cpu-load-timeout-seconds', result.stderr)
+                self.assertNotIn('Traceback', result.stderr)
+
+
 class CPUCheckpointTests(unittest.TestCase):
     def test_inspection_report_is_private_and_does_not_start_runtime(self):
         import qwen_server

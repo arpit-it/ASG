@@ -5585,3 +5585,56 @@ Status: Awaiting merge. Tested tree will be published through the GitHub plugin;
 independent final-revision review and actual required CI gate protected merge.
 Final PR/review/merge identities belong in the PR and next ledger reconciliation.
 Recorded 2026-11-01T06:17:32.083963+00:00
+
+
+### CPU offline checkpoint inspection verified merged — issue #367 / PR #368
+
+Independent review [5726766017](https://github.com/arpit-it/ASG/pull/368#pullrequestreview-5726766017) approved exact `7a35406cf690bff0799d45ca8138c2377b668290` / tree `1bdd52f64580c4e0c59e62d87d6c2d0a0829ac33`, all seven files and acceptance; no blockers. Independent52 total backend/HTTP tests:51 passes/one opt-in skip, plus50 base/new backend-selection parity cases and guarded no-tensor/no-optional-import inspection. Actual requiredCI41280292607 succeeded: Python124770669281 and Flutter124770669487; reviewer inspected full logs including977Linux passes/12skips,15Chrome passes,formatter287/analyzer,web/Wasm and real independent generated-project resolve/analyze/rendered interaction/test/build/serve. Parent115macOSPython total/two skips and983Flutter passes/nine skips/web/macOSdebug evidence remain separately scoped; none establishes live inference.
+
+Reviewer protected-plugin squashmerged [PR #368](https://github.com/arpit-it/ASG/pull/368) as `7f51cd4ce36fc8c54f9c7a94394daeae25fd29ad` at2026-11-01T06:24:52Z; issue367closed/completed06:24:53Z. Parent independently verified exacthead, mergedstate, issueclosure, currentmain and signed verified rawmerge with exactreviewedtree/soleparentda49382a. Guarded local-only object import/sync passed; main/origin-main0/0,indexempty,both unrelated IDEfiles byte-identical. Backup `/private/tmp/asg367-primary-before-sync`; guard `/private/tmp/asg368-safe-sync.py`. All GitHub access/publication/review/merge used connectedplugin; bothautomationlabels applied. Existing docs edits carried into reviewedtree.
+
+Bounded issue367 Done; fullF15 remains unchecked/Inprogress. Experimental CPU managed setup/portable-host integration and non-Apple CPU/CUDA live acceptance remain outstanding. No models/packages/downloads/inference/settings/stableapp/data replacement. No secondissue/task started; finalmerge bookkeeping retained locally for next normal reviewed increment. Fifteen-minute cadence/notification preference unchanged.
+Recorded 2026-11-01T06:25:38.341855+00:00
+Current run time 2026-11-01T06:25:38.341855+00:00
+
+
+### Experimental CPU load deadline — issue #369
+
+Selected existing F15 engineering acceptance after plugin verified PR368 merge
+7f51cd4c and no open issue/PR or competing active ASG owner. No new F ID.
+Branch `369-cpu-load-deadline`, isolated `/private/tmp/asg-cpu-load-deadline`;
+primary five IDE/docs edits backed up and retained; prior merge bookkeeping
+carried forward. Baseline loader Future.result() is unbounded before HTTP
+readiness. Add a CPU-only finite startup load deadline (default180s/max3600s),
+hard runtime-process termination rather than leaving an uncancellable native
+worker alive. Independent isolated Python watchdog covers even a GIL-holding native loader.
+Disarm/reap on success/failure; private best-effort diagnostic cannot
+block on full stderr. No normal CPU app choice, fallback, RAM quota or live
+inference claim. Mac subprocess tests can validate this delivered foundation;
+non-Apple CPU and separate CUDA live milestones remain pending.
+Acceptance: real controlled CLI hang/full-pipe termination, no readiness after
+timeout, serving/failure handling beyond deadline after disarm, invalid/
+nonfinite/conflicting options before side effects, unchanged Auto/MLX/MPS.
+Status: In progress; final tests/publication/independent review/CI/merge pending.
+Recorded 2026-11-01T06:46:11.407356+00:00
+
+
+Final local validation:121 Python cases/two opt-in skips passed, including
+48 backend passes/one skip and9 actual HTTP tests. Six new regressions cover
+real dedicated-process hangs, a ctypes native GIL-holding sleep, a full unread
+stderr pipe, success/failure disarm and helper reaping, CPU default/upper bound
+and unchanged legacy selection, nonfinite/out-of-range/conflicting options.
+The initial Python-thread approach could not cover GIL-held loading; replaced
+with an independent isolated interpreter. Its full-pipe shutdown regression
+exposed interpreter-finalization blockage; explicit watchdog exit fixed it and
+the final full suite passed. Outer sandbox loopback/nested Seatbelt failures
+passed on authorized rerun. Formatter287 unchanged, analyzer clean,983 Flutter
+tests/nine skips, web/Wasm dry-run and macOS debug builds passed; final asset
+builds also passed after the final watchdog revision. Existing runtime read-only
+health ready/idle/MLX/Metal/Qwen3.8-27B-4bit; no inference run. No model/package
+installation/download, settings/data/stable-app replacement. CPU remains
+experimental; non-Apple CPU/CUDA acceptance and full F15 remain pending.
+Status: Awaiting merge. Independent final-revision review, actual required CI
+and verified protected merge still required; final PR/review/merge identities
+will be recorded in the PR and reconciled into this ledger next increment.
+Recorded 2026-11-01T06:49:45.195858+00:00

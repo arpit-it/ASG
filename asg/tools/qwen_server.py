@@ -4,10 +4,13 @@
 """Local Qwen inference bridge: MLX (preferred) or legacy Torch, with SSE."""
 import argparse
 import json
+import math
 import os
 import queue
+import subprocess
 import sys
 import time
+from contextlib import contextmanager, nullcontext
 from concurrent.futures import ThreadPoolExecutor
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -268,6 +271,56 @@ def inspect_cpu_checkpoint(folder, max_weight_bytes=None):
             'scope': 'Local structure and observed disk bytes only; no dependency, tokenizer, tensor, RAM or inference validation.'}
 
 
+# The independent interpreter must remain responsive even if a native loader
+# holds this interpreter's GIL. EOF on its private pipe disarms it and also
+# cleans it up if this runtime exits unexpectedly. No model/path enters argv.
+_CPU_LOAD_WATCHDOG = r"""
+import os, signal, sys, threading
+parent, seconds = int(sys.argv[1]), float(sys.argv[2])
+finished = threading.Event()
+def watch_pipe():
+    sys.stdin.buffer.read(1)
+    finished.set()
+threading.Thread(target=watch_pipe, daemon=True).start()
+if not finished.wait(seconds) and os.getppid() == parent:
+    try:
+        os.set_blocking(2, False)
+        os.write(2, b'CPU model loading deadline exceeded; runtime process stopped. No fallback was started.\n')
+    except OSError:
+        pass
+    finally:
+        try:
+            os.kill(parent, getattr(signal, 'SIGKILL', signal.SIGTERM))
+        except ProcessLookupError:
+            pass
+# Avoid interpreter finalization waiting on the daemon pipe reader or logging
+# to a full stderr pipe after the parent has been terminated.
+os._exit(0)
+"""
+
+
+@contextmanager
+def cpu_load_deadline(seconds):
+    """Guard this dedicated runtime process, including a GIL-holding loader.
+
+    Expiration terminates this process with a platform kill signal, rather than
+    pretending to cancel a Future. It does not bound RAM or library descendants.
+    """
+    watcher = subprocess.Popen(
+        [sys.executable, '-I', '-S', '-c', _CPU_LOAD_WATCHDOG,
+         str(os.getpid()), str(seconds)],
+        stdin=subprocess.PIPE, stdout=subprocess.DEVNULL)
+    try:
+        yield
+    finally:
+        watcher.stdin.close()
+        try:
+            watcher.wait(timeout=5)
+        except subprocess.TimeoutExpired:
+            watcher.kill()
+            watcher.wait()
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--model', type=Path)
@@ -280,6 +333,7 @@ def main():
     parser.add_argument('--experimental-cpu', action='store_true', help='Opt in to unverified CPU implementation for controlled testing; not a supported backend')
     parser.add_argument('--cpu-threads', type=int, default=None, help='Experimental CPU intra-op thread limit, 1..32 (default 2)')
     parser.add_argument('--cpu-max-weight-bytes', type=int, help='Optional experimental CPU checkpoint disk-byte ceiling; not a RAM limit')
+    parser.add_argument('--cpu-load-timeout-seconds', type=float, help='Experimental CPU load deadline, >0 and <=3600 seconds (default 180); expiration ends this runtime process')
     parser.add_argument('--parent-pid', type=int)
     args = parser.parse_args()
     if args.backend == 'cpu' and not args.experimental_cpu:
@@ -290,11 +344,15 @@ def main():
         parser.error('--cpu-threads requires --backend cpu and a value between 1 and 32')
     if args.cpu_max_weight_bytes is not None and (args.backend != 'cpu' or args.cpu_max_weight_bytes <= 0):
         parser.error('--cpu-max-weight-bytes requires --backend cpu and a positive integer')
+    if args.cpu_load_timeout_seconds is not None and (args.backend != 'cpu' or not math.isfinite(args.cpu_load_timeout_seconds) or not 0 < args.cpu_load_timeout_seconds <= 3600):
+        parser.error('--cpu-load-timeout-seconds requires --backend cpu and a finite value >0 and <=3600')
+    if args.cpu_load_timeout_seconds is not None and args.capabilities:
+        parser.error('--cpu-load-timeout-seconds cannot combine with capabilities')
     if args.inspect_cpu_checkpoint:
         if args.backend != 'cpu' or args.model is None:
             parser.error('--inspect-cpu-checkpoint requires --backend cpu --experimental-cpu --model')
-        if args.capabilities or args.probe_devices or args.parent_pid is not None or args.cpu_threads is not None:
-            parser.error('--inspect-cpu-checkpoint cannot combine with capabilities, device probes, parent monitoring or thread configuration')
+        if args.capabilities or args.probe_devices or args.parent_pid is not None or args.cpu_threads is not None or args.cpu_load_timeout_seconds is not None:
+            parser.error('--inspect-cpu-checkpoint cannot combine with capabilities, device probes, parent monitoring, thread configuration or load deadlines')
         try:
             report = inspect_cpu_checkpoint(args.model, args.cpu_max_weight_bytes)
         except (ValueError, RuntimeError):
@@ -331,7 +389,9 @@ def main():
     kind = select_backend(args.backend, config, experimental_cpu=args.experimental_cpu)
     executor = ThreadPoolExecutor(max_workers=1, thread_name_prefix='qwen-inference')
     print(f'Loading {args.model_id} using {kind}. Local weights only.', flush=True)
-    backend = executor.submit(load_backend, folder, kind, experimental_cpu=args.experimental_cpu, cpu_threads=args.cpu_threads if args.cpu_threads is not None else 2).result()
+    deadline = cpu_load_deadline(args.cpu_load_timeout_seconds if args.cpu_load_timeout_seconds is not None else 180) if kind == 'cpu' else nullcontext()
+    with deadline:
+        backend = executor.submit(load_backend, folder, kind, experimental_cpu=args.experimental_cpu, cpu_threads=args.cpu_threads if args.cpu_threads is not None else 2).result()
     server = ThreadingHTTPServer(('127.0.0.1', args.port), create_handler(backend, executor, args.model_id, folder))
     server.daemon_threads = True
     print(f'Ready at http://127.0.0.1:{args.port}/v1 ({kind}, streaming)', flush=True)
