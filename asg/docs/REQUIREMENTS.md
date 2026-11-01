@@ -133,7 +133,8 @@ Unavailable hardware blocks only the corresponding real-host acceptance, not imp
   - Delivery: [PR #347](https://github.com/arpit-it/ASG/pull/347). Initial independent review found retry rollback overcount and inherited-pipe completion hang; both corrected with actual regressions. Native isolated UI observed below-button progress/speed, Pause at 5 MiB, Resume through 7.8 MiB and Stop retaining partial bytes. Final head d583ccbb/tree031725f4 approved in reviews5723106296/finalgate5723151483; requiredCI41208499529 passed. Protectedmerge07018365f0399d7047286baf01154fbd33a3890d at2026-10-31T14:12:20Z verified; issue346 closed. Full delivery evidence below.
   - Validation: deterministic local transfer/process fixtures, Python ownership/filter/telemetry regressions, Flutter protocol/controller/responsive UI tests, full format/analyze/test, web/macOS builds and independent exact-final review/required CI/protected merge. Mark Done only after verified merge; larger-model switch remains separately subject to actual inference.
 - [ ] F15 Hardware-aware inference backends — In progress (CPU implementation; non-Apple CPU/CUDA live validation pending); depends on F09
-  - In progress: reused [issue #356](https://github.com/arpit-it/ASG/issues/356), `356-cpu-request-budget`, from verified PR #388 merge `6eaf65b33cb5184685965cd9b313772b9ed17b69`. Actual CPU loopback requests with infinite output budgets disconnected on uncaught OverflowError before inference. Bound request conversion to fixed HTTP400 for Infinity/-Infinity/NaN/overflowing exponents on both transports, before tokenizer/model calls; verify idle health and successful retry. Existing finite/clamped/default budgets retained. Mac-verifiable HTTP implementation uses delivered CPU backend; full F15 and non-Apple CPU/CUDA real-host inference remain pending, CPU outside normal choices. Final checks/review/CI/merge remain gates.
+  - CPU JSON recursion boundary — Awaiting merge: reused [issue #356](https://github.com/arpit-it/ASG/issues/356), `356-cpu-json-depth`; below-limit deeply nested JSON disconnects before inference. Fixed HTTP400, no model calls, idle health and retry are acceptance. Mac HTTP checks do not establish inference; full F15/non-AppleCPU/CUDA remain pending. See delivery ledger below.
+  - Delivered bounded request-budget increment — Done: reused [issue #356](https://github.com/arpit-it/ASG/issues/356), `356-cpu-request-budget`, from verified PR #388 merge `6eaf65b33cb5184685965cd9b313772b9ed17b69`. Actual CPU loopback requests with infinite output budgets disconnected on uncaught OverflowError before inference. Bound request conversion to fixed HTTP400 for Infinity/-Infinity/NaN/overflowing exponents on both transports, before tokenizer/model calls; verify idle health and successful retry. Existing finite/clamped/default budgets retained. Mac-verifiable HTTP implementation uses delivered CPU backend; full F15 and non-Apple CPU/CUDA real-host inference remain pending, CPU outside normal choices. [PR #389](https://github.com/arpit-it/ASG/pull/389) exact693926b/tree06fdc31d independently approved5728690919/finalgate5728708251; requiredCI41318014083 passed; verified protectedmergeb1937ea9e293b233e3f9d7e96104f863c62e0ec8 at2026-11-01T14:55:24Z, issue356closed.
 
   - CPU generation diagnostics — Done after verified [PR #388](https://github.com/arpit-it/ASG/pull/388) merge6eaf65b3 (2026-11-01T14:27:34Z), finalgate5728598463/requiredCI41315753883 passed: reopened [issue #356](https://github.com/arpit-it/ASG/issues/356), `356-cpu-generation-errors`; actual HTTP private ValueError disclosure reproduced. Fixed CPU-only public failure categories, both transports, idle/retry acceptance; no live inference claim. Scope and checks in ledger below.
   - Delivered CPU thread control — Done after verified [PR #387](https://github.com/arpit-it/ASG/pull/387) merge07de05e5 (2026-11-01T14:08:56Z), finalgate5728459708/requiredCI41314284627 passed: reopened [issue #356](https://github.com/arpit-it/ASG/issues/356), `356-cpu-thread-control`; session-only whole threads1..32/default2 via delivered host/controller. Mac-verifiable integration under owner exception; full F15 and non-Apple CPU/CUDA live inference remain pending. Acceptance and validation in ledger below.
@@ -7611,3 +7612,63 @@ test/tool inputs match isolated validation. No live inference. Awaiting merge:
 plugin exact-tree publication, independent exact-final review, required CI and
 protected reviewer merge remain gates. FullF15/non-AppleCPU/CUDA acceptance pending.
 Recorded 2026-11-01T14:47:38.754699+00:00
+
+
+### CPU request-budget validation verified merged — issue #356 / PR #389
+
+Independent approval5728690919/finalgate5728708251 approved exact
+`693926b29267cbd8dcbd9d701c6250519b4efe1b` / tree
+`06fdc31d667b875e0fc12b293216f57e612b9550` (local2db8d301 identical).
+No blockers; independent65 backend/actualHTTP tests(one live skip) plus legacy
+both-transport nonfinite/overflowing-exponent and huge/fractional-finite probes
+passed. RequiredCI41318014083success: actual Flutter124882081028 logs inspected,
+formatter301/analyzer,Ubuntu1045passes/12skips,actualChrome15,web/Wasm and real
+independent generated-project resolve/analyze/test/render/build/serve. Python
+124882080825 all seven suites passed with explicit live/platform skips. Parent
+Mac1051/nineskips,web/macOSdebug,Python128/twoskips remain separate evidence.
+
+Reviewer protected-plugin squash merged [PR #389](https://github.com/arpit-it/ASG/pull/389)
+as `b1937ea9e293b233e3f9d7e96104f863c62e0ec8` at2026-11-01T14:55:24Z;
+issue356closed/completed14:55:26Z. Parent freshly plugin-verified PR/issue/current
+main and signed raw merge matching reviewedtree/soleparent6eaf65b3. Guarded local
+sync passed: main/origin-main0/0,indexempty,both IDEfiles byte-identical. Backup
+`/private/tmp/asg356-budget-before-sync`; guard`/private/tmp/asg389-safe-sync.py`.
+Plugin-only publication/review/merge; PR attached and both automation labels applied.
+Bounded HTTP-budget increment Done; fullF15 unchecked/Inprogress,CPUexperimental
+outside normal choices; non-AppleCPU/CUDA live inference pending. No model loading/
+download/install/settings/data/stable-app replacement,cadence/notification change
+or newissue/FID. Final merge bookkeeping retained for next reviewed increment.
+Recorded 2026-11-01T14:56:26.320193+00:00
+
+
+### CPU JSON recursion boundary — issue #356
+
+Reused/reopened #356 after plugin verification of PR389 mergeb1937ea9 and no
+open PR/issues or competing active ASG run. Branch `356-cpu-json-depth` preserves
+unrelated IDE edits and prior final-merge bookkeeping. F15/F09 continuation:
+actual CPU HTTP request with12000 nested arrays in unused metadata stays below
+32768 bytes yet disconnects on uncaught decoder RecursionError before inference.
+Four corrected baseline cases fail for stream true/false and direct/object-wrapped
+array nesting. Catch recursion at existing invalid-request boundary; exact HTTP400,
+zero tokenizer/model calls, idle health and successful subsequent request are
+acceptance. No arbitrary depth policy or changes to valid/default/clamped requests.
+Shared legacy handler retains the same invalid-request behavior. Initial nested
+object-only fixture exceeded byte limit; corrected to object-wrapped deep arrays
+before confirming all four baseline disconnects. Mac-verifiable actual sockets
+with injected CPU tensor APIs are not real inference. FullF15/non-AppleCPU/CUDA
+live acceptance remains pending; CPUexperimental outside normal choices.
+No newissue/FID, models loaded/downloaded, installs/settings/stableapp changes or
+cadence/notification changes. In progress pending checks, independent final-head
+review, required CI and protected reviewer merge.
+Recorded 2026-11-01T15:02:07.961997+00:00
+
+Final local validation:129Python tests passed/two explicit live/platform skips;
+12actualHTTP tests pass, including four new decoder-recursion cases, zero model/
+tokenizer calls and successful retry. Formatter301 unchanged, analyzer clean,
+isolated Flutter1051passed/nine opt-in skips, web/Wasm and macOSdebug builds pass.
+All323 source/test/tool/config inputs byte-identical to isolated validation.
+Fresh hostDarwinarm64/currentPythonTorchabsent/retained8765healthURLError. No live
+inference. Awaiting merge: exact-tree plugin publication, independent final-head
+review, required CI and protected reviewer merge remain gates. FullF15 and
+non-AppleCPU/CUDA real inference remain pending.
+Recorded 2026-11-01T15:02:47.757751+00:00
