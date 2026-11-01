@@ -6166,3 +6166,66 @@ Status Awaiting merge; no merge or live CPU inference claim.
 Recorded 2026-11-01T11:17:01.866455+00:00
 
 Final platform validation: isolated web/Wasm and macOS debug builds passed. No device inference claim.
+
+
+### CPU launch controller verified merged — issue #356 / PR #380
+
+Independent final review [5727815889](https://github.com/arpit-it/ASG/pull/380#pullrequestreview-5727815889)
+approved exact `6d3a1f1293b1f8a0a75051b25b190a443ad8731a` /
+tree `3d1672fb24437f39d5bbfecb7f29e654f8662701` (local e973f30 identical).
+No blockers; 102 independent focused setup/capability/actual-process/MVC tests
+and three extra busy/disposed/reverse-overlap/failure-privacy probes passed.
+Final gate5727830861 verified required CI41301289153 success:
+Flutter124832544185 formatter294/analyzer, Ubuntu1018 passes/12skips,
+actual Chrome15, web/Wasm and independent generated-project checks;
+Python124832544044 all seven suites passed. Parent local full1024passes/nineskips
+and web/macOSdebug builds are separate actual evidence; 298 tracked runtime/test/
+build inputs compared byte-identical. Read-only retained health ready/idle,
+MLX/Metal/Qwen3.8-27B-4bit; no inference/model loading performed.
+
+Independent reviewer normally protected-merged [PR #380](https://github.com/arpit-it/ASG/pull/380)
+as `03b04bde59d54ffcd044a5d94767a7346fb1c15f` at2026-11-01T11:25:16Z;
+issue356 closed/completed11:25:18Z. Parent freshly verified PR/issue/currentmain
+and signed raw merge matching reviewed tree/sole parent8c52534e. Guarded local-only
+synchronization passed: main/origin-main0/0, index empty, both unrelated IDE files
+byte-identical. Backup `/private/tmp/asg356-launch-controller-before-sync`;
+guard `/private/tmp/asg380-safe-sync.py`. Plugin-only publication/review/merge;
+PR attached and both automation labels applied. CPU launch controller increment
+Done; full F15 remains unchecked/In progress. CPU experimental/outside normal
+choices, non-Apple CPU and separate CUDA real-host inference pending. No install/
+download/settings/data/stable-app/runtime replacement or cadence/notification
+change. No new issue/FID. Final merge bookkeeping retained for next reviewed PR.
+Recorded 2026-11-01T11:25:55.007368+00:00
+
+
+### Experimental CPU checkpoint inspection controller — issue #367
+
+Reopened existing [issue #367](https://github.com/arpit-it/ASG/issues/367),
+branch `367-cpu-inspection-controller` from verified main `03b04bde` / PR #380.
+Fresh connected-plugin issue/PR search and chat inventory found no competing
+active ASG owner or open work. Primary IDE edits and previous verified-merge
+bookkeeping preserved. Gap: optional typed no-load CPU host exists, but setup
+controller exposes no checkpoint-inspection action. Delivered host is sufficient
+for this bounded Mac-verifiable F15 continuation under the owner exception;
+non-Apple CPU and separate CUDA live inference remain pending, full F15 unchecked.
+
+Scope/acceptance: API-only per-call experimental consent, nonempty trimmed Python
+and checkpoint plus positive exact optional disk-byte ceiling before host work;
+supported optional boundary required, shared busy exclusion, typed structural
+bytes/file-count result, stale capability/RAM/result clearing, epoch invalidation
+and disposal-safe success/failure. Private retry, no persistence/download/launch,
+connection/owned runtime preserved. Structural observations never imply dependency,
+tokenizer, tensor, memory-fit or inference readiness. No normal CPU/UI enablement.
+
+Validation: nine new controller regressions; 92 focused setup/capability cases
+passed. Isolated tracked-source full suite, format/analyze, web/Wasm/macOS debug
+builds and Python acceptance/backend suites recorded below when complete.
+Readonly retained runtime reports ready MLX/Metal/Qwen3.8-27B-4bit on Darwin arm64;
+no inference/model loading attempted. No install/download/stable-app/runtime/
+settings/data replacement or cadence/notification change. Historical inventory
+regenerated without promoting any historical or current support claim.
+Status In progress; exact-tree publication, independent final-revision review,
+required CI and protected reviewer merge remain required before completion.
+Recorded 2026-11-01T11:46:44.068089+00:00
+
+Final local validation: formatter295 unchanged; analyzer clean; isolated full Flutter suite1033 passed/nine opt-in skips; 92 focused setup/capability tests passed. Web release (Wasm dry-run included) and macOS debug builds passed. Python backend54 (one explicit live skip), product acceptance32 and historical inventory9 passed. These checks do not establish CPU inference. Status: Awaiting merge; independent exact-final review, required CI and verified protected merge remain gates.

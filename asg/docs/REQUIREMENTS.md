@@ -133,7 +133,8 @@ Unavailable hardware blocks only the corresponding real-host acceptance, not imp
   - Delivery: [PR #347](https://github.com/arpit-it/ASG/pull/347). Initial independent review found retry rollback overcount and inherited-pipe completion hang; both corrected with actual regressions. Native isolated UI observed below-button progress/speed, Pause at 5 MiB, Resume through 7.8 MiB and Stop retaining partial bytes. Final head d583ccbb/tree031725f4 approved in reviews5723106296/finalgate5723151483; requiredCI41208499529 passed. Protectedmerge07018365f0399d7047286baf01154fbd33a3890d at2026-10-31T14:12:20Z verified; issue346 closed. Full delivery evidence below.
   - Validation: deterministic local transfer/process fixtures, Python ownership/filter/telemetry regressions, Flutter protocol/controller/responsive UI tests, full format/analyze/test, web/macOS builds and independent exact-final review/required CI/protected merge. Mark Done only after verified merge; larger-model switch remains separately subject to actual inference.
 - [ ] F15 Hardware-aware inference backends — In progress (CPU implementation; non-Apple CPU/CUDA live validation pending); depends on F09
-  - CPU launch controller continuation — Awaiting merge: reopened [issue #356](https://github.com/arpit-it/ASG/issues/356), `356-cpu-launch-controller` from `8c52534e`. Delivered optional host launch is the technical prerequisite; unavailable non-Apple CPU/CUDA inference does not block this Mac-verifiable API-only orchestration. Explicit per-call consent/validated inputs, busy exclusion, existing-runtime rejection, private retry, stale-observation invalidation and late-process Stop/disposal cleanup. Launch only: no saved settings/connection or normal CPU choice changes. Acceptance and evidence in delivery ledger below; full F15/live milestones remain pending.
+  - CPU checkpoint inspection controller — Awaiting merge: reopened [issue #367](https://github.com/arpit-it/ASG/issues/367), `367-cpu-inspection-controller` from verified main `03b04bde`. Delivered optional no-load host API is the technical prerequisite for this Mac-verifiable increment. Explicit per-call consent/input bounds, typed structure/disk observations, shared busy exclusion, private retry and stale/disposed-result suppression. No normal CPU choice or inference/readiness claim; full F15 and non-Apple CPU/CUDA live acceptance remain pending. Acceptance and checks in the delivery ledger below.
+  - CPU launch controller continuation — Done through verified [PR #380](https://github.com/arpit-it/ASG/pull/380), merge03b04bde (2026-11-01), independent finalreview5727815889/finalgate5727830861 and requiredCI41301289153 passed: reopened [issue #356](https://github.com/arpit-it/ASG/issues/356), `356-cpu-launch-controller` from `8c52534e`. Delivered optional host launch is the technical prerequisite; unavailable non-Apple CPU/CUDA inference does not block this Mac-verifiable API-only orchestration. Explicit per-call consent/validated inputs, busy exclusion, existing-runtime rejection, private retry, stale-observation invalidation and late-process Stop/disposal cleanup. Launch only: no saved settings/connection or normal CPU choice changes. Acceptance and evidence in delivery ledger below; full F15/live milestones remain pending.
   - CPU preparation controller increment — Done through verified [PR #379](https://github.com/arpit-it/ASG/pull/379) merge8c52534e (2026-11-01), independent finalreview5727674572/requiredCI41299055188 passed: reopened [issue #358](https://github.com/arpit-it/ASG/issues/358), `358-cpu-preparation-controller`; consent-gated API-only orchestration with private errors, stale-report invalidation and lifecycle coverage. Full F15/live milestones remain pending.
   - CPU managed launch boundary — Done through verified [PR #378](https://github.com/arpit-it/ASG/pull/378) mergeeee26ac0 (2026-11-01), independent finalreview5727590874/requiredCI41296946066 passed: reopened [issue #356](https://github.com/arpit-it/ASG/issues/356), `356-cpu-managed-launch`; optional API-only launch with per-call consent, thread/load/disk limits, private owned-process lifecycle and actual process tests. CPU stays experimental outside normal choices; full F15/non-Apple CPU/CUDA live acceptance remain pending.
   - CPU API-only preparation host — Done after verified [PR #377](https://github.com/arpit-it/ASG/pull/377) mergee9981fb9 (2026-11-01), finalreview5727475100/requiredCI41294611190 passed: reopened [issue #358](https://github.com/arpit-it/ASG/issues/358), `358-cpu-preparation-host`; optional consent-gated bounded private bridge. Full F15/live milestones remain pending; acceptance below.
@@ -7059,3 +7060,66 @@ Status Awaiting merge; no merge or live CPU inference claim.
 Recorded 2026-11-01T11:17:01.866455+00:00
 
 Final platform validation: isolated web/Wasm and macOS debug builds passed. No device inference claim.
+
+
+### CPU launch controller verified merged — issue #356 / PR #380
+
+Independent final review [5727815889](https://github.com/arpit-it/ASG/pull/380#pullrequestreview-5727815889)
+approved exact `6d3a1f1293b1f8a0a75051b25b190a443ad8731a` /
+tree `3d1672fb24437f39d5bbfecb7f29e654f8662701` (local e973f30 identical).
+No blockers; 102 independent focused setup/capability/actual-process/MVC tests
+and three extra busy/disposed/reverse-overlap/failure-privacy probes passed.
+Final gate5727830861 verified required CI41301289153 success:
+Flutter124832544185 formatter294/analyzer, Ubuntu1018 passes/12skips,
+actual Chrome15, web/Wasm and independent generated-project checks;
+Python124832544044 all seven suites passed. Parent local full1024passes/nineskips
+and web/macOSdebug builds are separate actual evidence; 298 tracked runtime/test/
+build inputs compared byte-identical. Read-only retained health ready/idle,
+MLX/Metal/Qwen3.8-27B-4bit; no inference/model loading performed.
+
+Independent reviewer normally protected-merged [PR #380](https://github.com/arpit-it/ASG/pull/380)
+as `03b04bde59d54ffcd044a5d94767a7346fb1c15f` at2026-11-01T11:25:16Z;
+issue356 closed/completed11:25:18Z. Parent freshly verified PR/issue/currentmain
+and signed raw merge matching reviewed tree/sole parent8c52534e. Guarded local-only
+synchronization passed: main/origin-main0/0, index empty, both unrelated IDE files
+byte-identical. Backup `/private/tmp/asg356-launch-controller-before-sync`;
+guard `/private/tmp/asg380-safe-sync.py`. Plugin-only publication/review/merge;
+PR attached and both automation labels applied. CPU launch controller increment
+Done; full F15 remains unchecked/In progress. CPU experimental/outside normal
+choices, non-Apple CPU and separate CUDA real-host inference pending. No install/
+download/settings/data/stable-app/runtime replacement or cadence/notification
+change. No new issue/FID. Final merge bookkeeping retained for next reviewed PR.
+Recorded 2026-11-01T11:25:55.007368+00:00
+
+
+### Experimental CPU checkpoint inspection controller — issue #367
+
+Reopened existing [issue #367](https://github.com/arpit-it/ASG/issues/367),
+branch `367-cpu-inspection-controller` from verified main `03b04bde` / PR #380.
+Fresh connected-plugin issue/PR search and chat inventory found no competing
+active ASG owner or open work. Primary IDE edits and previous verified-merge
+bookkeeping preserved. Gap: optional typed no-load CPU host exists, but setup
+controller exposes no checkpoint-inspection action. Delivered host is sufficient
+for this bounded Mac-verifiable F15 continuation under the owner exception;
+non-Apple CPU and separate CUDA live inference remain pending, full F15 unchecked.
+
+Scope/acceptance: API-only per-call experimental consent, nonempty trimmed Python
+and checkpoint plus positive exact optional disk-byte ceiling before host work;
+supported optional boundary required, shared busy exclusion, typed structural
+bytes/file-count result, stale capability/RAM/result clearing, epoch invalidation
+and disposal-safe success/failure. Private retry, no persistence/download/launch,
+connection/owned runtime preserved. Structural observations never imply dependency,
+tokenizer, tensor, memory-fit or inference readiness. No normal CPU/UI enablement.
+
+Validation: nine new controller regressions; 92 focused setup/capability cases
+passed. Isolated tracked-source full suite, format/analyze, web/Wasm/macOS debug
+builds and Python acceptance/backend suites recorded below when complete.
+Readonly retained runtime reports ready MLX/Metal/Qwen3.8-27B-4bit on Darwin arm64;
+no inference/model loading attempted. No install/download/stable-app/runtime/
+settings/data replacement or cadence/notification change. Historical inventory
+regenerated without promoting any historical or current support claim.
+Status In progress; exact-tree publication, independent final-revision review,
+required CI and protected reviewer merge remain required before completion.
+Recorded 2026-11-01T11:46:44.068089+00:00
+
+Final local validation: formatter295 unchanged; analyzer clean; isolated full Flutter suite1033 passed/nine opt-in skips; 92 focused setup/capability tests passed. Web release (Wasm dry-run included) and macOS debug builds passed. Python backend54 (one explicit live skip), product acceptance32 and historical inventory9 passed. These checks do not establish CPU inference. Status: Awaiting merge; independent exact-final review, required CI and verified protected merge remain gates.

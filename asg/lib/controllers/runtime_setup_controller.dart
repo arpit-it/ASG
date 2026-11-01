@@ -4,6 +4,7 @@
 import 'dart:async';
 
 import '../models/local_model_config.dart';
+import '../models/cpu_checkpoint_inspection.dart';
 import '../models/model_download.dart';
 import '../services/model_download_host.dart';
 import '../models/model_catalog.dart';
@@ -15,6 +16,7 @@ import '../services/model_settings_store.dart';
 import '../services/runtime_setup_store.dart';
 import '../services/runtime_connection.dart';
 import '../services/runtime_host.dart';
+import '../services/cpu_checkpoint_inspection_host.dart';
 import '../services/cpu_environment_preparation_host.dart';
 import '../services/cpu_runtime_launch_host.dart';
 import 'base_controller.dart';
@@ -245,12 +247,16 @@ class RuntimeSetupController extends BaseController {
   ModelHardware? get memory => _memory;
   RuntimeCapabilities? _capabilities;
   RuntimeCapabilities? get capabilities => _capabilities;
+  CpuCheckpointInspection? _cpuCheckpointInspection;
+  CpuCheckpointInspection? get cpuCheckpointInspection =>
+      _cpuCheckpointInspection;
   int _discoveryEpoch = 0;
 
   void invalidateCapabilities() {
     _discoveryEpoch++;
     _capabilities = null;
     _memory = null;
+    _cpuCheckpointInspection = null;
     update();
   }
 
@@ -278,6 +284,56 @@ class RuntimeSetupController extends BaseController {
       _status = 'Capability discovery failed.';
       throw StateError(
         'Could not inspect runtime capabilities. Check the selected Python interpreter and installed packages, then retry. No weights were loaded or settings changed.',
+      );
+    }
+  });
+
+  /// API-only structural observation. Call invalidateCapabilities when input
+  /// context changes; observations never establish compatibility or readiness.
+  Future<void> inspectCpuCheckpoint(
+    String python,
+    String modelPath, {
+    required bool experimentalCpu,
+    int? maxWeightBytes,
+  }) => _action(() async {
+    if (!experimentalCpu ||
+        python.trim().isEmpty ||
+        modelPath.trim().isEmpty ||
+        (maxWeightBytes != null &&
+            (maxWeightBytes < 1 || maxWeightBytes > 9007199254740991))) {
+      throw const FormatException(
+        'Explicit experimental CPU consent, Python, checkpoint and a valid optional disk-byte ceiling are required.',
+      );
+    }
+    final target = host;
+    if (!target.supported || target is! CpuCheckpointInspectionHost) {
+      throw StateError(
+        'Experimental CPU checkpoint inspection is unavailable on this host.',
+      );
+    }
+    invalidateCapabilities();
+    final epoch = _discoveryEpoch;
+    _status = 'Inspecting experimental CPU checkpoint structure and disk bytes without loading weights…';
+    update();
+    try {
+      final report = await (target as CpuCheckpointInspectionHost)
+          .inspectCpuCheckpoint(
+            python.trim(),
+            modelPath.trim(),
+            experimentalCpu: true,
+            maxWeightBytes: maxWeightBytes,
+          );
+      if (isDisposed || epoch != _discoveryEpoch) return;
+      _cpuCheckpointInspection = report;
+      _status =
+          'Experimental CPU checkpoint inspected. ${CpuCheckpointInspection.scope}';
+    } catch (_) {
+      if (isDisposed || epoch != _discoveryEpoch) return;
+      _status = 'Experimental CPU checkpoint inspection failed.';
+      throw StateError(
+        'Could not inspect the experimental CPU checkpoint. Check Python, '
+        'checkpoint structure, read permissions and the optional disk-byte ceiling, '
+        'then retry. Inference and memory adequacy remain unverified.',
       );
     }
   });
