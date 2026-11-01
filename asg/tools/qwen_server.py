@@ -204,14 +204,22 @@ def validate_cpu_checkpoint(folder):
         except (OSError, RuntimeError, ValueError):
             raise ValueError('CPU checkpoint requires nonempty contained regular files') from None
 
+    def metadata(name, limit):
+        # Bound actual reads too: stat alone does not constrain a growing file.
+        with local_file(name).open('rb') as source:
+            content = source.read(limit + 1)
+        if len(content) > limit:
+            raise ValueError()
+        return json.loads(content.decode('utf-8'))
+
     try:
-        config = json.loads(local_file('config.json').read_text())
+        config = metadata('config.json', 1024 * 1024)
         if not isinstance(config, dict):
             raise ValueError()
         index = folder / 'model.safetensors.index.json'
         if index.exists() or index.is_symlink():
-            metadata = json.loads(local_file(index.name).read_text())
-            weights = metadata.get('weight_map') if isinstance(metadata, dict) else None
+            manifest = metadata(index.name, 8 * 1024 * 1024)
+            weights = manifest.get('weight_map') if isinstance(manifest, dict) else None
             if not isinstance(weights, dict) or not weights or any(
                     not isinstance(key, str) or not key or not isinstance(value, str) or
                     not value or Path(value).is_absolute() or
@@ -225,7 +233,7 @@ def validate_cpu_checkpoint(folder):
             local_file(shard)
         return config
     except (OSError, UnicodeError, ValueError, RuntimeError):
-        raise ValueError('Invalid CPU checkpoint: require contained config and nonempty safetensors weights/index') from None
+        raise ValueError('Invalid CPU checkpoint: require contained config (up to 1 MiB), index (up to 8 MiB) and nonempty safetensors weights') from None
 
 
 def main():
@@ -258,11 +266,12 @@ def main():
               json.loads((folder / 'config.json').read_text()))
     if 'Qwen3_5ForConditionalGeneration' not in config.get('architectures', []):
         raise ValueError('Unsupported model architecture')
-    index = folder / 'model.safetensors.index.json'
-    shards = set(json.loads(index.read_text())['weight_map'].values()) if index.exists() else {'model.safetensors'}
-    for shard in shards:
-        if not (folder / shard).resolve(strict=True).is_relative_to(folder):
-            raise ValueError('Shard outside model folder')
+    if args.backend != 'cpu':
+        index = folder / 'model.safetensors.index.json'
+        shards = set(json.loads(index.read_text())['weight_map'].values()) if index.exists() else {'model.safetensors'}
+        for shard in shards:
+            if not (folder / shard).resolve(strict=True).is_relative_to(folder):
+                raise ValueError('Shard outside model folder')
     if args.parent_pid:
         def watch_parent():
             while True:

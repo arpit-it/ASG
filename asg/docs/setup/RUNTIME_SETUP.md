@@ -132,6 +132,14 @@ attention, safetensors only, `local_files_only=True` and
 never automatically falls back. Thread limit is 1–32, default 2; this bounds
 intra-op parallelism, not total memory or every native-library thread. Quantized
 folders and unsupported architecture metadata are rejected before model load.
+Experimental CPU startup bounds config metadata to 1 MiB and the safetensors
+index to 8 MiB, reading at most each limit plus one byte before rejecting an
+oversized file. Invalid UTF-8 and excessively nested JSON are rejected with a
+sanitized checkpoint error before workers or model loaders start. Containment
+and metadata checks are preflight, not a filesystem sandbox: files may change
+before the trusted loader reads them. These bounds do not constrain tensor
+allocations or establish model memory adequacy.
+
 Float32 can require substantially more memory than stored weights: no model,
 especially 9B, is certified adequate without measured live-host evidence.
 

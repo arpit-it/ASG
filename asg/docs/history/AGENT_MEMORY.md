@@ -5388,3 +5388,27 @@ Validation:106 Python cases/two opt-in skips passed, including33 backend passes/
 
 Status: Awaiting merge; final publication/review/merge evidence remains mandatory.
 Recorded 2026-11-01T05:31:03.477806+00:00
+
+
+### CPU checkpoint preflight verified merged — issue #362 / PR #363
+
+Independent final approval5726637938 reviewed exacte056a204527d67e0906a2407f9e84e17fdf3c3f4/tree597717b3571cd6d374d9a18f9511dd00dd784a04, all five files and acceptance with no blockers; independently33backend passes/one opt-in skip and9actualHTTP passed. RequiredCI41277327955 Python124762054583 and Flutter124762054624 passed; reviewer inspected actual logs incl977Linux/12skips,15Chrome,formatter287/analyzer,web/Wasm and real generated-project resolve/analyze/rendered interactions/test/build/serve; Python32collector/9inventory/4download/34backend(skip1)/9HTTP/14command(skip1)/4confinement(twoLinuxskips). Parent106macOSPython/twoskips,983Flutter/nineskips/web/macOSdebug evidence remains distinct; no fixture/skip establishes inference.
+
+Reviewer protected-plugin squashmerged https://github.com/arpit-it/ASG/pull/363 asd7bb6f0574a04c489653138a8b2ee2b4fcc4662a at2026-11-01T05:37:53Z; issue362closed/completed05:37:55Z. Parent independently verified exacthead/mergedstate/issueclosure/currentmain and signed rawmerge exactreviewedtree/soleparent4cc1dd50. Guarded local-only object import/sync passed after sandbox metadata denial/authorized retry; main/origin-main0/0,indexempty, both unrelated IDEfiles byte-identical. Backup/private/tmp/asg362-primary-before-sync; guard/private/tmp/asg363-safe-sync.py. All GitHub access/publication/review/merge used connectedplugin; bothlabels and PRattachment applied.
+
+Bounded issue362 Done; fullF15 stays unchecked/Inprogress. Managed experimental CPU setup/budgeting/portable-host integration remain implementable; non-Apple pretrainedCPU and separateCUDA acceptance remain pending. Existingruntime read-onlyhealth ready/MLX/Metal/Qwen3.8-27B-4bit, no inference/model/download/install/settings/stableapp/data replacement. No secondissue/task started. Finalmergebookkeeping retained locally for the next normal reviewed increment; cadence/notification preference unchanged.
+
+Recorded 2026-11-01T05:38:42.732783+00:00
+Current run time 2026-11-01T05:38:42.732783+00:00
+
+
+### Bounded CPU checkpoint metadata correction — reopened issue #362
+
+Verified prior PR #363 merged `d7bb6f0574a04c489653138a8b2ee2b4fcc4662a`, issue362 completed; no open GitHub issue/PR or competing active run before reopening the matching task. Branch `362-cpu-metadata-bounds`, isolated `/private/tmp/asg-cpu-metadata-bounds`; primary five IDE/docs changes preserved, prior final review/CI/merge evidence carried forward. F15 startup preflight used unbounded config/index reads and main reread the CPU index afterward. Bounded scope/acceptance: 1 MiB config and 8 MiB index limits enforced with binary limit+1 reads, sanitized malformed/oversized/deep/UTF-8 rejection before executor/loader/HTTP, no redundant CPU index reread. Exact-boundary valid metadata, internal aliases and legacy Auto/MLX/MPS retained. CPU remains experimental; this is neither an allocation quota, race-proof filesystem sandbox nor real inference/fit acceptance. No new issue or F ID.
+
+Status: In progress; independent final-revision review, required checks and verified protected merge pending. Non-Apple CPU/CUDA live milestones and full F15 remain open. No download/install/settings/stable-app/data replacement.
+Recorded 2026-11-01T05:45:54.806330+00:00
+
+Validation:109 Python cases passed/two opt-in skips (36 backend passes/one opt-in skip; nine actual HTTP). Initial sandbox loopback/nested Seatbelt denial passed on authorized rerun. Formatter287 unchanged, analyzer clean,983 macOS Flutter tests/nine opt-in skips, release web/Wasm dry-run and macOS debug builds passed. Three new regressions plus strengthened isolated CLI cover six oversize/deep/UTF-8 cases before worker/loader/HTTP, exact valid limits, binary limit+1 reads and no CPU main reread. No skipped check establishes inference.
+Status: Awaiting merge; tested related contents will be published through the connected GitHub plugin. Independent exact-final review and required CI must pass before protected merge.
+Recorded 2026-11-01T05:46:12.913888+00:00
