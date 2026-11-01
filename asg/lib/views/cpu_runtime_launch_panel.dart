@@ -28,7 +28,15 @@ class _CpuRuntimeLaunchPanelState extends State<CpuRuntimeLaunchPanel>
   final model = TextEditingController();
   final ceiling = TextEditingController();
   final deadline = TextEditingController(text: '180');
+  final threads = TextEditingController(text: '2');
   bool consent = false;
+
+  int? get threadCount => int.tryParse(threads.text.trim());
+  bool get validThreads =>
+      RegExp(r'^[0-9]+$').hasMatch(threads.text.trim()) &&
+      threadCount != null &&
+      threadCount! >= 1 &&
+      threadCount! <= 32;
 
   int? get loadSeconds => int.tryParse(deadline.text.trim());
   bool get validDeadline =>
@@ -52,6 +60,7 @@ class _CpuRuntimeLaunchPanelState extends State<CpuRuntimeLaunchPanel>
     model.addListener(refresh);
     ceiling.addListener(refresh);
     deadline.addListener(refresh);
+    threads.addListener(refresh);
   }
 
   void refresh() => setState(() {});
@@ -62,6 +71,7 @@ class _CpuRuntimeLaunchPanelState extends State<CpuRuntimeLaunchPanel>
     model.dispose();
     ceiling.dispose();
     deadline.dispose();
+    threads.dispose();
     super.dispose();
   }
 
@@ -98,7 +108,7 @@ class _CpuRuntimeLaunchPanelState extends State<CpuRuntimeLaunchPanel>
           ),
           const SizedBox(height: 12),
           const Text(
-            'Limits: 2 threads; configurable server load deadline. These are not a RAM quota or proof that the model fits.',
+            'Limits: configurable Torch threads and server load deadline. These are not a RAM quota or proof that the model fits.',
           ),
           const SizedBox(height: 12),
           TextField(
@@ -131,6 +141,22 @@ class _CpuRuntimeLaunchPanelState extends State<CpuRuntimeLaunchPanel>
               border: const OutlineInputBorder(),
             ),
           ),
+          const SizedBox(height: 16),
+          TextField(
+            controller: threads,
+            enabled: !c.busy,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+              labelText: 'CPU launch threads',
+              helperText: 'Torch intra-operation threads, from 1 to 32. Default: 2. This does not cap total CPU or RAM use.',
+              helperMaxLines: 4,
+              errorText: validThreads
+                  ? null
+                  : 'Enter a whole thread count from 1 to 32.',
+              errorMaxLines: 3,
+              border: const OutlineInputBorder(),
+            ),
+          ),
           CheckboxListTile(
             contentPadding: EdgeInsets.zero,
             title: const Text(
@@ -152,6 +178,7 @@ class _CpuRuntimeLaunchPanelState extends State<CpuRuntimeLaunchPanel>
                     !consent ||
                     !validCeiling ||
                     !validDeadline ||
+                    !validThreads ||
                     widget.python.text.trim().isEmpty ||
                     checkpoint.text.trim().isEmpty ||
                     model.text.trim().isEmpty
@@ -163,6 +190,7 @@ class _CpuRuntimeLaunchPanelState extends State<CpuRuntimeLaunchPanel>
                     ),
                     model.text,
                     experimentalCpu: consent,
+                    threads: threadCount!,
                     maxWeightBytes: maxBytes,
                     loadTimeout: Duration(seconds: loadSeconds!),
                   ),

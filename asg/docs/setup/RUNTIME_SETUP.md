@@ -228,8 +228,9 @@ bytes field forwards the same ceiling to the delivered CPU host/controller. Leav
 it blank for no disk-byte ceiling, or enter decimal whole bytes from 1 through
 9007199254740991. Invalid input prevents launch; a failure retains the value for
 retry. The value and loading consent last only for this setup session and are
-not saved. Two threads remain fixed; the session-only server load deadline is
-configurable from 1 through 3600 whole seconds (default 180).
+not saved. Threads are session-only and configurable from 1 through 32 (default 2);
+the server load deadline is configurable from 1 through 3600 whole seconds
+(default 180).
 The disk ceiling does not limit RAM or establish model fit or real inference.
 CPU stays outside normal supported backend choices; launch and separate health
 observation do not satisfy the pending non-Apple CPU/CUDA live acceptance.
@@ -240,3 +241,8 @@ seconds (1–3600, default180). Invalid or empty input blocks launch. This bound
 server weight loading by terminating the dedicated runtime; it is not a request
 deadline, RAM quota or evidence of CPU inference support. Retry retains the input;
 a fresh setup session restores180. Saved setup/connection remain unchanged.
+
+The experimental CPU thread field selects Torch intra-operation threads. It does
+not cap total CPU or RAM use. Invalid or empty input blocks launch; retry/collapse
+retain it, and a fresh setup restores 2. It does not enable normal CPU selection
+or establish real-host inference.

@@ -251,6 +251,78 @@ void main() {
       expect(t.widget<TextField>(input).controller!.text, '180');
     },
   );
+  testWidgets(
+    'thread count refuses invalid input and retains exact retry setting',
+    (t) async {
+      final host = fixture.CpuLaunchRuntimeHost()..fail = true;
+      await open(t, host);
+      await inputs(t);
+      final input = field('CPU launch threads');
+      await reveal(t, input);
+      expect(t.widget<TextField>(input).controller!.text, '2');
+      for (final value in [
+        '',
+        '0',
+        '33',
+        '-1',
+        '+2',
+        '1.5',
+        '1e1',
+        '0x10',
+        'NaN',
+        '９',
+        '9' * 300,
+      ]) {
+        await reveal(t, input);
+        await t.enterText(input, value);
+        await reveal(t, launch);
+        expect(
+          t.widget<OutlinedButton>(launch).onPressed,
+          isNull,
+          reason: value,
+        );
+        expect(host.launches, 0);
+        expect(
+          find.text('Enter a whole thread count from 1 to 32.'),
+          findsOneWidget,
+        );
+      }
+      for (final value in [' 01 ', '32']) {
+        await reveal(t, input);
+        await t.enterText(input, value);
+        await reveal(t, launch);
+        await t.tap(launch);
+        await t.pumpAndSettle();
+        expect(host.threads, int.parse(value.trim()));
+        expect(find.textContaining('PRIVATE_CPU'), findsNothing);
+      }
+      final title = find.text('Experimental CPU launch');
+      await reveal(t, title);
+      await t.tap(title);
+      await t.pumpAndSettle();
+      await t.tap(title);
+      await t.pumpAndSettle();
+      await reveal(t, input);
+      expect(t.widget<TextField>(input).controller!.text, '32');
+      host.fail = false;
+      host.gate = Completer<void>();
+      await reveal(t, launch);
+      await t.tap(launch);
+      await t.pump();
+      await t.ensureVisible(input);
+      await t.pump();
+      expect(t.widget<TextField>(input).enabled, false);
+      expect(host.threads, 32);
+      host.gate!.complete();
+      await t.pumpAndSettle();
+      expect((await SharedPreferences.getInstance()).getKeys(), isEmpty);
+      await t.pumpWidget(const SizedBox());
+      await open(t, fixture.CpuLaunchRuntimeHost());
+      await reveal(t, input);
+      expect(t.widget<TextField>(input).controller!.text, '2');
+      expect(t.widget<CheckboxListTile>(consent).value, false);
+    },
+  );
   testWidgets('legacy and unsupported hosts have no CPU launch', (t) async {
     for (final host in [
       fixture.FakeRuntimeHost(),
@@ -285,11 +357,20 @@ void main() {
     expect(t.widget<OutlinedButton>(launch).onPressed, isNull);
     await reveal(t, deadline);
     await t.enterText(deadline, '42');
+    final threads = field('CPU launch threads');
+    await reveal(t, threads);
+    await t.enterText(threads, '33');
+    await reveal(t, launch);
+    expect(t.widget<OutlinedButton>(launch).onPressed, isNull);
+    expect(t.takeException(), isNull);
+    await reveal(t, threads);
+    await t.enterText(threads, '3');
     await reveal(t, launch);
     await t.tap(launch);
     await t.pumpAndSettle();
     expect(host.launches, 1);
     expect(host.ceiling, 12345);
+    expect(host.threads, 3);
     expect(host.deadline, const Duration(seconds: 42));
     expect(t.takeException(), isNull);
   });
