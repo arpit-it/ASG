@@ -194,12 +194,15 @@ void main() {
   test('only recognized ready backend/device pairs reach the model', () async {
     for (final status in ['ready', 'loading', 'error']) {
       for (final pair in [
-        ('mlx', 'metal'),
-        ('torch', 'mps'),
-        ('mlx', 'cpu'),
-        ('PRIVATE', '/private/device'),
-        (null, null),
-        (['mlx'], {'device': 'metal'}),
+        ('mlx', 'metal', LoadedRuntimeDevice.mlxMetal),
+        ('torch', 'mps', LoadedRuntimeDevice.torchMps),
+        ('torch', 'cpu', LoadedRuntimeDevice.torchCpu),
+        ('cpu', 'cpu', null),
+        ('torch', 'cuda', null),
+        ('mlx', 'cpu', null),
+        ('PRIVATE', '/private/device', null),
+        (null, null, null),
+        (['mlx'], {'device': 'metal'}, null),
       ]) {
         final api = RuntimeConnection(
           client: MockClient(
@@ -214,12 +217,7 @@ void main() {
           ),
         );
         final health = await api.check(const LocalModelConfig());
-        expect(
-          health.loadedDevice,
-          status == 'ready'
-              ? LoadedRuntimeDevice.reported(pair.$1, pair.$2)
-              : null,
-        );
+        expect(health.loadedDevice, status == 'ready' ? pair.$3 : null);
         expect(health.detail, isNot(contains('PRIVATE')));
         api.close();
       }
@@ -277,6 +275,66 @@ void main() {
       await tester.pumpAndSettle();
       expect(c.store.load().backend, RuntimeBackend.torch);
       expect(c.health.loadedDevice, LoadedRuntimeDevice.mlxMetal);
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox());
+    },
+  );
+  testWidgets(
+    'experimental CPU health is visible without enabling a launch choice',
+    (tester) async {
+      tester.view.physicalSize = const Size(320, 700);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final c = await create(
+        api: RuntimeConnection(
+          client: MockClient(
+            (_) async => http.Response(
+              '{"status":"ready","phase":"idle","backend":"torch","device":"cpu"}',
+              200,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpWidget(
+        MaterialApp(
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(context)
+                .copyWith(textScaler: TextScaler.linear(1.5)),
+            child: child!,
+          ),
+          home: RuntimeSetupScreen(controller: c),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(c.health.loadedDevice, LoadedRuntimeDevice.torchCpu);
+      expect(
+        find.textContaining(
+          'Torch / CPU (experimental; real-host inference unverified)',
+        ),
+        findsOneWidget,
+      );
+      expect(c.setup.backend, RuntimeBackend.auto);
+      final dropdown = find.byType(DropdownButtonFormField<RuntimeBackend>);
+      await tester.scrollUntilVisible(
+        dropdown,
+        250,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.ensureVisible(dropdown);
+      await tester.pumpAndSettle();
+      await tester.tap(dropdown);
+      await tester.pumpAndSettle();
+      expect(find.text('Auto (legacy preference)').last, findsOneWidget);
+      expect(find.text('MLX / Metal'), findsOneWidget);
+      expect(find.text('Torch / MPS'), findsOneWidget);
+      expect(find.text('Torch / CPU'), findsNothing);
+      expect(RuntimeBackend.values, [
+        RuntimeBackend.auto,
+        RuntimeBackend.mlx,
+        RuntimeBackend.torch,
+      ]);
+      expect(c.store.load().backend, RuntimeBackend.auto);
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox());
     },

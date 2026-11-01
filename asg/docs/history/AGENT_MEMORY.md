@@ -5595,3 +5595,67 @@ Status: Awaiting merge; independent final-revision review, actual required CI
 and verified protected merge remain mandatory. Exact final PR/review/merge
 evidence will be retained in the PR and next normal ledger reconciliation.
 Recorded 2026-11-01T07:16:50.415106+00:00
+
+
+### CPU watchdog startup acknowledgement verified merged — issue #369 / PR #371
+
+Independent final approval [5726961895](https://github.com/arpit-it/ASG/pull/371#pullrequestreview-5726961895)
+reviewed exactheadf52536be0de7d0c013d34eb2ef432df8563671e3 /
+tree821595c90981eb7a32368f1a265ad225ce35e680, all six files/acceptance, no blockers.
+Independent backend/actualHTTP58passes/one opt-in skip; extra invalid-but-alive
+helper probe refused loading, reaped child/closed pipes in5.102s.
+RequiredCI41284204073 Python124782081065/Flutter124782080812 passed; reviewer
+inspected actual full logs including32collector/9inventory/4download/50backend
+(one skip)/9HTTP/14command(one skip)/4confinement(two Linux skips),formatter287/
+analyzer/977LinuxFlutter12skips/15Chrome/web+Wasm and real generated-project
+resolve/analyze/rendered interaction/tests/build/serve. Parent122macOSPython/
+two skips,983Flutter/nine skips/web/macOSdebug evidence remains separate.
+None establishes real inference.
+
+Reviewer protected-plugin squashmerged [PR #371](https://github.com/arpit-it/ASG/pull/371)
+as `b0269535a0bde7dd3a9a24986d1a0a46b311dc98`; issue369closed/completed07:23:57Z.
+Parent independently verified mergedstate/exacthead/issueclosure/currentmain and
+signed rawmerge exactreviewedtree/soleparent2217e993. Guarded local-only sync
+passed after sandbox metadata denial/authorized retry; main/origin-main0/0,
+indexempty, both unrelated IDEfiles byte-identical. Backup
+/private/tmp/asg369-handshake-primary-before-sync; guard/private/tmp/asg371-safe-sync.py.
+All GitHub access/publication/review/merge used connectedplugin; PR attached and
+bothautomationlabels applied. Prior docs edits carried into reviewedtree.
+
+Bounded correction Done; fullF15 remains unchecked/Inprogress, CPUexperimental.
+Managed CPU integration/non-Apple pretrainedCPU/separateCUDA real-host acceptance
+remain outstanding. No models/packages/downloads/inference/settings/data/stableapp
+replacement. No secondissue/task started. Finalmerge bookkeeping retained locally
+for next normal reviewed increment; fifteen-minute cadence/notification unchanged.
+Merge date 2026-11-01T07:23:55Z
+Recorded 2026-11-01T07:24:44.678465+00:00
+
+
+### Experimental CPU reported identity — reopened issue #356
+
+F15 remains In progress. At verified main b0269535 (PR #371), explicit CPU
+HTTP health reports torch/cpu but the app discarded that pair as unknown.
+Branch `356-cpu-reported-device`, isolated `/private/tmp/asg-cpu-reported-device`.
+Reuse #356; no new issue/F ID. Scope: ready-only allowlisted CPU identity labeled
+experimental and real-host inference unverified. Normal persisted Auto/MLX/MPS
+choices, launch behavior and MLX-only runtime adoption remain unchanged.
+Acceptance: explicit transport expectations for ready/loading/error, CPU and
+malformed/mismatched pairs; narrow enlarged-text widget shows the warning and
+retains supported launch choices/settings. No inference/support/model-fit claim.
+Mac transport/UI validation depends only on the delivered CPU HTTP contract;
+non-Apple CPU and CUDA real-host milestones remain pending. Prior PR371 final
+review/CI/merge evidence carried forward with retained local documentation edits.
+Status: In progress pending validation, plugin publication, independent final
+review, required checks and verified protected merge.
+Recorded 2026-11-01T07:30:32.560494+00:00
+
+Validation: focused10tests and full984Fluttertests/nineopt-in skips passed;
+formatter287unchanged/analyzer clean; releaseweb/Wasm dry-run andmacOSdebug
+builds passed. Existing servercontract59Pythoncases/oneopt-in skip passed
+(50backend includingoneskip,9actualHTTP). Existing configured runtime read-only
+health ready/idle/MLX/Metal/Qwen3.8-27B-4bit; no inference run. No models,
+packages, downloads, installs, settings/data/stable-app replacement.
+Status: Awaiting merge. Plugin publication, independent exact-final review,
+required CI and verified protected merge remain mandatory. Final identities
+will be retained in the PR and reconciled into the next normal ledger increment.
+Recorded 2026-11-01T07:31:45.974076+00:00
