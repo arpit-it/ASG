@@ -835,6 +835,57 @@ class CPUPreparationTests(unittest.TestCase):
             self.assertNotIn('dependencies checked', result.stdout)
             self.assertFalse(helper.exists())
 
+    def test_actual_cpu_preparation_cli_private_failures_and_clean_success(self):
+        with tempfile.TemporaryDirectory(prefix='PRIVATE CPU preparation ') as temporary:
+            root = Path(temporary)
+            shutil.copyfile(Path(__file__).with_name('qwen_backends.py'), root / 'qwen_backends.py')
+            (root / 'transformers.py').write_text('class Loader:\n @staticmethod\n def from_pretrained(*a, **k): raise AssertionError("weight load")\nAutoTokenizer = Qwen3_5ForConditionalGeneration = Loader\n')
+            (root / 'safetensors').mkdir()
+            (root / 'safetensors' / '__init__.py').write_text('')
+            (root / 'safetensors' / 'torch.py').write_text('def load_file(*a, **k): raise AssertionError("weight load")\n')
+            command = [sys.executable, '-B', '-S', str(root / 'qwen_backends.py')]
+            helper = root / 'unused helper'
+            noise = 'import sys\nprint("PRIVATE stdout")\nprint("PRIVATE stderr", file=sys.stderr)\n'
+            for error, expected in [('ImportError', 'dependency unavailable'), ('OSError', 'dependency check failed'),
+                                    ('RuntimeError', 'dependency check failed'), ('MemoryError', 'out of memory'),
+                                    (None, 'dependencies checked')]:
+                with self.subTest(error=error):
+                    body = ('raise ' + error + '("PRIVATE /secret/environment TOKEN")\n') if error else 'def forbidden(*a, **k): raise AssertionError("side effect")\nset_num_threads = device = forbidden\n'
+                    (root / 'torch.py').write_text(noise + body)
+                    result = subprocess.run([*command, '--prepare', 'cpu', '--experimental-cpu', '--helper-target', str(helper)],
+                                            cwd='/', capture_output=True, text=True, timeout=10)
+                    self.assertEqual(result.returncode, 2 if error else 0, result.stderr)
+                    if error:
+                        self.assertEqual(result.stdout, '')
+                        self.assertIn('CPU preparation failed:', result.stderr)
+                        self.assertIn(expected, result.stderr)
+                        self.assertIn('no model was loaded, packages installed or fallback attempted', result.stderr)
+                        self.assertLess(len(result.stderr), 350)
+                    else:
+                        self.assertIn(expected, result.stdout)
+                        self.assertIn('unverified', result.stdout)
+                        self.assertEqual(result.stderr, '')
+                    for private in ('PRIVATE', 'TOKEN', temporary, 'Traceback'):
+                        self.assertNotIn(private, result.stdout + result.stderr)
+                    self.assertFalse(helper.exists())
+            # Legacy preparation still exposes its original exception behavior.
+            (root / 'torch.py').write_text('raise RuntimeError("LEGACY_SENTINEL")\n')
+            result = subprocess.run([*command, '--prepare', 'torch', '--helper-target', str(helper)],
+                                    capture_output=True, text=True, timeout=10)
+            self.assertEqual(result.returncode, 1)
+            self.assertIn('LEGACY_SENTINEL', result.stderr)
+            self.assertIn('Traceback', result.stderr)
+            # BaseException interruptions are never converted into dependency failures.
+            for interruption, code in [('SystemExit(7)', 7), ('KeyboardInterrupt()', -2 if os.name == 'posix' else None)]:
+                (root / 'torch.py').write_text('raise ' + interruption + '\n')
+                result = subprocess.run([*command, '--prepare', 'cpu', '--experimental-cpu'],
+                                        capture_output=True, text=True, timeout=10)
+                if code is not None:
+                    self.assertEqual(result.returncode, code)
+                else:
+                    self.assertNotEqual(result.returncode, 2)
+                self.assertNotIn('CPU preparation failed:', result.stderr)
+
 
 class CPUBackendTests(unittest.TestCase):
     """Execute the real backend against injected tensor/model APIs, not inference."""

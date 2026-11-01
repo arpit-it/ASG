@@ -254,5 +254,21 @@ if __name__ == '__main__':
         parser.error('CPU preparation requires --prepare cpu --experimental-cpu together')
     if args.prepare != 'cpu' and not args.helper_target:
         parser.error('--helper-target is required for legacy preparation')
-    prepared = prepare_backend(args.prepare, args.helper_target, experimental_cpu=args.experimental_cpu)
+    if args.prepare == 'cpu':
+        # Optional imports can print private installation paths and exception
+        # details. Keep their Python output inside this CLI-only boundary;
+        # direct callers retain the original exception semantics.
+        try:
+            with open(os.devnull, 'w') as sink, contextlib.redirect_stdout(sink), contextlib.redirect_stderr(sink):
+                prepared = prepare_backend('cpu', experimental_cpu=True)
+        except Exception as error:
+            if isinstance(error, MemoryError):
+                message = 'out of memory; free memory and inspect the configured Python environment'
+            elif isinstance(error, ImportError):
+                message = 'dependency unavailable; check installed Torch, Transformers and safetensors in the configured Python environment'
+            else:
+                message = 'dependency check failed; inspect the installed CPU loader APIs in the configured Python environment'
+            parser.exit(2, f'CPU preparation failed: {message}; no model was loaded, packages installed or fallback attempted.\n')
+    else:
+        prepared = prepare_backend(args.prepare, args.helper_target)
     print(f'{prepared} runtime dependencies checked; model loading and memory adequacy remain unverified.')

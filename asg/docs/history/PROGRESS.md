@@ -5877,3 +5877,68 @@ Status: Awaiting merge; independent exact-final review, required CI and verified
 protected merge mandatory. Full F15 unchecked, CPU experimental and excluded
 from normal managed choices. Prior PR373 merge/review/CI bookkeeping retained.
 Recorded 2026-11-01T08:16:46.947356+00:00
+
+
+### CPU loader failure boundary verified merged — issue #356 / PR #374
+
+Independent final approval [5727171374](https://github.com/arpit-it/ASG/pull/374#pullrequestreview-5727171374)
+reviewed exacthead53a50c65a1ac98145e3a186900a851c896a222c4 /
+tree5999dce9dbbf87ce92cc7f69fad18a6d3d004236; all five files/acceptance,
+no blockers. Shared-author APPROVE422 transparently recorded in COMMENT under
+documented zero-count protection; no bypass. Independent62backend/HTTPcases:
+61passes/one opt-in skip; five direct typed memory/import/runtime failure and
+KeyboardInterrupt/SystemExit preservation/cleanup probes passed.
+RequiredCI41288251866 passed; full actual Python124793897349/Flutter124793897120
+logs inspected, including32collector/9inventory/4download/53backend(oneskip)/
+9HTTP/14command(oneskip)/4confinement(twoLinuxskips),formatter/analyzer/default
+Flutter/Chrome/web and real generated-project verification. Parent125Python/
+twoskips,984Flutter/nineskips/web/macOSdebug evidence separately scoped.
+Existing local runtime readonlyhealth ready/idle/MLX/Metal/Qwen3.8-27B-4bit;
+no inference, downloads, installs, settings/data/stable-app replacement.
+
+Reviewer protected-plugin squashmerged [PR #374](https://github.com/arpit-it/ASG/pull/374)
+as `6899359fa52603de79ba69b8eca93a8216e3d4ac`; issue356closed/completed.
+Parent independently verified mergedstate/finalhead/issueclosure/currentmain and
+signed rawmerge exactreviewedtree/soleparent1f031688. Signedcommit08:24:48Z;
+REST merge/closure09:24:49/50Z timestamp discrepancy retained. Guarded local-only
+sync passed; main/origin-main0/0,indexempty,both unrelated IDEfiles byte-identical.
+Backup/private/tmp/asg356-loader-primary-before-sync; guard/private/tmp/asg374-safe-sync.py.
+All GitHub access/publication/review/merge used connectedplugin; PR attached and
+bothautomationlabels applied. Prior docs edits carried into reviewedtree.
+
+Bounded correction Done; fullF15 remains unchecked/Inprogress, CPUexperimental;
+non-Apple CPU/separateCUDA live acceptance and further managed CPU integration
+remain outstanding. No secondtask/newissue/FID. Finalmerge bookkeeping retained
+locally for next normal reviewed increment; cadence/notification unchanged.
+Recorded 2026-11-01T08:25:26.287031+00:00
+Current run time 2026-11-01T08:25:26.287031+00:00
+
+
+### CPU preparation diagnostic privacy — reopened issue #358
+
+F15 bounded correction from verified main6899359 / PR #374; branch
+`358-cpu-preparation-privacy`, isolated `/private/tmp/asg-cpu-preparation-privacy`.
+No competing active ASG owner or open PR/issue before selection; reuse358,
+no new issue/F ID. Evidence: preparation CLI directly exposed broken optional
+import tracebacks and private exception details; original CLI regression only
+required nonzero exit. Scope: CPU-only CLI suppresses Python import output and
+returns fixed dependency/memory/general guidance with exit2. Direct API errors,
+SystemExit/KeyboardInterrupt, legacy preparation and opt-in gates preserved.
+Native file-descriptor output is outside this narrowly documented guarantee.
+Actual isolated CLI tests cover noisy success, four error classes, no helper
+creation, no private text/path/traceback copying, legacy errors and interruptions.
+Mac-verifiable diagnostic boundary depends on delivered CPU preparation, not
+unavailable non-Apple CPU/CUDA inference. CPU remains experimental and normal
+app choices remain Auto/MLX/MPS. Full F15 unchecked/In progress.
+Status: Awaiting merge; independent final-revision review, required CI and
+verified protected merge remain mandatory. Prior PR374 final review/CI/merge
+bookkeeping retained from primary docs. No inference, downloads, installations,
+settings/data/stable-app replacement. Cadence/notification preference unchanged.
+Recorded 2026-11-01T08:46:33.646613+00:00
+
+Validation for issue358 preparation privacy: 126 Python cases passed (two opt-in
+skips); formatter287 unchanged, analysis clean,984 Flutter passes/nine skips;
+web release/Wasm and macOS debug builds passed. Initial restricted SDK-cache and
+loopback failures rerun with authorized access; actual final checks pass. Initial
+pre-resolution formatter warning resolved by clean final formatter. No real CPU
+inference claimed. Independent exact-final review/required CI/merge pending.
