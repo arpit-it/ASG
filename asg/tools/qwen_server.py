@@ -190,6 +190,10 @@ def create_handler(backend, executor, model_id, model_path):
     return Handler
 
 
+class CPUCheckpointError(ValueError):
+    """Sanitized checkpoint failure safe for the explicit CPU CLI boundary."""
+
+
 def _cpu_checkpoint_details(folder, max_weight_bytes=None):
     """Check local checkpoint structure without reading tensor contents.
 
@@ -197,30 +201,33 @@ def _cpu_checkpoint_details(folder, max_weight_bytes=None):
     Files may change after inspection; this is not a filesystem sandbox.
     """
     if max_weight_bytes is not None and (type(max_weight_bytes) is not int or max_weight_bytes <= 0):
-        raise ValueError('CPU weight byte ceiling must be a positive integer')
-    folder = folder.resolve(strict=True)
+        raise CPUCheckpointError('CPU weight byte ceiling must be a positive integer')
+    try:
+        folder = folder.resolve(strict=True)
+    except (OSError, RuntimeError):
+        raise CPUCheckpointError('CPU checkpoint folder is unavailable; no model was loaded') from None
 
     def local_file(name):
         try:
             path = (folder / name).resolve(strict=True)
             if not path.is_relative_to(folder) or not path.is_file() or path.stat().st_size == 0:
-                raise ValueError()
+                raise CPUCheckpointError()
             return path
         except (OSError, RuntimeError, ValueError):
-            raise ValueError('CPU checkpoint requires nonempty contained regular files') from None
+            raise CPUCheckpointError('CPU checkpoint requires nonempty contained regular files') from None
 
     def metadata(name, limit):
         # Bound actual reads too: stat alone does not constrain a growing file.
         with local_file(name).open('rb') as source:
             content = source.read(limit + 1)
         if len(content) > limit:
-            raise ValueError()
+            raise CPUCheckpointError()
         return json.loads(content.decode('utf-8'))
 
     try:
         config = metadata('config.json', 1024 * 1024)
         if not isinstance(config, dict):
-            raise ValueError()
+            raise CPUCheckpointError()
         index = folder / 'model.safetensors.index.json'
         if index.exists() or index.is_symlink():
             manifest = metadata(index.name, 8 * 1024 * 1024)
@@ -230,7 +237,7 @@ def _cpu_checkpoint_details(folder, max_weight_bytes=None):
                     not value or Path(value).is_absolute() or
                     '..' in Path(value).parts or not value.endswith('.safetensors')
                     for key, value in weights.items()):
-                raise ValueError()
+                raise CPUCheckpointError()
             shards = set(weights.values())
         else:
             shards = {'model.safetensors'}
@@ -242,9 +249,9 @@ def _cpu_checkpoint_details(folder, max_weight_bytes=None):
             raise OverflowError()
         return config, weight_bytes, len(paths)
     except OverflowError:
-        raise ValueError('CPU checkpoint exceeds configured weight byte ceiling; no model was loaded') from None
+        raise CPUCheckpointError('CPU checkpoint exceeds configured weight byte ceiling; no model was loaded') from None
     except (OSError, UnicodeError, ValueError, RuntimeError):
-        raise ValueError('Invalid CPU checkpoint: require contained config (up to 1 MiB), index (up to 8 MiB) and nonempty safetensors weights') from None
+        raise CPUCheckpointError('Invalid CPU checkpoint: require contained config (up to 1 MiB), index (up to 8 MiB) and nonempty safetensors weights') from None
 
 
 def validate_cpu_checkpoint(folder, max_weight_bytes=None):
@@ -391,9 +398,19 @@ def main():
         parser.error('--probe-devices requires --capabilities')
     if args.model is None:
         parser.error('--model is required unless --capabilities is used')
-    folder = args.model.resolve(strict=True)
+    try:
+        folder = args.model.resolve(strict=True)
+    except (OSError, RuntimeError):
+        if args.backend != 'cpu':
+            raise
+        raise CPUCheckpointError('CPU checkpoint folder is unavailable; no model was loaded') from None
     config = (validate_cpu_checkpoint(folder, max_weight_bytes=args.cpu_max_weight_bytes) if args.backend == 'cpu' else
               json.loads((folder / 'config.json').read_text()))
+    if args.backend == 'cpu':
+        try:
+            validate_model_config('cpu', config)
+        except ValueError as error:
+            raise CPUCheckpointError(str(error)) from None
     if 'Qwen3_5ForConditionalGeneration' not in config.get('architectures', []):
         raise ValueError('Unsupported model architecture')
     if args.backend != 'cpu':
@@ -430,4 +447,10 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except CPUCheckpointError as error:
+        # Only allowlisted checkpoint messages cross this CLI boundary. Preserve
+        # legacy failures and direct API ValueError behavior; omit tracebacks.
+        sys.stderr.write(f'CPU checkpoint preflight failed: {error}\n')
+        sys.exit(2)
