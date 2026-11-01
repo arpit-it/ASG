@@ -14,6 +14,28 @@ Update this document with task selection and delivery evidence, alongside [agent
 
 Unavailable hardware blocks only the corresponding real-host acceptance, not implementable work. Continue bounded F15 CPU implementation, tests, integration and independent review before repeating an unchanged host-resource check. Keep non-Apple CPU and later CUDA live inference explicitly pending; fixtures and app builds never establish inference or full F15 completion. Finish/review/merge each implementable issue before selecting another. Where actual technical prerequisites are delivered, Mac-verifiable F22 selection, F16 capability reporting and F11 adapters may proceed without waiting for every F15/F16 platform milestone. Record the bounded dependency assessment; retain priority among eligible increments and all historical evidence. This owner exception supersedes historical whole-feature selection gates below. Keep experimental backends outside normal supported app choices until live validation.
 
+### Owner priority and pending tracking — 2 November 2026
+
+Complete queued implementation tasks and fixes on the available Mac first. Windows, CUDA, non-Apple CPU and other unavailable-platform/device acceptance are **Deferred / Pending until the implementation queue is delivered**, tracked in [issue #400](https://github.com/arpit-it/ASG/issues/400). Retain missing-resource evidence and unchecked umbrella features; do not advertise unverified backends/hosts, repeatedly probe unchanged missing resources, or treat platform-only acceptance as a global development gate. This owner instruction supersedes historical whole-feature platform gates, including the F15/F16/F17 dependencies below. Implement actual prerequisites and preserve priority among eligible increments. F23 remains the final feature phase; deferred platform acceptance does not authorize paid resources, new access or deployment.
+
+Continue active PRs first, then the first technically eligible Mac-verifiable increment without routine owner task-selection input. Carry each through implementation, meaningful tests, fixes, plugin-only publication, independent final-revision review, required CI and reviewer merge before selecting another. Do not repeatedly reopen delivered CPU fixes without a reproducible defect. Do not mark deferred acceptance Done from fixtures or builds.
+
+The owner explicitly requested this one-time issue reconciliation; it permits multiple tracking issues now, without creating new features or changing future runs' one-new-issue limit. **Pending** means not started; **Deferred** is pending acceptance intentionally scheduled after implementation. REQUIREMENTS.md remains the sole specification and ordering authority; issues link its existing tasks:
+
+| Requirement | Tracking issue | Current state |
+| --- | --- | --- |
+| F15/F16/F17/F22 unavailable-platform acceptance | [#400](https://github.com/arpit-it/ASG/issues/400) | Deferred / Pending after implementation |
+| F22 remaining profile/selection/provenance | [#396](https://github.com/arpit-it/ASG/issues/396) | Request provenance In progress; per-project selection Pending |
+| F16 portable host/capability reporting | [#401](https://github.com/arpit-it/ASG/issues/401) | Pending implementation; external host validation Deferred |
+| F11 adapters and stack selection | [#402](https://github.com/arpit-it/ASG/issues/402) | Pending; one complete adapter at a time |
+| F19 Code Lab | [#403](https://github.com/arpit-it/ASG/issues/403) | Pending actual runner prerequisites |
+| F20 repository workflow | [#404](https://github.com/arpit-it/ASG/issues/404) | Pending adapter prerequisites |
+| F21 instruction schedules | [#405](https://github.com/arpit-it/ASG/issues/405) | Pending repository prerequisites |
+| F12 isolated self development | [#406](https://github.com/arpit-it/ASG/issues/406) | Pending |
+| F23 user-owned cloud connection | [#407](https://github.com/arpit-it/ASG/issues/407) | Pending; final feature phase |
+
+The saved development automation was updated through its management tool; active state, 15-minute interval, model, project and existing notification preference were preserved.
+
 ## Ordered feature queue
 
 - [x] F01 Structured requirements and task board — Done
@@ -132,8 +154,8 @@ Unavailable hardware blocks only the corresponding real-host acceptance, not imp
   - Scope/acceptance: progress immediately below Download, measured bytes/total/percentage/speed with honest unknown values; Start/Pause/Resume/Stop, owned process termination and retained partial files; exact repository/revision/destination matching for resume, including restart. Refuse unrelated/linked folders, keep raw child output private and preserve inference/current model. No automatic model download or inference claim.
   - Delivery: [PR #347](https://github.com/arpit-it/ASG/pull/347). Initial independent review found retry rollback overcount and inherited-pipe completion hang; both corrected with actual regressions. Native isolated UI observed below-button progress/speed, Pause at 5 MiB, Resume through 7.8 MiB and Stop retaining partial bytes. Final head d583ccbb/tree031725f4 approved in reviews5723106296/finalgate5723151483; requiredCI41208499529 passed. Protectedmerge07018365f0399d7047286baf01154fbd33a3890d at2026-10-31T14:12:20Z verified; issue346 closed. Full delivery evidence below.
   - Validation: deterministic local transfer/process fixtures, Python ownership/filter/telemetry regressions, Flutter protocol/controller/responsive UI tests, full format/analyze/test, web/macOS builds and independent exact-final review/required CI/protected merge. Mark Done only after verified merge; larger-model switch remains separately subject to actual inference.
-- [ ] F15 Hardware-aware inference backends — In progress (CPU implementation; non-Apple CPU/CUDA live validation pending); depends on F09
-  - CPU greedy streaming contract — Awaiting merge: reused [issue #356](https://github.com/arpit-it/ASG/issues/356), `356-cpu-greedy-streaming`; pin one beam/return sequence despite checkpoint defaults. CPU/MPS and actual HTTP regressions; full F15/live milestones remain pending. Review/CI/merge evidence follows in ledger.
+- [ ] F15 Hardware-aware inference backends — In progress (delivered CPU foundations; non-Apple CPU/CUDA live validation Deferred); depends on F09
+  - CPU greedy streaming contract — Done through verified [PR #399](https://github.com/arpit-it/ASG/pull/399) mergecfb10b4c (2026-11-01T19:39:00Z), finalgate5729884828/requiredCI41342371559 passed: reused [issue #356](https://github.com/arpit-it/ASG/issues/356), `356-cpu-greedy-streaming`; pin one beam/return sequence despite checkpoint defaults. CPU/MPS and actual HTTP regressions; full F15/live milestones remain pending. Review/CI/merge evidence follows in ledger.
   - CPU generation result contract — Done through verified [PR #398](https://github.com/arpit-it/ASG/pull/398) merge472a97f0 (2026-11-01T18:57:12Z), finalreview5729746700/requiredCI41338642406 passed: reopened [issue #356](https://github.com/arpit-it/ASG/issues/356), `356-cpu-generation-result`, from verified PR #397 mergea91b1593. A checkpoint structured-output default causes AttributeError after streamed text on the real backend with injected model APIs. Override the tensor-return contract; actual HTTP SSE/nonstream success, stop/length reasons, idle/repeat and shared MPS placement are acceptance. Delivered CPU foundation is sufficient for this Mac-verifiable correction; full F15/non-Apple CPU/CUDA live inference remain pending.
   - CPU worker dispatch recovery — Done through verified [PR #395](https://github.com/arpit-it/ASG/pull/395) merge49101166 (2026-11-01T17:57:11Z), finalgate5729457465/requiredCI41333492514 passed: reused [issue #356](https://github.com/arpit-it/ASG/issues/356), `356-cpu-dispatch-recovery`. Private HTTP503, honest idle state, abandoned-queue exclusion and successful retry; actual HTTP acceptance and review gates in the ledger below. Full F15/live milestones remain pending.
   - CPU request framing — Done through verified [PR #394](https://github.com/arpit-it/ASG/pull/394) merge8dace531 (2026-11-01T16:58:44Z), finalreview5729238281/requiredCI41328455583 passed: reused/reopened [issue #356](https://github.com/arpit-it/ASG/issues/356), `356-cpu-request-framing`, from verified PR #393 mergeefdc4e91. Actual conflicting Content-Length and Content-Length/Transfer-Encoding requests return HTTP200 and invoke generation. Require private HTTP400 for duplicate length or any unsupported transfer encoding before body read/backend work; actual sockets, idle health and valid retry for both transports. Delivered CPU HTTP foundation is the prerequisite; no unavailable inference host is needed for this bounded correction. Full F15/live milestones remain pending.
@@ -185,9 +207,9 @@ Unavailable hardware blocks only the corresponding real-host acceptance, not imp
   - Application acceptance: setup displays detected host, available backend/device, selected model compatibility, readiness and actionable dependency/memory failures. Persist the explicit backend/device choice with backward-compatible defaults. Offer fallback with user consent; do not silently download weights, install packages or move an active request to another backend. Health must report the actual backend/device and unknown capabilities honestly.
   - Engineering acceptance: preserve streaming, deadlines, cancellation scope, offline local-weight loading, owned-process cleanup and diagnostic privacy across implementations. Configuration and launch arguments must avoid machine-specific paths. Unsupported hosts/models fail before launch and preserve saved settings and last working output.
   - Validation: fake capability-selection tests plus real HTTP/process regressions for unavailable devices, incompatible models, timeout, cancellation and restart; controller/widget tests for persistence and fallback consent. Real CPU inference and an MLX regression are required for their delivery claims; CUDA stays unsupported/unverified until a real CUDA-host smoke test succeeds. Record host, backend, model format and actual result without private paths/prompts. Run relevant Flutter/Python checks and platform builds; no fixture or successful app build substitutes for device inference.
-  - Bounded delivery milestones: (1) backend contract/capability discovery and an MLX regression; (2) explicit CPU setup/inference on a supported non-Apple desktop with compatible weights; (3) explicit CUDA setup/inference on a CUDA host. Each milestone needs its own focused issue, saved settings/restart/error tests and real-host evidence. Isolate optional backend dependencies so missing MLX cannot prevent CPU/CUDA startup; validate configurable executable/model paths including spaces. Do not claim CPU adequacy for a 9B model without measured successful operation within the configured limits.
+  - Bounded delivery milestones: (1) backend contract/capability discovery and an MLX regression; (2) explicit CPU setup/inference on a supported non-Apple desktop with compatible weights; (3) explicit CUDA setup/inference on a CUDA host. Each milestone needs its own focused issue, saved settings/restart/error tests and real-host evidence. Non-Apple CPU/CUDA real-host acceptance is now Deferred in #400 until the queued implementation is delivered; this is not a dependency on eligible implementation. Isolate optional backend dependencies so missing MLX cannot prevent CPU/CUDA startup; validate configurable executable/model paths including spaces. Do not claim CPU adequacy for a 9B model without measured successful operation within the configured limits.
   - Delivery: create/reuse a narrowly scoped issue when selected; remain unchecked until all promised backend milestones, independent review, required checks and verified merges. CPU and CUDA evidence must be recorded separately; unavailable hardware is a recorded blocker, never a fixture-based completion claim.
-- [ ] F22 Hardware-aware local model catalog and selection — In progress; depends on F09 and F15
+- [ ] F22 Hardware-aware local model catalog and selection — In progress; depends on delivered F09/F15 foundations; unavailable-platform validation Deferred
   - Named local connection presets — Done: [issue #396](https://github.com/arpit-it/ASG/issues/396), `396-model-connection-presets`. Durable named connection drafts, explicit replacement/removal and draft-only restore; Save/Test remain separate. Depends on delivered F09 settings/RecordStorage, not unavailable CPU/CUDA live inference. Delivered through [PR #397](https://github.com/arpit-it/ASG/pull/397), independently approved at23ac82da (review5729629438), requiredCI41336882966 passed; verified mergea91b1593 at2026-11-01T18:34:32Z. Per-project/run provenance and larger-model inference remain pending; final evidence in ledger below.
   - Delivered owner-selected visibility increment — Done: [issue #354](https://github.com/arpit-it/ASG/issues/354), `354-current-preferred-model`, [PR #355](https://github.com/arpit-it/ASG/pull/355). Testedlocal e107437 / published62431105 share tree2a4b131a324949d02d88affe355049f6164e0131. Fresh independent final review5724199193 and requiredCI41222296670 passed; verified protectedmerge781f7e95bfd1ba428383d383532ccb15e3474b93 at2026-10-31T18:06:54Z, issue closed. Current model observed on open/refresh with truthful preferred/current labels, separate from new-load gates. FullF22 remains unchecked.
   - Delivered owner-selected curated-catalog increment: [issue #348](https://github.com/arpit-it/ASG/issues/348), `348-preferred-role-models`, [PR #349](https://github.com/arpit-it/ASG/pull/349), protectedmerge37b3470d91b860b118b7c85bd47df5f2b13fd7de at2026-10-31T15:33:06Z. Exactfinalreview5723547556/finalgate5723571602 and requiredCI41214940551 passed. Checked Qwen3.8/3.5 new-load order, separate current-runtime observation with no source-proof/RAM credit, advanced discovery retained. FullF15/F22 profile/backend/inference milestones remain outstanding.
@@ -199,7 +221,7 @@ Unavailable hardware blocks only the corresponding real-host acceptance, not imp
   - Validation: simulated low/high-memory and CPU/Metal/CUDA profiles, missing/corrupt weights, incompatible formats, license/revision changes, busy-switch refusal, restart and failure recovery. Verify at least two compatible real local model profiles (including one larger than 9B on capable hardware); record exact quantization/context/peak memory/speed and F17 evidence. Unavailable larger-model hardware remains a blocker, not a fabricated memory-based support claim. Normal independent review/CI/verified merge gates apply.
 - [ ] F16 Portable generation host and capability reporting — Queued; depends on F03, F04, F05 and F15
   - Source/evidence: owner-requested score improvements on 28 October 2026; the product targets six Flutter platforms, but `NativeGenerationHost.supported` gates the independent generator to macOS and model-written candidate confinement uses macOS Seatbelt. A passing Linux trusted-starter CI fixture does not establish a safe Linux/Windows product host. F15 concerns inference, F11 concerns generated project types; neither covers host execution portability.
-  - User value/priority: after F15 is completed, let desktop users discover exactly which generation/edit/repair operations their host can safely perform. Deliver Linux trusted-starter support first, then confined candidate verification, then Windows as separate increments; do not delay honest capability reporting until every host is supported.
+  - User value/priority: after eligible F15/F22 implementation increments (external platform acceptance is Deferred), let desktop users discover exactly which generation/edit/repair operations their host can safely perform. Deliver Linux trusted-starter support first, then confined candidate verification, then Windows as separate increments; do not delay honest capability reporting until every host is supported.
   - Scope: extend existing host interfaces with capabilities for starter creation, verification, candidate confinement, preview and process cleanup. Discover configured SDK/Python executables and validate paths without machine-specific defaults. Preserve the fixed operation allowlist, consent/approval binding, exclusive output folders and current macOS behavior. Mobile/web clients retain explicit unsupported host operations; remote execution is outside this task.
   - Acceptance: UI shows available and unavailable operations with actionable reasons; unsupported confinement refuses candidate execution before any source is run. Each enabled host passes real new-project resolve/analyze/test/web-build/serve, Stop/deadline/output-limit and descendant-cleanup checks, restart/uncertain-checkpoint refusal, stale-approval refusal and last-working-output preservation. Enabling starter generation must not implicitly enable candidate execution. Model-written candidate/repair support needs independently reviewed platform isolation and real deny-write/network/process-escape probes at the established boundary.
   - Validation/delivery: one narrowly scoped issue/PR per host/capability milestone, actual Linux/Windows builds and launches on their respective hosts, plus macOS regression coverage. Include paths with spaces, missing toolchains, occupied ports, failed previews and interrupted writes. Record tested versus unavailable capabilities separately; keep F16 unchecked until promised host increments satisfy acceptance and normal independent review/CI/verified merge. Broader generated targets remain F11.
@@ -335,7 +357,7 @@ Requirements changes: existing F10 acceptance guidance and F15 backend milestone
 
 ## Active task and delivery ledger
 
-Current: Issue #356 / `356-cpu-greedy-streaming` implements the bounded CPU/MPS single-completion generation contract. Previous PR #398 verified merged472a97f0; evidence retained below. Full F15 remains In progress and real-host CPU/CUDA acceptance pending. Independent final review, required CI and protected reviewer merge gate this increment.
+Current: Issue #356 / PR #399 CPU greedy streaming correction Done after independent final approval at a5bd70ff/tree8a298c79, requiredCI41342371559 and verified protectedmergecfb10b4ce34c2fd6c2013d2a88a88aab5ddf52c0 at2026-11-01T19:39:00Z. Main safely synchronized; fullF15/F22 remain In progress and non-Apple CPU/CUDA live milestones pending. Continue concrete implementable F15 work before eligible Mac-verifiable F22/F16/F11 increments.
 
 Historical pre-F17 selection: F10 In progress/unchecked. PR #248 verified merged as `c54c9b7b120d88531a0013705801d6babf0c7af9` at 2026-10-28T05:29:19Z after independent final review 5678169248 of `274bb3fd` and required CI 40637890903; tested tree `61f985bc`. Explicit opt-in named-test criterion contracts delivered. Full acceptance reconciliation, including whole-requirement supported verdicts, remains; no later task selected.
 
@@ -8228,3 +8250,63 @@ Status Awaiting merge: exact-tree plugin publication, independent final-revision
 review, required CI and protected reviewer merge remain pending. FullF15/F22
 remain unchecked/In progress. No model/download/install/settings/stableapp or
 schedule/notification changes. Recorded 2026-11-01T19:32:38.282897+00:00
+
+
+### CPU greedy streaming contract verified merged — issue #356 / PR #399
+
+Independent approval5729872318/finalgate5729884828 approved exact
+`a5bd70ffd02d5086eefb3a2277855b42319b83d2`, tree
+`8a298c79cad76b03bf9b07299913f3622f5149b0` (tested local21daba89 identical).
+No blockers; independent78backend/actualHTTP tests(one explicit live skip) passed.
+Removing either override separately reproduced four CPU/MPS failures. All325
+validation inputs matched, and parent actual logs were independently inspected.
+
+Required CI41342371559 completed/success: Flutter124954918915 formatter304/
+analyzer clean, Ubuntu1054passes12skips, actualChrome16, web/Wasm dryrun and
+real independent generated-project resolve/analyze/test/render/build/serve passed;
+Python124954919077 ran141tests/four explicit CI platform/live skips. Separate
+parent Mac1060Flutter/nine skips,141Python/two skips,web/macOSdebug passed.
+Neither fixtures nor builds establish CPU/CUDA live inference/fullF15 completion.
+
+Reviewer protected-plugin squash merged [PR #399](https://github.com/arpit-it/ASG/pull/399)
+as `cfb10b4ce34c2fd6c2013d2a88a88aab5ddf52c0` at2026-11-01T19:39:00Z;
+issue356closed/completed19:39:02Z. Parent freshly plugin-verified PR/issue/main,
+signed merge tree/sole parent472a97f0 and successful required jobs. Guarded local
+synchronization passed: main/origin-main0/0, empty index, both unrelated IDEfiles
+byte-identical. Evidence `/private/tmp/asg399-reviewed-merge.json`,
+`/private/tmp/asg399-safe-sync.py`, `/private/tmp/asg356-greedy-ide.json`.
+Both automation labels applied. Bounded correction Done; fullF15/F22 remain
+unchecked/In progress, CPUexperimental outside normal choices; non-AppleCPU/CUDA
+real inference pending. No model load/download/install/settings/data/stableapp/
+cadence/notification changes. Final merge bookkeeping retained for next normal
+reviewed development PR. Recorded 2026-11-01T19:39:59.472269+00:00
+
+
+### F22 requested-model provenance — issue #396
+
+Owner-priority continuation on `396-chat-model-provenance` from verified main
+cfb10b4ce34c2fd6c2013d2a88a88aab5ddf52c0. Existing preset delivery stays Done.
+Project Discuss/Plan/Review replies lack the request's model/budget after settings
+change. Capture typed app-authored requested-model ID/output ceiling once per
+request, persist only on completed assistant replies, retain through save-only
+retry/reopen, and display requested versus unverified loaded identity. Legacy
+replies remain unknown; malformed/user-attached provenance refuses overwrite.
+No endpoint, prompt, diagnostic, loaded-model/revision or inference claim is added.
+Per-project selection, Ask/Build/repair provenance and full F22 remain Pending.
+Delivered transport/settings/storage are sufficient; deferred CPU/CUDA/Windows
+acceptance is not a dependency. Scope includes owner-requested selection rules
+and Pending issue links #400–#407. In progress pending validation, exact-tree
+publication, independent final-revision review, required CI and verified merge.
+
+
+Validation for #396 requested-model provenance: 10 focused regressions including
+actual native database reopen; clean-source Flutter1070 passed/nine explicit live
+or platform skips. Formatter clean, analyzer no issues, web release/Wasm dry run
+and macOS debug builds passed. All328 source/configuration validation inputs
+byte-identical. Initial in-place full-suite license scan encountered third-party
+Python files in tools/.mlx-venv; the complete clean-copy rerun passed. No vendor
+files were modified or excluded from the tracked source copy. Python fixtures141 passed/two explicit live/platform skips.
+Final publication/review/CI/merge evidence follows. This validates app/request
+metadata and compatibility, not fresh inference or external-platform support.
+Status Awaiting merge; independent exact-final review/required CI/merge pending.
+Logs /private/tmp/asg396-provenance-{analyze,clean-flutter,web,macos,python}.log.

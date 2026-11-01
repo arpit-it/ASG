@@ -155,4 +155,26 @@ without blocking unrelated model settings or application startup after migration
 Legacy preference migration retains its original backup policy. Failed writes keep
 the previous list and form draft; close/reopen settings after a concurrent change.
 Deleting a preset never deletes active settings or loads/unloads a model. Project/run
-selection and request provenance remain F22 work.
+selection remains F22 work; project-chat request provenance is described below.
+
+
+## Project-chat requested-model provenance — issue #396 / F22
+
+Completed project Discuss/Plan/Review assistant messages in `studio.chat.v1.<id>`
+gain optional `modelRequest`: version1, requested `model` and `outputTokens`.
+App code snapshots the exact validated request settings before dispatch; model
+text cannot author this metadata. It records requested identity and budget only,
+not server-loaded weights/revision, backend, successful inference acceptance or
+measured consumption. No endpoints, prompts, timestamps or raw diagnostics are
+added. The model ID is nonempty, control-free and bounded to4096 characters;
+output tokens use the existing supported chat choices. Unknown versions, invalid
+shapes and metadata attached to non-assistant messages fail validation.
+
+Legacy messages keep their original JSON shape and display identity unavailable.
+The original snapshot survives final-save failure and save-only retry even if
+active settings change. Stopped/failed partial replies add no completed metadata.
+Portable project archives deliberately omit local request settings, matching their
+existing approval/settings omission; imported replies therefore show unknown.
+Ask, prototype Build, candidate/repair provenance and per-project model selection
+are outside this bounded increment and remain F22 work. No schema-key migration
+or rewrite of historical conversation records is required.
