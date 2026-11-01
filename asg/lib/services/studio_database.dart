@@ -95,6 +95,7 @@ class StudioDatabase implements ConditionalRecordStorage {
       } catch (_) {
         if (record.key != AskStore.key &&
             record.key != ModelSettingsStore.presetsKey &&
+            !record.key.startsWith(ConversationStore.selectionPrefix) &&
             !record.key.startsWith('studio.historicalRevisions.v1.') &&
             !record.key.startsWith('studio.historicalDecision.v1.') &&
             !record.key.startsWith('studio.archive.v1.') &&
@@ -160,6 +161,8 @@ class StudioDatabase implements ConditionalRecordStorage {
       ModelSettingsStore(source).load().endpoint;
     } else if (key == 'studio.runtimeSetup.v1') {
       RuntimeSetupStore(source).load();
+    } else if (key.startsWith(ConversationStore.selectionPrefix)) {
+      ConversationStore.decodeConnection(value);
     } else if (key.startsWith('studio.chat.v1.')) {
       ConversationStore(source).load(key.substring('studio.chat.v1.'.length));
     } else if (key.startsWith('studio.application.v1.')) {

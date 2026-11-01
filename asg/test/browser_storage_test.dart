@@ -46,6 +46,11 @@ void main() {
           config: LocalModelConfig(model: 'draft', chatOutputTokens: 512),
         ),
       ]);
+      await ConversationStore(records).saveConnection(
+        'project-selection',
+        ModelSettingsStore(records).loadPresets().single,
+        expected: null,
+      );
       await db.close();
       db = await databaseFactoryWeb.openDatabase(name);
       final reopened = ModelSettingsStore(
@@ -54,6 +59,22 @@ void main() {
       expect(reopened.loadPresets().single.config.model, 'draft');
       expect(reopened.loadPresets().single.config.chatOutputTokens, 512);
       expect(reopened.load().model, 'active');
+      final chat = ConversationStore(reopened.records);
+      expect(chat.loadConnection('project-selection')!.config.model, 'draft');
+      await reopened.savePresets([]);
+      await db.close();
+      db = await databaseFactoryWeb.openDatabase(name);
+      final third = ConversationStore(await StudioDatabase.migrate(db, prefs));
+      expect(
+        third.loadConnection('project-selection')!.config.chatOutputTokens,
+        512,
+      );
+      await third.saveConnection(
+        'project-selection',
+        null,
+        expected: third.loadConnection('project-selection'),
+      );
+      expect(third.loadConnection('project-selection'), isNull);
     } finally {
       await db.close();
       await databaseFactoryWeb.deleteDatabase(name);

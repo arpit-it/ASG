@@ -247,6 +247,79 @@ class _ModelChatState extends State<ModelChat> {
           ],
         ),
       ),
+      ExpansionTile(
+        key: const ValueKey('projectChatConnectionSettings'),
+        title: const Text('Project advisory-chat connection'),
+        subtitle: Text(
+          controller.connectionError ??
+              (controller.connectionPreset == null
+                  ? 'Global model settings'
+                  : 'Selected: ${controller.connectionPreset!.name} · ${controller.connectionPreset!.config.model}'),
+        ),
+        children: [
+          InputDecorator(
+            decoration: const InputDecoration(
+              labelText: 'Project advisory-chat connection',
+            ),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<int>(
+                key: const ValueKey('projectChatConnection'),
+                value: controller.connectionPreset == null ? -1 : -2,
+                isExpanded: true,
+                items: [
+                  const DropdownMenuItem(
+                    value: -1,
+                    child: Text('Global model settings'),
+                  ),
+                  if (controller.connectionPreset != null)
+                    DropdownMenuItem(
+                      value: -2,
+                      child: Text(
+                        'Selected: ${controller.connectionPreset!.name}',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  for (var i = 0; i < controller.presets.length; i++)
+                    DropdownMenuItem(
+                      value: i,
+                      child: Text(
+                        controller.presets[i].name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                ],
+                onChanged: controller.canChooseConnection
+                    ? (index) {
+                        if (index == null || index == -2) return;
+                        controller.choosePreset(
+                          index == -1 ? null : controller.presets[index],
+                        );
+                      }
+                    : null,
+              ),
+            ),
+          ),
+          Text(
+            controller.connectionPreset == null
+                ? 'Discuss, Plan and Review use current global settings for each request.'
+                : 'Requested model: ${controller.connectionPreset!.config.model} · output ceiling ${controller.connectionPreset!.config.chatOutputTokens} tokens. This project chat retains a connection snapshot even if its preset changes.',
+          ),
+          const Text(
+            'Applies to this project’s Discuss, Plan and Review only. Build, source and repair keep their existing connections. Selection does not load or test a model, verify loaded weights, or change global settings.',
+          ),
+          TextButton(
+            onPressed: controller.canChooseConnection
+                ? controller.refreshPresets
+                : null,
+            child: const Text('Refresh saved connection presets'),
+          ),
+          if (controller.presetError != null) Text(controller.presetError!),
+          if (controller.connectionError != null)
+            Text(controller.connectionError!),
+        ],
+      ),
     ],
   );
 
@@ -326,6 +399,7 @@ class _ModelChatState extends State<ModelChat> {
                         maxLines: 4,
                         enabled:
                             controller.ready &&
+                            controller.connectionError == null &&
                             !controller.busy &&
                             !controller.hasUnsavedResponse,
                         decoration: InputDecoration(
@@ -344,7 +418,8 @@ class _ModelChatState extends State<ModelChat> {
                       onPressed:
                           controller.busy ||
                               controller.hasUnsavedResponse ||
-                              !controller.ready
+                              !controller.ready ||
+                              controller.connectionError != null
                           ? null
                           : send,
                       icon: const Icon(Icons.send),
