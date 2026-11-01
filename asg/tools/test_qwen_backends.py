@@ -18,6 +18,77 @@ import qwen_backends as backends
 CONFIG = {'architectures': ['Qwen3_5ForConditionalGeneration']}
 
 
+class CPUCheckpointTests(unittest.TestCase):
+    def test_valid_single_sharded_and_internal_aliases(self):
+        from qwen_server import validate_cpu_checkpoint
+        with tempfile.TemporaryDirectory(prefix='CPU checkpoint ') as temporary:
+            folder = Path(temporary)
+            (folder / 'config.json').write_text(json.dumps(CONFIG))
+            (folder / 'model.safetensors').write_bytes(b'fixture only')
+            self.assertEqual(validate_cpu_checkpoint(folder), CONFIG)
+            (folder / 'alias.safetensors').symlink_to('model.safetensors')
+            (folder / 'model.safetensors.index.json').write_text(json.dumps(
+                {'weight_map': {'a': 'model.safetensors', 'b': 'alias.safetensors'}}))
+            self.assertEqual(validate_cpu_checkpoint(folder), CONFIG)
+
+    def test_invalid_checkpoints_rejected_before_worker_loader_or_http(self):
+        import qwen_server
+        cases = ['empty-map', 'list-map', 'null-map', 'bad-value', 'empty-key',
+                 'wrong-extension', 'missing', 'empty', 'directory', 'external-shard',
+                 'external-config', 'external-index', 'broken-index', 'bad-config',
+                 'bad-index', 'parent-shard', 'absolute-shard']
+        for case in cases:
+            with self.subTest(case=case), tempfile.TemporaryDirectory(prefix='CPU invalid ') as temporary:
+                root = Path(temporary); folder = root / 'checkpoint'; folder.mkdir()
+                config = folder / 'config.json'; config.write_text(json.dumps(CONFIG))
+                shard = folder / 'model.safetensors'; shard.write_bytes(b'fixture only')
+                index = folder / 'model.safetensors.index.json'
+                weight_map = {'a': 'model.safetensors'}
+                if case == 'empty-map': weight_map = {}
+                elif case == 'list-map': weight_map = []
+                elif case == 'null-map': weight_map = None
+                elif case == 'bad-value': weight_map = {'a': 1}
+                elif case == 'empty-key': weight_map = {'': 'model.safetensors'}
+                elif case == 'wrong-extension': weight_map = {'a': 'weights.bin'}; (folder / 'weights.bin').write_bytes(b'bin')
+                elif case == 'parent-shard': weight_map = {'a': '../outside.safetensors'}
+                elif case == 'absolute-shard': weight_map = {'a': str(root / 'outside.safetensors')}
+                elif case in ('missing', 'empty', 'directory', 'external-shard'):
+                    shard.unlink()
+                    if case == 'empty': shard.touch()
+                    elif case == 'directory': shard.mkdir()
+                    elif case == 'external-shard':
+                        (root / 'outside.safetensors').write_bytes(b'external')
+                        shard.symlink_to(root / 'outside.safetensors')
+                elif case == 'bad-config': config.write_text('[]')
+                index.write_text(json.dumps({'weight_map': weight_map}))
+                if case == 'bad-index': index.write_text('{')
+                if case in ('external-config', 'external-index', 'broken-index'):
+                    target = config if case == 'external-config' else index
+                    outside = root / 'outside.json'
+                    if case != 'broken-index': outside.write_bytes(target.read_bytes())
+                    target.unlink(); target.symlink_to(outside)
+                with patch.object(qwen_server, 'load_backend') as load, patch.object(qwen_server, 'ThreadPoolExecutor') as executor, patch.object(qwen_server, 'ThreadingHTTPServer') as http, patch.object(sys, 'argv', ['qwen_server.py', '--backend', 'cpu', '--experimental-cpu', '--model', str(folder)]):
+                    with self.assertRaisesRegex(ValueError, 'Invalid CPU checkpoint'):
+                        qwen_server.main()
+                load.assert_not_called(); executor.assert_not_called(); http.assert_not_called()
+
+    def test_isolated_cli_rejects_manifest_without_optional_imports(self):
+        with tempfile.TemporaryDirectory(prefix='CPU isolated checkpoint ') as temporary:
+            root = Path(temporary)
+            for name in ('qwen_backends.py', 'qwen_server.py'):
+                shutil.copyfile(Path(__file__).with_name(name), root / name)
+            for name in ('torch', 'transformers', 'safetensors', 'mlx', 'mlx_lm'):
+                (root / (name + '.py')).write_text('raise AssertionError("optional import reached")')
+            folder = root / 'model'; folder.mkdir()
+            (folder / 'config.json').write_text(json.dumps(CONFIG))
+            (folder / 'model.safetensors.index.json').write_text('{"weight_map":{}}')
+            result = subprocess.run([sys.executable, '-B', '-S', str(root / 'qwen_server.py'), '--backend', 'cpu', '--experimental-cpu', '--model', str(folder)], capture_output=True, text=True, timeout=10)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn('Invalid CPU checkpoint', result.stderr)
+            self.assertNotIn('optional import reached', result.stderr)
+            self.assertNotIn('Loading ', result.stdout)
+
+
 class BackendTests(unittest.TestCase):
     def capabilities(self, system='Darwin', machine='arm64', missing=()):
         return backends.discover_capabilities(system, machine, lambda name: name not in missing)
