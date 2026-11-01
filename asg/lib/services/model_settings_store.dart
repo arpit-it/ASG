@@ -52,11 +52,20 @@ class ModelSettingsStore {
     }
   }
 
-  static String _encodePresets(List<ModelConnectionPreset> presets) =>
-      jsonEncode({
-        'version': 1,
-        'presets': presets.map((p) => p.toJson()).toList(),
-      });
+  static String _encodePresets(List<ModelConnectionPreset> presets) {
+    final value = jsonEncode({
+      'version': 1,
+      'presets': presets.map((p) => p.toJson()).toList(),
+    });
+    // JSON escaping can expand individually bounded fields beyond the reader's
+    // whole-record limit. Every storage adapter must preserve round trips.
+    if (value.length > 65536) {
+      throw const FormatException(
+        'Connection presets exceed the saved record limit.',
+      );
+    }
+    return value;
+  }
 
   Future<void> savePresets(
     List<ModelConnectionPreset> presets, {

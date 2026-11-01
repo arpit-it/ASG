@@ -67,6 +67,29 @@ void main() {
   );
 
   test(
+    'escaped bounded fields reject before writes and preserve the prior record',
+    () async {
+      final records = PresetRecords();
+      final store = ModelSettingsStore(records);
+      await store.savePresets([
+        const ModelConnectionPreset(name: 'Original', config: first),
+      ]);
+      final original = records.values[ModelSettingsStore.presetsKey];
+      final config = LocalModelConfig(
+        baseUrl: 'http://localhost/${'\u0001' * 490}',
+        model: '\u0001' * 256,
+      );
+      final oversized = List.generate(
+        20,
+        (i) => ModelConnectionPreset(name: 'Preset $i', config: config),
+      );
+      await expectLater(store.savePresets(oversized), throwsFormatException);
+      expect(records.values[ModelSettingsStore.presetsKey], original);
+      expect(store.loadPresets().single.name, 'Original');
+    },
+  );
+
+  test(
     'invalid schema/config/duplicates/count preserve corrupt records',
     () async {
       final good = ModelConnectionPreset(name: 'One', config: first).toJson();
@@ -212,4 +235,64 @@ void main() {
       expect(tester.takeException(), isNull);
     },
   );
+  for (final width in [280.0, 360.0]) {
+    testWidgets(
+      'preset workflow remains tappable at $width with enlarged text',
+      (tester) async {
+        tester.view.physicalSize = Size(width, 640);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+        final records = PresetRecords();
+        final store = ModelSettingsStore(records);
+        await store.save(first);
+        await tester.pumpWidget(
+          MaterialApp(
+            builder: (context, child) => MediaQuery(
+              data: MediaQuery.of(context)
+                  .copyWith(textScaler: TextScaler.linear(1.8)),
+              child: child!,
+            ),
+            home: Scaffold(body: ModelSettings(store: store)),
+          ),
+        );
+        final fields = tester
+            .widgetList<TextField>(find.byType(TextField))
+            .toList();
+        fields[1].controller!.text = 'draft';
+        fields[2].controller!.text = 'x' * 64;
+        Future<void> tapVisible(Finder finder) async {
+          await Scrollable.ensureVisible(
+            tester.element(finder),
+            alignment: 0.5,
+          );
+          await tester.pumpAndSettle();
+          expect(finder.hitTestable(), findsOneWidget);
+          await tester.tap(finder);
+          await tester.pumpAndSettle();
+        }
+
+        await tapVisible(
+          find.widgetWithText(OutlinedButton, 'Save new preset'),
+        );
+        expect(store.loadPresets().single.config.model, 'draft');
+        await tapVisible(find.byType(DropdownButton<String>));
+        await tester.tap(find.text('x' * 64).last);
+        await tester.pumpAndSettle();
+        fields[1].controller!.text = 'replacement';
+        records.fail = true;
+        final replace = find.widgetWithText(OutlinedButton, 'Replace selected');
+        await tapVisible(replace);
+        expect(store.loadPresets().single.config.model, 'draft');
+        expect(fields[1].controller!.text, 'replacement');
+        records.fail = false;
+        await tapVisible(replace);
+        expect(store.loadPresets().single.config.model, 'replacement');
+        await tapVisible(find.widgetWithText(TextButton, 'Remove selected'));
+        expect(store.loadPresets(), isEmpty);
+        expect(store.load().model, 'first');
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
 }

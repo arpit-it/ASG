@@ -7169,3 +7169,36 @@ Publication: [PR #397](https://github.com/arpit-it/ASG/pull/397), branch
 tree9e391c853442ec9ebe39e8c945b2c85d045efbb5. This delivery-link follow-up
 changes documentation only; all324 validated inputs remain unchanged.
 Independent exact-final review, actual required CI and protected merge pending.
+
+
+Independent review5729567592 at initialfinalf8782eb4 found an encoded-size
+round-trip defect in legacy/injected adapters: individually bounded escaped fields
+could exceed the65536-character reader limit after saving. Enforce the final JSON
+limit before any adapter write; baseline-failing reviewer probe and retained-record
+regression now pass. Initial requiredCI41336297845 Python job124936797551 failed
+on stale acceptance inventory source comparison; regenerate the existing artifact,
+retaining separate historical statuses and support limitations.
+
+Final corrected validation: formatter304 unchanged/analyzer clean; isolated exact
+Flutter1058 passed/nine explicit skips, actualChromeIndexedDB6 passed, release
+web/Wasm and macOSdebug builds passed; all324 validation inputs byte-identical.
+All seven Python suites137 tests passed/two explicit live/platform skips. No live
+inference, model support or fullF15/F22 completion claim. Awaiting fresh exact-final
+independent review, new requiredCI and protected reviewer merge after publication.
+Recorded 2026-11-01T18:26:03.095810+00:00
+
+
+Further independent review reproduced zero content viewport at280x640/1.8x
+text: fixed dialog title/actions consumed all content height. Use one scrollable
+title/content region; preserve fixed actions and add actual280/360px create,
+restore, failedreplacement/retry and remove regressions with hit-test assertions.
+The reviewer's original UI probe now passes;280px content viewport364px.
+
+Final local revision validation after both fixes: formatter304/analyzer clean;
+isolated exact-source Flutter1060 passed/nine explicit skips, ChromeIndexedDB6
+passed, releaseweb/Wasm and macOSdebug builds passed. All324validation inputs
+byte-identical. All137Python tests/two explicit skips passed; affected inventory9
+and productacceptance32 freshly rerun after final view change. Existing historical
+inventory regenerated without changing observations/support verdicts. Independent
+fresh exact-head review/newCI/protectedmerge remain pending; no fullF15/F22 or
+liveCPU/CUDA inference claim. Recorded 2026-11-01T18:28:47.036424+00:00
