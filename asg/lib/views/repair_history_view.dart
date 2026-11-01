@@ -59,6 +59,7 @@ class RepairHistoryView extends StatelessWidget {
             childrenPadding: const EdgeInsets.all(12),
             expandedCrossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              Text(attempt.modelRequestDescription),
               Text('Started ${attempt.startedAt.toUtc().toIso8601String()}'),
               Text(
                 usesCurrentApproval(attempt)

@@ -6,6 +6,8 @@ import 'dart:io';
 
 import 'package:asg/models/candidate_verification_run.dart';
 import 'package:asg/models/repair_attempt.dart';
+import 'package:asg/models/model_request_provenance.dart';
+import 'package:asg/services/model_settings_store.dart';
 import 'package:asg/models/source_generation.dart';
 import 'package:asg/services/repair_attempt_store.dart';
 import 'package:asg/services/studio_database.dart';
@@ -31,6 +33,94 @@ CandidateVerificationRun run(AtomicRecords records) => CandidateVerificationRun(
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  test(
+    'reserved, failed and cancelled requests retain original settings',
+    () async {
+      final records = AtomicRecords();
+      await seed(records);
+      final candidate = boundFailure(records);
+      await saveFailure(records, candidate);
+      final settings = ModelSettingsStore(records);
+      for (final cancelled in [false, true]) {
+        final id = cancelled ? 'cancel-model' : 'failed-model';
+        await settings.save(LocalModelConfig(model: id, chatOutputTokens: 512));
+        final provider = FakeProvider();
+        final service = serviceFor(records, provider);
+        final pending = service.propose(
+          project: project,
+          boardTaskId: 'Tanalyze',
+          config: settings.load(),
+          originals: originals,
+          repairCandidate: candidate,
+        );
+        final outcome = expectLater(pending, throwsA(anything));
+        await tick();
+        final reserved = RepairAttemptStore(
+          records,
+          project.id,
+        ).load().attempts.last;
+        expect(reserved.status, RepairAttemptStatus.reserved);
+        expect(reserved.modelRequest!.model, id);
+        expect(reserved.modelRequest!.outputTokens, 4096);
+        await settings.save(const LocalModelConfig(model: 'replacement'));
+        if (cancelled) await service.cancel();
+        provider.stream.addError(StateError('transport failed'));
+        await provider.stream.close();
+        await outcome;
+        final saved = RepairAttemptStore(
+          records,
+          project.id,
+        ).load().attempts.last;
+        expect(saved.modelRequest!.toJson(), reserved.modelRequest!.toJson());
+        expect(
+          saved.status,
+          cancelled
+              ? RepairAttemptStatus.cancelled
+              : RepairAttemptStatus.failed,
+        );
+      }
+    },
+  );
+
+  test(
+    'legacy stays unknown and malformed provenance blocks new writes',
+    () async {
+      final records = AtomicRecords();
+      await seed(records);
+      final store = RepairAttemptStore(records, project.id);
+      await store.reserve(run(records), () {});
+      final legacy =
+          jsonDecode(records.values[store.key]!) as Map<String, dynamic>;
+      expect(store.load().attempts.single.modelRequest, isNull);
+      expect(
+        store.load().attempts.single.modelRequestDescription,
+        contains('unavailable'),
+      );
+      for (final invalid in [
+        null,
+        {},
+        {'version': 1, 'model': 'x', 'outputTokens': 2048},
+        {
+          'version': 1,
+          'model': 'x',
+          'outputTokens': 4096,
+          'endpoint': 'private',
+        },
+      ]) {
+        final data = jsonDecode(jsonEncode(legacy)) as Map<String, dynamic>;
+        (data['attempts'] as List).single['modelRequest'] = invalid;
+        final corrupt = jsonEncode(data);
+        records.values[store.key] = corrupt;
+        expect(store.load, throwsFormatException);
+        await expectLater(
+          RepairAttemptStore(records, project.id).reserve(run(records), () {}),
+          throwsFormatException,
+        );
+        expect(records.values[store.key], corrupt);
+      }
+    },
+  );
+
   test('reserved interruptions and failures exhaust after three across service recreation', () async {
     final records = AtomicRecords();
     await seed(records);
@@ -172,7 +262,13 @@ void main() {
       expect(provider.prompt, isNotNull);
       provider.stream.add(response());
       await provider.stream.close();
-      await pending;
+      final completed = await pending;
+      final saved = RepairAttemptStore(
+        records,
+        project.id,
+      ).load().attempts.last;
+      expect(saved.modelRequest!.toJson(), completed.modelRequest!.toJson());
+      expect(saved.modelRequest!.outputTokens, 4096);
     }
     final provider = FakeProvider();
     await expectLater(
@@ -248,7 +344,14 @@ void main() {
     final fixtures = AtomicRecords();
     await seed(fixtures);
     final attempt = RepairAttemptStore(records, project.id);
-    await attempt.reserve(run(fixtures), () {});
+    await attempt.reserve(
+      run(fixtures),
+      () {},
+      modelRequest: const ModelRequestProvenance(
+        model: 'native-repair',
+        outputTokens: 4096,
+      ),
+    );
     await attempt.finish(RepairAttemptStatus.failed);
     await db.close();
     db = await databaseFactoryIo.openDatabase(path);
@@ -257,6 +360,12 @@ void main() {
       RepairAttemptStore(records, project.id).load().attempts.single.status,
       RepairAttemptStatus.failed,
     );
+    final reopened = RepairAttemptStore(
+      records,
+      project.id,
+    ).load().attempts.single;
+    expect(reopened.modelRequest!.model, 'native-repair');
+    expect(reopened.modelRequest!.outputTokens, 4096);
     await db.close();
     db = await databaseFactoryIo.openDatabase(path);
     // Direct disk corruption must not be replaced or block unrelated records.

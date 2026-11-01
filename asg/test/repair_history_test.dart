@@ -5,6 +5,7 @@ import 'dart:convert';
 
 import 'package:asg/controllers/source_review_controller.dart';
 import 'package:asg/models/repair_attempt.dart';
+import 'package:asg/models/model_request_provenance.dart';
 import 'package:asg/models/source_edit_proposal.dart';
 import 'package:asg/services/conversation_store.dart';
 import 'package:asg/services/plan_approval_store.dart';
@@ -32,7 +33,16 @@ void main() {
         RepairAttemptStatus.failed,
       ]) {
         final store = RepairAttemptStore(records, project.id);
-        await store.reserve(failure, () {});
+        await store.reserve(
+          failure,
+          () {},
+          modelRequest: status == RepairAttemptStatus.proposed
+              ? const ModelRequestProvenance(
+                  model: 'repair-request-model',
+                  outputTokens: 4096,
+                )
+              : null,
+        );
         if (status != RepairAttemptStatus.reserved) {
           await store.finish(
             status,
@@ -85,6 +95,14 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('Repair request 2 · analyze'));
       await tester.pumpAndSettle();
+      await show(find.textContaining('Requested model: repair-request-model'));
+      expect(find.textContaining('4096 output tokens'), findsOneWidget);
+      expect(
+        find.textContaining(
+          'Server-loaded weights and revision are unverified',
+        ),
+        findsOneWidget,
+      );
       await show(find.text('Original analyze exit 65'));
       await show(find.text('Undefined name at lib/main.dart:7'));
       await show(find.text('Line changes'));

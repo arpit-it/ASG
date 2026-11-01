@@ -140,7 +140,11 @@ class ApprovedSourceProposer {
 
     try {
       if (repairRun != null) {
-        await attempts!.reserve(repairRun, authorizeRequest);
+        await attempts!.reserve(
+          repairRun,
+          authorizeRequest,
+          modelRequest: modelRequest,
+        );
       }
       authorizeRequest();
       // Saved task/acceptance text is the instruction, not caller-supplied prose.

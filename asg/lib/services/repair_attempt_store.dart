@@ -5,6 +5,7 @@ import 'dart:convert';
 
 import '../models/candidate_verification_run.dart';
 import '../models/repair_attempt.dart';
+import '../models/model_request_provenance.dart';
 import '../models/source_edit_proposal.dart';
 import 'record_storage.dart';
 
@@ -27,8 +28,9 @@ class RepairAttemptStore {
 
   Future<void> reserve(
     CandidateVerificationRun failure,
-    void Function() authorize,
-  ) async {
+    void Function() authorize, {
+    ModelRequestProvenance? modelRequest,
+  }) async {
     if (_owned != null) throw StateError('Repair request already reserved.');
     final expected = records.getString(key);
     final journal = load();
@@ -46,6 +48,7 @@ class RepairAttemptStore {
       );
     }
     final attempt = RepairAttempt(
+      modelRequest: modelRequest,
       number: journal.attempts.length + 1,
       startedAt: DateTime.now().toUtc(),
       failure: failure,
@@ -72,6 +75,7 @@ class RepairAttemptStore {
       throw StateError('Saved repair request changed. Reopen history.');
     }
     attempts[owned.number - 1] = RepairAttempt(
+      modelRequest: owned.modelRequest,
       number: owned.number,
       startedAt: owned.startedAt,
       failure: owned.failure,
