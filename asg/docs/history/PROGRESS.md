@@ -6991,3 +6991,63 @@ pass fixed HTTP400 with zero backend calls, idle health and exact-length retry.
 No inference performed. Awaiting merge: exact-tree plugin publication, independent
 final-revision review, required CI and protected reviewer merge remain gates.
 Full F15/non-Apple CPU/CUDA remain pending. Recorded 2026-11-01T16:02:05.193698+00:00
+
+
+### CPU incomplete-body rejection verified merged — issue #356 / PR #392
+
+Independent approval5728963053/finalgate5728982512 approved exact
+`20586257643167c727bdc8c69a5476add3874a93` / tree
+`748278eaeb59c18a7f803e9357f0f4dea374b7ec` (local63affcf identical).
+No blockers; independent68 backend/actualHTTP tests(one live skip) passed;
+additional legacy one/ten-byte EOF rejection and fragmented exact-length UTF8
+success both transports passed. RequiredCI41324293296 success: actualFlutter
+124900873370 logs verified formatter301/analyzer,Ubuntu1045passes/12skips,
+Chrome15,web/Wasm and real independent generated-project resolve/analyze/test/
+render/build/serve. Python124900873498 seven suites passed with explicit skips.
+Parent Mac1051/nineskips,web/macOSdebug,Python131/twoskips are separate evidence;
+none establishes live inference.
+
+Reviewer protected-plugin squash merged [PR #392](https://github.com/arpit-it/ASG/pull/392)
+as `0f5362d70819c31da98719418cbfd51875ee9c5f` at2026-11-01T16:09:59Z;
+issue356closed/completed16:10:00Z. Parent independently plugin-verified PR/issue,
+requiredCI/currentmain; signed rawmerge reviewedtree/soleparent6d4dfefd checked.
+Guarded local-only synchronization passed: main/origin-main0/0,indexempty,
+both IDEfiles byte-identical. Manifest `/private/tmp/asg356-incomplete-ide.json`;
+guard `/private/tmp/asg392-safe-sync.py`; rawmerge `/private/tmp/asg392-reviewed-merge.json`.
+PR attached and both automation labels applied. Bounded EOF rejection increment
+Done; full F15 unchecked/Inprogress,CPUexperimental outside normal choices;
+non-AppleCPU/CUDA real inference pending. No model load/download/install/settings/
+data/stableapp/cadence/notification changes; no newissue/FID. Final merge evidence
+retained locally for the next reviewed increment.
+Recorded 2026-11-01T16:10:43.004886+00:00
+
+
+### CPU malformed-origin rejection — issue #356
+
+Reopened matching #356 on `356-cpu-origin-rejection` from plugin-verified
+PR #392 merge0f5362d7. No open PR/competing active run; searched existing issues.
+Actual loopback POST Origin `http://[` raises uncaught ValueError and disconnects
+without a response. Four baseline CPU cases (two malformed authorities × both
+transport settings) fail with RemoteDisconnected. Catch parser ValueError at
+the existing shared origin boundary: private HTTP403 POST/OPTIONS, unchanged
+GET health HTTP200 without CORS grants, no server traceback/backend calls, idle
+health and successful valid retry. Valid localhost/IPv4/IPv6 CORS remains covered.
+Scope F15 CPU implementation/F09 truthful failures; delivered HTTP/backend code
+is the prerequisite, so this Mac-verifiable boundary does not need unavailable
+non-Apple CPU/CUDA inference hosts. Full F15/live milestones remain pending; CPU
+stays experimental outside normal choices. No new issue/F ID, installs/downloads,
+settings/data/stable-app/cadence changes. Prior merge bookkeeping and IDE edits
+preserved. In progress pending checks, exact-tree publication, independent final
+review, required CI and protected reviewer merge.
+Recorded 2026-11-01T16:32:14.989291+00:00
+
+Final local validation:133 Python tests pass/two explicit live/platform skips;
+70 backend/actualHTTP tests pass/one live skip. Formatter301 unchanged, analyzer
+clean, isolated tracked Flutter1051 pass/nine opt-in skips; release web/Wasm and
+macOS debug builds pass. All322 relevant validation inputs byte-identical. Four
+malformed-origin baseline cases fail with RemoteDisconnected; corrected actual
+POST/OPTIONS/GET, no-traceback/no-backend/retry and valid-local CORS checks pass.
+Fresh host Darwin arm64/current Python Torch absent/retained8765health URLError;
+no inference performed. Awaiting merge: exact-tree plugin publication, independent
+final-revision review, required CI and protected reviewer merge remain gates.
+Full F15/non-AppleCPU/CUDA acceptance pending. Recorded 2026-11-01T16:33:45.876748+00:00

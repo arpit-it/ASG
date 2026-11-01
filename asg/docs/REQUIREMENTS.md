@@ -133,7 +133,8 @@ Unavailable hardware blocks only the corresponding real-host acceptance, not imp
   - Delivery: [PR #347](https://github.com/arpit-it/ASG/pull/347). Initial independent review found retry rollback overcount and inherited-pipe completion hang; both corrected with actual regressions. Native isolated UI observed below-button progress/speed, Pause at 5 MiB, Resume through 7.8 MiB and Stop retaining partial bytes. Final head d583ccbb/tree031725f4 approved in reviews5723106296/finalgate5723151483; requiredCI41208499529 passed. Protectedmerge07018365f0399d7047286baf01154fbd33a3890d at2026-10-31T14:12:20Z verified; issue346 closed. Full delivery evidence below.
   - Validation: deterministic local transfer/process fixtures, Python ownership/filter/telemetry regressions, Flutter protocol/controller/responsive UI tests, full format/analyze/test, web/macOS builds and independent exact-final review/required CI/protected merge. Mark Done only after verified merge; larger-model switch remains separately subject to actual inference.
 - [ ] F15 Hardware-aware inference backends — In progress (CPU implementation; non-Apple CPU/CUDA live validation pending); depends on F09
-  - CPU incomplete request body — Awaiting merge: reopened [issue #356](https://github.com/arpit-it/ASG/issues/356), `356-cpu-incomplete-body`; actual valid-JSON EOF before declared length starts inference on main6d4dfefd. Reject before parsing/backend work; actual socket/idle/retry acceptance and review gates in the ledger below. Full F15/live milestones remain pending.
+  - CPU malformed-origin rejection — Awaiting merge: reused [issue #356](https://github.com/arpit-it/ASG/issues/356), `356-cpu-origin-rejection`; actual parser-failure disconnect reproduced. Private rejection/no backend calls/idle/retry, preserved GET policy and valid local CORS are acceptance. Full F15/live milestones remain pending; see ledger below.
+  - CPU incomplete request body — Done through verified [PR #392](https://github.com/arpit-it/ASG/pull/392) merge0f5362d7 (2026-11-01T16:09:59Z), finalgate5728982512/requiredCI41324293296 passed: reopened [issue #356](https://github.com/arpit-it/ASG/issues/356), `356-cpu-incomplete-body`; actual valid-JSON EOF before declared length starts inference on main6d4dfefd. Reject before parsing/backend work; actual socket/idle/retry acceptance and review gates in the ledger below. Full F15/live milestones remain pending.
   - CPU body timeout — Done through verified [PR #391](https://github.com/arpit-it/ASG/pull/391) merge6d4dfefd (2026-11-01T15:40:43Z), finalgate5728862389/requiredCI41321869175 passed: reused [issue #356](https://github.com/arpit-it/ASG/issues/356), `356-cpu-body-timeout`; actual partial-body disconnect reproduced. Fixed private HTTP408, no inference, idle health and retry are acceptance. Full F15/non-Apple CPU/CUDA remain pending. See delivery ledger below.
   - CPU JSON recursion boundary — Done through verified [PR #390](https://github.com/arpit-it/ASG/pull/390) mergeae70a0f0 (2026-11-01T15:10:39Z), finalgate5728759106/requiredCI41319304534 passed: reused [issue #356](https://github.com/arpit-it/ASG/issues/356), `356-cpu-json-depth`; below-limit deeply nested JSON disconnects before inference. Fixed HTTP400, no model calls, idle health and retry are acceptance. Mac HTTP checks do not establish inference; full F15/non-AppleCPU/CUDA remain pending. See delivery ledger below.
   - Delivered bounded request-budget increment — Done: reused [issue #356](https://github.com/arpit-it/ASG/issues/356), `356-cpu-request-budget`, from verified PR #388 merge `6eaf65b33cb5184685965cd9b313772b9ed17b69`. Actual CPU loopback requests with infinite output budgets disconnected on uncaught OverflowError before inference. Bound request conversion to fixed HTTP400 for Infinity/-Infinity/NaN/overflowing exponents on both transports, before tokenizer/model calls; verify idle health and successful retry. Existing finite/clamped/default budgets retained. Mac-verifiable HTTP implementation uses delivered CPU backend; full F15 and non-Apple CPU/CUDA real-host inference remain pending, CPU outside normal choices. [PR #389](https://github.com/arpit-it/ASG/pull/389) exact693926b/tree06fdc31d independently approved5728690919/finalgate5728708251; requiredCI41318014083 passed; verified protectedmergeb1937ea9e293b233e3f9d7e96104f863c62e0ec8 at2026-11-01T14:55:24Z, issue356closed.
@@ -7787,3 +7788,63 @@ pass fixed HTTP400 with zero backend calls, idle health and exact-length retry.
 No inference performed. Awaiting merge: exact-tree plugin publication, independent
 final-revision review, required CI and protected reviewer merge remain gates.
 Full F15/non-Apple CPU/CUDA remain pending. Recorded 2026-11-01T16:02:05.193698+00:00
+
+
+### CPU incomplete-body rejection verified merged — issue #356 / PR #392
+
+Independent approval5728963053/finalgate5728982512 approved exact
+`20586257643167c727bdc8c69a5476add3874a93` / tree
+`748278eaeb59c18a7f803e9357f0f4dea374b7ec` (local63affcf identical).
+No blockers; independent68 backend/actualHTTP tests(one live skip) passed;
+additional legacy one/ten-byte EOF rejection and fragmented exact-length UTF8
+success both transports passed. RequiredCI41324293296 success: actualFlutter
+124900873370 logs verified formatter301/analyzer,Ubuntu1045passes/12skips,
+Chrome15,web/Wasm and real independent generated-project resolve/analyze/test/
+render/build/serve. Python124900873498 seven suites passed with explicit skips.
+Parent Mac1051/nineskips,web/macOSdebug,Python131/twoskips are separate evidence;
+none establishes live inference.
+
+Reviewer protected-plugin squash merged [PR #392](https://github.com/arpit-it/ASG/pull/392)
+as `0f5362d70819c31da98719418cbfd51875ee9c5f` at2026-11-01T16:09:59Z;
+issue356closed/completed16:10:00Z. Parent independently plugin-verified PR/issue,
+requiredCI/currentmain; signed rawmerge reviewedtree/soleparent6d4dfefd checked.
+Guarded local-only synchronization passed: main/origin-main0/0,indexempty,
+both IDEfiles byte-identical. Manifest `/private/tmp/asg356-incomplete-ide.json`;
+guard `/private/tmp/asg392-safe-sync.py`; rawmerge `/private/tmp/asg392-reviewed-merge.json`.
+PR attached and both automation labels applied. Bounded EOF rejection increment
+Done; full F15 unchecked/Inprogress,CPUexperimental outside normal choices;
+non-AppleCPU/CUDA real inference pending. No model load/download/install/settings/
+data/stableapp/cadence/notification changes; no newissue/FID. Final merge evidence
+retained locally for the next reviewed increment.
+Recorded 2026-11-01T16:10:43.004886+00:00
+
+
+### CPU malformed-origin rejection — issue #356
+
+Reopened matching #356 on `356-cpu-origin-rejection` from plugin-verified
+PR #392 merge0f5362d7. No open PR/competing active run; searched existing issues.
+Actual loopback POST Origin `http://[` raises uncaught ValueError and disconnects
+without a response. Four baseline CPU cases (two malformed authorities × both
+transport settings) fail with RemoteDisconnected. Catch parser ValueError at
+the existing shared origin boundary: private HTTP403 POST/OPTIONS, unchanged
+GET health HTTP200 without CORS grants, no server traceback/backend calls, idle
+health and successful valid retry. Valid localhost/IPv4/IPv6 CORS remains covered.
+Scope F15 CPU implementation/F09 truthful failures; delivered HTTP/backend code
+is the prerequisite, so this Mac-verifiable boundary does not need unavailable
+non-Apple CPU/CUDA inference hosts. Full F15/live milestones remain pending; CPU
+stays experimental outside normal choices. No new issue/F ID, installs/downloads,
+settings/data/stable-app/cadence changes. Prior merge bookkeeping and IDE edits
+preserved. In progress pending checks, exact-tree publication, independent final
+review, required CI and protected reviewer merge.
+Recorded 2026-11-01T16:32:14.989291+00:00
+
+Final local validation:133 Python tests pass/two explicit live/platform skips;
+70 backend/actualHTTP tests pass/one live skip. Formatter301 unchanged, analyzer
+clean, isolated tracked Flutter1051 pass/nine opt-in skips; release web/Wasm and
+macOS debug builds pass. All322 relevant validation inputs byte-identical. Four
+malformed-origin baseline cases fail with RemoteDisconnected; corrected actual
+POST/OPTIONS/GET, no-traceback/no-backend/retry and valid-local CORS checks pass.
+Fresh host Darwin arm64/current Python Torch absent/retained8765health URLError;
+no inference performed. Awaiting merge: exact-tree plugin publication, independent
+final-revision review, required CI and protected reviewer merge remain gates.
+Full F15/non-AppleCPU/CUDA acceptance pending. Recorded 2026-11-01T16:33:45.876748+00:00
