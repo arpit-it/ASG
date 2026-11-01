@@ -133,7 +133,8 @@ Unavailable hardware blocks only the corresponding real-host acceptance, not imp
   - Delivery: [PR #347](https://github.com/arpit-it/ASG/pull/347). Initial independent review found retry rollback overcount and inherited-pipe completion hang; both corrected with actual regressions. Native isolated UI observed below-button progress/speed, Pause at 5 MiB, Resume through 7.8 MiB and Stop retaining partial bytes. Final head d583ccbb/tree031725f4 approved in reviews5723106296/finalgate5723151483; requiredCI41208499529 passed. Protectedmerge07018365f0399d7047286baf01154fbd33a3890d at2026-10-31T14:12:20Z verified; issue346 closed. Full delivery evidence below.
   - Validation: deterministic local transfer/process fixtures, Python ownership/filter/telemetry regressions, Flutter protocol/controller/responsive UI tests, full format/analyze/test, web/macOS builds and independent exact-final review/required CI/protected merge. Mark Done only after verified merge; larger-model switch remains separately subject to actual inference.
 - [ ] F15 Hardware-aware inference backends — In progress (CPU implementation; non-Apple CPU/CUDA live validation pending); depends on F09
-  - CPU generation result contract — Awaiting merge: reopened [issue #356](https://github.com/arpit-it/ASG/issues/356), `356-cpu-generation-result`, from verified PR #397 mergea91b1593. A checkpoint structured-output default causes AttributeError after streamed text on the real backend with injected model APIs. Override the tensor-return contract; actual HTTP SSE/nonstream success, stop/length reasons, idle/repeat and shared MPS placement are acceptance. Delivered CPU foundation is sufficient for this Mac-verifiable correction; full F15/non-Apple CPU/CUDA live inference remain pending.
+  - CPU greedy streaming contract — Awaiting merge: reused [issue #356](https://github.com/arpit-it/ASG/issues/356), `356-cpu-greedy-streaming`; pin one beam/return sequence despite checkpoint defaults. CPU/MPS and actual HTTP regressions; full F15/live milestones remain pending. Review/CI/merge evidence follows in ledger.
+  - CPU generation result contract — Done through verified [PR #398](https://github.com/arpit-it/ASG/pull/398) merge472a97f0 (2026-11-01T18:57:12Z), finalreview5729746700/requiredCI41338642406 passed: reopened [issue #356](https://github.com/arpit-it/ASG/issues/356), `356-cpu-generation-result`, from verified PR #397 mergea91b1593. A checkpoint structured-output default causes AttributeError after streamed text on the real backend with injected model APIs. Override the tensor-return contract; actual HTTP SSE/nonstream success, stop/length reasons, idle/repeat and shared MPS placement are acceptance. Delivered CPU foundation is sufficient for this Mac-verifiable correction; full F15/non-Apple CPU/CUDA live inference remain pending.
   - CPU worker dispatch recovery — Done through verified [PR #395](https://github.com/arpit-it/ASG/pull/395) merge49101166 (2026-11-01T17:57:11Z), finalgate5729457465/requiredCI41333492514 passed: reused [issue #356](https://github.com/arpit-it/ASG/issues/356), `356-cpu-dispatch-recovery`. Private HTTP503, honest idle state, abandoned-queue exclusion and successful retry; actual HTTP acceptance and review gates in the ledger below. Full F15/live milestones remain pending.
   - CPU request framing — Done through verified [PR #394](https://github.com/arpit-it/ASG/pull/394) merge8dace531 (2026-11-01T16:58:44Z), finalreview5729238281/requiredCI41328455583 passed: reused/reopened [issue #356](https://github.com/arpit-it/ASG/issues/356), `356-cpu-request-framing`, from verified PR #393 mergeefdc4e91. Actual conflicting Content-Length and Content-Length/Transfer-Encoding requests return HTTP200 and invoke generation. Require private HTTP400 for duplicate length or any unsupported transfer encoding before body read/backend work; actual sockets, idle health and valid retry for both transports. Delivered CPU HTTP foundation is the prerequisite; no unavailable inference host is needed for this bounded correction. Full F15/live milestones remain pending.
   - CPU malformed-origin rejection — Done through verified [PR #393](https://github.com/arpit-it/ASG/pull/393) mergeefdc4e91 (2026-11-01T16:42:06Z), finalgate5729156526/requiredCI41327073121 passed: reused [issue #356](https://github.com/arpit-it/ASG/issues/356), `356-cpu-origin-rejection`; actual parser-failure disconnect reproduced. Private rejection/no backend calls/idle/retry, preserved GET policy and valid local CORS are acceptance. Full F15/live milestones remain pending; see ledger below.
@@ -334,7 +335,7 @@ Requirements changes: existing F10 acceptance guidance and F15 backend milestone
 
 ## Active task and delivery ledger
 
-Current: Issue #362 / PR #363 CPU checkpoint preflight Done after independent final review5726637938 at exactheade056a204527d67e0906a2407f9e84e17fdf3c3f4/tree597717b3571cd6d374d9a18f9511dd00dd784a04, requiredCI41277327955 and verified protectedmerged7bb6f0574a04c489653138a8b2ee2b4fcc4662a at2026-11-01T05:37:53Z. Issue #360 / PR #361 CPU dependency preflight Done after approval5726609031, requiredCI41276357161 and verified protectedmerge4cc1dd5050e06219f18dd81d203c669787de7099 at2026-11-01T05:23:39Z. Issue #358 / PR #359 CPU environment preparation Done after independent final review5726576421, requiredCI41275310134 and verified protectedmergea617c20f704208570905ea93ce4536718b14f1f4 at2026-11-01T05:07:50Z; #356 / PR #357 experimental Torch CPU foundation Done after independent final review5726526578, requiredCI41274416964 and verified protectedmerge0776de0a2d44e52d78bb49762381c9a37b2fadd5 at2026-11-01T04:52:00Z. FullF15 remains In progress; real-host CPU/CUDA acceptance pending. Continue implementable F15 setup/preparation/budgeting/host integration before repeating unchanged hardware blockers.
+Current: Issue #356 / `356-cpu-greedy-streaming` implements the bounded CPU/MPS single-completion generation contract. Previous PR #398 verified merged472a97f0; evidence retained below. Full F15 remains In progress and real-host CPU/CUDA acceptance pending. Independent final review, required CI and protected reviewer merge gate this increment.
 
 Historical pre-F17 selection: F10 In progress/unchecked. PR #248 verified merged as `c54c9b7b120d88531a0013705801d6babf0c7af9` at 2026-10-28T05:29:19Z after independent final review 5678169248 of `274bb3fd` and required CI 40637890903; tested tree `61f985bc`. Explicit opt-in named-test criterion contracts delivered. Full acceptance reconciliation, including whole-requirement supported verdicts, remains; no later task selected.
 
@@ -8161,3 +8162,69 @@ tree583203fc059659aebcd8727bf9992ac08e75c960; all six blobs plugin-verified.
 This delivery-link follow-up changes documentation only; all326validated inputs
 remain unchanged. Independent exact-final review, actual required CI and protected
 reviewer merge pending.
+
+
+### CPU generation result contract verified merged — issue #356 / PR #398
+
+Independent review5729746700 approved exact
+`f251f48a48d87db4cef8590900b92e301339bb1f`, tree
+`a3c013af33f7ab9135302405ebd61d9b0ed4f3b0` (tested local9c911cf identical).
+No blockers; reviewer independently passed76backend/actualHTTP tests(one explicit
+live fixture skip), reproduced baseline AttributeError versus final stop/length
+success, matched all326validation inputs and inspected parent actual check logs.
+
+Required CI41338642406 completed/success: Python124943786474 ran139tests/four
+explicit CI platform/live skips; Flutter124943786672 formatter304/analyzer clean,
+Ubuntu1054passes12skips, actualChrome16, web/Wasm and real independent generated
+project resolve/analyze/test/render/build/serve. Separate parent Mac validation
+1060Flutter/nine skips,139Python/two skips,web/macOSdebug passed. No fixture or
+build establishes non-Apple CPU/CUDA inference or full F15 completion.
+
+Reviewer protected-plugin squash merged [PR #398](https://github.com/arpit-it/ASG/pull/398)
+as `472a97f0dc698016209ba9376e184e775d5aed0f` at2026-11-01T18:57:12Z;
+issue356closed/completed18:57:13Z. Parent freshly plugin-verified PR/issue/current
+main and successful exact-headCI; signed merge tree/sole parenta91b1593 matched.
+Guarded local-only synchronization passed: main/origin-main0/0,indexempty, both
+IDE edits byte-identical. Evidence `/private/tmp/asg398-reviewed-merge.json`,
+`/private/tmp/asg398-safe-sync.py`, `/private/tmp/asg356-result-ide.json`.
+Both automation labels applied. Bounded result-contract correction Done; fullF15/
+F22unchecked/In progress,CPUexperimental outside normal choices; live non-Apple
+CPU/CUDA milestones pending. No model load/download/install/settings/data/stable
+app/cadence/notification changes. Final merge bookkeeping retained for the next
+normal reviewed development PR.
+Recorded 2026-11-01T18:57:54.269140+00:00
+
+
+### CPU greedy streaming contract — issue #356
+
+Reopened matching issue #356 on `356-cpu-greedy-streaming` from verified
+main472a97f0. No open PR or competing ASG run at selection. Shared Torch
+generation inherits checkpoint beam/return-sequence defaults despite its
+single-completion streamer. Official Transformers generation utilities reject
+beam search with a streamer. Injected model APIs reproduce four direct CPU/MPS
+stop/length failures; actual CPU HTTP baseline gives SSE error/no DONE and
+nonstream500. This is not live inference.
+
+Scope/acceptance: explicitly pin one beam and one return sequence per request;
+CPU/MPS stop/length and placement, actual SSE/nonstream completion, idle health
+and repeated requests. Delivered CPU foundation is sufficient for this bounded
+Mac-verifiable correction; no unavailable inference host is required. Preserve
+Auto/MLX/normal managed choices, experimental CPU status and all live milestones.
+No new issue/F ID, model download/install, stable-app/settings or cadence change.
+Status In progress pending checks, exact-tree plugin publication, independent
+final-revision review, required CI and protected reviewer merge.
+Recorded 2026-11-01T19:31:23.326694+00:00
+
+
+Local final validation: formatter304 unchanged/analyzer clean; isolated Flutter
+1060 passed/nine explicit live/platform skips, release web/Wasm and macOSdebug
+builds passed. All325 validation source/config inputs byte-identical. Seven Python
+suites141 tests passed/two explicit live/platform skips. Baseline direct CPU/MPS
+and actual HTTP regressions fail; corrected stop/length/SSE/nonstream/idle/repeat
+regressions pass. Host Darwinarm64/currentPythonTorch absent; retained8765health
+URLError, no actual inference. Logs `/private/tmp/asg356-greedy-python.log` and
+`/private/tmp/asg356-greedy-{flutter,web,macos}.log`.
+Status Awaiting merge: exact-tree plugin publication, independent final-revision
+review, required CI and protected reviewer merge remain pending. FullF15/F22
+remain unchecked/In progress. No model/download/install/settings/stableapp or
+schedule/notification changes. Recorded 2026-11-01T19:32:38.282897+00:00
