@@ -139,6 +139,61 @@ void main() {
     await open(t, fixture.CpuLaunchRuntimeHost());
     expect(t.widget<CheckboxListTile>(consent).value, false);
   });
+  testWidgets(
+    'disk ceiling rejects invalid values and forwards exact trimmed bytes',
+    (t) async {
+      final host = fixture.CpuLaunchRuntimeHost()..fail = true;
+      await open(t, host);
+      await inputs(t);
+      final limit = field('CPU launch maximum weight bytes on disk (optional)');
+      for (final invalid in [
+        '0',
+        '-1',
+        '1.5',
+        '1e3',
+        '0x10',
+        '9007199254740992',
+        'PRIVATE_INPUT',
+      ]) {
+        await reveal(t, limit);
+        await t.enterText(limit, invalid);
+        await t.pump();
+        await reveal(t, launch);
+        expect(t.widget<OutlinedButton>(launch).onPressed, isNull);
+        expect(
+          find.text(
+            'Enter whole bytes from 1 to 9007199254740991, or leave blank.',
+          ),
+          findsOneWidget,
+        );
+        expect(host.launches, 0);
+        expect(t.takeException(), isNull);
+      }
+      for (final valid in [' 1 ', ' 9007199254740991 ']) {
+        await reveal(t, limit);
+        await t.enterText(limit, valid);
+        await reveal(t, launch);
+        await t.tap(launch);
+        await t.pumpAndSettle();
+        expect(host.ceiling, int.parse(valid.trim()));
+        expect(t.widget<TextField>(limit).controller!.text, valid);
+      }
+      expect(host.launches, 2);
+      host.fail = false;
+      host.gate = Completer<void>();
+      await reveal(t, launch);
+      await t.tap(launch);
+      await t.pump();
+      expect(t.widget<TextField>(limit).enabled, false);
+      expect(host.ceiling, 9007199254740991);
+      host.gate!.complete();
+      await t.pumpAndSettle();
+      expect((await SharedPreferences.getInstance()).getKeys(), isEmpty);
+      await t.pumpWidget(const SizedBox());
+      await open(t, fixture.CpuLaunchRuntimeHost());
+      expect(t.widget<TextField>(limit).controller!.text, isEmpty);
+    },
+  );
   testWidgets('legacy and unsupported hosts have no CPU launch', (t) async {
     for (final host in [
       fixture.FakeRuntimeHost(),
@@ -158,9 +213,17 @@ void main() {
     final host = fixture.CpuLaunchRuntimeHost();
     await open(t, host, narrow: true);
     await inputs(t);
+    final limit = field('CPU launch maximum weight bytes on disk (optional)');
+    await reveal(t, limit);
+    await t.enterText(limit, '9007199254740992');
+    await t.pump();
+    expect(t.takeException(), isNull);
+    await t.enterText(limit, '12345');
+    await reveal(t, launch);
     await t.tap(launch);
     await t.pumpAndSettle();
     expect(host.launches, 1);
+    expect(host.ceiling, 12345);
     expect(t.takeException(), isNull);
   });
 }

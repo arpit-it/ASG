@@ -221,3 +221,14 @@ CPU/float32 placement and streams two generated tokens. This is library API
 coverage, not pretrained-model correctness, performance or F15 live acceptance.
 
 Experimental CPU loading requires a private watchdog armed acknowledgement within five seconds before submitting the loader. Failed helper startup refuses loading and reaps the helper; the acknowledgement is not continuous helper health supervision.
+
+
+In setup's separate **Experimental CPU launch** panel, an optional maximum weight
+bytes field forwards the same ceiling to the delivered CPU host/controller. Leave
+it blank for no disk-byte ceiling, or enter decimal whole bytes from 1 through
+9007199254740991. Invalid input prevents launch; a failure retains the value for
+retry. The value and loading consent last only for this setup session and are
+not saved. Two threads and the 180-second server load deadline remain fixed.
+The disk ceiling does not limit RAM or establish model fit or real inference.
+CPU stays outside normal supported backend choices; launch and separate health
+observation do not satisfy the pending non-Apple CPU/CUDA live acceptance.
