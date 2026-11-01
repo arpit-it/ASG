@@ -125,6 +125,8 @@ def create_handler(backend, executor, model_id, model_path):
                 self.respond(429, {'error': 'Model busy; cancel or wait for the current request'})
                 return
             cancelled = Event()
+            dispatched = Event()
+            abandoned = Event()
             events = queue.Queue(maxsize=64)
             deadline = time.monotonic() + 180
             phase['value'] = 'thinking'
@@ -140,6 +142,12 @@ def create_handler(backend, executor, model_id, model_path):
                             raise TimeoutError('Client is not reading')
                 raise GenerationCancelled()
             def generate():
+                # ThreadPoolExecutor can enqueue work before failing to start a
+                # thread. A later submit may run that abandoned work: it must
+                # neither infer nor release a lock now owned by another request.
+                dispatched.wait()
+                if abandoned.is_set():
+                    return
                 try:
                     metrics = backend.generate(messages, tokens, publish, cancelled, deadline)
                     publish('finish', metrics)
@@ -168,8 +176,16 @@ def create_handler(backend, executor, model_id, model_path):
             try:
                 executor.submit(generate)
             except Exception:
+                # No worker owns this request. Restore health before releasing
+                # the lock, and reject before sending any SSE success headers.
+                abandoned.set()
+                cancelled.set()
+                phase['value'] = 'idle'
                 lock.release()
-                raise
+                dispatched.set()
+                self.respond(503, {'error': 'Generation worker unavailable; retry the request or restart the local runtime'})
+                return
+            dispatched.set()
             try:
                 if streaming:
                     self.send_headers(200, 'text/event-stream; charset=utf-8')

@@ -7023,3 +7023,74 @@ Darwin arm64/current Python Torch absent/retained8765health URLError; no inferen
 performed. Awaiting merge: plugin exact-tree publication, independent exact-final
 review, required CI and protected reviewer merge remain gates. Full F15/non-Apple
 CPU/CUDA live acceptance remains pending. Recorded 2026-11-01T16:50:37.677002+00:00
+
+
+### CPU request framing verified merged — issue #356 / PR #394
+
+Independent approval5729206503/finalgate5729238281 approved exact
+`e821f916115ccf1f7d724402a76d4dcb6fe26a08` / tree
+`d03a8db0edf7ffb2016b51e17a684418d0f1f1a8` (localbd1c6679 identical).
+No blockers; independent72backend/actualHTTP tests(one live skip) and12 extra
+legacy mixed-case/transfer-only/comma/missing/zero framing rejection plus
+fragmented UTF8 successful-retry pairs pass both transports. RequiredCI
+41328455583success: actualFlutter124913261720 logs verified formatter301/analyzer,
+Ubuntu1045passes12skips,actualChrome15,web/Wasm and real independent generated-
+project resolve/analyze/test/render/build/serve. Python124913261896 seven suites
+pass with explicit live/platform skips. Parent Mac1051/nineskips,web/macOSdebug
+and Python135/twoskips are separate evidence; none establishes live inference.
+
+Reviewer protected-plugin squash merged [PR #394](https://github.com/arpit-it/ASG/pull/394)
+as `8dace5316256bb7529b745e5db10a82f0091fc77` at2026-11-01T16:58:44Z;
+issue356closed/completed16:58:45Z. Parent freshly plugin-verified PR/issue/requiredCI
+and currentmain. Signed rawmerge reviewedtree/soleparentefdc4e91 verified; guarded
+local-only synchronization passed main/origin-main0/0,indexempty,both IDEfiles
+byte-identical. Manifest `/private/tmp/asg356-framing-ide.json`; guard
+`/private/tmp/asg394-safe-sync.py`; rawmerge `/private/tmp/asg394-reviewed-merge.json`.
+PR attached and both automation labels applied. Bounded framing increment Done;
+fullF15 unchecked/Inprogress,CPUexperimental outside normal choices; non-AppleCPU/
+CUDA real inference pending. No model load/download/install/settings/data/stableapp/
+cadence/notification changes or newissue/FID. Final merge bookkeeping retained for
+the next normal reviewed development increment.
+Recorded 2026-11-01T16:59:29.511339+00:00
+
+
+### CPU worker dispatch recovery — issue #356
+
+Reopened matching [issue #356](https://github.com/arpit-it/ASG/issues/356) on
+`356-cpu-dispatch-recovery`, from plugin-verified PR #394 merge8dace531.
+No open PR or competing active ASG run at selection. Four baseline actual HTTP
+cases failed with RemoteDisconnected when worker submission raised RuntimeError
+or MemoryError. Health remained thinking. Return fixed private HTTP503 JSON before
+SSE headers, restore idle and release request ownership; prevent abandoned queued
+work from inferring or releasing a later request's lock. ThreadPoolExecutor can
+enqueue before thread startup fails, so a dispatch acknowledgement and abandonment
+flag gate worker entry. Accepted cancelled work retains normal worker cleanup.
+
+Acceptance: both transports, no traceback/private exception disclosure, no
+backend/tokenizer calls on rejection, idle health and successful retry. Cover real
+executor queue-before-thread-start failure as well as rejection before/after enqueue;
+preserve legacy HTTP behavior. Delivered F15 CPU/F09 HTTP foundation is the actual
+dependency; Mac socket/process fixtures validate this boundary without unavailable
+non-Apple CPU/CUDA live inference. Full F15 remains In progress, CPU experimental
+outside normal choices; live milestones remain pending. No model download/install,
+settings/data/stable-app/cadence/notification changes. Prior PR394 merge evidence
+and unrelated IDE edits retained. Awaiting final checks, exact-tree publication,
+independent final-revision review, required CI and protected reviewer merge.
+Recorded 2026-11-01T17:47:18.257161+00:00
+
+Final local validation:137 Python tests pass/two explicit live/platform skips;
+formatter301 unchanged, analyzer clean, isolated Flutter1051 pass/nine opt-in skips,
+release web/Wasm and macOS debug builds pass. All321 source/test/tool/pubspec
+validation inputs byte-identical to isolated checkout. Four baseline dispatch cases
+failed with RemoteDisconnected; fixed actual HTTP rejection/retry, enqueue-then-raise
+and real executor thread-start failure tests pass. Fresh host Darwin arm64/current
+Python Torch absent; retained8765health URLError. No actual inference performed.
+Awaiting merge: exact-tree plugin publication, independent final-revision review,
+required CI and protected reviewer merge remain gates. Full F15/live milestones
+remain pending. Recorded 2026-11-01T17:48:38.605793+00:00
+
+Publication: [PR #395](https://github.com/arpit-it/ASG/pull/395), branch
+`356-cpu-dispatch-recovery`, initial published3970ff54 and local e62ab734 share
+validated tree0d8ba3e574d74da124fb6ff1b34828a2e803c0d9. This follow-up changes
+only delivery links; all321 tested source/config inputs remain unchanged.
+Independent final-revision review, required CI and merge remain pending.
