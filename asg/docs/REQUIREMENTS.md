@@ -151,7 +151,8 @@ Unavailable hardware blocks only the corresponding real-host acceptance, not imp
   - Delivered CPU checkpoint preflight (PR #363, verified merged7bb6f05; review5726637938/CI41277327955 passed): [issue #362](https://github.com/arpit-it/ASG/issues/362), `362-cpu-checkpoint`; validate contained config/index and nonempty safetensors shard manifests before worker/loader creation. Structural validation only; CPU remains experimental and real-host acceptance pending.
   - Delivered bounded metadata correction — Done: reopened [issue #362](https://github.com/arpit-it/ASG/issues/362), `362-cpu-metadata-bounds`, [PR #364](https://github.com/arpit-it/ASG/pull/364): config1MiB/index8MiB actual read limits and no duplicate CPU index read. Finalreview5726671793/requiredCI41278251584 passed; verified protectedmerge03139bcf at2026-11-01T05:53:49Z. CPU remains experimental; fullF15/live milestones remain pending.
   - Delivered bounded CPU resource increment — Done: [issue #365](https://github.com/arpit-it/ASG/issues/365), `365-cpu-weight-budget`, [PR #366](https://github.com/arpit-it/ASG/pull/366); optional startup disk-byte ceiling, canonical alias deduplication and pre-loader rejection. Finalreview5726709978/requiredCI41279204915 passed; verified protectedmerge da49382a at2026-11-01T06:07:25Z. No RAM quota, inference or full F15 completion claim; exact delivery ledger below.
-  - Active CPU offline inspection increment: [issue #367](https://github.com/arpit-it/ASG/issues/367), `367-cpu-inspection`. Startup-only checkpoint checks lacked a no-load report. Explicit opt-in inspection reuses bounded structural/format checks and returns private versioned disk-byte/file-count JSON before dependencies/workers/HTTP; no tensor/tokenizer/RAM/inference readiness claim. Acceptance: single/sharded/alias counts, ceiling and incompatible/invalid options, real isolated CLI/no optional imports/no startup, unchanged legacy behavior. Mac-verifiable preparation depends on delivered #358/#362/#365, not unavailable non-Apple CPU/CUDA hosts. Awaiting merge after local checks; independent final review, required CI and verified merge pending; full F15 unchecked.
+  - Delivered CPU offline inspection increment — Done: [issue #367](https://github.com/arpit-it/ASG/issues/367), `367-cpu-inspection`. Startup-only checkpoint checks lacked a no-load report. Explicit opt-in inspection reuses bounded structural/format checks and returns private versioned disk-byte/file-count JSON before dependencies/workers/HTTP; no tensor/tokenizer/RAM/inference readiness claim. Acceptance: single/sharded/alias counts, ceiling and incompatible/invalid options, real isolated CLI/no optional imports/no startup, unchanged legacy behavior. Mac-verifiable preparation depends on delivered #358/#362/#365, not unavailable non-Apple CPU/CUDA hosts. Delivered through [PR #368](https://github.com/arpit-it/ASG/pull/368), finalreview5726766017/requiredCI41280292607 passed; verified protectedmerge7f51cd4c at2026-11-01T06:24:52Z. Full F15 unchecked; exact evidence below.
+  - CPU load deadline increment — Awaiting merge: [issue #369](https://github.com/arpit-it/ASG/issues/369), `369-cpu-load-deadline`. Main7f51cd4c waits on the CPU loader indefinitely; documented generation limits exclude loading. Add a bounded configurable CPU-only load deadline, ending the dedicated runtime process on expiry, with private diagnostics and no fallback. Accept when real controlled subprocess hangs terminate (including full stderr), success/failure disarms before subsequent activity, invalid options fail before side effects and legacy paths remain unchanged. Depends on delivered CPU CLI foundation; Mac process tests are sufficient for this bounded enforcement, not non-Apple CPU/CUDA inference. Full F15 remains In progress.
   - Scope: separate Python backend loading/generation/device discovery behind a common contract; retain MLX, add Torch CPU first, then CUDA as separately verified increments. Keep model-format compatibility explicit: an MLX-quantized folder must not be assumed compatible with Torch. Keep existing configured HTTP runtime connections usable.
   - Application acceptance: setup displays detected host, available backend/device, selected model compatibility, readiness and actionable dependency/memory failures. Persist the explicit backend/device choice with backward-compatible defaults. Offer fallback with user consent; do not silently download weights, install packages or move an active request to another backend. Health must report the actual backend/device and unknown capabilities honestly.
   - Engineering acceptance: preserve streaming, deadlines, cancellation scope, offline local-weight loading, owned-process cleanup and diagnostic privacy across implementations. Configuration and launch arguments must avoid machine-specific paths. Unsupported hosts/models fail before launch and preserve saved settings and last working output.
@@ -6379,3 +6380,56 @@ Status: Awaiting merge. Tested tree will be published through the GitHub plugin;
 independent final-revision review and actual required CI gate protected merge.
 Final PR/review/merge identities belong in the PR and next ledger reconciliation.
 Recorded 2026-11-01T06:17:32.083963+00:00
+
+
+### CPU offline checkpoint inspection verified merged — issue #367 / PR #368
+
+Independent review [5726766017](https://github.com/arpit-it/ASG/pull/368#pullrequestreview-5726766017) approved exact `7a35406cf690bff0799d45ca8138c2377b668290` / tree `1bdd52f64580c4e0c59e62d87d6c2d0a0829ac33`, all seven files and acceptance; no blockers. Independent52 total backend/HTTP tests:51 passes/one opt-in skip, plus50 base/new backend-selection parity cases and guarded no-tensor/no-optional-import inspection. Actual requiredCI41280292607 succeeded: Python124770669281 and Flutter124770669487; reviewer inspected full logs including977Linux passes/12skips,15Chrome passes,formatter287/analyzer,web/Wasm and real independent generated-project resolve/analyze/rendered interaction/test/build/serve. Parent115macOSPython total/two skips and983Flutter passes/nine skips/web/macOSdebug evidence remain separately scoped; none establishes live inference.
+
+Reviewer protected-plugin squashmerged [PR #368](https://github.com/arpit-it/ASG/pull/368) as `7f51cd4ce36fc8c54f9c7a94394daeae25fd29ad` at2026-11-01T06:24:52Z; issue367closed/completed06:24:53Z. Parent independently verified exacthead, mergedstate, issueclosure, currentmain and signed verified rawmerge with exactreviewedtree/soleparentda49382a. Guarded local-only object import/sync passed; main/origin-main0/0,indexempty,both unrelated IDEfiles byte-identical. Backup `/private/tmp/asg367-primary-before-sync`; guard `/private/tmp/asg368-safe-sync.py`. All GitHub access/publication/review/merge used connectedplugin; bothautomationlabels applied. Existing docs edits carried into reviewedtree.
+
+Bounded issue367 Done; fullF15 remains unchecked/Inprogress. Experimental CPU managed setup/portable-host integration and non-Apple CPU/CUDA live acceptance remain outstanding. No models/packages/downloads/inference/settings/stableapp/data replacement. No secondissue/task started; finalmerge bookkeeping retained locally for next normal reviewed increment. Fifteen-minute cadence/notification preference unchanged.
+Recorded 2026-11-01T06:25:38.341855+00:00
+Current run time 2026-11-01T06:25:38.341855+00:00
+
+
+### Experimental CPU load deadline — issue #369
+
+Selected existing F15 engineering acceptance after plugin verified PR368 merge
+7f51cd4c and no open issue/PR or competing active ASG owner. No new F ID.
+Branch `369-cpu-load-deadline`, isolated `/private/tmp/asg-cpu-load-deadline`;
+primary five IDE/docs edits backed up and retained; prior merge bookkeeping
+carried forward. Baseline loader Future.result() is unbounded before HTTP
+readiness. Add a CPU-only finite startup load deadline (default180s/max3600s),
+hard runtime-process termination rather than leaving an uncancellable native
+worker alive. Independent isolated Python watchdog covers even a GIL-holding native loader.
+Disarm/reap on success/failure; private best-effort diagnostic cannot
+block on full stderr. No normal CPU app choice, fallback, RAM quota or live
+inference claim. Mac subprocess tests can validate this delivered foundation;
+non-Apple CPU and separate CUDA live milestones remain pending.
+Acceptance: real controlled CLI hang/full-pipe termination, no readiness after
+timeout, serving/failure handling beyond deadline after disarm, invalid/
+nonfinite/conflicting options before side effects, unchanged Auto/MLX/MPS.
+Status: In progress; final tests/publication/independent review/CI/merge pending.
+Recorded 2026-11-01T06:46:11.407356+00:00
+
+
+Final local validation:121 Python cases/two opt-in skips passed, including
+48 backend passes/one skip and9 actual HTTP tests. Six new regressions cover
+real dedicated-process hangs, a ctypes native GIL-holding sleep, a full unread
+stderr pipe, success/failure disarm and helper reaping, CPU default/upper bound
+and unchanged legacy selection, nonfinite/out-of-range/conflicting options.
+The initial Python-thread approach could not cover GIL-held loading; replaced
+with an independent isolated interpreter. Its full-pipe shutdown regression
+exposed interpreter-finalization blockage; explicit watchdog exit fixed it and
+the final full suite passed. Outer sandbox loopback/nested Seatbelt failures
+passed on authorized rerun. Formatter287 unchanged, analyzer clean,983 Flutter
+tests/nine skips, web/Wasm dry-run and macOS debug builds passed; final asset
+builds also passed after the final watchdog revision. Existing runtime read-only
+health ready/idle/MLX/Metal/Qwen3.8-27B-4bit; no inference run. No model/package
+installation/download, settings/data/stable-app replacement. CPU remains
+experimental; non-Apple CPU/CUDA acceptance and full F15 remain pending.
+Status: Awaiting merge. Independent final-revision review, actual required CI
+and verified protected merge still required; final PR/review/merge identities
+will be recorded in the PR and reconciled into this ledger next increment.
+Recorded 2026-11-01T06:49:45.195858+00:00

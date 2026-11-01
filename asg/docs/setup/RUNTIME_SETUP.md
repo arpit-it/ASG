@@ -180,7 +180,18 @@ The inherited HTTP limits apply: one request, 4096 input/output-token ceilings,
 cancellation. Checks run around preprocessing, each streamed fragment and token
 stopping criteria. A native prefill/kernel cannot be interrupted mid-call;
 terminating the separately owned test process is the hard-stop boundary. These
-limits do not impose a model-loading deadline or memory quota. `/health` reports
+limits do not impose a memory quota. Experimental CPU loading has a separate
+180-second process deadline (issue #369), configurable with
+`--cpu-load-timeout-seconds` to a finite value greater than zero and at most
+3600. It covers the loader call only, after structural/dependency preflight,
+and is disarmed on success or failure before HTTP serving. Expiration ends
+this dedicated runtime process with a platform kill signal (SIGKILL on POSIX)
+and a fixed private diagnostic from an independent isolated Python watchdog.
+(best effort if stderr is unavailable/full); it cannot safely cancel a native
+loader thread in place. No fallback starts. This is not an allocation quota,
+a bound on third-party descendants or real CPU inference evidence. The option
+requires experimental CPU startup and is rejected for no-load inspection and
+capability queries. Auto/MLX/MPS loading is unchanged. `/health` reports
 `backend: torch`, `device: cpu` after a successful load, without certifying CPU
 performance or acceptance. Existing app readers intentionally treat that device
 as unknown until managed CPU integration is delivered.
