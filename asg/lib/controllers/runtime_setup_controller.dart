@@ -60,6 +60,11 @@ class RuntimeSetupController extends BaseController {
   RuntimeHealth get health => _health;
   bool _busy = false, _stopRequested = false, _settingsLoadFailed = false;
   Object? _healthCheck;
+  bool _cpuLaunching = false;
+  bool get cpuLaunching => _cpuLaunching;
+  bool get canLaunchCpuRuntime =>
+      host.supported && host is CpuRuntimeLaunchHost;
+
   bool get busy => _busy || host.working;
   String? _error;
   String? get error => _error;
@@ -440,6 +445,7 @@ class RuntimeSetupController extends BaseController {
     }
     _stopRequested = false;
     invalidateCapabilities();
+    _cpuLaunching = true;
     _status = 'Starting experimental CPU process…';
     update();
     try {
@@ -461,6 +467,8 @@ class RuntimeSetupController extends BaseController {
         'Could not launch experimental CPU. Check Python, installed dependencies, '
         'checkpoint, limits and port, then retry. Stop an owned process before retrying.',
       );
+    } finally {
+      _cpuLaunching = false;
     }
     // Stop may precede asynchronous acquisition of the process. Disposal also
     // cleans a late process, without publishing completion to a closed view.

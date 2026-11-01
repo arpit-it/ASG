@@ -6452,3 +6452,69 @@ Inventory was regenerated after formatting to bind current source. Retained runt
 health observed MLX/Metal/Qwen3.8-27B-4bit; no CPU inference or weights loaded.
 Status Awaiting merge: exact-tree publication, independent final review, required CI
 and verified protected merge remain gates. No install/download/stable-app replacement.
+
+
+### CPU dependency-check view verified merged — issue #358 / PR #383
+
+Independent final review [5728140205](https://github.com/arpit-it/ASG/pull/383#pullrequestreview-5728140205)
+approved exact `a7e6e9a1e4444b495bf09d08dc44e9e92c41456a` /
+tree `de82b14a0e9b7c4608ab6b4a495e855eb03cc3df` (local3a04bb7 identical).
+No blockers; independent95 focused tests and two extra unsupported-optional-host/
+saved-Python-no-consent probes passed. Finalgate5728162577 confirmed required
+CI41308233057 success: Flutter124852967608 formatter299/analyzer,Ubuntu1037passes/
+12skips,actualChrome15,web/Wasm and independent generated-project resolve/analyze/
+test/build/serve; Python124852967441 all seven suites passed with explicit skips.
+Parent isolatedMac1043passes/nineskips,95focused,web/macOSdebug and Pythoninventory9/
+product32 remain separate evidence. No fixture/build/health observation establishes
+CPU inference.
+
+Reviewer normally protected-merged [PR #383](https://github.com/arpit-it/ASG/pull/383)
+as `2f65060a4183e131dc942665382727192114c8eb` at2026-11-01T12:54:58Z;
+issue358closed/completed12:54:59Z. Shared-owner COMMENT records independent approval
+without bypass. Parent freshly verified PR/issue/currentCI and signed rawmerge with
+reviewedtree/soleparent42e5e051. Guarded local-only sync passed: main/origin-main0/0,
+indexempty,both IDEfiles byte-identical. Backup `/private/tmp/asg358-view-before-sync`;
+guard `/private/tmp/asg383-safe-sync.py`. Plugin-only publication/review/merge; both
+automation labels applied. Bounded dependency-check view Done; fullF15 unchecked/
+Inprogress,CPUexperimental/outside normal supported choices; non-AppleCPU/CUDA live
+acceptance remains pending. No install/download/model-load/stableapp/settings/runtime
+replacement or cadence/notification change. No newissue/FID. Final merge bookkeeping
+retained locally for the next normal reviewed development increment.
+Recorded 2026-11-01T12:55:45.987335+00:00
+
+
+### Experimental CPU launch view — issue #356
+
+Reopened existing issue #356, branch `356-cpu-launch-view` from plugin-verified
+main `2f65060a4183e131dc942665382727192114c8eb`. No competing active ASG chat
+or open PR/issue at selection. Preserve prior PR #383 merge reconciliation and IDE
+edits. Delivered optional CPU host/controller are actual technical prerequisites;
+this bounded F15 continuation is Mac-verifiable under the owner exception. Full F15
+and non-Apple CPU/CUDA real inference remain pending, CPU outside supported choices.
+
+Acceptance: collapsed optional-host-only launch panel; explicit session consent to
+weight loading/RAM use, independent checkpoint/model ID and shared Python input.
+Visible fixed limits two threads/180-second server load deadline/no disk-byte ceiling,
+no RAM quota claim. Busy/ready/owned-runtime exclusion, private failure/retry, Stop
+during pending acquisition and disposal cleanup. No saved setup/connection changes,
+automatic connection, install/download or normal CPU choice. Separate health check
+required; launch does not establish readiness/inference. Five new widget regressions
+cover forwarding/defaults, consent, busy/private retry, Stop/late ownership cleanup,
+fresh-session reset, unsupported hosts and 320px enlarged text. Keep view state alive
+while scrolling. Initial helper scroll direction and fake Stop-count assumptions
+corrected; interim PageStorage experiment removed after TextField key collision.
+Five widget tests pass. Full isolated-source validation pending at this entry;
+independent final-head review, required CI and protected reviewer merge remain gates.
+Read-only retained loopback health returned connection failure; no inference claim,
+launch, weight loading or stable-app/settings/runtime replacement performed.
+No new issue/F ID, cadence or notification changes.
+Recorded 2026-11-01T13:17:41.878552+00:00
+
+Final local validation: formatter301 unchanged, analyzer clean; isolated tracked-source
+full Flutter suite1048 passed/nine opt-in skips; five new widget tests passed. Web
+release/Wasm dry-run and macOS debug builds passed. Python backend/product/inventory
+95 passed with one explicit live-inference skip. 356 source/test/build inputs
+byte-identical between isolated validation and checkout. No actual CPU inference
+claimed. Status Awaiting merge; exact-tree publication, independent final revision
+review and required CI/protected reviewer merge remain gates.
+Recorded 2026-11-01T13:18:22.802573+00:00
