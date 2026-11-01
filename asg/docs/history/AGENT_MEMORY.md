@@ -5343,3 +5343,27 @@ Validation:28 Python backend tests passed/one opt-in inference API skip;9actual 
 Status: Awaiting merge. Remote publication, independent exact-revision review, requiredCI and protected merge must be verified before completion.
 
 Recorded 2026-11-01T05:01:12.657708+00:00
+
+
+### CPU preparation verified merged — issue #358 / PR #359
+
+Independent review5726576421 approved exact head `d4bacf753880a1c2d0e7ee12070b7a732dfb0a12` / tree `5f977de9b848f97dd68b27394033672f4f9d21b5` with no blocking findings; independently reran37backend/HTTP tests with one opt-in skip and existing-library CPU API preparation without weights. RequiredCI41275310134 Flutter124756189475/Python124756189919 passed; reviewer inspected actual logs including977Linux/12skips,15Chrome,web/Wasm and real independent generated-project resolve/analyze/rendered interaction/test/build/serve plus all Python fixtures. Local983macOS/nineskips,formatter287/analyzer/web/macOSdebug and other Python evidence remain separately scoped. No skipped test verifies inference.
+
+Reviewer protected-plugin squashmerged [PR #359](https://github.com/arpit-it/ASG/pull/359) as `a617c20f704208570905ea93ce4536718b14f1f4` at2026-11-01T05:07:50Z. Parent independently verified exactPRhead/mergedstate, issue358closed/completed05:07:51Z, remote main, signed rawmerge exact reviewedtree/soleparent0776de0. Guarded local-only object import and sync succeeded after sandbox metadata denial/authorized retry; primarymain/origin-main0/0,indexempty. Backup `/private/tmp/asg358-primary-before-sync`; guard `/private/tmp/asg359-safe-sync.py`. All five original edits preserved/carried into reviewed docs, both IDEfiles byte-identical. All GitHub access/publication/review/merge used connectedplugin; both automationlabels applied,PRattached.
+
+Bounded CPU preparation is Done; fullF15 stays unchecked/Inprogress. Managed experimental setup/checkpoint budgeting/portable-host integration remain implementable; non-Apple pretrainedCPU and separateCUDA real-host acceptance remain pending. Normal supported app choices/Auto/MLX behavior unchanged. Existingruntime freshread-onlyhealth ready/idle/MLXMetal, no inference/model/download/install/settings/stableapp/data replacement. No secondissue/task started. Mergebookkeeping retained locally for the next normal reviewed increment. Cadence/notification preference unchanged.
+
+Recorded 2026-11-01T05:08:29.748649+00:00
+
+
+### Experimental CPU dependency preflight — issue #360
+
+Selected F15 correction from verified a617c20f after plugin confirmed no open issue/PR or competing owner. Branch `360-cpu-dependencies`, isolated `/private/tmp/asg-cpu-dependencies`; primary five IDE/docs edits retained, prior #358/#359 verified merge evidence carried forward. CPU discovery omitted safetensors even though preparation and the safe CPU loader require it. Add it only to explicit CPU discovery; default schema/Auto/MLX/MPS stay unchanged. Acceptance: name each absent CPU dependency, report unavailable/unknown device state, reject startup before executor/model/HTTP creation, actual isolated CLI without optional imports. All-present CPU remains unverified. No download/install/inference or normal app enablement; full F15/non-Apple CPU/CUDA acceptance remains pending.
+
+Status at implementation: In progress; final checks, publication, independent review and protected merge pending.
+
+Validation: 103 Python cases passed/two explicit skips, including 30 backend passes/one opt-in skip and nine actual HTTP fixtures. Initial enclosing sandbox denied HTTP binds and nested Seatbelt; authorized rerun passed. Formatter287 unchanged, analyzer clean,983 macOS Flutter tests/nine opt-in skips, release web/Wasm dry-run and macOS debug build passed. No source changes after these checks beyond restoring a pre-existing unused test import; focused backend rerun passed. Historical acceptance inventory regenerated without differences. No current inference claim or runtime/model/settings/stable-app mutation.
+
+Status: Awaiting merge; tested related contents will be published through connected GitHub plugin. Independent exact-final review, required CI and verified protected merge remain mandatory; full F15 unchecked/In progress.
+
+Recorded 2026-11-01T05:16:17.300287+00:00
