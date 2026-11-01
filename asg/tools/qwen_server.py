@@ -187,12 +187,14 @@ def create_handler(backend, executor, model_id, model_path):
     return Handler
 
 
-def validate_cpu_checkpoint(folder):
+def validate_cpu_checkpoint(folder, max_weight_bytes=None):
     """Check local checkpoint structure without reading tensor contents.
 
     This is preflight only: the trusted loader still validates actual tensors.
     Files may change after inspection; this is not a filesystem sandbox.
     """
+    if max_weight_bytes is not None and (type(max_weight_bytes) is not int or max_weight_bytes <= 0):
+        raise ValueError('CPU weight byte ceiling must be a positive integer')
     folder = folder.resolve(strict=True)
 
     def local_file(name):
@@ -229,9 +231,15 @@ def validate_cpu_checkpoint(folder):
             shards = set(weights.values())
         else:
             shards = {'model.safetensors'}
-        for shard in shards:
-            local_file(shard)
+        # Count canonical paths once; never open tensor files. This observed
+        # disk footprint is not a loader allocation or post-inspection quota.
+        paths = {local_file(shard) for shard in shards}
+        weight_bytes = sum(path.stat().st_size for path in paths)
+        if max_weight_bytes is not None and weight_bytes > max_weight_bytes:
+            raise OverflowError()
         return config
+    except OverflowError:
+        raise ValueError('CPU checkpoint exceeds configured weight byte ceiling; no model was loaded') from None
     except (OSError, UnicodeError, ValueError, RuntimeError):
         raise ValueError('Invalid CPU checkpoint: require contained config (up to 1 MiB), index (up to 8 MiB) and nonempty safetensors weights') from None
 
@@ -246,6 +254,7 @@ def main():
     parser.add_argument('--backend', choices=['auto', 'mlx', 'torch', 'cpu'], default='auto')
     parser.add_argument('--experimental-cpu', action='store_true', help='Opt in to unverified CPU implementation for controlled testing; not a supported backend')
     parser.add_argument('--cpu-threads', type=int, default=None, help='Experimental CPU intra-op thread limit, 1..32 (default 2)')
+    parser.add_argument('--cpu-max-weight-bytes', type=int, help='Optional experimental CPU checkpoint disk-byte ceiling; not a RAM limit')
     parser.add_argument('--parent-pid', type=int)
     args = parser.parse_args()
     if args.backend == 'cpu' and not args.experimental_cpu:
@@ -254,6 +263,8 @@ def main():
         parser.error('--experimental-cpu requires --backend cpu; no automatic fallback')
     if args.cpu_threads is not None and (args.backend != 'cpu' or not 1 <= args.cpu_threads <= 32):
         parser.error('--cpu-threads requires --backend cpu and a value between 1 and 32')
+    if args.cpu_max_weight_bytes is not None and (args.backend != 'cpu' or args.cpu_max_weight_bytes <= 0):
+        parser.error('--cpu-max-weight-bytes requires --backend cpu and a positive integer')
     if args.capabilities:
         print(json.dumps(discover_capabilities(probe_devices=args.probe_devices, experimental_cpu=args.experimental_cpu), sort_keys=True))
         return
@@ -262,7 +273,7 @@ def main():
     if args.model is None:
         parser.error('--model is required unless --capabilities is used')
     folder = args.model.resolve(strict=True)
-    config = (validate_cpu_checkpoint(folder) if args.backend == 'cpu' else
+    config = (validate_cpu_checkpoint(folder, max_weight_bytes=args.cpu_max_weight_bytes) if args.backend == 'cpu' else
               json.loads((folder / 'config.json').read_text()))
     if 'Qwen3_5ForConditionalGeneration' not in config.get('architectures', []):
         raise ValueError('Unsupported model architecture')

@@ -31,6 +31,66 @@ class CPUCheckpointTests(unittest.TestCase):
                 {'weight_map': {'a': 'model.safetensors', 'b': 'alias.safetensors'}}))
             self.assertEqual(validate_cpu_checkpoint(folder), CONFIG)
 
+    def test_weight_ceiling_boundary_shards_and_canonical_aliases(self):
+        from qwen_server import validate_cpu_checkpoint
+        with tempfile.TemporaryDirectory() as temporary:
+            folder = Path(temporary)
+            (folder / 'config.json').write_text(json.dumps(CONFIG))
+            (folder / 'model.safetensors').write_bytes(b'12345')
+            self.assertEqual(validate_cpu_checkpoint(folder, 5), CONFIG)
+            with self.assertRaisesRegex(ValueError, 'exceeds configured weight byte ceiling'):
+                validate_cpu_checkpoint(folder, 4)
+            (folder / 'other.safetensors').write_bytes(b'678')
+            (folder / 'alias.safetensors').symlink_to('model.safetensors')
+            (folder / 'model.safetensors.index.json').write_text(json.dumps({'weight_map': {
+                'a': 'model.safetensors', 'b': 'model.safetensors',
+                'c': 'alias.safetensors', 'd': 'other.safetensors'}}))
+            self.assertEqual(validate_cpu_checkpoint(folder, 8), CONFIG)
+            with self.assertRaisesRegex(ValueError, 'exceeds configured weight byte ceiling'):
+                validate_cpu_checkpoint(folder, 7)
+            self.assertEqual(validate_cpu_checkpoint(folder), CONFIG)
+            for limit in (0, -1, True, 1.5, '8'):
+                with self.subTest(limit=limit), self.assertRaisesRegex(ValueError, 'positive integer'):
+                    validate_cpu_checkpoint(folder, limit)
+
+    def test_weight_ceiling_rejects_before_any_backend_or_startup_side_effect(self):
+        import qwen_server
+        with tempfile.TemporaryDirectory(prefix='PRIVATE CPU ') as temporary:
+            folder = Path(temporary)
+            (folder / 'config.json').write_text(json.dumps(CONFIG))
+            (folder / 'model.safetensors').write_bytes(b'12345')
+            with patch.object(qwen_server, 'select_backend') as select, patch.object(qwen_server, 'load_backend') as load, patch.object(qwen_server, 'ThreadPoolExecutor') as executor, patch.object(qwen_server, 'ThreadingHTTPServer') as http, patch.object(sys, 'argv', ['qwen_server.py', '--backend', 'cpu', '--experimental-cpu', '--cpu-max-weight-bytes', '4', '--model', str(folder)]):
+                with self.assertRaisesRegex(ValueError, '^CPU checkpoint exceeds configured weight byte ceiling; no model was loaded$'):
+                    qwen_server.main()
+            select.assert_not_called(); load.assert_not_called(); executor.assert_not_called(); http.assert_not_called()
+
+    def test_isolated_cli_weight_ceiling_validation_and_no_optional_imports(self):
+        with tempfile.TemporaryDirectory(prefix='CPU byte ceiling ') as temporary:
+            root = Path(temporary)
+            for name in ('qwen_backends.py', 'qwen_server.py'):
+                shutil.copyfile(Path(__file__).with_name(name), root / name)
+            for name in ('torch', 'transformers', 'safetensors', 'mlx', 'mlx_lm'):
+                (root / (name + '.py')).write_text('raise AssertionError("optional import reached")')
+            folder = root / 'model'; folder.mkdir()
+            (folder / 'config.json').write_text(json.dumps(CONFIG))
+            (folder / 'model.safetensors').write_bytes(b'12345')
+            command = [sys.executable, '-B', '-S', str(root / 'qwen_server.py')]
+            for backend, flags, limit in [('cpu', ['--experimental-cpu'], '4'),
+                                          ('cpu', ['--experimental-cpu'], '0'),
+                                          ('cpu', ['--experimental-cpu'], '-1'),
+                                          ('cpu', ['--experimental-cpu'], '1.5'),
+                                          ('auto', [], '4'), ('mlx', [], '4'), ('torch', [], '4')]:
+                with self.subTest(backend=backend, limit=limit):
+                    result = subprocess.run([*command, '--backend', backend, *flags,
+                        '--cpu-max-weight-bytes', limit, '--model', str(folder)],
+                        capture_output=True, text=True, timeout=10)
+                    self.assertNotEqual(result.returncode, 0)
+                    expected = 'exceeds configured weight byte ceiling' if backend == 'cpu' and limit == '4' else '--cpu-max-weight-bytes'
+                    self.assertIn(expected, result.stderr)
+                    self.assertNotIn('optional import reached', result.stderr)
+                    self.assertNotIn('Loading ', result.stdout)
+                    self.assertNotIn('PRIVATE', result.stderr)
+
     def test_invalid_checkpoints_rejected_before_worker_loader_or_http(self):
         import qwen_server
         cases = ['empty-map', 'list-map', 'null-map', 'bad-value', 'empty-key',
@@ -121,7 +181,7 @@ class CPUCheckpointTests(unittest.TestCase):
             # Preflight owns all CPU metadata reads, unlike legacy startup.
             with patch.object(qwen_server, 'validate_cpu_checkpoint', return_value=CONFIG) as preflight, patch.object(qwen_server, 'select_backend', return_value='cpu'), patch.object(qwen_server, 'ThreadPoolExecutor') as executor, patch.object(qwen_server, 'ThreadingHTTPServer', return_value=Mock()), patch.object(Path, 'read_text', side_effect=AssertionError('metadata reread')), patch.object(sys, 'argv', ['qwen_server.py', '--backend', 'cpu', '--experimental-cpu', '--model', str(folder)]):
                 qwen_server.main()
-            preflight.assert_called_once_with(folder.resolve())
+            preflight.assert_called_once_with(folder.resolve(), max_weight_bytes=None)
             executor.assert_called_once()
 
     def test_isolated_cli_rejects_manifest_without_optional_imports(self):

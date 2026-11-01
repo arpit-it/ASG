@@ -5500,3 +5500,46 @@ Recorded 2026-11-01T05:45:54.806330+00:00
 Validation:109 Python cases passed/two opt-in skips (36 backend passes/one opt-in skip; nine actual HTTP). Initial sandbox loopback/nested Seatbelt denial passed on authorized rerun. Formatter287 unchanged, analyzer clean,983 macOS Flutter tests/nine opt-in skips, release web/Wasm dry-run and macOS debug builds passed. Three new regressions plus strengthened isolated CLI cover six oversize/deep/UTF-8 cases before worker/loader/HTTP, exact valid limits, binary limit+1 reads and no CPU main reread. No skipped check establishes inference.
 Status: Awaiting merge; tested related contents will be published through the connected GitHub plugin. Independent exact-final review and required CI must pass before protected merge.
 Recorded 2026-11-01T05:46:12.913888+00:00
+
+
+### CPU metadata bounds verified merged — reopened issue #362 / PR #364
+
+Independent final approval [5726671793](https://github.com/arpit-it/ASG/pull/364#pullrequestreview-5726671793) reviewed exact `c7e544f80e6254612a62f9269d7f45d11eb8aa00` / tree `bff6414914311cb6481be402ff9136195506177a` with no blockers. Independently36backend passes/one opt-in skip and9actualHTTP passed. RequiredCI41278251584 Flutter124764728358/Python124764728544 succeeded; reviewer inspected full logs:977Linux/12skips,15Chrome,formatter287/analyzer,web/Wasm and real generated-project resolve/analyze/rendered interaction/test/build/serve; Python32collector/9inventory/4download/37backend(one skip)/9HTTP/14command(one skip)/4confinement(two Linux skips). Parent109macOSPython/two skips,983macOSFlutter/nine skips/web/macOSdebug evidence remains separately scoped; no fixture/skip establishes inference. Reviewer clarified baseline already sanitized RecursionError through RuntimeError; corrected issue comment6554053034. Actual fixed gaps are unbounded metadata reads and redundant CPU index reread; implementation/tested tree unchanged.
+
+Reviewer protected-plugin squashmerged [PR #364](https://github.com/arpit-it/ASG/pull/364) as `03139bcf0f1dfddeea19b6122521345cb5ca4962` at2026-11-01T05:53:49Z; issue362closed/completed05:53:51Z. Parent independently verified exacthead/mergedstate/issueclosure/currentmain and signed rawmerge exactreviewedtree/soleparentd7bb6f05. Guarded local-only object import/sync passed after sandbox metadata denial/authorized retry; main/origin-main0/0,indexempty,both unrelated IDEfiles byte-identical. Backup `/private/tmp/asg362-bounds-primary-before-sync`; guard `/private/tmp/asg364-safe-sync.py`. All GitHub access/publication/review/merge used connectedplugin; bothautomationlabels and PRattachment applied. Prior docs edits carried into reviewedtree.
+
+Bounded correction Done; fullF15 unchecked/Inprogress. Managed experimental CPU setup/budgeting/portable-host integration remain implementable; non-Apple pretrainedCPU and separateCUDA real-host acceptance pending. Existingruntime freshread-onlyhealth ready/MLX/Metal/Qwen3.8-27B-4bit (initialsandboxURLfailure; authorizedread succeeded), no inference/model/download/install/settings/stableapp/data replacement. No secondissue/task started. Finalmergebookkeeping retained locally for next normal reviewed increment. Fifteen-minute cadence/notification preference unchanged.
+Recorded 2026-11-01T05:54:33.426554+00:00
+Current run time 2026-11-01T05:54:33.426554+00:00
+
+
+### Experimental CPU checkpoint byte ceiling — issue #365
+
+F15 remains In progress; this bounded resource-control increment follows verified
+PR #364 merge03139bcf. No competing active owner or open GitHub task/PR was found.
+Branch `365-cpu-weight-budget`, isolated `/private/tmp/asg-cpu-weight-budget`.
+Acceptance: optional positive CPU-only `--cpu-max-weight-bytes`, canonical-path
+weight sum and alias deduplication, exact boundary pass/excess reject before
+backend discovery/worker/loader/HTTP, no tensor reads or normal app enablement.
+Disk inspection is not a RAM quota, live inference/fit proof or filesystem
+sandbox; non-Apple CPU/CUDA host milestones remain pending. Existing F15 scope
+covers this increment; #344/#350 display estimates and #362 metadata preflight
+do not cover startup byte ceilings. No new F ID. Unrelated primary IDE/docs edits
+preserved; prior verified merge bookkeeping carried into this reviewed branch.
+Status: In progress; final validation, publication, independent review and
+protected merge pending.
+Recorded 2026-11-01T06:00:10.504589+00:00
+
+Validation:112 Python cases passed/two opt-in skips, including39 backend passes/
+one opt-in skip and9 actual HTTP cases. Initial sandbox loopback/nested Seatbelt
+denials passed on authorized rerun. Formatter287 unchanged, analyzer clean,
+983 macOS Flutter tests/nine opt-in skips, release web/Wasm dry-run and macOS
+debug builds passed. Three new tests cover exact/summed boundaries, canonical
+aliases and repeated entries, invalid direct/CLI limits, CPU-only options and
+isolated real CLI refusal before optional imports/startup. Existing runtime
+read-only health ready/MLX/Metal/Qwen3.8-27B-4bit; no inference was run. No model,
+package install, settings change or stable-app replacement. Status: Awaiting
+merge; exact tested tree will be published via GitHub plugin, with independent
+final review/required CI/verified protected merge still mandatory. PR and final
+review/merge identities will be recorded in the PR and next ledger reconciliation.
+Recorded 2026-11-01T06:01:45.827429+00:00
