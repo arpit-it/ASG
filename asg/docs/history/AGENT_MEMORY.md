@@ -6670,3 +6670,63 @@ Fresh hostDarwinarm64/currentPythonTorch absent; retained8765healthURLError. No
 actual inference/model load/download/install/stable-app replacement. Awaiting
 merge: independent exact-final review, required CI/protected merge remain gates.
 Recorded 2026-11-01T14:19:48.829276+00:00
+
+
+### CPU generation diagnostics verified merged — issue #356 / PR #388
+
+Independent approval5728564870/finalgate5728598463 approved exact
+`3eafddd70bc119e25b5f8536b4dda853176f79f3` / tree
+`cc580d5a73a05f52198146bc0761c87f0e1b5385` (local1e94dde identical).
+No blockers; independent64 backend/actualHTTP tests(one live skip) plus large
+unstringifiable private ValueError after partial output passed both transports,
+failed completion and explicit retry. RequiredCI41315753883success: reviewer
+inspected Flutter124875306638 actual logs,formatter301/analyzer,Ubuntu1045passes/
+12skips,actualChrome15,web/Wasm and independent generated-project resolve/analyze/
+test/build/render/serve. Python124875306462 all seven suites passed with explicit
+live/platform skips. ParentMac1051/nineskips,web/macOSdebug and Python127/twoskips
+remain separate evidence.
+
+Reviewer protected-plugin squash merged [PR #388](https://github.com/arpit-it/ASG/pull/388)
+as `6eaf65b33cb5184685965cd9b313772b9ed17b69` at2026-11-01T14:27:34Z;
+issue356closed/completed14:27:36Z. Parent freshly plugin-verified PR/issue/current
+main/CI and signed raw merge matching reviewedtree/soleparent07de05e5. Guarded
+local-only sync passed: main/origin-main0/0,indexempty,both IDEfiles byte-identical.
+Backup `/private/tmp/asg356-errors-before-sync`; guard`/private/tmp/asg388-safe-sync.py`.
+Plugin-only publication/review/merge; PR attached and both automation labels applied.
+Bounded CPU diagnostics increment Done; fullF15 unchecked/Inprogress,CPUexperimental
+outside normal choices; non-AppleCPU/CUDA live inference pending. No model loading/
+download/install/settings/data/stable-app replacement,cadence/notification change
+or newissue/FID. Final merge bookkeeping retained for next reviewed increment.
+Recorded 2026-11-01T14:28:35.731080+00:00
+
+
+### CPU nonfinite request budgets — issue #356
+
+Reopened matching issue356; branch `356-cpu-request-budget` from freshly
+plugin-verified PR388 merge6eaf65b33cb5184685965cd9b313772b9ed17b69.
+No open PR/issue or competing active run at selection. Preserve unrelated IDE
+edits and previous final-merge bookkeeping. F15/F09 bounded continuation:
+actual CPU HTTP baseline reproduced four RemoteDisconnected failures from
+uncaught int(infinity) OverflowError. Add the missing conversion failure to
+fixed invalid-request HTTP400 boundary before lock/worker/tokenizer/model.
+Actual socket regression covers Infinity/-Infinity/NaN/1e999/-1e999 across both
+transports, exact public error, zero tokenizer/model calls, idle health and
+successful subsequent request. Existing finite/default/clamped budgets retained.
+Fresh host Darwin arm64, current Python Torch absent, retained8765healthURLError;
+no real inference/model load/download/install/settings/stable-app changes.
+Mac-verifiable implementation uses delivered backend; full F15 and non-AppleCPU/
+CUDA real-host acceptance remain pending, CPU outside normal choices. No new
+issue/FID or cadence/notification changes. Final validation/review/CI/merge gates
+remain; no completion claim. Initial edit helper used wrong relative path before
+any edit/test; corrected and baseline reproduced, no product change from that error.
+Recorded 2026-11-01T14:47:10.274931+00:00
+
+Final local validation: formatter301 unchanged, analyzer clean, isolated tracked
+Flutter1051 passed/nine explicit skips; release web/Wasm and macOS debug builds
+passed. Python128 tests passed/two explicit live/platform skips; final11 actual
+HTTP tests passed including ten nonfinite-budget/transport cases with zero CPU
+model/tokenizer calls and successful subsequent requests. All321 relevant source/
+test/tool inputs match isolated validation. No live inference. Awaiting merge:
+plugin exact-tree publication, independent exact-final review, required CI and
+protected reviewer merge remain gates. FullF15/non-AppleCPU/CUDA acceptance pending.
+Recorded 2026-11-01T14:47:38.754699+00:00

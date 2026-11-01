@@ -100,7 +100,7 @@ def create_handler(backend, executor, model_id, model_path):
                 # retains its smaller caller-selected limit and 256 default.
                 tokens = min(4096, max(1, int(request.get('max_tokens', 256))))
                 streaming = request.get('stream') is True
-            except (ValueError, TypeError, AttributeError):
+            except (ValueError, TypeError, AttributeError, OverflowError):
                 self.respond(400, {'error': 'Invalid request or model ID'})
                 return
             if not lock.acquire(blocking=False):
