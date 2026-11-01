@@ -5724,3 +5724,68 @@ Status: Awaiting merge; plugin publication, independent final-revision review,
 required CI and verified protected merge remain mandatory. Full F15 stays
 unchecked; no inference/support claim or new issue/F ID. Cadence unchanged.
 Recorded 2026-11-01T08:02:11.507889+00:00
+
+
+### CPU checkpoint privacy correction verified merged — issue #362 / PR #373
+
+Independent final approval [5727084901](https://github.com/arpit-it/ASG/pull/373#pullrequestreview-5727084901)
+reviewed exacthead6c6e60532be41e77774c16009212438137107931 /
+tree0bf538ed3ac28b7e3de2a366c3dea57ad822f80c, all five files/acceptance,
+no blockers. Shared-author APPROVE422 was transparently recorded in the COMMENT
+approval under documented zero-count protection; no bypass. Independent61
+backend/actualHTTPcases:60passes/one opt-in skip, plus eight additional actual
+CLI privacy probes for nonobject/invalidUTF8/deepJSON/private manifests/external
+config/directory index/empty weights passed. RequiredCI41287206344 succeeded;
+reviewer inspected full actual Python124790817152 and Flutter124790816934 logs,
+including32collector/9inventory/4download/52backend(oneskip)/9actualHTTP/
+14command(oneskip)/4confinement(twoLinuxskips),formatter287/analyzer/
+978LinuxFlutter12skips/15Chrome/web+Wasm and real generated-project
+resolve/analyze/renderedinteraction/test/build/serve. Parent final124macOSPython/
+twoskips,984Flutter/nineskips/web/macOSdebug evidence remains separately scoped.
+No fixture/build result establishes live inference.
+
+Reviewer protected-plugin squashmerged [PR #373](https://github.com/arpit-it/ASG/pull/373)
+as `1f031688c9ac24eed46662792f9ecd4da87bb666` on2026-11-01;
+issue362 freshly verified closed/completed. Parent independently verified
+mergedstate/finalhead/issueclosure/currentmain and raw signedmerge exactreviewed
+tree/soleparentef9df589. Signed commit time08:09:28Z; REST merged/closed metadata
+reports09:09:28/30Z, a recorded timestamp discrepancy rather than inferred time.
+Guarded local-only sync passed; main/origin-main0/0,indexempty and both unrelated
+IDEfiles byte-identical. Backup/private/tmp/asg362-primary-before-sync;
+guard/private/tmp/asg373-safe-sync.py. All GitHub access/publication/review/merge
+used connectedplugin; PR attached/bothautomationlabels applied. Prior local
+merge bookkeeping/docs were carried into reviewedtree.
+
+Bounded correction Done; fullF15 remains unchecked/Inprogress, CPUexperimental.
+Non-Apple pretrainedCPU/separateCUDA live acceptance and further managed CPU
+integration remain outstanding. No model/package downloads/installations,
+inference/settings/data/stableapp replacement. No secondtask or newissue/FID.
+Finalmerge bookkeeping retained locally for next normal reviewed increment;
+fifteen-minute cadence/notification preference unchanged.
+Recorded 2026-11-01T08:10:19.895993+00:00
+Current run time 2026-11-01T08:10:19.895993+00:00
+
+
+### CPU loader failure boundary — reopened issue #356
+
+F15 remains In progress; branch `356-cpu-loader-errors`, isolated
+`/private/tmp/asg-cpu-loader-errors`, from verified main1f031688 / PR #373.
+No competing active ASG owner or open PR/issue at selection; reuse356, no new ID.
+Evidence: optional CPU loader errors escaped checkpoint preflight as private
+tracebacks. Scope: fixed actionable memory/dependency/general load diagnostics,
+exit2 without copied paths/metadata/tracebacks; disarm/reap watchdog, shut down
+worker before refusing HTTP. Legacy Auto/MLX/MPS errors and successful startup
+remain unchanged; no fallback. Acceptance: real isolated CLI exercises three
+failure classes and legacy error preservation, verifying owned cleanup before
+exit/no HTTP. Existing actual watchdog/deadline/streaming regressions pass.
+Mac-verifiable CPU implementation depends on delivered preflight/loader/watchdog,
+not unavailable non-Apple CPU/CUDA inference; those milestones remain pending.
+Validation:125 Python cases/two opt-in skips, formatter287 unchanged, analyzer
+clean,984 Flutter passes/nine opt-in skips, release web/Wasm and macOS debug
+builds passed. Initial sandbox loopback/SDK-cache denials retried with authorized
+permissions; initial mistyped collector module corrected to canonical suite.
+No inference/model/package download/install/settings/data/stable-app replacement.
+Status: Awaiting merge; independent exact-final review, required CI and verified
+protected merge mandatory. Full F15 unchecked, CPU experimental and excluded
+from normal managed choices. Prior PR373 merge/review/CI bookkeeping retained.
+Recorded 2026-11-01T08:16:46.947356+00:00

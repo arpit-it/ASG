@@ -84,6 +84,69 @@ print('WATCHDOG_REAPED', flush=True)
             self.assertLess(time.monotonic() - start, 8)
             return result
 
+    def test_actual_cli_loader_errors_are_private_and_cleanup_before_exit(self):
+        with tempfile.TemporaryDirectory(prefix='PRIVATE CPU loader ') as temporary:
+            root = Path(temporary)
+            for name in ('qwen_server.py', 'qwen_backends.py'):
+                shutil.copyfile(Path(__file__).with_name(name), root / name)
+            folder = root / 'PRIVATE checkpoint'; folder.mkdir()
+            (folder / 'config.json').write_text(json.dumps(CONFIG))
+            (folder / 'model.safetensors').write_bytes(b'fixture')
+            script = root / 'fixture.py'
+            script.write_text("""
+import concurrent.futures, http.server, runpy, subprocess, sys
+import qwen_backends
+mode = sys.argv.pop(1)
+qwen_backends.select_backend = lambda requested, *a, **k: requested
+def fail(*a, **k):
+    error = {'memory': MemoryError, 'import': ImportError}.get(mode, RuntimeError)
+    raise error('PRIVATE /secret/checkpoint TOKEN metadata')
+qwen_backends.load_backend = fail
+workers, watchers = [], []
+original_executor = concurrent.futures.ThreadPoolExecutor
+class Worker(original_executor):
+    def __init__(self, *a, **k):
+        super().__init__(*a, **k); workers.append(self); self.cleaned = False
+    def shutdown(self, *a, **k):
+        self.cleaned = True; return super().shutdown(*a, **k)
+concurrent.futures.ThreadPoolExecutor = Worker
+original_popen = subprocess.Popen
+def popen(*a, **k):
+    child = original_popen(*a, **k); watchers.append(child); return child
+subprocess.Popen = popen
+def refuse_http(*a, **k): raise AssertionError('HTTP started')
+http.server.ThreadingHTTPServer = refuse_http
+try:
+    runpy.run_path(str(__import__('pathlib').Path(__file__).with_name('qwen_server.py')), run_name='__main__')
+finally:
+    assert len(workers) == 1 and workers[0].cleaned
+    if mode != 'legacy':
+        assert len(watchers) == 1 and watchers[0].returncode == 0
+        assert watchers[0].stdin.closed and watchers[0].stdout.closed
+    print('CLEANUP_VERIFIED', flush=True)
+""")
+            for mode in ('runtime', 'memory', 'import', 'legacy'):
+                with self.subTest(mode=mode):
+                    backend = 'mlx' if mode == 'legacy' else 'cpu'
+                    flags = [] if mode == 'legacy' else ['--experimental-cpu']
+                    result = subprocess.run([sys.executable, '-B', '-S', str(script), mode,
+                        '--backend', backend, *flags, '--model', str(folder),
+                        '--model-id', 'test-model'], capture_output=True, text=True, timeout=10)
+                    self.assertIn('CLEANUP_VERIFIED', result.stdout)
+                    if mode == 'legacy':
+                        self.assertEqual(result.returncode, 1)
+                        self.assertIn('PRIVATE /secret/checkpoint TOKEN metadata', result.stderr)
+                        self.assertIn('Traceback', result.stderr)
+                    else:
+                        self.assertEqual(result.returncode, 2, result.stderr)
+                        self.assertIn('CPU startup failed:', result.stderr)
+                        self.assertIn('no fallback', result.stderr)
+                        self.assertLess(len(result.stderr), 300)
+                        expected = {'memory': 'out of memory', 'import': 'dependency', 'runtime': 'local weights'}[mode]
+                        self.assertIn(expected, result.stderr)
+                        for private in (temporary, 'PRIVATE', 'TOKEN', 'Traceback', 'HTTP started'):
+                            self.assertNotIn(private, result.stderr)
+
     def test_watchdog_startup_failure_refuses_loader_and_reaps_helper(self):
         # Real isolated interpreters cover EOF, invalid output, a partial
         # acknowledgement and an alive helper that never acknowledges.

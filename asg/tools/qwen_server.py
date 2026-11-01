@@ -190,6 +190,10 @@ def create_handler(backend, executor, model_id, model_path):
     return Handler
 
 
+class CPUStartupError(RuntimeError):
+    """Bounded CPU loader failure safe for the CLI boundary."""
+
+
 class CPUCheckpointError(ValueError):
     """Sanitized checkpoint failure safe for the explicit CPU CLI boundary."""
 
@@ -432,8 +436,22 @@ def main():
     executor = ThreadPoolExecutor(max_workers=1, thread_name_prefix='qwen-inference')
     print(f'Loading {args.model_id} using {kind}. Local weights only.', flush=True)
     deadline = cpu_load_deadline(args.cpu_load_timeout_seconds if args.cpu_load_timeout_seconds is not None else 180) if kind == 'cpu' else nullcontext()
-    with deadline:
-        backend = executor.submit(load_backend, folder, kind, experimental_cpu=args.experimental_cpu, cpu_threads=args.cpu_threads if args.cpu_threads is not None else 2).result()
+    try:
+        with deadline:
+            backend = executor.submit(load_backend, folder, kind, experimental_cpu=args.experimental_cpu, cpu_threads=args.cpu_threads if args.cpu_threads is not None else 2).result()
+    except BaseException as error:
+        executor.shutdown(wait=False, cancel_futures=True)
+        if kind != 'cpu' or not isinstance(error, Exception):
+            raise
+        # Optional loaders may include private paths or metadata in exceptions.
+        # Do not copy their text or traceback across the CLI boundary.
+        if isinstance(error, MemoryError):
+            message = 'CPU loading ran out of memory; choose smaller compatible weights or free memory'
+        elif isinstance(error, ImportError):
+            message = 'CPU loader dependency failed; inspect the configured Python environment'
+        else:
+            message = 'CPU loading failed; check compatible local weights, tokenizer and installed loader APIs'
+        raise CPUStartupError(message + '; no runtime was started and no fallback was attempted') from None
     server = ThreadingHTTPServer(('127.0.0.1', args.port), create_handler(backend, executor, args.model_id, folder))
     server.daemon_threads = True
     print(f'Ready at http://127.0.0.1:{args.port}/v1 ({kind}, streaming)', flush=True)
@@ -453,4 +471,7 @@ if __name__ == '__main__':
         # Only allowlisted checkpoint messages cross this CLI boundary. Preserve
         # legacy failures and direct API ValueError behavior; omit tracebacks.
         sys.stderr.write(f'CPU checkpoint preflight failed: {error}\n')
+        sys.exit(2)
+    except CPUStartupError as error:
+        sys.stderr.write(f'CPU startup failed: {error}\n')
         sys.exit(2)
