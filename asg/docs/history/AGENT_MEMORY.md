@@ -6300,3 +6300,67 @@ by those harness corrections. No actual CPU inference/model load/install/downloa
 stable-app/runtime/settings/data replacement or cadence/notification change.
 Status Awaiting merge: exact-tree publication, independent final revision review,
 required CI and verified protected merge still required. Full F15 remains unchecked.
+
+
+### CPU checkpoint inspection view verified merged — issue #367 / PR #382
+
+Independent final review [5728000707](https://github.com/arpit-it/ASG/pull/382#pullrequestreview-5728000707)
+approved exact `ba05ce76b4ad3488df594d40124da9595415ee2d` /
+tree `91612e0cc9a335dc51fa74bfe2b38b28274233ba` (local940fab1 identical).
+No blockers; independent108 focused view/controller/actual-process/MVC tests and
+two additional pending-view disposal/fresh-session consent probes passed.
+Finalgate5728026642 confirmed requiredCI41305959228 success: Flutter124846266092
+formatter297/analyzer,Ubuntu1032passes/12skips,actualChrome15,web/Wasm and independent
+generated-project resolve/analyze/test/build/serve; Python124846265831 all seven
+suites passed with explicit live/platform skips. Parent Mac1038passes/nineskips,
+web/macOSdebug and Python95(one live skip) remain separate evidence. No fixture,
+health observation or successful build establishes CPU inference.
+
+Independent reviewer normally protected-merged [PR #382](https://github.com/arpit-it/ASG/pull/382)
+as `42e5e051b78d34c854c7afa503102b112dfdec3a` at2026-11-01T12:26:04Z;
+issue367closed/completed12:26:05Z. Shared-owner COMMENT records independent approval
+without bypass. Parent freshly verified PR/issue/currentmain/CI and signed rawmerge
+matching reviewedtree/soleparent87f44313. Guarded local-only sync passed: main/
+origin-main0/0,indexempty,both unrelated IDEfiles byte-identical. Backup
+`/private/tmp/asg367-view-before-sync`; guard`/private/tmp/asg382-safe-sync.py`.
+Plugin-only publication/review/merge; PR attached and both automation labels applied.
+Bounded inspection view increment Done; fullF15 unchecked/Inprogress,CPUexperimental
+and outside normal supported choices. Non-AppleCPU/separateCUDA live acceptance
+remain pending. Readonly retained health reportsready MLX/Metal/Qwen3.8-27B-4bit;
+no model load/install/download/settings/data/stableapp/runtime replacement or cadence/
+notification change. No newissue/FID. Finalmerge bookkeeping retained locally for
+the next normal reviewed development increment.
+Recorded 2026-11-01T12:27:11.874912+00:00
+
+
+### Experimental CPU dependency-check view — issue #358
+
+Reopened existing issue #358; branch `358-cpu-preparation-view` from verified
+PR #382 merge `42e5e051b78d34c854c7afa503102b112dfdec3a`. Fresh plugin open
+issue/PR searches and chat inventory found no competing ASG work. Preserved IDE
+edits and prior merge bookkeeping. Main already delivers optional CPU preparation
+host/controller, but setup never invokes it. F15 continuity selects this bounded
+Mac-verifiable integration before unrelated features; unavailable non-Apple CPU
+and CUDA real inference remain pending, full F15 unchecked.
+
+Acceptance: separate collapsed optional-host-only panel, explicit session consent
+and nonempty shared Python gate, busy exclusion/private failure/retry, dependency-only
+success, no supported CPU choice or settings/runtime mutation. No package install,
+model download or weight load. Widget regressions cover input/consent gates,
+trimmed forwarding, busy/retry/privacy, legacy/unsupported exclusion, pending close
+and fresh-session consent, 320px enlarged text. Initial harness assumptions about
+saved Python, scrolling and duplicate scope text were corrected. Full validation,
+independent final-revision review and required CI remain gates. Status In progress.
+Recorded 2026-11-01T12:45:51.728889+00:00
+
+Final local validation: formatter299 unchanged, analyzer clean, isolated tracked-source
+Flutter suite1043 passed/nine explicit opt-in skips; focused95 view/controller/actual
+CPU preparation-process/MVC tests passed. Web release/Wasm dry-run and macOS debug
+builds passed;355 relevant inputs byte-identical between validation copy and checkout.
+Python inventory9/product32 passed. Primary full test run hit the pre-existing
+license scan of untracked tools/.mlx-venv; isolated tracked-source suite resolves
+that environmental contamination without altering model environments or license rules.
+Inventory was regenerated after formatting to bind current source. Retained runtime
+health observed MLX/Metal/Qwen3.8-27B-4bit; no CPU inference or weights loaded.
+Status Awaiting merge: exact-tree publication, independent final review, required CI
+and verified protected merge remain gates. No install/download/stable-app replacement.

@@ -12,6 +12,7 @@ import '../models/local_model_config.dart';
 import '../models/runtime_setup.dart';
 import 'runtime_capability_panel.dart';
 import 'cpu_checkpoint_inspection_panel.dart';
+import 'cpu_environment_preparation_panel.dart';
 
 class RuntimeSetupScreen extends StatefulWidget {
   const RuntimeSetupScreen({
@@ -417,6 +418,11 @@ class _RuntimeSetupScreenState extends State<RuntimeSetupScreen> {
                   ],
                 ),
               ]),
+              if (controller.canPrepareCpuEnvironment)
+                CpuEnvironmentPreparationPanel(
+                  controller: controller,
+                  python: python,
+                ),
               if (controller.canInspectCpuCheckpoint)
                 CpuCheckpointInspectionPanel(
                   controller: controller,

@@ -363,7 +363,10 @@ class RuntimeSetupController extends BaseController {
         'Runtime helper ready for ${backend.label}. Model loading and memory adequacy remain unverified.';
   });
 
-  /// API-only opt-in; preparation never establishes CPU inference support.
+  bool get canPrepareCpuEnvironment =>
+      host.supported && host is CpuEnvironmentPreparationHost;
+
+  /// Explicit opt-in; preparation never establishes CPU inference support.
   Future<void> prepareCpuEnvironment(
     String python, {
     required bool experimentalCpu,
