@@ -4,6 +4,7 @@
 import 'candidate_verification_run.dart';
 import 'candidate_failure.dart';
 import 'source_edit_proposal.dart';
+import 'model_request_provenance.dart';
 
 enum RepairAttemptStatus { reserved, proposed, failed, cancelled }
 
@@ -15,7 +16,12 @@ class RepairAttempt {
     required this.failure,
     required this.status,
     this.proposal,
+    this.modelRequest,
   });
+  final ModelRequestProvenance? modelRequest;
+  String get modelRequestDescription =>
+      modelRequest?.description ??
+      'Requested model provenance unavailable for this legacy repair attempt.';
   final int number;
   final DateTime startedAt;
   final CandidateVerificationRun failure;
@@ -24,6 +30,7 @@ class RepairAttempt {
   String get category => failure.snapshot.steps.last.operation;
 
   Map<String, Object?> toJson() => {
+    'modelRequest': ?modelRequest?.toJson(),
     'number': number,
     'startedAt': startedAt.toUtc().toIso8601String(),
     'failure': failure.toJson(),
@@ -44,7 +51,17 @@ class RepairAttempt {
   };
 
   factory RepairAttempt.fromJson(Map<String, dynamic> json) {
-    if (json.length != 5 ||
+    if (json.length != (json.containsKey('modelRequest') ? 6 : 5) ||
+        json.keys.any(
+          (key) => !const {
+            'number',
+            'startedAt',
+            'failure',
+            'status',
+            'proposal',
+            'modelRequest',
+          }.contains(key),
+        ) ||
         !json.containsKey('proposal') ||
         json['number'] is! int ||
         (json['number'] as int) < 1 ||
@@ -52,6 +69,14 @@ class RepairAttempt {
         json['failure'] is! Map<String, dynamic> ||
         !RepairAttemptStatus.values.any((s) => s.name == json['status'])) {
       throw const FormatException('Invalid repair attempt.');
+    }
+    final modelRequest = json.containsKey('modelRequest')
+        ? ModelRequestProvenance.fromJson(json['modelRequest'])
+        : null;
+    if (modelRequest != null &&
+        modelRequest.outputTokens !=
+            ModelRequestProvenance.sourceOutputTokens) {
+      throw const FormatException('Invalid repair request ceiling.');
     }
     final failure = CandidateVerificationRun.fromJson(
       json['failure'] as Map<String, dynamic>,
@@ -99,6 +124,7 @@ class RepairAttempt {
       throw const FormatException('Unexpected repair proposal.');
     }
     return RepairAttempt(
+      modelRequest: modelRequest,
       number: json['number'] as int,
       startedAt: time,
       failure: failure,

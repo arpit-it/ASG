@@ -7702,3 +7702,70 @@ no fresh model inference, stable-app replacement or deferred-platform claim.
 Status Awaiting merge: plugin publication, independent exact-final review, required
 CI and protected reviewer merge remain gates. Logs /private/tmp/asg396-source-*.log.
 Recorded 2026-11-01T21:39:30.331377+00:00
+
+
+### Source proposal/candidate request provenance verified merged — #396 / PR #411
+
+Bounded increment Done. Independentreview5730405309/finalgate5730421108
+approved exact010b0e3151269759802a6d5993b78fa67a2975a1, testedlocal
+8bff120f22b462444d0df698db9e86c6a449bf85, identicaltree
+2e73d79d5ae2f660992373fbaa374f55cb9f2c3f. Independently107Flutter plus9inventory
+tests passed and all19remote blobs matched. RequiredCI41353262122 passed:
+Flutter124987811687 format309/analyzerclean,1080Ubuntu tests/12explicit skips,
+17Chrome,web/Wasm and actual independent generated-project resolve/analyze/test/
+render/build/serve;Python124987811498141tests/four explicit CI skips. ParentMac
+1086Flutter/nine skips,77focused,141Python/two skips,format/analyze/web/macOSpass;
+all437validation source/platform/config inputs matched. No fresh inference claim.
+
+Reviewer protected-plugin squash merged https://github.com/arpit-it/ASG/pull/411
+as ae21f5f78527a3319e505b72115dcaa1c31070e3 at2026-11-01T21:47:11Z. Parent
+freshly plugin-verified merged PR,currentmain,signed merge/tree/soleparent2f54b3fe
+and successful requiredCI. Guarded local sync:main/origin-main0/0,indexempty,
+both unrelatedIDEedits byte-identical. Evidence/private/tmp/asg411-publication.json,
+/private/tmp/asg411-reviewed-merge.json and/private/tmp/asg411-safe-sync.py.
+Both automation labels applied. Finalmerge bookkeeping retained for the next
+normal reviewed development PR.
+
+Issue396 freshly confirmed open: per-project/chat/run selection and full repair-
+attempt journal request provenance remain Pending. Latest completed repair proposal
+metadata follows its candidate, but is not a complete durable attempt journal.
+FullF22/F15 remain unchecked; unavailable-platform acceptance Deferred400. No
+new issue,download/install/model/settings/stableapp/deployment/cadence changes.
+Recorded 2026-11-01T21:48:17.783654+00:00
+
+
+### F22 repair-attempt requested-model provenance — issue #396
+
+Bounded increment on `396-repair-model-provenance` from verified main
+ae21f5f78527a3319e505b72115dcaa1c31070e3 (PR #411). No active PR or competing
+ASG run at selection. Persist exact configured model ID and fixed 4096-token source
+ceiling at atomic reservation before transport; retain on proposed/failed/cancelled
+outcomes and interrupted reserved records. Show requested versus unverified loaded
+weights/revision; legacy attempts remain explicitly unknown. Reject corrupt metadata
+without overwrite; retain budget, approval and Stop protections. No endpoint/prompt
+added to provenance. Delivered F09/F05 transport/storage are prerequisites; deferred
+#400 hardware acceptance is not required. Per-project selection and full F22/F15
+remain Pending/unchecked.
+
+Acceptance: actual HTTP model/ceiling matches journal; settings changes cannot
+relabel a reserved attempt; failure/cancel/proposed/native reopen retain identity;
+failed reservation sends no inference, malformed metadata refuses new writes, and
+narrow 2x-text history remains readable. Full checks, relevant builds, exact-tree
+plugin publication, independent final-revision review, required CI and protected
+reviewer merge remain gates. Status In progress.
+
+
+Validation: focused16 regressions passed, including actual HTTP/journal agreement,
+settings changed during active requests, failure/cancellation and native reopen;
+legacy/corrupt records and narrow 2x-text history pass. Full clean tracked-source
+Flutter1088 passed/nine explicit live/platform skips; formatter309 unchanged,
+analyzer clean, web release/Wasm dry run and macOS debug builds passed. All437
+validation source/platform/config inputs matched. Seven required Python suites141
+tests/two explicit live/platform skips passed. Initial HTTP test fixture lacked
+conditional storage; corrected to AtomicRecords and focused/full suites rerun.
+Historical acceptance inventory regenerated for changed runtime hashes without
+altering observation identities or claiming current inference/platform support.
+No fresh inference, stable-app replacement, model download or settings change.
+Status Awaiting merge: plugin publication, independent exact-final review, required
+CI and protected reviewer merge remain gates. Logs /private/tmp/asg396-repair-*.log.
+Recorded 2026-11-01T22:01:37.646491+00:00

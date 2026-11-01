@@ -13,6 +13,7 @@ import 'package:asg/models/model_request_provenance.dart';
 import 'package:asg/models/source_generation.dart';
 import 'package:asg/services/approved_source_proposer.dart';
 import 'package:asg/services/model_settings_store.dart';
+import 'package:asg/services/repair_attempt_store.dart';
 import 'package:asg/services/source_edit_proposer.dart';
 import 'package:asg/services/source_generation_store.dart';
 import 'package:asg/services/studio_database.dart';
@@ -23,6 +24,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'approved_source_proposer_test.dart' show seed, originals, response;
 import 'planning_conversation_test.dart' show ControlledRecords, project;
 import 'source_edit_proposer_test.dart' show FakeProvider;
+import 'source_candidate_controller_test.dart' show AtomicRecords;
+import 'candidate_repair_proposer_test.dart' show boundFailure, saveFailure;
 
 const request = ModelRequestProvenance(
   model: 'source-model',
@@ -78,11 +81,14 @@ void main() {
           );
           await incoming.response.close();
         });
-        final records = ControlledRecords();
+        final records = AtomicRecords();
         await seed(records);
+        final failed = boundFailure(records);
+        await saveFailure(records, failed);
         final value = await ApprovedSourceProposer(records).propose(
           project: project,
           boardTaskId: 'Tanalyze',
+          repairCandidate: failed,
           originals: originals,
           config: LocalModelConfig(
             baseUrl: 'http://127.0.0.1:${server.port}/v1',
@@ -94,6 +100,12 @@ void main() {
         expect(body['model'], value.modelRequest!.model);
         expect(body['max_tokens'], value.modelRequest!.outputTokens);
         expect(body['max_tokens'], 4096);
+        final attempt = RepairAttemptStore(
+          records,
+          project.id,
+        ).load().attempts.single;
+        expect(attempt.modelRequest!.model, body['model']);
+        expect(attempt.modelRequest!.outputTokens, body['max_tokens']);
         expect(
           value.modelRequest!.toJson().keys,
           unorderedEquals(['version', 'model', 'outputTokens']),

@@ -191,3 +191,19 @@ journals, promotion/build history and rollback retain the metadata in their exis
 atomic records. No storage key changes or destructive migration occur. Unprepared
 review proposals remain session-only; the repair-attempt journal's separate request
 provenance and per-project model selection remain pending.
+
+
+## Repair-attempt request identity — issue #396 / F22
+
+Each new `studio.repairAttempts.v1.<projectId>` attempt optionally stores app-authored
+`modelRequest` with the same strict version/model/outputTokens schema. Production
+repair requests reserve the configured model ID and actual fixed 4096-token ceiling
+atomically before transport; terminal updates retain that snapshot. Reserved means
+request intent, not proof that transport dispatched or inference ran. Failed and
+cancelled attempts retain identity without claiming a completed proposal. No endpoint
+is stored. The failure snapshot's sourceRequest describes the previous candidate,
+not the new repair request. Older attempts omit modelRequest and remain unknown.
+Explicit null, unknown fields, malformed identities and other ceilings fail closed;
+corrupt journals are preserved and block new reservations. Budgets, authorization,
+conditional writes and storage namespace/version are unchanged. Per-project model
+selection and verified loaded-model/revision remain pending.
