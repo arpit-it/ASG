@@ -114,6 +114,68 @@ class _AskScreenState extends State<AskScreen> {
                           }
                         : null,
                   ),
+                  const SizedBox(height: 12),
+                  InputDecorator(
+                    decoration: const InputDecoration(
+                      labelText: 'Conversation model connection',
+                    ),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton<int>(
+                        value: controller.connectionPreset == null ? -1 : -2,
+                        isExpanded: true,
+                        items: [
+                          const DropdownMenuItem(
+                            value: -1,
+                            child: Text('Global model settings'),
+                          ),
+                          if (controller.connectionPreset != null)
+                            DropdownMenuItem(
+                              value: -2,
+                              child: Text(
+                                'Selected: ${controller.connectionPreset!.name}',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          for (var i = 0; i < controller.presets.length; i++)
+                            DropdownMenuItem(
+                              value: i,
+                              child: Text(
+                                controller.presets[i].name,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                        ],
+                        onChanged: controller.canChangeConversation
+                            ? (index) {
+                                if (index == null || index == -2) return;
+                                controller.choosePreset(
+                                  index == -1
+                                      ? null
+                                      : controller.presets[index],
+                                );
+                              }
+                            : null,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    controller.connectionPreset == null
+                        ? 'Uses current global settings for each request. New conversations start here.'
+                        : 'Requested model: ${controller.connectionPreset!.config.model} · output ceiling ${controller.connectionPreset!.config.chatOutputTokens} tokens. This conversation retains a connection snapshot even if its preset changes.',
+                  ),
+                  const Text(
+                    'Selection does not load or test a model, verify loaded weights, or change global settings. New conversation choices are saved with the first question.',
+                  ),
+                  TextButton(
+                    onPressed: controller.canChangeConversation
+                        ? controller.refreshPresets
+                        : null,
+                    child: const Text('Refresh saved connection presets'),
+                  ),
+                  if (controller.presetError != null)
+                    Text(controller.presetError!),
                   if (controller.error != null)
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 12),

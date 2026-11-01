@@ -207,3 +207,14 @@ Explicit null, unknown fields, malformed identities and other ceilings fail clos
 corrupt journals are preserved and block new reservations. Budgets, authorization,
 conditional writes and storage namespace/version are unchanged. Per-project model
 selection and verified loaded-model/revision remain pending.
+
+
+Ask conversation connection selection (F22 / issue #396): optional
+`connectionPreset` in `studio.ask.v1` stores a validated named local HTTP connection
+snapshot (endpoint, requested model and chat output ceiling). Absent means current
+global settings per request; explicit null/malformed values are rejected. Existing
+conversation choices publish atomically before activation; new choices persist with
+the first question. Preset edits/removal do not alter snapshots. Ask is not included
+in project archives; endpoint snapshots are local configuration, never reply
+provenance or verified loaded-model identity. No credentials are accepted in local
+endpoints. Corrupt history remains retained/isolated by StudioDatabase.

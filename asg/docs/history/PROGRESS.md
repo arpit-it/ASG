@@ -7769,3 +7769,97 @@ No fresh inference, stable-app replacement, model download or settings change.
 Status Awaiting merge: plugin publication, independent exact-final review, required
 CI and protected reviewer merge remain gates. Logs /private/tmp/asg396-repair-*.log.
 Recorded 2026-11-01T22:01:37.646491+00:00
+
+
+### Repair-attempt requested-model provenance verified merged — #396 / PR #412
+
+Bounded increment Done. Independent review5730483729/finalgate5730502442
+approved exactc67bade3c2cdb09a960d8a71d3842fae8b138b41; testedlocal
+a4cd887534833b049c73138a31f6fbd106bd4cf0 has identicaltree
+82914537175a3d89df2149d1c27ff02d23a7d797. Independent105Flutter/nineinventory
+tests passed; all12remote blobs and437validation inputs matched. No blockers.
+RequiredCI41355069659 completed/success: Flutter124993271012 formatter309/
+analyzer clean,1082Ubuntu tests/12skips,17Chrome,web/Wasm and real independent
+generated-project resolve/analyze/test/render/build/serve; Python124993270855
+141tests/four explicit CI skips. ParentMac1088Flutter/nine skips,16focused,
+141Python/two skips,format/analyzer/web/macOS passed. No fresh inference claim.
+
+Reviewer protected-plugin squash merged https://github.com/arpit-it/ASG/pull/412
+as6ab1c79dbe4993ac82b496eda9c92585503cb344 at2026-11-01T22:09:05Z. Parent
+freshly plugin-verified merged PR,currentmain,signed merge/tree/soleparentae21f5f7
+and both requiredCI jobs. Guarded localmain synchronization passed: main/origin-main
+0/0,indexempty,both unrelatedIDE edits byte-identical. Evidence/private/tmp/asg412-
+publication.json,/private/tmp/asg412-reviewed-merge.json,/private/tmp/asg412-safe-sync.py.
+Both automation labels applied; PR attached. Finalmerge bookkeeping retained for
+the next normal reviewed development PR.
+
+Issue396 remains open for explicit per-project/chat/run model selection and
+remaining verified profile/context identity/real-model evidence. FullF22/F15 stay
+unchecked; unavailable-platform acceptance Deferred400. Existing runtime health
+ready/MLX/Metal/Qwen3.8-27B-4bit after authorized read (initial sandboxURLError);
+no generation/load/settings action. No newissue/download/install/stableapp/data/
+externaldeployment/cadence/notification changes.
+Recorded 2026-11-01T22:09:41.752249+00:00
+
+
+### F22 durable Ask conversation model selection — issue #396
+
+Selected `396-ask-model-selection` from verified main6ab1c79d (PR #412).
+No competing active ASG run or open PR at selection. Existing F09, preset and Ask
+foundations provide the technical prerequisites; unavailable-platform acceptance
+remains Deferred #400, full F22/F15 unchecked. Reuse #396, no new issue.
+
+Scope: explicit idle-only Ask conversation connection snapshots from saved named
+presets, global defaults for new/legacy chats, durable before activation for saved
+chats and atomic with the first question for new chats. Preset edits/removal cannot
+retarget a saved conversation. Requests capture selected config and preserve exact
+reply provenance. No global setting mutation, model load or verified support claim.
+Project/run selection and verified profile/inference evidence remain Pending.
+
+Acceptance: distinct chat routing, native reopen/legacy, actual loopback HTTP model
+and ceiling agreement, failed save preserves old choice/history, corruption refuses
+overwrite, busy/unsaved-answer/disposal guards, narrow 320px 2x-text interaction.
+26 focused tests passed; initial offscreen widget finder corrected with actual
+scrolling. Full checks/builds/publication/review/required CI remain gates.
+Initial full-suite license scan sees ignored local Python environment; clean tracked
+source rerun in /private/tmp/asg-selection-validation/asg avoids that contamination.
+Issue scope updated through proper issue tool preserving the complete previous body.
+Status In progress. Recorded 2026-11-01T22:16:37.847605+00:00.
+
+
+Validation for Ask selection: final clean tracked-source Flutter1094 passed/nine
+explicit live/platform skips,26 focused checks passed, actual Chrome IndexedDB
+reopen passed. Formatter310 unchanged, analyzer clean, release web/Wasm dry run
+and macOS debug builds passed on final runtime source. Seven Python suites141
+tests/two explicit skips passed after isolated confinement retest; initial parallel
+CPU/confinement startup timing failures did not recur in final validation. Missing
+root LICENSE in the first clean copy was corrected; the entire suite was rerun.
+All367 tracked runtime/test/tool/assets/config validation inputs remain identical.
+Historical inventory refreshed without changing observations or claiming current
+inference. Runtime read ready/MLX/Metal/Qwen3.8-27B-4bit; no fresh generation, model
+load/download, stable-app replacement or global settings change.
+Status Awaiting merge: exact-tree plugin publication, independent final-revision
+review, required CI and protected reviewer merge remain gates. #396 remains open
+for project/run selection and verified profiles; F22/F15 remain unchecked.
+Logs/private/tmp/asg-selection-*.log. Recorded 2026-11-01T22:21:36.741733+00:00.
+
+
+PR #413 review5730556818 found P2: reselecting the same preset in a new Ask
+conversation left FormField index0 stale; removing/refreshing its source preset
+then asserted. Replaced the field with a controller-valued DropdownButton inside
+InputDecorator, eliminating retained selection state. Expanded the real320px2x UI
+test with same-object reselection, removal/refresh and selected snapshot/value-2
+assertions. Changed Selected label to reflect an unsaved new-conversation draft.
+26 focused checks passed. Final full checks/builds and fresh exact-final independent
+review/CI/merge required; no merge claimed. Recorded 2026-11-01T22:25:55.454708+00:00.
+
+
+Review fix revalidated: full corrected tracked-source1094Flutter passed/nine
+explicit skips; exact narrow reselection/removal-refresh regression and Ask flows
+pass. Formatter310 unchanged, analyzer clean, web release/Wasm and macOS debug
+rebuilds passed; refreshed historical inventory nine tests passed. All367 final
+validation inputs and inventory match the tested copy. Python transport/policy
+sources unchanged from141passing fixtures/two skips. Awaiting normal follow-up
+publication, fresh exact-final independent review, new required CI and protected
+merge; blocking review5730556818 must be resolved on corrected head.
+Recorded 2026-11-01T22:29:33.637452+00:00.

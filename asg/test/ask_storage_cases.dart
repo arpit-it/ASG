@@ -2,6 +2,9 @@
 // Copyright 2026 Arpit Sinha
 
 import 'package:asg/controllers/ask_controller.dart';
+import 'package:asg/models/local_model_config.dart';
+import 'package:asg/models/model_connection_preset.dart';
+import 'package:asg/services/model_settings_store.dart';
 import 'package:asg/services/ask_store.dart';
 import 'package:asg/services/model_provider.dart';
 import 'package:asg/services/studio_database.dart';
@@ -28,10 +31,17 @@ Future<void> verifyAskStorage(DatabaseFactory factory, String name) async {
       'studio.chat.v1.unrelated',
       '[{"role":"user","content":"project private"}]',
     );
+    await ModelSettingsStore(records).savePresets([
+      const ModelConnectionPreset(
+        name: 'Retained',
+        config: LocalModelConfig(model: 'disk-selected', chatOutputTokens: 512),
+      ),
+    ]);
     final controller = AskController(
       AskStore(records),
       createProvider: (_) => _Answer(),
     )..load();
+    await controller.choosePreset(controller.presets.single);
     expect(await controller.send('Explain a future Ω'), isTrue);
     controller.select(null);
     expect(await controller.send('Explain a stream'), isTrue);
@@ -47,7 +57,9 @@ Future<void> verifyAskStorage(DatabaseFactory factory, String name) async {
       )..load();
       expect(reopened.history.length, 2);
       expect(reopened.selectedId, 'ask-2');
+      expect(reopened.connectionPreset, isNull);
       reopened.select('ask-1');
+      expect(reopened.connectionPreset!.config.model, 'disk-selected');
       expect(reopened.messages.first.content, 'Explain a future Ω');
       expect(reopened.messages.last.content, contains('final n = 1;'));
       expect(reopened.messages.last.modelRequest!.model, isNotEmpty);
