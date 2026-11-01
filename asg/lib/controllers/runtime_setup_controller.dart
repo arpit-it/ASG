@@ -15,6 +15,7 @@ import '../services/model_settings_store.dart';
 import '../services/runtime_setup_store.dart';
 import '../services/runtime_connection.dart';
 import '../services/runtime_host.dart';
+import '../services/cpu_environment_preparation_host.dart';
 import 'base_controller.dart';
 import 'model_settings_controller.dart';
 
@@ -301,6 +302,45 @@ class RuntimeSetupController extends BaseController {
     if (isDisposed) return;
     _status =
         'Runtime helper ready for ${backend.label}. Model loading and memory adequacy remain unverified.';
+  });
+
+  /// API-only opt-in; preparation never establishes CPU inference support.
+  Future<void> prepareCpuEnvironment(
+    String python, {
+    required bool experimentalCpu,
+  }) => _action(() async {
+    if (!experimentalCpu || python.trim().isEmpty) {
+      throw const FormatException(
+        'Choose Python and explicitly consent to experimental CPU preparation.',
+      );
+    }
+    final target = host;
+    if (!target.supported || target is! CpuEnvironmentPreparationHost) {
+      throw StateError(
+        'Experimental CPU preparation is unavailable on this host.',
+      );
+    }
+    invalidateCapabilities();
+    _status = 'Checking installed experimental CPU dependencies without loading weights…';
+    update();
+    try {
+      await (target as CpuEnvironmentPreparationHost).prepareCpuEnvironment(
+        python.trim(),
+        experimentalCpu: true,
+      );
+    } catch (_) {
+      if (isDisposed) return;
+      _status = 'Experimental CPU preparation failed.';
+      throw StateError(
+        'Could not check experimental CPU dependencies. Check the selected Python '
+        'interpreter, installed Torch, Transformers and safetensors, then retry. '
+        'Model loading and memory adequacy remain unverified.',
+      );
+    }
+    if (isDisposed) return;
+    _status =
+        'Experimental CPU dependencies checked. Model loading, memory '
+        'adequacy and inference remain unverified. Connection settings are unchanged.';
   });
   Future<void> saveSetup(RuntimeSetup values) => _action(() async {
     await _saveSetup(values);
