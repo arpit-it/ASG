@@ -133,7 +133,7 @@ Unavailable hardware blocks only the corresponding real-host acceptance, not imp
   - Delivery: [PR #347](https://github.com/arpit-it/ASG/pull/347). Initial independent review found retry rollback overcount and inherited-pipe completion hang; both corrected with actual regressions. Native isolated UI observed below-button progress/speed, Pause at 5 MiB, Resume through 7.8 MiB and Stop retaining partial bytes. Final head d583ccbb/tree031725f4 approved in reviews5723106296/finalgate5723151483; requiredCI41208499529 passed. Protectedmerge07018365f0399d7047286baf01154fbd33a3890d at2026-10-31T14:12:20Z verified; issue346 closed. Full delivery evidence below.
   - Validation: deterministic local transfer/process fixtures, Python ownership/filter/telemetry regressions, Flutter protocol/controller/responsive UI tests, full format/analyze/test, web/macOS builds and independent exact-final review/required CI/protected merge. Mark Done only after verified merge; larger-model switch remains separately subject to actual inference.
 - [ ] F15 Hardware-aware inference backends — In progress (CPU implementation; non-Apple CPU/CUDA live validation pending); depends on F09
-  - CPU worker dispatch recovery — Awaiting merge: reused [issue #356](https://github.com/arpit-it/ASG/issues/356), `356-cpu-dispatch-recovery`. Private HTTP503, honest idle state, abandoned-queue exclusion and successful retry; actual HTTP acceptance and review gates in the ledger below. Full F15/live milestones remain pending.
+  - CPU worker dispatch recovery — Done through verified [PR #395](https://github.com/arpit-it/ASG/pull/395) merge49101166 (2026-11-01T17:57:11Z), finalgate5729457465/requiredCI41333492514 passed: reused [issue #356](https://github.com/arpit-it/ASG/issues/356), `356-cpu-dispatch-recovery`. Private HTTP503, honest idle state, abandoned-queue exclusion and successful retry; actual HTTP acceptance and review gates in the ledger below. Full F15/live milestones remain pending.
   - CPU request framing — Done through verified [PR #394](https://github.com/arpit-it/ASG/pull/394) merge8dace531 (2026-11-01T16:58:44Z), finalreview5729238281/requiredCI41328455583 passed: reused/reopened [issue #356](https://github.com/arpit-it/ASG/issues/356), `356-cpu-request-framing`, from verified PR #393 mergeefdc4e91. Actual conflicting Content-Length and Content-Length/Transfer-Encoding requests return HTTP200 and invoke generation. Require private HTTP400 for duplicate length or any unsupported transfer encoding before body read/backend work; actual sockets, idle health and valid retry for both transports. Delivered CPU HTTP foundation is the prerequisite; no unavailable inference host is needed for this bounded correction. Full F15/live milestones remain pending.
   - CPU malformed-origin rejection — Done through verified [PR #393](https://github.com/arpit-it/ASG/pull/393) mergeefdc4e91 (2026-11-01T16:42:06Z), finalgate5729156526/requiredCI41327073121 passed: reused [issue #356](https://github.com/arpit-it/ASG/issues/356), `356-cpu-origin-rejection`; actual parser-failure disconnect reproduced. Private rejection/no backend calls/idle/retry, preserved GET policy and valid local CORS are acceptance. Full F15/live milestones remain pending; see ledger below.
   - CPU incomplete request body — Done through verified [PR #392](https://github.com/arpit-it/ASG/pull/392) merge0f5362d7 (2026-11-01T16:09:59Z), finalgate5728982512/requiredCI41324293296 passed: reopened [issue #356](https://github.com/arpit-it/ASG/issues/356), `356-cpu-incomplete-body`; actual valid-JSON EOF before declared length starts inference on main6d4dfefd. Reject before parsing/backend work; actual socket/idle/retry acceptance and review gates in the ledger below. Full F15/live milestones remain pending.
@@ -186,6 +186,7 @@ Unavailable hardware blocks only the corresponding real-host acceptance, not imp
   - Bounded delivery milestones: (1) backend contract/capability discovery and an MLX regression; (2) explicit CPU setup/inference on a supported non-Apple desktop with compatible weights; (3) explicit CUDA setup/inference on a CUDA host. Each milestone needs its own focused issue, saved settings/restart/error tests and real-host evidence. Isolate optional backend dependencies so missing MLX cannot prevent CPU/CUDA startup; validate configurable executable/model paths including spaces. Do not claim CPU adequacy for a 9B model without measured successful operation within the configured limits.
   - Delivery: create/reuse a narrowly scoped issue when selected; remain unchecked until all promised backend milestones, independent review, required checks and verified merges. CPU and CUDA evidence must be recorded separately; unavailable hardware is a recorded blocker, never a fixture-based completion claim.
 - [ ] F22 Hardware-aware local model catalog and selection — In progress; depends on F09 and F15
+  - Named local connection presets — Awaiting merge: [issue #396](https://github.com/arpit-it/ASG/issues/396), `396-model-connection-presets`. Durable named connection drafts, explicit replacement/removal and draft-only restore; Save/Test remain separate. Depends on delivered F09 settings/RecordStorage, not unavailable CPU/CUDA live inference. Per-project/run provenance and larger-model inference remain pending; final evidence in ledger below.
   - Delivered owner-selected visibility increment — Done: [issue #354](https://github.com/arpit-it/ASG/issues/354), `354-current-preferred-model`, [PR #355](https://github.com/arpit-it/ASG/pull/355). Testedlocal e107437 / published62431105 share tree2a4b131a324949d02d88affe355049f6164e0131. Fresh independent final review5724199193 and requiredCI41222296670 passed; verified protectedmerge781f7e95bfd1ba428383d383532ccb15e3474b93 at2026-10-31T18:06:54Z, issue closed. Current model observed on open/refresh with truthful preferred/current labels, separate from new-load gates. FullF22 remains unchecked.
   - Delivered owner-selected curated-catalog increment: [issue #348](https://github.com/arpit-it/ASG/issues/348), `348-preferred-role-models`, [PR #349](https://github.com/arpit-it/ASG/pull/349), protectedmerge37b3470d91b860b118b7c85bd47df5f2b13fd7de at2026-10-31T15:33:06Z. Exactfinalreview5723547556/finalgate5723571602 and requiredCI41214940551 passed. Checked Qwen3.8/3.5 new-load order, separate current-runtime observation with no source-proof/RAM credit, advanced discovery retained. FullF15/F22 profile/backend/inference milestones remain outstanding.
   - Delivered owner-selected discovery milestone: [issue #261](https://github.com/arpit-it/ASG/issues/261), `261-coding-model-picker`, [PR #262](https://github.com/arpit-it/ASG/pull/262), merge `1da17314e297a246dbd9992e1fb126b6307fd671`: searchable MLX candidate picker, hardware estimates and explicit metadata checks before pinned download-form selection. F17 stays In progress; F15 and full F22 profile/inference acceptance remain outstanding.
@@ -7981,3 +7982,71 @@ Publication: [PR #395](https://github.com/arpit-it/ASG/pull/395), branch
 validated tree0d8ba3e574d74da124fb6ff1b34828a2e803c0d9. This follow-up changes
 only delivery links; all321 tested source/config inputs remain unchanged.
 Independent final-revision review, required CI and merge remain pending.
+
+
+### CPU worker dispatch recovery verified merged — issue #356 / PR #395
+
+Independent approval5729439820/finalgate5729457465 approved exact
+`f177b86d673746f1b02e9f8fae697a83d77afeaf` / tree
+`6764aeb79665aab33e7bf3bbad48d0b5cf3a9923` (localbfe444bb identical).
+No blockers; independent74 backend/actualHTTP tests(one live skip) and extra actual
+Thread.start failure/held accepted retry/concurrent429 probes passed. RequiredCI
+41333492514 completed/success: Flutter124928352241 and Python124928352346.
+Reviewer inspected actual logs: formatter301/analyzer,Ubuntu1045passes12skips,
+Chrome15,web/Wasm and real independent generated-project resolve/analyze/test/
+render/build/serve; all seven Python suites passed with explicit live/platform skips.
+Parent Mac1051/nine skips,web/macOSdebug and Python137/two skips are separate
+evidence; none establishes CPU/CUDA live inference or full F15 completion.
+
+Reviewer protected-plugin squash merged [PR #395](https://github.com/arpit-it/ASG/pull/395)
+as `49101166104a3fa1a16660c8a723363dc6681409` at2026-11-01T17:57:11Z;
+issue356closed/completed17:57:12Z. Parent freshly plugin-verified PR/issue/main/CI.
+Signed rawmerge reviewedtree/soleparent8dace531 verified; guarded local-only sync
+passed main/origin-main0/0,indexempty,both IDEfiles byte-identical. Manifest
+`/private/tmp/asg356-dispatch-ide.json`; guard`/private/tmp/asg395-safe-sync.py`;
+rawmerge`/private/tmp/asg395-reviewed-merge.json`. PR attached and both automation
+labels applied. Bounded dispatch increment Done; full F15 unchecked/In progress,
+CPUexperimental outside normal choices; non-AppleCPU/CUDA real inference pending.
+No model load/download/install/settings/data/stableapp/cadence/notification changes
+or newissue/FID. Final merge bookkeeping retained for next reviewed increment.
+Recorded 2026-11-01T17:57:49.618164+00:00
+
+
+### F22 named local connection presets — issue #396
+
+Selected [issue #396](https://github.com/arpit-it/ASG/issues/396) on
+`396-model-connection-presets` from verified PR #395 merge49101166. Fresh
+GitHub-plugin searches found no open issue/PR or competing active ASG run.
+Inspected F15 CPU loader/generation and shared HTTP/tests first; no additional
+concrete CPU defect established. This does not establish all CPU work exhausted.
+F22 has one saved connection and no reusable profiles. Delivered F09 settings/local
+transport and transactional RecordStorage are sufficient technical dependencies
+for Mac-verifiable connection presets; non-Apple CPU/CUDA live milestones remain
+pending and experimental CPU stays outside normal supported choices.
+
+Scope/acceptance: up to20 named local HTTP connection drafts with exact server ID
+and requested chat token limit; create, explicit selected replacement, remove and
+restore all fields without applying active settings or loading/verifying a model.
+Separate strict versioned record; preserve corrupt records and unrelated settings,
+failed-write draft/list, busy/disposal guards and stale-dialog refusal with atomic
+conditional production publication. Preserve legacy settings keys/defaults and
+existing Save/Test. Reopen native/IndexedDB, corruption/failure/busy/disposal and
+actual dialog regressions; format/analyze/full Flutter/web/macOS checks. No project/
+run model provenance, compatibility or larger-model inference claim. Full F15/F22
+remain In progress/unchecked. Status In progress pending final validation, exact-tree
+plugin publication, independent final-revision review, CI and protected merge.
+Recorded 2026-11-01T18:17:37.267043+00:00
+
+
+Final local validation for #396: formatter304 files unchanged, analyzer clean;
+isolated exact-source Flutter1057 passed/nine explicit opt-in skips; actual Chrome
+IndexedDB6 passed; release web/Wasm and macOS debug candidate builds passed.
+All324 validation inputs byte-identical. Initial checkout license scan included
+ignored third-party MLX environment; isolated tracked-source rerun excludes it.
+Isolated macOS build first lacked generated plugin metadata; cached offline pub
+get regenerated it, lockfile unchanged, build passed. CPU backend54 tests passed/
+one opt-in skip. Fresh hostDarwin arm64/currentPythonTorch absent; retained8765
+healthURLError; no actual inference performed. Stable app/data/settings untouched.
+Status Awaiting merge: plugin exact-tree publication, independent final-revision
+review, required CI and protected reviewer merge remain gates. F15/F22 remain
+uncheckmarked/In progress. Recorded 2026-11-01T18:20:36.143365+00:00

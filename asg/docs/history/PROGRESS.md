@@ -7182,3 +7182,71 @@ Publication: [PR #395](https://github.com/arpit-it/ASG/pull/395), branch
 validated tree0d8ba3e574d74da124fb6ff1b34828a2e803c0d9. This follow-up changes
 only delivery links; all321 tested source/config inputs remain unchanged.
 Independent final-revision review, required CI and merge remain pending.
+
+
+### CPU worker dispatch recovery verified merged — issue #356 / PR #395
+
+Independent approval5729439820/finalgate5729457465 approved exact
+`f177b86d673746f1b02e9f8fae697a83d77afeaf` / tree
+`6764aeb79665aab33e7bf3bbad48d0b5cf3a9923` (localbfe444bb identical).
+No blockers; independent74 backend/actualHTTP tests(one live skip) and extra actual
+Thread.start failure/held accepted retry/concurrent429 probes passed. RequiredCI
+41333492514 completed/success: Flutter124928352241 and Python124928352346.
+Reviewer inspected actual logs: formatter301/analyzer,Ubuntu1045passes12skips,
+Chrome15,web/Wasm and real independent generated-project resolve/analyze/test/
+render/build/serve; all seven Python suites passed with explicit live/platform skips.
+Parent Mac1051/nine skips,web/macOSdebug and Python137/two skips are separate
+evidence; none establishes CPU/CUDA live inference or full F15 completion.
+
+Reviewer protected-plugin squash merged [PR #395](https://github.com/arpit-it/ASG/pull/395)
+as `49101166104a3fa1a16660c8a723363dc6681409` at2026-11-01T17:57:11Z;
+issue356closed/completed17:57:12Z. Parent freshly plugin-verified PR/issue/main/CI.
+Signed rawmerge reviewedtree/soleparent8dace531 verified; guarded local-only sync
+passed main/origin-main0/0,indexempty,both IDEfiles byte-identical. Manifest
+`/private/tmp/asg356-dispatch-ide.json`; guard`/private/tmp/asg395-safe-sync.py`;
+rawmerge`/private/tmp/asg395-reviewed-merge.json`. PR attached and both automation
+labels applied. Bounded dispatch increment Done; full F15 unchecked/In progress,
+CPUexperimental outside normal choices; non-AppleCPU/CUDA real inference pending.
+No model load/download/install/settings/data/stableapp/cadence/notification changes
+or newissue/FID. Final merge bookkeeping retained for next reviewed increment.
+Recorded 2026-11-01T17:57:49.618164+00:00
+
+
+### F22 named local connection presets — issue #396
+
+Selected [issue #396](https://github.com/arpit-it/ASG/issues/396) on
+`396-model-connection-presets` from verified PR #395 merge49101166. Fresh
+GitHub-plugin searches found no open issue/PR or competing active ASG run.
+Inspected F15 CPU loader/generation and shared HTTP/tests first; no additional
+concrete CPU defect established. This does not establish all CPU work exhausted.
+F22 has one saved connection and no reusable profiles. Delivered F09 settings/local
+transport and transactional RecordStorage are sufficient technical dependencies
+for Mac-verifiable connection presets; non-Apple CPU/CUDA live milestones remain
+pending and experimental CPU stays outside normal supported choices.
+
+Scope/acceptance: up to20 named local HTTP connection drafts with exact server ID
+and requested chat token limit; create, explicit selected replacement, remove and
+restore all fields without applying active settings or loading/verifying a model.
+Separate strict versioned record; preserve corrupt records and unrelated settings,
+failed-write draft/list, busy/disposal guards and stale-dialog refusal with atomic
+conditional production publication. Preserve legacy settings keys/defaults and
+existing Save/Test. Reopen native/IndexedDB, corruption/failure/busy/disposal and
+actual dialog regressions; format/analyze/full Flutter/web/macOS checks. No project/
+run model provenance, compatibility or larger-model inference claim. Full F15/F22
+remain In progress/unchecked. Status In progress pending final validation, exact-tree
+plugin publication, independent final-revision review, CI and protected merge.
+Recorded 2026-11-01T18:17:37.267043+00:00
+
+
+Final local validation for #396: formatter304 files unchanged, analyzer clean;
+isolated exact-source Flutter1057 passed/nine explicit opt-in skips; actual Chrome
+IndexedDB6 passed; release web/Wasm and macOS debug candidate builds passed.
+All324 validation inputs byte-identical. Initial checkout license scan included
+ignored third-party MLX environment; isolated tracked-source rerun excludes it.
+Isolated macOS build first lacked generated plugin metadata; cached offline pub
+get regenerated it, lockfile unchanged, build passed. CPU backend54 tests passed/
+one opt-in skip. Fresh hostDarwin arm64/currentPythonTorch absent; retained8765
+healthURLError; no actual inference performed. Stable app/data/settings untouched.
+Status Awaiting merge: plugin exact-tree publication, independent final-revision
+review, required CI and protected reviewer merge remain gates. F15/F22 remain
+uncheckmarked/In progress. Recorded 2026-11-01T18:20:36.143365+00:00

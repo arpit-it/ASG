@@ -20,6 +20,7 @@ class _ModelSettingsState extends State<ModelSettings> {
   late final initial = controller.initial;
   late final url = TextEditingController(text: initial.baseUrl);
   late final model = TextEditingController(text: initial.model);
+  final presetName = TextEditingController();
   late int chatOutputTokens = initial.chatOutputTokens;
   LocalModelConfig get config => LocalModelConfig(
     baseUrl: url.text.trim(),
@@ -42,6 +43,7 @@ class _ModelSettingsState extends State<ModelSettings> {
     controller.dispose();
     url.dispose();
     model.dispose();
+    presetName.dispose();
     super.dispose();
   }
 
@@ -75,6 +77,7 @@ class _ModelSettingsState extends State<ModelSettings> {
             ),
             const SizedBox(height: 16),
             DropdownButtonFormField<int>(
+              key: ValueKey(chatOutputTokens),
               initialValue: chatOutputTokens,
               isExpanded: true,
               decoration: const InputDecoration(
@@ -101,6 +104,85 @@ class _ModelSettingsState extends State<ModelSettings> {
             const Text(
               'On Android Emulator, use 10.0.2.2 instead of 127.0.0.1 to reach this Mac. Physical phones need a separate secured connection; it is not configured here.',
             ),
+            const SizedBox(height: 16),
+            const Text('Saved connection presets'),
+            DropdownButton<String>(
+              value: controller.selectedPreset,
+              hint: const Text('Restore a preset into draft'),
+              isExpanded: true,
+              items: controller.presets
+                  .map(
+                    (p) => DropdownMenuItem(
+                      value: p.name,
+                      child: Text(p.name, overflow: TextOverflow.ellipsis),
+                    ),
+                  )
+                  .toList(),
+              onChanged:
+                  controller.busy ||
+                      controller.presetsLoadFailed ||
+                      controller.settingsLoadFailed
+                  ? null
+                  : (name) {
+                      if (name == null) return;
+                      final restored = controller.selectPreset(name);
+                      if (restored == null) return;
+                      setState(() {
+                        url.text = restored.baseUrl;
+                        model.text = restored.model;
+                        chatOutputTokens = restored.chatOutputTokens;
+                        presetName.text = name;
+                      });
+                    },
+            ),
+            TextField(
+              controller: presetName,
+              enabled:
+                  !controller.busy &&
+                  !controller.presetsLoadFailed &&
+                  !controller.settingsLoadFailed,
+              maxLength: 64,
+              decoration: const InputDecoration(labelText: 'New preset name'),
+            ),
+            Wrap(
+              spacing: 8,
+              children: [
+                OutlinedButton(
+                  onPressed:
+                      controller.busy ||
+                          controller.presetsLoadFailed ||
+                          controller.settingsLoadFailed
+                      ? null
+                      : () => controller.savePreset(presetName.text, config),
+                  child: const Text('Save new preset'),
+                ),
+                OutlinedButton(
+                  onPressed:
+                      controller.busy ||
+                          controller.presetsLoadFailed ||
+                          controller.settingsLoadFailed ||
+                          controller.selectedPreset == null
+                      ? null
+                      : () => controller.savePreset(
+                          controller.selectedPreset!,
+                          config,
+                          replace: true,
+                        ),
+                  child: const Text('Replace selected'),
+                ),
+                TextButton(
+                  onPressed:
+                      controller.busy ||
+                          controller.presetsLoadFailed ||
+                          controller.settingsLoadFailed ||
+                          controller.selectedPreset == null
+                      ? null
+                      : controller.removePreset,
+                  child: const Text('Remove selected'),
+                ),
+              ],
+            ),
+            Text(controller.presetStatus),
             const SizedBox(height: 16),
             const Text(ModelSettingsController.requestLimits),
             const SizedBox(height: 16),
