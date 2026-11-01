@@ -19,6 +19,86 @@ CONFIG = {'architectures': ['Qwen3_5ForConditionalGeneration']}
 
 
 class CPUCheckpointTests(unittest.TestCase):
+    def test_inspection_report_is_private_and_does_not_start_runtime(self):
+        import qwen_server
+        import contextlib
+        import io
+        with tempfile.TemporaryDirectory(prefix='PRIVATE CPU inspection ') as temporary:
+            folder = Path(temporary)
+            (folder / 'config.json').write_text(json.dumps({**CONFIG, 'private': 'SECRET'}))
+            (folder / 'model.safetensors').write_bytes(b'12345')
+            (folder / 'other.safetensors').write_bytes(b'678')
+            (folder / 'alias.safetensors').symlink_to('model.safetensors')
+            (folder / 'model.safetensors.index.json').write_text(json.dumps({'weight_map': {
+                'SECRET': 'model.safetensors', 'b': 'alias.safetensors', 'c': 'other.safetensors'}}))
+            output = io.StringIO()
+            with patch.object(qwen_server, 'select_backend') as select, patch.object(qwen_server, 'load_backend') as load, patch.object(qwen_server, 'ThreadPoolExecutor') as worker, patch.object(qwen_server, 'ThreadingHTTPServer') as server, patch.object(qwen_server, 'discover_capabilities') as discover, patch.object(qwen_server, 'Thread') as thread, patch.object(sys, 'argv', ['qwen_server.py', '--inspect-cpu-checkpoint', '--backend', 'cpu', '--experimental-cpu', '--model', str(folder), '--cpu-max-weight-bytes', '8']), contextlib.redirect_stdout(output):
+                qwen_server.main()
+            for operation in (select, load, worker, server, discover, thread):
+                operation.assert_not_called()
+            report = json.loads(output.getvalue())
+            self.assertEqual((report['schema_version'], report['backend'], report['device']), (1, 'torch', 'cpu'))
+            self.assertEqual((report['weight_bytes'], report['weight_file_count']), (8, 2))
+            self.assertEqual(report['readiness'], 'unverified')
+            self.assertIsNone(report['model_compatible'])
+            self.assertIsNone(report['memory_adequate'])
+            self.assertFalse(report['inference_verified'])
+            self.assertTrue(report['experimental'])
+            for private in (temporary, 'SECRET', 'model.safetensors', 'other.safetensors'):
+                self.assertNotIn(private, output.getvalue())
+
+    def test_inspection_rejects_incompatible_metadata_without_dependencies(self):
+        from qwen_server import inspect_cpu_checkpoint
+        with tempfile.TemporaryDirectory() as temporary:
+            folder = Path(temporary)
+            (folder / 'model.safetensors').write_bytes(b'fixture')
+            for config in ({'architectures': ['Other']}, {**CONFIG, 'quantization': {}},
+                           {**CONFIG, 'quantization_config': {}},
+                           {'architectures': ['Qwen3_5ForConditionalGeneration', 'Other']}):
+                with self.subTest(config=config):
+                    (folder / 'config.json').write_text(json.dumps(config))
+                    with patch.object(backends, 'discover_capabilities', side_effect=AssertionError('dependency discovery')), self.assertRaises(ValueError):
+                        inspect_cpu_checkpoint(folder)
+
+    def test_isolated_inspection_cli_success_failure_and_option_consent(self):
+        with tempfile.TemporaryDirectory(prefix='PRIVATE CPU inspection ') as temporary:
+            root = Path(temporary)
+            for name in ('qwen_backends.py', 'qwen_server.py'):
+                shutil.copyfile(Path(__file__).with_name(name), root / name)
+            for name in ('torch', 'transformers', 'safetensors', 'mlx', 'mlx_lm'):
+                (root / (name + '.py')).write_text('raise AssertionError("optional import reached")')
+            folder = root / 'model with spaces'; folder.mkdir()
+            config = folder / 'config.json'
+            config.write_text(json.dumps(CONFIG))
+            (folder / 'model.safetensors').write_bytes(b'12345')
+            command = [sys.executable, '-B', '-S', str(root / 'qwen_server.py'), '--inspect-cpu-checkpoint']
+            consent = ['--backend', 'cpu', '--experimental-cpu', '--model', str(folder)]
+            result = subprocess.run([*command, *consent, '--cpu-max-weight-bytes', '5'], capture_output=True, text=True, timeout=10)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual(json.loads(result.stdout)['weight_bytes'], 5)
+            self.assertEqual(result.stderr, '')
+            invalid = [[], ['--backend', 'cpu'], ['--backend', 'mlx'],
+                       ['--backend', 'cpu', '--experimental-cpu'],
+                       [*consent, '--capabilities'], [*consent, '--probe-devices'],
+                       [*consent, '--parent-pid', '1'], [*consent, '--cpu-threads', '2'],
+                       [*consent, '--cpu-max-weight-bytes', '4'],
+                       ['--backend', 'cpu', '--experimental-cpu', '--model', str(root / 'missing PRIVATE')]]
+            for flags in invalid:
+                with self.subTest(flags=flags):
+                    result = subprocess.run([*command, *flags], capture_output=True, text=True, timeout=10)
+                    self.assertNotEqual(result.returncode, 0)
+                    self.assertEqual(result.stdout, '')
+                    self.assertNotIn(str(folder), result.stderr)
+                    self.assertNotIn('optional import reached', result.stderr)
+                    self.assertNotIn('Traceback', result.stderr)
+            for contents in ('{', json.dumps({'architectures': ['Other']}), json.dumps({**CONFIG, 'quantization': {}})):
+                config.write_text(contents)
+                result = subprocess.run([*command, *consent], capture_output=True, text=True, timeout=10)
+                self.assertEqual(result.returncode, 2)
+                self.assertEqual(result.stdout, '')
+                self.assertNotIn(str(folder), result.stderr)
+                self.assertNotIn('Traceback', result.stderr)
+
     def test_valid_single_sharded_and_internal_aliases(self):
         from qwen_server import validate_cpu_checkpoint
         with tempfile.TemporaryDirectory(prefix='CPU checkpoint ') as temporary:

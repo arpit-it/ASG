@@ -140,6 +140,27 @@ and metadata checks are preflight, not a filesystem sandbox: files may change
 before the trusted loader reads them. These bounds do not constrain tensor
 allocations or establish model memory adequacy.
 
+Before a controlled load, inspect a selected checkpoint without starting a runtime:
+
+```sh
+python -B tools/qwen_server.py --inspect-cpu-checkpoint --backend cpu \
+  --experimental-cpu --model "/path/to/local unquantized Qwen3.5"
+```
+
+This explicit operation emits schema-version-1 JSON with `backend: torch`,
+`device: cpu`, `experimental: true`, `readiness: unverified`, validated local
+structure, measured `weight_bytes` and distinct canonical `weight_file_count`.
+It uses the same bounded metadata/contained-file checks as startup and rejects
+incompatible architecture/quantization. It neither imports model libraries nor
+reads tensors, starts workers/server, probes devices or changes an existing
+runtime. Paths, tensor names and arbitrary checkpoint metadata are omitted.
+`model_compatible` and `memory_adequate` remain null; `inference_verified` is false.
+Tokenizer/tensor validity, installed dependencies and memory fit are unverified.
+Use the separate API preparation command above to check installed dependencies.
+Inspection requires the CPU consent/model flags and cannot combine with
+capabilities/device probes, parent monitoring or thread configuration. Failures
+produce private stderr with nonzero exit and no successful JSON report.
+
 For a controlled test, optionally add `--cpu-max-weight-bytes 1073741824`
 (example: 1 GiB) to refuse a checkpoint whose inspected safetensors footprint
 exceeds that positive integer. It is accepted only for explicit experimental

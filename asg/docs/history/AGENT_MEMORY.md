@@ -5455,3 +5455,45 @@ merge; exact tested tree will be published via GitHub plugin, with independent
 final review/required CI/verified protected merge still mandatory. PR and final
 review/merge identities will be recorded in the PR and next ledger reconciliation.
 Recorded 2026-11-01T06:01:45.827366+00:00
+
+
+### CPU startup byte ceiling verified merged — issue #365 / PR #366
+
+Independent final approval5726709978 reviewed exact4ba3f517ae199437b0d39289f4c64b82776d2915/tree daeb7e0dd31f92eacd56403b9ad81d4c346a4950, all six files and acceptance; no blockers. Independently48 backend/actualHTTP passes and one opt-in skip. RequiredCI41279204915 Python124767463556/Flutter124767463686 succeeded; reviewer inspected actual logs:977Linux/12skips,15Chrome,formatter287/analyzer,web/Wasm and real generated-project resolve/analyze/renderedinteraction/test/build/serve; Python32collector/9inventory/4download/40backend(one skip)/9HTTP/14command(one skip)/4confinement(two Linux skips). Parent112macOSPython/two skips,983macOSFlutter/nine skips/web/macOSdebug evidence remains separate; no fixture/skip establishes inference.
+
+Reviewer protected-plugin squashmerged https://github.com/arpit-it/ASG/pull/366 as da49382a59b224e8c097df120328cbe2863e0e11 at2026-11-01T06:07:25Z; issue365closed/completed06:07:26Z. Parent independently verified finalhead/mergedstate/issueclosure/currentmain and signed rawmerge exactreviewedtree/soleparent03139bcf. Guarded local-only object import/sync passed; main/origin-main0/0,indexempty,both unrelated IDEfiles byte-identical. Backup/private/tmp/asg365-primary-before-sync; guard/private/tmp/asg366-safe-sync.py. All GitHub access/publication/review/merge used connectedplugin; bothautomationlabels applied. Previous doc edits carried into reviewedtree.
+
+Bounded issue365 Done; fullF15 remains unchecked/Inprogress. Experimental CPU managed setup/portable-host integration and non-Apple CPU/CUDA live acceptance remain outstanding. No models/packages/downloads/inference/settings/stableapp/data replacement. No secondissue/task started; finalmerge bookkeeping retained locally for next normal reviewed increment. Fifteen-minute cadence/notification preference unchanged.
+Recorded 2026-11-01T06:08:01.351Z
+
+
+### Experimental CPU offline checkpoint inspection — issue #367
+
+Branch `367-cpu-inspection`, isolated `/private/tmp/asg-cpu-inspection`, from
+verified PR366 merge da49382a. Plugin found no open issue/PR or competing active
+ASG owner. F15 remains In progress; no new F ID. Scope: explicit no-load private
+schema-v1 selected-checkpoint report, reusing bounded metadata, canonical bytes
+and common declared-format checks. No optional dependency discovery/imports,
+tensor reads, worker/HTTP start, settings/runtime mutation or supported CPU UI.
+Isolated CLI tests include consent, option conflicts, spaced paths, malformed/
+incompatible metadata, ceiling refusal and import sentinels; direct tests check
+alias counts and absent startup side effects. Missing non-Apple CPU/CUDA hosts
+block live claims only; this preparation increment is independently testable on
+this Mac. Prior PR366 final review/CI/merge evidence carried into this branch;
+primary IDE/docs edits preserved. Status: In progress pending final validation,
+publication, independent exact-head review, required CI and protected merge.
+Recorded 2026-11-01T06:15:50.145287+00:00
+
+Validation:115 Python cases/two opt-in skips passed (42 backend passes/one skip;
+9 actual HTTP). Initial outer-sandbox loopback/nested-confinement denials passed
+on authorized rerun. Formatter287 unchanged, analyzer clean,983 Flutter tests/
+nine opt-in skips, release web/Wasm dry-run and macOS debug builds passed.
+Three new regressions exercise direct and real isolated CLI inspection, no
+optional imports/startup, single/sharded/canonical-alias byte counts, exact
+ceiling, privacy, missing folder, incompatible metadata and option consent.
+Existing runtime read-only health ready/idle/MLX/Metal/Qwen3.8-27B-4bit. No
+inference, model/package download/install, stable-app/data/settings replacement.
+Status: Awaiting merge. Tested tree will be published through the GitHub plugin;
+independent final-revision review and actual required CI gate protected merge.
+Final PR/review/merge identities belong in the PR and next ledger reconciliation.
+Recorded 2026-11-01T06:17:32.083963+00:00

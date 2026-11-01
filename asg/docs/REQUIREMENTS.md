@@ -150,7 +150,8 @@ Unavailable hardware blocks only the corresponding real-host acceptance, not imp
   - Delivered CPU dependency correction (PR #361, verified merge4cc1dd50/review5726609031/CI41276357161): [issue #360](https://github.com/arpit-it/ASG/issues/360), `360-cpu-dependencies`; include required safetensors in explicit dependency discovery and reject startup before loading. Done for this bounded correction; no full backend acceptance claim.
   - Delivered CPU checkpoint preflight (PR #363, verified merged7bb6f05; review5726637938/CI41277327955 passed): [issue #362](https://github.com/arpit-it/ASG/issues/362), `362-cpu-checkpoint`; validate contained config/index and nonempty safetensors shard manifests before worker/loader creation. Structural validation only; CPU remains experimental and real-host acceptance pending.
   - Delivered bounded metadata correction — Done: reopened [issue #362](https://github.com/arpit-it/ASG/issues/362), `362-cpu-metadata-bounds`, [PR #364](https://github.com/arpit-it/ASG/pull/364): config1MiB/index8MiB actual read limits and no duplicate CPU index read. Finalreview5726671793/requiredCI41278251584 passed; verified protectedmerge03139bcf at2026-11-01T05:53:49Z. CPU remains experimental; fullF15/live milestones remain pending.
-  - Active bounded CPU resource increment: [issue #365](https://github.com/arpit-it/ASG/issues/365), `365-cpu-weight-budget`; optional positive startup disk-byte ceiling, canonical alias deduplication and pre-loader rejection. In progress; no RAM quota, inference or full F15 completion claim. Exact acceptance/validation recorded in the delivery ledger below.
+  - Delivered bounded CPU resource increment — Done: [issue #365](https://github.com/arpit-it/ASG/issues/365), `365-cpu-weight-budget`, [PR #366](https://github.com/arpit-it/ASG/pull/366); optional startup disk-byte ceiling, canonical alias deduplication and pre-loader rejection. Finalreview5726709978/requiredCI41279204915 passed; verified protectedmerge da49382a at2026-11-01T06:07:25Z. No RAM quota, inference or full F15 completion claim; exact delivery ledger below.
+  - Active CPU offline inspection increment: [issue #367](https://github.com/arpit-it/ASG/issues/367), `367-cpu-inspection`. Startup-only checkpoint checks lacked a no-load report. Explicit opt-in inspection reuses bounded structural/format checks and returns private versioned disk-byte/file-count JSON before dependencies/workers/HTTP; no tensor/tokenizer/RAM/inference readiness claim. Acceptance: single/sharded/alias counts, ceiling and incompatible/invalid options, real isolated CLI/no optional imports/no startup, unchanged legacy behavior. Mac-verifiable preparation depends on delivered #358/#362/#365, not unavailable non-Apple CPU/CUDA hosts. Awaiting merge after local checks; independent final review, required CI and verified merge pending; full F15 unchecked.
   - Scope: separate Python backend loading/generation/device discovery behind a common contract; retain MLX, add Torch CPU first, then CUDA as separately verified increments. Keep model-format compatibility explicit: an MLX-quantized folder must not be assumed compatible with Torch. Keep existing configured HTTP runtime connections usable.
   - Application acceptance: setup displays detected host, available backend/device, selected model compatibility, readiness and actionable dependency/memory failures. Persist the explicit backend/device choice with backward-compatible defaults. Offer fallback with user consent; do not silently download weights, install packages or move an active request to another backend. Health must report the actual backend/device and unknown capabilities honestly.
   - Engineering acceptance: preserve streaming, deadlines, cancellation scope, offline local-weight loading, owned-process cleanup and diagnostic privacy across implementations. Configuration and launch arguments must avoid machine-specific paths. Unsupported hosts/models fail before launch and preserve saved settings and last working output.
@@ -6336,3 +6337,45 @@ merge; exact tested tree will be published via GitHub plugin, with independent
 final review/required CI/verified protected merge still mandatory. PR and final
 review/merge identities will be recorded in the PR and next ledger reconciliation.
 Recorded 2026-11-01T06:01:45.827213+00:00
+
+
+### CPU startup byte ceiling verified merged — issue #365 / PR #366
+
+Independent final approval5726709978 reviewed exact4ba3f517ae199437b0d39289f4c64b82776d2915/tree daeb7e0dd31f92eacd56403b9ad81d4c346a4950, all six files and acceptance; no blockers. Independently48 backend/actualHTTP passes and one opt-in skip. RequiredCI41279204915 Python124767463556/Flutter124767463686 succeeded; reviewer inspected actual logs:977Linux/12skips,15Chrome,formatter287/analyzer,web/Wasm and real generated-project resolve/analyze/renderedinteraction/test/build/serve; Python32collector/9inventory/4download/40backend(one skip)/9HTTP/14command(one skip)/4confinement(two Linux skips). Parent112macOSPython/two skips,983macOSFlutter/nine skips/web/macOSdebug evidence remains separate; no fixture/skip establishes inference.
+
+Reviewer protected-plugin squashmerged https://github.com/arpit-it/ASG/pull/366 as da49382a59b224e8c097df120328cbe2863e0e11 at2026-11-01T06:07:25Z; issue365closed/completed06:07:26Z. Parent independently verified finalhead/mergedstate/issueclosure/currentmain and signed rawmerge exactreviewedtree/soleparent03139bcf. Guarded local-only object import/sync passed; main/origin-main0/0,indexempty,both unrelated IDEfiles byte-identical. Backup/private/tmp/asg365-primary-before-sync; guard/private/tmp/asg366-safe-sync.py. All GitHub access/publication/review/merge used connectedplugin; bothautomationlabels applied. Previous doc edits carried into reviewedtree.
+
+Bounded issue365 Done; fullF15 remains unchecked/Inprogress. Experimental CPU managed setup/portable-host integration and non-Apple CPU/CUDA live acceptance remain outstanding. No models/packages/downloads/inference/settings/stableapp/data replacement. No secondissue/task started; finalmerge bookkeeping retained locally for next normal reviewed increment. Fifteen-minute cadence/notification preference unchanged.
+Recorded 2026-11-01T06:08:01.351Z
+
+
+### Experimental CPU offline checkpoint inspection — issue #367
+
+Branch `367-cpu-inspection`, isolated `/private/tmp/asg-cpu-inspection`, from
+verified PR366 merge da49382a. Plugin found no open issue/PR or competing active
+ASG owner. F15 remains In progress; no new F ID. Scope: explicit no-load private
+schema-v1 selected-checkpoint report, reusing bounded metadata, canonical bytes
+and common declared-format checks. No optional dependency discovery/imports,
+tensor reads, worker/HTTP start, settings/runtime mutation or supported CPU UI.
+Isolated CLI tests include consent, option conflicts, spaced paths, malformed/
+incompatible metadata, ceiling refusal and import sentinels; direct tests check
+alias counts and absent startup side effects. Missing non-Apple CPU/CUDA hosts
+block live claims only; this preparation increment is independently testable on
+this Mac. Prior PR366 final review/CI/merge evidence carried into this branch;
+primary IDE/docs edits preserved. Status: In progress pending final validation,
+publication, independent exact-head review, required CI and protected merge.
+Recorded 2026-11-01T06:15:50.145287+00:00
+
+Validation:115 Python cases/two opt-in skips passed (42 backend passes/one skip;
+9 actual HTTP). Initial outer-sandbox loopback/nested-confinement denials passed
+on authorized rerun. Formatter287 unchanged, analyzer clean,983 Flutter tests/
+nine opt-in skips, release web/Wasm dry-run and macOS debug builds passed.
+Three new regressions exercise direct and real isolated CLI inspection, no
+optional imports/startup, single/sharded/canonical-alias byte counts, exact
+ceiling, privacy, missing folder, incompatible metadata and option consent.
+Existing runtime read-only health ready/idle/MLX/Metal/Qwen3.8-27B-4bit. No
+inference, model/package download/install, stable-app/data/settings replacement.
+Status: Awaiting merge. Tested tree will be published through the GitHub plugin;
+independent final-revision review and actual required CI gate protected merge.
+Final PR/review/merge identities belong in the PR and next ledger reconciliation.
+Recorded 2026-11-01T06:17:32.083963+00:00

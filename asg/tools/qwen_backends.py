@@ -81,11 +81,16 @@ def select_backend(requested, config, capabilities=None, experimental_cpu=False)
         raise ValueError(f'{kind} is unavailable on this host; use an explicitly configured compatible runtime')
     if entry['missing_dependencies']:
         raise ValueError(f"{kind} requires installed dependencies: {', '.join(entry['missing_dependencies'])}")
+    validate_model_config(kind, config)
+    return kind
+
+
+def validate_model_config(kind, config):
+    """Check declared format only; no dependencies, tensor reads or readiness claim."""
     if config.get('architectures') != ['Qwen3_5ForConditionalGeneration']:
         raise ValueError('Unsupported model architecture')
     if kind in ('torch', 'cpu') and (config.get('quantization') is not None or config.get('quantization_config') is not None):
         raise ValueError('Torch requires compatible unquantized weights; MLX/other quantized folders are not supported')
-    return kind
 
 
 class MLXBackend:

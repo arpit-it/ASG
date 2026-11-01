@@ -18,7 +18,7 @@ sys.path.insert(0, str(Path(__file__).parent / '.runtime-deps'))
 os.environ['HF_HUB_OFFLINE'] = '1'
 os.environ['TRANSFORMERS_OFFLINE'] = '1'
 
-from qwen_backends import GenerationCancelled, discover_capabilities, load_backend, select_backend
+from qwen_backends import GenerationCancelled, discover_capabilities, load_backend, select_backend, validate_model_config
 
 
 
@@ -187,7 +187,7 @@ def create_handler(backend, executor, model_id, model_path):
     return Handler
 
 
-def validate_cpu_checkpoint(folder, max_weight_bytes=None):
+def _cpu_checkpoint_details(folder, max_weight_bytes=None):
     """Check local checkpoint structure without reading tensor contents.
 
     This is preflight only: the trusted loader still validates actual tensors.
@@ -237,16 +237,41 @@ def validate_cpu_checkpoint(folder, max_weight_bytes=None):
         weight_bytes = sum(path.stat().st_size for path in paths)
         if max_weight_bytes is not None and weight_bytes > max_weight_bytes:
             raise OverflowError()
-        return config
+        return config, weight_bytes, len(paths)
     except OverflowError:
         raise ValueError('CPU checkpoint exceeds configured weight byte ceiling; no model was loaded') from None
     except (OSError, UnicodeError, ValueError, RuntimeError):
         raise ValueError('Invalid CPU checkpoint: require contained config (up to 1 MiB), index (up to 8 MiB) and nonempty safetensors weights') from None
 
 
+def validate_cpu_checkpoint(folder, max_weight_bytes=None):
+    """Preserve the startup contract: return only validated config metadata."""
+    return _cpu_checkpoint_details(folder, max_weight_bytes)[0]
+
+
+def inspect_cpu_checkpoint(folder, max_weight_bytes=None):
+    """Private structural report, without optional imports or runtime startup.
+
+    No checkpoint paths, tensor names or arbitrary metadata enter the report.
+    Dependencies, tokenizer/tensor validity, RAM fit and inference stay unknown.
+    """
+    try:
+        config, weight_bytes, file_count = _cpu_checkpoint_details(folder, max_weight_bytes)
+        validate_model_config('cpu', config)
+    except OSError:
+        raise ValueError('CPU checkpoint folder is unavailable; no model was loaded') from None
+    return {'schema_version': 1, 'backend': 'torch', 'device': 'cpu',
+            'experimental': True, 'readiness': 'unverified',
+            'checkpoint_structure': 'validated', 'weight_bytes': weight_bytes,
+            'weight_file_count': file_count, 'model_compatible': None,
+            'memory_adequate': None, 'inference_verified': False,
+            'scope': 'Local structure and observed disk bytes only; no dependency, tokenizer, tensor, RAM or inference validation.'}
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--model', type=Path)
+    parser.add_argument('--inspect-cpu-checkpoint', action='store_true', help='Report experimental CPU checkpoint structure and disk bytes without loading or starting a runtime')
     parser.add_argument('--capabilities', action='store_true', help='Report dependencies without loading weights or probing devices')
     parser.add_argument('--probe-devices', action='store_true', help='With --capabilities, query device APIs without loading weights')
     parser.add_argument('--port', type=int, default=8765)
@@ -265,6 +290,17 @@ def main():
         parser.error('--cpu-threads requires --backend cpu and a value between 1 and 32')
     if args.cpu_max_weight_bytes is not None and (args.backend != 'cpu' or args.cpu_max_weight_bytes <= 0):
         parser.error('--cpu-max-weight-bytes requires --backend cpu and a positive integer')
+    if args.inspect_cpu_checkpoint:
+        if args.backend != 'cpu' or args.model is None:
+            parser.error('--inspect-cpu-checkpoint requires --backend cpu --experimental-cpu --model')
+        if args.capabilities or args.probe_devices or args.parent_pid is not None or args.cpu_threads is not None:
+            parser.error('--inspect-cpu-checkpoint cannot combine with capabilities, device probes, parent monitoring or thread configuration')
+        try:
+            report = inspect_cpu_checkpoint(args.model, args.cpu_max_weight_bytes)
+        except (ValueError, RuntimeError):
+            parser.error('CPU checkpoint inspection failed: require an accessible compatible unquantized Qwen3.5 checkpoint with contained bounded metadata and nonempty safetensors within the configured byte ceiling; no model was loaded')
+        print(json.dumps(report, sort_keys=True))
+        return
     if args.capabilities:
         print(json.dumps(discover_capabilities(probe_devices=args.probe_devices, experimental_cpu=args.experimental_cpu), sort_keys=True))
         return
