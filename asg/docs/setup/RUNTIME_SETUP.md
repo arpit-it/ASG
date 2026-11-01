@@ -112,6 +112,12 @@ separately chosen, already provisioned environment; normal app setup still has n
 CPU choice. Legacy preparation still requires its helper target and preserves
 Auto/MLX/MPS behavior.
 
+CPU preparation CLI failures return exit 2 with fixed dependency/memory guidance,
+without copying Python import output, exception text or tracebacks. This bounds
+Python diagnostics only; native-library file-descriptor output is not intercepted.
+Direct API callers retain original exceptions; interruption exits are preserved.
+The check still performs no installation, model load or inference.
+
 Capability discovery does not load weights:
 
 ```sh
