@@ -169,6 +169,7 @@ void main() {
     expect(ConversationStore(records).load(project.id), hasLength(1));
     await tester.drag(find.byType(ListView), const Offset(0, -300));
     await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('Retry saving response'));
     await tester.tap(find.text('Retry saving response'));
     await tester.pumpAndSettle();
     expect(find.text('Response not saved yet'), findsNothing);

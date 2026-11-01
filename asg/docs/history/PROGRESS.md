@@ -7863,3 +7863,78 @@ sources unchanged from141passing fixtures/two skips. Awaiting normal follow-up
 publication, fresh exact-final independent review, new required CI and protected
 merge; blocking review5730556818 must be resolved on corrected head.
 Recorded 2026-11-01T22:29:33.637452+00:00.
+
+
+### Ask conversation model selection verified merged — #396 / PR #413
+
+Bounded increment Done on `396-ask-model-selection`. Finalaea6d5294e5bbf78cfeb473e97ec765de08cdc1a
+independently approved5730577029/finalgate5730596513; testedlocalea6472d7893f4a15dfcd65ba81769fb86351c0e9
+has identicaltree437301e66a868769b56da699c352b9fc9ce3b76c. All11remote blobs and367
+validation inputs matched. Reviewer P2 dropdown refresh assertion fixed in final
+revision; exact external probe and52independent focused/nineinventory tests passed,
+review thread resolved. RequiredCI41357446090 completed/success: Flutter125000453415
+format310/analyzer clean,1088Ubuntu tests/12explicit skips,17actualChrome,web/Wasm
+and actual independent generated-project resolve/analyze/test/render/build/serve;
+Python125000453550141tests/four explicit CI skips. Parentfinal1094Flutter/nine
+skips,26focused,141Python/two skips,actualChrome,format/analyzer/web/macOS pass.
+No fresh inference claim.
+
+Independent reviewer protected-plugin squash merged https://github.com/arpit-it/ASG/pull/413
+as b16ce9ded116df7520bad92ff5f2452687253d70 at2026-11-01T22:36:44Z. Parent freshly
+plugin-verified merged PR/currentmain/signedmerge/tree/soleparent6ab1c79d and
+requiredCI. Guarded local synchronization passed: main/origin-main0/0,indexempty,
+both unrelatedIDE edits byte-identical. Evidence/private/tmp/asg-selection-publication.json,
+/private/tmp/asg413-reviewed-merge.json and/private/tmp/asg413-safe-sync.py. Both
+automation labels applied; PR attached. Final merge bookkeeping retained for the
+next normal reviewed development PR.
+
+Issue396 freshly confirmed open for remaining per-project/run selection and exact
+verified profile/context identity/real-model evidence. Standalone Ask conversation
+selection is delivered; fullF22/F15 remain unchecked, external-platform acceptance
+Deferred400. No newissue/modeldownload/install/stableapp/settings/externaldeployment/
+cadence/notification changes. Current run time 2026-11-01T22:37:35.888924+00:00.
+
+
+### F22 project advisory-chat connection selection — issue #396
+
+In progress on `396-project-chat-selection` from plugin-verified PR #413 merge
+`b16ce9ded116df7520bad92ff5f2452687253d70`. No competing active ASG run/open PR.
+Retained prior merge bookkeeping and both unrelated IDE edits. Existing preset,
+settings and conversation storage are delivered prerequisites; Deferred #400
+hardware acceptance is not required. Reuse #396; no new issue.
+
+Bounded scope: durable per-project Discuss/Plan/Review connection snapshots,
+explicit preset/global selection, save-before-activation, busy/unsaved/disposal
+guards, stale-screen refusal and corrupt-record isolation. Snapshot routing and
+completed request provenance agree. Build/source/repair keep existing routing;
+run selection and verified profile/inference evidence remain Pending, fullF22/F15
+unchecked. No load/download/settings/stable-app changes or fresh inference claim.
+
+Seven new regressions cover separate projects, deletion/reopen/global fallback,
+failed/gated writes/disposal, streaming and save-only retry, strict corruption and
+stale selection, actual loopback HTTP payload, native database reopen/isolation,
+and 320px/2x UI reselection/removal. Initial layout placed selection before Plan
+approval, pushing controls out of reach in existing tests; moved it after approval.
+Initial HTTP fixture inherited test override; restored actual HTTP explicitly.
+Focused27 tests now pass; full checks/builds/review/CI/merge remain gates.
+Recorded 2026-11-01T22:46:29.597364+00:00.
+
+
+Final project advisory-chat selection validation: 1,101 Flutter tests passed with
+nine explicit skips in a clean tracked-source copy; 46 focused chat/recovery/layout
+checks passed with one opt-in skip. Actual Chrome IndexedDB six tests passed,
+including selection reopen/removal/global reset. Formatter311 unchanged, analyzer
+clean, web release/Wasm dry run and macOS debug build passed. Seven Python suites
+141tests/two explicit skips and historical inventory nine tests passed. All369
+validation input hashes match the checkout. Full-suite layout findings were fixed
+by keeping existing conversation/recovery/diagnostics ahead of a collapsed model
+connection section; recovery test now scrolls to the actual Retry control. Existing
+settings error wording remains compatible. Local runtime health read ready/MLX/
+Metal/Qwen3.8-27B-4bit; no fresh inference or platform-support claim.
+
+Awaiting merge: exact tested-tree plugin publication, independent final-revision
+review, required CI and protected reviewer merge remain gates. #396 stays open for
+run selection/verified profiles; fullF22/F15 unchecked, unavailable-platform
+acceptance Deferred400. Logs/private/tmp/asg-project-{focused,full,chrome,analyze,
+format,web,macos,python,inventory}.log; validation manifest/private/tmp/asg-project-
+selection-inputs.json. Recorded 2026-11-01T22:53:23.855298+00:00.

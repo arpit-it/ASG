@@ -4,6 +4,7 @@
 import 'dart:async';
 
 import '../models/local_model_config.dart';
+import '../models/model_connection_preset.dart';
 import '../models/model_request_provenance.dart';
 import '../models/requirements_board.dart';
 import '../models/build_plan.dart';
@@ -43,7 +44,7 @@ class ChatController extends BaseController {
       ? 'Chat limits unavailable: saved model settings could not be loaded. Saved conversations remain available.'
       : 'Chat limits: $_outputTokenLimit output tokens, 15 seconds to connect, '
             '30 seconds without data, 3 minutes total per model request. '
-            'Last loaded limits shown; saved settings are reloaded for each request. '
+            'Last loaded limits shown; the selected connection is checked for each request. '
             'The server may impose a lower output ceiling.';
   static const cancellationScope =
       'Stop closes this app connection and discards the partial response. '
@@ -125,7 +126,7 @@ class ChatController extends BaseController {
     error = hasUnsavedResponse
         ? 'Conversation could not be saved. Check local storage and Retry saving. The completed response remains available in this screen.'
         : _outputTokenLimit == null
-        ? 'Saved model settings could not be loaded. Restore valid settings and retry. Saved data has not been overwritten.'
+        ? 'Saved model settings could not be loaded, or the chat selection changed elsewhere. Check settings and reopen this chat before retrying. Saved data has not been overwritten.'
         : 'Conversation could not be saved or prepared. Check local storage and saved settings, then retry. Saved messages have not been replaced.';
   }
 
@@ -135,6 +136,61 @@ class ChatController extends BaseController {
     if (isDisposed) return;
     _messages = completed;
     _unsavedResponse = null;
+  }
+
+  ModelConnectionPreset? _connectionPreset;
+  ModelConnectionPreset? get connectionPreset => _connectionPreset;
+  List<ModelConnectionPreset> _presets = [];
+  List<ModelConnectionPreset> get presets => List.unmodifiable(_presets);
+  String? presetError;
+  String? connectionError;
+  bool get canChooseConnection =>
+      ready &&
+      !busy &&
+      !hasUnsavedResponse &&
+      !isDisposed &&
+      connectionError == null;
+
+  void refreshPresets() {
+    if (!canChooseConnection) return;
+    try {
+      _presets = ModelSettingsStore(_store!.records).loadPresets();
+      presetError = null;
+    } catch (_) {
+      _presets = [];
+      presetError = 'Connection presets could not be loaded. Saved data and the current chat selection remain unchanged.';
+    }
+    update();
+  }
+
+  Future<void> choosePreset(ModelConnectionPreset? preset) async {
+    if (!canChooseConnection ||
+        (preset != null && !_presets.contains(preset))) {
+      return;
+    }
+    busy = true;
+    phase = GenerationPhase.applying;
+    error = null;
+    update();
+    try {
+      await _store!.saveConnection(
+        project.id,
+        preset,
+        expected: _connectionPreset,
+      );
+      if (!isDisposed) {
+        _connectionPreset = preset;
+        try {
+          _loadModelConfig();
+        } catch (_) {}
+      }
+    } catch (_) {
+      if (!isDisposed) error = 'Chat model selection could not be saved. Previous selection and messages remain. Check local storage or reopen if another screen changed the selection.';
+    } finally {
+      busy = false;
+      phase = GenerationPhase.idle;
+      update();
+    }
   }
 
   PlanApproval? _approval;
@@ -295,7 +351,13 @@ class ChatController extends BaseController {
   String? error;
   LocalModelConfig _loadModelConfig() {
     try {
-      final config = ModelSettingsStore(_store!.records).load();
+      if (connectionError != null) {
+        throw const FormatException('Invalid chat connection.');
+      }
+      _store!.checkConnection(project.id, _connectionPreset);
+      final config =
+          _connectionPreset?.config ??
+          ModelSettingsStore(_store!.records).load();
       _outputTokenLimit = config.chatOutputTokens;
       return config;
     } catch (_) {
@@ -308,12 +370,27 @@ class ChatController extends BaseController {
 
   Future<void> load() async {
     if (busy || hasUnsavedResponse || isDisposed) return;
+    busy = true;
+    update();
     try {
       final store = await _openStore();
       final saved = store.load(project.id);
       if (isDisposed) return;
       _store = store;
       _messages = saved;
+      try {
+        _connectionPreset = store.loadConnection(project.id);
+        connectionError = null;
+      } catch (_) {
+        connectionError = 'Saved chat model selection could not be loaded. Reopen after repairing local storage; requests are blocked and saved data is preserved.';
+      }
+      try {
+        _presets = ModelSettingsStore(store.records).loadPresets();
+        presetError = null;
+      } catch (_) {
+        _presets = [];
+        presetError = 'Connection presets could not be loaded. Saved chat selection remains unchanged.';
+      }
       try {
         _loadModelConfig();
       } catch (_) {
@@ -327,13 +404,20 @@ class ChatController extends BaseController {
       }
     } catch (_) {
       error = 'Conversation could not be loaded. Saved data has not been overwritten.';
+    } finally {
+      busy = false;
     }
     update();
   }
 
   Future<bool> send(String prompt) async {
     final text = prompt.trim();
-    if (text.isEmpty || busy || hasUnsavedResponse || !ready || isDisposed) {
+    if (text.isEmpty ||
+        busy ||
+        hasUnsavedResponse ||
+        !ready ||
+        connectionError != null ||
+        isDisposed) {
       return false;
     }
     busy = true;

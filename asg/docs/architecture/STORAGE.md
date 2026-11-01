@@ -218,3 +218,15 @@ the first question. Preset edits/removal do not alter snapshots. Ask is not incl
 in project archives; endpoint snapshots are local configuration, never reply
 provenance or verified loaded-model identity. No credentials are accepted in local
 endpoints. Corrupt history remains retained/isolated by StudioDatabase.
+
+
+### Project advisory-chat connection snapshots (F22 / issue #396)
+
+`studio.chatConnection.v1.<projectId>` stores a strict version-1 object with a
+nullable `preset` snapshot (name, baseUrl, exact requested model and output ceiling).
+Absent/null selection uses current global settings per request. Chat message JSON
+and approval context are unchanged. Conditional writes reject stale selections;
+invalid records are retained and isolated by project, with requests blocked.
+Selection only routes Discuss/Plan/Review, never Build/source/repair or model loading.
+Presets may be removed without changing a saved snapshot. The record contains a
+connection destination and stays local; portable project archives do not include it.
