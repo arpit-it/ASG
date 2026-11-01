@@ -2,10 +2,13 @@
 // Copyright 2026 Arpit Sinha
 
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:asg/controllers/ask_controller.dart';
 import 'package:asg/models/ask_conversation.dart';
 import 'package:asg/models/chat_message.dart';
+import 'package:asg/models/local_model_config.dart';
+import 'package:asg/services/model_settings_store.dart';
 import 'package:asg/services/ask_store.dart';
 import 'package:asg/services/model_provider.dart';
 import 'package:asg/services/record_storage.dart';
@@ -61,6 +64,55 @@ void main() {
   });
   tearDown(() {
     if (!controller.isDisposed) controller.dispose();
+  });
+  test('Ask snapshots each requested model before initial save and restores metadata', () async {
+    final settings = ModelSettingsStore(records);
+    await settings.save(
+      const LocalModelConfig(model: 'first', chatOutputTokens: 512),
+    );
+    records.gate = Completer<void>();
+    final first = controller.send('first question');
+    records.values['studio.localModel.v1'] = jsonEncode({
+      'baseUrl': 'http://127.0.0.1:8765/v1',
+      'model': 'second',
+      'chatOutputTokens': 1024,
+    });
+    records.gate!.complete();
+    await tick();
+    provider.stream.add('first answer');
+    await provider.stream.close();
+    await first;
+    final reopened = AskController(
+      AskStore(records),
+      createProvider: (config) {
+        expect(config.model, 'second');
+        expect(config.chatOutputTokens, 1024);
+        return AskProvider()
+          ..stream.add('second answer')
+          ..stream.close();
+      },
+    )..load();
+    await reopened.send('second question');
+    final saved = AskStore(records)
+        .load()
+        .single
+        .messages
+        .where((m) => m.role == 'assistant')
+        .toList();
+    expect(saved.map((m) => m.modelRequest!.model), ['first', 'second']);
+    expect(saved.map((m) => m.modelRequest!.outputTokens), [512, 1024]);
+    expect(provider.prompts.single, isNot(contains('modelRequest')));
+    reopened.dispose();
+  });
+  test('corrupt Ask provenance refuses overwrite and preserves original data', () async {
+    const raw =
+        '{"version":1,"conversations":[{"id":"ask-1","messages":[{"role":"user","content":"q"},{"role":"assistant","content":"a","modelRequest":null}]}]}';
+    records.values[AskStore.key] = raw;
+    controller.load();
+    expect(controller.ready, isFalse);
+    expect(await controller.send('overwrite'), isFalse);
+    expect(records.values[AskStore.key], raw);
+    expect(provider.prompts, isEmpty);
   });
   test('zero-project stream saves before inference, follow-up and separate history', () async {
     records.values['studio.chat.v1.project'] = 'private project discussion';
@@ -138,6 +190,9 @@ void main() {
     await provider.stream.close();
     await send;
     expect(controller.unsavedAnswer, 'completed answer');
+    final captured = controller.unsavedReply!.modelRequest!;
+    expect(captured.model, isNotEmpty);
+    records.values['studio.localModel.v1'] = '{broken';
     expect(controller.messages.length, 1);
     controller.select(null);
     expect(controller.selectedId, 'ask-1');
@@ -147,6 +202,7 @@ void main() {
     expect(controller.unsavedAnswer, isNull);
     expect(controller.messages.length, 2);
     expect(provider.prompts.length, 1);
+    expect(controller.messages.last.modelRequest!.toJson(), captured.toJson());
     expect(
       AskStore(records).load().single.messages.last.content,
       'completed answer',

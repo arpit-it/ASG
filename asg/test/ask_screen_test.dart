@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:asg/controllers/ask_controller.dart';
 import 'package:asg/models/project.dart';
+import 'package:asg/models/model_request_provenance.dart';
 import 'package:asg/services/ask_store.dart';
 import 'package:asg/services/studio_store.dart';
 import 'package:asg/views/ask_screen.dart';
@@ -15,6 +16,54 @@ import 'package:asg/views/studio_home.dart';
 import 'ask_controller_test.dart' show AskRecords, AskProvider;
 
 void main() {
+  testWidgets(
+    'Ask cards show requested versus unknown identity at narrow enlarged width',
+    (tester) async {
+      tester.view.physicalSize = const Size(320, 800);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      await tester.pumpWidget(
+        MaterialApp(
+          home: MediaQuery(
+            data: const MediaQueryData(textScaler: TextScaler.linear(1.5)),
+            child: const Scaffold(
+              body: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    AskMessage(role: 'assistant', text: 'Legacy answer'),
+                    AskMessage(
+                      role: 'Unsaved suggestion',
+                      text: 'Completed answer',
+                      modelRequest: ModelRequestProvenance(
+                        model: 'requested-model',
+                        outputTokens: 512,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      expect(
+        find.textContaining('Requested model unavailable'),
+        findsOneWidget,
+      );
+      expect(
+        find.textContaining('Requested model: requested-model'),
+        findsOneWidget,
+      );
+      expect(
+        find.textContaining(
+          'Server-loaded weights and revision are unverified.',
+        ),
+        findsOneWidget,
+      );
+      expect(tester.takeException(), isNull);
+    },
+  );
   testWidgets('landing Ask opens without creating a project', (tester) async {
     tester.view.physicalSize = const Size(320, 600);
     tester.view.devicePixelRatio = 1;

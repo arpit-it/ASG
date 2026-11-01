@@ -24,3 +24,11 @@ The evidence directories `acceptance/2026-10-31-ask-native-fixture`, `acceptance
 This increment does not replace or launch the installed stable app, download models, install software, alter the development schedule, or enable repository execution/cloud tools.
 
 Review #5722262274 found a 16-pixel selected-project toolbar overflow at 320 pixels. The corrected layout and regression also exposed and fixed a vertical composer overflow with enlarged text. Selected-project Ask access, all toolbar actions, code/save recovery and no-project entry now pass as real Chrome widget interactions and native fixtures. Updated fixture observations bind runtime source `3967d247f8984d2377961c0307e4446885f5ed28`; the earlier actual inference observation remains unchanged and historical. Only home/project view layout changed; Ask request/prompt/storage/model code is unchanged, so no new inference is claimed. Final local formatter/analyzer,908defaulttests/nineskips,15Chrome tests,41Python collector/inventory tests and web/macOS debug builds passed before corrected publication.
+
+
+Completed Ask answers now retain the requested model ID and output-token ceiling
+captured before saving their question. Changing settings affects later requests;
+it does not relabel earlier answers or completed unsaved answers. Retry saving
+retains that original metadata without inference. Legacy replies explicitly show
+identity unavailable. Requested settings do not verify server-loaded weights or
+revision. Metadata contains no endpoint and does not change Ask permissions.

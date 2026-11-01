@@ -50,6 +50,8 @@ Future<void> verifyAskStorage(DatabaseFactory factory, String name) async {
       reopened.select('ask-1');
       expect(reopened.messages.first.content, 'Explain a future Ω');
       expect(reopened.messages.last.content, contains('final n = 1;'));
+      expect(reopened.messages.last.modelRequest!.model, isNotEmpty);
+      expect(reopened.messages.last.modelRequest!.outputTokens, greaterThan(0));
       expect(records.getString(AskStore.key), expected);
       expect(
         records.getString('studio.chat.v1.unrelated'),

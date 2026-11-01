@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../controllers/ask_controller.dart';
+import '../models/model_request_provenance.dart';
 
 class AskScreen extends StatefulWidget {
   const AskScreen({super.key, required this.controller});
@@ -129,7 +130,11 @@ class _AskScreenState extends State<AskScreen> {
                       child: const Text('Retry loading Ask history'),
                     ),
                   for (final message in controller.messages)
-                    AskMessage(role: message.role, text: message.content),
+                    AskMessage(
+                      role: message.role,
+                      text: message.content,
+                      modelRequest: message.modelRequest,
+                    ),
                   if (controller.busy)
                     Text(
                       controller.saving
@@ -147,6 +152,7 @@ class _AskScreenState extends State<AskScreen> {
                     AskMessage(
                       role: 'Unsaved suggestion',
                       text: controller.unsavedAnswer!,
+                      modelRequest: controller.unsavedReply?.modelRequest,
                     ),
                     Wrap(
                       spacing: 12,
@@ -232,8 +238,14 @@ class _AskScreenState extends State<AskScreen> {
 }
 
 class AskMessage extends StatelessWidget {
-  const AskMessage({super.key, required this.role, required this.text});
+  const AskMessage({
+    super.key,
+    required this.role,
+    required this.text,
+    this.modelRequest,
+  });
   final String role, text;
+  final ModelRequestProvenance? modelRequest;
   @override
   Widget build(BuildContext context) {
     final chunks = text.split('```');
@@ -252,6 +264,10 @@ class AskMessage extends StatelessWidget {
               style: Theme.of(context).textTheme.labelLarge,
             ),
             const SizedBox(height: 8),
+            if (role == 'assistant' || role == 'Unsaved suggestion')
+              Text(
+                modelRequest?.description ?? 'Requested model unavailable for this saved reply. Current settings do not identify past requests.',
+              ),
             for (var i = 0; i < chunks.length; i++)
               if (chunks[i].trim().isNotEmpty)
                 i.isOdd
