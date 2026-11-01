@@ -8153,3 +8153,11 @@ stableapp/cadence changes. Status Awaiting merge: exact-tree plugin publication,
 independent final-revision review, required CI and protected reviewer merge pending.
 Full F15/F22 remain unchecked/In progress.
 Recorded 2026-11-01T18:47:53.792693+00:00
+
+
+Publication: [PR #398](https://github.com/arpit-it/ASG/pull/398), branch
+`356-cpu-generation-result`. Tested localf9bfa8b and published83cfa3eb share
+tree583203fc059659aebcd8727bf9992ac08e75c960; all six blobs plugin-verified.
+This delivery-link follow-up changes documentation only; all326validated inputs
+remain unchanged. Independent exact-final review, actual required CI and protected
+reviewer merge pending.
