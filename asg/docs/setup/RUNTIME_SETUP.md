@@ -228,7 +228,15 @@ bytes field forwards the same ceiling to the delivered CPU host/controller. Leav
 it blank for no disk-byte ceiling, or enter decimal whole bytes from 1 through
 9007199254740991. Invalid input prevents launch; a failure retains the value for
 retry. The value and loading consent last only for this setup session and are
-not saved. Two threads and the 180-second server load deadline remain fixed.
+not saved. Two threads remain fixed; the session-only server load deadline is
+configurable from 1 through 3600 whole seconds (default 180).
 The disk ceiling does not limit RAM or establish model fit or real inference.
 CPU stays outside normal supported backend choices; launch and separate health
 observation do not satisfy the pending non-Apple CPU/CUDA live acceptance.
+
+
+The experimental CPU launch panel exposes a session-only load deadline in whole
+seconds (1–3600, default180). Invalid or empty input blocks launch. This bounds
+server weight loading by terminating the dedicated runtime; it is not a request
+deadline, RAM quota or evidence of CPU inference support. Retry retains the input;
+a fresh setup session restores180. Saved setup/connection remain unchanged.
