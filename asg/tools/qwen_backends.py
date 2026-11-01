@@ -5,7 +5,7 @@
 
 Default discovery reports installed modules; an explicit probe queries device APIs.
 Neither establishes successful model loading or memory adequacy.
-CPU/CUDA execution remains unsupported until independently delivered.
+CPU execution is experimental and explicit opt-in only; CUDA is unsupported.
 """
 import contextlib
 import importlib
@@ -38,7 +38,7 @@ def probe_device(kind):
         return None
 
 
-def discover_capabilities(system=None, machine=None, available=None, probe_devices=False):
+def discover_capabilities(system=None, machine=None, available=None, probe_devices=False, experimental_cpu=False):
     system = platform.system() if system is None else system
     machine = platform.machine() if machine is None else machine
     available = available or (lambda name: importlib.util.find_spec(name) is not None)
@@ -55,18 +55,27 @@ def discover_capabilities(system=None, machine=None, available=None, probe_devic
                         'missing_dependencies': missing,
                         'device_ready': ready, 'model_compatible': None,
                         'readiness': 'unverified' if host_supported and not missing and ready is not False else 'unavailable'})
+    if experimental_cpu:
+        missing = [name for name in ('torch', 'transformers') if not available(name)]
+        supported = system in ('Darwin', 'Linux', 'Windows')
+        entries.append({'backend': 'cpu', 'device': 'cpu',
+                        'host_supported': supported, 'missing_dependencies': missing,
+                        'device_ready': None, 'model_compatible': None,
+                        'readiness': 'unverified' if supported and not missing else 'unavailable'})
     return {'schema_version': 1, 'host': {'system': system, 'machine': machine},
-            'backends': entries, 'unsupported_devices': ['cpu', 'cuda'],
+            'backends': entries, 'unsupported_devices': ['cuda'] if experimental_cpu else ['cpu', 'cuda'],
             'scope': ('Dependency and device discovery; no weight load or memory adequacy check.' if probe_devices else 'Dependency discovery only; no device probe, weight load or memory adequacy check.')}
 
 
-def select_backend(requested, config, capabilities=None):
-    capabilities = discover_capabilities() if capabilities is None else capabilities
+def select_backend(requested, config, capabilities=None, experimental_cpu=False):
+    if requested == 'cpu' and not experimental_cpu:
+        raise ValueError('CPU is experimental; explicit --experimental-cpu is required')
+    capabilities = discover_capabilities(experimental_cpu=experimental_cpu) if capabilities is None else capabilities
     entries = {entry['backend']: entry for entry in capabilities['backends']}
     # Preserve the legacy auto preference; never retry another backend after load.
     kind = ('mlx' if 'mlx_lm' not in entries['mlx']['missing_dependencies'] else 'torch') if requested == 'auto' else requested
     if kind not in entries:
-        raise ValueError('Unsupported backend; CPU/CUDA execution is not available')
+        raise ValueError('Unsupported backend; no fallback was started')
     entry = entries[kind]
     if not entry['host_supported']:
         raise ValueError(f'{kind} is unavailable on this host; use an explicitly configured compatible runtime')
@@ -74,8 +83,8 @@ def select_backend(requested, config, capabilities=None):
         raise ValueError(f"{kind} requires installed dependencies: {', '.join(entry['missing_dependencies'])}")
     if config.get('architectures') != ['Qwen3_5ForConditionalGeneration']:
         raise ValueError('Unsupported model architecture')
-    if kind == 'torch' and (config.get('quantization') is not None or config.get('quantization_config') is not None):
-        raise ValueError('Torch/MPS requires compatible unquantized weights; MLX/other quantized folders are not supported')
+    if kind in ('torch', 'cpu') and (config.get('quantization') is not None or config.get('quantization_config') is not None):
+        raise ValueError('Torch requires compatible unquantized weights; MLX/other quantized folders are not supported')
     return kind
 
 
@@ -136,12 +145,14 @@ class TorchMPSBackend:
         from transformers import TextStreamer, StoppingCriteria, StoppingCriteriaList
         class TokenStreamer(TextStreamer):
             def on_finalized_text(self, text, stream_end=False):
+                check()
                 if text:
                     publish('token', text)
         class Stop(StoppingCriteria):
             def __call__(self, *_args, **_kwargs):
                 return cancelled.is_set() or time.monotonic() > deadline
-        inputs = self.tokenizer(prompt, return_tensors='pt').to('mps')
+        inputs = self.tokenizer(prompt, return_tensors='pt').to(self.device)
+        check()
         with torch.inference_mode():
             output = self.model.generate(**inputs, max_new_tokens=tokens, do_sample=False, streamer=TokenStreamer(self.tokenizer, skip_prompt=True, skip_special_tokens=True), stopping_criteria=StoppingCriteriaList([Stop()]))
         check()
@@ -150,11 +161,38 @@ class TorchMPSBackend:
 
 
 
-def load_backend(folder, kind):
+class TorchCPUBackend(TorchMPSBackend):
+    """Experimental local-only float32 CPU loader; no accelerator imports/fallback.
+
+    Stop/deadline checks surround preprocessing and each streamed output/token.
+    A running native kernel/prefill cannot be preempted by Python cancellation.
+    The owning runtime process remains the hard-stop boundary.
+    """
+    device = 'cpu'
+
+    def __init__(self, folder, cpu_threads=2):
+        if type(cpu_threads) is not int or not 1 <= cpu_threads <= 32:
+            raise ValueError('CPU thread limit must be between 1 and 32')
+        import torch
+        torch.set_num_threads(cpu_threads)
+        from transformers import AutoTokenizer, Qwen3_5ForConditionalGeneration
+        self.tokenizer = AutoTokenizer.from_pretrained(folder, local_files_only=True, trust_remote_code=False)
+        with torch.device('cpu'):
+            self.model = Qwen3_5ForConditionalGeneration.from_pretrained(
+                folder, local_files_only=True, trust_remote_code=False,
+                use_safetensors=True, dtype=torch.float32, device_map=None,
+                attn_implementation='eager').to('cpu').eval()
+
+
+def load_backend(folder, kind, experimental_cpu=False, cpu_threads=2):
     if kind == 'mlx':
         return MLXBackend(folder)
     if kind == 'torch':
         return TorchMPSBackend(folder)
+    if kind == 'cpu':
+        if not experimental_cpu:
+            raise ValueError('CPU is experimental; explicit --experimental-cpu is required')
+        return TorchCPUBackend(folder, cpu_threads)
     raise ValueError('Unsupported backend')
 
 
