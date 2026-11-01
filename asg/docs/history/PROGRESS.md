@@ -5409,3 +5409,25 @@ Validation:24 default Python backend cases passed/one explicit CPU API fixture s
 Publication/independent final-revision review, required CI and verified protected merge are pending; this implementation increment must not be marked Done until verified. Full F15 and CPU real-host milestone remain incomplete. Subsequent work can implement explicit setup/preparation, CPU-aware budgeting/host integration with honest unsupported states; do not spend runs only repeating unavailable-host evidence.
 
 Recorded 2026-11-01T04:45:50.874902+00:00
+
+
+### Experimental Torch CPU foundation verified merged — issue #356 / PR #357
+
+Independent final-revision review5726526578 approved exacthead34c1b62d7b8dece3efe1295607dae19541484839/tree2997c943e11bab0d4f270b4e1edca8941e053786 with no blocking findings. Reviewer independently reran24backend cases/oneoptin skip,9actualHTTP/9inventory and real-library tiny random CPUAPI fixture (53,792parameters,allCPU/float32,2fragments,length; not pretrained/non-Appleacceptance). RequiredCI41274416964 Flutter124753572130 and Python124753572154 passed; actual logs inspected by reviewer before merge. Local983macOSFlutter/nineoptin skips,format287/analyzer/web+Wasm/macOSdebug and Python results above remain separately scoped.
+
+Independent reviewer normal protected-plugin squashmerged https://github.com/arpit-it/ASG/pull/357 as0776de0a2d44e52d78bb49762381c9a37b2fadd5 at2026-11-01T04:52:00Z; issue356 verified closed/completed. Parent independently verified PR/exacthead/issueclosure/currentmain and signed rawmerge exactreviewedtree/soleparent781f7e95. Guarded local-only object import and synchronization passed; primarymain/origin-main0/0,indexempty. Existing documentation additions carried into the reviewed merge and original twoIDEfiles byte-identical. Backup/manifest/private/tmp/asg356-primary-before-sync; guard/private/tmp/asg357-safe-sync.py. All GitHub access/publication/review/merge used connectedplugin.
+
+Bounded implementation issue356 is delivered; fullF15 remains unchecked/Inprogress. Real pretrainedCPU inference on non-Apple desktop, explicit managedCPU setup/preparation/budgeting/portable-host integration and separateCUDA milestones remain distinct outstanding work in canonicalF15. Lack of a targethost blocks those real-host claims, not further bounded implementation. Updatedautomation saved/verified active15minute cadence,failed_runs_only preserved,CPUimplementationcontinuity explicit. ExistingMLX runtime freshread-onlyhealth ready/idle/MLXMetal; no inference/load/settings/modeldownload/install or stableapp/data replacement. No secondissue/task started. Finalmergebookkeeping retained locally for the nextnormalreviewedincrement.
+
+Recorded 2026-11-01T04:52:45.489449+00:00
+
+
+### Explicit no-install CPU preparation — issue #358
+
+Branch `358-cpu-preparation` from verified0776de0; no competing owner or open issue/PR. F15 preparation rejected CPU despite the delivered experimental loader. This bounded increment checks installed Torch, Transformers tokenizer/Qwen loader and safetensors APIs only with explicit `--prepare cpu --experimental-cpu`. No model/tokenizer construction, package install, helper directory, device probe, thread mutation, fallback or normal app CPU enablement. Legacy Auto/MLX/MPS preparation remains covered. Non-Apple CPU/CUDA real inference, compatible-checkpoint memory adequacy and fullF15 remain pending. No new F ID or duplicate queue. Prior PR357 final review/CI/merge bookkeeping retained.
+
+Validation:28 Python backend tests passed/one opt-in inference API skip;9actual loopback HTTP passed;62other Python fixtures passed/one opt-in generation skip (32collector,9inventory,4download,14command,4confinement). Four added tests cover no side effects, consent before imports, missing/broken APIs, actual CLI with spaced paths and failures. Initial HTTP sandbox bind denial resolved by authorized local test rerun. Actual installed Torch2.12.1/Transformers5.16.1 CPU preparation command succeeded without weights/inference. Formatter287 unchanged, clean analyzer,983Flutter/nineoptin skips,web+Wasm dryrun/macOSdebugbuild passed. Stable app/data/settings/runtime untouched; original IDE/docs changes preserved.
+
+Status: Awaiting merge. Remote publication, independent exact-revision review, requiredCI and protected merge must be verified before completion.
+
+Recorded 2026-11-01T05:01:12.657708+00:00

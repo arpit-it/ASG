@@ -196,14 +196,30 @@ def load_backend(folder, kind, experimental_cpu=False, cpu_threads=2):
     raise ValueError('Unsupported backend')
 
 
-def prepare_backend(requested, helper_target):
+def prepare_backend(requested, helper_target=None, experimental_cpu=False):
     """Check the exact requested environment; never load weights or fall back.
 
     Auto retains the historical module preference. Only legacy Torch prepares
     its pinned helper in the app-owned target; installed packages stay intact.
+    Explicit experimental CPU checks existing loader APIs without installation.
     """
-    if requested not in ('auto', 'mlx', 'torch'):
+    if requested not in ('auto', 'mlx', 'torch', 'cpu'):
         raise ValueError('Unsupported preparation backend')
+    if (requested == 'cpu') != bool(experimental_cpu):
+        raise ValueError('CPU preparation requires --prepare cpu --experimental-cpu together')
+    if requested == 'cpu':
+        # Import the installed loader APIs only. Never construct a model, probe
+        # accelerators, change thread defaults or install into the environment.
+        import torch
+        from transformers import AutoTokenizer, Qwen3_5ForConditionalGeneration
+        from safetensors.torch import load_file
+        if not all(callable(api) for api in (
+                torch.set_num_threads, torch.device, AutoTokenizer.from_pretrained,
+                Qwen3_5ForConditionalGeneration.from_pretrained, load_file)):
+            raise RuntimeError('CPU loader APIs unavailable; no fallback was started')
+        return 'cpu'
+    if not helper_target:
+        raise ValueError('Legacy preparation requires --helper-target')
     kind = ('mlx' if importlib.util.find_spec('mlx_lm') else 'torch') if requested == 'auto' else requested
     if kind == 'mlx':
         import mlx.core as mx
@@ -225,8 +241,13 @@ def prepare_backend(requested, helper_target):
 if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser(description='Prepare the explicitly selected runtime environment; no weights loaded.')
-    parser.add_argument('--prepare', choices=('auto', 'mlx', 'torch'), required=True)
-    parser.add_argument('--helper-target', required=True)
+    parser.add_argument('--prepare', choices=('auto', 'mlx', 'torch', 'cpu'), required=True)
+    parser.add_argument('--helper-target')
+    parser.add_argument('--experimental-cpu', action='store_true', help='Check existing CPU loader APIs only; CPU inference remains unverified')
     args = parser.parse_args()
-    prepared = prepare_backend(args.prepare, args.helper_target)
+    if (args.prepare == 'cpu') != args.experimental_cpu:
+        parser.error('CPU preparation requires --prepare cpu --experimental-cpu together')
+    if args.prepare != 'cpu' and not args.helper_target:
+        parser.error('--helper-target is required for legacy preparation')
+    prepared = prepare_backend(args.prepare, args.helper_target, experimental_cpu=args.experimental_cpu)
     print(f'{prepared} runtime dependencies checked; model loading and memory adequacy remain unverified.')
