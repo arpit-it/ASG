@@ -6936,3 +6936,58 @@ No actual inference. Awaiting merge: plugin exact-tree publication, independent
 final-revision review, required CI and protected reviewer merge remain gates.
 Full F15 and non-Apple CPU/CUDA real inference remain pending.
 Recorded 2026-11-01T15:33:14.698793+00:00
+
+
+### CPU request-body timeout verified merged — issue #356 / PR #391
+
+Independent approval5728843169/finalgate5728862389 approved exact
+`622b949242ecd6980077aae500370c5fdaa1270a` / tree
+`487513b59f9d33b0d25c3194d13112f94a67359d` (localc939ec4 identical).
+No blocking findings; independent67 backend/actualHTTP tests(one live skip) passed.
+Extra real unshortened production15.0second legacy/no-body timeout returned exact
+HTTP408 with zero backend calls, idle health and valid retry. RequiredCI41321869175
+success: actualFlutter124893618359 logs formatter301/analyzer,Ubuntu1045passes/
+12skips,actualChrome15,web/Wasm and real independent generated-project resolve/
+analyze/test/render/build/serve passed. Python124893618568 seven suites passed with
+explicit skips. Parent Mac1051/nineskips,web/macOSdebug,Python130/twoskips remain
+separate evidence; none establishes live inference.
+
+Reviewer protected-plugin squash merged [PR #391](https://github.com/arpit-it/ASG/pull/391)
+as `6d4dfefda7659b1dbfc5ac242a0618cc53c7c776` at2026-11-01T15:40:43Z;
+issue356closed/completed15:40:44Z. Parent independently plugin-verified PR/issue,
+requiredCI/currentmain and signed rawmerge reviewedtree/soleparentae70a0f0.
+Guarded local-only synchronization passed: main/origin-main0/0,indexempty,both IDE
+files byte-identical. Manifest `/private/tmp/asg356-body-before-sync/manifest.json`;
+guard `/private/tmp/asg391-safe-sync.py`. PR attached and both automation labels
+applied. Bounded body-timeout increment Done; full F15 unchecked/Inprogress,
+CPUexperimental outside normal choices; non-AppleCPU/CUDA real inference pending.
+No model load/download/install/settings/data/stableapp/cadence/notification changes.
+No newissue/FID. Final merge bookkeeping retained for next reviewed increment.
+Recorded 2026-11-01T15:41:48.694245+00:00
+
+
+### CPU incomplete request-body rejection — issue #356
+
+Reopened matching issue #356, branch `356-cpu-incomplete-body`, from verified
+PR #391 merge6d4dfefd. No open PR/competing run. Actual loopback clients declaring
+more bytes than sent and half-closing after valid JSON triggered inference/HTTP200
+in both transports. Six baseline regression cases failed (valid, malformed and empty
+EOF for stream true/false). Require exact declared body completion before JSON
+parsing/model lock: fixed private HTTP400, zero tokenizer/model calls, idle health
+and successful exact-length retry. Preserve 32KiB limit, HTTP408 stalls and legacy
+Auto/MLX behavior. This F15/F09 increment depends on delivered CPU/HTTP foundations;
+Mac socket tests validate the boundary independently of missing inference hardware.
+CPU stays experimental outside normal choices. Full F15/non-Apple CPU/CUDA live
+acceptance remain pending. No model load/download/install/settings/stable-app changes.
+Status In progress; checks, independent final-revision review, required CI and
+protected reviewer merge remain gates. Prior PR391 final-merge evidence retained.
+Recorded 2026-11-01T16:00:10.537077+00:00
+
+Final local validation:131 Python tests passed/two explicit live/platform skips;
+formatter301 unchanged, analyzer clean, isolated Flutter1051 passed/nine opt-in skips,
+web/Wasm and macOSdebug builds passed. All322 source/test/tool/config inputs match
+isolated validation byte-for-byte. Six EOF regression cases failed on baseline and
+pass fixed HTTP400 with zero backend calls, idle health and exact-length retry.
+No inference performed. Awaiting merge: exact-tree plugin publication, independent
+final-revision review, required CI and protected reviewer merge remain gates.
+Full F15/non-Apple CPU/CUDA remain pending. Recorded 2026-11-01T16:02:05.193698+00:00
