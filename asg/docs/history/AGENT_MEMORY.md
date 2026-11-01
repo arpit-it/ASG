@@ -6790,3 +6790,61 @@ inference. Awaiting merge: exact-tree plugin publication, independent final-head
 review, required CI and protected reviewer merge remain gates. FullF15 and
 non-AppleCPU/CUDA real inference remain pending.
 Recorded 2026-11-01T15:02:47.757751+00:00
+
+
+### CPU JSON recursion boundary verified merged — issue #356 / PR #390
+
+Independent approval5728741460/finalgate5728759106 approved exact
+`412958d771af912671bc66b35cab840177c115cc` / tree
+`d66b15c25010ab643018b1b787fa4f816850610b` (local600d1ea identical).
+No blockers; independent66backend/actualHTTP tests(one live skip) plus extra
+legacy direct/wrapped deep rejection and shallow-valid retries passed both
+transports. RequiredCI41319304534success: actual Flutter124885920729 logs inspected,
+formatter301/analyzer,Ubuntu1045passes/12skips,actualChrome15,web/Wasm and real
+independent generated-project resolve/analyze/test/render/build/serve. Python
+124885920451 all seven suites passed with explicit live/platform skips. Parent
+Mac1051/nineskips,web/macOSdebug,Python129/twoskips remain separate evidence.
+
+Reviewer protected-plugin squash merged [PR #390](https://github.com/arpit-it/ASG/pull/390)
+as `ae70a0f0ab2b921de78f897a7baf7d9260d87f6a` at2026-11-01T15:10:39Z;
+issue356closed/completed15:10:41Z. Parent freshly plugin-verified PR/issue/current
+main/CI and signed rawmerge matching reviewedtree/soleparentb1937ea9. Guarded local
+sync passed: main/origin-main0/0,indexempty,both IDEfiles byte-identical. Backup
+`/private/tmp/asg356-depth-before-sync`; guard`/private/tmp/asg390-safe-sync.py`.
+Plugin-only publication/review/merge; PR attached and both automation labels applied.
+Bounded JSON recursion increment Done; fullF15 unchecked/Inprogress,CPUexperimental
+outside normal choices; non-AppleCPU/CUDA real inference remains pending. No model
+load/download/install/settings/data/stableapp replacement,cadence/notification
+change or newissue/FID. Final merge bookkeeping retained for next reviewed increment.
+Recorded 2026-11-01T15:11:41.951817+00:00
+
+
+### CPU request-body timeout — issue #356
+
+Reopened matching issue #356 on branch `356-cpu-body-timeout` from plugin-verified
+PR #390 merge ae70a0f0. No open PR or competing active run. Actual loopback partial
+JSON body reaches the read timeout and disconnects without HTTP response. Both
+stream true/false regression cases failed on baseline. Return fixed private HTTP408
+before inference/model lock; require zero tokenizer/model calls, idle health and
+successful subsequent valid requests. Tests shorten only the real socket timeout;
+production retains 15 seconds. Shared legacy handler benefits from the same boundary.
+F15 CPU implementation/F09 diagnostics continuation uses delivered backend; no
+unavailable hardware prerequisite for this bounded Mac HTTP acceptance. Full F15,
+non-Apple CPU and CUDA real inference remain pending; CPU stays experimental outside
+normal choices. No model load/download/install/settings/stable-app/cadence/notification
+changes. Prior final-merge bookkeeping and unrelated IDE edits retained.
+Status In progress; checks, independent final-revision review, required CI and
+protected reviewer merge remain gates.
+Recorded 2026-11-01T15:30:58.829096+00:00
+
+Final local checks: all130 Python tests passed/two explicit live/platform skips;
+formatter301 unchanged, analyzer clean, isolated tracked-source Flutter1051 passed/
+nine opt-in skips, release web/Wasm and macOS debug builds passed. Both baseline
+stalled-body cases failed with RemoteDisconnected; actual socket regression now
+passes fixed HTTP408, zero tokenizer/model calls, idle health and valid retry.
+All322 source/test/tool/config inputs match isolated validation byte-for-byte.
+Fresh host Darwin arm64/current Python Torch absent; retained8765health URLError.
+No actual inference. Awaiting merge: plugin exact-tree publication, independent
+final-revision review, required CI and protected reviewer merge remain gates.
+Full F15 and non-Apple CPU/CUDA real inference remain pending.
+Recorded 2026-11-01T15:33:14.698793+00:00

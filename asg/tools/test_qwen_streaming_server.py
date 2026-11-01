@@ -138,6 +138,45 @@ class CPUHTTPTests(unittest.TestCase):
                     else:
                         self.assertEqual(json.loads(body)['choices'][0]['finish_reason'], 'stop')
 
+    def test_stalled_cpu_request_body_returns_timeout_before_inference_and_allows_retry(self):
+        import http.client
+        import socket
+        from unittest.mock import patch
+        original_timeout = socket.socket.settimeout
+
+        def short_body_timeout(connection, seconds):
+            # Exercise the real socket timeout without a 15-second test delay.
+            return original_timeout(connection, 0.05 if seconds == 15 else seconds)
+
+        for streaming in (True, False):
+            with self.subTest(streaming=streaming):
+                self.fixture.tokenizer.apply_chat_template.reset_mock()
+                self.fixture.model.generate.reset_mock()
+                partial = (b'{"model":"cpu-fixture","stream":' +
+                           (b'true' if streaming else b'false') + b',"messages":[')
+                with patch.object(socket.socket, 'settimeout', short_body_timeout):
+                    with socket.create_connection(self.server.server_address, timeout=5) as connection:
+                        connection.sendall(
+                            b'POST /v1/chat/completions HTTP/1.1\r\nHost: localhost\r\n'
+                            b'Content-Type: application/json\r\nContent-Length: 200\r\n\r\n' + partial)
+                        response = http.client.HTTPResponse(connection)
+                        response.begin()
+                        self.assertEqual(response.status, 408)
+                        self.assertEqual(response.headers['Content-Type'], 'application/json')
+                        self.assertEqual(json.load(response),
+                                         {'error': 'Request body timed out; send the complete JSON request and retry'})
+                        response.close()
+                self.fixture.tokenizer.apply_chat_template.assert_not_called()
+                self.fixture.model.generate.assert_not_called()
+                with urllib.request.urlopen(self.url+'/health', timeout=5) as response:
+                    self.assertEqual(json.load(response)['phase'], 'idle')
+                with self.request(streaming) as response:
+                    result = response.read().decode()
+                if streaming:
+                    self.assertIn('[DONE]', result)
+                else:
+                    self.assertEqual(json.loads(result)['choices'][0]['finish_reason'], 'stop')
+
     def test_deep_cpu_json_fails_before_inference_and_allows_retry(self):
         for streaming in (True, False):
             for opening, closing in ((b'', b''), (b'{"nested":', b'}')):
