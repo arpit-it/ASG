@@ -7,6 +7,9 @@ import 'dart:convert';
 import 'package:asg/controllers/source_review_controller.dart';
 import 'package:asg/controllers/source_candidate_controller.dart';
 import 'package:asg/models/build_plan.dart';
+import 'package:asg/models/local_model_config.dart';
+import 'package:asg/models/model_connection_preset.dart';
+import 'package:asg/services/model_settings_store.dart';
 import 'package:asg/services/application_store.dart';
 import 'package:asg/services/candidate_verification_store.dart';
 import 'package:asg/services/repair_attempt_store.dart';
@@ -427,6 +430,18 @@ void main() {
       await controller.runAutomaticRepairs(['lib/main.dart'], approved: false);
       expect(provider.prompt, isNull);
       expect(controller.repairHistory, isEmpty);
+      final settings = ModelSettingsStore(records);
+      await settings.save(const LocalModelConfig(model: 'loop-global'));
+      await settings.savePresets([
+        const ModelConnectionPreset(
+          name: 'Repair',
+          config: LocalModelConfig(model: 'loop-selected'),
+        ),
+      ]);
+      controller.refreshPresets();
+      if (outcome == 'success') {
+        controller.choosePreset(controller.presets.single);
+      }
       var stopped = false;
       void listener() {
         if (stopped || !controller.automaticRepairActive) return;
@@ -460,6 +475,11 @@ void main() {
       final run = controller.runAutomaticRepairs([
         'lib/main.dart',
       ], approved: true);
+      await settings.save(const LocalModelConfig(model: 'changed-during-loop'));
+      if (controller.automaticRepairActive) {
+        controller.choosePreset(null);
+        expect(controller.canChooseConnection, false);
+      }
       if ([
         'stop request',
         'withdraw',
@@ -503,6 +523,13 @@ void main() {
           controller.repairHistory.length,
           ['exhausted', 'categories'].contains(outcome) ? 3 : 1,
         );
+        for (final attempt in controller.repairHistory) {
+          expect(
+            attempt.modelRequest!.model,
+            outcome == 'success' ? 'loop-selected' : 'loop-global',
+          );
+          expect(attempt.modelRequest!.outputTokens, 4096);
+        }
         if (outcome == 'success' || outcome == 'categories') {
           expect(controller.candidate!.phase, SourceGenerationPhase.ready);
           expect(controller.candidateSession!.canPromote, isTrue);

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import '../controllers/source_review_controller.dart';
 import '../models/source_generation.dart';
 import 'source_diff_view.dart';
+import 'source_connection_view.dart';
 import 'source_candidate_view.dart';
 import 'repair_history_view.dart';
 
@@ -54,6 +55,7 @@ class _SourceReviewScreenState extends State<SourceReviewScreen>
     final selectedPaths = selected.toList()..sort();
     final automaticScope = (
       evidence,
+      controller.connectionPreset,
       controller.candidateParent,
       selectedPaths.join('\n'),
     );
@@ -123,6 +125,7 @@ class _SourceReviewScreenState extends State<SourceReviewScreen>
                 'Cancellation closes the request; server-side inference may continue.',
               ),
             ],
+            SourceConnectionView(controller: controller),
             Text(controller.status),
             if (controller.error != null) SelectableText(controller.error!),
             if (controller.candidate != null) ...[

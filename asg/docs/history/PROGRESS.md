@@ -8011,3 +8011,78 @@ Awaiting exact tested-tree plugin publication, independent final-revision review
 required CI and protected reviewer merge. #396 remains open for source/repair
 selection and verified profiles; fullF22/F15 unchecked, platform acceptance
 Deferred400. Recorded 2026-11-01T23:17:35.841769+00:00.
+
+
+### Prototype session connection selection verified merged — #396 / PR #415
+
+Bounded increment Done on `396-prototype-run-selection`. Final
+9a7738a556535fb8579511b067af2d5fbc712ffc independently approved COMMENTreview
+5730751295/finalgate5730767381; testedlocalb9ad2b16b84a1540e7454f892d781c6941cef825
+shares identicaltreefdf18152f85ca63b49beee885aa0a93d6d53a134. All810remote blobs/modes
+and333validationinputs match. Independent33focusedFlutter/one opt-in skip passed;
+no blockers. RequiredCI41361474548 passed: Flutter125012565712format313/analyzer
+clean,1100Ubuntu/12explicit skips,17Chrome,web/Wasm and actual independent
+generated-project resolve/analyze/test/render/build/serve; Python125012565482
+141tests/four explicit CI skips. Parent1106Flutter/nine skips,25focused/one skip,
+format/analyzer/web/macOS/inventory9 passed. No fresh inference/platform claim;
+default8765 health unreachable, no model/settings/stable-app changes.
+
+Independent reviewer protected-plugin squash merged
+https://github.com/arpit-it/ASG/pull/415 as21b5a9889a79f68c7c0258427b85740438090066
+at2026-11-01T23:24:29Z. Parent freshly plugin-verified mergedPR/currentmain/signed
+merge/tree/soleparentb4d62f9a, both requiredCI jobs and issue396stillopen. Guarded
+localmain synchronization passed: main/origin-main0/0,indexempty,both unrelated
+IDEedits byte-identical. Evidence/private/tmp/asg-run-publication.json,
+/private/tmp/asg415-reviewed-merge.json,/private/tmp/asg415-safe-sync.py.
+Both labels applied. Finalmerge bookkeeping retained for next normal reviewed PR.
+
+Status Pending remaining F22 work; no active implementation after this merge.
+Prototype session-only request connection choice delivered; reopening defaults
+global, completed request provenance persists. Source/repair selection and verified
+model/profile/context identity/real-model evidence remain Pending; fullF22/F15
+unchecked, unavailable-platform acceptance Deferred400. No cadence/notification/
+settings/stable-app change. Current run time 2026-11-01T23:25:47.837320+00:00.
+
+
+### F22 source/repair review-session connection selection — issue #396
+
+In progress on `396-source-run-selection` from freshly plugin-verified PR #415
+merge `21b5a9889a79f68c7c0258427b85740438090066`. No other active ASG run or
+open PR at selection; reuse #396, no new issue. Delivered presets, source review,
+repair budgets and request provenance provide actual prerequisites. Deferred #400
+hardware acceptance is not required for this Mac-verifiable increment.
+
+Scope: idle-only explicit source/repair connection snapshots; reopen uses global
+settings. Source/manual repair captures config before asynchronous file reads;
+automatic repairs freeze one connection across every attempt, including global
+fallback. Preset edits/removal/corruption do not retarget a selected snapshot or
+rewrite records. Busy/promoted/disposed selection is refused. Fixed4096 request
+ceiling, proposal/candidate/journal provenance, approval, Stop, budget and working
+output protections remain. Automatic consent includes the selected snapshot.
+Selection does not load/test weights or alter other routes/global settings.
+
+Acceptance: actual selected-endpoint HTTP/provenance agreement, source-read races,
+global changes across multi-category repair attempts, snapshot deletion/corruption,
+reset/reopen/disposal and narrow320px2x reselection/refresh. All68 focused tests
+passed after fixing ambiguous UI scroll targeting and limiting busy assertions to
+still-active repair loops. Nine historical inventory checks passed; observations
+unchanged and no inference/support claim. Full checks/builds, exact-tree plugin
+publication, independent final review, required CI and reviewer merge remain gates.
+Verified model/profile/context and real-model evidence remain Pending; fullF22/F15
+unchecked and platform acceptance Deferred400.
+Recorded 2026-11-01T23:31:04.508985+00:00.
+
+
+Final source/repair selection validation: clean tracked-source Flutter1111 passed
+with nine explicit live/platform skips. Formatter315 unchanged, analyzer clean,
+web release/Wasm dry run and macOS debug builds passed on corrected final source.
+Seven Python suites141 tests/two explicit skips and nine historical inventory tests
+passed. All337 runtime/test/tool/assets/config inputs byte-match the tested copy.
+Two analyzer brace issues fixed and full final checks/builds rerun. No fresh
+inference, model load/download, global settings or stable-app change. Historical
+inventory refreshed without changing observation identities or support claims.
+Status Awaiting merge: exact-tree plugin publication, independent final review,
+required CI and protected reviewer merge remain gates. FullF22/F15 unchecked;
+verified profiles/context/real-model evidence Pending, platform acceptance Deferred400.
+Logs/private/tmp/asg-source-selection-{full-final,analyze-final,format-final,
+web-final,macos-final,python,inventory-final,focused}.log. Recorded 2026-11-01T23:32:46.843574+00:00.
