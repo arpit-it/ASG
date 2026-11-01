@@ -22,6 +22,7 @@ import 'package:asg/services/model_provider.dart';
 import 'package:asg/services/runtime_connection.dart';
 import 'package:asg/services/runtime_host.dart';
 import 'package:asg/services/cpu_environment_preparation_host.dart';
+import 'package:asg/services/cpu_runtime_launch_host.dart';
 import 'package:asg/services/runtime_host_native.dart';
 import 'package:asg/services/runtime_setup_store.dart';
 import 'package:asg/views/runtime_setup_screen.dart';
@@ -194,6 +195,38 @@ class CpuPrepareRuntimeHost extends PrepareRuntimeHost
     cpuPython = python;
     consent = experimentalCpu;
     await prepare(python);
+  }
+}
+
+class CpuLaunchRuntimeHost extends FakeRuntimeHost
+    implements CpuRuntimeLaunchHost {
+  CpuLaunchRuntimeHost({super.supported});
+  int launches = 0;
+  bool fail = false;
+  Completer<void>? gate;
+  RuntimeSetup? received;
+  String? model;
+  int? threads, ceiling;
+  Duration? deadline;
+  @override
+  Future<void> startCpuRuntime(
+    RuntimeSetup setup,
+    String modelId, {
+    required bool experimentalCpu,
+    int threads = 2,
+    int? maxWeightBytes,
+    Duration loadTimeout = const Duration(seconds: 180),
+  }) async {
+    expect(experimentalCpu, isTrue);
+    launches++;
+    received = setup;
+    model = modelId;
+    this.threads = threads;
+    ceiling = maxWeightBytes;
+    deadline = loadTimeout;
+    await gate?.future;
+    if (fail) throw StateError('PRIVATE_CPU /private/python token=secret');
+    ownsProcess = true;
   }
 }
 
@@ -783,6 +816,151 @@ void main() {
         await pending;
         expect(c.status, contains('Checking installed'));
         expect(c.error, isNull);
+      },
+    );
+  }
+
+  const cpuValues = RuntimeSetup(
+    python: ' /python with spaces ',
+    modelPath: ' /models/checkpoint ',
+  );
+  test(
+    'CPU launch validates consent, inputs and bounds before side effects',
+    () async {
+      SharedPreferences.setMockInitialValues({});
+      final host = CpuLaunchRuntimeHost();
+      final c = await controller(host);
+      addTearDown(c.dispose);
+      await c.startCpuRuntime(cpuValues, 'model', experimentalCpu: false);
+      expect(c.error, contains('consent'));
+      for (final values in [
+        const RuntimeSetup(python: ' ', modelPath: '/m'),
+        const RuntimeSetup(python: '/p'),
+      ]) {
+        await c.startCpuRuntime(values, 'model', experimentalCpu: true);
+        expect(c.error, isNotNull);
+      }
+      await c.startCpuRuntime(cpuValues, ' ', experimentalCpu: true);
+      expect(c.error, isNotNull);
+      for (final threads in [0, 33]) {
+        await c.startCpuRuntime(
+          cpuValues,
+          'model',
+          experimentalCpu: true,
+          threads: threads,
+        );
+        expect(c.error, isNotNull);
+      }
+      for (final bytes in [0, 9007199254740992]) {
+        await c.startCpuRuntime(
+          cpuValues,
+          'model',
+          experimentalCpu: true,
+          maxWeightBytes: bytes,
+        );
+        expect(c.error, isNotNull);
+      }
+      for (final timeout in [Duration.zero, const Duration(hours: 2)]) {
+        await c.startCpuRuntime(
+          cpuValues,
+          'model',
+          experimentalCpu: true,
+          loadTimeout: timeout,
+        );
+        expect(c.error, isNotNull);
+      }
+      expect(host.launches, 0);
+      expect((await SharedPreferences.getInstance()).getKeys(), isEmpty);
+    },
+  );
+  test(
+    'CPU launch rejects absent optional API, unsupported and existing runtimes',
+    () async {
+      SharedPreferences.setMockInitialValues({});
+      for (final host in [
+        FakeRuntimeHost(),
+        CpuLaunchRuntimeHost(supported: false),
+        CpuLaunchRuntimeHost()..ownsProcess = true,
+      ]) {
+        final c = await controller(host);
+        await c.startCpuRuntime(cpuValues, 'model', experimentalCpu: true);
+        expect(c.error, isNotNull);
+        if (host is CpuLaunchRuntimeHost) expect(host.launches, 0);
+        c.dispose();
+      }
+      final host = CpuLaunchRuntimeHost();
+      final c = await controller(host, api: connection(ready: () => true));
+      await c.refresh();
+      await c.startCpuRuntime(cpuValues, 'model', experimentalCpu: true);
+      expect(host.launches, 0);
+      expect(c.error, contains('already running'));
+      c.dispose();
+    },
+  );
+  test('CPU launch failure is private; retry forwards limits without settings writes', () async {
+    SharedPreferences.setMockInitialValues({});
+    final host = CpuLaunchRuntimeHost()..fail = true;
+    final c = await controller(host);
+    addTearDown(c.dispose);
+    final saved = c.setup, config = c.connectionConfig;
+    await c.startCpuRuntime(cpuValues, 'model', experimentalCpu: true);
+    expect(c.error, contains('retry'));
+    expect(c.error, isNot(contains('PRIVATE_CPU')));
+    expect(c.error, isNot(contains('/private/')));
+    host.fail = false;
+    await c.startCpuRuntime(
+      cpuValues,
+      ' model ',
+      experimentalCpu: true,
+      threads: 3,
+      maxWeightBytes: 1234,
+      loadTimeout: const Duration(seconds: 12),
+    );
+    expect(host.received!.python, '/python with spaces');
+    expect(host.received!.modelPath, '/models/checkpoint');
+    expect(host.model, 'model');
+    expect(host.threads, 3);
+    expect(host.ceiling, 1234);
+    expect(host.deadline, const Duration(seconds: 12));
+    expect(c.error, isNull);
+    expect(c.status, contains('Verify health separately'));
+    expect(c.setup, same(saved));
+    expect(c.connectionConfig, same(config));
+    expect((await SharedPreferences.getInstance()).getKeys(), isEmpty);
+    await c.stop();
+    expect(host.ownsProcess, isFalse);
+  });
+  for (final dispose in [false, true]) {
+    test(
+      'CPU launch excludes overlap and cleans late acquired process, dispose=$dispose',
+      () async {
+        SharedPreferences.setMockInitialValues({});
+        final host = CpuLaunchRuntimeHost()..gate = Completer<void>();
+        final c = await controller(host);
+        final pending = c.startCpuRuntime(
+          cpuValues,
+          'model',
+          experimentalCpu: true,
+        );
+        expect(c.busy, isTrue);
+        await c.startCpuRuntime(cpuValues, 'other', experimentalCpu: true);
+        await c.prepare('/python');
+        expect(host.launches, 1);
+        if (dispose) {
+          c.dispose();
+        } else {
+          await c.stop();
+        }
+        final status = c.status;
+        host.gate!.complete();
+        await pending;
+        expect(host.ownsProcess, isFalse);
+        expect(host.stops, 1);
+        if (dispose) {
+          expect(c.status, status);
+        } else {
+          c.dispose();
+        }
       },
     );
   }
