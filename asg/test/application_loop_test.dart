@@ -116,6 +116,8 @@ void main() {
     expect(await c.apply('Change it'), false);
     expect(c.definition!.title, 'Demo');
     expect(c.revision, 1);
+    expect(c.messages, isEmpty);
+    expect(store.load(project).messages, isEmpty);
     c.dispose();
   });
   test('invalid action targets cannot enter executable application state', () {

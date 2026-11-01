@@ -278,6 +278,12 @@ class _ProjectWorkspaceState extends State<ProjectWorkspace> {
                       ),
                       const SizedBox(height: 8),
                       SelectableText(m.content),
+                      if (m.role == 'assistant') ...[
+                        const SizedBox(height: 8),
+                        Text(
+                          m.modelRequest?.description ?? 'No model request recorded. Built-in actions use no model; legacy replies have unknown provenance.',
+                        ),
+                      ],
                     ],
                   ),
                 ),
