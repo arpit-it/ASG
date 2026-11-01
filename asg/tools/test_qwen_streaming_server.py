@@ -116,6 +116,64 @@ class CPUHTTPTests(unittest.TestCase):
             body = body.replace(b'"max_tokens": 2', b'"max_tokens": ' + raw_budget.encode())
         return urllib.request.urlopen(urllib.request.Request(self.url+'/v1/chat/completions', data=body, headers={'Content-Type': 'application/json'}), timeout=5)
 
+    def test_ambiguous_cpu_request_framing_rejects_before_inference_and_allows_retry(self):
+        import http.client
+        import socket
+        from unittest.mock import patch
+        for streaming in (True, False):
+            body = json.dumps({'model': 'cpu-fixture', 'messages': [
+                {'role': 'user', 'content': 'PRIVATE_PROMPT'}], 'stream': streaming}).encode()
+            length = b'Content-Length: ' + str(len(body)).encode() + b'\r\n'
+            for headers in (length + length, length + b'Content-Length: 1\r\n',
+                            b'Content-Length: 1\r\n' + length,
+                            length + b'Transfer-Encoding: chunked\r\n',
+                            length + b'Transfer-Encoding: identity\r\n',
+                            length + b'Transfer-Encoding:\r\n',
+                            b'Transfer-Encoding: chunked\r\n'):
+                with self.subTest(streaming=streaming, headers=headers):
+                    self.fixture.tokenizer.apply_chat_template.reset_mock()
+                    self.fixture.model.generate.reset_mock()
+                    with patch.object(self.server, 'handle_error') as handler_error:
+                        with socket.create_connection(self.server.server_address, timeout=5) as connection:
+                            connection.sendall(
+                                b'POST /v1/chat/completions HTTP/1.1\r\nHost: localhost\r\n'
+                                b'Content-Type: application/json\r\n' + headers + b'\r\n' + body)
+                            response = http.client.HTTPResponse(connection)
+                            response.begin()
+                            self.assertEqual(response.status, 400)
+                            self.assertEqual(json.load(response), {'error': 'Unsupported request framing; send one Content-Length and no Transfer-Encoding'})
+                            response.close()
+                        handler_error.assert_not_called()
+                    self.fixture.tokenizer.apply_chat_template.assert_not_called()
+                    self.fixture.model.generate.assert_not_called()
+                    with urllib.request.urlopen(self.url+'/health', timeout=5) as response:
+                        self.assertEqual(json.load(response)['phase'], 'idle')
+                    with self.request(streaming) as response:
+                        result = response.read().decode()
+                    if streaming:
+                        self.assertIn('[DONE]', result)
+                    else:
+                        self.assertEqual(json.loads(result)['choices'][0]['finish_reason'], 'stop')
+
+    def test_unsupported_cpu_framing_does_not_wait_for_a_body(self):
+        import http.client
+        import socket
+        for headers in (b'Content-Length: 100\r\nContent-Length: 100\r\n',
+                        b'Content-Length: 100\r\nTransfer-Encoding: chunked\r\n'):
+            with self.subTest(headers=headers):
+                # Leave the write side open and send no body. Rejection must
+                # precede the production 15-second body-read timeout.
+                with socket.create_connection(self.server.server_address, timeout=2) as connection:
+                    connection.sendall(b'POST /v1/chat/completions HTTP/1.1\r\nHost: localhost\r\n'
+                        b'Content-Type: application/json\r\n' + headers + b'\r\n')
+                    response = http.client.HTTPResponse(connection)
+                    response.begin()
+                    self.assertEqual(response.status, 400)
+                    self.assertIn('Unsupported request framing', json.load(response)['error'])
+                    response.close()
+        self.fixture.tokenizer.apply_chat_template.assert_not_called()
+        self.fixture.model.generate.assert_not_called()
+
     def test_nonfinite_cpu_token_budgets_fail_before_inference_and_allow_retry(self):
         for streaming in (True, False):
             for budget in ('Infinity', '-Infinity', 'NaN', '1e999', '-1e999'):
