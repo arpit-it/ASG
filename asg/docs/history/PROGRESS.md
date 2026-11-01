@@ -6058,3 +6058,64 @@ inference claimed or runtime replacement attempted. No model download/install,
 settings/data/stable-app replacement. Status: Awaiting merge; independent exact-
 final review, required CI and verified protected merge pending.
 Recorded 2026-11-01T09:46:21.076297+00:00
+
+
+### CPU preparation host verified merged — issue #358 / PR #377
+
+Independent final review5727475100 approved exactb4018798f459bfa83090f135554faf160a37d5ae
+/tree931371152c9bc30ac8044a67e3527e6f0cd12c77 (locale9688cc8 identical).
+Independent46Flutter focused/discovery tests and54Python backend cases/one live
+skip passed; no blockers or unresolved threads. RequiredCI41294611190 passed:
+Flutter124812714891 formatter292/analyzer,Ubuntu999passes/12skips,actualChrome15,
+web/Wasm and independent generated-project resolve/analyze/test/build/serve;
+Python124812715046 all seven suites passed. Parent Mac1005passes/nineskips and
+126Python/twoskips/web/macOSdebug checks remain separately scoped. No inference
+claim. Shared-owner independent COMMENT approval follows existing zero-count
+protection; no bypass. Reviewer protected-plugin squashmergee9981fb9febe325c3ccd0fad84d4f1881140f0bb
+verified via fresh plugin PR/main/issue358closed-completed and signed raw merge
+matching exactreviewedtree/soleparent24a08537. REST merged_at09:51:52Z and reviewer
+reported merge09:51:53Z; closure09:51:54Z on2026-11-01. Guarded local-only sync
+passed; main/origin-main0/0,indexempty,both unrelatedIDEfiles byte-identical.
+Backup/private/tmp/asg358-host-primary-before-sync; guard/private/tmp/asg377-safe-sync.py.
+Readonly health rerun with loopback permission reports ready/idle MLX/Metal/
+Qwen3.8-27B-4bit; original restricted invocation was unreachable. No model loaded
+by this check. Optional CPU preparation foundation Done; fullF15 unchecked/
+Inprogress,CPUexperimental/no normal backend choice or UI enablement. Further
+managed integration and non-Apple CPU/separateCUDA live acceptance remain pending.
+No download/install/settings/data/stableapp replacement or cadence/notification
+change. GitHub publication/review/merge used connectedplugin only; PR attached
+and bothautomationlabels added. No second issue/FID. Final merge bookkeeping
+retained locally for the next normal reviewed increment.
+Recorded 2026-11-01T09:52:28.490370+00:00
+Current run time 2026-11-01T09:52:28.490370+00:00
+
+
+### Experimental CPU managed launch — issue #356
+
+Reopened existing issue #356; branch `356-cpu-managed-launch` from verified
+maine9981fb / PR #377. Fresh connected GitHub searches found no open PR/issues
+or competing active ASG owner. Retained prior verified-merge docs and unrelated
+primary IDE edits. F15 gap: NativeRuntimeHost.start forwarded only normal backend
+choices although opt-in CPU CLI/preparation/inspection were delivered.
+Scope/acceptance: optional API-only launch requiring per-call consent before any
+helper/port/process side effect; validated threads1..32, positive exact optional
+disk-byte ceiling and load deadline>0..3600s; explicit CPU arguments without
+fallback; private failures/output; shared owned-process stop/exit/overlap/retry
+lifecycle. Defaults and legacy Auto/MLX/MPS stay unchanged; no normal CPU choice,
+UI/persistence change or inference readiness claim. Actual controlled subprocess
+argument/stop/exit/stderr-flood/retry, invalid-input/no-write, busy/port-conflict
+and private support/asset/executable-failure tests. Python retains authoritative
+checkpoint preflight and loader deadline. Mac-verifiable integration depends on
+delivered CPU foundations, not unavailable non-Apple CPU/CUDA validation hosts.
+Full F15 remains unchecked/In progress; those live milestones stay pending.
+Validation: formatter294 unchanged after formatting; analyzer clean; 28 focused
+CPU launch/inspection/preparation tests; full Flutter suite and web/Wasm/macOSdebug
+builds passed (final Flutter total recorded below). Seven Python suites126cases/
+twoskips passed; sandbox HTTP denial was rerun with loopback permission. Historical
+inventory regenerated without promoting any current acceptance. No weights,
+package/system install, stable app/runtime/settings/data replacement or inference
+claim. Status: Awaiting merge; independent final-revision review, required CI
+and protected reviewer merge remain gates.
+Recorded 2026-11-01T10:17:41.802831+00:00
+
+Final local validation: 1012 Flutter passes/nine opt-in skips; 28 focused CPU process cases passed. Web/Wasm and macOS debug builds passed; 126 Python cases/two skips. No real CPU inference claimed.

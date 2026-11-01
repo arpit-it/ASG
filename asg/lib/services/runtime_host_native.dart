@@ -14,6 +14,7 @@ import '../models/runtime_capabilities.dart';
 import 'runtime_host.dart';
 import 'cpu_checkpoint_inspection_host.dart';
 import 'cpu_environment_preparation_host.dart';
+import 'cpu_runtime_launch_host.dart';
 import '../models/cpu_checkpoint_inspection.dart';
 import 'model_download_host.dart';
 import 'model_downloader_native.dart';
@@ -31,7 +32,8 @@ class NativeRuntimeHost
         RuntimeHost,
         ModelDownloadHost,
         CpuCheckpointInspectionHost,
-        CpuEnvironmentPreparationHost {
+        CpuEnvironmentPreparationHost,
+        CpuRuntimeLaunchHost {
   NativeRuntimeHost({
     this.port = 8765,
     this.supportDirectory,
@@ -577,7 +579,64 @@ class NativeRuntimeHost
     },
   );
   @override
-  Future<void> start(RuntimeSetup setup, String modelId) => _job(() async {
+  Future<void> startCpuRuntime(
+    RuntimeSetup setup,
+    String modelId, {
+    required bool experimentalCpu,
+    int threads = 2,
+    int? maxWeightBytes,
+    Duration loadTimeout = const Duration(seconds: 180),
+  }) => _job(() async {
+    if (!experimentalCpu ||
+        setup.python.trim().isEmpty ||
+        setup.modelPath.trim().isEmpty ||
+        modelId.trim().isEmpty ||
+        threads < 1 ||
+        threads > 32 ||
+        (maxWeightBytes != null &&
+            (maxWeightBytes < 1 || maxWeightBytes > 9007199254740991)) ||
+        loadTimeout <= Duration.zero ||
+        loadTimeout > const Duration(hours: 1) ||
+        port < 1 ||
+        port > 65535) {
+      throw const FormatException(
+        'Explicit experimental CPU consent, Python, checkpoint, model ID and valid CPU limits are required.',
+      );
+    }
+    try {
+      await _start(
+        setup,
+        modelId,
+        backend: 'cpu',
+        extraArguments: [
+          '--experimental-cpu',
+          '--cpu-threads',
+          '$threads',
+          '--cpu-load-timeout-seconds',
+          '${loadTimeout.inMicroseconds / Duration.microsecondsPerSecond}',
+          if (maxWeightBytes != null) ...[
+            '--cpu-max-weight-bytes',
+            '$maxWeightBytes',
+          ],
+        ],
+      );
+    } catch (_) {
+      throw StateError(
+        'Experimental CPU launch failed. Check the selected environment, checkpoint, limits and managed port. Stop an owned runtime before retrying. Real-host inference remains unverified.',
+      );
+    }
+  });
+
+  @override
+  Future<void> start(RuntimeSetup setup, String modelId) =>
+      _job(() => _start(setup, modelId, backend: setup.backend.argument));
+
+  Future<void> _start(
+    RuntimeSetup setup,
+    String modelId, {
+    required String backend,
+    List<String> extraArguments = const [],
+  }) async {
     if (_process != null) {
       throw StateError(
         'Stop the runtime started by this app before starting another.',
@@ -593,7 +652,8 @@ class NativeRuntimeHost
       '-B',
       script,
       '--backend',
-      setup.backend.argument,
+      backend,
+      ...extraArguments,
       '--model',
       setup.modelPath,
       '--port',
@@ -616,7 +676,8 @@ class NativeRuntimeHost
       }),
     );
     _log('Runtime process started. Waiting for model readiness…');
-  });
+  }
+
   void markReady() {
     _loading = false;
   }
