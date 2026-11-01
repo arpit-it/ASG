@@ -194,6 +194,63 @@ void main() {
       expect(t.widget<TextField>(limit).controller!.text, isEmpty);
     },
   );
+  testWidgets(
+    'load deadline validates exact seconds and retains retry inputs',
+    (t) async {
+      final host = fixture.CpuLaunchRuntimeHost()..fail = true;
+      await open(t, host);
+      await inputs(t);
+      final input = field('CPU load deadline (seconds)');
+      await reveal(t, input);
+      expect(t.widget<TextField>(input).controller!.text, '180');
+      for (final value in [
+        '',
+        '0',
+        '3601',
+        '-1',
+        '+2',
+        '1.5',
+        '1e2',
+        'NaN',
+        '999999999999999999999999999',
+      ]) {
+        await reveal(t, input);
+        await t.enterText(input, value);
+        await reveal(t, launch);
+        expect(
+          t.widget<OutlinedButton>(launch).onPressed,
+          isNull,
+          reason: value,
+        );
+      }
+      for (final value in [' 1 ', '3600']) {
+        await reveal(t, input);
+        await t.enterText(input, value);
+        await reveal(t, launch);
+        await t.tap(launch);
+        await t.pumpAndSettle();
+        expect(host.deadline, Duration(seconds: int.parse(value.trim())));
+        expect(find.textContaining('PRIVATE_CPU'), findsNothing);
+      }
+      host.fail = false;
+      host.gate = Completer<void>();
+      await reveal(t, launch);
+      await t.tap(launch);
+      await t.pump();
+      await t.ensureVisible(input);
+      await t.pump();
+      expect(t.widget<TextField>(input).enabled, false);
+      expect(t.widget<TextField>(input).controller!.text, '3600');
+      host.gate!.complete();
+      await t.pumpAndSettle();
+      expect(host.deadline, const Duration(hours: 1));
+      expect((await SharedPreferences.getInstance()).getKeys(), isEmpty);
+      await t.pumpWidget(const SizedBox());
+      await open(t, fixture.CpuLaunchRuntimeHost());
+      await reveal(t, input);
+      expect(t.widget<TextField>(input).controller!.text, '180');
+    },
+  );
   testWidgets('legacy and unsupported hosts have no CPU launch', (t) async {
     for (final host in [
       fixture.FakeRuntimeHost(),
@@ -219,11 +276,21 @@ void main() {
     await t.pump();
     expect(t.takeException(), isNull);
     await t.enterText(limit, '12345');
+    final deadline = field('CPU load deadline (seconds)');
+    await reveal(t, deadline);
+    await t.enterText(deadline, '3601');
+    await t.pump();
+    expect(t.takeException(), isNull);
+    await reveal(t, launch);
+    expect(t.widget<OutlinedButton>(launch).onPressed, isNull);
+    await reveal(t, deadline);
+    await t.enterText(deadline, '42');
     await reveal(t, launch);
     await t.tap(launch);
     await t.pumpAndSettle();
     expect(host.launches, 1);
     expect(host.ceiling, 12345);
+    expect(host.deadline, const Duration(seconds: 42));
     expect(t.takeException(), isNull);
   });
 }

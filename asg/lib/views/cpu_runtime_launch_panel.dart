@@ -27,7 +27,15 @@ class _CpuRuntimeLaunchPanelState extends State<CpuRuntimeLaunchPanel>
   final checkpoint = TextEditingController();
   final model = TextEditingController();
   final ceiling = TextEditingController();
+  final deadline = TextEditingController(text: '180');
   bool consent = false;
+
+  int? get loadSeconds => int.tryParse(deadline.text.trim());
+  bool get validDeadline =>
+      RegExp(r'^[0-9]+$').hasMatch(deadline.text.trim()) &&
+      loadSeconds != null &&
+      loadSeconds! >= 1 &&
+      loadSeconds! <= 3600;
 
   int? get maxBytes => int.tryParse(ceiling.text.trim());
   bool get validCeiling =>
@@ -43,6 +51,7 @@ class _CpuRuntimeLaunchPanelState extends State<CpuRuntimeLaunchPanel>
     checkpoint.addListener(refresh);
     model.addListener(refresh);
     ceiling.addListener(refresh);
+    deadline.addListener(refresh);
   }
 
   void refresh() => setState(() {});
@@ -52,6 +61,7 @@ class _CpuRuntimeLaunchPanelState extends State<CpuRuntimeLaunchPanel>
     checkpoint.dispose();
     model.dispose();
     ceiling.dispose();
+    deadline.dispose();
     super.dispose();
   }
 
@@ -88,7 +98,7 @@ class _CpuRuntimeLaunchPanelState extends State<CpuRuntimeLaunchPanel>
           ),
           const SizedBox(height: 12),
           const Text(
-            'Limits: 2 threads; 180-second server load deadline. These are not a RAM quota or proof that the model fits.',
+            'Limits: 2 threads; configurable server load deadline. These are not a RAM quota or proof that the model fits.',
           ),
           const SizedBox(height: 12),
           TextField(
@@ -101,6 +111,22 @@ class _CpuRuntimeLaunchPanelState extends State<CpuRuntimeLaunchPanel>
                   'Blank means no disk-byte ceiling. This is not a RAM limit.',
               helperMaxLines: 3,
               errorText: validCeiling ? null : 'Enter whole bytes from 1 to 9007199254740991, or leave blank.',
+              errorMaxLines: 3,
+              border: const OutlineInputBorder(),
+            ),
+          ),
+          const SizedBox(height: 16),
+          TextField(
+            controller: deadline,
+            enabled: !c.busy,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+              labelText: 'CPU load deadline (seconds)',
+              helperText: 'Stops the dedicated runtime if weight loading exceeds this deadline. Default: 180 seconds.',
+              helperMaxLines: 4,
+              errorText: validDeadline
+                  ? null
+                  : 'Enter whole seconds from 1 to 3600.',
               errorMaxLines: 3,
               border: const OutlineInputBorder(),
             ),
@@ -125,6 +151,7 @@ class _CpuRuntimeLaunchPanelState extends State<CpuRuntimeLaunchPanel>
                     c.host.ownsProcess ||
                     !consent ||
                     !validCeiling ||
+                    !validDeadline ||
                     widget.python.text.trim().isEmpty ||
                     checkpoint.text.trim().isEmpty ||
                     model.text.trim().isEmpty
@@ -137,6 +164,7 @@ class _CpuRuntimeLaunchPanelState extends State<CpuRuntimeLaunchPanel>
                     model.text,
                     experimentalCpu: consent,
                     maxWeightBytes: maxBytes,
+                    loadTimeout: Duration(seconds: loadSeconds!),
                   ),
             icon: const Icon(Icons.play_arrow),
             label: const Text('Launch experimental CPU'),

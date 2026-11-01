@@ -133,7 +133,8 @@ Unavailable hardware blocks only the corresponding real-host acceptance, not imp
   - Delivery: [PR #347](https://github.com/arpit-it/ASG/pull/347). Initial independent review found retry rollback overcount and inherited-pipe completion hang; both corrected with actual regressions. Native isolated UI observed below-button progress/speed, Pause at 5 MiB, Resume through 7.8 MiB and Stop retaining partial bytes. Final head d583ccbb/tree031725f4 approved in reviews5723106296/finalgate5723151483; requiredCI41208499529 passed. Protectedmerge07018365f0399d7047286baf01154fbd33a3890d at2026-10-31T14:12:20Z verified; issue346 closed. Full delivery evidence below.
   - Validation: deterministic local transfer/process fixtures, Python ownership/filter/telemetry regressions, Flutter protocol/controller/responsive UI tests, full format/analyze/test, web/macOS builds and independent exact-final review/required CI/protected merge. Mark Done only after verified merge; larger-model switch remains separately subject to actual inference.
 - [ ] F15 Hardware-aware inference backends — In progress (CPU implementation; non-Apple CPU/CUDA live validation pending); depends on F09
-  - Active CPU launch disk-ceiling view: reopened [issue #365](https://github.com/arpit-it/ASG/issues/365), `365-cpu-launch-ceiling`; optional exact-byte limit uses delivered controller/host. Mac-verifiable integration; full F15/live platform milestones remain pending. Acceptance and validation in ledger below.
+  - Active bounded CPU launch deadline view: reopened [issue #369](https://github.com/arpit-it/ASG/issues/369), `369-cpu-launch-deadline`; expose the delivered host/controller deadline in setup with session-only whole seconds1..3600/default180. Mac-verifiable integration; full F15 and non-AppleCPU/CUDA live inference remain pending. Acceptance and checks in delivery ledger below.
+  - Delivered CPU launch disk-ceiling view — Done after verified [PR #385](https://github.com/arpit-it/ASG/pull/385) merge7221513e (2026-11-01T13:40:13Z), finalreview5728301655/requiredCI41311829237 passed: reused [issue #365](https://github.com/arpit-it/ASG/issues/365), `365-cpu-launch-ceiling`; optional exact-byte limit uses delivered controller/host. Mac-verifiable integration; full F15/live platform milestones remain pending. Acceptance and validation in ledger below.
   - Delivered CPU launch view — Done after verified [PR #384](https://github.com/arpit-it/ASG/pull/384) merge3c05328d (2026-11-01T13:25:47Z), finalreview5728255927/requiredCI41310704303 passed: reused [issue #356](https://github.com/arpit-it/ASG/issues/356), `356-cpu-launch-view`; optional delivered host/controller support this Mac-verifiable opt-in integration. Full F15 and non-Apple CPU/CUDA live inference remain pending. Scope and acceptance in ledger below.
   - Delivered CPU dependency-check view — Done after verified [PR #383](https://github.com/arpit-it/ASG/pull/383) merge2f65060a (2026-11-01T12:54:58Z), finalreview5728140205/requiredCI41308233057 passed: reused [issue #358](https://github.com/arpit-it/ASG/issues/358), `358-cpu-preparation-view`; explicit session consent gates dependency-only preparation via delivered controller/host. Full F15 and non-Apple CPU/CUDA inference remain pending. Acceptance and validation in delivery ledger below.
   - Delivered CPU no-load inspection view — Done after verified [PR #382](https://github.com/arpit-it/ASG/pull/382) merge42e5e051 (2026-11-01T12:26:04Z), finalreview5728000707/requiredCI41305959228 passed: reused [issue #367](https://github.com/arpit-it/ASG/issues/367), `367-cpu-inspection-view`; explicit experimental consent and structural disk observations only. Normal CPU choices and real-host acceptance remain unavailable; full F15 stays unchecked. Scope/tests in delivery ledger below.
@@ -7387,3 +7388,65 @@ access; an inventory-copy path typo corrected before suite completion. Status
 Awaiting merge: exact-tree plugin publication, independent final-head review,
 required CI and protected reviewer merge remain gates. No actual CPU inference.
 Recorded 2026-11-01T13:32:15.847796+00:00
+
+
+### CPU launch disk ceiling verified merged — issue #365 / PR #385
+
+Independent approval5728301655/finalgate5728326372 approved exact
+`b9bf78091bf852483cb9f7bead419e842c4437aa` /
+tree `1da3043ab050292bfcca556b030f6404377f89d7` (local3ad5a2e identical).
+No blockers; independent87 focused UI/controller/actual-process/MVC tests and two
+extra collapse/clear/300-digit-input probes passed, temporary probes removed.
+RequiredCI41311829237success: reviewer inspected actual Flutter124863630853 logs,
+formatter301/analyzer,Ubuntu1043passes/12skips,actualChrome15,web/Wasm and real
+independent generated-project resolve/analyze/test/build/render/serve. Python
+124863631112 all seven suites passed with explicit live/platform skips. Parent
+Mac1049passes/nineskips,web/macOSdebug,Python95(skip1) remain separate evidence.
+
+Reviewer normally protected-plugin squash merged [PR #385](https://github.com/arpit-it/ASG/pull/385)
+as `7221513e0f6ac755f17c7ab53c4ac6ed986bffb4` at2026-11-01T13:40:13Z;
+issue365closed/completed13:40:14Z. Shared-owner COMMENT records independent
+approval without bypass. Parent freshly plugin-verified PR/issue/currentmain/CI
+and signed raw merge matching reviewedtree/soleparent3c05328d. Guarded local-only
+sync passed: main/origin-main0/0,indexempty,both unrelated IDEfiles byte-identical.
+Backup `/private/tmp/asg365-ceiling-before-sync`; guard`/private/tmp/asg385-safe-sync.py`.
+Plugin-only publication/review/merge; PR attached and both automation labels applied.
+Bounded launch disk-ceiling view Done; fullF15 unchecked/Inprogress,CPUexperimental
+outside normal choices; non-AppleCPU/CUDA live inference remains pending. Fresh
+resource observation Darwinarm64/currentPythonTorchabsent,retained8765healthURLError.
+No model load/download/install/settings/data/stableapp/runtime replacement or
+cadence/notification change. No newissue/FID; finalmerge bookkeeping retained
+for next normal reviewed development PR.
+Recorded 2026-11-01T13:41:08.961774+00:00
+
+
+### Experimental CPU launch deadline view — issue #369
+
+Reused/reopened #369 from verified PR385 merge7221513e, branch
+`369-cpu-launch-deadline`. Fresh GitHub-plugin open issue/PR searches and chat
+inventory found no competing run. Preserve unrelated IDE edits and prior final
+merge bookkeeping. F15 priority: delivered host/controller deadline API is the
+technical prerequisite; setup currently hardcodes180 seconds. Expose session-only
+whole seconds1..3600/default180, exact forwarding and private invalid refusal,
+busy exclusion/retry retention/fresh-session reset,320px enlarged layout.
+Explicit CPU consent, Stop, ownership gates and thread/disk controls retained.
+No saved settings/connection changes or supported CPU choice; no inference claim.
+Mac tests validate integration; non-AppleCPU/CUDA live acceptance and fullF15
+remain pending. No newissue/FID, model load/download/install/stable-app replacement
+or cadence/notification changes. Status In progress; final checks/review/CI/merge
+remain gates.
+
+Final source validation: formatter301 unchanged; analyzer clean; isolated tracked
+Flutter1050 passed/nine explicit opt-in skips; focused88 passed, including actual
+CPU launch subprocess checks. Python backend54(one live skip)/product32/inventory9
+passed. All322 relevant source/test/tool/config inputs match isolated validation.
+Initial widget helper pumpAndSettle waited on an intentional busy indicator;
+changed to bounded pump and reran focused/full suites. SDK-cache sandbox access
+was approved; issue branch created before validation. No model loading or inference.
+Platform builds and independent final-revision review/required CI/protected merge
+remain gates; fullF15 and non-AppleCPU/CUDA live inference remain pending.
+Recorded 2026-11-01T13:46:20.438552+00:00
+
+Release web/Wasm dry-run and macOS debug builds passed in isolated validation.
+Status Awaiting merge: plugin exact-tree publication, independent final-head review,
+required CI and protected reviewer merge remain gates. No actual CPU inference.
