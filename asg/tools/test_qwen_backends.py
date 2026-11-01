@@ -72,6 +72,58 @@ class CPUCheckpointTests(unittest.TestCase):
                         qwen_server.main()
                 load.assert_not_called(); executor.assert_not_called(); http.assert_not_called()
 
+    def test_metadata_limits_deep_json_and_invalid_utf8_fail_before_startup(self):
+        import qwen_server
+        for name, limit in [('config.json', 1024 * 1024),
+                            ('model.safetensors.index.json', 8 * 1024 * 1024)]:
+            for content in (b' ' * (limit + 1), b'[' * 2000 + b']' * 2000, b'\xff'):
+                with self.subTest(name=name, size=len(content)), tempfile.TemporaryDirectory() as temporary:
+                    folder = Path(temporary)
+                    (folder / 'config.json').write_text(json.dumps(CONFIG))
+                    (folder / 'model.safetensors').write_bytes(b'fixture')
+                    (folder / name).write_bytes(content)
+                    with patch.object(qwen_server, 'load_backend') as load, patch.object(qwen_server, 'ThreadPoolExecutor') as executor, patch.object(qwen_server, 'ThreadingHTTPServer') as http, patch.object(sys, 'argv', ['qwen_server.py', '--backend', 'cpu', '--experimental-cpu', '--model', str(folder)]):
+                        with self.assertRaisesRegex(ValueError, '^Invalid CPU checkpoint'):
+                            qwen_server.main()
+                    load.assert_not_called(); executor.assert_not_called(); http.assert_not_called()
+
+    def test_metadata_exact_limits_and_bounded_binary_reads(self):
+        from qwen_server import validate_cpu_checkpoint
+        from unittest.mock import Mock
+        with tempfile.TemporaryDirectory() as temporary:
+            folder = Path(temporary)
+            config = json.dumps(CONFIG).encode()
+            index = b'{"weight_map":{"a":"model.safetensors"}}'
+            (folder / 'config.json').write_bytes(config + b' ' * (1024 * 1024 - len(config)))
+            (folder / 'model.safetensors.index.json').write_bytes(index + b' ' * (8 * 1024 * 1024 - len(index)))
+            (folder / 'model.safetensors').write_bytes(b'fixture')
+            original = Path.open
+            readers = []
+            def tracked(path, *args, **kwargs):
+                source = original(path, *args, **kwargs)
+                reader = Mock(wraps=source)
+                reader.__enter__ = Mock(return_value=reader)
+                reader.__exit__ = Mock(side_effect=lambda *_: source.close())
+                readers.append(reader)
+                self.assertEqual(args, ('rb',))
+                return reader
+            with patch.object(Path, 'open', tracked):
+                self.assertEqual(validate_cpu_checkpoint(folder), CONFIG)
+            self.assertEqual(len(readers), 2)
+            readers[0].read.assert_called_once_with(1024 * 1024 + 1)
+            readers[1].read.assert_called_once_with(8 * 1024 * 1024 + 1)
+
+    def test_cpu_main_does_not_reread_preflight_metadata(self):
+        import qwen_server
+        from unittest.mock import Mock
+        with tempfile.TemporaryDirectory() as temporary:
+            folder = Path(temporary)
+            # Preflight owns all CPU metadata reads, unlike legacy startup.
+            with patch.object(qwen_server, 'validate_cpu_checkpoint', return_value=CONFIG) as preflight, patch.object(qwen_server, 'select_backend', return_value='cpu'), patch.object(qwen_server, 'ThreadPoolExecutor') as executor, patch.object(qwen_server, 'ThreadingHTTPServer', return_value=Mock()), patch.object(Path, 'read_text', side_effect=AssertionError('metadata reread')), patch.object(sys, 'argv', ['qwen_server.py', '--backend', 'cpu', '--experimental-cpu', '--model', str(folder)]):
+                qwen_server.main()
+            preflight.assert_called_once_with(folder.resolve())
+            executor.assert_called_once()
+
     def test_isolated_cli_rejects_manifest_without_optional_imports(self):
         with tempfile.TemporaryDirectory(prefix='CPU isolated checkpoint ') as temporary:
             root = Path(temporary)
@@ -81,7 +133,7 @@ class CPUCheckpointTests(unittest.TestCase):
                 (root / (name + '.py')).write_text('raise AssertionError("optional import reached")')
             folder = root / 'model'; folder.mkdir()
             (folder / 'config.json').write_text(json.dumps(CONFIG))
-            (folder / 'model.safetensors.index.json').write_text('{"weight_map":{}}')
+            (folder / 'model.safetensors.index.json').write_bytes(b' ' * (8 * 1024 * 1024 + 1))
             result = subprocess.run([sys.executable, '-B', '-S', str(root / 'qwen_server.py'), '--backend', 'cpu', '--experimental-cpu', '--model', str(folder)], capture_output=True, text=True, timeout=10)
             self.assertNotEqual(result.returncode, 0)
             self.assertIn('Invalid CPU checkpoint', result.stderr)
