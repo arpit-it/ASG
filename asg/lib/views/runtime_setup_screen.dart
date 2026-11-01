@@ -11,6 +11,7 @@ import 'model_download_panel.dart';
 import '../models/local_model_config.dart';
 import '../models/runtime_setup.dart';
 import 'runtime_capability_panel.dart';
+import 'cpu_checkpoint_inspection_panel.dart';
 
 class RuntimeSetupScreen extends StatefulWidget {
   const RuntimeSetupScreen({
@@ -368,7 +369,7 @@ class _RuntimeSetupScreenState extends State<RuntimeSetupScreen> {
                 ),
                 const SizedBox(height: 12),
                 const Text(
-                  'Auto keeps the legacy MLX-first dependency preference. Explicit choices never fall back to another backend. Torch/MPS needs compatible unquantized weights; MLX quantized weights cannot be reused by Torch. CPU/CUDA are unavailable. Selection does not verify dependencies, devices or model compatibility; launch validates them. Changing this choice leaves the active connection unchanged.',
+                  'Auto keeps the legacy MLX-first dependency preference. Explicit choices never fall back to another backend. Torch/MPS needs compatible unquantized weights; MLX quantized weights cannot be reused by Torch. CPU/CUDA are unavailable as supported launch choices. Selection does not verify dependencies, devices or model compatibility; launch validates them. Changing this choice leaves the active connection unchanged.',
                 ),
                 const SizedBox(height: 12),
                 RuntimeCapabilityPanel(
@@ -416,6 +417,11 @@ class _RuntimeSetupScreenState extends State<RuntimeSetupScreen> {
                   ],
                 ),
               ]),
+              if (controller.canInspectCpuCheckpoint)
+                CpuCheckpointInspectionPanel(
+                  controller: controller,
+                  python: python,
+                ),
             ] else
               section('Model setup on your Mac', [
                 const Text(

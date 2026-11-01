@@ -6317,3 +6317,74 @@ required CI and protected reviewer merge remain required before completion.
 Recorded 2026-11-01T11:46:44.068089+00:00
 
 Final local validation: formatter295 unchanged; analyzer clean; isolated full Flutter suite1033 passed/nine opt-in skips; 92 focused setup/capability tests passed. Web release (Wasm dry-run included) and macOS debug builds passed. Python backend54 (one explicit live skip), product acceptance32 and historical inventory9 passed. These checks do not establish CPU inference. Status: Awaiting merge; independent exact-final review, required CI and verified protected merge remain gates.
+
+
+### CPU checkpoint inspection controller verified merged — issue #367 / PR #381
+
+Independent final review [5727903611](https://github.com/arpit-it/ASG/pull/381#pullrequestreview-5727903611)
+approved exact `c7136871a9ef6420121acf1c0c55a2e9df2a4576` /
+tree `5d92ad6d11417a3c8dcbf01086b1a4de43b8ea2f` (local6d4e195 identical).
+No blockers; independent103 focused setup/capability/actual checkpoint-process/MVC
+cases and two extra lifecycle/invalidation probes passed. Finalgate5727915424
+verified requiredCI41303519922 success: Flutter124839157667 formatter295/analyzer,
+Ubuntu1027passes/12skips,actualChrome15,web/Wasm dry-run and independent generated
+project resolve/analyze/test/build/serve; Python124839157861 all seven suites passed.
+Parent Mac1033passes/nineskips,92focused,web/macOSdebug and Pythonbackend54(one live
+skip)/product32/inventory9 remain separate evidence. No fixture/build/health check
+is represented as real CPU inference.
+
+Independent reviewer normally protected-merged [PR #381](https://github.com/arpit-it/ASG/pull/381)
+as `87f44313f98b9b9adaafa184a3fa64f33939e840` at2026-11-01T11:53:58Z;
+issue367closed/completed11:53:59Z. Shared-owner COMMENT approval transparently
+records independent review; no protection bypass. Parent freshly verified PR,
+exacthead,currentmain,CIrun,issueclosure and signed rawmerge matching reviewedtree/
+soleparent03b04bde. Guarded local-only sync passed: main/origin-main0/0,indexempty,
+both unrelated IDEfiles byte-identical. Backup `/private/tmp/asg367-inspection-controller-before-sync`;
+guard `/private/tmp/asg381-safe-sync.py`. GitHub publication/review/merge used
+connectedplugin only; PR attached and both automation labels applied. Prior
+verified-merge bookkeeping published with this increment. API-only inspection
+controller increment Done; fullF15 unchecked/Inprogress,CPUexperimental/outside
+normal choices. Non-Apple CPU/separateCUDA live inference remain pending. No
+install/download/settings/data/stableapp/runtime replacement or cadence/notification
+change. No newissue/FID. Finalmerge bookkeeping retained locally for next reviewed PR.
+Recorded 2026-11-01T11:55:03.320967+00:00
+
+
+### Experimental CPU checkpoint inspection view — issue #367
+
+Reopened existing [issue #367](https://github.com/arpit-it/ASG/issues/367),
+branch `367-cpu-inspection-view` from verified main `87f44313` / PR #381.
+Fresh connected GitHub open-issue/PR searches and chat inventory found no competing
+active ASG run. Preserved unrelated IDE edits and prior final-merge bookkeeping.
+F15 continuity: native no-load host and controller are delivered, but no setup
+view invokes them. These prerequisites support this bounded Mac-verifiable view;
+non-Apple CPU/CUDA real inference remains pending, full F15 unchecked. No new task ID
+or issue; historical API-only delivery claims remain historical.
+
+Scope/acceptance: separate collapsed experimental panel only for supported optional
+inspection hosts; explicit session consent, shared Python plus independent CPU
+checkpoint field and optional positive exact disk-byte ceiling. Display typed observed
+bytes/file count and explicit unverified CPU readiness. Input/consent changes clear
+observations. Busy exclusion, private failure/retry, no settings/connection/runtime
+mutation, no installs/downloads/load/start buttons or normal CPU backend choice.
+This does not verify tokenizer/tensor validity, RAM fit or inference. Keep default
+Auto/MLX/MPS workflow. Widget coverage includes exact-byte input boundaries, trimmed
+forwarding, no side effects, busy/private retry, stale observations, legacy/unsupported
+hosts and 320px enlarged text. Five new widget regressions and six-suite focused108
+cases passed. Full isolated validation/required CI and independent final-revision
+review remain gates. Status In progress; no merge/completion claim.
+Recorded 2026-11-01T12:17:14.217114+00:00
+
+
+Final local validation for #367 inspection view: formatter297 unchanged after formatting;
+analyzer clean; isolated full Flutter suite1038 passed/nine explicit opt-in skips;
+108 focused view/controller/actual-process/MVC tests passed. Web release including
+Wasm dry-run and macOS debug builds passed in `/private/tmp/asg367-view-validation`.
+Python backend54(one live skip), product32 and inventory9 passed (95 total).
+Initial narrow widget helper needed scrolling to build the offscreen panel; corrected
+and all focused/full tests rerun. Initial Python invocation used a nonexistent module
+name; corrected to test_qwen_backends and all95 passed. No production defect hidden
+by those harness corrections. No actual CPU inference/model load/install/download,
+stable-app/runtime/settings/data replacement or cadence/notification change.
+Status Awaiting merge: exact-tree publication, independent final revision review,
+required CI and verified protected merge still required. Full F15 remains unchecked.

@@ -250,6 +250,8 @@ class RuntimeSetupController extends BaseController {
   CpuCheckpointInspection? _cpuCheckpointInspection;
   CpuCheckpointInspection? get cpuCheckpointInspection =>
       _cpuCheckpointInspection;
+  bool get canInspectCpuCheckpoint =>
+      host.supported && host is CpuCheckpointInspectionHost;
   int _discoveryEpoch = 0;
 
   void invalidateCapabilities() {
@@ -288,7 +290,7 @@ class RuntimeSetupController extends BaseController {
     }
   });
 
-  /// API-only structural observation. Call invalidateCapabilities when input
+  /// Structural observation. Call invalidateCapabilities when input
   /// context changes; observations never establish compatibility or readiness.
   Future<void> inspectCpuCheckpoint(
     String python,
