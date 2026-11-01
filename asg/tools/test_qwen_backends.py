@@ -332,12 +332,49 @@ class CPUBackendTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'unavailable on this host'):
             backends.select_backend('cpu', CONFIG, self.caps('Other'), experimental_cpu=True)
 
+    def test_missing_cpu_dependencies_are_reported_before_startup_side_effects(self):
+        import qwen_server
+        for name in ('torch', 'transformers', 'safetensors'):
+            with self.subTest(missing=name):
+                caps = self.caps(missing=(name,))
+                cpu = caps['backends'][-1]
+                self.assertEqual(cpu['missing_dependencies'], [name])
+                self.assertEqual(cpu['readiness'], 'unavailable')
+                self.assertIsNone(cpu['device_ready'])
+                with tempfile.TemporaryDirectory(prefix='cpu missing dependency ') as temporary:
+                    folder = Path(temporary)
+                    (folder / 'config.json').write_text(json.dumps(CONFIG))
+                    (folder / 'model.safetensors').write_bytes(b'not real weights')
+                    with patch.object(backends, 'discover_capabilities', return_value=caps), patch.object(qwen_server, 'load_backend') as load, patch.object(qwen_server, 'ThreadPoolExecutor') as executor, patch.object(qwen_server, 'ThreadingHTTPServer') as http, patch.object(sys, 'argv', ['qwen_server.py', '--backend', 'cpu', '--experimental-cpu', '--model', str(folder)]):
+                        with self.assertRaisesRegex(ValueError, name):
+                            qwen_server.main()
+                    load.assert_not_called()
+                    executor.assert_not_called()
+                    http.assert_not_called()
+
+    def test_isolated_cli_discovers_missing_safetensors_without_optional_imports(self):
+        with tempfile.TemporaryDirectory(prefix='cpu dependency CLI ') as temporary:
+            root = Path(temporary)
+            shutil.copyfile(Path(__file__).with_name('qwen_backends.py'), root / 'qwen_backends.py')
+            shutil.copyfile(Path(__file__).with_name('qwen_server.py'), root / 'qwen_server.py')
+            # -S excludes site packages; sentinel modules exist but must not run.
+            for name in ('torch', 'transformers', 'mlx', 'mlx_lm', 'accelerate'):
+                (root / (name + '.py')).write_text('raise AssertionError("optional dependency imported")\n')
+            command = [sys.executable, '-B', '-S', str(root / 'qwen_server.py')]
+            result = subprocess.run([*command, '--backend', 'cpu', '--experimental-cpu', '--capabilities'], cwd='/', capture_output=True, text=True, timeout=10, check=True)
+            cpu = json.loads(result.stdout)['backends'][-1]
+            self.assertEqual(cpu['missing_dependencies'], ['safetensors'])
+            self.assertEqual(cpu['readiness'], 'unavailable')
+            self.assertEqual(result.stderr, '')
+            legacy = subprocess.run([*command, '--capabilities'], cwd='/', capture_output=True, text=True, timeout=10, check=True)
+            self.assertEqual([entry['backend'] for entry in json.loads(legacy.stdout)['backends']], ['mlx', 'torch'])
+
     def test_selection_and_loading_require_opt_in_and_do_not_fall_back(self):
         with self.assertRaisesRegex(ValueError, 'experimental'):
             backends.select_backend('cpu', CONFIG, self.caps())
         with self.assertRaisesRegex(ValueError, 'experimental'):
             backends.load_backend(Path('/missing'), 'cpu')
-        for name in ('torch', 'transformers'):
+        for name in ('torch', 'transformers', 'safetensors'):
             with self.assertRaisesRegex(ValueError, 'requires installed dependencies'):
                 backends.select_backend('cpu', CONFIG, self.caps(missing=(name,)), experimental_cpu=True)
         for field in ('quantization', 'quantization_config'):

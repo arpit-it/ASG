@@ -56,7 +56,7 @@ def discover_capabilities(system=None, machine=None, available=None, probe_devic
                         'device_ready': ready, 'model_compatible': None,
                         'readiness': 'unverified' if host_supported and not missing and ready is not False else 'unavailable'})
     if experimental_cpu:
-        missing = [name for name in ('torch', 'transformers') if not available(name)]
+        missing = [name for name in ('torch', 'transformers', 'safetensors') if not available(name)]
         supported = system in ('Darwin', 'Linux', 'Windows')
         entries.append({'backend': 'cpu', 'device': 'cpu',
                         'host_supported': supported, 'missing_dependencies': missing,
