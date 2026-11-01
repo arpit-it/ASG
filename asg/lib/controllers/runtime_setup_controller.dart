@@ -16,6 +16,7 @@ import '../services/runtime_setup_store.dart';
 import '../services/runtime_connection.dart';
 import '../services/runtime_host.dart';
 import '../services/cpu_environment_preparation_host.dart';
+import '../services/cpu_runtime_launch_host.dart';
 import 'base_controller.dart';
 import 'model_settings_controller.dart';
 
@@ -341,6 +342,75 @@ class RuntimeSetupController extends BaseController {
     _status =
         'Experimental CPU dependencies checked. Model loading, memory '
         'adequacy and inference remain unverified. Connection settings are unchanged.';
+  });
+
+  /// Launch-only opt-in for controlled CPU validation. Does not save settings,
+  /// connect chat, or establish model readiness or real-host inference support.
+  Future<void> startCpuRuntime(
+    RuntimeSetup values,
+    String modelId, {
+    required bool experimentalCpu,
+    int threads = 2,
+    int? maxWeightBytes,
+    Duration loadTimeout = const Duration(seconds: 180),
+  }) => _action(() async {
+    if (!experimentalCpu ||
+        values.python.trim().isEmpty ||
+        values.modelPath.trim().isEmpty ||
+        modelId.trim().isEmpty ||
+        threads < 1 ||
+        threads > 32 ||
+        (maxWeightBytes != null &&
+            (maxWeightBytes < 1 || maxWeightBytes > 9007199254740991)) ||
+        loadTimeout <= Duration.zero ||
+        loadTimeout > const Duration(hours: 1)) {
+      throw const FormatException(
+        'Explicit experimental CPU consent, Python, checkpoint, model ID and valid CPU limits are required.',
+      );
+    }
+    final target = host;
+    if (!target.supported || target is! CpuRuntimeLaunchHost) {
+      throw StateError('Experimental CPU launch is unavailable on this host.');
+    }
+    if (_health.ready || host.ownsProcess) {
+      throw StateError(
+        'A runtime is already running. Stop it before an experimental CPU launch.',
+      );
+    }
+    _stopRequested = false;
+    invalidateCapabilities();
+    _status = 'Starting experimental CPU process…';
+    update();
+    try {
+      await (target as CpuRuntimeLaunchHost).startCpuRuntime(
+        RuntimeSetup(
+          python: values.python.trim(),
+          modelPath: values.modelPath.trim(),
+        ),
+        modelId.trim(),
+        experimentalCpu: true,
+        threads: threads,
+        maxWeightBytes: maxWeightBytes,
+        loadTimeout: loadTimeout,
+      );
+    } catch (_) {
+      if (_startupCancelled) return;
+      _status = 'Experimental CPU launch failed.';
+      throw StateError(
+        'Could not launch experimental CPU. Check Python, installed dependencies, '
+        'checkpoint, limits and port, then retry. Stop an owned process before retrying.',
+      );
+    }
+    // Stop may precede asynchronous acquisition of the process. Disposal also
+    // cleans a late process, without publishing completion to a closed view.
+    if (_startupCancelled) {
+      if (host.ownsProcess) await _stopManaged();
+      return;
+    }
+    _status =
+        'Experimental CPU launch requested. Verify health separately before '
+        'connecting. Model readiness, memory adequacy and real-host inference '
+        'remain unverified. Connection settings are unchanged.';
   });
   Future<void> saveSetup(RuntimeSetup values) => _action(() async {
     await _saveSetup(values);

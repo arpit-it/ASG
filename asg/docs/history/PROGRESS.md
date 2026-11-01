@@ -6186,3 +6186,71 @@ recorded in the linked PR before completion.
 Recorded 2026-11-01T10:46:35.691285+00:00
 
 Final platform validation for issue #358 controller increment: web/Wasm and macOS debug builds passed on the isolated tested source tree. No device inference claim.
+
+
+### CPU preparation controller verified merged — issue #358 / PR #379
+
+Independent final review [5727674572](https://github.com/arpit-it/ASG/pull/379#pullrequestreview-5727674572)
+approved exact `156b676c6aca21546544bc0e00a1c7ad3abac82c` /
+tree `ecb66e38792fcfc2fddfe3bcd0c27d0c672c87db` (local57ae603 identical).
+No blockers; independent89 focused setup/capability/actual-process/MVC tests and
+three extra unsupported/busy-host/reverse-overlap/disposed-call probes passed.
+RequiredCI41299055188 passed: Flutter124825994190 formatter294/analyzer,
+Ubuntu1012passes/12skips, actualChrome15, web/Wasm and independent generated-project
+resolve/analyze/test/build/serve; Python124825994082 all seven suites passed.
+Correction to preceding pre-merge evidence: local product-acceptance suite32
+(not historical27), inventory9; PR comment6556936685 records this correction.
+Parent local clean tracked-tree1018passes/nineskips and web/macOSdebug builds
+remain separate evidence.354 tracked test/build inputs compared byte-identical.
+
+Reviewer normal protected-plugin squashmerge [PR #379](https://github.com/arpit-it/ASG/pull/379)
+as `8c52534e0ee744bd1ad107aeee61e051528bd7b8` at2026-11-01T10:54:41Z;
+issue358closed/completed10:54:42Z. Shared-owner COMMENT verdict transparently
+records independent approval; no protection bypass. Parent freshly verified PR,
+issue closure, currentmain and signed raw merge matching reviewedtree/sole
+parenteee26ac0. Guarded local-only synchronization passed: main/origin-main0/0,
+indexempty, both unrelated IDE files byte-identical. Backup
+`/private/tmp/asg358-controller-before-sync`; guard`/private/tmp/asg379-safe-sync.py`.
+CPU preparation controller increment Done; fullF15 unchecked/Inprogress and
+CPUexperimental/outside normal backend choices. Non-Apple CPU and separateCUDA
+real-host inference remain pending; no fixture/build/health inference equivalence.
+No model/package install/download, stableapp/runtime/settings/data replacement
+or cadence/notification change. GitHub publication/review/merge used connected
+plugin exclusively; PR attached and both automation labels applied. No new issue/FID.
+Final merge bookkeeping retained locally for the next normal reviewed increment.
+Recorded 2026-11-01T10:55:20.527753+00:00
+
+
+### Experimental CPU launch controller — issue #356
+
+Reopened existing [issue #356](https://github.com/arpit-it/ASG/issues/356),
+branch `356-cpu-launch-controller` from verified main `8c52534e`.
+No other active ASG run or open issue/PR observed before mutations. Delivered
+optional CPU host API is sufficient for this bounded F15 continuation under the
+owner platform exception. Full F15 stays In progress, unchecked; unavailable
+non-Apple CPU and separate CUDA real-inference acceptance remain pending.
+
+Scope/acceptance: API-only consent-gated launch, validated nonempty Python,
+checkpoint/model identity and bounded thread/disk/load limits before host work;
+unsupported/ready/owned runtime rejection; shared busy exclusion; exact trimmed
+forwarding; private failure/retry; invalidate stale capability/RAM observations;
+Stop or disposal during launch cleans a late acquired process without publishing
+closed-view completion. No automatic health/connection claim, settings writes,
+normal backend choice/UI enablement, dependency/model install or download.
+Server retains authoritative model/dependency/load validation. Legacy start is
+unchanged. Successful launch explicitly requests separate health verification.
+
+Validation: six new regressions including invalid boundaries, unsupported/existing
+runtime rejection, failure privacy/retry and argument forwarding, Stop/disposal
+race cleanup, plus stale capability/RAM clearing. Focused suite passed before the
+final observation regression; final isolated tracked-source full Flutter suite
+1024 passed/nine opt-in skips, analyzer clean, formatter294. Existing actual CPU
+subprocess launch tests passed; these fixtures are not inference. Python backend
+54 cases (one opt-in skip), product acceptance32 and inventory9 passed after
+regenerating historical inventory for changed runtime hashes. Web/macOS build,
+exact-tree publication, independent final review, required CI and reviewer
+protected-merge evidence are recorded in the linked PR before completion.
+Status Awaiting merge; no merge or live CPU inference claim.
+Recorded 2026-11-01T11:17:01.866455+00:00
+
+Final platform validation: isolated web/Wasm and macOS debug builds passed. No device inference claim.

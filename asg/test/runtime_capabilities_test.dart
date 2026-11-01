@@ -59,6 +59,12 @@ class CpuDiscoveryHost extends DiscoveryHost
   }) async {}
 }
 
+class CpuLaunchDiscoveryHost extends fixture.CpuLaunchRuntimeHost {
+  @override
+  Future<RuntimeCapabilities> discover(String python) async =>
+      RuntimeCapabilities.fromJson(report());
+}
+
 void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
   test(
@@ -75,6 +81,25 @@ void main() {
       expect(c.capabilities, isNull);
       expect(c.memory, isNull);
       expect(c.health.ready, isFalse);
+    },
+  );
+  test(
+    'CPU launch clears stale observations only after valid consent',
+    () async {
+      final host = CpuLaunchDiscoveryHost();
+      final c = await fixture.controller(host);
+      addTearDown(c.dispose);
+      await c.discover('/python');
+      expect(c.capabilities, isNotNull);
+      expect(c.memory, isNotNull);
+      const values = RuntimeSetup(python: '/python', modelPath: '/model');
+      await c.startCpuRuntime(values, 'model', experimentalCpu: false);
+      expect(c.capabilities, isNotNull);
+      await c.startCpuRuntime(values, 'model', experimentalCpu: true);
+      expect(c.capabilities, isNull);
+      expect(c.memory, isNull);
+      expect(c.health.ready, isFalse);
+      await c.stop();
     },
   );
   test('discovery sanitizes host and rejects untrusted identity/readiness', () {
