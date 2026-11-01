@@ -8,6 +8,9 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:asg/controllers/source_review_controller.dart';
+import 'package:asg/models/model_connection_preset.dart';
+
 import 'package:asg/models/local_model_config.dart';
 import 'package:asg/models/model_request_provenance.dart';
 import 'package:asg/models/source_generation.dart';
@@ -110,6 +113,88 @@ void main() {
           value.modelRequest!.toJson().keys,
           unorderedEquals(['version', 'model', 'outputTokens']),
         );
+      } finally {
+        await server.close(force: true);
+        HttpOverrides.global = previous;
+      }
+    },
+  );
+
+  test(
+    'selected review-session endpoint sends matching source provenance',
+    () async {
+      final previous = HttpOverrides.current;
+      HttpOverrides.global = null;
+      final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+      try {
+        final observed = Completer<Map<String, dynamic>>();
+        server.listen((incoming) async {
+          observed.complete(
+            jsonDecode(await utf8.decoder.bind(incoming).join())
+                as Map<String, dynamic>,
+          );
+          incoming.response.headers.contentType = ContentType(
+            'text',
+            'event-stream',
+          );
+          incoming.response.write(
+            'data: ${jsonEncode({
+              'choices': [
+                {
+                  'delta': {'content': response()},
+                },
+              ],
+            })}\n\ndata: [DONE]\n\n',
+          );
+          await incoming.response.close();
+        });
+        final records = AtomicRecords();
+        await seed(records);
+        final settings = ModelSettingsStore(records);
+        await settings.save(
+          const LocalModelConfig(
+            baseUrl: 'http://127.0.0.1:1/v1',
+            model: 'unused-global',
+          ),
+        );
+        await settings.savePresets([
+          ModelConnectionPreset(
+            name: 'Wire',
+            config: LocalModelConfig(
+              baseUrl: 'http://127.0.0.1:${server.port}/v1',
+              model: 'wire-selected',
+              chatOutputTokens: 512,
+            ),
+          ),
+        ]);
+        final controller = SourceReviewController(
+          project: project,
+          generated: GeneratedProject(
+            directory: '/saved',
+            sdk: '',
+            python: '',
+            sources: {'lib/main.dart': 'hash'},
+          ),
+          records: records,
+          readSnapshot: (_, _) async => originals,
+        );
+        try {
+          controller.choosePreset(controller.presets.single);
+          await controller.request('Tanalyze', ['lib/main.dart']);
+          expect(controller.error, isNull);
+          final value = controller.proposal!;
+          final body = await observed.future;
+          expect(body['model'], value.modelRequest!.model);
+          expect(body['max_tokens'], value.modelRequest!.outputTokens);
+          expect(body['max_tokens'], 4096);
+          expect(body['model'], 'wire-selected');
+          expect(
+            value.modelRequest!.toJson().keys,
+            unorderedEquals(['version', 'model', 'outputTokens']),
+          );
+        } finally {
+          controller.dispose();
+        }
       } finally {
         await server.close(force: true);
         HttpOverrides.global = previous;

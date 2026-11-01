@@ -4,6 +4,8 @@
 import 'dart:async';
 
 import '../models/approved_source_proposal.dart';
+import '../models/local_model_config.dart';
+import '../models/model_connection_preset.dart';
 import '../models/build_plan.dart';
 import '../models/project.dart';
 import '../models/plan_approval.dart';
@@ -64,6 +66,7 @@ class SourceReviewController extends BaseController {
       _workingRecordReadable = false;
     }
     refreshApproval();
+    refreshPresets();
   }
 
   late final String? _workingRecord;
@@ -101,6 +104,39 @@ class SourceReviewController extends BaseController {
     }
     update();
   }
+
+  ModelConnectionPreset? _connectionPreset;
+  ModelConnectionPreset? get connectionPreset => _connectionPreset;
+  List<ModelConnectionPreset> _presets = const [];
+  List<ModelConnectionPreset> get presets => List.unmodifiable(_presets);
+  String? _presetError;
+  String? get presetError => _presetError;
+  bool get canChooseConnection => !busy && !promoted && !isDisposed;
+
+  void refreshPresets() {
+    if (!canChooseConnection) return;
+    try {
+      _presets = ModelSettingsStore(records).loadPresets();
+      _presetError = null;
+    } catch (_) {
+      _presets = const [];
+      _presetError = 'Connection presets could not be loaded. Current source/repair connection and saved data are unchanged.';
+    }
+    update();
+  }
+
+  /// A review-session snapshot; retained proposals keep their own provenance.
+  void choosePreset(ModelConnectionPreset? preset) {
+    if (!canChooseConnection ||
+        (preset != null && !_presets.contains(preset))) {
+      return;
+    }
+    _connectionPreset = preset;
+    update();
+  }
+
+  LocalModelConfig _requestConfig() =>
+      _connectionPreset?.config ?? ModelSettingsStore(records).load();
 
   bool get candidateSupported => _folderPicker.supported;
   String? _candidateParent;
@@ -414,6 +450,15 @@ class SourceReviewController extends BaseController {
     final selection = List<String>.unmodifiable(selected);
     final approval = proposal!.approval;
     final taskId = proposal!.boardTaskId;
+    // One connection for all attempts, even if global settings change mid-loop.
+    late final LocalModelConfig config;
+    try {
+      config = _requestConfig();
+    } catch (_) {
+      _error = 'Source/repair connection could not be read. Restore valid model settings before retrying.';
+      update();
+      return;
+    }
     _repairLoopActive = true;
     _loopCancelled = false;
     _cancelled = false;
@@ -441,7 +486,13 @@ class SourceReviewController extends BaseController {
           throw StateError('No current repairable saved failure.');
         }
         final previousProposal = _proposal;
-        await _request(taskId, selection, repair: true, automatic: true);
+        await _request(
+          taskId,
+          selection,
+          repair: true,
+          automatic: true,
+          config: config,
+        );
         authorize();
         if (_error != null ||
             identical(_proposal, previousProposal) ||
@@ -519,6 +570,7 @@ class SourceReviewController extends BaseController {
     List<String> selected, {
     bool repair = false,
     bool automatic = false,
+    LocalModelConfig? config,
   }) async {
     if (_busy ||
         (_candidateSession?.busy ?? false) ||
@@ -547,12 +599,14 @@ class SourceReviewController extends BaseController {
     }
     // Bind the entire request, including asynchronous source capture, to approval.
     late final PlanApproval started;
+    late final LocalModelConfig requestConfig;
     try {
       _requireWorking();
       started = PlanApprovalStore(records).requireCurrentApproval(project);
+      requestConfig = config ?? _requestConfig();
     } catch (_) {
       if (!isDisposed) {
-        _error = 'Source review approval could not be read. Restore local storage access and approve a current Plan before retrying. Working output is retained.';
+        _error = 'Source review approval or model connection could not be read. Restore valid local model settings and approve a current Plan before retrying. Working output is retained.';
         update();
       }
       return;
@@ -600,7 +654,7 @@ class SourceReviewController extends BaseController {
       final value = await _proposer.propose(
         project: project,
         boardTaskId: taskId,
-        config: ModelSettingsStore(records).load(),
+        config: requestConfig,
         originals: originals,
         repairCandidate: repairCandidate,
       );
