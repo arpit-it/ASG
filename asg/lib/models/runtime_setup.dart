@@ -24,7 +24,8 @@ enum RuntimeBackend {
 /// An allowlisted server report, never a local device probe or adequacy claim.
 enum LoadedRuntimeDevice {
   mlxMetal('MLX / Metal'),
-  torchMps('Torch / MPS');
+  torchMps('Torch / MPS'),
+  torchCpu('Torch / CPU (experimental; real-host inference unverified)');
 
   const LoadedRuntimeDevice(this.label);
   final String label;
@@ -33,6 +34,7 @@ enum LoadedRuntimeDevice {
       switch ((backend, device)) {
         ('mlx', 'metal') => mlxMetal,
         ('torch', 'mps') => torchMps,
+        ('torch', 'cpu') => torchCpu,
         _ => null,
       };
 }
