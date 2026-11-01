@@ -7394,3 +7394,69 @@ Final publication/review/CI/merge evidence follows. This validates app/request
 metadata and compatibility, not fresh inference or external-platform support.
 Status Awaiting merge; independent exact-final review/required CI/merge pending.
 Logs /private/tmp/asg396-provenance-{analyze,clean-flutter,web,macos,python}.log.
+
+
+### Requested-model provenance verified merged — issue #396 / PR #408
+
+Independent review5730154319/finalgate5730172949 approved exact
+6f1d6f9534e9749617850eee3325ad9ef2c19b26/tree60debf4ae3f1bc066bbc57f0c510aa95667d790b
+(tested local a742e6b identical). Reviewer independently passed26 provenance,
+native-reopen, Plan-approval and save-recovery tests and matched all328
+validation source/configuration inputs; no blocking findings.
+Required CI41347599428 completed/success: Flutter124970668678 formatter307
+unchanged/analyzer clean, Ubuntu1064 passes/12 explicit skips, actualChrome16
+and real independent generated-project resolve/analyze/test/render/build/serve
+passed; Python124970668906 ran141 tests/four explicit CI live/platform skips.
+Separate parent Mac1070Flutter/nine skips,141Python/two skips,web/macOSdebug
+passed. No fixture or build establishes fresh inference or platform support.
+
+Reviewer protected-plugin squash merged [PR #408](https://github.com/arpit-it/ASG/pull/408)
+as93687d3d85ae6e0af081f9856b7fa1f881d34022 at2026-11-01T20:41:36Z
+(2 November2026,02:11:36IST). Parent freshly plugin-verified merged PR, current
+main, signed tree/sole parentcfb10b4 and required CI. Guarded local synchronization
+passed: main/origin-main0/0,indexempty,both unrelated IDE edits byte-identical.
+Evidence /private/tmp/asg408-reviewed-merge.json and /private/tmp/asg408-safe-sync.py.
+
+Bounded project-chat provenance increment Done; fullF22/F15 remain unchecked.
+Issue396 intentionally remains open and is explicitly titled Pending for
+per-project selection and remaining request provenance; PR references it without
+auto-closing unfinished scope. Owner-requested Pending trackers400–407 remain
+open. Windows/CUDA and unavailable-platform acceptance Deferred until queued
+implementation is delivered. Saved active15minute schedule retains original
+model/project/notification preference and directs autonomous eligible work.
+No model/download/install/settings/data/stableapp/deployment changes.
+Final merge bookkeeping retained for the next normal reviewed development PR.
+Recorded 2026-11-01T20:42:58.473151+00:00
+
+
+### F22 standalone Ask requested-model provenance — issue #396
+
+Selected bounded increment on `396-ask-model-provenance` from verified main
+93687d3d85ae6e0af081f9856b7fa1f881d34022. PR #408 project-chat provenance is
+verified merged; its final evidence above is retained. Ask previously saved only
+answer text and lost requested identity. Capture validated model ID/output ceiling
+once before the question save; persist on completed assistant replies and retain
+the same typed reply through save-only retry. Display requested identity separately
+from unverified server-loaded weights; legacy replies stay unknown. No endpoint,
+prompt, support/inference claim or execution permission is stored in metadata.
+
+Acceptance: settings changed while saving/streaming cannot relabel a reply; each
+subsequent request snapshots its own settings; failed final-save retry does not
+repeat inference or read replacement settings; reopen preserves metadata. Stop,
+failure, deadline and disposal retain no completed partial answer. Corrupt metadata
+fails closed without overwrite; narrow/enlarged cards show explicit requested and
+unknown identity. Existing Ask transport/settings/storage are delivered prerequisites;
+deferred CPU/CUDA/Windows acceptance is not required. Per-project selection and
+Build/source/repair provenance remain Pending; full F22/F15 remain unchecked.
+Status: In progress pending full checks, plugin publication, independent final
+revision review, required CI and verified protected reviewer merge.
+
+Validation: 20 focused Ask/controller/native storage/widget tests passed; full clean
+tracked-source Flutter suite 1,073 passed/nine explicit skips, formatter clean and
+analyzer no issues. Web release/Wasm dry run and macOS debug builds passed. Actual
+Chrome IndexedDB reopen/corruption test passed with metadata assertions. All 327
+validation source/configuration inputs matched the tested copy. Initial focused
+failures were test setup serialization and an offscreen finder; corrected and
+retested. No fresh inference, stable-app replacement or external-platform support
+is claimed. Status: Awaiting merge; exact-final independent review, required CI
+and protected reviewer merge remain gates. Logs /private/tmp/asg396-ask-*.log.

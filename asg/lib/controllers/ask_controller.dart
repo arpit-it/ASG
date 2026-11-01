@@ -5,6 +5,7 @@ import 'dart:async';
 
 import '../models/ask_conversation.dart';
 import '../models/chat_message.dart';
+import '../models/model_request_provenance.dart';
 import '../services/ask_store.dart';
 import '../services/local_model.dart';
 import '../services/model_provider.dart';
@@ -41,9 +42,10 @@ class AskController extends BaseController {
   bool ready = false, busy = false, saving = false;
   String? error;
   String draft = '';
-  String? _unsavedAnswer;
-  String? get unsavedAnswer => _unsavedAnswer;
-  bool get canChangeConversation => ready && !busy && _unsavedAnswer == null;
+  ChatMessage? _unsavedReply;
+  String? get unsavedAnswer => _unsavedReply?.content;
+  ChatMessage? get unsavedReply => _unsavedReply;
+  bool get canChangeConversation => ready && !busy && _unsavedReply == null;
   bool get canRetryAnswer =>
       canChangeConversation &&
       messages.isNotEmpty &&
@@ -54,7 +56,7 @@ class AskController extends BaseController {
   bool _stopped = false;
 
   void load() {
-    if (busy || _unsavedAnswer != null || isDisposed) return;
+    if (busy || _unsavedReply != null || isDisposed) return;
     try {
       final saved = store.load();
       _history = saved;
@@ -133,6 +135,7 @@ class AskController extends BaseController {
       final config = ModelSettingsStore(store.records).load();
       config.endpoint;
       config.validateChatLimit();
+      final request = ModelRequestProvenance.fromConfig(config);
       if (input != null) {
         await _save(updated);
         accepted = true;
@@ -172,17 +175,18 @@ class AskController extends BaseController {
       await completion.future;
       if (isDisposed || _stopped) return accepted;
       if (draft.trim().isEmpty) throw StateError('Empty answer');
-      _unsavedAnswer = draft;
+      _unsavedReply = ChatMessage(
+        role: 'assistant',
+        content: draft,
+        modelRequest: request,
+      );
       saving = true;
       update();
-      await _save([
-        ...messages,
-        ChatMessage(role: 'assistant', content: draft),
-      ]);
-      if (!isDisposed) _unsavedAnswer = null;
+      await _save([...messages, _unsavedReply!]);
+      if (!isDisposed) _unsavedReply = null;
     } catch (_) {
       if (!isDisposed && !_stopped) {
-        error = _unsavedAnswer != null
+        error = _unsavedReply != null
             ? 'Answer completed but could not be saved. Retry saving without asking the model again, or discard the answer.'
             : accepted
             ? 'Ask failed or timed out. Check the local runtime and saved model settings, then Retry answer. Saved messages remain.'
@@ -200,16 +204,13 @@ class AskController extends BaseController {
   }
 
   Future<void> retrySaving() async {
-    if (busy || _unsavedAnswer == null || isDisposed) return;
+    if (busy || _unsavedReply == null || isDisposed) return;
     busy = saving = true;
     error = null;
     update();
     try {
-      await _save([
-        ...messages,
-        ChatMessage(role: 'assistant', content: _unsavedAnswer!),
-      ]);
-      if (!isDisposed) _unsavedAnswer = null;
+      await _save([...messages, _unsavedReply!]);
+      if (!isDisposed) _unsavedReply = null;
     } catch (_) {
       error = 'Answer could not be saved. Check local storage and Retry saving, or discard the answer.';
     } finally {
@@ -220,7 +221,7 @@ class AskController extends BaseController {
 
   void discardAnswer() {
     if (busy || isDisposed) return;
-    _unsavedAnswer = null;
+    _unsavedReply = null;
     error = null;
     update();
   }
