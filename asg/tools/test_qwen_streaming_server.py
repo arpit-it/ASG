@@ -66,6 +66,7 @@ class ServerTests(unittest.TestCase):
             text=response.read().decode()
         self.assertIn('event: error', text)
         self.assertNotIn('[DONE]', text)
+        self.assertIn('Invalid fixture prompt', text)
     def test_remote_origins_are_rejected(self):
         request = urllib.request.Request(self.url+'/v1/chat/completions', data=b'{}', headers={'Content-Type':'application/json','Origin':'https://example.com'})
         with self.assertRaises(urllib.error.HTTPError) as error:
@@ -139,6 +140,51 @@ class CPUHTTPTests(unittest.TestCase):
         self.fixture.model.generate.side_effect = lambda **kwargs: type('Output', (), {'shape': (1, 3)})()
         with self.request(False) as response:
             self.assertEqual(json.load(response)['choices'][0]['finish_reason'], 'stop')
+
+    def test_cpu_failure_diagnostics_are_private_for_both_transports_and_retry(self):
+        # Optional tensor/tokenizer errors may contain prompts, paths, newlines,
+        # or even a dynamically named exception type. Never publish any of them.
+        private = 'PRIVATE_PROMPT /secret/checkpoint\nevent: message\ndata: [DONE]'
+        private_type = type('PRIVATE_EXCEPTION_TYPE', (RuntimeError,), {})
+        for stage in ('tokenizer', 'model'):
+            for error_type in (ValueError, TimeoutError, MemoryError, RuntimeError, private_type):
+                for streaming in (True, False):
+                    with self.subTest(stage=stage, error=error_type.__name__, streaming=streaming):
+                        target = (self.fixture.tokenizer.apply_chat_template if stage == 'tokenizer'
+                                  else self.fixture.model.generate)
+                        original_effect = target.side_effect
+                        target.side_effect = error_type(private)
+                        if streaming:
+                            with self.request() as response:
+                                body = response.read().decode()
+                            self.assertIn('event: error', body)
+                            self.assertNotIn('[DONE]', body)
+                            self.assertNotIn('finish_reason', body)
+                        else:
+                            with self.assertRaises(urllib.error.HTTPError) as failure:
+                                self.request(False)
+                            self.assertEqual(failure.exception.code, 500)
+                            body = failure.exception.read().decode()
+                            self.assertEqual(set(json.loads(body)), {'error'})
+                        self.assertNotIn('PRIVATE', body)
+                        self.assertNotIn('/secret', body)
+                        expected = ('CPU generation ran out of memory; choose smaller compatible weights or free memory.'
+                                    if error_type is MemoryError else
+                                    'CPU generation timed out; reduce input or requested output and retry.'
+                                    if error_type is TimeoutError else
+                                    'CPU generation failed; check input length, compatible local weights, tokenizer and installed loader APIs, then retry.')
+                        if streaming:
+                            payload = next(line[6:] for line in body.splitlines() if line.startswith('data: {"error"'))
+                            self.assertEqual(json.loads(payload), {'error': expected})
+                        else:
+                            self.assertEqual(json.loads(body), {'error': expected})
+                        # An executor barrier also verifies the worker released its lock.
+                        self.executor.submit(lambda: None).result(timeout=3)
+                        with urllib.request.urlopen(self.url+'/health', timeout=5) as response:
+                            self.assertEqual(json.load(response)['phase'], 'idle')
+                        target.side_effect = original_effect
+                        with self.request(False) as response:
+                            self.assertEqual(json.load(response)['choices'][0]['finish_reason'], 'stop')
 
     def test_disconnect_stops_cpu_stream_and_releases_owned_worker(self):
         import socket
