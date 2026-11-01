@@ -431,6 +431,33 @@ class CPUHTTPTests(unittest.TestCase):
         self.assertEqual(data['choices'][0]['message']['content'], 'Hello CPU')
         self.assertEqual(data['choices'][0]['finish_reason'], 'length')
 
+    def test_checkpoint_structured_output_default_completes_on_both_transports(self):
+        from types import SimpleNamespace
+        original = self.fixture.model.generate.side_effect
+        def configured(**kwargs):
+            result = original(**kwargs)
+            return (SimpleNamespace(sequences=result)
+                    if kwargs.get('return_dict_in_generate', True) else result)
+        self.fixture.model.generate.side_effect = configured
+        for streaming in (True, False):
+            for output_length, reason in ((4, 'stop'), (5, 'length')):
+                with self.subTest(streaming=streaming, reason=reason):
+                    self.fixture.output_length = output_length
+                    with self.request(streaming) as response:
+                        result = response.read().decode()
+                    if streaming:
+                        self.assertIn('[DONE]', result)
+                        self.assertNotIn('event: error', result)
+                        self.assertIn('"finish_reason": "' + reason + '"', result)
+                        self.assertIn('Hello ', result)
+                    else:
+                        choice = json.loads(result)['choices'][0]
+                        self.assertEqual(choice['message']['content'], 'Hello CPU')
+                        self.assertEqual(choice['finish_reason'], reason)
+                    self.executor.submit(lambda: None).result(timeout=3)
+                    with urllib.request.urlopen(self.url+'/health', timeout=5) as response:
+                        self.assertEqual(json.load(response)['phase'], 'idle')
+
     def test_cpu_errors_have_no_success_marker_and_allow_retry(self):
         self.fixture.model.generate.side_effect = RuntimeError('PRIVATE /model path')
         with self.request() as response:

@@ -1031,6 +1031,28 @@ class CPUBackendTests(unittest.TestCase):
         self.output_length = 5
         self.assertEqual(self.backend.generate([], 2, lambda *_: None, Event(), time.monotonic()+10), {'finish_reason': 'length'})
 
+    def test_checkpoint_structured_output_default_cannot_break_completion(self):
+        from types import SimpleNamespace
+        original = self.model.generate.side_effect
+        def configured(**kwargs):
+            result = original(**kwargs)
+            # A checkpoint may persist return_dict_in_generate=True. Model API
+            # substitutes must honor the explicit per-request override too.
+            return (SimpleNamespace(sequences=result)
+                    if kwargs.get('return_dict_in_generate', True) else result)
+        self.model.generate.side_effect = configured
+        for device in ('cpu', 'mps'):
+            for output_length, reason in ((4, 'stop'), (5, 'length')):
+                with self.subTest(device=device, reason=reason):
+                    backend = self.backend if device == 'cpu' else object.__new__(backends.TorchMPSBackend)
+                    backend.model, backend.tokenizer = self.model, self.tokenizer
+                    self.expected_device = device
+                    self.output_length = output_length
+                    events = []
+                    self.assertEqual(backend.generate([], 2, lambda *e: events.append(e), Event(), time.monotonic()+10), {'finish_reason': reason})
+                    self.assertEqual(events, [('token', 'Hello '), ('token', 'CPU')])
+                    self.assertEqual(self.batch.device, device)
+
     def test_shared_torch_generation_preserves_mps_tensor_placement(self):
         self.expected_device = 'mps'
         mps = object.__new__(backends.TorchMPSBackend)
