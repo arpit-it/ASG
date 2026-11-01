@@ -133,6 +133,7 @@ class LocalModelProvider implements StreamingModelProvider {
       // Compatibility with older non-streaming providers, without fake tokenization.
       final body = await response.stream.bytesToString().timeout(idleTimeout);
       final data = jsonDecode(body) as Map<String, dynamic>;
+      _validateResponseModel(data);
       final choice = (data['choices'] as List).first as Map;
       if (choice['finish_reason'] == 'length') {
         throw _SafeModelFailure(
@@ -180,6 +181,7 @@ class LocalModelProvider implements StreamingModelProvider {
           'Local generation failed. Check the runtime and retry.',
         );
       }
+      _validateResponseModel(data);
       if (name == 'ping') continue;
       if (name == 'status') {
         if (data['phase'] == 'thinking') {
@@ -207,6 +209,19 @@ class LocalModelProvider implements StreamingModelProvider {
     if (!_cancelled) {
       throw _SafeModelFailure(
         'The model stream ended before completion. Your application was not changed.',
+      );
+    }
+  }
+
+  // A reported identity is a server assertion, not proof of loaded weights.
+  // Older compatible servers omit it; omission must not manufacture evidence.
+  void _validateResponseModel(Map<String, dynamic> data) {
+    if (data.containsKey('model') &&
+        (data['model'] is! String ||
+            (data['model'] as String).isEmpty ||
+            data['model'] != config.model)) {
+      throw _SafeModelFailure(
+        'Local server reported a different or invalid model ID. Check the selected model and local runtime, then retry.',
       );
     }
   }

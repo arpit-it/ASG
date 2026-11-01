@@ -7998,3 +7998,80 @@ required CI and protected reviewer merge remain gates. FullF22/F15 unchecked;
 verified profiles/context/real-model evidence Pending, platform acceptance Deferred400.
 Logs/private/tmp/asg-source-selection-{full-final,analyze-final,format-final,
 web-final,macos-final,python,inventory-final,focused}.log. Recorded 2026-11-01T23:32:46.843574+00:00.
+
+
+### Source/repair review-session connection selection verified merged — #396 / PR #416
+
+Bounded increment Done on `396-source-run-selection`. Exact final
+`aef773089fd36c575c4b43fa42674c343654cf97` independently approved5730802096 /
+finalgate5730821144; testedlocal64bc38fe007757fba6b9f993a8a185148357852d shares
+tree02a69dc9bd314117a863c345dfd55cb290c078e9. All812remote blobs/modes and
+337validationinputs matched. Independent77focused Flutter plus one corruption
+probe and9inventory tests passed; no blockers. RequiredCI41362708614completed/
+success: Flutter125016294242format315/analyzer clean,1105Ubuntu tests/12explicit
+skips,17actualChrome,web/Wasm and actual independent generated-project resolve/
+analyze/test/render/build/serve; Python125016293952141tests/fourCI skips. Parent
+final1111Flutter/nine skips,68focused,141Python/two skips,format/analyze/web/macOS
+and9inventory passed. No fresh inference or unavailable-platform support claim.
+
+Independent reviewer protected-plugin squash merged
+https://github.com/arpit-it/ASG/pull/416 as
+`ec14b432411ca0947b17bf907ad25b3695fecbb0` at2026-11-01T23:40:31Z. Parent
+freshly plugin-verified mergedPR,currentmain,signedtree/soleparent21b5a988 and
+requiredCI. Guarded localmain synchronization passed: main/origin-main0/0,index
+empty,both unrelatedIDE edits byte-identical. Evidence/private/tmp/asg-source-
+selection-publication.json,/private/tmp/asg416-reviewed-merge.json and
+/private/tmp/asg416-safe-sync.py. Both labels applied; PR attached.
+
+Status Pending remaining F22 profiles/context/real-model evidence; no active
+implementation after this merge. Source/manual repair connection choice is now
+explicit per review session; automatic repairs freeze all attempts, reopening
+uses global defaults, completed provenance persists. FullF22/F15 remain unchecked;
+unavailable-platform acceptance Deferred400. Keep issue396open. No modeldownload/
+install/stableapp/globalsettings/deployment/cadence/notification change.
+Current run time 2026-11-01T23:41:11.142259+00:00.
+
+
+### F22 contradictory response identity rejection — issue #396
+
+In progress on `396-response-model-identity` from plugin-verified PR #416 merge
+`ec14b432411ca0947b17bf907ad25b3695fecbb0`. No competing active run or open PR
+at selection. Reuse #396; no new issue. Actual transport sends the chosen model
+but previously ignored contradictory JSON/SSE response identity. Delivered F09
+transport and F22 selection/provenance are the technical prerequisites; Deferred
+platform acceptance #400 is not a gate.
+
+Scope/acceptance: when a completion payload supplies `model`, require an exact
+nonempty string match before consuming that payload. Check every SSE payload,
+including identity-only/status payloads and late identity changes. Missing model
+remains compatible and unverified. Reject wrong, empty, null or nonstring identity
+with locally authored actionable guidance, never echoing private response fields.
+Partial text cannot turn a later mismatch into successful completion. No loaded
+weight proof, profile/context verification, schema migration or support claim.
+
+Validation so far: 41 focused transport/settings tests passed, including 18 new
+JSON/SSE/actual loopback HTTP checks and existing cancellation/deadline/privacy
+checks. Formatter316 unchanged; analyzer clean; inventory9 passed with historical
+source comparison refreshed and original observations unchanged. Full checkout
+suite encountered only ignored third-party `.mlx-venv` license scan contamination;
+clean tracked-source rerun and web/macOS builds are in progress. Default8765 health
+unreachable; no fresh inference/model download/stable-app/settings change.
+Exact-tree plugin publication, independent final review, required CI and protected
+reviewer merge remain gates. FullF22/F15 unchecked; profiles/context/real-model
+capability evidence Pending, external platform acceptance Deferred400.
+Recorded 2026-11-01T23:45:48.212414+00:00.
+
+
+Final response-identity validation: 1130 clean tracked-source Flutter tests passed,
+nine explicit live/platform skips; 42 focused tests including 19 new identity and
+Ask persistence/retry checks passed. Final analyzer clean and formatter316 unchanged;
+web release/Wasm dry run and macOS debug builds passed on unchanged runtime source.
+All337runtime/test/tool/assets/config inputs byte-match the clean tested copy.
+Inventory9passed; source comparison refreshed without altering observations or
+support claims. Early test import-order/accepted-question assertion mistakes fixed
+and final full checks rerun. No fresh inference. Status Awaiting merge: exact-tree
+plugin publication, independent final review, required CI and protected reviewer
+merge remain required. FullF22/F15 unchecked, profiles/context/real-model evidence
+Pending and unavailable-platform acceptance Deferred400. Logs/private/tmp/asg-
+identity-{focused-final,full-final,analyze-final,format-final,web,macos,inventory}.log.
+Recorded 2026-11-01T23:47:26.062342+00:00.
