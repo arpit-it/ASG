@@ -6031,3 +6031,70 @@ and protected reviewer merge remain gates.
 Recorded 2026-11-01T10:17:41.802831+00:00
 
 Final local validation: 1012 Flutter passes/nine opt-in skips; 28 focused CPU process cases passed. Web/Wasm and macOS debug builds passed; 126 Python cases/two skips. No real CPU inference claimed.
+
+
+### CPU managed launch verified merged — issue #356 / PR #378
+
+Independent final review [5727590874](https://github.com/arpit-it/ASG/pull/378#pullrequestreview-5727590874)
+approved exact `52f7522fa89a65dfa1020f6a66b3b06c01073e64` /
+tree `c2e5b13638c514c8140952556463e88b65a9e994` (local76e5e7b identical).
+No blocking findings. Independent46Flutter focused cases,54Python backend cases/
+one explicit live skip and two additional no-side-effect/shipped-helper probes
+passed. RequiredCI41296946066 passed: Flutter124819672709 formatter294/analyzer,
+Ubuntu1006passes/12skips,actualChrome15,web/Wasm and independent generated-project
+resolve/analyze/test/build/serve; Python124819672977 all seven suites. Parent Mac
+1012passes/nineskips,28focusedCPU,126Python/twoskips,web/macOSdebug remain separate
+evidence. No fixture, HTTP test or build is claimed as real CPU inference.
+
+Reviewer normal protected-plugin squashmerge [PR #378](https://github.com/arpit-it/ASG/pull/378)
+as `eee26ac0b3d8f87e552189be7e06c77a761db4f0` at2026-11-01T10:25:51Z;
+issue356closed/completed10:25:52Z. Shared-owner COMMENT verdict transparently
+records independent review; zero-count protection and required checks unchanged.
+Parent freshly verified PR/exacthead/currentmain/closure and signed rawmerge
+matching reviewedtree/soleparente9981fb9. Guarded local-only sync passed: main/
+origin-main0/0,indexempty,both unrelatedIDEfiles byte-identical. Backup
+`/private/tmp/asg356-launch-primary-before-sync`; guard`/private/tmp/asg378-safe-sync.py`.
+Prior final-merge docs retained and now published with this increment. Optional
+CPU managed launch boundary Done; fullF15 unchecked/Inprogress,CPUexperimental/
+unverified/outside normal choices; non-Apple CPU and separateCUDA live milestones
+remain pending. Readonly retained health: statusready/MLX/Metal/Qwen3.8-27B-4bit;
+no model loaded by that check. No downloads/install/settings/data/stableapp/runtime
+replacement or cadence/notification change. GitHub access/publication/review/merge
+used connectedplugin exclusively; PR attached and bothautomationlabels added.
+No newissue/FID. Final merge bookkeeping retained locally for next reviewed PR.
+Recorded 2026-11-01T10:26:42.576119+00:00
+Current run time 2026-11-01T10:26:42.576119+00:00
+
+
+### Experimental CPU preparation controller — issue #358
+
+Reopened existing [issue #358](https://github.com/arpit-it/ASG/issues/358),
+branch `358-cpu-preparation-controller` from verified main `eee26ac0`.
+No open issue/PR or competing active ASG run was observed before shared changes.
+F15 gap: setup controller exposed only legacy preparation despite delivered CPU
+CLI and optional host bridge. This bounded increment adds an API-only opt-in
+action requiring per-call consent, nonempty Python and an available optional
+host before side effects; shared busy exclusion, stale capability/memory
+invalidation, private failure/retry and disposal-safe completion. Settings,
+normal backend choices and legacy preparation remain unchanged.
+Acceptance coverage: consent/empty input, absent optional host, trimmed spaced
+path forwarding, failure privacy/retry, no persistence/download/launch, duplicate
+and legacy-action exclusion, both disposed outcomes and stale report clearing.
+Full F15 remains unchecked/In progress; CPU remains experimental outside normal
+choices. Unavailable non-Apple CPU and separate CUDA real-inference validation
+remain pending; delivered host APIs are sufficient technical prerequisites for
+this Mac-verifiable orchestration increment under the owner platform exception.
+Validation: formatter294/analyzer clean; 68 focused setup tests; final isolated
+tracked-tree full suite1018passes/nine opt-in skips. Primary checkout license
+scan encountered ignored third-party `tools/.mlx-venv` sources; preserved that
+environment and reran the actual full suite in `/private/tmp/asg358-controller-validation`.
+Product acceptance and historical inventory Python suites passed (27+9); inventory
+regenerated without promoting historical/current acceptance. Read-only retained
+health reports ready MLX/Metal/Qwen3.8-27B-4bit; no CPU inference or model loading
+was attempted. No install/download/stable-app/settings/data replacement.
+Status: Awaiting merge; PR, exact tested-tree publication, platform-build results,
+independent final-revision review, required CI and protected reviewer merge are
+recorded in the linked PR before completion.
+Recorded 2026-11-01T10:46:35.691285+00:00
+
+Final platform validation for issue #358 controller increment: web/Wasm and macOS debug builds passed on the isolated tested source tree. No device inference claim.

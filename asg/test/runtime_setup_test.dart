@@ -21,6 +21,7 @@ import 'package:asg/services/model_settings_store.dart';
 import 'package:asg/services/model_provider.dart';
 import 'package:asg/services/runtime_connection.dart';
 import 'package:asg/services/runtime_host.dart';
+import 'package:asg/services/cpu_environment_preparation_host.dart';
 import 'package:asg/services/runtime_host_native.dart';
 import 'package:asg/services/runtime_setup_store.dart';
 import 'package:asg/views/runtime_setup_screen.dart';
@@ -178,6 +179,21 @@ class PrepareRuntimeHost extends FakeRuntimeHost {
         'token=PRIVATE_PREPARE',
       ], 'PRIVATE_PREPARE failed');
     }
+  }
+}
+
+class CpuPrepareRuntimeHost extends PrepareRuntimeHost
+    implements CpuEnvironmentPreparationHost {
+  String? cpuPython;
+  bool? consent;
+  @override
+  Future<void> prepareCpuEnvironment(
+    String python, {
+    required bool experimentalCpu,
+  }) async {
+    cpuPython = python;
+    consent = experimentalCpu;
+    await prepare(python);
   }
 }
 
@@ -686,6 +702,90 @@ void main() {
       expect(host.ownsProcess, isFalse);
     }
   }, skip: !Platform.isMacOS);
+
+  test(
+    'CPU preparation rejects missing consent and Python before host work',
+    () async {
+      SharedPreferences.setMockInitialValues({});
+      final host = CpuPrepareRuntimeHost()..fail = false;
+      final c = await controller(host);
+      addTearDown(c.dispose);
+      for (final input in [('/python', false), ('  ', true)]) {
+        await c.prepareCpuEnvironment(input.$1, experimentalCpu: input.$2);
+        expect(c.error, contains('consent'));
+        expect(host.preparations, 0);
+        expect(c.busy, isFalse);
+      }
+    },
+  );
+
+  test('CPU preparation refuses a host without the optional API', () async {
+    SharedPreferences.setMockInitialValues({});
+    final host = PrepareRuntimeHost()..fail = false;
+    final c = await controller(host);
+    addTearDown(c.dispose);
+    await c.prepareCpuEnvironment('/python', experimentalCpu: true);
+    expect(c.error, contains('unavailable'));
+    expect(host.preparations, 0);
+  });
+
+  test(
+    'CPU preparation errors are private and retry leaves settings intact',
+    () async {
+      SharedPreferences.setMockInitialValues({});
+      final host = CpuPrepareRuntimeHost();
+      final c = await controller(host);
+      addTearDown(c.dispose);
+      final setup = c.setup;
+      final config = c.connectionConfig;
+      await c.prepareCpuEnvironment('/private/python', experimentalCpu: true);
+      expect(c.error, isNot(contains('PRIVATE_PREPARE')));
+      expect(c.error, isNot(contains('/private/')));
+      expect(c.error, contains('retry'));
+      expect(c.status, contains('failed'));
+      expect(c.busy, isFalse);
+      host.fail = false;
+      await c.prepareCpuEnvironment(
+        ' /python with spaces ',
+        experimentalCpu: true,
+      );
+      expect(host.cpuPython, '/python with spaces');
+      expect(host.consent, isTrue);
+      expect(c.error, isNull);
+      expect(c.status, contains('inference remain unverified'));
+      expect(c.setup, same(setup));
+      expect(c.connectionConfig, same(config));
+      expect(host.downloads, 0);
+      expect(host.ownsProcess, isFalse);
+      expect((await SharedPreferences.getInstance()).getKeys(), isEmpty);
+    },
+  );
+
+  for (final fail in [false, true]) {
+    test(
+      'CPU preparation excludes overlap and ignores disposed completion $fail',
+      () async {
+        SharedPreferences.setMockInitialValues({});
+        final host = CpuPrepareRuntimeHost()..fail = fail;
+        host.gate = Completer<void>();
+        final c = await controller(host);
+        final pending = c.prepareCpuEnvironment(
+          '/python',
+          experimentalCpu: true,
+        );
+        expect(c.busy, isTrue);
+        expect(c.status, contains('Checking installed'));
+        await c.prepareCpuEnvironment('/other', experimentalCpu: true);
+        await c.prepare('/other');
+        expect(host.preparations, 1);
+        c.dispose();
+        host.gate!.complete();
+        await pending;
+        expect(c.status, contains('Checking installed'));
+        expect(c.error, isNull);
+      },
+    );
+  }
 
   test('Prepare failures are private, terminal and retryable', () async {
     SharedPreferences.setMockInitialValues({});

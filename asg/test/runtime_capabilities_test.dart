@@ -12,6 +12,8 @@ import 'package:asg/models/runtime_setup.dart';
 import 'package:asg/views/runtime_setup_screen.dart';
 import 'package:asg/views/runtime_capability_panel.dart';
 
+import 'package:asg/services/cpu_environment_preparation_host.dart';
+
 import 'runtime_setup_test.dart' as fixture;
 
 Map<String, dynamic> report({bool missing = false}) => {
@@ -48,8 +50,33 @@ class DiscoveryHost extends fixture.FakeRuntimeHost {
   }
 }
 
+class CpuDiscoveryHost extends DiscoveryHost
+    implements CpuEnvironmentPreparationHost {
+  @override
+  Future<void> prepareCpuEnvironment(
+    String python, {
+    required bool experimentalCpu,
+  }) async {}
+}
+
 void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
+  test(
+    'CPU preparation clears prior capability and memory observations',
+    () async {
+      final c = await fixture.controller(CpuDiscoveryHost());
+      addTearDown(c.dispose);
+      await c.discover('/python');
+      expect(c.capabilities, isNotNull);
+      expect(c.memory, isNotNull);
+      await c.prepareCpuEnvironment('/python', experimentalCpu: false);
+      expect(c.capabilities, isNotNull);
+      await c.prepareCpuEnvironment('/python', experimentalCpu: true);
+      expect(c.capabilities, isNull);
+      expect(c.memory, isNull);
+      expect(c.health.ready, isFalse);
+    },
+  );
   test('discovery sanitizes host and rejects untrusted identity/readiness', () {
     final value = report();
     value['host'] = {'system': 'PRIVATE /secret', 'machine': 'token=private'};
