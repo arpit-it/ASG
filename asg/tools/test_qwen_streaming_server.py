@@ -138,6 +138,39 @@ class CPUHTTPTests(unittest.TestCase):
                     else:
                         self.assertEqual(json.loads(body)['choices'][0]['finish_reason'], 'stop')
 
+    def test_deep_cpu_json_fails_before_inference_and_allows_retry(self):
+        for streaming in (True, False):
+            for opening, closing in ((b'', b''), (b'{"nested":', b'}')):
+                with self.subTest(streaming=streaming, container=opening):
+                    self.fixture.tokenizer.apply_chat_template.reset_mock()
+                    self.fixture.model.generate.reset_mock()
+                    # Fit both shapes below the byte limit while exceeding the
+                    # decoder recursion budget on supported Python versions.
+                    nested = opening + b'[' * 12000 + b'0' + b']' * 12000 + closing
+                    body = (b'{"model":"cpu-fixture","messages":[{"role":"user",'
+                            b'"content":"fixture"}],"stream":' +
+                            (b'true' if streaming else b'false') + b',"extra":' +
+                            nested + b'}')
+                    self.assertLessEqual(len(body), 32768)
+                    request = urllib.request.Request(
+                        self.url+'/v1/chat/completions', data=body,
+                        headers={'Content-Type': 'application/json'})
+                    with self.assertRaises(urllib.error.HTTPError) as failure:
+                        urllib.request.urlopen(request, timeout=5)
+                    self.assertEqual(failure.exception.code, 400)
+                    self.assertEqual(json.load(failure.exception),
+                                     {'error': 'Invalid request or model ID'})
+                    self.fixture.tokenizer.apply_chat_template.assert_not_called()
+                    self.fixture.model.generate.assert_not_called()
+                    with urllib.request.urlopen(self.url+'/health', timeout=5) as response:
+                        self.assertEqual(json.load(response)['phase'], 'idle')
+                    with self.request(streaming) as response:
+                        result = response.read().decode()
+                    if streaming:
+                        self.assertIn('[DONE]', result)
+                    else:
+                        self.assertEqual(json.loads(result)['choices'][0]['finish_reason'], 'stop')
+
     def test_cpu_health_sse_nonstream_and_reuse(self):
         with urllib.request.urlopen(self.url+'/health', timeout=5) as response:
             health = json.load(response)

@@ -6730,3 +6730,63 @@ test/tool inputs match isolated validation. No live inference. Awaiting merge:
 plugin exact-tree publication, independent exact-final review, required CI and
 protected reviewer merge remain gates. FullF15/non-AppleCPU/CUDA acceptance pending.
 Recorded 2026-11-01T14:47:38.754699+00:00
+
+
+### CPU request-budget validation verified merged — issue #356 / PR #389
+
+Independent approval5728690919/finalgate5728708251 approved exact
+`693926b29267cbd8dcbd9d701c6250519b4efe1b` / tree
+`06fdc31d667b875e0fc12b293216f57e612b9550` (local2db8d301 identical).
+No blockers; independent65 backend/actualHTTP tests(one live skip) plus legacy
+both-transport nonfinite/overflowing-exponent and huge/fractional-finite probes
+passed. RequiredCI41318014083success: actual Flutter124882081028 logs inspected,
+formatter301/analyzer,Ubuntu1045passes/12skips,actualChrome15,web/Wasm and real
+independent generated-project resolve/analyze/test/render/build/serve. Python
+124882080825 all seven suites passed with explicit live/platform skips. Parent
+Mac1051/nineskips,web/macOSdebug,Python128/twoskips remain separate evidence.
+
+Reviewer protected-plugin squash merged [PR #389](https://github.com/arpit-it/ASG/pull/389)
+as `b1937ea9e293b233e3f9d7e96104f863c62e0ec8` at2026-11-01T14:55:24Z;
+issue356closed/completed14:55:26Z. Parent freshly plugin-verified PR/issue/current
+main and signed raw merge matching reviewedtree/soleparent6eaf65b3. Guarded local
+sync passed: main/origin-main0/0,indexempty,both IDEfiles byte-identical. Backup
+`/private/tmp/asg356-budget-before-sync`; guard`/private/tmp/asg389-safe-sync.py`.
+Plugin-only publication/review/merge; PR attached and both automation labels applied.
+Bounded HTTP-budget increment Done; fullF15 unchecked/Inprogress,CPUexperimental
+outside normal choices; non-AppleCPU/CUDA live inference pending. No model loading/
+download/install/settings/data/stable-app replacement,cadence/notification change
+or newissue/FID. Final merge bookkeeping retained for next reviewed increment.
+Recorded 2026-11-01T14:56:26.320193+00:00
+
+
+### CPU JSON recursion boundary — issue #356
+
+Reused/reopened #356 after plugin verification of PR389 mergeb1937ea9 and no
+open PR/issues or competing active ASG run. Branch `356-cpu-json-depth` preserves
+unrelated IDE edits and prior final-merge bookkeeping. F15/F09 continuation:
+actual CPU HTTP request with12000 nested arrays in unused metadata stays below
+32768 bytes yet disconnects on uncaught decoder RecursionError before inference.
+Four corrected baseline cases fail for stream true/false and direct/object-wrapped
+array nesting. Catch recursion at existing invalid-request boundary; exact HTTP400,
+zero tokenizer/model calls, idle health and successful subsequent request are
+acceptance. No arbitrary depth policy or changes to valid/default/clamped requests.
+Shared legacy handler retains the same invalid-request behavior. Initial nested
+object-only fixture exceeded byte limit; corrected to object-wrapped deep arrays
+before confirming all four baseline disconnects. Mac-verifiable actual sockets
+with injected CPU tensor APIs are not real inference. FullF15/non-AppleCPU/CUDA
+live acceptance remains pending; CPUexperimental outside normal choices.
+No newissue/FID, models loaded/downloaded, installs/settings/stableapp changes or
+cadence/notification changes. In progress pending checks, independent final-head
+review, required CI and protected reviewer merge.
+Recorded 2026-11-01T15:02:07.961997+00:00
+
+Final local validation:129Python tests passed/two explicit live/platform skips;
+12actualHTTP tests pass, including four new decoder-recursion cases, zero model/
+tokenizer calls and successful retry. Formatter301 unchanged, analyzer clean,
+isolated Flutter1051passed/nine opt-in skips, web/Wasm and macOSdebug builds pass.
+All323 source/test/tool/config inputs byte-identical to isolated validation.
+Fresh hostDarwinarm64/currentPythonTorchabsent/retained8765healthURLError. No live
+inference. Awaiting merge: exact-tree plugin publication, independent final-head
+review, required CI and protected reviewer merge remain gates. FullF15 and
+non-AppleCPU/CUDA real inference remain pending.
+Recorded 2026-11-01T15:02:47.757751+00:00
