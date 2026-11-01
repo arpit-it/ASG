@@ -32,3 +32,22 @@ it does not relabel earlier answers or completed unsaved answers. Retry saving
 retains that original metadata without inference. Legacy replies explicitly show
 identity unavailable. Requested settings do not verify server-loaded weights or
 revision. Metadata contains no endpoint and does not change Ask permissions.
+
+## Conversation model connection
+
+Use Conversation model connection to select a saved local connection preset for
+one Ask conversation. The selected model and output ceiling appear above its
+messages. Selection connects to the saved local endpoint on the next request; it
+does not load weights, test compatibility or change global model settings.
+Manage named presets in model settings, then use Refresh saved connection presets.
+
+An existing conversation saves the choice before using it. A new conversation
+saves its choice with the first question. A saved conversation retains a snapshot
+when the original preset is edited or deleted. Choose Global model settings to
+return that conversation to the current global configuration on every request.
+New and legacy conversations default to global settings. Each completed reply
+retains its own requested-model metadata independently of later selections.
+
+Stop a request and save or discard a completed unsaved answer before switching.
+If selection cannot be saved, the previous choice and messages remain. A selected
+connection does not establish the server's loaded weights or verified support.

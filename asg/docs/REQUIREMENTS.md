@@ -25,7 +25,7 @@ The owner explicitly requested this one-time issue reconciliation; it permits mu
 | Requirement | Tracking issue | Current state |
 | --- | --- | --- |
 | F15/F16/F17/F22 unavailable-platform acceptance | [#400](https://github.com/arpit-it/ASG/issues/400) | Deferred / Pending after implementation |
-| F22 remaining profile/selection/provenance | [#396](https://github.com/arpit-it/ASG/issues/396) | Project-chat provenance Done via PR #408; Ask provenance Done via PR #409; prototype Build provenance Done via PR #410; source provenance Done via PR #411; repair journal Awaiting merge; per-project selection Pending |
+| F22 remaining profile/selection/provenance | [#396](https://github.com/arpit-it/ASG/issues/396) | Project-chat provenance Done via PR #408; Ask provenance Done via PR #409; prototype Build provenance Done via PR #410; source provenance Done via PR #411; repair journal Done via PR #412; per-project selection Pending |
 | F16 portable host/capability reporting | [#401](https://github.com/arpit-it/ASG/issues/401) | Pending implementation; external host validation Deferred |
 | F11 adapters and stack selection | [#402](https://github.com/arpit-it/ASG/issues/402) | Pending; one complete adapter at a time |
 | F19 Code Lab | [#403](https://github.com/arpit-it/ASG/issues/403) | Pending actual runner prerequisites |
@@ -210,6 +210,7 @@ The saved development automation was updated through its management tool; active
   - Bounded delivery milestones: (1) backend contract/capability discovery and an MLX regression; (2) explicit CPU setup/inference on a supported non-Apple desktop with compatible weights; (3) explicit CUDA setup/inference on a CUDA host. Each milestone needs its own focused issue, saved settings/restart/error tests and real-host evidence. Non-Apple CPU/CUDA real-host acceptance is now Deferred in #400 until the queued implementation is delivered; this is not a dependency on eligible implementation. Isolate optional backend dependencies so missing MLX cannot prevent CPU/CUDA startup; validate configurable executable/model paths including spaces. Do not claim CPU adequacy for a 9B model without measured successful operation within the configured limits.
   - Delivery: create/reuse a narrowly scoped issue when selected; remain unchecked until all promised backend milestones, independent review, required checks and verified merges. CPU and CUDA evidence must be recorded separately; unavailable hardware is a recorded blocker, never a fixture-based completion claim.
 - [ ] F22 Hardware-aware local model catalog and selection — In progress; depends on delivered F09/F15 foundations; unavailable-platform validation Deferred
+  - Repair-attempt requested-model provenance — Done: issue #396, `396-repair-model-provenance`, [PR #412](https://github.com/arpit-it/ASG/pull/412); exact c67bade3 approved5730502442, requiredCI41355069659 passed, verified reviewer merge6ab1c79d at2026-11-01T22:09:05Z. Atomic request identity retained across outcomes; per-project selection Pending.
   - Source proposal/candidate provenance — Done: [issue #396](https://github.com/arpit-it/ASG/issues/396), `396-source-model-provenance`; [PR #411](https://github.com/arpit-it/ASG/pull/411), independently approved010b0e3151/finalgate5730421108, requiredCI41353262122 passed; verified protectedmergeae21f5f7 at2026-11-01T21:47:11Z. Actual fixed4096 source request metadata through candidate history. Per-project selection and full repair-attempt journal remain Pending.
   - Prototype Build requested-model provenance — Done: [issue #396](https://github.com/arpit-it/ASG/issues/396), `396-build-model-provenance`; completed model edits retain actual model/fixed 2048-token request ceiling with their saved app revision. Built-in actions never fabricate inference. Verified [PR #410](https://github.com/arpit-it/ASG/pull/410) merge2f54b3fe at2026-11-01T21:13:12Z; finalreview5730298387/requiredCI41350314221 passed. Per-project selection and source/repair provenance remain Pending.
   - Project-chat requested-model provenance — Done: [PR #408](https://github.com/arpit-it/ASG/pull/408), merge93687d3d at2026-11-01T20:41:36Z, finalreview5730172949/requiredCI41347599428 passed. Issue #396 remains open as Pending for the remaining F22 selection/provenance work.
@@ -360,7 +361,7 @@ Requirements changes: existing F10 acceptance guidance and F15 backend milestone
 
 ## Active task and delivery ledger
 
-Current: Issue #396 repair-attempt requested-model provenance Awaiting merge on `396-repair-model-provenance`. PR #411 source proposal/candidate provenance verified merged as ae21f5f7 at2026-11-01T21:47:11Z; finalreview5730421108/requiredCI41353262122 passed. Per-project selection remains Pending; full F22/F15 unchecked. External-platform acceptance Deferred400.
+Current: Issue #396 repair-attempt requested-model provenance Done via PR #412, independently approved c67bade3/finalgate5730502442; requiredCI41355069659 passed; verified merge6ab1c79d at2026-11-01T22:09:05Z. PR #411 source proposal/candidate provenance verified merged as ae21f5f7 at2026-11-01T21:47:11Z; finalreview5730421108/requiredCI41353262122 passed. Per-project selection remains Pending; full F22/F15 unchecked. External-platform acceptance Deferred400.
 
 Historical pre-F17 selection: F10 In progress/unchecked. PR #248 verified merged as `c54c9b7b120d88531a0013705801d6babf0c7af9` at 2026-10-28T05:29:19Z after independent final review 5678169248 of `274bb3fd` and required CI 40637890903; tested tree `61f985bc`. Explicit opt-in named-test criterion contracts delivered. Full acceptance reconciliation, including whole-requirement supported verdicts, remains; no later task selected.
 
@@ -8600,3 +8601,76 @@ No fresh inference, stable-app replacement, model download or settings change.
 Status Awaiting merge: plugin publication, independent exact-final review, required
 CI and protected reviewer merge remain gates. Logs /private/tmp/asg396-repair-*.log.
 Recorded 2026-11-01T22:01:37.643358+00:00
+
+
+### Repair-attempt requested-model provenance verified merged — #396 / PR #412
+
+Bounded increment Done. Independent review5730483729/finalgate5730502442
+approved exactc67bade3c2cdb09a960d8a71d3842fae8b138b41; testedlocal
+a4cd887534833b049c73138a31f6fbd106bd4cf0 has identicaltree
+82914537175a3d89df2149d1c27ff02d23a7d797. Independent105Flutter/nineinventory
+tests passed; all12remote blobs and437validation inputs matched. No blockers.
+RequiredCI41355069659 completed/success: Flutter124993271012 formatter309/
+analyzer clean,1082Ubuntu tests/12skips,17Chrome,web/Wasm and real independent
+generated-project resolve/analyze/test/render/build/serve; Python124993270855
+141tests/four explicit CI skips. ParentMac1088Flutter/nine skips,16focused,
+141Python/two skips,format/analyzer/web/macOS passed. No fresh inference claim.
+
+Reviewer protected-plugin squash merged https://github.com/arpit-it/ASG/pull/412
+as6ab1c79dbe4993ac82b496eda9c92585503cb344 at2026-11-01T22:09:05Z. Parent
+freshly plugin-verified merged PR,currentmain,signed merge/tree/soleparentae21f5f7
+and both requiredCI jobs. Guarded localmain synchronization passed: main/origin-main
+0/0,indexempty,both unrelatedIDE edits byte-identical. Evidence/private/tmp/asg412-
+publication.json,/private/tmp/asg412-reviewed-merge.json,/private/tmp/asg412-safe-sync.py.
+Both automation labels applied; PR attached. Finalmerge bookkeeping retained for
+the next normal reviewed development PR.
+
+Issue396 remains open for explicit per-project/chat/run model selection and
+remaining verified profile/context identity/real-model evidence. FullF22/F15 stay
+unchecked; unavailable-platform acceptance Deferred400. Existing runtime health
+ready/MLX/Metal/Qwen3.8-27B-4bit after authorized read (initial sandboxURLError);
+no generation/load/settings action. No newissue/download/install/stableapp/data/
+externaldeployment/cadence/notification changes.
+Recorded 2026-11-01T22:09:41.752249+00:00
+
+
+### F22 durable Ask conversation model selection — issue #396
+
+Selected `396-ask-model-selection` from verified main6ab1c79d (PR #412).
+No competing active ASG run or open PR at selection. Existing F09, preset and Ask
+foundations provide the technical prerequisites; unavailable-platform acceptance
+remains Deferred #400, full F22/F15 unchecked. Reuse #396, no new issue.
+
+Scope: explicit idle-only Ask conversation connection snapshots from saved named
+presets, global defaults for new/legacy chats, durable before activation for saved
+chats and atomic with the first question for new chats. Preset edits/removal cannot
+retarget a saved conversation. Requests capture selected config and preserve exact
+reply provenance. No global setting mutation, model load or verified support claim.
+Project/run selection and verified profile/inference evidence remain Pending.
+
+Acceptance: distinct chat routing, native reopen/legacy, actual loopback HTTP model
+and ceiling agreement, failed save preserves old choice/history, corruption refuses
+overwrite, busy/unsaved-answer/disposal guards, narrow 320px 2x-text interaction.
+26 focused tests passed; initial offscreen widget finder corrected with actual
+scrolling. Full checks/builds/publication/review/required CI remain gates.
+Initial full-suite license scan sees ignored local Python environment; clean tracked
+source rerun in /private/tmp/asg-selection-validation/asg avoids that contamination.
+Issue scope updated through proper issue tool preserving the complete previous body.
+Status In progress. Recorded 2026-11-01T22:16:37.847605+00:00.
+
+
+Validation for Ask selection: final clean tracked-source Flutter1094 passed/nine
+explicit live/platform skips,26 focused checks passed, actual Chrome IndexedDB
+reopen passed. Formatter310 unchanged, analyzer clean, release web/Wasm dry run
+and macOS debug builds passed on final runtime source. Seven Python suites141
+tests/two explicit skips passed after isolated confinement retest; initial parallel
+CPU/confinement startup timing failures did not recur in final validation. Missing
+root LICENSE in the first clean copy was corrected; the entire suite was rerun.
+All367 tracked runtime/test/tool/assets/config validation inputs remain identical.
+Historical inventory refreshed without changing observations or claiming current
+inference. Runtime read ready/MLX/Metal/Qwen3.8-27B-4bit; no fresh generation, model
+load/download, stable-app replacement or global settings change.
+Status Awaiting merge: exact-tree plugin publication, independent final-revision
+review, required CI and protected reviewer merge remain gates. #396 remains open
+for project/run selection and verified profiles; F22/F15 remain unchecked.
+Logs/private/tmp/asg-selection-*.log. Recorded 2026-11-01T22:21:36.741733+00:00.

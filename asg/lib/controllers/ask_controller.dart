@@ -5,6 +5,7 @@ import 'dart:async';
 
 import '../models/ask_conversation.dart';
 import '../models/chat_message.dart';
+import '../models/model_connection_preset.dart';
 import '../models/model_request_provenance.dart';
 import '../services/ask_store.dart';
 import '../services/local_model.dart';
@@ -39,6 +40,61 @@ class AskController extends BaseController {
   List<ChatMessage> get messages => _selectedId == null
       ? const []
       : _history.firstWhere((c) => c.id == _selectedId).messages;
+  ModelConnectionPreset? _newConversationPreset;
+  ModelConnectionPreset? get connectionPreset => _selectedId == null
+      ? _newConversationPreset
+      : _history.firstWhere((c) => c.id == _selectedId).connectionPreset;
+  List<ModelConnectionPreset> _presets = [];
+  List<ModelConnectionPreset> get presets => List.unmodifiable(_presets);
+  String? presetError;
+
+  void refreshPresets() {
+    if (!canChangeConversation || isDisposed) return;
+    try {
+      _presets = ModelSettingsStore(store.records).loadPresets();
+      presetError = null;
+    } catch (_) {
+      _presets = [];
+      presetError = 'Connection presets could not be loaded. Saved data and the current conversation selection remain unchanged.';
+    }
+    update();
+  }
+
+  Future<void> choosePreset(ModelConnectionPreset? preset) async {
+    if (!canChangeConversation || isDisposed) return;
+    // Only an explicitly offered validated preset may change the destination.
+    if (preset != null && !_presets.contains(preset)) return;
+    if (_selectedId == null) {
+      _newConversationPreset = preset;
+      error = null;
+      update();
+      return;
+    }
+    busy = saving = true;
+    error = null;
+    update();
+    try {
+      final next = [
+        for (final conversation in _history)
+          if (conversation.id == _selectedId)
+            AskConversation(
+              id: conversation.id,
+              messages: conversation.messages,
+              connectionPreset: preset,
+            )
+          else
+            conversation,
+      ];
+      await store.save(_history, next);
+      if (!isDisposed) _history = next;
+    } catch (_) {
+      if (!isDisposed) error = 'Model selection could not be saved. Previous selection and messages remain; retry after checking local storage.';
+    } finally {
+      busy = saving = false;
+      update();
+    }
+  }
+
   bool ready = false, busy = false, saving = false;
   String? error;
   String draft = '';
@@ -67,6 +123,7 @@ class AskController extends BaseController {
       ready = false;
       error = 'Ask history could not be loaded. Saved data has not been overwritten.';
     }
+    if (ready) refreshPresets();
     update();
   }
 
@@ -74,6 +131,7 @@ class AskController extends BaseController {
     if (!canChangeConversation || isDisposed) return;
     if (id != null && !_history.any((c) => c.id == id)) return;
     _selectedId = id;
+    _newConversationPreset = null;
     draft = '';
     error = null;
     update();
@@ -85,7 +143,11 @@ class AskController extends BaseController {
         'ask-${_history.fold<int>(0, (n, c) => int.parse(c.id.substring(4)) > n ? int.parse(c.id.substring(4)) : n) + 1}';
     return [
       ..._history.where((c) => c.id != id),
-      AskConversation(id: id, messages: updated),
+      AskConversation(
+        id: id,
+        messages: updated,
+        connectionPreset: connectionPreset,
+      ),
     ];
   }
 
@@ -132,7 +194,8 @@ class AskController extends BaseController {
     var accepted = input == null;
     Timer? deadline;
     try {
-      final config = ModelSettingsStore(store.records).load();
+      final config =
+          connectionPreset?.config ?? ModelSettingsStore(store.records).load();
       config.endpoint;
       config.validateChatLimit();
       final request = ModelRequestProvenance.fromConfig(config);
