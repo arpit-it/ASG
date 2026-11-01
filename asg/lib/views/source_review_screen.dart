@@ -231,6 +231,10 @@ class _SourceReviewScreenState extends State<SourceReviewScreen>
                 'Approved ${evidence.approval.recordedAt.toUtc().toIso8601String()}',
               ),
               SelectableText(evidence.proposal.summary),
+              Text(
+                evidence.modelRequest?.description ??
+                    'Source request provenance unavailable.',
+              ),
               if (!controller.candidateSupported)
                 const Text(
                   'Candidate preparation requires a native filesystem.',

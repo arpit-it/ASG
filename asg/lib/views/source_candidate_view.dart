@@ -31,6 +31,7 @@ class _SourceCandidateViewState extends State<SourceCandidateView> {
       children: [
         const Divider(),
         Text('Candidate checks: ${result.phase.name}'),
+        Text(result.sourceRequestDescription),
         if (controller.busy) const LinearProgressIndicator(),
         const Text(
           'Verify runs offline resolve, analysis, tests and web build in a macOS '

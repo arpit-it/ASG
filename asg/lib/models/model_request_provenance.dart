@@ -9,6 +9,8 @@ class ModelRequestProvenance {
     required this.model,
     required this.outputTokens,
   });
+  // Source proposals have a fixed ceiling independent of chat options.
+  static const sourceOutputTokens = 4096;
   final String model;
   final int outputTokens;
 
@@ -27,7 +29,10 @@ class ModelRequestProvenance {
     if (model.trim().isEmpty ||
         model.length > 4096 ||
         RegExp(r'[\x00-\x1f\x7f]').hasMatch(model) ||
-        !LocalModelConfig.chatTokenOptions.contains(outputTokens)) {
+        ![
+          ...LocalModelConfig.chatTokenOptions,
+          sourceOutputTokens,
+        ].contains(outputTokens)) {
       throw const FormatException('Invalid saved model request provenance.');
     }
   }

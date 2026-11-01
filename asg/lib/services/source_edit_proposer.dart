@@ -6,6 +6,7 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 
 import '../models/local_model_config.dart';
+import '../models/model_request_provenance.dart';
 import '../models/source_edit_proposal.dart';
 import '../models/structured_proposal_json.dart';
 import 'local_model.dart';
@@ -16,8 +17,9 @@ class SourceEditProposer {
   SourceEditProposer({ProviderFactory? createProvider})
     : _createProvider =
           createProvider ??
-          ((config) => LocalModelProvider(config, maxTokens: 4096));
+          ((config) => LocalModelProvider(config, maxTokens: outputTokens));
 
+  static const outputTokens = ModelRequestProvenance.sourceOutputTokens;
   final ProviderFactory _createProvider;
   ModelProvider? _provider;
   bool _active = false, _cancelled = false;

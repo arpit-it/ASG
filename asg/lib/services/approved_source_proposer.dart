@@ -4,6 +4,7 @@
 import 'dart:convert';
 
 import '../models/repair_attempt.dart';
+import '../models/model_request_provenance.dart';
 import 'repair_attempt_store.dart';
 import '../models/approved_source_proposal.dart';
 import '../models/build_plan.dart';
@@ -44,6 +45,12 @@ class ApprovedSourceProposer {
 
   /// Call again before showing or using retained evidence. No writes are allowed.
   void requireCurrent(StudioProject project, ApprovedSourceProposal evidence) {
+    evidence.modelRequest?.validate();
+    if (evidence.modelRequest != null &&
+        evidence.modelRequest!.outputTokens !=
+            SourceEditProposer.outputTokens) {
+      throw const FormatException('Invalid source request ceiling.');
+    }
     final current = PlanApprovalStore(records).requireCurrentApproval(project);
     if (evidence.projectId != project.id ||
         !evidence.approval.matches(current)) {
@@ -101,6 +108,12 @@ class ApprovedSourceProposer {
     if (repairCandidate != null) {
       _requireRepairApproval(project, repairCandidate);
     }
+    config.endpoint;
+    final modelRequest = ModelRequestProvenance(
+      model: config.model,
+      outputTokens: SourceEditProposer.outputTokens,
+    );
+    modelRequest.validate();
     _active = true;
     _cancelled = false;
     final attempts = repairRun == null
@@ -147,6 +160,7 @@ class ApprovedSourceProposer {
         boardTaskId: task.id,
         approval: approval,
         proposal: proposal,
+        modelRequest: modelRequest,
         repairRun: repairRun,
       );
       // Includes changes while the provider was finishing transport cleanup.

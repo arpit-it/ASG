@@ -925,6 +925,8 @@ void main() {
     expect(controller.error, isNull);
     expect(bases, ['/saved', '/candidates/copy-1']);
     expect(controller.candidate!.directory, '/candidates/copy-2');
+    expect(controller.proposal!.modelRequest!.model, 'Qwen3.5-9B');
+    expect(controller.proposal!.modelRequest!.outputTokens, 4096);
     expect(controller.proposal!.repairRun, isNull);
     // New candidate verification must not depend on the previous latest journal.
     await controller.candidateSession!.verify(approved: true);
@@ -1649,6 +1651,22 @@ void main() {
       provider.stream.add(response());
       unawaited(provider.stream.close());
       await tester.pumpAndSettle();
+      await tester.scrollUntilVisible(
+        find.textContaining('Requested model: Qwen3.5-9B'),
+        100,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(
+        find.textContaining('Requested model: Qwen3.5-9B'),
+        findsOneWidget,
+      );
+      expect(find.textContaining('4096 output tokens'), findsOneWidget);
+      expect(
+        find.textContaining(
+          'Server-loaded weights and revision are unverified',
+        ),
+        findsOneWidget,
+      );
       expect(find.text('Prepare unverified candidate'), findsNothing);
       await tester.scrollUntilVisible(
         find.text('Select candidate parent folder'),
