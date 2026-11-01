@@ -88,6 +88,11 @@ def create_handler(backend, executor, model_id, model_path):
             if self.path != '/v1/chat/completions':
                 self.respond(404, {'error': 'Unknown route'})
                 return
+            # This endpoint reads fixed-length JSON only. Do not interpret one
+            # of multiple lengths or ignore a different transfer framing.
+            if len(self.headers.get_all('Content-Length', [])) > 1 or 'Transfer-Encoding' in self.headers:
+                self.respond(400, {'error': 'Unsupported request framing; send one Content-Length and no Transfer-Encoding'})
+                return
             try:
                 self.connection.settimeout(15)
                 size = int(self.headers.get('Content-Length', '0'))
