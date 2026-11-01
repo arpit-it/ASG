@@ -7176,3 +7176,9 @@ Python Torch absent; retained8765health URLError. No actual inference performed.
 Awaiting merge: exact-tree plugin publication, independent final-revision review,
 required CI and protected reviewer merge remain gates. Full F15/live milestones
 remain pending. Recorded 2026-11-01T17:48:38.605793+00:00
+
+Publication: [PR #395](https://github.com/arpit-it/ASG/pull/395), branch
+`356-cpu-dispatch-recovery`, initial published3970ff54 and local e62ab734 share
+validated tree0d8ba3e574d74da124fb6ff1b34828a2e803c0d9. This follow-up changes
+only delivery links; all321 tested source/config inputs remain unchanged.
+Independent final-revision review, required CI and merge remain pending.
