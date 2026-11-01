@@ -397,6 +397,7 @@ class _SourceGenerationScreenState extends State<SourceGenerationScreen> {
                       ),
                       children: [
                         SelectableText(entry.project.directory),
+                        Text(entry.project.sourceRequestDescription),
                         TextButton(
                           onPressed: controller.busy
                               ? null

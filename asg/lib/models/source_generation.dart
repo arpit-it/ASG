@@ -2,6 +2,7 @@
 // Copyright 2026 Arpit Sinha
 
 import 'plan_approval.dart';
+import 'model_request_provenance.dart';
 import 'build_task.dart';
 
 enum GeneratedSnapshotStatus { none, current, outdated, unknown }
@@ -107,6 +108,7 @@ class GeneratedProject {
     this.limits = VerificationLimits.starter,
     this.approval,
     this.confined = false,
+    this.sourceRequest,
     List<BuildTask>? tasks,
   }) : sources = Map.unmodifiable(sources),
        outputs = Map.unmodifiable(outputs),
@@ -115,6 +117,16 @@ class GeneratedProject {
        tasks = tasks == null
            ? null
            : BuildTask.fromJson(tasks.map((t) => t.toJson()).toList()) {
+    if (sourceRequest != null) {
+      sourceRequest!.validate();
+      if (!confined ||
+          sourceRequest!.outputTokens !=
+              ModelRequestProvenance.sourceOutputTokens) {
+        throw const FormatException(
+          'Source request metadata requires a confined source candidate and its fixed ceiling.',
+        );
+      }
+    }
     if (this.tasks != null && (approval == null || !approval!.approved)) {
       throw const FormatException('Structured tasks require an approved Plan.');
     }
@@ -123,6 +135,12 @@ class GeneratedProject {
 
   /// Model-written source always executes through the confined native runner.
   final bool confined;
+
+  /// Latest completed source request for this candidate, never inference proof.
+  final ModelRequestProvenance? sourceRequest;
+  String get sourceRequestDescription =>
+      sourceRequest?.description ??
+      'Source request provenance unavailable. Fixed starters use no model; legacy candidates have unknown provenance.';
 
   /// A task whose validation or runner threw; no command exit result is implied.
   final String failedOperation;
@@ -226,6 +244,7 @@ class GeneratedProject {
   }) => GeneratedProject(
     directory: directory,
     confined: confined,
+    sourceRequest: sourceRequest,
     approval: approval ?? this.approval,
     tasks: tasks ?? this.tasks,
     sdk: sdk ?? this.sdk,
@@ -244,6 +263,7 @@ class GeneratedProject {
   Map<String, Object> toJson() => {
     'limits': limits.toJson(),
     if (confined) 'confinementVersion': 1,
+    'sourceRequest': ?sourceRequest?.toJson(),
     'directory': directory,
     'sdk': sdk,
     'python': python,
@@ -266,6 +286,9 @@ class GeneratedProject {
           ? VerificationLimits.fromJson(json['limits'])
           : VerificationLimits.starter,
       confined: json.containsKey('confinementVersion'),
+      sourceRequest: json.containsKey('sourceRequest')
+          ? ModelRequestProvenance.fromJson(json['sourceRequest'])
+          : null,
       directory: json['directory'] as String,
       tasks: json.containsKey('tasks')
           ? BuildTask.fromJson(json['tasks'])

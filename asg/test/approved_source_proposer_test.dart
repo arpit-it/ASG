@@ -79,6 +79,8 @@ void main() {
       provider.stream.add(response());
       await provider.stream.close();
       final evidence = await pending;
+      expect(evidence.modelRequest!.model, 'Qwen3.5-9B');
+      expect(evidence.modelRequest!.outputTokens, 4096);
       expect(evidence.boardTaskId, 'Tanalyze');
       expect(evidence.projectId, project.id);
       expect(

@@ -7629,3 +7629,76 @@ historical observation identities and limits. Retained runtime health unavailabl
 Status Awaiting merge: independent exact-final review, actual required CI and
 protected reviewer merge remain gates. Logs /private/tmp/asg396-build-*.log.
 Recorded 2026-11-01T21:06:03.301346+00:00
+
+
+### Prototype Build requested-model provenance verified merged — #396 / PR #410
+
+Bounded increment Done. Independent review5730267838/finalgate5730298387
+approved final574941fffd30246541d9c7193ee39f80c5f938f4, testedlocal
+c770cc66ecccc06dffb9acf9247e65a6351ece68, identical
+treed1130b6599cc4653f0bcd81a744bfa186ddfef02. Independent31Flutter/one live skip
+and nineinventorytests passed; all328validationinputs matched. No blockers.
+RequiredCI41350314221 completed/success: Flutter124978869484 format308/analyzer
+clean,1076Ubuntu passes/12explicit skips,actualChrome17,web/Wasm and independent
+generated-project resolve/analyze/test/render/build/serve passed; Python124978869723
+141tests/four explicit CI platform/live skips. ParentMac1082Flutter/nine skips,
+141Python/two skips,format/analyzer/web/macOSdebug passed. Actual loopbackHTTP
+confirms metadata matches request; no fixture/build establishes fresh inference.
+
+Reviewer protected-plugin squash merged [PR #410](https://github.com/arpit-it/ASG/pull/410)
+as2f54b3fead02a0c3a9fd3e294ed19f3becb8d74a at2026-11-01T21:13:12Z. Parent
+freshly plugin-verified PR/currentmain,signedmerge/tree/soleparent1e1145d7 and
+successful requiredCI. Guarded local sync passed: main/origin-main0/0,emptyindex,
+bothIDEedits byte-identical. Evidence /private/tmp/asg410-reviewed-merge.json,
+/private/tmp/asg410-publication.json and /private/tmp/asg410-safe-sync.py.
+Both automation labels applied and PR attached.
+
+Issue396 remains open/Pending for per-project selection and source/repair request
+provenance; prototype Build is delivered along with Ask/project-chat metadata.
+FullF22/F15 remain unchecked; unavailable-platform acceptance Deferred400.
+No new issue,model/download/install/settings/stableapp/deployment/cadence changes.
+Final merge bookkeeping retained for next normal reviewed development PR.
+Recorded 2026-11-01T21:14:03.740966+00:00
+
+
+### F22 source proposal and candidate provenance — issue #396
+
+Selected bounded increment `396-source-model-provenance` from plugin-verified
+main 2f54b3fead02a0c3a9fd3e294ed19f3becb8d74a, PR #410 merged. No open PR or
+competing active ASG run. Source proposal review and saved source candidates lost
+the requested model identity. Capture the exact configured model ID and the actual
+fixed 4096-token source ceiling, independent of chat budget. Carry typed metadata
+through reviewed candidate copies, verification checkpoints/outcomes, promotion,
+build history and selected rollback; show requested versus unverified loaded weights
+and explicit legacy/starter unknown guidance. No endpoint/prompt or permissions
+added. Existing F09 transport and F04/F05/F06 storage/candidate foundations suffice;
+deferred external-platform acceptance #400 is not a technical prerequisite.
+
+Acceptance: actual HTTP request matches metadata; changes to global settings during
+transport do not relabel completed proposals; subsequent requests capture their own
+settings. Native reopen/history/rollback retain metadata, legacy stays unknown and
+corrupt metadata blocks overwrite. Candidate copying and repair-evidence rebinding
+retain the latest source request. Stop/disposal/failure and approval/confinement
+regressions remain enforced. Narrow enlarged UI exposes honest identity. Full checks,
+relevant builds, independent final-revision review, required CI and verified reviewer
+merge are mandatory. Per-project selection and repair-attempt journal provenance
+remain Pending; latest source-candidate metadata is not a complete repair journal.
+Full F22/F15 remain unchecked; no fresh inference or platform support claim.
+Status: In progress.
+Recorded 2026-11-01T21:36:07.985679+00:00
+
+Validation: four new end-to-end/domain regressions plus extended candidate-copy,
+repair-rebinding and narrow 2x-text tests passed; 77 focused checks. Full clean
+tracked-source Flutter suite 1086 passed/nine explicit skips; format309 unchanged,
+analyzer clean, web/Wasm release and macOS debug builds passed. All314 lib/test/
+asset/config inputs match the tested copy (native/project config included below
+in publication evidence). Seven Python suites141 tests/two explicit live/platform
+skips passed. Historical acceptance inventory regenerated for changed source hashes
+without changing observation identities or claiming current support. Initial new
+test issues were a lazy-list finder and writing/reading intentionally corrupt native
+records through validated APIs; corrected using scroll and raw synthetic DB setup,
+then focused/full tests passed. Existing runtime health unavailable (URLError);
+no fresh model inference, stable-app replacement or deferred-platform claim.
+Status Awaiting merge: plugin publication, independent exact-final review, required
+CI and protected reviewer merge remain gates. Logs /private/tmp/asg396-source-*.log.
+Recorded 2026-11-01T21:39:30.331377+00:00

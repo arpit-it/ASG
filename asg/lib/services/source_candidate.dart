@@ -55,6 +55,7 @@ Future<GeneratedProject> prepareSourceCandidate({
     return GeneratedProject(
       directory: candidate.directory,
       confined: true,
+      sourceRequest: evidence.modelRequest,
       sdk: generated.sdk,
       python: generated.python,
       sources: candidate.sources,

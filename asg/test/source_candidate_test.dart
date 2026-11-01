@@ -9,6 +9,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:asg/models/approved_source_proposal.dart';
+import 'package:asg/models/model_request_provenance.dart';
 import 'package:asg/models/source_edit_proposal.dart';
 import 'package:asg/models/source_generation.dart';
 import 'package:asg/services/conversation_store.dart';
@@ -62,6 +63,10 @@ void main() {
     boardTaskId: 'Tanalyze',
     approval: PlanApprovalStore(records).load(project.id)!,
     proposal: proposal(),
+    modelRequest: const ModelRequestProvenance(
+      model: 'candidate-model',
+      outputTokens: 4096,
+    ),
   );
   Future<GeneratedProject> prepare({void Function()? active}) =>
       prepareSourceCandidate(
@@ -149,6 +154,8 @@ void main() {
         FileSystemEntityType.notFound,
       );
     }
+    expect(result.sourceRequest!.model, 'candidate-model');
+    expect(result.sourceRequest!.outputTokens, 4096);
     expect(result.steps, isEmpty);
     expect(result.outputs, isEmpty);
     expect(result.resolution, isEmpty);

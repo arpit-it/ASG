@@ -178,3 +178,16 @@ existing approval/settings omission; imported replies therefore show unknown.
 Ask, prototype Build, candidate/repair provenance and per-project model selection
 are outside this bounded increment and remain F22 work. No schema-key migration
 or rewrite of historical conversation records is required.
+
+Source candidates optionally carry `sourceRequest` using the version-1 request
+provenance schema (model ID and output ceiling only). It describes the latest
+completed source proposal used for that candidate, including a repair proposal,
+with the source editor's fixed 4096-token ceiling; it never proves loaded weights,
+revision, compatibility or successful inference. It requires the existing confined
+candidate marker and never grants confinement or execution permission. Missing
+legacy/starter metadata stays unknown; explicit null, malformed fields or a wrong
+source ceiling refuse loading and overwriting. Copies, checkpoints, verification
+journals, promotion/build history and rollback retain the metadata in their existing
+atomic records. No storage key changes or destructive migration occur. Unprepared
+review proposals remain session-only; the repair-attempt journal's separate request
+provenance and per-project model selection remain pending.

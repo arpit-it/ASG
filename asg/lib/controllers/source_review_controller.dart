@@ -193,6 +193,7 @@ class SourceReviewController extends BaseController {
         boardTaskId: evidence.boardTaskId,
         approval: evidence.approval,
         proposal: evidence.proposal,
+        modelRequest: evidence.modelRequest,
       );
       _proposal = candidateEvidence;
       if (publishCandidate != null) {
