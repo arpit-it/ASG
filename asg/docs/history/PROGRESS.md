@@ -7842,3 +7842,24 @@ Status Awaiting merge: exact-tree plugin publication, independent final-revision
 review, required CI and protected reviewer merge remain gates. #396 remains open
 for project/run selection and verified profiles; F22/F15 remain unchecked.
 Logs/private/tmp/asg-selection-*.log. Recorded 2026-11-01T22:21:36.741733+00:00.
+
+
+PR #413 review5730556818 found P2: reselecting the same preset in a new Ask
+conversation left FormField index0 stale; removing/refreshing its source preset
+then asserted. Replaced the field with a controller-valued DropdownButton inside
+InputDecorator, eliminating retained selection state. Expanded the real320px2x UI
+test with same-object reselection, removal/refresh and selected snapshot/value-2
+assertions. Changed Selected label to reflect an unsaved new-conversation draft.
+26 focused checks passed. Final full checks/builds and fresh exact-final independent
+review/CI/merge required; no merge claimed. Recorded 2026-11-01T22:25:55.454708+00:00.
+
+
+Review fix revalidated: full corrected tracked-source1094Flutter passed/nine
+explicit skips; exact narrow reselection/removal-refresh regression and Ask flows
+pass. Formatter310 unchanged, analyzer clean, web release/Wasm and macOS debug
+rebuilds passed; refreshed historical inventory nine tests passed. All367 final
+validation inputs and inventory match the tested copy. Python transport/policy
+sources unchanged from141passing fixtures/two skips. Awaiting normal follow-up
+publication, fresh exact-final independent review, new required CI and protected
+merge; blocking review5730556818 must be resolved on corrected head.
+Recorded 2026-11-01T22:29:33.637452+00:00.

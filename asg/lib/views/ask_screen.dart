@@ -115,49 +115,50 @@ class _AskScreenState extends State<AskScreen> {
                         : null,
                   ),
                   const SizedBox(height: 12),
-                  DropdownButtonFormField<int>(
-                    key: ValueKey((
-                      controller.selectedId,
-                      controller.connectionPreset,
-                      controller.busy,
-                    )),
-                    initialValue: controller.connectionPreset == null ? -1 : -2,
-                    isExpanded: true,
+                  InputDecorator(
                     decoration: const InputDecoration(
                       labelText: 'Conversation model connection',
                     ),
-                    items: [
-                      const DropdownMenuItem(
-                        value: -1,
-                        child: Text('Global model settings'),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton<int>(
+                        value: controller.connectionPreset == null ? -1 : -2,
+                        isExpanded: true,
+                        items: [
+                          const DropdownMenuItem(
+                            value: -1,
+                            child: Text('Global model settings'),
+                          ),
+                          if (controller.connectionPreset != null)
+                            DropdownMenuItem(
+                              value: -2,
+                              child: Text(
+                                'Selected: ${controller.connectionPreset!.name}',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          for (var i = 0; i < controller.presets.length; i++)
+                            DropdownMenuItem(
+                              value: i,
+                              child: Text(
+                                controller.presets[i].name,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                        ],
+                        onChanged: controller.canChangeConversation
+                            ? (index) {
+                                if (index == null || index == -2) return;
+                                controller.choosePreset(
+                                  index == -1
+                                      ? null
+                                      : controller.presets[index],
+                                );
+                              }
+                            : null,
                       ),
-                      if (controller.connectionPreset != null)
-                        DropdownMenuItem(
-                          value: -2,
-                          child: Text(
-                            'Saved: ${controller.connectionPreset!.name}',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      for (var i = 0; i < controller.presets.length; i++)
-                        DropdownMenuItem(
-                          value: i,
-                          child: Text(
-                            controller.presets[i].name,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                    ],
-                    onChanged: controller.canChangeConversation
-                        ? (index) {
-                            if (index == null || index == -2) return;
-                            controller.choosePreset(
-                              index == -1 ? null : controller.presets[index],
-                            );
-                          }
-                        : null,
+                    ),
                   ),
                   Text(
                     controller.connectionPreset == null
