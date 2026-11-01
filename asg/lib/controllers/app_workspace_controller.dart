@@ -4,6 +4,7 @@
 import '../models/app_definition.dart';
 import '../models/chat_message.dart';
 import '../models/project.dart';
+import '../models/model_connection_preset.dart';
 import '../models/generation_event.dart';
 import '../services/application_store.dart';
 import '../services/application_editor.dart';
@@ -99,6 +100,41 @@ class AppWorkspaceController extends BaseController {
   bool get busy => _busy;
   String? _error;
   String? get error => _error;
+  ModelConnectionPreset? _connectionPreset;
+  ModelConnectionPreset? get connectionPreset => _connectionPreset;
+  List<ModelConnectionPreset> _presets = const [];
+  List<ModelConnectionPreset> get presets => List.unmodifiable(_presets);
+  String? presetError;
+  bool get canChooseConnection =>
+      _state != null &&
+      _store != null &&
+      !busy &&
+      !savingInteractions &&
+      !hasUnsavedInteractions &&
+      !isDisposed;
+
+  void refreshPresets() {
+    if (!canChooseConnection) return;
+    try {
+      _presets = ModelSettingsStore(_store!.records).loadPresets();
+      presetError = null;
+    } catch (_) {
+      _presets = const [];
+      presetError = 'Connection presets could not be loaded. Current prototype connection and saved data are unchanged.';
+    }
+    update();
+  }
+
+  /// Explicit workspace-session choice; completed requests retain provenance.
+  void choosePreset(ModelConnectionPreset? preset) {
+    if (!canChooseConnection ||
+        (preset != null && !_presets.contains(preset))) {
+      return;
+    }
+    _connectionPreset = preset;
+    update();
+  }
+
   Future<void> load() async {
     try {
       final store = await _openStore();
@@ -107,6 +143,7 @@ class AppWorkspaceController extends BaseController {
       _store = store;
       _state = loaded;
       _error = null;
+      refreshPresets();
     } catch (_) {
       if (!isDisposed) {
         _error =
@@ -145,7 +182,7 @@ class AppWorkspaceController extends BaseController {
     update();
     try {
       final change = await _editor.apply(
-        ModelSettingsStore(store.records).load(),
+        _connectionPreset?.config ?? ModelSettingsStore(store.records).load(),
         _runtimeDefinition ?? current.definition,
         text,
         onProgress: (event) {

@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "claim": "separate-historical-observations-only",
   "manifestSha256": "0505c640aa4a9170a73946648bd6205062942bcc3a2a37704e7a37fa0cbcbe1c",
-  "comparisonRuntimeSha256": "c4f1aafb257e89c008e6890f5b3386c68d0dc695664c4f19731dae2b40c4246c",
+  "comparisonRuntimeSha256": "6e8d2dc52a1da88d682aeb97217c049a1b4a4fe54c5a7b264b571a37ca459b1b",
   "limitations": [
     "No combined identity, current pass, support verdict or authenticated observation.",
     "Recorded source hashes do not prove bundle equivalence or unaffected behavior.",
@@ -624,6 +624,7 @@
           "lib/views/cpu_environment_preparation_panel.dart",
           "lib/views/cpu_runtime_launch_panel.dart",
           "lib/views/model_download_panel.dart",
+          "lib/views/prototype_connection_view.dart",
           "lib/views/runtime_capability_panel.dart"
         ]
       }
@@ -873,6 +874,7 @@
           "lib/views/cpu_environment_preparation_panel.dart",
           "lib/views/cpu_runtime_launch_panel.dart",
           "lib/views/model_download_panel.dart",
+          "lib/views/prototype_connection_view.dart",
           "lib/views/runtime_capability_panel.dart"
         ]
       }
@@ -1091,6 +1093,7 @@
           "lib/views/cpu_environment_preparation_panel.dart",
           "lib/views/cpu_runtime_launch_panel.dart",
           "lib/views/model_download_panel.dart",
+          "lib/views/prototype_connection_view.dart",
           "lib/views/runtime_capability_panel.dart"
         ]
       }
@@ -1237,6 +1240,7 @@
           "lib/views/cpu_environment_preparation_panel.dart",
           "lib/views/cpu_runtime_launch_panel.dart",
           "lib/views/model_download_panel.dart",
+          "lib/views/prototype_connection_view.dart",
           "lib/views/runtime_capability_panel.dart"
         ]
       }
@@ -1625,6 +1629,7 @@
           "lib/views/cpu_environment_preparation_panel.dart",
           "lib/views/cpu_runtime_launch_panel.dart",
           "lib/views/model_download_panel.dart",
+          "lib/views/prototype_connection_view.dart",
           "lib/views/runtime_capability_panel.dart"
         ]
       }
@@ -1762,6 +1767,7 @@
           "lib/views/cpu_environment_preparation_panel.dart",
           "lib/views/cpu_runtime_launch_panel.dart",
           "lib/views/model_download_panel.dart",
+          "lib/views/prototype_connection_view.dart",
           "lib/views/runtime_capability_panel.dart"
         ]
       }
@@ -1886,6 +1892,7 @@
           "lib/views/cpu_environment_preparation_panel.dart",
           "lib/views/cpu_runtime_launch_panel.dart",
           "lib/views/model_download_panel.dart",
+          "lib/views/prototype_connection_view.dart",
           "lib/views/runtime_capability_panel.dart"
         ]
       }
@@ -2023,6 +2030,7 @@
           "lib/views/cpu_environment_preparation_panel.dart",
           "lib/views/cpu_runtime_launch_panel.dart",
           "lib/views/model_download_panel.dart",
+          "lib/views/prototype_connection_view.dart",
           "lib/views/runtime_capability_panel.dart"
         ]
       }
@@ -2160,6 +2168,7 @@
           "lib/views/cpu_environment_preparation_panel.dart",
           "lib/views/cpu_runtime_launch_panel.dart",
           "lib/views/model_download_panel.dart",
+          "lib/views/prototype_connection_view.dart",
           "lib/views/runtime_capability_panel.dart"
         ]
       }
@@ -2297,6 +2306,7 @@
           "lib/views/cpu_environment_preparation_panel.dart",
           "lib/views/cpu_runtime_launch_panel.dart",
           "lib/views/model_download_panel.dart",
+          "lib/views/prototype_connection_view.dart",
           "lib/views/runtime_capability_panel.dart"
         ]
       }
@@ -2434,6 +2444,7 @@
           "lib/views/cpu_environment_preparation_panel.dart",
           "lib/views/cpu_runtime_launch_panel.dart",
           "lib/views/model_download_panel.dart",
+          "lib/views/prototype_connection_view.dart",
           "lib/views/runtime_capability_panel.dart"
         ]
       }
@@ -2561,6 +2572,7 @@
           "lib/views/cpu_environment_preparation_panel.dart",
           "lib/views/cpu_runtime_launch_panel.dart",
           "lib/views/model_download_panel.dart",
+          "lib/views/prototype_connection_view.dart",
           "lib/views/runtime_capability_panel.dart"
         ]
       }
@@ -2686,6 +2698,7 @@
           "lib/views/cpu_environment_preparation_panel.dart",
           "lib/views/cpu_runtime_launch_panel.dart",
           "lib/views/model_download_panel.dart",
+          "lib/views/prototype_connection_view.dart",
           "lib/views/runtime_capability_panel.dart"
         ]
       }
@@ -2811,6 +2824,7 @@
           "lib/views/cpu_environment_preparation_panel.dart",
           "lib/views/cpu_runtime_launch_panel.dart",
           "lib/views/model_download_panel.dart",
+          "lib/views/prototype_connection_view.dart",
           "lib/views/runtime_capability_panel.dart"
         ]
       }
@@ -2979,6 +2993,7 @@
           "lib/views/cpu_environment_preparation_panel.dart",
           "lib/views/cpu_runtime_launch_panel.dart",
           "lib/views/model_download_panel.dart",
+          "lib/views/prototype_connection_view.dart",
           "lib/views/runtime_capability_panel.dart"
         ]
       }
@@ -3167,6 +3182,7 @@
           "lib/views/cpu_environment_preparation_panel.dart",
           "lib/views/cpu_runtime_launch_panel.dart",
           "lib/views/model_download_panel.dart",
+          "lib/views/prototype_connection_view.dart",
           "lib/views/runtime_capability_panel.dart"
         ]
       }

@@ -19,6 +19,7 @@ import '../models/project.dart';
 import '../models/generation_event.dart';
 import '../controllers/app_workspace_controller.dart';
 import 'live_application_view.dart';
+import 'prototype_connection_view.dart';
 import 'model_chat.dart';
 import '../services/conversation_store.dart';
 import 'generation_status_view.dart';
@@ -343,6 +344,7 @@ class _ProjectWorkspaceState extends State<ProjectWorkspace> {
                   ),
                 ),
               ),
+            PrototypeConnectionView(controller: controller),
             if (controller.error != null)
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 12),
