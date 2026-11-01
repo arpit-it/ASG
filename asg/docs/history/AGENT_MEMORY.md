@@ -5854,3 +5854,57 @@ web release/Wasm and macOS debug builds passed. Initial restricted SDK-cache and
 loopback failures rerun with authorized access; actual final checks pass. Initial
 pre-resolution formatter warning resolved by clean final formatter. No real CPU
 inference claimed. Independent exact-final review/required CI/merge pending.
+
+
+### CPU preparation privacy verified merged — issue #358 / PR #375
+
+Independent final review5727278341 approved exact6d3e8923e22e3c22a8d93f07d4c976f21a82fb96
+/tree2c41bdca35c08e98d3c8fe8ac5fc5c518918a780 after both required checks passed.
+CI41290366613 Python124800166688/Flutter124800166841 passed; reviewer inspected
+actual logs including Chrome storage, web build and independent generated-project
+verification. Independent54backendcases/one skip plus two later-import privacy
+probes passed. No blockers. Shared-author APPROVE422 recorded transparently as
+COMMENT verdict under existing zero-count protection. Automatic approval review
+rejected an earlier premature approval while CI ran; no review was submitted then.
+Final approval/protected merge occurred only after checks passed, without bypass.
+Reviewer plugin squashmerged PR375 as6e4d718e65851f6d7a5ec1035f716de3d6623206.
+Parent independently verified mergedPR/exacthead, issue358closed/completed, current
+main and signed rawmerge matching reviewedtree/soleparent6899359. Signed commit
+08:52:51Z; REST merge09:52:52Z/closure09:52:53Z retains existing timestamp discrepancy.
+Guarded local-only sync passed after authorized Git-metadata access rerun; main/
+origin-main0/0,indexempty,both unrelated IDEfiles byte-identical. Backup:
+/private/tmp/asg358-preparation-primary-before-sync; guard/private/tmp/asg375-safe-sync.py.
+Publication/rawtree verification/review/merge used connected GitHub plugin only;
+PR both automationlabels applied. Existingruntime readonlyhealth ready/MLX/Metal/
+Qwen3.8-27B-4bit; no fresh inference. Bounded correction Done; fullF15 unchecked/
+Inprogress, CPUexperimental. Managed CPU integration and non-Apple CPU/separate
+CUDA live acceptance remain outstanding. No download/install/settings/data/
+stableapp replacement. No second issue/FID. Cadence/notification unchanged.
+Recorded 2026-11-01T08:53:45.593699+00:00
+Current run time 2026-11-01T08:53:45.593699+00:00
+
+
+### Experimental CPU checkpoint host bridge — reopened issue #367
+
+Branch `367-cpu-inspection-host`, from verified main6e4d718e / PR #375.
+No competing active ASG owner/open task or PR. Primary IDE edits preserved;
+prior merge bookkeeping carried into this increment. CLI inspection existed but
+Flutter lacked a typed boundary. Scope/acceptance: optional experimental host
+interface, immutable strict disk observations, explicit per-call consent, ceiling
+validation, shared bounded private process reader, malformed/false-readiness/
+nonzero/overflow/timeout rejection, owned cleanup/retry and actual shipped-helper
+structural fixture without optional model imports. No normal CPU selection or UI
+enablement; settings and Auto/MLX/MPS retained. Depends on delivered CLI/preflight,
+not unavailable non-Apple CPU/CUDA inference. Those live milestones remain pending;
+full F15 unchecked/In progress. No inference, RAM fit or tensor-readiness claim.
+Status: In progress; independent exact-final review, required CI and verified
+protected merge required. No downloads, installs or stable-app replacement.
+
+Validation: formatter290 unchanged, analysis clean, 994 Flutter passes/nine skips;
+17 focused CPU/discovery actual-process cases passed. Web release/Wasm and macOS
+debug builds passed. Initial Python inventory mismatch resolved by regenerating
+the historical comparison inventory (no current support/acceptance claim). Full
+126 Python cases passed with two opt-in skips after regeneration. Readonly local
+health reports MLX/Metal/Qwen3.8-27B-4bit; no fresh inference. Status: Awaiting merge;
+exact-final independent review, required CI and verified protected merge pending.
+Recorded 2026-11-01T09:18:00.599718+00:00

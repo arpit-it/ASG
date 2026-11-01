@@ -12,6 +12,8 @@ import 'package:path_provider/path_provider.dart';
 import '../models/runtime_setup.dart';
 import '../models/runtime_capabilities.dart';
 import 'runtime_host.dart';
+import 'cpu_checkpoint_inspection_host.dart';
+import '../models/cpu_checkpoint_inspection.dart';
 import 'model_download_host.dart';
 import 'model_downloader_native.dart';
 import '../models/model_download.dart';
@@ -23,7 +25,8 @@ class _ExternalCheckpointMetadata implements Exception {
   const _ExternalCheckpointMetadata();
 }
 
-class NativeRuntimeHost implements RuntimeHost, ModelDownloadHost {
+class NativeRuntimeHost
+    implements RuntimeHost, ModelDownloadHost, CpuCheckpointInspectionHost {
   NativeRuntimeHost({
     this.port = 8765,
     this.supportDirectory,
@@ -316,12 +319,73 @@ class NativeRuntimeHost implements RuntimeHost, ModelDownloadHost {
     }
     await _script('qwen_backends.py');
     final script = await _script('qwen_server.py');
-    final process = await Process.start(python.trim(), [
+    final report = await _inspectionReport(python.trim(), [
       '-B',
       script,
       '--capabilities',
       '--probe-devices',
-    ], runInShell: false);
+    ]);
+    return RuntimeCapabilities.fromJson(report);
+  });
+
+  @override
+  Future<CpuCheckpointInspection> inspectCpuCheckpoint(
+    String python,
+    String modelPath, {
+    required bool experimentalCpu,
+    int? maxWeightBytes,
+  }) => _job(() async {
+    if (!experimentalCpu) {
+      throw const FormatException(
+        'Explicit experimental CPU consent is required.',
+      );
+    }
+    if (python.trim().isEmpty ||
+        modelPath.trim().isEmpty ||
+        (maxWeightBytes != null &&
+            (maxWeightBytes < 1 || maxWeightBytes > 9007199254740991))) {
+      throw const FormatException(
+        'Choose Python, a checkpoint and a positive exact disk-byte ceiling.',
+      );
+    }
+    try {
+      await _script('qwen_backends.py');
+      final script = await _script('qwen_server.py');
+      final report = CpuCheckpointInspection.fromJson(
+        await _inspectionReport(python.trim(), [
+          '-B',
+          script,
+          '--inspect-cpu-checkpoint',
+          '--backend',
+          'cpu',
+          '--experimental-cpu',
+          '--model',
+          modelPath,
+          if (maxWeightBytes != null) ...[
+            '--cpu-max-weight-bytes',
+            '$maxWeightBytes',
+          ],
+        ]),
+      );
+      if (maxWeightBytes != null && report.weightBytes > maxWeightBytes) {
+        throw const FormatException(
+          'CPU checkpoint exceeds the disk-byte ceiling.',
+        );
+      }
+      return report;
+    } catch (_) {
+      // Never expose subprocess, filesystem or untrusted JSON diagnostics.
+      throw StateError(
+        'CPU checkpoint inspection failed. Check the Python environment, complete unquantized checkpoint and disk-byte ceiling, then retry. No model was loaded.',
+      );
+    }
+  });
+
+  Future<Object?> _inspectionReport(
+    String python,
+    List<String> arguments,
+  ) async {
+    final process = await Process.start(python, arguments, runInShell: false);
     var exited = false;
     final exit = process.exitCode.then((code) {
       exited = true;
@@ -373,7 +437,7 @@ class NativeRuntimeHost implements RuntimeHost, ModelDownloadHost {
           'Capability discovery failed. Check the Python environment and retry.',
         );
       }
-      return RuntimeCapabilities.fromJson(jsonDecode(utf8.decode(bytes)));
+      return jsonDecode(utf8.decode(bytes));
     } finally {
       try {
         if (!exited) {
@@ -385,7 +449,8 @@ class NativeRuntimeHost implements RuntimeHost, ModelDownloadHost {
         await errors.cancel();
       }
     }
-  });
+  }
+
   @override
   Future<void> prepare(
     String python, {
