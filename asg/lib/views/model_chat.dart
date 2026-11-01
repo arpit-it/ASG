@@ -157,6 +157,10 @@ class _ModelChatState extends State<ModelChat> {
                 ),
                 const SizedBox(height: 8),
                 SelectableText(m.content),
+                if (m.role == 'assistant') ...[
+                  const SizedBox(height: 8),
+                  Text(m.modelRequestDescription),
+                ],
               ],
             ),
           ),
@@ -172,6 +176,8 @@ class _ModelChatState extends State<ModelChat> {
                 const Text('Response not saved yet'),
                 const SizedBox(height: 8),
                 SelectableText(response.content),
+                const SizedBox(height: 8),
+                Text(response.modelRequestDescription),
                 const SizedBox(height: 8),
                 const Text(
                   'Keep this screen open to retain the response. Retry saves it without asking the model again.',

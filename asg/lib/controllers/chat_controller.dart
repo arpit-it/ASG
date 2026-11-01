@@ -4,6 +4,7 @@
 import 'dart:async';
 
 import '../models/local_model_config.dart';
+import '../models/model_request_provenance.dart';
 import '../models/requirements_board.dart';
 import '../models/build_plan.dart';
 import '../services/plan_task_import.dart';
@@ -348,6 +349,7 @@ class ChatController extends BaseController {
     String? planValidationError;
     try {
       final config = _loadModelConfig();
+      final modelRequest = ModelRequestProvenance.fromConfig(config);
       final requirements = RequirementsStore(_store!.records).load(project.id);
       final String fullRequirements;
       try {
@@ -419,6 +421,7 @@ class ChatController extends BaseController {
       _unsavedResponse = ChatMessage(
         role: 'assistant',
         content: requestMode.labelResponse(result),
+        modelRequest: modelRequest,
         planContext: requestMode == ConversationMode.plan
             ? requestPlanContext
             : null,

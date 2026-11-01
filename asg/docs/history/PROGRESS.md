@@ -7426,3 +7426,59 @@ Status Awaiting merge: exact-tree plugin publication, independent final-revision
 review, required CI and protected reviewer merge remain pending. FullF15/F22
 remain unchecked/In progress. No model/download/install/settings/stableapp or
 schedule/notification changes. Recorded 2026-11-01T19:32:38.282897+00:00
+
+
+### CPU greedy streaming contract verified merged — issue #356 / PR #399
+
+Independent approval5729872318/finalgate5729884828 approved exact
+`a5bd70ffd02d5086eefb3a2277855b42319b83d2`, tree
+`8a298c79cad76b03bf9b07299913f3622f5149b0` (tested local21daba89 identical).
+No blockers; independent78backend/actualHTTP tests(one explicit live skip) passed.
+Removing either override separately reproduced four CPU/MPS failures. All325
+validation inputs matched, and parent actual logs were independently inspected.
+
+Required CI41342371559 completed/success: Flutter124954918915 formatter304/
+analyzer clean, Ubuntu1054passes12skips, actualChrome16, web/Wasm dryrun and
+real independent generated-project resolve/analyze/test/render/build/serve passed;
+Python124954919077 ran141tests/four explicit CI platform/live skips. Separate
+parent Mac1060Flutter/nine skips,141Python/two skips,web/macOSdebug passed.
+Neither fixtures nor builds establish CPU/CUDA live inference/fullF15 completion.
+
+Reviewer protected-plugin squash merged [PR #399](https://github.com/arpit-it/ASG/pull/399)
+as `cfb10b4ce34c2fd6c2013d2a88a88aab5ddf52c0` at2026-11-01T19:39:00Z;
+issue356closed/completed19:39:02Z. Parent freshly plugin-verified PR/issue/main,
+signed merge tree/sole parent472a97f0 and successful required jobs. Guarded local
+synchronization passed: main/origin-main0/0, empty index, both unrelated IDEfiles
+byte-identical. Evidence `/private/tmp/asg399-reviewed-merge.json`,
+`/private/tmp/asg399-safe-sync.py`, `/private/tmp/asg356-greedy-ide.json`.
+Both automation labels applied. Bounded correction Done; fullF15/F22 remain
+unchecked/In progress, CPUexperimental outside normal choices; non-AppleCPU/CUDA
+real inference pending. No model load/download/install/settings/data/stableapp/
+cadence/notification changes. Final merge bookkeeping retained for next normal
+reviewed development PR. Recorded 2026-11-01T19:39:59.472269+00:00
+
+
+### Owner priority and F22 request provenance — 2 November 2026
+
+Windows/CUDA and unavailable-platform acceptance Deferred until queued implementation
+is delivered; tracking #400. One-time owner-requested Pending reconciliation links
+existing requirements to #401–#407, without adding a competing specification.
+Schedule updated through management tool, preserving interval/notification/model.
+Reopened #396 for project-chat requested-model/output-budget provenance on
+396-chat-model-provenance; named presets remain delivered. Capture once, durable
+completed replies/save-only retry/reopen, explicit unknown legacy and unverified
+loaded weights. Per-project choice/other request types/full F22 stay pending.
+In progress pending actual validation, independent review, CI and verified merge.
+
+
+Validation for #396 requested-model provenance: 10 focused regressions including
+actual native database reopen; clean-source Flutter1070 passed/nine explicit live
+or platform skips. Formatter clean, analyzer no issues, web release/Wasm dry run
+and macOS debug builds passed. All328 source/configuration validation inputs
+byte-identical. Initial in-place full-suite license scan encountered third-party
+Python files in tools/.mlx-venv; the complete clean-copy rerun passed. No vendor
+files were modified or excluded from the tracked source copy. Python fixtures141 passed/two explicit live/platform skips.
+Final publication/review/CI/merge evidence follows. This validates app/request
+metadata and compatibility, not fresh inference or external-platform support.
+Status Awaiting merge; independent exact-final review/required CI/merge pending.
+Logs /private/tmp/asg396-provenance-{analyze,clean-flutter,web,macos,python}.log.
