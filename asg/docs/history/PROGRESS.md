@@ -5747,3 +5747,68 @@ Status: Awaiting merge. Plugin publication, independent exact-final review,
 required CI and verified protected merge remain mandatory. Final identities
 will be retained in the PR and reconciled into the next normal ledger increment.
 Recorded 2026-11-01T07:31:45.974076+00:00
+
+
+### CPU reported identity app increment verified merged — issue #356 / PR #372
+
+Independent final approval [5727000098](https://github.com/arpit-it/ASG/pull/372#pullrequestreview-5727000098)
+reviewed exact60756b94d3114a605d6fa1c88d84e25115cdb8d6 /
+treeda9d2ce99a2284b940488deb7e125059fb6a0a29. Initial review5726984081
+blocked stale acceptance inventory; regenerated only comparisonRuntimeSha256,
+9inventory/32collector tests passed and fresh final review obtained. No bypass;
+shared-author APPROVE422 recorded transparently in independent COMMENT approval.
+Reviewer independently73focused+9inventory passes. RequiredCI41285315169
+Python124785365249/Flutter124785365419 passed; actual full logs inspected:
+978LinuxFlutter12skips/15Chrome/formatter287/analyzer/web+Wasm and real generated
+project resolve/analyze/renderedinteraction/test/build/serve; Python32collector/
+9inventory/4download/50backend(oneskip)/9actualHTTP/14command(oneskip)/
+4confinement(twoLinuxskips). Parent984macOSFlutter9skips/web/macOSdebug and
+59backend/HTTP1skip evidence remain separately scoped. No live inference claim.
+
+Reviewer protected-plugin squashmerged [PR #372](https://github.com/arpit-it/ASG/pull/372)
+as `ef9df58903fa9626fbfc449259c74ffa5b7b6973` at2026-11-01T07:40:22Z;
+issue356closed/completed07:40:23Z. Parent independently verified finalhead,
+mergedstate/issueclosure/currentmain and signed rawmerge exactreviewedtree/
+soleparentb0269535. Guarded local-only sync passed after sandbox metadata
+denial/authorized retry; main/origin-main0/0,indexempty,both unrelated IDEfiles
+byte-identical. Backup/private/tmp/asg356-identity-primary-before-sync;
+guard/private/tmp/asg372-safe-sync.py. All GitHub access/publication/review/merge
+used connectedplugin; PR attached and bothautomationlabels applied. Existing
+local documentation edits were retained in reviewedtree.
+
+Bounded CPU identity increment Done; fullF15 remains unchecked/Inprogress.
+CPU remains experimental, normalAuto/MLX/MPS choices unchanged; managed CPU
+integration/non-Apple CPU/separateCUDA real-host milestones remain outstanding.
+No models/packages/downloads/inference/settings/data/stableapp replacement.
+No secondissue/task started. Finalmergebookkeeping retained locally for next
+normal reviewed increment; fifteen-minute cadence/notification unchanged.
+Recorded 2026-11-01T07:41:09.360983+00:00
+Current run time 2026-11-01T07:41:09.360983+00:00
+
+
+### CPU checkpoint CLI privacy correction — reopened issue #362
+
+F15 remains In progress. Verified PR #372 merged ef9df589; connected-plugin
+open-issue/PR searches empty and thread inventory found no competing active ASG
+owner. Reuse #362; branch `362-cpu-checkpoint-privacy`, isolated
+`/private/tmp/asg-cpu-checkpoint-privacy`. Main exposed private paths in raw
+CPU checkpoint filesystem/preflight tracebacks, including missing model folders.
+Typed ValueError-compatible checkpoint failures now cross the explicit CPU CLI
+as bounded actionable exit-2 diagnostics without traceback. Direct callers keep
+specific validation errors; legacy Auto/MLX/MPS failure behavior stays intact.
+Acceptance: eight actual isolated CLI failures (missing/broken/loop folders,
+invalid JSON, missing weights, ceiling, architecture and quantization), no private
+paths/metadata/optional imports/startup; direct startup side-effect guards and
+legacy missing-folder behavior. Depends only on delivered CPU preflight, so this
+Mac-verifiable correction proceeds while non-Apple CPU/CUDA inference is pending.
+Prior PR372 final review/CI/merge evidence and local documentation edits retained.
+Validation: 52 backend cases/one opt-in skip and final124 Python cases/two
+opt-in skips passed; macOS debug asset build passed. Formatter287 unchanged, analyzer clean,
+984 Flutter passes/nine opt-in skips and web/Wasm build passed. Existing runtime
+read-only health ready/idle/MLX/Metal/Qwen3.8-27B-4bit; no inference. Initial outer
+sandbox blocked loopback/confinement and SDK-cache writes; authorized reruns used.
+No downloads/installations/models/settings/data/stable-app replacement.
+Status: Awaiting merge; plugin publication, independent final-revision review,
+required CI and verified protected merge remain mandatory. Full F15 stays
+unchecked; no inference/support claim or new issue/F ID. Cadence unchanged.
+Recorded 2026-11-01T08:02:11.507889+00:00

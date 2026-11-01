@@ -328,6 +328,63 @@ class CPUCheckpointTests(unittest.TestCase):
                     qwen_server.main()
             select.assert_not_called(); load.assert_not_called(); executor.assert_not_called(); http.assert_not_called()
 
+    def test_cpu_checkpoint_cli_failures_are_private_and_do_not_start(self):
+        with tempfile.TemporaryDirectory(prefix='PRIVATE CPU preflight ') as temporary:
+            root = Path(temporary)
+            for name in ('qwen_backends.py', 'qwen_server.py'):
+                shutil.copyfile(Path(__file__).with_name(name), root / name)
+            for name in ('torch', 'transformers', 'safetensors', 'mlx', 'mlx_lm'):
+                (root / (name + '.py')).write_text('raise AssertionError("optional import reached")')
+            folder = root / 'PRIVATE model'; folder.mkdir()
+            command = [sys.executable, '-B', '-S', str(root / 'qwen_server.py'),
+                       '--backend', 'cpu', '--experimental-cpu', '--model']
+            missing = root / 'PRIVATE missing'
+            broken = root / 'PRIVATE broken'; broken.symlink_to(missing)
+            loop = root / 'PRIVATE loop'; loop.symlink_to(loop)
+            config = folder / 'config.json'
+            weights = folder / 'model.safetensors'
+            for case in ('missing', 'broken', 'loop', 'json', 'weights', 'ceiling', 'architecture', 'quantized'):
+                with self.subTest(case=case):
+                    config.write_text(json.dumps(CONFIG))
+                    weights.write_bytes(b'fixture')
+                    selected = {'missing': missing, 'broken': broken, 'loop': loop}.get(case, folder)
+                    flags = []
+                    if case == 'json':
+                        config.write_text('PRIVATE invalid metadata')
+                    if case == 'architecture':
+                        config.write_text(json.dumps({'architectures': ['PRIVATE architecture']}))
+                    if case == 'quantized':
+                        config.write_text(json.dumps({**CONFIG, 'quantization': {'PRIVATE': 'metadata'}}))
+                    if case == 'weights':
+                        weights.unlink()
+                    if case == 'ceiling':
+                        flags = ['--cpu-max-weight-bytes', '1']
+                    result = subprocess.run([*command, str(selected), *flags],
+                        capture_output=True, text=True, timeout=10)
+                    self.assertEqual(result.returncode, 2, result.stderr)
+                    self.assertEqual(result.stdout, '')
+                    self.assertIn('CPU checkpoint preflight failed:', result.stderr)
+                    self.assertLess(len(result.stderr), 300)
+                    for private in (temporary, 'PRIVATE', 'Traceback', 'optional import reached',
+                                    'config.json', 'model.safetensors'):
+                        self.assertNotIn(private, result.stderr)
+            from qwen_server import CPUCheckpointError, validate_cpu_checkpoint
+            with self.assertRaisesRegex(CPUCheckpointError, 'folder is unavailable'):
+                validate_cpu_checkpoint(missing)
+
+    def test_missing_cpu_folder_rejects_before_startup_and_preserves_legacy(self):
+        import qwen_server
+        with tempfile.TemporaryDirectory() as temporary:
+            missing = Path(temporary) / 'missing'
+            for backend in ('cpu', 'auto', 'mlx', 'torch'):
+                flags = ['--experimental-cpu'] if backend == 'cpu' else []
+                with self.subTest(backend=backend), patch.object(qwen_server, 'select_backend') as select, patch.object(qwen_server, 'load_backend') as load, patch.object(qwen_server, 'ThreadPoolExecutor') as worker, patch.object(qwen_server, 'ThreadingHTTPServer') as server, patch.object(sys, 'argv', ['qwen_server.py', '--backend', backend, *flags, '--model', str(missing)]):
+                    expected = qwen_server.CPUCheckpointError if backend == 'cpu' else FileNotFoundError
+                    with self.assertRaises(expected):
+                        qwen_server.main()
+                    for operation in (select, load, worker, server):
+                        operation.assert_not_called()
+
     def test_isolated_cli_weight_ceiling_validation_and_no_optional_imports(self):
         with tempfile.TemporaryDirectory(prefix='CPU byte ceiling ') as temporary:
             root = Path(temporary)
