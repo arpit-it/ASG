@@ -133,7 +133,8 @@ Unavailable hardware blocks only the corresponding real-host acceptance, not imp
   - Delivery: [PR #347](https://github.com/arpit-it/ASG/pull/347). Initial independent review found retry rollback overcount and inherited-pipe completion hang; both corrected with actual regressions. Native isolated UI observed below-button progress/speed, Pause at 5 MiB, Resume through 7.8 MiB and Stop retaining partial bytes. Final head d583ccbb/tree031725f4 approved in reviews5723106296/finalgate5723151483; requiredCI41208499529 passed. Protectedmerge07018365f0399d7047286baf01154fbd33a3890d at2026-10-31T14:12:20Z verified; issue346 closed. Full delivery evidence below.
   - Validation: deterministic local transfer/process fixtures, Python ownership/filter/telemetry regressions, Flutter protocol/controller/responsive UI tests, full format/analyze/test, web/macOS builds and independent exact-final review/required CI/protected merge. Mark Done only after verified merge; larger-model switch remains separately subject to actual inference.
 - [ ] F15 Hardware-aware inference backends — In progress (CPU implementation; non-Apple CPU/CUDA live validation pending); depends on F09
-  - CPU no-load host integration — Awaiting merge: reopened [issue #367](https://github.com/arpit-it/ASG/issues/367), `367-cpu-inspection-host`; optional typed experimental boundary and bounded private process capture. No normal CPU selection/inference claim. Acceptance and validation below.
+  - CPU API-only preparation host — Awaiting merge: reopened [issue #358](https://github.com/arpit-it/ASG/issues/358), `358-cpu-preparation-host`; optional consent-gated bounded private bridge. Full F15/live milestones remain pending; acceptance below.
+  - CPU no-load host integration — Done after verified [PR #376](https://github.com/arpit-it/ASG/pull/376) merge24a08537 (2026-11-01), finalreview5727369513/requiredCI41292597514 passed: reopened [issue #367](https://github.com/arpit-it/ASG/issues/367), `367-cpu-inspection-host`; optional typed experimental boundary and bounded private process capture. No normal CPU selection/inference claim. Acceptance and validation below.
   - CPU preparation privacy correction — Done after verified [PR #375](https://github.com/arpit-it/ASG/pull/375) merge6e4d718e (2026-11-01), finalreview5727278341/requiredCI41290366613 passed: reopened [issue #358](https://github.com/arpit-it/ASG/issues/358), `358-cpu-preparation-privacy`; fixed CPU-only CLI errors and Python import-output suppression. Actual subprocess failure/success/legacy/interruption tests; no inference or full F15 claim.
   - CPU loader failure boundary — Done through verified [PR #374](https://github.com/arpit-it/ASG/pull/374) merge6899359f (2026-11-01), finalreview5727171374/requiredCI41288251866 passed: reopened [issue #356](https://github.com/arpit-it/ASG/issues/356), `356-cpu-loader-errors`; bounded private startup diagnostics and owned cleanup. Actual CLI/process regressions and checks recorded below. CPU remains experimental; non-Apple CPU/CUDA inference pending.
   - Delivered bounded estimate — Done: [issue #350](https://github.com/arpit-it/ASG/issues/350), `350-checkpoint-memory`, [PR #351](https://github.com/arpit-it/ASG/pull/351). Conservative selected-local-checkpoint working/OS budget and current pressure, strictly advisory; finalreview5723644359/finalgate5723664871 and requiredCI41216813526 passed; verified protectedmerge2979ad38039d5010b6fdbe7c275e1e5bfcd57648 at2026-10-31T15:57:37Z. FullF15 remains Inprogress; delivery ledger below.
@@ -6797,3 +6798,65 @@ the historical comparison inventory (no current support/acceptance claim). Full
 health reports MLX/Metal/Qwen3.8-27B-4bit; no fresh inference. Status: Awaiting merge;
 exact-final independent review, required CI and verified protected merge pending.
 Recorded 2026-11-01T09:18:00.599718+00:00
+
+
+### CPU checkpoint host bridge verified merged — issue #367 / PR #376
+
+Independent final review [5727369513](https://github.com/arpit-it/ASG/pull/376#pullrequestreview-5727369513)
+approved exact `30a7a9018ea9260dfbe406550c3121455bd3405a` /
+tree `3a8ee59c79ae5bdf0e40d5471c3fa9695ff02e04` (local4b10d6dd identical).
+No blockers; independent35focused tests plus two extra privacy/omitted-ceiling/
+busy/stderr-flood cleanup probes passed. Transparent COMMENT verdict reflects
+shared-author/zero-count protection, no bypass. RequiredCI41292597514 passed:
+Python124806747575 seven suites; Flutter124806747724 formatter290/analyzer,
+Ubuntu988passes/12skips, actualChrome15passes, web/Wasm and independent generated
+project resolve/analyze/test/build/serve. Parent Mac994passes/nineskips,
+126Python/twoskips, web/macOSdebug separately scoped; no inference claim.
+
+Reviewer protected-plugin squashmerged [PR #376](https://github.com/arpit-it/ASG/pull/376)
+as `24a08537e23c1fc3b546afaf60eb024485fbf603` at2026-11-01T09:25:50Z;
+issue367closed/completed09:25:52Z. Parent independently verified mergedPR/exacthead,
+closure/currentmain and signed rawmerge exactreviewedtree/soleparent6e4d718e.
+Guarded local sync passed; main/origin-main0/0,indexempty,both unrelatedIDEfiles
+byte-identical. Backup `/private/tmp/asg367-host-primary-before-sync`, guard
+`/private/tmp/asg376-safe-sync.py`. Remote access/publication/review/merge used
+connected GitHub plugin exclusively; PR attached and bothautomationlabels added.
+Prior docs bookkeeping retained. Bounded host foundation Done; fullF15 unchecked/
+Inprogress, CPUexperimental, no normal CPU/UI choice. Further managed integration
+and non-Apple CPU/separateCUDA live inference remain outstanding. No download,
+install, settings/data/stable-app replacement or cadence/notification change.
+No second issue/F ID. Finalmerge bookkeeping retained locally for next normal
+reviewed increment.
+Recorded 2026-11-01T09:26:33.624928+00:00
+Current run time 2026-11-01T09:26:33.624928+00:00
+
+
+### Experimental CPU environment preparation host — issue #358
+
+Reopened existing issue #358; branch `358-cpu-preparation-host` from verified
+main24a08537 / PR #376. No competing active owner/open PR found. Primary IDE/docs
+edits preserved; prior verified-merge bookkeeping carried into this branch.
+Evidence: Python CPU preparation exists but Flutter exposes only normal backend
+preparation through the legacy process path. Scope/acceptance: optional API-only
+experimental host interface, per-call consent before helper writes, bounded private
+capture shared with inspection, exact allowlisted success text, actual subprocess
+malformed/false-readiness/nonzero/overflow/timeout/stderr-flood cleanup and retry,
+private asset/executable failure handling, overlap guards, shipped-helper API-only
+sentinels. No model/package installation, weights, accelerator probe, normal CPU
+choice/UI, persisted settings change or inference readiness claim. Depends on
+delivered CLI/preflight and bounded host capture, not unavailable non-Apple CPU
+or CUDA live inference. Those milestones and full F15 remain unchecked/In progress.
+21 focused CPU preparation/checkpoint tests passed; full verification pending.
+Status: In progress; independent exact-final review, required CI and verified
+protected reviewer merge remain gates.
+Recorded 2026-11-01T09:45:29.282489+00:00
+
+Validation: formatter292 unchanged; analyzer clean; 1005 Flutter passes/nine
+opt-in skips; 21 focused actual CPU preparation/checkpoint cases passed. Seven
+Python suites126 cases/two skips passed. Web release/Wasm and macOS debug builds
+passed. Historical inventory regenerated with no current support/acceptance claim.
+Readonly loopback health was not reachable in the restricted invocation; no fresh
+inference claimed or runtime replacement attempted. No model download/install,
+settings/data/stable-app replacement. Status: Awaiting merge; independent exact-
+final review, required CI and verified protected merge pending.
+Recorded 2026-11-01T09:46:21.073124+00:00

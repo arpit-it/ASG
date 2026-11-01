@@ -5996,3 +5996,65 @@ the historical comparison inventory (no current support/acceptance claim). Full
 health reports MLX/Metal/Qwen3.8-27B-4bit; no fresh inference. Status: Awaiting merge;
 exact-final independent review, required CI and verified protected merge pending.
 Recorded 2026-11-01T09:18:00.599718+00:00
+
+
+### CPU checkpoint host bridge verified merged — issue #367 / PR #376
+
+Independent final review [5727369513](https://github.com/arpit-it/ASG/pull/376#pullrequestreview-5727369513)
+approved exact `30a7a9018ea9260dfbe406550c3121455bd3405a` /
+tree `3a8ee59c79ae5bdf0e40d5471c3fa9695ff02e04` (local4b10d6dd identical).
+No blockers; independent35focused tests plus two extra privacy/omitted-ceiling/
+busy/stderr-flood cleanup probes passed. Transparent COMMENT verdict reflects
+shared-author/zero-count protection, no bypass. RequiredCI41292597514 passed:
+Python124806747575 seven suites; Flutter124806747724 formatter290/analyzer,
+Ubuntu988passes/12skips, actualChrome15passes, web/Wasm and independent generated
+project resolve/analyze/test/build/serve. Parent Mac994passes/nineskips,
+126Python/twoskips, web/macOSdebug separately scoped; no inference claim.
+
+Reviewer protected-plugin squashmerged [PR #376](https://github.com/arpit-it/ASG/pull/376)
+as `24a08537e23c1fc3b546afaf60eb024485fbf603` at2026-11-01T09:25:50Z;
+issue367closed/completed09:25:52Z. Parent independently verified mergedPR/exacthead,
+closure/currentmain and signed rawmerge exactreviewedtree/soleparent6e4d718e.
+Guarded local sync passed; main/origin-main0/0,indexempty,both unrelatedIDEfiles
+byte-identical. Backup `/private/tmp/asg367-host-primary-before-sync`, guard
+`/private/tmp/asg376-safe-sync.py`. Remote access/publication/review/merge used
+connected GitHub plugin exclusively; PR attached and bothautomationlabels added.
+Prior docs bookkeeping retained. Bounded host foundation Done; fullF15 unchecked/
+Inprogress, CPUexperimental, no normal CPU/UI choice. Further managed integration
+and non-Apple CPU/separateCUDA live inference remain outstanding. No download,
+install, settings/data/stable-app replacement or cadence/notification change.
+No second issue/F ID. Finalmerge bookkeeping retained locally for next normal
+reviewed increment.
+Recorded 2026-11-01T09:26:33.624928+00:00
+Current run time 2026-11-01T09:26:33.624928+00:00
+
+
+### Experimental CPU environment preparation host — issue #358
+
+Reopened existing issue #358; branch `358-cpu-preparation-host` from verified
+main24a08537 / PR #376. No competing active owner/open PR found. Primary IDE/docs
+edits preserved; prior verified-merge bookkeeping carried into this branch.
+Evidence: Python CPU preparation exists but Flutter exposes only normal backend
+preparation through the legacy process path. Scope/acceptance: optional API-only
+experimental host interface, per-call consent before helper writes, bounded private
+capture shared with inspection, exact allowlisted success text, actual subprocess
+malformed/false-readiness/nonzero/overflow/timeout/stderr-flood cleanup and retry,
+private asset/executable failure handling, overlap guards, shipped-helper API-only
+sentinels. No model/package installation, weights, accelerator probe, normal CPU
+choice/UI, persisted settings change or inference readiness claim. Depends on
+delivered CLI/preflight and bounded host capture, not unavailable non-Apple CPU
+or CUDA live inference. Those milestones and full F15 remain unchecked/In progress.
+21 focused CPU preparation/checkpoint tests passed; full verification pending.
+Status: In progress; independent exact-final review, required CI and verified
+protected reviewer merge remain gates.
+Recorded 2026-11-01T09:45:29.282489+00:00
+
+Validation: formatter292 unchanged; analyzer clean; 1005 Flutter passes/nine
+opt-in skips; 21 focused actual CPU preparation/checkpoint cases passed. Seven
+Python suites126 cases/two skips passed. Web release/Wasm and macOS debug builds
+passed. Historical inventory regenerated with no current support/acceptance claim.
+Readonly loopback health was not reachable in the restricted invocation; no fresh
+inference claimed or runtime replacement attempted. No model download/install,
+settings/data/stable-app replacement. Status: Awaiting merge; independent exact-
+final review, required CI and verified protected merge pending.
+Recorded 2026-11-01T09:46:21.076297+00:00
