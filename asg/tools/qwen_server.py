@@ -194,11 +194,19 @@ def main():
     parser.add_argument('--probe-devices', action='store_true', help='With --capabilities, query device APIs without loading weights')
     parser.add_argument('--port', type=int, default=8765)
     parser.add_argument('--model-id', default='Qwen3.5-9B')
-    parser.add_argument('--backend', choices=['auto', 'mlx', 'torch'], default='auto')
+    parser.add_argument('--backend', choices=['auto', 'mlx', 'torch', 'cpu'], default='auto')
+    parser.add_argument('--experimental-cpu', action='store_true', help='Opt in to unverified CPU implementation for controlled testing; not a supported backend')
+    parser.add_argument('--cpu-threads', type=int, default=None, help='Experimental CPU intra-op thread limit, 1..32 (default 2)')
     parser.add_argument('--parent-pid', type=int)
     args = parser.parse_args()
+    if args.backend == 'cpu' and not args.experimental_cpu:
+        parser.error('--backend cpu requires --experimental-cpu; real-host inference remains unverified')
+    if args.experimental_cpu and args.backend != 'cpu':
+        parser.error('--experimental-cpu requires --backend cpu; no automatic fallback')
+    if args.cpu_threads is not None and (args.backend != 'cpu' or not 1 <= args.cpu_threads <= 32):
+        parser.error('--cpu-threads requires --backend cpu and a value between 1 and 32')
     if args.capabilities:
-        print(json.dumps(discover_capabilities(probe_devices=args.probe_devices), sort_keys=True))
+        print(json.dumps(discover_capabilities(probe_devices=args.probe_devices, experimental_cpu=args.experimental_cpu), sort_keys=True))
         return
     if args.probe_devices:
         parser.error('--probe-devices requires --capabilities')
@@ -222,10 +230,10 @@ def main():
                     os._exit(0)
                 time.sleep(2)
         Thread(target=watch_parent, daemon=True).start()
-    kind = select_backend(args.backend, config)
+    kind = select_backend(args.backend, config, experimental_cpu=args.experimental_cpu)
     executor = ThreadPoolExecutor(max_workers=1, thread_name_prefix='qwen-inference')
     print(f'Loading {args.model_id} using {kind}. Local weights only.', flush=True)
-    backend = executor.submit(load_backend, folder, kind).result()
+    backend = executor.submit(load_backend, folder, kind, experimental_cpu=args.experimental_cpu, cpu_threads=args.cpu_threads if args.cpu_threads is not None else 2).result()
     server = ThreadingHTTPServer(('127.0.0.1', args.port), create_handler(backend, executor, args.model_id, folder))
     server.daemon_threads = True
     print(f'Ready at http://127.0.0.1:{args.port}/v1 ({kind}, streaming)', flush=True)

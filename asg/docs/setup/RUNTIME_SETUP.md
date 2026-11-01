@@ -80,3 +80,67 @@ The dependency-only CLI remains `--capabilities`; opt into device APIs with `--c
 
 
 Explicit **Inspect capabilities** also observes total host RAM and current free/reclaimable memory through the existing bounded read-only OS helpers. Unknown values remain visible on unsupported clients or probe failure; a memory-only failure preserves dependency/device results. Inspect again to refresh this transient snapshot. This is memory of the app host, not a remote runtime or GPU memory measurement, and does not assess selected-checkpoint fit or prove successful inference. No settings, weights or active runtime are changed.
+
+
+## Experimental CPU implementation — issue #356
+
+The Python bridge has an explicit testing path for unquantized local Qwen3.5
+conditional-generation checkpoints. It is **experimental, with no verified real
+CPU inference yet**, and is absent from normal managed setup/backend choices.
+Auto/MLX/Torch-MPS selection and default capability reports are unchanged. CUDA
+is unavailable. This is an implementation foundation, not F15 completion.
+
+Use a separately owned process and unused loopback port for controlled testing;
+keep the current runtime and saved app settings intact. The explicitly chosen
+Python environment must already contain Torch and Transformers with
+`Qwen3_5ForConditionalGeneration`. No packages or weights are downloaded by this
+path. Capability discovery does not load weights:
+
+```sh
+python -B tools/qwen_server.py --backend cpu --experimental-cpu --capabilities
+```
+
+A future host validation can explicitly launch with compatible existing local
+weights (quote paths with spaces):
+
+```sh
+python -B tools/qwen_server.py --backend cpu --experimental-cpu --cpu-threads 2 \
+  --model "/path/to/existing/unquantized-checkpoint" --model-id cpu-validation --port 18765
+```
+
+CPU loading uses float32, an explicit CPU device context/tensor placement, eager
+attention, safetensors only, `local_files_only=True` and
+`trust_remote_code=False`. It does not require MLX, MPS, CUDA or Accelerate and
+never automatically falls back. Thread limit is 1–32, default 2; this bounds
+intra-op parallelism, not total memory or every native-library thread. Quantized
+folders and unsupported architecture metadata are rejected before model load.
+Float32 can require substantially more memory than stored weights: no model,
+especially 9B, is certified adequate without measured live-host evidence.
+
+The inherited HTTP limits apply: one request, 4096 input/output-token ceilings,
+180-second generation deadline, streaming heartbeats and client-disconnect
+cancellation. Checks run around preprocessing, each streamed fragment and token
+stopping criteria. A native prefill/kernel cannot be interrupted mid-call;
+terminating the separately owned test process is the hard-stop boundary. These
+limits do not impose a model-loading deadline or memory quota. `/health` reports
+`backend: torch`, `device: cpu` after a successful load, without certifying CPU
+performance or acceptance. Existing app readers intentionally treat that device
+as unknown until managed CPU integration is delivered.
+
+Next implementation increments may add explicit CPU setup/preparation, compatible
+checkpoint budgeting and managed-host integration with honest unsupported states.
+Non-Apple desktop real inference, restart/error/stop measurements, MLX regression
+and separate CUDA-host evidence still gate their promised support claims. Do not
+substitute injected tensor/model APIs, real HTTP fixture sockets or app builds
+for those live measurements. See the canonical F15 ledger.
+
+Reproduce the small real-library API fixture with an already compatible Python
+environment (no dependency installation or downloads):
+
+```sh
+ASG_CPU_API_FIXTURE=1 python -B tools/test_qwen_backends.py CPUAPIFixtureTests
+```
+
+It constructs and deletes a tiny random local checkpoint and tokenizer, verifies
+CPU/float32 placement and streams two generated tokens. This is library API
+coverage, not pretrained-model correctness, performance or F15 live acceptance.

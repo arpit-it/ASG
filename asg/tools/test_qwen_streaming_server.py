@@ -88,5 +88,90 @@ class ServerTests(unittest.TestCase):
         self.assertEqual(error.exception.code, 400)
         self.assertIsNone(self.backend.tokens)
 
+class CPUHTTPTests(unittest.TestCase):
+    """Actual sockets and backend code; injected tensor APIs are not live inference."""
+    def setUp(self):
+        from test_qwen_backends import CPUBackendTests
+        self.fixture = CPUBackendTests()
+        self.fixture.setUp()
+        self.addCleanup(self.fixture.doCleanups)
+        self.executor = ThreadPoolExecutor(max_workers=1)
+        self.server = ThreadingHTTPServer(('127.0.0.1', 0), module.create_handler(
+            self.fixture.backend, self.executor, 'cpu-fixture', Path('/local model with spaces')))
+        self.server.daemon_threads = True
+        self.thread = Thread(target=self.server.serve_forever, daemon=True)
+        self.thread.start()
+        self.url = f'http://127.0.0.1:{self.server.server_port}'
+
+    def tearDown(self):
+        self.server.shutdown()
+        self.server.server_close()
+        self.executor.shutdown()
+        self.thread.join(timeout=2)
+
+    def request(self, streaming=True):
+        body = json.dumps({'model': 'cpu-fixture', 'messages': [{'role': 'user', 'content': 'fixture'}], 'stream': streaming, 'max_tokens': 2}).encode()
+        return urllib.request.urlopen(urllib.request.Request(self.url+'/v1/chat/completions', data=body, headers={'Content-Type': 'application/json'}), timeout=5)
+
+    def test_cpu_health_sse_nonstream_and_reuse(self):
+        with urllib.request.urlopen(self.url+'/health', timeout=5) as response:
+            health = json.load(response)
+        self.assertEqual((health['backend'], health['device'], health['phase']), ('torch', 'cpu', 'idle'))
+        with self.request() as response:
+            text = response.read().decode()
+        self.assertIn('Hello ', text)
+        self.assertIn('CPU', text)
+        self.assertIn('[DONE]', text)
+        self.assertIn('"finish_reason": "stop"', text)
+        self.fixture.output_length = 5
+        with self.request(False) as response:
+            data = json.load(response)
+        self.assertEqual(data['choices'][0]['message']['content'], 'Hello CPU')
+        self.assertEqual(data['choices'][0]['finish_reason'], 'length')
+
+    def test_cpu_errors_have_no_success_marker_and_allow_retry(self):
+        self.fixture.model.generate.side_effect = RuntimeError('PRIVATE /model path')
+        with self.request() as response:
+            text = response.read().decode()
+        self.assertIn('event: error', text)
+        self.assertNotIn('[DONE]', text)
+        self.assertNotIn('PRIVATE', text)
+        self.fixture.model.generate.side_effect = lambda **kwargs: type('Output', (), {'shape': (1, 3)})()
+        with self.request(False) as response:
+            self.assertEqual(json.load(response)['choices'][0]['finish_reason'], 'stop')
+
+    def test_disconnect_stops_cpu_stream_and_releases_owned_worker(self):
+        import socket
+        import struct
+        import time
+        from threading import Event
+        stopped = Event()
+        def generate(**kwargs):
+            try:
+                for _ in range(1000):
+                    kwargs['streamer'].on_finalized_text('cpu fixture ' * 100)
+                    time.sleep(0.005)
+                self.fail('Disconnected worker did not observe cancellation')
+            finally:
+                stopped.set()
+        self.fixture.model.generate.side_effect = generate
+        body = json.dumps({'model': 'cpu-fixture', 'messages': [{'role': 'user', 'content': 'fixture'}], 'stream': True}).encode()
+        sock = socket.create_connection(('127.0.0.1', self.server.server_port), timeout=5)
+        try:
+            sock.sendall(b'POST /v1/chat/completions HTTP/1.1\r\nHost: localhost\r\nContent-Type: application/json\r\nContent-Length: ' + str(len(body)).encode() + b'\r\n\r\n' + body)
+            received = b''
+            while b'cpu fixture' not in received:
+                received += sock.recv(8192)
+            sock.setsockopt(socket.SOL_SOCKET, socket.SO_LINGER, struct.pack('ii', 1, 0))
+        finally:
+            sock.close()
+        self.assertTrue(stopped.wait(3), 'CPU backend did not stop after client disconnect')
+        # Future completion proves cleanup/lock release without racing the worker.
+        self.executor.submit(lambda: None).result(timeout=3)
+        self.fixture.model.generate.side_effect = lambda **kwargs: type('Output', (), {'shape': (1, 3)})()
+        with self.request(False) as response:
+            self.assertEqual(response.status, 200)
+
+
 if __name__ == '__main__':
     unittest.main()
