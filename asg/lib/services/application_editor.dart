@@ -5,6 +5,7 @@ import 'dart:convert';
 
 import '../models/app_definition.dart';
 import '../models/local_model_config.dart';
+import '../models/model_request_provenance.dart';
 import 'local_model.dart';
 import 'model_provider.dart';
 import 'local_application_actions.dart';
@@ -12,7 +13,8 @@ import '../models/generation_event.dart';
 import 'streamed_summary.dart';
 
 class ApplicationUpdate {
-  const ApplicationUpdate(this.definition, this.summary);
+  const ApplicationUpdate(this.definition, this.summary, {this.modelRequest});
+  final ModelRequestProvenance? modelRequest;
   final AppDefinition definition;
   final String summary;
 }
@@ -23,7 +25,8 @@ class ApplicationEditor {
     this.allowBuiltInEdits = true,
   }) : _createProvider =
            createProvider ??
-           ((config) => LocalModelProvider(config, maxTokens: 2048));
+           ((config) => LocalModelProvider(config, maxTokens: outputTokens));
+  static const outputTokens = 2048;
   final ProviderFactory _createProvider;
   final bool allowBuiltInEdits;
   ModelProvider? _provider;
@@ -40,6 +43,13 @@ class ApplicationEditor {
       onProgress?.call(const GenerationEvent.phase(GenerationPhase.applying));
       return ApplicationUpdate(direct.definition, direct.summary);
     }
+    // Prototype edits use their own fixed ceiling, independent of chat limits.
+    final modelRequest = ModelRequestProvenance(
+      model: config.model,
+      outputTokens: outputTokens,
+    );
+    config.endpoint;
+    modelRequest.validate();
     _provider = _createProvider(config);
     try {
       final compact = current.toJson();
@@ -102,7 +112,7 @@ class ApplicationEditor {
           'Model did not return a valid update summary.',
         );
       }
-      return ApplicationUpdate(definition, summary);
+      return ApplicationUpdate(definition, summary, modelRequest: modelRequest);
     } finally {
       await _provider?.cancel();
       _provider = null;

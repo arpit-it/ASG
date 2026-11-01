@@ -160,7 +160,11 @@ class AppWorkspaceController extends BaseController {
       final updated = ApplicationSnapshot(change.definition, [
         ...current.messages,
         ChatMessage(role: 'user', content: text),
-        ChatMessage(role: 'assistant', content: change.summary),
+        ChatMessage(
+          role: 'assistant',
+          content: change.summary,
+          modelRequest: change.modelRequest,
+        ),
       ], current.revision + 1);
       _phase = GenerationPhase.applying;
       update();

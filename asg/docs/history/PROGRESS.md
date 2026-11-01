@@ -7561,3 +7561,71 @@ two explicit live/platform skips), including nine inventory regeneration tests.
 No Dart/runtime source changed after the passing full Flutter suite and builds.
 Historical observations remain historical; this is no new inference/support claim.
 Awaiting fresh exact-final review, new required CI and protected reviewer merge.
+
+
+### Standalone Ask requested-model provenance verified merged — #396 / PR #409
+
+Bounded increment Done: independent final review5730212984/finalgate5730229820
+approved b8d39746d873569ad3f690517501ccaffa8b6141, tested local417b309257d941f3749fb61ac786f0c0d81f3a61,
+identical treee4d81a862426c78c4233fee5f0acea9065983c58. Independent30 Flutter
+and nine inventory tests passed; all327validationinputs match. Initial stale
+acceptance inventory failure was corrected and fresh final revision reviewed.
+Required CI41348980556 completed/success: Flutter124974897892 formatter307
+unchanged/analyzer clean,1067Ubuntu passes/12explicit skips, actualChrome17,
+web/Wasm and independent generated-project resolve/analyze/test/render/build/serve
+passed; Python124974898183141tests/four explicit CI platform/live skips. Parent
+Mac1073Flutter/nine skips,141Python/two skips,web/macOSdebug/actualChromeAsk1 passed.
+No fixture or build establishes fresh inference or deferred-platform support.
+
+Reviewer protected-plugin squash merged https://github.com/arpit-it/ASG/pull/409
+as1e1145d74a262633b974345134308ef7d0277572 at2026-11-01T20:56:39Z. Parent freshly
+verified merged PR/currentmain, signed merge/tree/sole parent93687d3d and successful
+required CI. Guarded local sync passed: main/origin-main0/0,indexempty,bothIDE
+edits byte-identical. Evidence /private/tmp/asg409-reviewed-merge.json and
+/private/tmp/asg409-safe-sync.py; both automation labels applied.
+
+Issue396 remains open for per-project selection and Build/source/repair request
+provenance. F22/F15 remain unchecked; unavailable-platform acceptance Deferred400.
+No new issue, model/download/install/settings/stableapp/deployment/cadence changes.
+Final merge bookkeeping retained for next normal reviewed development PR.
+Recorded 2026-11-01T20:57:14.878062+00:00.
+
+
+### F22 prototype Build requested-model provenance — issue #396
+
+Bounded increment on `396-build-model-provenance` from verified main
+1e1145d74a262633b974345134308ef7d0277572 (PR #409). No open PR or competing
+ASG run at selection. ApplicationEditor lost request identity before saving the
+summary. Capture the configured model and actual fixed 2048-token editor ceiling
+on completed model updates; persist atomically with the application revision and
+display requested versus unverified loaded weights. Built-in actions record no
+model request; missing historical metadata stays unknown. No endpoint or new
+permission is stored. Existing ChatMessage schema/storage supports this increment.
+
+Acceptance: changed settings during inference and subsequent requests retain
+their own model; chat budgets never relabel the editor's fixed ceiling; cancellation,
+disposal, malformed responses and failed persistence retain working output/history.
+Native reopen preserves metadata; corrupt metadata refuses overwrite. Narrow
+enlarged history shows both requested and legacy/built-in guidance. Deferred
+CPU/CUDA/Windows evidence is not a prerequisite. Per-project selection and
+source/repair provenance remain Pending; full F22/F15 remain unchecked.
+
+Status In progress pending final checks, exact-tree plugin publication, independent
+final-revision review, required CI and protected reviewer merge.
+Recorded 2026-11-01T21:02:08.540511+00:00
+
+
+Validation: nine new regressions passed, including actual loopback HTTP request
+model/2048-token matching and native database reopen/corrupt-record retention.
+Full clean tracked-source Flutter suite 1,082 passed/nine explicit skips; formatter
+308 unchanged, analyzer clean, web release/Wasm dry run and macOS debug builds
+passed. All 328 validation source/config inputs match. Seven Python suites passed
+141 tests/two explicit live/platform skips. Initial test factory/disposal/history
+assertions were corrected and rerun. The clean-copy initial macOS build lacked
+generated plugin metadata; locked pub get regenerated it, then the build passed.
+Acceptance inventory regenerated for changed runtime fingerprints, retaining
+historical observation identities and limits. Retained runtime health unavailable
+(URLError); no fresh inference, platform-support, stable-app or settings claim.
+Status Awaiting merge: independent exact-final review, actual required CI and
+protected reviewer merge remain gates. Logs /private/tmp/asg396-build-*.log.
+Recorded 2026-11-01T21:06:03.301346+00:00
