@@ -7272,3 +7272,69 @@ tree583203fc059659aebcd8727bf9992ac08e75c960; all six blobs plugin-verified.
 This delivery-link follow-up changes documentation only; all326validated inputs
 remain unchanged. Independent exact-final review, actual required CI and protected
 reviewer merge pending.
+
+
+### CPU generation result contract verified merged — issue #356 / PR #398
+
+Independent review5729746700 approved exact
+`f251f48a48d87db4cef8590900b92e301339bb1f`, tree
+`a3c013af33f7ab9135302405ebd61d9b0ed4f3b0` (tested local9c911cf identical).
+No blockers; reviewer independently passed76backend/actualHTTP tests(one explicit
+live fixture skip), reproduced baseline AttributeError versus final stop/length
+success, matched all326validation inputs and inspected parent actual check logs.
+
+Required CI41338642406 completed/success: Python124943786474 ran139tests/four
+explicit CI platform/live skips; Flutter124943786672 formatter304/analyzer clean,
+Ubuntu1054passes12skips, actualChrome16, web/Wasm and real independent generated
+project resolve/analyze/test/render/build/serve. Separate parent Mac validation
+1060Flutter/nine skips,139Python/two skips,web/macOSdebug passed. No fixture or
+build establishes non-Apple CPU/CUDA inference or full F15 completion.
+
+Reviewer protected-plugin squash merged [PR #398](https://github.com/arpit-it/ASG/pull/398)
+as `472a97f0dc698016209ba9376e184e775d5aed0f` at2026-11-01T18:57:12Z;
+issue356closed/completed18:57:13Z. Parent freshly plugin-verified PR/issue/current
+main and successful exact-headCI; signed merge tree/sole parenta91b1593 matched.
+Guarded local-only synchronization passed: main/origin-main0/0,indexempty, both
+IDE edits byte-identical. Evidence `/private/tmp/asg398-reviewed-merge.json`,
+`/private/tmp/asg398-safe-sync.py`, `/private/tmp/asg356-result-ide.json`.
+Both automation labels applied. Bounded result-contract correction Done; fullF15/
+F22unchecked/In progress,CPUexperimental outside normal choices; live non-Apple
+CPU/CUDA milestones pending. No model load/download/install/settings/data/stable
+app/cadence/notification changes. Final merge bookkeeping retained for the next
+normal reviewed development PR.
+Recorded 2026-11-01T18:57:54.269140+00:00
+
+
+### CPU greedy streaming contract — issue #356
+
+Reopened matching issue #356 on `356-cpu-greedy-streaming` from verified
+main472a97f0. No open PR or competing ASG run at selection. Shared Torch
+generation inherits checkpoint beam/return-sequence defaults despite its
+single-completion streamer. Official Transformers generation utilities reject
+beam search with a streamer. Injected model APIs reproduce four direct CPU/MPS
+stop/length failures; actual CPU HTTP baseline gives SSE error/no DONE and
+nonstream500. This is not live inference.
+
+Scope/acceptance: explicitly pin one beam and one return sequence per request;
+CPU/MPS stop/length and placement, actual SSE/nonstream completion, idle health
+and repeated requests. Delivered CPU foundation is sufficient for this bounded
+Mac-verifiable correction; no unavailable inference host is required. Preserve
+Auto/MLX/normal managed choices, experimental CPU status and all live milestones.
+No new issue/F ID, model download/install, stable-app/settings or cadence change.
+Status In progress pending checks, exact-tree plugin publication, independent
+final-revision review, required CI and protected reviewer merge.
+Recorded 2026-11-01T19:31:23.326694+00:00
+
+
+Local final validation: formatter304 unchanged/analyzer clean; isolated Flutter
+1060 passed/nine explicit live/platform skips, release web/Wasm and macOSdebug
+builds passed. All325 validation source/config inputs byte-identical. Seven Python
+suites141 tests passed/two explicit live/platform skips. Baseline direct CPU/MPS
+and actual HTTP regressions fail; corrected stop/length/SSE/nonstream/idle/repeat
+regressions pass. Host Darwinarm64/currentPythonTorch absent; retained8765health
+URLError, no actual inference. Logs `/private/tmp/asg356-greedy-python.log` and
+`/private/tmp/asg356-greedy-{flutter,web,macos}.log`.
+Status Awaiting merge: exact-tree plugin publication, independent final-revision
+review, required CI and protected reviewer merge remain pending. FullF15/F22
+remain unchecked/In progress. No model/download/install/settings/stableapp or
+schedule/notification changes. Recorded 2026-11-01T19:32:38.282897+00:00
