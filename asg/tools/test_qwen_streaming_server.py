@@ -89,6 +89,27 @@ class ServerTests(unittest.TestCase):
         self.assertEqual(error.exception.code, 400)
         self.assertIsNone(self.backend.tokens)
 
+    def test_real_executor_thread_start_failure_discards_queued_legacy_request(self):
+        from unittest.mock import patch
+        for streaming in (True, False):
+            with self.subTest(streaming=streaming):
+                # Real submit enqueues before _adjust_thread_count; the next
+                # successful request must safely drain that abandoned work.
+                with patch.object(self.executor, '_adjust_thread_count', side_effect=RuntimeError('PRIVATE_THREAD_PATH')), patch.object(self.backend, 'generate', wraps=self.backend.generate) as generate:
+                    with self.assertRaises(urllib.error.HTTPError) as error:
+                        self.request(streaming)
+                    self.assertEqual(error.exception.code, 503)
+                    self.assertNotIn('PRIVATE', error.exception.read().decode())
+                    error.exception.close()
+                    generate.assert_not_called()
+                with patch.object(self.backend, 'generate', wraps=self.backend.generate) as generate:
+                    with self.request(streaming) as response:
+                        self.assertIn('Hello ', response.read().decode())
+                    self.executor.submit(lambda: None).result(timeout=3)
+                    self.assertEqual(generate.call_count, 1)
+                with urllib.request.urlopen(self.url+'/health', timeout=5) as response:
+                    self.assertEqual(json.load(response)['phase'], 'idle')
+
 class CPUHTTPTests(unittest.TestCase):
     """Actual sockets and backend code; injected tensor APIs are not live inference."""
     def setUp(self):
@@ -115,6 +136,42 @@ class CPUHTTPTests(unittest.TestCase):
         if raw_budget is not None:
             body = body.replace(b'"max_tokens": 2', b'"max_tokens": ' + raw_budget.encode())
         return urllib.request.urlopen(urllib.request.Request(self.url+'/v1/chat/completions', data=body, headers={'Content-Type': 'application/json'}), timeout=5)
+
+    def test_dispatch_failure_is_private_idle_and_retryable_before_sse(self):
+        from unittest.mock import patch
+        original_submit = self.executor.submit
+        for streaming in (True, False):
+            for enqueue, failure in ((False, RuntimeError('PRIVATE_DISPATCH_PATH')),
+                                     (False, MemoryError('PRIVATE_DISPATCH_PROMPT')),
+                                     (True, RuntimeError('PRIVATE_THREAD_START'))):
+                with self.subTest(streaming=streaming, failure=type(failure).__name__, enqueue=enqueue):
+                    self.fixture.tokenizer.apply_chat_template.reset_mock()
+                    self.fixture.model.generate.reset_mock()
+                    queued = []
+                    def reject(work):
+                        if enqueue:
+                            queued.append(original_submit(work))
+                        raise failure
+                    with patch.object(self.executor, 'submit', side_effect=reject), patch.object(self.server, 'handle_error') as handler_error:
+                        with self.assertRaises(urllib.error.HTTPError) as error:
+                            self.request(streaming)
+                        self.assertEqual(error.exception.code, 503)
+                        self.assertEqual(error.exception.headers['Content-Type'], 'application/json')
+                        self.assertEqual(json.load(error.exception), {'error': 'Generation worker unavailable; retry the request or restart the local runtime'})
+                        error.exception.close()
+                        handler_error.assert_not_called()
+                    for future in queued:
+                        future.result(timeout=3)
+                    self.fixture.tokenizer.apply_chat_template.assert_not_called()
+                    self.fixture.model.generate.assert_not_called()
+                    with urllib.request.urlopen(self.url+'/health', timeout=5) as response:
+                        self.assertEqual(json.load(response)['phase'], 'idle')
+                    with self.request(streaming) as response:
+                        result = response.read().decode()
+                    if streaming:
+                        self.assertIn('[DONE]', result)
+                    else:
+                        self.assertEqual(json.loads(result)['choices'][0]['finish_reason'], 'stop')
 
     def test_ambiguous_cpu_request_framing_rejects_before_inference_and_allows_retry(self):
         import http.client
