@@ -140,6 +140,17 @@ and metadata checks are preflight, not a filesystem sandbox: files may change
 before the trusted loader reads them. These bounds do not constrain tensor
 allocations or establish model memory adequacy.
 
+For a controlled test, optionally add `--cpu-max-weight-bytes 1073741824`
+(example: 1 GiB) to refuse a checkpoint whose inspected safetensors footprint
+exceeds that positive integer. It is accepted only for explicit experimental
+CPU; omission keeps the previous behavior. The preflight sums distinct canonical
+weight-file paths, counting repeated tensor entries and internal symlink aliases
+once, without opening tensor contents. Exact equality passes. Excess fails with
+a private, actionable error before backend discovery, workers or model loading.
+This is an observed disk-byte ceiling, not a RAM allocation quota or a model-fit
+estimate; hard-link names count separately and files may change after inspection.
+Normal app choices, Auto and MLX/MPS launch behavior are unchanged.
+
 Float32 can require substantially more memory than stored weights: no model,
 especially 9B, is certified adequate without measured live-host evidence.
 
