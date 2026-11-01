@@ -100,6 +100,9 @@ def create_handler(backend, executor, model_id, model_path):
                 # retains its smaller caller-selected limit and 256 default.
                 tokens = min(4096, max(1, int(request.get('max_tokens', 256))))
                 streaming = request.get('stream') is True
+            except TimeoutError:
+                self.respond(408, {'error': 'Request body timed out; send the complete JSON request and retry'})
+                return
             # A byte-bounded JSON body can still exhaust decoder recursion.
             # Reject it before acquiring the model lock or invoking a backend.
             except (ValueError, TypeError, AttributeError, OverflowError, RecursionError):
