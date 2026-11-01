@@ -137,3 +137,22 @@ Standalone Ask stores a versioned conversation library in `studio.ask.v1`, indep
 ## Explicit managed backend selection — issue #332 / F15
 
 `studio.runtimeSetup.v1` gains additive string `backend`: `auto`, `mlx` or `torch`. Missing/null values read as the legacy `auto` preference; unknown/non-string values fail validation without overwriting the original record. No key migration, implicit profile rewrite or active-connection switch occurs. Setup's explicit save action publishes state only after storage succeeds; overlapping actions and late disposed-controller publication are blocked. Already dispatched writes may finish after the setup view closes. A failed settings load requires restoring valid records and reopening setup before saving; defaults must not replace a corrupt record. Loaded backend/device identity is transient health state and is never saved as a capability or inference-verification claim.
+
+
+## Named local connection presets
+
+`studio.modelConnectionPresets.v1` stores version1 and at most20 named local
+connection drafts (name, local base URL, exact server model ID and supported chat
+output-token ceiling). Names are unique and case-sensitive, 1–64 characters; URL
+and model ID limits are512/256 characters. No credentials, downloaded weights or
+compatibility/readiness claims belong here. The existing `studio.localModel.v1`
+active settings record is unchanged. Restoring a preset edits the settings draft;
+only the existing explicit Save applies it to future requests. Test remains separate.
+
+Presets use RecordStorage; production conditional transactions reject stale dialog
+updates. Invalid schemas, duplicate names and corruption are preserved and reported
+without blocking unrelated model settings or application startup after migration.
+Legacy preference migration retains its original backup policy. Failed writes keep
+the previous list and form draft; close/reopen settings after a concurrent change.
+Deleting a preset never deletes active settings or loads/unloads a model. Project/run
+selection and request provenance remain F22 work.

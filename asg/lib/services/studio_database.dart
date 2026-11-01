@@ -94,6 +94,7 @@ class StudioDatabase implements ConditionalRecordStorage {
         validate(record.key, record.value);
       } catch (_) {
         if (record.key != AskStore.key &&
+            record.key != ModelSettingsStore.presetsKey &&
             !record.key.startsWith('studio.historicalRevisions.v1.') &&
             !record.key.startsWith('studio.historicalDecision.v1.') &&
             !record.key.startsWith('studio.archive.v1.') &&
@@ -126,6 +127,7 @@ class StudioDatabase implements ConditionalRecordStorage {
       const [
         'studio.projects.v1',
         'studio.localModel.v1',
+        ModelSettingsStore.presetsKey,
         'studio.runtimeSetup.v1',
         'studio.lastProject.v1',
       ].contains(key) ||
@@ -152,6 +154,8 @@ class StudioDatabase implements ConditionalRecordStorage {
       InspectedFolderStore(source).load();
     } else if (key == 'studio.projects.v1') {
       StudioStore(source).load();
+    } else if (key == ModelSettingsStore.presetsKey) {
+      ModelSettingsStore.decodePresets(value);
     } else if (key == 'studio.localModel.v1') {
       ModelSettingsStore(source).load().endpoint;
     } else if (key == 'studio.runtimeSetup.v1') {

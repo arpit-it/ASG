@@ -20,6 +20,7 @@ class _ModelSettingsState extends State<ModelSettings> {
   late final initial = controller.initial;
   late final url = TextEditingController(text: initial.baseUrl);
   late final model = TextEditingController(text: initial.model);
+  final presetName = TextEditingController();
   late int chatOutputTokens = initial.chatOutputTokens;
   LocalModelConfig get config => LocalModelConfig(
     baseUrl: url.text.trim(),
@@ -42,72 +43,148 @@ class _ModelSettingsState extends State<ModelSettings> {
     controller.dispose();
     url.dispose();
     model.dispose();
+    presetName.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) => AlertDialog(
+    scrollable: true,
     title: const Text('Local model · Qwen 9B'),
     content: SizedBox(
       width: 540,
-      child: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Start your existing model in a local server with a compatible /v1/chat/completions API. This app connects to it; it does not install a runtime or download weights.',
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Start your existing model in a local server with a compatible /v1/chat/completions API. This app connects to it; it does not install a runtime or download weights.',
+          ),
+          const SizedBox(height: 16),
+          TextField(
+            controller: url,
+            enabled: !controller.busy && !controller.settingsLoadFailed,
+            decoration: const InputDecoration(labelText: 'Local API base URL'),
+          ),
+          TextField(
+            controller: model,
+            enabled: !controller.busy && !controller.settingsLoadFailed,
+            decoration: const InputDecoration(
+              labelText: 'Exact server model ID',
             ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: url,
-              enabled: !controller.busy && !controller.settingsLoadFailed,
-              decoration: const InputDecoration(
-                labelText: 'Local API base URL',
+          ),
+          const SizedBox(height: 16),
+          DropdownButtonFormField<int>(
+            key: ValueKey(chatOutputTokens),
+            initialValue: chatOutputTokens,
+            isExpanded: true,
+            decoration: const InputDecoration(labelText: 'Chat output tokens'),
+            items: LocalModelConfig.chatTokenOptions
+                .map(
+                  (value) =>
+                      DropdownMenuItem(value: value, child: Text('$value')),
+                )
+                .toList(),
+            onChanged: controller.busy || controller.settingsLoadFailed
+                ? null
+                : (value) {
+                    if (value != null) {
+                      setState(() => chatOutputTokens = value);
+                    }
+                  },
+          ),
+          const Text(
+            'Applies to the next chat request after Save. This is a requested output ceiling; the server may impose a lower limit. Connection tests, source edits and repairs use separate fixed limits.',
+          ),
+          const SizedBox(height: 16),
+          const Text(
+            'On Android Emulator, use 10.0.2.2 instead of 127.0.0.1 to reach this Mac. Physical phones need a separate secured connection; it is not configured here.',
+          ),
+          const SizedBox(height: 16),
+          const Text('Saved connection presets'),
+          DropdownButton<String>(
+            value: controller.selectedPreset,
+            hint: const Text('Restore a preset into draft'),
+            isExpanded: true,
+            items: controller.presets
+                .map(
+                  (p) => DropdownMenuItem(
+                    value: p.name,
+                    child: Text(p.name, overflow: TextOverflow.ellipsis),
+                  ),
+                )
+                .toList(),
+            onChanged:
+                controller.busy ||
+                    controller.presetsLoadFailed ||
+                    controller.settingsLoadFailed
+                ? null
+                : (name) {
+                    if (name == null) return;
+                    final restored = controller.selectPreset(name);
+                    if (restored == null) return;
+                    setState(() {
+                      url.text = restored.baseUrl;
+                      model.text = restored.model;
+                      chatOutputTokens = restored.chatOutputTokens;
+                      presetName.text = name;
+                    });
+                  },
+          ),
+          TextField(
+            controller: presetName,
+            enabled:
+                !controller.busy &&
+                !controller.presetsLoadFailed &&
+                !controller.settingsLoadFailed,
+            maxLength: 64,
+            decoration: const InputDecoration(labelText: 'New preset name'),
+          ),
+          Wrap(
+            spacing: 8,
+            children: [
+              OutlinedButton(
+                onPressed:
+                    controller.busy ||
+                        controller.presetsLoadFailed ||
+                        controller.settingsLoadFailed
+                    ? null
+                    : () => controller.savePreset(presetName.text, config),
+                child: const Text('Save new preset'),
               ),
-            ),
-            TextField(
-              controller: model,
-              enabled: !controller.busy && !controller.settingsLoadFailed,
-              decoration: const InputDecoration(
-                labelText: 'Exact server model ID',
+              OutlinedButton(
+                onPressed:
+                    controller.busy ||
+                        controller.presetsLoadFailed ||
+                        controller.settingsLoadFailed ||
+                        controller.selectedPreset == null
+                    ? null
+                    : () => controller.savePreset(
+                        controller.selectedPreset!,
+                        config,
+                        replace: true,
+                      ),
+                child: const Text('Replace selected'),
               ),
-            ),
-            const SizedBox(height: 16),
-            DropdownButtonFormField<int>(
-              initialValue: chatOutputTokens,
-              isExpanded: true,
-              decoration: const InputDecoration(
-                labelText: 'Chat output tokens',
+              TextButton(
+                onPressed:
+                    controller.busy ||
+                        controller.presetsLoadFailed ||
+                        controller.settingsLoadFailed ||
+                        controller.selectedPreset == null
+                    ? null
+                    : controller.removePreset,
+                child: const Text('Remove selected'),
               ),
-              items: LocalModelConfig.chatTokenOptions
-                  .map(
-                    (value) =>
-                        DropdownMenuItem(value: value, child: Text('$value')),
-                  )
-                  .toList(),
-              onChanged: controller.busy || controller.settingsLoadFailed
-                  ? null
-                  : (value) {
-                      if (value != null) {
-                        setState(() => chatOutputTokens = value);
-                      }
-                    },
-            ),
-            const Text(
-              'Applies to the next chat request after Save. This is a requested output ceiling; the server may impose a lower limit. Connection tests, source edits and repairs use separate fixed limits.',
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              'On Android Emulator, use 10.0.2.2 instead of 127.0.0.1 to reach this Mac. Physical phones need a separate secured connection; it is not configured here.',
-            ),
-            const SizedBox(height: 16),
-            const Text(ModelSettingsController.requestLimits),
-            const SizedBox(height: 16),
-            SelectableText(controller.status),
-            if (controller.busy) const LinearProgressIndicator(),
-          ],
-        ),
+            ],
+          ),
+          Text(controller.presetStatus),
+          const SizedBox(height: 16),
+          const Text(ModelSettingsController.requestLimits),
+          const SizedBox(height: 16),
+          SelectableText(controller.status),
+          if (controller.busy) const LinearProgressIndicator(),
+        ],
       ),
     ),
     actions: [

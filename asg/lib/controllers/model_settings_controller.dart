@@ -4,6 +4,7 @@
 import 'dart:async';
 
 import '../models/local_model_config.dart';
+import '../models/model_connection_preset.dart';
 import '../services/model_settings_store.dart';
 import '../services/local_model.dart';
 import '../services/model_provider.dart';
@@ -12,7 +13,14 @@ import 'base_controller.dart';
 class ModelSettingsController extends BaseController {
   ModelSettingsController(this.store, {ProviderFactory? createProvider})
     : _createProvider =
-          createProvider ?? ((config) => LocalModelProvider(config));
+          createProvider ?? ((config) => LocalModelProvider(config)) {
+    try {
+      _presets = store.loadPresets();
+    } catch (_) {
+      presetsLoadFailed = true;
+      presetStatus = 'Saved connection presets could not be read. Records are preserved; restore valid presets before editing them.';
+    }
+  }
   final ModelSettingsStore store;
   final ProviderFactory _createProvider;
   ModelProvider? _provider;
@@ -35,6 +43,85 @@ class ModelSettingsController extends BaseController {
       settingsLoadFailed = true;
       status = 'Saved model settings could not be loaded. Records have not been overwritten. Restore valid settings before saving or testing.';
       return const LocalModelConfig();
+    }
+  }
+
+  List<ModelConnectionPreset> _presets = const [];
+  List<ModelConnectionPreset> get presets => List.unmodifiable(_presets);
+  bool presetsLoadFailed = false;
+  String? selectedPreset;
+  String presetStatus =
+      'Presets restore a draft only. Save applies the connection to later requests; Test checks the server separately. No model is loaded or verified by a preset.';
+
+  LocalModelConfig? selectPreset(String name) {
+    if (busy || presetsLoadFailed || settingsLoadFailed || isDisposed) {
+      return null;
+    }
+    for (final preset in _presets) {
+      if (preset.name == name) {
+        selectedPreset = name;
+        presetStatus = 'Preset restored into the draft. Choose Save to apply it or Test model to check the connection.';
+        update();
+        return preset.config;
+      }
+    }
+    return null;
+  }
+
+  Future<void> savePreset(
+    String name,
+    LocalModelConfig config, {
+    bool replace = false,
+  }) async {
+    if (busy || presetsLoadFailed || settingsLoadFailed || isDisposed) return;
+    final preset = ModelConnectionPreset(name: name.trim(), config: config);
+    final exists = _presets.any((p) => p.name == preset.name);
+    if ((replace && (!exists || selectedPreset != preset.name)) ||
+        (!replace && exists)) {
+      presetStatus = 'That name already exists or is not selected. Select it and use Replace selected, or choose a new name.';
+      update();
+      return;
+    }
+    await _writePresets([
+      for (final p in _presets)
+        if (p.name != preset.name) p,
+      preset,
+    ], 'Connection preset saved. Active settings are unchanged.');
+  }
+
+  Future<void> removePreset() async {
+    if (busy ||
+        presetsLoadFailed ||
+        settingsLoadFailed ||
+        isDisposed ||
+        selectedPreset == null) {
+      return;
+    }
+    await _writePresets([
+      for (final p in _presets)
+        if (p.name != selectedPreset) p,
+    ], 'Selected preset removed. Draft and active settings are unchanged.');
+  }
+
+  Future<void> _writePresets(
+    List<ModelConnectionPreset> next,
+    String message,
+  ) async {
+    busy = true;
+    update();
+    try {
+      await store.savePresets(next, expected: _presets);
+      if (isDisposed) return;
+      _presets = List.unmodifiable(next);
+      if (!_presets.any((p) => p.name == selectedPreset)) selectedPreset = null;
+      presetStatus = message;
+    } on FormatException {
+      if (!isDisposed) presetStatus = 'Invalid preset. Use a unique name (1–64 characters), local URL (up to 512), model ID (up to 256) and supported token limit; at most 20 presets.';
+    } catch (_) {
+      if (!isDisposed) presetStatus = 'Presets could not be saved. Previous presets and draft are retained; check storage, close and reopen settings, then retry.';
+    } finally {
+      busy = false;
+      if (!isDisposed) update();
     }
   }
 

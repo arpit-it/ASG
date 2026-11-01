@@ -21,12 +21,44 @@ import 'package:asg/models/plan_approval.dart';
 
 import 'dart:convert';
 
+import 'package:asg/models/local_model_config.dart';
+import 'package:asg/models/model_connection_preset.dart';
+import 'package:asg/services/model_settings_store.dart';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sembast_web/sembast_web.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  test('IndexedDB connection presets survive reopen without changing active config', () async {
+    final name = 'asg-presets-${DateTime.now().microsecondsSinceEpoch}';
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    var db = await databaseFactoryWeb.openDatabase(name);
+    try {
+      final records = await StudioDatabase.migrate(db, prefs);
+      await ModelSettingsStore(records)
+          .save(const LocalModelConfig(model: 'active'));
+      await ModelSettingsStore(records).savePresets([
+        const ModelConnectionPreset(
+          name: 'Alternate',
+          config: LocalModelConfig(model: 'draft', chatOutputTokens: 512),
+        ),
+      ]);
+      await db.close();
+      db = await databaseFactoryWeb.openDatabase(name);
+      final reopened = ModelSettingsStore(
+        await StudioDatabase.migrate(db, prefs),
+      );
+      expect(reopened.loadPresets().single.config.model, 'draft');
+      expect(reopened.loadPresets().single.config.chatOutputTokens, 512);
+      expect(reopened.load().model, 'active');
+    } finally {
+      await db.close();
+      await databaseFactoryWeb.deleteDatabase(name);
+    }
+  });
   test(
     'IndexedDB migration, failed transaction and reopen retain data',
     () async {
