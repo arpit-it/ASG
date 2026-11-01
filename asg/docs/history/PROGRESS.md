@@ -7290,3 +7290,65 @@ and productacceptance32 freshly rerun after final view change. Existing historic
 inventory regenerated without changing observations/support verdicts. Independent
 fresh exact-head review/newCI/protectedmerge remain pending; no fullF15/F22 or
 liveCPU/CUDA inference claim. Recorded 2026-11-01T18:28:47.036424+00:00
+
+
+### Named local connection presets verified merged — issue #396 / PR #397
+
+Independent final review5729629438 approved exact
+`23ac82da6c72c5379c8b898ec68a2f1ed604412a`, tree
+`18487030ab803cc049351480c163e48b31d2d112` (tested local46f8896 identical).
+Both blocking findings were fixed and independently retested: encoded JSON size
+round trips and the zero-height narrow/enlarged dialog content. Independent20
+focused/external/native concurrent-dialog probes passed with no remaining blockers.
+
+Required CI41336882966 completed successfully. Reviewer inspected actual logs:
+Flutter124938496933 formatter304/analyzer, Ubuntu1054 passes/12 skips, actual
+Chrome16, web/Wasm and real independent generated-project resolve/analyze/test/
+render/build/serve. Python124938497172 ran137 tests with four explicit CI skips.
+Separate parent Mac validation:1060 Flutter passes/nine skips, ChromeIndexedDB6,
+web/macOSdebug builds and137 Python tests/two skips; all324 inputs matched.
+No fixture/build establishes non-Apple CPU/CUDA or larger-model inference.
+
+Reviewer protected-plugin squash merged [PR #397](https://github.com/arpit-it/ASG/pull/397)
+as `a91b1593dc5115ece3c14e0854e1f4534f3e3d91` at2026-11-01T18:34:32Z.
+Parent independently verified PR merged, issue396 closed/completed18:34:34Z,
+current main, successful required CI, signed merge reviewed tree/sole parent49101166.
+Guarded local synchronization passed: main/origin-main0/0, empty index and both IDE
+files byte-identical. Evidence: `/private/tmp/asg397-reviewed-merge.json`,
+`/private/tmp/asg397-safe-sync.py`, `/private/tmp/asg396-ide.json`. PR attached
+and both automation labels applied. Bounded presets increment Done; F22/F15
+remain unchecked/In progress. No model loading/download/install, active settings,
+stable app, cadence or notification changes. Final bookkeeping is preserved for
+the next normal reviewed development PR. Recorded 2026-11-01T18:35:29.890475+00:00
+
+
+### CPU generation result contract — issue #356
+
+Reopened matching issue356; branch `356-cpu-generation-result` starts from
+verified PR397 mergea91b1593. No competing active ASG run/open PR at selection.
+Checkpoint generation_config.return_dict_in_generate=True is not overridden,
+but the Torch bridge assumes output.shape. Injected model API reproduction
+raises AttributeError after streamed text; actual loopback baseline has SSE
+error/no DONE and nonstream HTTP500 for both stop and length completions.
+
+Enforce per-request tensor output in the shared Torch path; no Auto/MLX selection
+change. Acceptance: CPU SSE/nonstream output completes with correct text/reason,
+idle health and repeated requests; MPS retains placement and stop/length results.
+Regression APIs are injected, never pretrained/live inference. Delivered CPU
+implementation is the actual technical prerequisite; unavailable non-Apple CPU/
+CUDA hardware does not block this bounded correction. Full F15 remains unchecked.
+Independent final-revision review, required CI and protected reviewer merge pending.
+Recorded 2026-11-01T18:46:06.571039+00:00
+
+
+Final local validation: formatter304 unchanged/analyzer clean; isolated exact-source
+Flutter1060 passed/nine explicit skips, releaseweb/Wasm and macOSdebug candidate
+builds passed. All326source/config validation inputs byte-identical. Seven Python
+suites139 tests passed/two explicit live/platform skips; focused11 tests passed.
+Actual loopback regression and direct CPU/MPS stop/length regression failed on
+baseline and pass after override. No live inference: Darwinarm64/currentPython
+Torch absent and retained8765healthURLError. No model/download/install/settings/
+stableapp/cadence changes. Status Awaiting merge: exact-tree plugin publication,
+independent final-revision review, required CI and protected reviewer merge pending.
+Full F15/F22 remain unchecked/In progress.
+Recorded 2026-11-01T18:47:53.795810+00:00

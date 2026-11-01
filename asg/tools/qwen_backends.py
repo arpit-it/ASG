@@ -159,7 +159,10 @@ class TorchMPSBackend:
         inputs = self.tokenizer(prompt, return_tensors='pt').to(self.device)
         check()
         with torch.inference_mode():
-            output = self.model.generate(**inputs, max_new_tokens=tokens, do_sample=False, streamer=TokenStreamer(self.tokenizer, skip_prompt=True, skip_special_tokens=True), stopping_criteria=StoppingCriteriaList([Stop()]))
+            # Checkpoints can persist a structured-output default. This bridge
+            # consumes a sequence tensor to classify completion, never scores
+            # or a GenerateOutput object; override that default per request.
+            output = self.model.generate(**inputs, max_new_tokens=tokens, do_sample=False, return_dict_in_generate=False, streamer=TokenStreamer(self.tokenizer, skip_prompt=True, skip_special_tokens=True), stopping_criteria=StoppingCriteriaList([Stop()]))
         check()
         reason = 'length' if output.shape[-1] - inputs.input_ids.shape[-1] >= tokens else 'stop'
         return {'finish_reason': reason}
