@@ -110,9 +110,33 @@ class CPUHTTPTests(unittest.TestCase):
         self.executor.shutdown()
         self.thread.join(timeout=2)
 
-    def request(self, streaming=True):
+    def request(self, streaming=True, raw_budget=None):
         body = json.dumps({'model': 'cpu-fixture', 'messages': [{'role': 'user', 'content': 'fixture'}], 'stream': streaming, 'max_tokens': 2}).encode()
+        if raw_budget is not None:
+            body = body.replace(b'"max_tokens": 2', b'"max_tokens": ' + raw_budget.encode())
         return urllib.request.urlopen(urllib.request.Request(self.url+'/v1/chat/completions', data=body, headers={'Content-Type': 'application/json'}), timeout=5)
+
+    def test_nonfinite_cpu_token_budgets_fail_before_inference_and_allow_retry(self):
+        for streaming in (True, False):
+            for budget in ('Infinity', '-Infinity', 'NaN', '1e999', '-1e999'):
+                with self.subTest(streaming=streaming, budget=budget):
+                    self.fixture.tokenizer.apply_chat_template.reset_mock()
+                    self.fixture.model.generate.reset_mock()
+                    with self.assertRaises(urllib.error.HTTPError) as failure:
+                        self.request(streaming, raw_budget=budget)
+                    self.assertEqual(failure.exception.code, 400)
+                    self.assertEqual(json.load(failure.exception),
+                                     {'error': 'Invalid request or model ID'})
+                    self.fixture.tokenizer.apply_chat_template.assert_not_called()
+                    self.fixture.model.generate.assert_not_called()
+                    with urllib.request.urlopen(self.url+'/health', timeout=5) as response:
+                        self.assertEqual(json.load(response)['phase'], 'idle')
+                    with self.request(streaming) as response:
+                        body = response.read().decode()
+                    if streaming:
+                        self.assertIn('[DONE]', body)
+                    else:
+                        self.assertEqual(json.loads(body)['choices'][0]['finish_reason'], 'stop')
 
     def test_cpu_health_sse_nonstream_and_reuse(self):
         with urllib.request.urlopen(self.url+'/health', timeout=5) as response:
