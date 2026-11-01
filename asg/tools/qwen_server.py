@@ -90,7 +90,11 @@ def create_handler(backend, executor, model_id, model_path):
                 if not 0 < size <= 32768:
                     self.respond(413, {'error': 'Request size limit'})
                     return
-                request = json.loads(self.rfile.read(size))
+                body = self.rfile.read(size)
+                if len(body) != size:
+                    self.respond(400, {'error': 'Incomplete request body; send the complete JSON request and retry'})
+                    return
+                request = json.loads(body)
                 if request.get('model') != model_id:
                     raise ValueError('Use the configured model ID')
                 messages = request.get('messages')

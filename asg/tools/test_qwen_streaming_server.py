@@ -138,6 +138,43 @@ class CPUHTTPTests(unittest.TestCase):
                     else:
                         self.assertEqual(json.loads(body)['choices'][0]['finish_reason'], 'stop')
 
+    def test_incomplete_cpu_body_fails_before_inference_and_allows_retry(self):
+        import http.client
+        import socket
+        for streaming in (True, False):
+            valid = json.dumps({'model': 'cpu-fixture', 'messages': [
+                {'role': 'user', 'content': 'PRIVATE_PROMPT'}],
+                'stream': streaming}).encode()
+            for body in (valid, valid[:-1], b''):
+                with self.subTest(streaming=streaming, body_length=len(body)):
+                    self.fixture.tokenizer.apply_chat_template.reset_mock()
+                    self.fixture.model.generate.reset_mock()
+                    with socket.create_connection(self.server.server_address, timeout=5) as connection:
+                        connection.sendall(
+                            b'POST /v1/chat/completions HTTP/1.1\r\nHost: localhost\r\n'
+                            b'Content-Type: application/json\r\nContent-Length: ' +
+                            str(len(valid) + 10).encode() + b'\r\n\r\n' + body)
+                        # EOF ends the read immediately, even when the prefix is
+                        # valid JSON. It must not start an unintended generation.
+                        connection.shutdown(socket.SHUT_WR)
+                        response = http.client.HTTPResponse(connection)
+                        response.begin()
+                        self.assertEqual(response.status, 400)
+                        self.assertEqual(response.headers['Content-Type'], 'application/json')
+                        self.assertEqual(json.load(response),
+                                         {'error': 'Incomplete request body; send the complete JSON request and retry'})
+                        response.close()
+                    self.fixture.tokenizer.apply_chat_template.assert_not_called()
+                    self.fixture.model.generate.assert_not_called()
+                    with urllib.request.urlopen(self.url+'/health', timeout=5) as response:
+                        self.assertEqual(json.load(response)['phase'], 'idle')
+                    with self.request(streaming) as response:
+                        result = response.read().decode()
+                    if streaming:
+                        self.assertIn('[DONE]', result)
+                    else:
+                        self.assertEqual(json.loads(result)['choices'][0]['finish_reason'], 'stop')
+
     def test_stalled_cpu_request_body_returns_timeout_before_inference_and_allows_retry(self):
         import http.client
         import socket
