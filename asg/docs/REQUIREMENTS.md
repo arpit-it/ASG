@@ -133,7 +133,8 @@ Unavailable hardware blocks only the corresponding real-host acceptance, not imp
   - Delivery: [PR #347](https://github.com/arpit-it/ASG/pull/347). Initial independent review found retry rollback overcount and inherited-pipe completion hang; both corrected with actual regressions. Native isolated UI observed below-button progress/speed, Pause at 5 MiB, Resume through 7.8 MiB and Stop retaining partial bytes. Final head d583ccbb/tree031725f4 approved in reviews5723106296/finalgate5723151483; requiredCI41208499529 passed. Protectedmerge07018365f0399d7047286baf01154fbd33a3890d at2026-10-31T14:12:20Z verified; issue346 closed. Full delivery evidence below.
   - Validation: deterministic local transfer/process fixtures, Python ownership/filter/telemetry regressions, Flutter protocol/controller/responsive UI tests, full format/analyze/test, web/macOS builds and independent exact-final review/required CI/protected merge. Mark Done only after verified merge; larger-model switch remains separately subject to actual inference.
 - [ ] F15 Hardware-aware inference backends — In progress (CPU implementation; non-Apple CPU/CUDA live validation pending); depends on F09
-  - Active CPU thread control: reopened [issue #356](https://github.com/arpit-it/ASG/issues/356), `356-cpu-thread-control`; session-only whole threads1..32/default2 via delivered host/controller. Mac-verifiable integration under owner exception; full F15 and non-Apple CPU/CUDA live inference remain pending. Acceptance and validation in ledger below.
+  - CPU generation diagnostics — Awaiting merge: reopened [issue #356](https://github.com/arpit-it/ASG/issues/356), `356-cpu-generation-errors`; actual HTTP private ValueError disclosure reproduced. Fixed CPU-only public failure categories, both transports, idle/retry acceptance; no live inference claim. Scope and checks in ledger below.
+  - Delivered CPU thread control — Done after verified [PR #387](https://github.com/arpit-it/ASG/pull/387) merge07de05e5 (2026-11-01T14:08:56Z), finalgate5728459708/requiredCI41314284627 passed: reopened [issue #356](https://github.com/arpit-it/ASG/issues/356), `356-cpu-thread-control`; session-only whole threads1..32/default2 via delivered host/controller. Mac-verifiable integration under owner exception; full F15 and non-Apple CPU/CUDA live inference remain pending. Acceptance and validation in ledger below.
   - Delivered bounded CPU launch deadline view — Done after verified [PR #386](https://github.com/arpit-it/ASG/pull/386) mergecf285a5e (2026-11-01T13:55:00Z), finalgate5728387763/requiredCI41312972161 passed: reused [issue #369](https://github.com/arpit-it/ASG/issues/369), `369-cpu-launch-deadline`; expose the delivered host/controller deadline in setup with session-only whole seconds1..3600/default180. Mac-verifiable integration; full F15 and non-AppleCPU/CUDA live inference remain pending. Acceptance and checks in delivery ledger below.
   - Delivered CPU launch disk-ceiling view — Done after verified [PR #385](https://github.com/arpit-it/ASG/pull/385) merge7221513e (2026-11-01T13:40:13Z), finalreview5728301655/requiredCI41311829237 passed: reused [issue #365](https://github.com/arpit-it/ASG/issues/365), `365-cpu-launch-ceiling`; optional exact-byte limit uses delivered controller/host. Mac-verifiable integration; full F15/live platform milestones remain pending. Acceptance and validation in ledger below.
   - Delivered CPU launch view — Done after verified [PR #384](https://github.com/arpit-it/ASG/pull/384) merge3c05328d (2026-11-01T13:25:47Z), finalreview5728255927/requiredCI41310704303 passed: reused [issue #356](https://github.com/arpit-it/ASG/issues/356), `356-cpu-launch-view`; optional delivered host/controller support this Mac-verifiable opt-in integration. Full F15 and non-Apple CPU/CUDA live inference remain pending. Scope and acceptance in ledger below.
@@ -7510,3 +7511,63 @@ URLError, no model loading/inference performed. Status Awaiting merge: plugin
 exact-tree publication, independent final revision review, required CI and protected
 reviewer merge remain gates. Full F15/live CPU/CUDA acceptance remains pending.
 Recorded 2026-11-01T14:02:21.106397+00:00
+
+
+### CPU thread control verified merged — issue #356 / PR #387
+
+Independent approval5728434083/finalgate5728459708 approved exact
+`85db56086f8c4d2c965e1471dc49dd522b7bbb3f` / tree
+`f8358245b2564ae7eaf7f8e13bb112baac6af17e` (localc80dc94 identical).
+No blockers; independent89 focused UI/controller/actual-process/MVC tests and two
+extra consent/ownership plus invalid-collapse/disposal probes passed; temporary
+probes removed. RequiredCI41314284627success: reviewer inspected actual Flutter
+124870938755 logs,formatter301/analyzer,Ubuntu1045passes/12skips,actualChrome15,
+web/Wasm and independent generated-project resolve/analyze/test/build/render/serve.
+Python124870938548 all seven suites passed with explicit live/platform skips.
+ParentMac1051/nineskips,web/macOSdebug,Python95(skip1) remain separate evidence.
+
+Reviewer protected-plugin squash merged [PR #387](https://github.com/arpit-it/ASG/pull/387)
+as `07de05e59e52d9aefbf1e2bc5f91564cee0cf418` at2026-11-01T14:08:56Z;
+issue356closed/completed14:08:57Z. Parent freshly plugin-verified PR/issue/main/CI
+and signed raw merge matching reviewedtree/soleparentcf285a5. Guarded local-only
+sync passed: main/origin-main0/0,indexempty,both unrelated IDEfiles byte-identical.
+Backup `/private/tmp/asg356-threads-before-sync`; guard`/private/tmp/asg387-safe-sync.py`.
+Plugin-only publication/review/merge; PR attached and both automation labels applied.
+Bounded thread control Done; fullF15 unchecked/Inprogress,CPUexperimental outside
+normal choices; non-AppleCPU/CUDA real inference remains pending. No model loading/
+download/install/stableapp/settings/data/runtime replacement or cadence/notification
+change. No newissue/FID. Finalmerge bookkeeping retained for next reviewed increment.
+Recorded 2026-11-01T14:09:43.980682+00:00
+
+
+### CPU generation diagnostics — issue #356
+
+Reopened matching #356; branch `356-cpu-generation-errors` from verified PR387
+merge07de05e5, no open PR or competing active run. Actual loopback HTTP CPU
+fixture exposed injected private ValueError text through SSE. This F15/F09
+continuation replaces arbitrary CPU generation exception text and dynamic type
+names with fixed actionable failure/timeout/memory diagnostics, preserving legacy
+MLX/MPS behavior. SSE fails without successful completion; nonstream HTTP500;
+worker/lock release, idle health and explicit successful retry are acceptance.
+Tokenizer/model ValueError, TimeoutError, MemoryError, RuntimeError and custom
+private type/name/newline probes cover both transports with actual sockets and
+injected tensor APIs. These checks are not live inference. No new issue/F ID.
+Full F15/non-Apple CPU/CUDA acceptance remains pending; CPU stays experimental
+outside normal choices. No model load/download/install/stable-app or settings
+change. Prior PR387 merge bookkeeping and unrelated IDE edits preserved.
+Initial new regression failed on baseline; fixed CPU boundary passes all ten HTTP
+tests. Full checks, independent exact-final review/CI/merge remain gates.
+Recorded 2026-11-01T14:17:15.201276+00:00
+
+Final local checks: formatter301 unchanged, analyzer clean, isolated Flutter1051
+passed/nine explicit skips, release web/Wasm dry-run and macOS debug build passed.
+All127 Python tests passed/two explicit live/platform skips; final10 actual HTTP
+tests passed, including20 tokenizer/model/error/transport combinations and exact
+fixed categories plus retry/idle. All319 source/test/tool inputs byte-identical
+to isolated validation. Initial isolated Flutter run omitted root LICENSE and
+failed two fixture reads; copied tracked root fixtures and reran full tests/builds
+successfully. Initial loopback sandbox denial resolved with approved execution.
+Fresh hostDarwinarm64/currentPythonTorch absent; retained8765healthURLError. No
+actual inference/model load/download/install/stable-app replacement. Awaiting
+merge: independent exact-final review, required CI/protected merge remain gates.
+Recorded 2026-11-01T14:19:48.829276+00:00

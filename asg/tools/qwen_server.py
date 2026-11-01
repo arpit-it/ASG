@@ -129,7 +129,19 @@ def create_handler(backend, executor, model_id, model_path):
                     pass
                 except Exception as error:
                     try:
-                        publish('error', str(error) if isinstance(error, (ValueError, TimeoutError)) else f'Local generation failed ({type(error).__name__})')
+                        if getattr(backend, 'device', None) == 'cpu':
+                            # Optional CPU tokenizer/model exceptions can contain
+                            # prompts, paths or dynamically named types. Keep the
+                            # public HTTP boundary fixed, including SSE failures.
+                            if isinstance(error, MemoryError):
+                                message = 'CPU generation ran out of memory; choose smaller compatible weights or free memory.'
+                            elif isinstance(error, TimeoutError):
+                                message = 'CPU generation timed out; reduce input or requested output and retry.'
+                            else:
+                                message = 'CPU generation failed; check input length, compatible local weights, tokenizer and installed loader APIs, then retry.'
+                        else:
+                            message = str(error) if isinstance(error, (ValueError, TimeoutError)) else f'Local generation failed ({type(error).__name__})'
+                        publish('error', message)
                     except GenerationCancelled:
                         pass
                 finally:
