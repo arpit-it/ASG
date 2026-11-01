@@ -7850,3 +7850,76 @@ run selection/verified profiles; fullF22/F15 unchecked, unavailable-platform
 acceptance Deferred400. Logs/private/tmp/asg-project-{focused,full,chrome,analyze,
 format,web,macos,python,inventory}.log; validation manifest/private/tmp/asg-project-
 selection-inputs.json. Recorded 2026-11-01T22:53:23.855298+00:00.
+
+
+### Project advisory-chat connection selection verified merged — #396 / PR #414
+
+Bounded increment Done on `396-project-chat-selection`. Final `23865cc9af71a9323105d8e0043d94e581371456`
+independently approved in review5730673000 and finalgate5730687373; tested
+local0d360f3170f446beb8485c588efff82d7043e545 shares identical
+tree27190df84cf89852964f76cade2cf3272fd7a4dc. All808 remote blobs and369validation
+inputs matched. Independent56 focusedFlutter/one skip, three additional all-mode
+routing probes and nine root inventory checks passed; no blockers. Required
+CI41359442717 passed: Flutter125006461879(format311/analyzer clean,1095Ubuntu/12explicit skips,17Chrome,web/Wasm and real generated-project resolve/analyze/test/render/build/serve), Python125006462081(141tests/four explicit CI skips). Parent1101Flutter/nine skips,46focused/one
+skip,actualChrome6,format311/analyzer/web/macOS and141Python/two skips passed.
+No fresh inference or platform-support claim.
+
+Independent reviewer protected-plugin squash merged
+https://github.com/arpit-it/ASG/pull/414 as `b4d62f9a19b0faeb58bf0d8956b222ab2e4b88c3` at2026-11-01T23:01:02Z. Parent
+freshly plugin-verified merged PR/currentmain/signedtree/soleparentb16ce9de and
+requiredCI, then safely synchronized localmain. Both unrelated IDE edits remained
+byte-identical, index empty, main/origin-main0/0. Evidence/private/tmp/asg-project-
+publication.json,/private/tmp/asg414-reviewed-merge.json,/private/tmp/asg414-safe-sync.py.
+Both automation labels applied; PR attached. Finalmerge bookkeeping retained for
+the next normal reviewed development PR.
+
+Issue396 remains open for run selection and verified profile/context identity and
+real-model evidence. Project advisory-chat and standalone Ask selection are now
+delivered; Build/source/repair still use their existing connections. FullF22/F15
+remain unchecked, external-platform acceptance Deferred400. No modeldownload/
+install/stableapp/globalsettings/deployment/cadence/notification change.
+Current run time 2026-11-01T23:01:44.207297+00:00.
+
+
+### F22 prototype Build session connection selection — issue #396
+
+In progress on `396-prototype-run-selection` from verified PR #414 merge
+b4d62f9a19b0faeb58bf0d8956b222ab2e4b88c3. No competing active ASG run or open
+PR at selection; reuse #396, no new issue. F22 requires explicit model choice per
+run; prototype Apply instruction previously always loaded global settings.
+Delivered presets, prototype editor and request provenance are actual prerequisites;
+Deferred400 hardware acceptance is not required for this bounded increment.
+
+Scope/acceptance: explicit idle-only connection snapshot for prototype instructions
+in the current open workspace session; reopening uses global defaults, clearly
+labeled. Preset edits/removal/refresh cannot change the selected snapshot; global
+settings, advisory chat, source and repair routing are unchanged. Actual requests
+retain the editor's fixed2048 ceiling and saved completion provenance. Switching
+is refused while streaming, preview writes/unsaved interactions or after disposal.
+Corrupt preset lists preserve data and selected/global fallback. No model load,
+weight verification, inference or fullF22/F15 completion claim.
+
+Validation: five new controller/widget regressions plus updated actual loopback
+HTTP controller route test cover selection/reset/reopen, preset removal/corruption,
+busy/disposal, failed/pending saves, concurrent global changes and actual wire
+model/budget agreement. 320px/2x UI selection/reselection/removal-refresh/reset
+passes after settling actual scroll before tapping. Focused selection tests pass;
+full checks/builds, independent exact-final review, required CI and verified reviewer
+merge remain gates. Source/repair selection and verified profiles remain Pending.
+Recorded 2026-11-01T23:16:40.263753+00:00.
+
+
+Prototype session connection selection validation complete: 1,106 Flutter tests
+passed/nine explicit skips in clean tracked-source copy; 25 focused checks/one
+opt-in skip passed, including selected-endpoint actual HTTP and native provenance
+reopen. Formatter313 unchanged, analyzer clean, web release/Wasm dry run and macOS
+debug build passed. Nine historical inventory checks passed; all333 validation
+input hashes match. No runtime inference performed: default8765 health endpoint
+was unreachable; no server/settings/stable-app changes. Existing optional skips
+are not model/device acceptance. Logs/private/tmp/asg-run-{full,focused-final,
+format,analyze,web,macos,inventory}.log; clean copy/private/tmp/asg-run-selection-validation.
+
+Awaiting exact tested-tree plugin publication, independent final-revision review,
+required CI and protected reviewer merge. #396 remains open for source/repair
+selection and verified profiles; fullF22/F15 unchecked, platform acceptance
+Deferred400. Recorded 2026-11-01T23:17:35.841769+00:00.

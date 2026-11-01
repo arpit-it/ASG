@@ -7,6 +7,7 @@ import 'dart:io';
 
 import 'package:asg/controllers/app_workspace_controller.dart';
 import 'package:asg/models/local_model_config.dart';
+import 'package:asg/models/model_connection_preset.dart';
 import 'package:asg/models/chat_message.dart';
 import 'package:asg/services/application_editor.dart';
 import 'package:asg/services/application_store.dart';
@@ -120,15 +121,30 @@ void main() {
           );
           await request.response.close();
         });
-        final result = await ApplicationEditor(allowBuiltInEdits: false).apply(
-          LocalModelConfig(
-            baseUrl: 'http://127.0.0.1:${server.port}/v1',
-            model: 'wire-model',
-            chatOutputTokens: 512,
-          ),
-          changed,
-          'custom change',
+        final store = ApplicationStore.fromPreferences(
+          await SharedPreferences.getInstance(),
         );
+        final settings = ModelSettingsStore(store.records);
+        await settings.savePresets([
+          ModelConnectionPreset(
+            name: 'Wire',
+            config: LocalModelConfig(
+              baseUrl: 'http://127.0.0.1:${server.port}/v1',
+              model: 'wire-model',
+              chatOutputTokens: 512,
+            ),
+          ),
+        ]);
+        final controller = AppWorkspaceController(
+          project,
+          openStore: () async => store,
+          editor: ApplicationEditor(allowBuiltInEdits: false),
+        );
+        await controller.load();
+        controller.choosePreset(controller.presets.single);
+        expect(await controller.apply('custom change'), true);
+        final result = store.load(project).messages.last;
+        controller.dispose();
         final body = await observed.future;
         expect(body['model'], result.modelRequest!.model);
         expect(body['max_tokens'], result.modelRequest!.outputTokens);
