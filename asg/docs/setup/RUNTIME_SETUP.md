@@ -94,7 +94,25 @@ Use a separately owned process and unused loopback port for controlled testing;
 keep the current runtime and saved app settings intact. The explicitly chosen
 Python environment must already contain Torch and Transformers with
 `Qwen3_5ForConditionalGeneration`. No packages or weights are downloaded by this
-path. Capability discovery does not load weights:
+path. Safetensors must also be installed for CPU loading.
+
+Before choosing a model, explicitly check the existing CPU loader APIs (issue #358):
+
+```sh
+python -B tools/qwen_backends.py --prepare cpu --experimental-cpu
+```
+
+This checks installed Torch, Transformers tokenizer/Qwen loader and safetensors
+loader APIs without calling them. No helper target is required or created; no
+packages are installed, model/tokenizer loaded, accelerator probed or thread
+settings changed. Missing/broken dependencies fail without fallback. Successful
+preparation only checks imports and API presence; compatible weights, memory,
+actual inference and non-Apple host validation remain unverified. Run this in a
+separately chosen, already provisioned environment; normal app setup still has no
+CPU choice. Legacy preparation still requires its helper target and preserves
+Auto/MLX/MPS behavior.
+
+Capability discovery does not load weights:
 
 ```sh
 python -B tools/qwen_server.py --backend cpu --experimental-cpu --capabilities
@@ -127,7 +145,7 @@ limits do not impose a model-loading deadline or memory quota. `/health` reports
 performance or acceptance. Existing app readers intentionally treat that device
 as unknown until managed CPU integration is delivered.
 
-Next implementation increments may add explicit CPU setup/preparation, compatible
+Next implementation increments may add managed CPU setup, compatible
 checkpoint budgeting and managed-host integration with honest unsupported states.
 Non-Apple desktop real inference, restart/error/stop measurements, MLX regression
 and separate CUDA-host evidence still gate their promised support claims. Do not

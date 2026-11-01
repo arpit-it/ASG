@@ -190,6 +190,85 @@ class BackendTests(unittest.TestCase):
         self.assertIn('--model is required', missing.stderr)
 
 
+class CPUPreparationTests(unittest.TestCase):
+    """Preparation checks existing APIs; no model or device acceptance claim."""
+    def modules(self):
+        from types import SimpleNamespace
+        from unittest.mock import Mock
+        return {
+            'torch': SimpleNamespace(set_num_threads=Mock(), device=Mock()),
+            'transformers': SimpleNamespace(AutoTokenizer=SimpleNamespace(from_pretrained=Mock()),
+                                           Qwen3_5ForConditionalGeneration=SimpleNamespace(from_pretrained=Mock())),
+            'safetensors': SimpleNamespace(),
+            'safetensors.torch': SimpleNamespace(load_file=Mock()),
+            'mlx': None, 'mlx_lm': None, 'accelerate': None,
+        }
+
+    def test_cpu_checks_apis_without_load_install_device_or_thread_changes(self):
+        modules = self.modules()
+        with patch.dict(sys.modules, modules), patch('subprocess.run') as run:
+            self.assertEqual(backends.prepare_backend('cpu', experimental_cpu=True), 'cpu')
+        run.assert_not_called()
+        modules['torch'].set_num_threads.assert_not_called()
+        modules['torch'].device.assert_not_called()
+        modules['transformers'].AutoTokenizer.from_pretrained.assert_not_called()
+        modules['transformers'].Qwen3_5ForConditionalGeneration.from_pretrained.assert_not_called()
+        modules['safetensors.torch'].load_file.assert_not_called()
+
+    def test_opt_in_validation_precedes_imports_and_side_effects(self):
+        for requested, opt_in in [('cpu', False), ('auto', True), ('mlx', True), ('torch', True)]:
+            with self.subTest(requested=requested), patch('builtins.__import__', side_effect=AssertionError('import')):
+                with self.assertRaisesRegex(ValueError, 'together'):
+                    backends.prepare_backend(requested, experimental_cpu=opt_in)
+        with patch('builtins.__import__', side_effect=AssertionError('import')):
+            with self.assertRaisesRegex(ValueError, 'helper-target'):
+                backends.prepare_backend('torch')
+
+    def test_missing_or_broken_dependencies_fail_without_fallback_or_install(self):
+        for missing in ('torch', 'transformers', 'safetensors.torch'):
+            modules = self.modules()
+            modules[missing] = None
+            with self.subTest(missing=missing), patch.dict(sys.modules, modules), patch('subprocess.run') as run:
+                with self.assertRaises(ImportError):
+                    backends.prepare_backend('cpu', experimental_cpu=True)
+                run.assert_not_called()
+        modules = self.modules()
+        modules['torch'].device = None
+        with patch.dict(sys.modules, modules), patch('subprocess.run') as run:
+            with self.assertRaisesRegex(RuntimeError, 'loader APIs unavailable'):
+                backends.prepare_backend('cpu', experimental_cpu=True)
+            run.assert_not_called()
+
+    def test_actual_cli_with_spaced_paths_and_no_model_or_helper_directory(self):
+        with tempfile.TemporaryDirectory(prefix='asg cpu preparation ') as temporary:
+            root = Path(temporary)
+            shutil.copyfile(Path(__file__).with_name('qwen_backends.py'), root / 'qwen_backends.py')
+            # Stand-in installed libraries fail if any loading/device action runs.
+            (root / 'torch.py').write_text('def forbidden(*a, **k): raise AssertionError("side effect")\nset_num_threads = device = forbidden\n')
+            (root / 'transformers.py').write_text('class Loader:\n @staticmethod\n def from_pretrained(*a, **k): raise AssertionError("weight load")\nAutoTokenizer = Qwen3_5ForConditionalGeneration = Loader\n')
+            (root / 'safetensors').mkdir()
+            (root / 'safetensors' / '__init__.py').write_text('')
+            (root / 'safetensors' / 'torch.py').write_text('def load_file(*a, **k): raise AssertionError("weight load")\n')
+            command = [sys.executable, '-B', str(root / 'qwen_backends.py')]
+            helper = root / 'unused helper'
+            for arguments in ([], ['--helper-target', str(helper)]):
+                result = subprocess.run([*command, '--prepare', 'cpu', '--experimental-cpu', *arguments], cwd='/', capture_output=True, text=True, timeout=10, check=True)
+                self.assertIn('cpu runtime dependencies checked', result.stdout)
+                self.assertIn('unverified', result.stdout)
+                self.assertEqual(result.stderr, '')
+                self.assertFalse(helper.exists())
+            for arguments in (['--prepare', 'cpu'], ['--prepare', 'auto', '--experimental-cpu'], ['--prepare', 'torch']):
+                result = subprocess.run([*command, *arguments], capture_output=True, text=True, timeout=10)
+                self.assertEqual(result.returncode, 2)
+                self.assertIn('error:', result.stderr)
+                self.assertNotIn('Traceback', result.stderr)
+            (root / 'transformers.py').write_text('raise ImportError("broken installed dependency")\n')
+            result = subprocess.run([*command, '--prepare', 'cpu', '--experimental-cpu'], capture_output=True, text=True, timeout=10)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertNotIn('dependencies checked', result.stdout)
+            self.assertFalse(helper.exists())
+
+
 class CPUBackendTests(unittest.TestCase):
     """Execute the real backend against injected tensor/model APIs, not inference."""
     def setUp(self):
