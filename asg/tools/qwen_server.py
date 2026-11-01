@@ -187,6 +187,47 @@ def create_handler(backend, executor, model_id, model_path):
     return Handler
 
 
+def validate_cpu_checkpoint(folder):
+    """Check local checkpoint structure without reading tensor contents.
+
+    This is preflight only: the trusted loader still validates actual tensors.
+    Files may change after inspection; this is not a filesystem sandbox.
+    """
+    folder = folder.resolve(strict=True)
+
+    def local_file(name):
+        try:
+            path = (folder / name).resolve(strict=True)
+            if not path.is_relative_to(folder) or not path.is_file() or path.stat().st_size == 0:
+                raise ValueError()
+            return path
+        except (OSError, RuntimeError, ValueError):
+            raise ValueError('CPU checkpoint requires nonempty contained regular files') from None
+
+    try:
+        config = json.loads(local_file('config.json').read_text())
+        if not isinstance(config, dict):
+            raise ValueError()
+        index = folder / 'model.safetensors.index.json'
+        if index.exists() or index.is_symlink():
+            metadata = json.loads(local_file(index.name).read_text())
+            weights = metadata.get('weight_map') if isinstance(metadata, dict) else None
+            if not isinstance(weights, dict) or not weights or any(
+                    not isinstance(key, str) or not key or not isinstance(value, str) or
+                    not value or Path(value).is_absolute() or
+                    '..' in Path(value).parts or not value.endswith('.safetensors')
+                    for key, value in weights.items()):
+                raise ValueError()
+            shards = set(weights.values())
+        else:
+            shards = {'model.safetensors'}
+        for shard in shards:
+            local_file(shard)
+        return config
+    except (OSError, UnicodeError, ValueError, RuntimeError):
+        raise ValueError('Invalid CPU checkpoint: require contained config and nonempty safetensors weights/index') from None
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--model', type=Path)
@@ -213,7 +254,8 @@ def main():
     if args.model is None:
         parser.error('--model is required unless --capabilities is used')
     folder = args.model.resolve(strict=True)
-    config = json.loads((folder / 'config.json').read_text())
+    config = (validate_cpu_checkpoint(folder) if args.backend == 'cpu' else
+              json.loads((folder / 'config.json').read_text()))
     if 'Qwen3_5ForConditionalGeneration' not in config.get('architectures', []):
         raise ValueError('Unsupported model architecture')
     index = folder / 'model.safetensors.index.json'

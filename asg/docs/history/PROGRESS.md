@@ -5455,3 +5455,24 @@ Validation: 103 Python cases passed/two explicit skips, including 30 backend pas
 Status: Awaiting merge; tested related contents will be published through connected GitHub plugin. Independent exact-final review, required CI and verified protected merge remain mandatory; full F15 unchecked/In progress.
 
 Recorded 2026-11-01T05:16:17.300287+00:00
+
+
+### CPU dependency preflight verified merged — issue #360 / PR #361
+
+Independent approval5726609031 reviewed exact head35263cc1cc39b1b948ee957e6d00ac097e575c09/tree17dd671166423a112652aada137442ce0aa78c7c and all five files/acceptance with no blockers. Independently30backend passes/one opt-in skip and9actualHTTP passed. RequiredCI41276357161 Flutter124759217626 and Python124759217514 succeeded; reviewer inspected actual logs: formatter287/analyzer,977Linux/12skips,15actualChrome,web/Wasm and independent generated-project resolve/analyze/render/test/build/serve; Python32collector/9inventory/4download/31backend(one skip)/9HTTP/14command(one skip)/4confinement(two Linux skips). Parent103macOSPython/two skips and983macOSFlutter/nine skips/web/macOSdebug remain distinct; no skipped check verifies inference.
+
+Reviewer protected-plugin squashmerged https://github.com/arpit-it/ASG/pull/361 as4cc1dd5050e06219f18dd81d203c669787de7099 at2026-11-01T05:23:39Z. Parent independently verified merged exactPRhead/issue360closed-completed05:23:40Z/currentmain and signed rawmerge exact reviewedtree/soleparenta617c20f. Guarded local-only object import/synchronization passed after sandbox metadata denial/authorized retry; primarymain/origin-main0/0,indexempty. Prior document edits carried into reviewedtree; both unrelated IDEfiles byte-identical. Backup /private/tmp/asg360-primary-before-sync; guard /private/tmp/asg361-safe-sync.py. All GitHub reads/publication/review/merge used connectedplugin; bothautomationlabels and PRattachment applied.
+
+Bounded issue360 Done; fullF15 stays unchecked/Inprogress. Managed experimental CPU setup/checkpoint budgeting/portable-host integration remain implementable; non-Apple pretrainedCPU and separateCUDA acceptance pending. Existingruntime freshread-onlyhealth ready/idle/MLXMetal Qwen3.8; no inference/model/download/install/settings/stableapp/data replacement. No second issue/task started. Finalmergebookkeeping retained locally for next normal reviewed increment; cadence/notification preference unchanged.
+
+Recorded 2026-11-01T05:24:19.059323+00:00
+
+
+### Experimental CPU checkpoint preflight — issue #362
+
+Selected F15 engineering increment after plugin verified PR361 merged4cc1dd50 and no open task/PR or competing active owner. Isolated `/private/tmp/asg-cpu-checkpoint`, branch `362-cpu-checkpoint`; primary five IDE/docs edits preserved. Existing CPU startup accepted empty/malformed shard maps and uncontained metadata. Explicit CPU preflight now requires contained nonempty regular config/index and nonempty string-to-safetensors maps/files before worker, loader or HTTP creation. Valid single/sharded/internal aliases accepted; no tensor-content reads or inference/fit/sandbox claim. Legacy Auto/MLX/MPS and normal app choices unchanged; fullF15 and non-Apple CPU/CUDA live acceptance remain pending. Prior PR361 final review/CI/merge evidence carried into this reviewed increment.
+
+Validation:106 Python cases/two opt-in skips passed, including33 backend passes/one skip and9actualHTTP; new17 malformed/external/missing-file variants prove no worker/loader/server creation plus actual isolated CLI import sentinel and valid local/internal aliases. Initial HTTP sandbox bind denial passed on authorized rerun. Formatter287 unchanged, analyzer clean,983Flutter/nine opt-in skips. Release web/Wasm dry run and macOS debug builds passed. Independent exact-head review/requiredCI/protected merge pending. No model/download/install/settings/stable-app/data mutation.
+
+Status: Awaiting merge; final publication/review/merge evidence remains mandatory.
+Recorded 2026-11-01T05:31:03.477806+00:00
