@@ -7250,3 +7250,10 @@ healthURLError; no actual inference performed. Stable app/data/settings untouche
 Status Awaiting merge: plugin exact-tree publication, independent final-revision
 review, required CI and protected reviewer merge remain gates. F15/F22 remain
 uncheckmarked/In progress. Recorded 2026-11-01T18:20:36.143365+00:00
+
+
+Publication: [PR #397](https://github.com/arpit-it/ASG/pull/397), branch
+`396-model-connection-presets`. Tested local2cd4dc3/published9cc9693 share
+tree9e391c853442ec9ebe39e8c945b2c85d045efbb5. This delivery-link follow-up
+changes documentation only; all324 validated inputs remain unchanged.
+Independent exact-final review, actual required CI and protected merge pending.
