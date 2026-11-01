@@ -36,8 +36,12 @@ def create_handler(backend, executor, model_id, model_path):
             origin = self.headers.get('Origin')
             if not origin:
                 return True
-            parsed = urlparse(origin)
-            return parsed.scheme == 'http' and parsed.hostname in ('localhost', '127.0.0.1', '::1')
+            try:
+                parsed = urlparse(origin)
+                return parsed.scheme == 'http' and parsed.hostname in ('localhost', '127.0.0.1', '::1')
+            except ValueError:
+                # Malformed authorities are untrusted headers, not server errors.
+                return False
 
         def send_headers(self, code, content_type, length=None):
             self.send_response(code)

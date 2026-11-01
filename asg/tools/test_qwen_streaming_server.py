@@ -138,6 +138,59 @@ class CPUHTTPTests(unittest.TestCase):
                     else:
                         self.assertEqual(json.loads(body)['choices'][0]['finish_reason'], 'stop')
 
+    def test_malformed_cpu_origins_reject_privately_and_allow_retry(self):
+        from unittest.mock import patch
+        for origin in ('http://[', 'http://[not-ipv6]'):
+            for streaming in (True, False):
+                with self.subTest(origin=origin, streaming=streaming):
+                    self.fixture.tokenizer.apply_chat_template.reset_mock()
+                    self.fixture.model.generate.reset_mock()
+                    body = json.dumps({'model': 'cpu-fixture', 'messages': [
+                        {'role': 'user', 'content': 'PRIVATE_PROMPT'}],
+                        'stream': streaming}).encode()
+                    # Exercise actual HTTP header parsing before backend work.
+                    import http.client
+                    import socket
+                    with patch.object(self.server, 'handle_error') as handler_error:
+                        for method in ('POST', 'OPTIONS', 'GET'):
+                            route = '/health' if method == 'GET' else '/v1/chat/completions'
+                            with socket.create_connection(self.server.server_address, timeout=5) as connection:
+                                connection.sendall((method + ' ' + route + ' HTTP/1.1\r\nHost: localhost\r\n'
+                                    'Content-Type: application/json\r\nOrigin: ' + origin +
+                                    '\r\nContent-Length: ' + str(len(body)) + '\r\n\r\n').encode() + body)
+                                response = http.client.HTTPResponse(connection)
+                                response.begin()
+                                self.assertEqual(response.status, 200 if method == 'GET' else 403)
+                                self.assertIsNone(response.headers.get('Access-Control-Allow-Origin'))
+                                result = json.load(response)
+                                if method == 'POST':
+                                    self.assertEqual(result, {'error': 'Local JSON requests only'})
+                                elif method == 'OPTIONS':
+                                    self.assertEqual(result, {})
+                                else:
+                                    self.assertEqual(result['phase'], 'idle')
+                                response.close()
+                        handler_error.assert_not_called()
+                    self.fixture.tokenizer.apply_chat_template.assert_not_called()
+                    self.fixture.model.generate.assert_not_called()
+                    with self.request(streaming) as response:
+                        result = response.read().decode()
+                    if streaming:
+                        self.assertIn('[DONE]', result)
+                    else:
+                        self.assertEqual(json.loads(result)['choices'][0]['finish_reason'], 'stop')
+
+    def test_valid_cpu_local_origins_keep_cors_and_generation(self):
+        for origin in ('http://localhost:8080', 'http://127.0.0.1:8080', 'http://[::1]:8080'):
+            with self.subTest(origin=origin):
+                body = json.dumps({'model': 'cpu-fixture', 'messages': [
+                    {'role': 'user', 'content': 'fixture'}]}).encode()
+                request = urllib.request.Request(self.url+'/v1/chat/completions', data=body,
+                    headers={'Content-Type': 'application/json', 'Origin': origin})
+                with urllib.request.urlopen(request, timeout=5) as response:
+                    self.assertEqual(response.headers['Access-Control-Allow-Origin'], origin)
+                    self.assertEqual(json.load(response)['choices'][0]['finish_reason'], 'stop')
+
     def test_incomplete_cpu_body_fails_before_inference_and_allows_retry(self):
         import http.client
         import socket
