@@ -67,6 +67,7 @@ class _PresetObservation extends StatelessWidget {
             if (observation == null)
               const Text('Historical test: unavailable (not saved).'),
             if (observation != null) ...[
+              _DeclaredProfile(observation.profileNotes, historical: true),
               Text('Observed UTC: ${observation.observedAt.toIso8601String()}'),
               Text(
                 'Test: ${observation.jsonFormat ? 'JSON sentinel object' : 'nonblank text'}; '
@@ -98,7 +99,8 @@ class _PresetObservation extends StatelessWidget {
 
 /// Current declarations are deliberately separate from historical observations.
 class _DeclaredProfile extends StatelessWidget {
-  const _DeclaredProfile(this.notes);
+  const _DeclaredProfile(this.notes, {this.historical = false});
+  final bool historical;
   final ModelProfileNotes? notes;
 
   static const guidance =
@@ -113,9 +115,13 @@ class _DeclaredProfile extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Divider(),
-        const Text(guidance),
+        Text(historical ? ModelTestObservation.profileGuidance : guidance),
         if (profile == null || profile.isEmpty)
-          const Text('Profile declarations: unavailable (not saved).')
+          Text(
+            historical
+                ? 'Test-time profile declarations: unavailable (not recorded).'
+                : 'Profile declarations: unavailable (not saved).',
+          )
         else ...[
           for (final entry in {
             'Revision': profile.revision,
@@ -125,11 +131,11 @@ class _DeclaredProfile extends StatelessWidget {
             'Backend': profile.backend,
           }.entries)
             Text(
-              'Declared ${entry.key.toLowerCase()}: '
+              '${historical ? 'Test-time declared' : 'Declared'} ${entry.key.toLowerCase()}: '
               '${entry.value.isEmpty ? 'unavailable (not saved)' : entry.value}',
             ),
           Text(
-            'Declared context tokens: '
+            '${historical ? 'Test-time declared' : 'Declared'} context tokens: '
             '${profile.contextTokens ?? 'unavailable (not saved)'}',
           ),
         ],

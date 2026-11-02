@@ -121,6 +121,71 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('test-time declarations stay separate at 320px 2x', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(320, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    await tester.pumpWidget(
+      MaterialApp(
+        home: MediaQuery(
+          data: const MediaQueryData(textScaler: TextScaler.linear(2)),
+          child: Scaffold(
+            body: SingleChildScrollView(
+              child: ModelProfileComparison(
+                presets: [
+                  ModelConnectionPreset(
+                    name: 'Snapshot',
+                    config: const LocalModelConfig(),
+                    profileNotes: const ModelProfileNotes(revision: 'current'),
+                    testObservation: ModelTestObservation(
+                      jsonFormat: true,
+                      observedAt: DateTime.utc(2026),
+                      firstTextMilliseconds: 1,
+                      completedMilliseconds: 2,
+                      profileNotes: const ModelProfileNotes(
+                        revision: 'test-revision',
+                        license: 'test-license',
+                        architecture: 'test-architecture',
+                        quantization: '4-bit',
+                        backend: 'test-backend',
+                        contextTokens: 8192,
+                      ),
+                    ),
+                  ),
+                  preset('Legacy'),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('Compare saved preset observations'));
+    await tester.pumpAndSettle();
+    expect(find.text('Declared revision: current'), findsOneWidget);
+    for (final value in [
+      'revision: test-revision',
+      'license: test-license',
+      'architecture: test-architecture',
+      'quantization: 4-bit',
+      'backend: test-backend',
+      'context tokens: 8192',
+    ]) {
+      expect(find.text('Test-time declared $value'), findsOneWidget);
+    }
+    expect(find.text(ModelTestObservation.profileGuidance), findsNWidgets(2));
+    expect(
+      find.text('Test-time profile declarations: unavailable (not recorded).'),
+      findsOneWidget,
+    );
+    await tester.ensureVisible(find.text('Legacy'));
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+  });
+
   for (final width in [320.0, 1000.0]) {
     testWidgets('comparison preserves distinct observations at width $width', (
       tester,

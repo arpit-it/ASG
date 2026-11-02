@@ -60,6 +60,87 @@ void main() {
     await pending;
   }
 
+  test('test-time notes survive edits, failed save retry and reopen', () async {
+    const notes = ModelProfileNotes(
+      revision: 'before-test',
+      license: 'MPL-2.0',
+      architecture: 'Qwen',
+      quantization: '4-bit',
+      backend: 'MLX',
+      contextTokens: 8192,
+    );
+    await controller.saveProfileNotes(config, notes);
+    await complete();
+    await controller.saveProfileNotes(
+      config,
+      const ModelProfileNotes(revision: 'after-test'),
+    );
+    records.fail = true;
+    await controller.saveTestObservation(config);
+    expect(store.loadPresets().single.testObservation, isNull);
+    records.fail = false;
+    await controller.saveTestObservation(config);
+    final saved = ModelSettingsStore(records).loadPresets().single;
+    expect(saved.profileNotes!.revision, 'after-test');
+    expect(saved.testObservation!.profileNotes!.toJson(), notes.toJson());
+    await controller.saveProfileNotes(config, null);
+    final cleared = store.loadPresets().single;
+    expect(cleared.profileNotes, isNull);
+    expect(cleared.testObservation!.profileNotes!.toJson(), notes.toJson());
+  });
+  test('unselected or unmatched draft cannot inherit preset notes', () async {
+    await controller.saveProfileNotes(
+      config,
+      const ModelProfileNotes(revision: 'unrelated'),
+    );
+    controller.selectedPreset = null;
+    await complete();
+    controller.selectedPreset = 'Selected';
+    await controller.saveTestObservation(config);
+    expect(store.loadPresets().single.testObservation!.profileNotes, isNull);
+    probe = Probe();
+    const other = LocalModelConfig(model: 'different');
+    final pending = controller.test(other);
+    probe.output.add('done');
+    await probe.output.close();
+    await pending;
+    await controller.savePreset('Different', other);
+    controller.selectedPreset = 'Different';
+    await controller.saveTestObservation(other);
+    expect(store.loadPresets().last.testObservation!.profileNotes, isNull);
+  });
+  test('legacy and damaged snapshots never infer current notes', () async {
+    final legacy = observation().toJson();
+    expect(ModelTestObservation.fromJson(legacy).profileNotes, isNull);
+    for (final bad in [
+      null,
+      {},
+      {'revision': 'incomplete'},
+      {...const ModelProfileNotes().toJson(), 'contextTokens': 8192.0},
+      {...const ModelProfileNotes().toJson(), 'revision': 'bad\nvalue'},
+      {...const ModelProfileNotes().toJson(), 'verified': true},
+    ]) {
+      final raw = jsonEncode({
+        'version': 1,
+        'presets': [
+          {
+            ...const ModelConnectionPreset(
+              name: 'Selected',
+              config: config,
+            ).toJson(),
+            'testObservation': {...legacy, 'profileNotes': bad},
+          },
+        ],
+      });
+      records.values[ModelSettingsStore.presetsKey] = raw;
+      final broken = ModelSettingsController(store);
+      expect(broken.presetsLoadFailed, isTrue);
+      await broken.savePreset('Selected', config, replace: true);
+      expect(records.values[ModelSettingsStore.presetsKey], raw);
+      broken.dispose();
+    }
+  });
+
   for (final json in [false, true]) {
     test(
       'explicit ${json ? 'JSON' : 'text'} save retains metadata only',

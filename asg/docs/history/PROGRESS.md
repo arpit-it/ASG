@@ -10152,3 +10152,55 @@ regressions passed. The first full working-tree run encountered ignored third-pa
 virtualenv Python files in the license scan; the clean tracked-source rerun passed.
 No live inference or stable app replacement. Awaiting plugin publication, independent
 exact-final review, required CI and protected reviewer merge. FullF22/F15 unchecked.
+
+
+### Declared profile comparison context verified merged — PR #450
+Bounded increment Done for F22/#396 on `396-profile-comparison-context`,
+scope6578411126. Testedlocal963996b and pluginpublished
+acf3be6bf879ea90756dd4896f5d9583394a1637 share exacttree
+ff2bdc11a4202ce6ca25dc283e7cfef7fc6da6e5; all6publicationblobs match.
+Independent exactfinal review5737350021/finalgate6578646206 approved unchanged
+head with no blockers. Independent20focusedFlutter/nineinventory/one actualdialog
+20presets/max256notes/context1048576 at320px2x probe passed. All372tracked
+Dart/Python lib/test/tool validation inputs match clean snapshot. Parent1249Flutter/
+nine explicit skips,11focused,format353/analyzer/web/Wasm/isolatedmacOSdebug/
+nineinventory passed. Initial working-tree license scan included ignored third-party
+virtualenv files; clean tracked-source rerun passed. RequiredCI41453994650 BOTH
+SUCCESS: Python125305941857 and Flutter125305942361 including actualChrome
+storage/browsertransport/web/independentgeneratedproject verification.
+Read-only comparison now shows current declared revision/license/architecture/
+quantization/backend/context with explicit unverified/not-tested-configuration
+labels, missing/partial/legacy/refreshed values honest. No transport/storage/budget/
+selection changes, live inference/support or stableapp replacement claim.
+Reviewer protected-plugin squashmerged PR450 as
+1b09709eee1883111f77632bd5a18802568f9e03 at2026-11-02T13:41:06Z.
+Parent freshly verified mergedPR/currentmain/#396OPEN/signedexacttree/soleparent
+bbb9cbc1. Verified commitobject hash before guarded local synchronization;
+localmain/originmain0/0,emptyindex,both originalIDEedits byteidentical.
+FullF22/F15unchecked; external acceptanceDeferred400. Remaining verified profiles/
+context/capability work Pending396. Final canonical bookkeeping retained for next
+normal reviewed development PR. Bothautomationlabels applied; no newissue,
+cadence or notification preference change.
+Receipts:/private/tmp/asg450-publication.json,/private/tmp/asg450-validation-inputs.json,
+/private/tmp/asg450-reviewed-merge.json,/private/tmp/asg450-safe-sync.py.
+Currentrun 2026-11-02T13:41:56.322020+00:00
+
+
+### Test-time saved profile declarations — F22 / #396
+In progress on `396-test-profile-snapshot`, scope6578722759, from verified
+PR450 merge1b09709eee1883111f77632bd5a18802568f9e03. Historical tests lose
+declaration context when current notes change. Capture matching saved notes
+before dispatch; explicit save retains them across edits/retry/reopen. Compare
+separately as unverified user declarations, never actual identity/support or
+context-capacity evidence. Legacy/unmatched data unavailable. Delivered presets/
+observations suffice; external acceptance Deferred400. ActualHTTP/native-reopen/
+responsive regressions, full checks, independent final review, required CI and
+protected merge remain gates. F22/F15 unchecked; #396 open. No new issue or
+stable-app replacement.
+
+Final tracked-source validation: 1253Flutter passed/nine explicit skips, focused34,
+formatter353/analyzer/web and isolatedmacOSdebug builds passed. Nine inventory
+regressions passed. All374validation inputs match the tested snapshot. ActualHTTP
+and native database reopen verify retained test-time declarations after notes
+edits. Awaiting plugin publication, independent exact-final review, required CI
+and protected reviewer merge. No live inference or supported-profile claim.

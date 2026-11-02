@@ -63,7 +63,11 @@ void main() {
       );
       final controller = ModelSettingsController(store);
       try {
-        await controller.savePreset('HTTP', config);
+        await controller.savePreset(
+          'HTTP',
+          config,
+          profileNotes: const ModelProfileNotes(revision: 'http-test-time'),
+        );
         controller.selectPreset('HTTP');
         for (final json in [false, true]) {
           await controller.test(config, jsonFormat: json);
@@ -71,6 +75,10 @@ void main() {
           await controller.saveTestObservation(config);
           final saved = store.loadPresets().single;
           expect(saved.testObservation!.jsonFormat, json);
+          expect(
+            saved.testObservation!.profileNotes!.revision,
+            'http-test-time',
+          );
           expect(saved.testObservation!.responseModel, 'exact-request');
           expect(saved.config.baseUrl, config.baseUrl);
           expect(saved.config.model, 'exact-request');
@@ -84,6 +92,10 @@ void main() {
         expect(
           store.loadPresets().single.profileNotes!.revision,
           'edited-without-inference',
+        );
+        expect(
+          store.loadPresets().single.testObservation!.profileNotes!.revision,
+          'http-test-time',
         );
         expect(requests.length, 2);
         await controller.removeTestObservation();
@@ -120,6 +132,10 @@ void main() {
               firstTextMilliseconds: 12,
               completedMilliseconds: 34,
               responseModel: 'saved',
+              profileNotes: const ModelProfileNotes(
+                revision: 'test-time',
+                contextTokens: 4096,
+              ),
               runtimeMetrics: const ModelRuntimeMetrics(
                 promptTokens: 42,
                 completionTokens: 2,
@@ -137,6 +153,15 @@ void main() {
         await db.close();
         db = await databaseFactoryIo.openDatabase(path);
         records = await StudioDatabase.migrate(db, prefs);
+        expect(
+          ModelSettingsStore(records)
+              .loadPresets()
+              .single
+              .testObservation!
+              .profileNotes!
+              .revision,
+          'test-time',
+        );
         expect(
           ModelSettingsStore(records).loadPresets().single.config.model,
           'saved',
