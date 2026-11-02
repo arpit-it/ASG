@@ -201,6 +201,11 @@ class _ModelCatalogScreenState extends State<ModelCatalogScreen> {
               ),
               SelectableText('Pinned revision: ${info.revision}'),
               Text(
+                'Source-declared text context: ${info.declaredContextTokens == null ? 'unknown' : '${info.declaredContextTokens} tokens'}. '
+                'From this pinned checkpoint configuration; usable capacity and loaded revision remain unverified. '
+                'No RoPE expansion or request-budget change.',
+              ),
+              Text(
                 'Metadata checked: ${info.checkedAt.toIso8601String()} · live inference: unverified',
               ),
               if (assessment.estimatedBytes != null)

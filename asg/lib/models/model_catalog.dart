@@ -23,11 +23,15 @@ class ModelCatalogMetadata {
     required this.weightBytes,
     required this.downloadBytes,
     required this.checkedAt,
+    this.declaredContextTokens,
   });
   final String revision, license, architecture;
   final int bits, weightBytes, downloadBytes;
   final bool mlxFormat;
   final DateTime checkedAt;
+
+  /// Pinned checkpoint declaration, never measured capacity or loaded identity.
+  final int? declaredContextTokens;
   bool get runtimeCompatible =>
       architecture == 'Qwen3_5ForConditionalGeneration' &&
       bits == 4 &&
