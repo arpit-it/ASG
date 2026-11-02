@@ -6,6 +6,7 @@ import 'dart:async';
 import '../models/local_model_config.dart';
 import '../models/model_connection_preset.dart';
 import '../models/model_profile_notes.dart';
+import '../models/model_format_probe.dart';
 import '../services/model_settings_store.dart';
 import '../services/local_model.dart';
 import '../services/model_inventory.dart';
@@ -185,7 +186,7 @@ class ModelSettingsController extends BaseController {
     }
   }
 
-  Future<void> test(LocalModelConfig config) async {
+  Future<void> test(LocalModelConfig config, {bool jsonFormat = false}) async {
     if (busy || settingsLoadFailed || isDisposed) return;
     busy = true;
     final request = ++_request;
@@ -195,6 +196,7 @@ class ModelSettingsController extends BaseController {
     update();
     var characters = 0;
     var hasText = false;
+    final response = StringBuffer();
     try {
       // Validate before creating a provider, including injected providers.
       config.endpoint;
@@ -207,7 +209,7 @@ class ModelSettingsController extends BaseController {
       });
       _subscription = _provider!
           .generate(
-            'Reply with one short sentence confirming you can help plan a software project.',
+            jsonFormat ? ModelFormatProbe.prompt : 'Reply with one short sentence confirming you can help plan a software project.',
           )
           .listen(
             (text) {
@@ -218,6 +220,8 @@ class ModelSettingsController extends BaseController {
                 _finish(
                   'Connection test stopped: response exceeded the text limit.',
                 );
+              } else if (jsonFormat) {
+                response.write(text);
               }
             },
             onError: (Object error) {
@@ -231,7 +235,11 @@ class ModelSettingsController extends BaseController {
             onDone: () {
               if (request != _request || isDisposed) return;
               _finish(
-                hasText
+                jsonFormat
+                    ? ModelFormatProbe.accepts(response.toString())
+                          ? 'Draft connection returned the expected JSON object in one completed response. Requested model ID: ${config.model}. Loaded identity and general schema/tool compatibility remain unverified. Settings are unchanged; this observation is not saved.'
+                          : 'JSON format test failed: response did not match the expected JSON object. Response text is omitted. Check the model and retry; settings are unchanged.'
+                    : hasText
                     ? 'Local server completed the connection test. Response text is omitted.'
                     : 'Connection test failed: the server returned no text. Check the model ID and runtime.',
               );

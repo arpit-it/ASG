@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:asg/views/model_settings.dart';
+import 'package:asg/models/model_format_probe.dart';
 
 import 'dart:async';
 
@@ -16,8 +17,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 class Probe implements ModelProvider {
   final output = StreamController<String>();
   bool cancelled = false;
+  String? prompt;
   @override
-  Stream<String> generate(String prompt) => output.stream;
+  Stream<String> generate(String prompt) {
+    this.prompt = prompt;
+    return output.stream;
+  }
+
   @override
   Future<void> cancel() async {
     cancelled = true;
@@ -32,6 +38,118 @@ void main() {
       await SharedPreferences.getInstance(),
     );
   });
+  test('JSON format observation requires one exact duplicate-free object', () {
+    for (final text in [
+      '{"asg_probe":"ok"}',
+      ' \n { "asg_probe" : "ok" } \t',
+      r'{"asg_\u0070robe":"ok"}',
+    ]) {
+      expect(ModelFormatProbe.accepts(text), isTrue, reason: text);
+    }
+    for (final text in [
+      '',
+      'ok',
+      '```json\n{"asg_probe":"ok"}\n```',
+      '[]',
+      'null',
+      '1',
+      '"ok"',
+      '{"asg_probe":true}',
+      '{"asg_probe":"wrong"}',
+      '{"asg_probe":"ok","extra":1}',
+      '{"asg_probe":"wrong","asg_probe":"ok"}',
+      r'{"asg_probe":"wrong","asg_\u0070robe":"ok"}',
+      '{"asg_probe":"ok"} trailing',
+      '{"asg_probe":',
+    ]) {
+      expect(ModelFormatProbe.accepts(text), isFalse, reason: text);
+    }
+  });
+  test(
+    'JSON probe is completed, bounded, private and leaves settings unchanged',
+    () async {
+      for (final kind in [
+        'valid',
+        'wrong',
+        'empty',
+        'error',
+        'large',
+        'stop',
+      ]) {
+        final p = Probe();
+        final c = ModelSettingsController(store, createProvider: (_) => p);
+        final pending = c.test(
+          const LocalModelConfig(model: 'chosen'),
+          jsonFormat: true,
+        );
+        expect(p.prompt, ModelFormatProbe.prompt);
+        await c.test(const LocalModelConfig(model: 'other'));
+        expect(c.busy, isTrue);
+        p.output.add('{"asg_probe":');
+        await Future<void>.delayed(Duration.zero);
+        expect(c.status, contains('Waiting for a completed'));
+        if (kind == 'stop') {
+          c.stopTest();
+        } else if (kind == 'error') {
+          p.output.addError(StateError('private-marker'));
+        } else {
+          p.output.add(
+            kind == 'valid'
+                ? '"ok"}'
+                : kind == 'large'
+                ? 'private-marker' * 500
+                : kind == 'empty'
+                ? ''
+                : '"private-marker"}',
+          );
+        }
+        unawaited(p.output.close());
+        await pending;
+        expect(c.busy, isFalse);
+        expect(p.cancelled, isTrue);
+        expect(c.status, isNot(contains('private-marker')));
+        if (kind == 'valid') {
+          expect(c.status, contains('expected JSON object in one completed'));
+          expect(c.status, contains('Requested model ID: chosen'));
+          expect(c.status, contains('unverified'));
+        } else {
+          expect(
+            c.status,
+            isNot(contains('expected JSON object in one completed')),
+          );
+        }
+        expect(store.load().model, const LocalModelConfig().model);
+        expect(store.loadPresets(), isEmpty);
+        c.dispose();
+      }
+    },
+  );
+  testWidgets(
+    'JSON probe deadline and disposal never publish partial success',
+    (tester) async {
+      for (final dispose in [false, true]) {
+        final p = Probe();
+        final c = ModelSettingsController(store, createProvider: (_) => p);
+        final pending = c.test(const LocalModelConfig(), jsonFormat: true);
+        p.output.add('{"asg_probe":"ok"}');
+        await tester.pump();
+        expect(c.busy, isTrue);
+        if (dispose) {
+          c.dispose();
+        } else {
+          await tester.pump(ModelSettingsController.probeTimeout);
+        }
+        await pending;
+        expect(
+          c.status,
+          isNot(contains('expected JSON object in one completed')),
+        );
+        expect(p.cancelled, isTrue);
+        unawaited(p.output.close());
+        if (!dispose) c.dispose();
+      }
+    },
+  );
   test(
     'invalid saves explain settings and preserve saved configuration',
     () async {
@@ -52,7 +170,7 @@ void main() {
     },
   );
   testWidgets('connection limits fit narrow enlarged dialog', (tester) async {
-    tester.view.physicalSize = const Size(360, 720);
+    tester.view.physicalSize = const Size(320, 720);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
@@ -60,13 +178,16 @@ void main() {
       MaterialApp(
         builder: (context, child) => MediaQuery(
           data: MediaQuery.of(context)
-              .copyWith(textScaler: TextScaler.linear(1.8)),
+              .copyWith(textScaler: TextScaler.linear(2)),
           child: child!,
         ),
         home: Scaffold(body: ModelSettings(store: store)),
       ),
     );
     expect(find.text(ModelSettingsController.requestLimits), findsOneWidget);
+    expect(find.text('Test JSON format'), findsOneWidget);
+    expect(find.text('Test JSON format').hitTestable(), findsOneWidget);
+    expect(find.text(ModelFormatProbe.guidance), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
   test('diagnostics omit response and errors; empty response fails', () async {

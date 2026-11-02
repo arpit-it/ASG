@@ -8,6 +8,7 @@ import '../controllers/model_settings_controller.dart';
 
 import '../models/local_model_config.dart';
 import '../models/model_profile_notes.dart';
+import '../models/model_format_probe.dart';
 import 'model_profile_notes_fields.dart';
 
 class ModelSettings extends StatefulWidget {
@@ -247,6 +248,8 @@ class _ModelSettingsState extends State<ModelSettings> {
             Text(controller.inventoryStatus!),
           const SizedBox(height: 16),
           const Text(ModelSettingsController.requestLimits),
+          const SizedBox(height: 8),
+          const Text(ModelFormatProbe.guidance),
           const SizedBox(height: 16),
           SelectableText(controller.status),
           if (controller.busy) const LinearProgressIndicator(),
@@ -268,6 +271,12 @@ class _ModelSettingsState extends State<ModelSettings> {
             ? null
             : () => controller.test(config),
         child: const Text('Test model'),
+      ),
+      OutlinedButton(
+        onPressed: controller.busy || controller.settingsLoadFailed
+            ? null
+            : () => controller.test(config, jsonFormat: true),
+        child: const Text('Test JSON format'),
       ),
       FilledButton(
         onPressed: controller.busy || controller.settingsLoadFailed

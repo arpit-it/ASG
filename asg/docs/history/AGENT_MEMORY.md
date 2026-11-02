@@ -9400,3 +9400,70 @@ source change; required CI supplies web build and actual browser regressions.
 Status Awaiting merge: plugin exact-tree publication, independent exact-final
 review, required CI and protected reviewer merge remain gates. Issue396 stays
 open, F22/F15unchecked, platform acceptance Deferred400.
+
+
+### Profile response identity integrity verified merged — PR #439
+Bounded increment Done for F22/#396 on `396-profile-response-identity`.
+Testedlocal9f20f66675d1f352f0a051f7d9d61177655c2b95 and publishedfinal
+639ddbf960e89ba1464ae4c98dd09e2878d4e529 share exacttree
+ef4752948891448ae142ce521cf2d296069ea6ca; allsix publication blobs matched.
+Independent approval5733742284/finalgate5733796966 found no blockers; eight
+probe tests (30 invalid-ID combinations plus valid/legacy/deadline/refusal
+checks), nine inventory tests,842remote blobs/modes and364inputs passed.
+RequiredCI41412614608 BOTH SUCCESS:Flutter125168865070 full1191Ubuntu/12skips,
+actualChrome storage/UI/browsertransport/web/realindependentgeneratedproject;
+Python125168864915 passed165tests/fourplatformskips. Parent1197Flutter/nine
+skips,165Python/two skips,analyzer/formatter340 passed. Original-probe mutation
+falsely accepted all30 identity cases; final refuses. Missing IDs remain
+unverified and matching IDs remain server assertions, not weight authentication.
+No model launch/inference/download/settings/installedapp or support change;
+default8765health unavailable. Historical432 evidence retained unchanged.
+Reviewer protected-plugin squashmerged4f8ea02e76438ce3ee5e4c254e3853df51a78e46
+at2026-11-02T08:30:12Z; parent freshplugin verified mergedPR/defaultmain source
+blob/issue396OPEN. Signed exacttree/soleparentb8ee1ee5/objecthash verified before
+guarded local-only sync. Localmain/originmain0/0,emptyindex,bothIDEeditsbyte-identical.
+FullF22/F15unchecked; externalacceptanceDeferred400. No active implementation
+aftermerge; remaining verified profiles/context/capability work Pending396.
+Finalcanonicalbookkeeping retained for next normal reviewed developmentPR.
+Bothautomationlabels applied; no newissue/cadence/notification change. Receipts:
+/private/tmp/asg-profile-publication.json,/private/tmp/asg396-profile-identity-inputs.json,
+/private/tmp/asg439-reviewed-merge.json,/private/tmp/asg439-review-summary.json,
+/private/tmp/asg439-safe-sync.py. Currentrun 2026-11-02T08:31:44.420625+00:00
+
+### Explicit draft JSON format observation — F22 / #396
+In progress on `396-json-format-probe`, base verified PR #439 merge
+`4f8ea02e76438ce3ee5e4c254e3853df51a78e46`. No competing active ASG run or
+open PR found. Reuse #396; no new issue. Existing text-only Test model does not
+observe F22 JSON-format behavior. Add a separate explicit Test JSON format
+using the existing 30-second/4096-character/256-output-token test boundary,
+fixed harmless prompt and strict duplicate-free one-member JSON validation.
+Success requires completed output; Stop, deadline, error, partial/oversize or
+wrong-format output cannot pass. Omit response/error text. Show requested ID
+and temporary one-workload observation, never authenticated loaded identity,
+JSON-mode/tool/general-schema capability or saved verified profile. Settings
+and presets remain unchanged. Delivered F09/F22 transport/settings satisfy
+actual dependencies; external acceptance Deferred #400 is unnecessary.
+Validate parser/controller/Stop/disposal/deadline/busy/privacy, actual HTTP
+JSON refusal and fragmented SSE retry with exact model/fixed output budget,
+320px 2x UI, full Flutter/Python checks and relevant web/macOS builds.
+Independent final-revision review, required CI and protected reviewer merge
+remain gates. Full F22/F15 stay unchecked. Prior439 final merge evidence above
+retained for this normal reviewed increment. No live inference, model download,
+new supported model/platform or installed-app/settings change claimed.
+
+Final local validation: isolated tracked-source Flutter1201 passed/nine explicit
+skips, analyzer clean, formatter342 unchanged after formatting; web and macOS
+debug builds passed. Ten focused tests passed after the final 320px2x action
+hit-test assertion, including actual HTTP JSON refusal and fragmented SSE retry,
+exact requested model/256-token payload, duplicate keys, completed-only output,
+privacy/Stop/deadline/disposal and unchanged settings/presets. Python165 passed/
+two explicit platform skips with required owned loopback/confinement access;
+the first outer-sandbox attempt failed solely at those unavailable boundaries.
+All367 runtime/test/tool/asset/package/inventory inputs match the isolated
+validated copy (/private/tmp/asg-json-inputs.json). No live inference claimed.
+Status Awaiting merge: exact tested-tree plugin publication, independent final-
+revision review, required CI and protected reviewer merge remain delivery gates.
+The PR will record exact tested/published revisions and final-review/CI/merge
+receipts; retain this issue open for remaining F22 verified profiles/context.
+FullF22/F15 unchecked; external platform acceptance remains Deferred #400.
+Recorded 2026-11-02T08:51:00Z.

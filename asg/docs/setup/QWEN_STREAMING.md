@@ -163,3 +163,19 @@ unknown; malformed selected-entry metadata fails privately. Inspection does not
 run generation, save settings, apply profile notes or alter request budgets.
 These policy/declaration values do not verify usable context, model identity,
 format compatibility, memory fit or successful inference.
+
+### Explicit draft JSON format observation
+
+In Local model settings, **Test JSON format** sends a fixed harmless request to
+that dialog's draft connection and exact model ID, without applying the draft.
+It asks for `{"asg_probe":"ok"}` and requires a completed, duplicate-free JSON
+object with exactly that member/value. Markdown, prose, extra members and
+partial output fail. This uses the same 30-second, 4096-character and fixed
+256-output-token limits as Test model; **Stop test** closes the app connection
+without promising server-side cancellation. Raw response/error text is omitted.
+
+This is one temporary prompt-format observation, not an API `response_format`
+request or general schema/tool compatibility test. It does not authenticate
+loaded weights, establish a context budget or enable model support. Results are
+not saved to profiles or settings. Save remains a separate action. No new real
+model validation is implied by the deterministic HTTP/controller regressions.
