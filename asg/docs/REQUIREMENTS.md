@@ -210,7 +210,8 @@ The saved development automation was updated through its management tool; active
   - Bounded delivery milestones: (1) backend contract/capability discovery and an MLX regression; (2) explicit CPU setup/inference on a supported non-Apple desktop with compatible weights; (3) explicit CUDA setup/inference on a CUDA host. Each milestone needs its own focused issue, saved settings/restart/error tests and real-host evidence. Non-Apple CPU/CUDA real-host acceptance is now Deferred in #400 until the queued implementation is delivered; this is not a dependency on eligible implementation. Isolate optional backend dependencies so missing MLX cannot prevent CPU/CUDA startup; validate configurable executable/model paths including spaces. Do not claim CPU adequacy for a 9B model without measured successful operation within the configured limits.
   - Delivery: create/reuse a narrowly scoped issue when selected; remain unchecked until all promised backend milestones, independent review, required checks and verified merges. CPU and CUDA evidence must be recorded separately; unavailable hardware is a recorded blocker, never a fixture-based completion claim.
 - [ ] F22 Hardware-aware local model catalog and selection — In progress; depends on delivered F09/F15 foundations; unavailable-platform validation Deferred
-  - Temporary client-observed test latency — Awaiting merge: #396, `396-model-test-latency`; monotonic first nonblank text/completed-response times for successful explicit draft tests, no token-speed/profile/support claim. Delivered test/transport prerequisites; Deferred400 unnecessary.
+  - Draft connection observation invalidation — Awaiting merge: #396, `396-draft-test-invalidation`; clear stale response/latency/inventory on connection edits or preset restoration, retain busy guards and note/cursor-only behavior; normal tests/review/CI/verified merge required.
+  - Temporary client-observed test latency — Done (bounded increment): #396, `396-model-test-latency`, [PR #441](https://github.com/arpit-it/ASG/pull/441); final39ab3534 approved5734353043/finalgate5734432234, requiredCI41419692986 passed; verified reviewer mergefdc5dbd2928b110f1c89afe569694bda0c089751 at2026-11-02T09:28:02Z; monotonic first nonblank text/completed-response times for successful explicit draft tests, no token-speed/profile/support claim. Delivered test/transport prerequisites; Deferred400 unnecessary.
   - Explicit draft JSON format observation — Done (bounded increment): #396, `396-json-format-probe`, [PR #440](https://github.com/arpit-it/ASG/pull/440); finalf391444d approved5734064466/finalgate5734104575, requiredCI41416191653 passed; verified reviewer mergece0fa17f6b06e06e18ca19e7570daa71a6b1d6f1 at2026-11-02T08:58:41Z; separate bounded opt-in test of one duplicate-free sentinel object, temporary requested-ID observation only. No saved capability, JSON-mode, loaded identity or general schema/tool claim. Delivered transport/settings prerequisites; Deferred #400 unnecessary.
   - Profile response identity integrity — Done (bounded increment): #396, `396-profile-response-identity`, [PR #439](https://github.com/arpit-it/ASG/pull/439); final639ddbf9 approved5733742284/finalgate5733796966, requiredCI41412614608 passed; verified reviewer merge4f8ea02e76438ce3ee5e4c254e3853df51a78e46 at2026-11-02T08:30:12Z. Refuse contradictory observed completion IDs; synthetic HTTP contract only, fullF22/F15unchecked.
   - Actual Chrome selected-connection redirect acceptance — Done (bounded increment): #396, `396-browser-redirect-acceptance`, [PR #438](https://github.com/arpit-it/ASG/pull/438); finalcff94f8d approved6571995803/finalgate6572105934, requiredCI41409297327 passed; reviewer mergeb8ee1ee5ce390b5f06fc0a2b19f4b2cbac87413c verified at2026-11-02T08:02:08Z. Actual Chrome zero-target/private refusal/JSON+SSE retry; fullF22/F15unchecked.
@@ -390,7 +391,7 @@ Requirements changes: existing F10 acceptance guidance and F15 backend milestone
 
 ## Active task and delivery ledger
 
-Current: Issue #396 contradictory response-model identity safeguard Done via PR #417; final92260d9c approved5730855594/finalgate5730876269, requiredCI41363879462 passed, verified reviewer merge9e7e9c0e at2026-11-01T23:55:28Z. Remaining verified profiles/context/real-model capability evidence Pending; fullF22/F15 unchecked, platform acceptance Deferred400.
+Current: Issue #396 temporary client-observed test latency Done via PR #441; final39ab3534 approved5734353043/finalgate5734432234, requiredCI41419692986 passed, verified reviewer mergefdc5dbd2 at2026-11-02T09:28:02Z. Remaining verified profiles/context/real-model capability evidence Pending; fullF22/F15 unchecked, platform acceptance Deferred400.
 
 Historical pre-F17 selection: F10 In progress/unchecked. PR #248 verified merged as `c54c9b7b120d88531a0013705801d6babf0c7af9` at 2026-10-28T05:29:19Z after independent final review 5678169248 of `274bb3fd` and required CI 40637890903; tested tree `61f985bc`. Explicit opt-in named-test criterion contracts delivered. Full acceptance reconciliation, including whole-requirement supported verdicts, remains; no later task selected.
 
@@ -10452,3 +10453,66 @@ Existing default8765health unavailable; no model launch/inference/download or
 installed-app/settings change. Status Awaiting merge: plugin exact-tested-tree
 publication, independent final-revision review, required CI and protected reviewer
 merge remain gates. Keep396open/fullF22/F15unchecked/platformDeferred400.
+
+
+### Temporary client-observed test latency verified merged — PR #441
+Bounded increment Done for F22/#396 on `396-model-test-latency`.
+Tested local56931784256377d445001076bea69c90d7230bcd and published final
+39ab35345b9aceda763a81c42510000527e4004d share exact tree
+ec037aac64b7b84d40c6f3d554659d539741e8b5; all eight publication blobs match.
+Independent approval5734353043/finalgate5734432234 found no blockers;
+19 independent Flutter/controller/actualHTTP/narrowUI/preset checks, one
+success/Stop/retry/wrongJSON timing-reset probe and nine inventory checks passed;
+all844 remote blobs/modes and367 validation inputs match. RequiredCI41419692986
+BOTH SUCCESS: Flutter125191996441 full1196Ubuntu/12explicit skips,17actualChrome,
+actual browsertransport/web/real independent generated-project verification;
+Python125191995961165tests/four explicit CI platform skips. Parent1202Flutter/
+nine skips,11focused,inventory9,formatter342/analyzer/web/macOSdebug passed.
+Temporary monotonic first-nonblank-text and completed-response timings cover
+one successful explicit draft test; no model token-speed/capacity/loaded-weight
+identity, saved verified profile or new inference/support claim. Default8765
+health unavailable; no model launch/download/settings/installed-app change.
+Independent reviewer protected-plugin squashmerged PR441 as
+fdc5dbd2928b110f1c89afe569694bda0c089751 at2026-11-02T09:28:02Z.
+Parent fresh plugin verified mergedPR/defaultmain exactsourceblob/#396OPEN.
+Signed exacttree/soleparentce0fa17/objecthash verified before guarded local-only
+sync. Localmain/originmain0/0,emptyindex,both originalIDEedits byte-identical.
+FullF22/F15 remain unchecked; externalacceptance Deferred400. No active
+implementation aftermerge; remaining verified profiles/context/capability work
+Pending396. Final canonical bookkeeping retained for next normal reviewed PR.
+Both automationlabels applied; no newissue/cadence/notification change.
+Receipts:/private/tmp/asg-latency-publication.json,/private/tmp/asg-latency-inputs.json,
+/private/tmp/asg441-reviewed-merge.json,/private/tmp/asg441-review-summary.json,
+/private/tmp/asg441-safe-sync.py.
+Currentrun 2026-11-02T09:29:14.415263+00:00
+
+
+### Connection draft observation invalidation — F22 / #396
+In progress on `396-draft-test-invalidation` from verified PR #441 merge
+`fdc5dbd2928b110f1c89afe569694bda0c089751`. Fresh connected GitHub
+verified PR441 merged and no open PR; app inventory found no competing active
+ASG run. Reuse #396, scope comment6573971778; no new issue. Code inspection
+found successful response/latency status survives changing URL/model/output
+budget or restoring a preset, presenting an old observation beside a new draft.
+Controller invalidates status/inventory with neutral retest guidance; active
+tests/busy/loading failures/disposal remain guarded. Cursor-only movement,
+preset names/profile notes and preset-only writes retain connection results.
+No inference, settings write, backend/support or saved-profile claim. Delivered
+F22 settings/test foundations suffice; unavailable-hardware acceptance Deferred
+#400 is unnecessary. FullF22/F15 remain unchecked. Validate lifecycle/retry,
+text/JSON success and failure, preset restore, UI field/token/note/cursor edits,
+actual HTTP regressions, full Flutter/inventory checks and web/macOS builds.
+Independent exact-final review, required CI and protected reviewer merge remain
+gates. Preserve prior441 final review/CI/merge bookkeeping in this normal PR.
+Recorded 2026-11-02T09:46:56.347029+00:00
+
+Final local validation: isolated tracked-source Flutter1204 passed/nine explicit
+skips, focused21 controller/UI/preset/actualHTTP tests passed, inventory9passed.
+Formatter342 unchanged, analyzer clean, web and macOS debug builds passed.
+All367 validation inputs byte-identical. Test-only duplicate disposal corrected
+before final successful checks. Cursor-only listeners retain status; URL/model/
+token/preset restore clears stale observations; active requests remain busy.
+Existing default8765health unavailable; no runtime launch/model inference/
+download/settings/installed-app change. Status Awaiting merge: exact-tested-tree
+plugin publication, independent final-revision review, required CI and protected
+reviewer merge remain gates. Keep396open/F22/F15unchecked/Deferred400.

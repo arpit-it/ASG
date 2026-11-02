@@ -66,8 +66,20 @@ class _ModelSettingsState extends State<ModelSettings> {
   void initState() {
     super.initState();
     controller.addListener(refresh);
-    url.addListener(controller.clearInventory);
-    model.addListener(controller.clearInventory);
+    lastUrl = url.text;
+    lastModel = model.text;
+    url.addListener(connectionTextChanged);
+    model.addListener(connectionTextChanged);
+  }
+
+  late String lastUrl = url.text;
+  late String lastModel = model.text;
+
+  void connectionTextChanged() {
+    if (lastUrl == url.text && lastModel == model.text) return;
+    lastUrl = url.text;
+    lastModel = model.text;
+    controller.connectionDraftChanged();
   }
 
   void refresh() {
@@ -129,7 +141,7 @@ class _ModelSettingsState extends State<ModelSettings> {
                 ? null
                 : (value) {
                     if (value != null) {
-                      controller.clearInventory();
+                      controller.connectionDraftChanged();
                       setState(() => chatOutputTokens = value);
                     }
                   },

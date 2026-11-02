@@ -78,6 +78,130 @@ void main() {
     },
   );
 
+  test('draft changes clear observations without writes and cannot unlock active tests', () async {
+    var provider = Probe();
+    final seen = <LocalModelConfig>[];
+    final c = ModelSettingsController(
+      store,
+      createProvider: (config) {
+        seen.add(config);
+        return provider;
+      },
+    );
+    await c.savePreset('Preset', const LocalModelConfig(model: 'preset'));
+    for (final json in [false, true]) {
+      final pending = c.test(
+        const LocalModelConfig(model: 'old'),
+        jsonFormat: json,
+      );
+      final activeStatus = c.status;
+      c.connectionDraftChanged();
+      expect(c.busy, isTrue);
+      expect(c.testing, isTrue);
+      expect(c.status, activeStatus);
+      provider.output.add(json ? '{"asg_probe":"ok"}' : 'private');
+      await provider.output.close();
+      await pending;
+      final completed = c.status;
+      expect(completed, contains('Client-observed first text:'));
+      await c.savePreset(json ? 'JSON' : 'Text', const LocalModelConfig());
+      expect(c.status, completed);
+      c.inventoryStatus = 'Old inventory';
+      if (json) {
+        c.selectPreset('Preset');
+      } else {
+        c.connectionDraftChanged();
+      }
+      expect(c.status, ModelSettingsController.draftChangedGuidance);
+      expect(c.inventoryStatus, isNull);
+      expect(c.status, isNot(contains('old')));
+      expect(store.load().model, const LocalModelConfig().model);
+      expect(seen.length, json ? 2 : 1);
+      provider = Probe();
+    }
+    final retry = c.test(const LocalModelConfig(model: 'new'));
+    provider.output.addError(StateError('private'));
+    unawaited(provider.output.close());
+    await retry;
+    expect(seen.last.model, 'new');
+    expect(c.status, contains('failed'));
+    c.connectionDraftChanged();
+    expect(c.status, ModelSettingsController.draftChangedGuidance);
+    c.dispose();
+    final closed = c.status;
+    c.connectionDraftChanged();
+    expect(c.status, closed);
+  });
+
+  testWidgets(
+    'connection edits clear status but preset names and notes do not',
+    (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(body: ModelSettings(store: store)),
+        ),
+      );
+      final fields = tester
+          .widgetList<TextField>(find.byType(TextField))
+          .toList();
+      final url = fields[0].controller!;
+      final model = fields[1].controller!;
+      url.text = 'http://private@localhost';
+      await tester.pump();
+      await tester.tap(find.widgetWithText(OutlinedButton, 'Test model'));
+      await tester.pumpAndSettle();
+      expect(
+        find.textContaining('Invalid connection settings'),
+        findsOneWidget,
+      );
+      model.text = 'new-model';
+      await tester.pump();
+      expect(
+        find.text(ModelSettingsController.draftChangedGuidance),
+        findsOneWidget,
+      );
+      expect(find.textContaining('Invalid connection settings'), findsNothing);
+      await tester.tap(find.widgetWithText(OutlinedButton, 'Test JSON format'));
+      await tester.pumpAndSettle();
+      fields[2].controller!.text = 'name';
+      model.selection = const TextSelection.collapsed(offset: 1);
+      final tile = find.byType(ExpansionTile);
+      await tester.ensureVisible(tile);
+      await tester.tap(tile);
+      await tester.pumpAndSettle();
+      tester
+              .widget<TextField>(find.byKey(const ValueKey('License note')))
+              .controller!
+              .text =
+          'license';
+      await tester.pump();
+      expect(
+        find.textContaining('Invalid connection settings'),
+        findsOneWidget,
+      );
+      final tokens = find.byType(DropdownButtonFormField<int>);
+      await tester.ensureVisible(tokens);
+      await tester.tap(tokens);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('512').last);
+      await tester.pumpAndSettle();
+      expect(
+        find.text(ModelSettingsController.draftChangedGuidance),
+        findsOneWidget,
+      );
+      await tester.tap(find.widgetWithText(OutlinedButton, 'Test model'));
+      await tester.pumpAndSettle();
+      url.text = 'http://localhost:9876/v1';
+      await tester.pump();
+      expect(
+        find.text(ModelSettingsController.draftChangedGuidance),
+        findsOneWidget,
+      );
+      expect(store.load().model, const LocalModelConfig().model);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
   test('JSON format observation requires one exact duplicate-free object', () {
     for (final text in [
       '{"asg_probe":"ok"}',
