@@ -13,6 +13,7 @@ import 'package:asg/models/local_model_config.dart';
 import 'package:asg/models/model_connection_preset.dart';
 import 'package:asg/models/model_profile_notes.dart';
 import 'package:asg/models/model_test_observation.dart';
+import 'package:asg/models/model_runtime_metrics.dart';
 import 'package:asg/services/model_settings_store.dart';
 import 'package:asg/services/studio_database.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -116,6 +117,12 @@ void main() {
               observedAt: DateTime.utc(2026, 11, 2),
               firstTextMilliseconds: 12,
               completedMilliseconds: 34,
+              runtimeMetrics: const ModelRuntimeMetrics(
+                promptTokens: 42,
+                completionTokens: 2,
+                tokensPerSecond: 12.5,
+                peakMemoryGb: 6.25,
+              ),
             ),
             config: LocalModelConfig(model: 'saved'),
             profileNotes: ModelProfileNotes(
@@ -153,6 +160,9 @@ void main() {
             .testObservation!;
         expect(savedObservation.jsonFormat, isTrue);
         expect(savedObservation.observedAt, DateTime.utc(2026, 11, 2));
+        expect(savedObservation.runtimeMetrics!.promptTokens, 42);
+        expect(savedObservation.runtimeMetrics!.tokensPerSecond, 12.5);
+        expect(savedObservation.runtimeMetrics!.peakMemoryGb, 6.25);
         expect(savedObservation.completedMilliseconds, 34);
         final editor = ModelSettingsController(ModelSettingsStore(records));
         final selectedConfig = editor.selectPreset('Local')!;

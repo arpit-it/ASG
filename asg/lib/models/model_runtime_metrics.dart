@@ -13,11 +13,51 @@ class ModelRuntimeMetrics {
   final int promptTokens, completionTokens;
   final double? tokensPerSecond, peakMemoryGb;
 
+  Map<String, Object?> toJson() {
+    final value = <String, Object?>{
+      'prompt_tokens': promptTokens,
+      'completion_tokens': completionTokens,
+      'tokens_per_second': tokensPerSecond,
+      'peak_memory_gb': peakMemoryGb,
+    };
+    ModelRuntimeMetrics.fromJson(value);
+    return value;
+  }
+
+  /// Durable metadata is strict; corruption must never become missing telemetry.
+  factory ModelRuntimeMetrics.fromJson(Object? value) {
+    const invalid = FormatException('Invalid saved runtime metrics.');
+    if (value is! Map<String, dynamic> ||
+        value.length != 4 ||
+        !value.keys.toSet().containsAll([
+          'prompt_tokens',
+          'completion_tokens',
+          'tokens_per_second',
+          'peak_memory_gb',
+        ])) {
+      throw invalid;
+    }
+    final parsed = parse({...value, 'finish_reason': 'stop'}, outputLimit: 256);
+    if (parsed == null ||
+        (value['tokens_per_second'] != null &&
+            parsed.tokensPerSecond == null) ||
+        (value['peak_memory_gb'] != null && parsed.peakMemoryGb == null)) {
+      throw invalid;
+    }
+    return parsed;
+  }
+
   static const guidance =
       'Temporary server-reported metrics from this completed test only. '
       'Token counts, generation speed and process peak memory are server '
       'assertions, not independent app measurements or verified model identity, '
-      'context capacity, available memory or support. Not saved with test observations.';
+      'context capacity, available memory or support. Saved only when you explicitly save the test observation.';
+
+  static const historicalGuidance =
+      'Historical server-reported metrics from the saved completed test. '
+      'The server and loaded weights may have changed. Token counts, speed and '
+      'process peak memory are unverified server assertions, not independent '
+      'measurements, available memory, context capacity or model support.';
 
   /// Malformed optional telemetry is unavailable; it cannot invalidate text.
   static ModelRuntimeMetrics? parse(Object? value, {required int outputLimit}) {

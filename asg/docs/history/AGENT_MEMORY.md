@@ -9842,3 +9842,56 @@ launch/inference/download/installedapp change. Awaiting merge: plugin exacttree
 publication, independent final review, requiredCI and protected reviewer merge
 remain gates. FullF22/F15unchecked; externalacceptanceDeferred400.
 Recorded 2026-11-02T11:39:34.602078+00:00
+
+
+### Completed-test runtime metrics verified merged — PR #446
+Bounded increment Done for F22/#396 on `396-test-runtime-metrics`.
+Tested local6096a850334cdd0b7d24363a81d185389a74a9f8 and published final
+8a5f636c2b6ff6e252d683d446c61aa6f15d8b83 share exacttree
+715575b3187cd5aa80a5bf478c6fcd83a997cae4; all13publicationblobs match.
+Independent approval5736018950/finalgate6576372712 found no blockers;
+27independentFlutter/nineinventory passed. RequiredCI41438740167 BOTH SUCCESS:
+Flutter125254994464 fulltests/actualChrome/browsertransport/web/Wasm and real
+independentgeneratedproject verification; Python125254994757 fixtures passed.
+Parent1233Flutter/nine explicit skips,27focused,format350/analyzer/web/isolated
+macOSdebug/nineinventory passed; all374sourcevalidationinputs match.
+Typed optional final server assertions for prompt/completion tokens, generation
+TPS and processpeakGB display only after completed explicit tests, temporary
+and unverified. Missing/malformed metrics unavailable; delayedDONE/EOF/error/
+truncation/Stop/formatfailure/draftchange/reopen and320px2x guidance covered.
+No extra request, telemetry persistence or capability/context/support verdict.
+Default8765health freshly unavailable; no model launch/inference/download or
+installedapp change. Independent reviewer protected-plugin squashmerged PR446
+as86dadc817798b92a6bbef92fbf1c9f64b5a8325b at2026-11-02T11:48:46Z.
+Parent freshplugin verified mergedPR/currentmain/#396OPEN/signed exacttree/
+soleparentf5ab9b6d; commitobject hash verified before guarded local sync.
+Localmain/originmain0/0,emptyindex,both originalIDEedits byte-identical.
+FullF22/F15unchecked; externalacceptanceDeferred400. No active implementation
+aftermerge; remaining verified profiles/context/capability work Pending396.
+Final canonical bookkeeping retained for next normal reviewed PR. Bothautomation
+labels applied; no newissue/cadence/notification change.
+Receipts:/private/tmp/asg-metrics-publication.json,/private/tmp/asg-metrics-inputs.json,
+/private/tmp/asg446-reviewed-merge.json,/private/tmp/asg446-safe-sync.py.
+Currentrun 2026-11-02T11:49:48.078818+00:00
+
+
+### Historical runtime metrics — F22 / #396
+In progress on `396-historical-runtime-metrics` from verified PR #446 merge
+86dadc817798b92a6bbef92fbf1c9f64b5a8325b. Scope comment6576598565.
+F22 profile tradeoffs gap: saved test observations previously dropped completed
+server token/speed/process-peak metrics. Optional strict allowlisted metadata now
+follows the existing explicit matching-preset save, retaining five-field legacy
+records and showing reopened figures as historical/unverified. No automatic
+persistence, prompts/outputs/private diagnostics, model support/context verdict,
+extra request, model launch/download or stable app change. FullF22/F15 unchecked;
+external acceptance Deferred400. Failure/retry, schema, actualHTTP, native reopen
+and320px2x regressions added/extended. Final validation/review/CI/merge pending.
+Initial constructor reference/lint fixed. In-place full-suite license check saw
+ignored tools/.mlx-venv vendor Python; exact tracked-source validation and builds
+run in /private/tmp/asg447-validation, preserving local runtime and IDE data.
+An initial Python unittest import invocation was corrected to discover -s tools.
+Recorded 2026-11-02T12:03:42.190310+00:00
+
+Final tracked-source validation passed: 1235Flutter tests/nine explicit skips, analyzer clean, formatter350, web includingWasm dryrun and isolatedmacOSdebug build; nineinventory regressions passed. ActualHTTP JSON/SSE explicit save/failure/retry and native database reopen/strictschema/320px2x historical guidance covered. No live inference or installedapp change. Source/test/tool snapshot hashes match. Awaiting merge: plugin exacttree publication, independent finalrevision review, requiredCI and protected reviewer merge remain gates. FullF22/F15 unchecked; issue396 stays open. Recorded 2026-11-02T12:04:55.696351+00:00
+
+Independent review5736304782 at9459ac5f found blocking stale acceptance-inventory comparison hash in requiredCI41441992616/Python125265865558. Source tests/builds still valid; nineinventory tests had passed before final braces lint fix. Regenerated final inventory to c5768759876bf2f2bbe466f03da2a41cec1144251846aa6b27fb74f0c6f8ca32; all nine inventory regressions now pass against final source. Reviewer independently39focusedFlutter passed; no other blocker reported. Fresh finalrevision review and new requiredCI remain gates; no merge claimed. Recorded 2026-11-02T12:08:07.516916+00:00
