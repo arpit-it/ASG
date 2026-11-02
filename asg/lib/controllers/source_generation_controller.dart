@@ -5,6 +5,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import '../models/app_definition.dart';
+import '../models/generation_capabilities.dart';
 import '../models/build_history_entry.dart';
 import '../models/artifact_inspection.dart';
 import '../models/build_plan.dart';
@@ -49,6 +50,9 @@ class SourceGenerationController extends BaseController {
   final GenerationHost Function() createRollbackHost;
   GenerationHost _host;
   GenerationHost get host => _host;
+  GenerationCapabilities get capabilities => _host is GenerationCapabilitySource
+      ? (_host as GenerationCapabilitySource).capabilities
+      : const GenerationCapabilities.unknown();
   GenerationInput? _input;
   GeneratedSnapshotStatus get snapshotStatus =>
       _input?.compare(_result) ?? GeneratedSnapshotStatus.unknown;

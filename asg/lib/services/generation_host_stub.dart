@@ -2,13 +2,18 @@
 // Copyright 2026 Arpit Sinha
 
 import '../models/app_definition.dart';
+import '../models/generation_capabilities.dart';
 import '../models/project.dart';
 import '../models/source_generation.dart';
 import 'generation_host.dart';
 
 GenerationHost createGenerationHost() => UnsupportedGenerationHost();
 
-class UnsupportedGenerationHost implements GenerationHost {
+class UnsupportedGenerationHost
+    implements GenerationHost, GenerationCapabilitySource {
+  @override
+  GenerationCapabilities get capabilities =>
+      const GenerationCapabilities.unavailable('Browser or unsupported host');
   @override
   bool get supported => false;
   Never unavailable() => throw UnsupportedError(

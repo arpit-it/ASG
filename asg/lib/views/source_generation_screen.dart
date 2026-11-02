@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MPL-2.0
 // Copyright 2026 Arpit Sinha
 
+import 'generation_capability_panel.dart';
+
 import 'package:flutter/material.dart';
 
 import '../controllers/source_generation_controller.dart';
@@ -159,6 +161,7 @@ class _SourceGenerationScreenState extends State<SourceGenerationScreen> {
                   ),
               ],
             ),
+            GenerationCapabilityPanel(report: controller.capabilities),
             if (!controller.available)
               const Text(
                 'Generation currently requires the macOS app, Flutter project type and readable history. Other platforms retain the in-app prototype.',

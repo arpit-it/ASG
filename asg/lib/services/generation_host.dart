@@ -2,6 +2,7 @@
 // Copyright 2026 Arpit Sinha
 
 import '../models/app_definition.dart';
+import '../models/generation_capabilities.dart';
 import '../models/project.dart';
 import '../models/source_generation.dart';
 
@@ -35,4 +36,9 @@ abstract interface class GenerationHost {
   Future<void> openPreview(Uri uri);
   Future<void> stopPreview();
   Future<void> dispose();
+}
+
+/// Optional reporting contract; unknown integrations do not inherit capabilities.
+abstract interface class GenerationCapabilitySource {
+  GenerationCapabilities get capabilities;
 }
