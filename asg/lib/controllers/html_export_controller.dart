@@ -3,6 +3,9 @@
 
 import 'dart:async';
 
+import '../models/html/html_source_check.dart';
+import '../services/html/html_source_check.dart';
+
 import '../services/html/html_preview.dart';
 import '../services/html/html_preview_factory.dart';
 import 'html_preview_controller.dart';
@@ -18,10 +21,80 @@ class HtmlExportController extends BaseController {
     required this.exporter,
     FolderPicker? folderPicker,
     HtmlPreview? previewService,
-  }) : _picker = folderPicker ?? FolderPicker(),
+    HtmlSourceChecker? sourceChecker,
+  }) : checker = sourceChecker ?? createHtmlSourceChecker(),
+       _picker = folderPicker ?? FolderPicker(),
        preview = HtmlPreviewController(previewService ?? createHtmlPreview());
 
   final HtmlSourceExport exporter;
+  final HtmlSourceChecker checker;
+  HtmlSourceCheck? _sourceCheck;
+  String? _checkError;
+  bool _checking = false, _checkStopped = false;
+  int _checkGeneration = 0;
+  HtmlSourceCheck? get sourceCheck => _sourceCheck;
+  String? get checkError => _checkError;
+  bool get checking => _checking;
+  bool get checkStopped => _checkStopped;
+
+  Future<void> checkExport() async {
+    final request = _exportedRequest;
+    final directory = _exportedDirectory;
+    if (isDisposed ||
+        _checking ||
+        _busy ||
+        !checker.supported ||
+        request == null ||
+        directory == null) {
+      return;
+    }
+    final generation = ++_checkGeneration;
+    _checking = true;
+    _checkStopped = false;
+    _sourceCheck = null;
+    _checkError = null;
+    update();
+    void authorize() {
+      if (isDisposed || generation != _checkGeneration) {
+        throw StateError('Source check revoked.');
+      }
+    }
+
+    final deadline = Timer(const Duration(seconds: 10), () {
+      if (!isDisposed && _checking && generation == _checkGeneration) {
+        stopCheck();
+        _checkError = 'Source check reached its 10-second deadline. Waiting for pending file IO to settle before retry.';
+        update();
+      }
+    });
+    try {
+      final result = await checker.check(
+        directory: directory,
+        input: request.input,
+        authorizeRead: authorize,
+      );
+      authorize();
+      _sourceCheck = result;
+    } catch (_) {
+      if (!isDisposed && generation == _checkGeneration) {
+        _checkError = 'Source verification failed. Files may be missing, changed, symbolic or unreadable. Nothing was changed; restore the exact starter before retry.';
+      }
+    } finally {
+      deadline.cancel();
+      _checking = false;
+      update();
+    }
+  }
+
+  void stopCheck() {
+    if (isDisposed || !_checking || _checkStopped) return;
+    _checkGeneration++;
+    _checkStopped = true;
+    _sourceCheck = null;
+    _checkError = 'Source check stopped. Pending file IO may still settle; no files were changed.';
+    update();
+  }
+
   final FolderPicker _picker;
   final HtmlPreviewController preview;
   HtmlExportRequest? _exportedRequest;
@@ -57,6 +130,9 @@ class HtmlExportController extends BaseController {
   }
 
   void _invalidate() {
+    _checkGeneration++;
+    _sourceCheck = null;
+    _checkError = null;
     _exportedRequest = null;
     if (preview.url != null || preview.busy || preview.cleanupFailed) {
       unawaited(preview.stop());
@@ -168,6 +244,7 @@ class HtmlExportController extends BaseController {
 
   @override
   void dispose() {
+    _checkGeneration++;
     preview.dispose();
     _exportedRequest = null;
     _authority++;

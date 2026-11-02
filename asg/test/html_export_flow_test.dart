@@ -316,16 +316,23 @@ void main() {
       });
       await tester.pumpAndSettle();
       expect(c.exportedDirectory, '${temporary.path}/exported_site');
+      await tester.runAsync(c.checkExport);
+      expect(c.sourceCheck?.files, 5);
+      expect(c.checkError, isNull);
       await tester.drag(find.byType(Scrollable).first, const Offset(0, 10000));
       await tester.pumpAndSettle();
       await tester.scrollUntilVisible(
-        find.text('Source export complete. Full runner checks remain planned.'),
+        find.text(
+          'Source export complete. Full runner integration remains planned.',
+        ),
         180,
         scrollable: find.byType(Scrollable).first,
       );
       await tester.pumpAndSettle();
       expect(
-        find.text('Source export complete. Full runner checks remain planned.'),
+        find.text(
+          'Source export complete. Full runner integration remains planned.',
+        ),
         findsOneWidget,
       );
       expect(tester.takeException(), isNull);
