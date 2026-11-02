@@ -11038,7 +11038,8 @@ new issue/cadence/notification change. Receipts:/private/tmp/asg464-publication.
 
 
 ### Creation-time HTML runner discovery — F11 / #402
-In progress on `402-creation-runner-discovery`, scope6587720764, from verified
+Awaiting merge in [PR #465](https://github.com/arpit-it/ASG/pull/465) on
+`402-creation-runner-discovery`, scope6587720764, from verified
 PR464 merge `327355870fcb983e26d1aa7be6ea2543cacd8cc7`. No earlier active run or
 open PR at selection. Reuses issue #402; no new requirement or issue.
 F11 requires stack capabilities/version/toolchain information before creation;
@@ -11068,3 +11069,8 @@ match the validation manifest /private/tmp/asg402-discovery-inputs.json (421).
 Initial formatter ran before package resolution and reported include warnings;
 post-resolution final formatter is clean. No runtime/test failures or inference,
 app-launch/support claims. Awaiting plugin publication/review/CI/merge.
+
+PR465 publication: tested local cb2ed40e/plugin20e8072a share exacttree5962cdd4;
+all nine remote blobs and421validation inputs match. This followup changes
+only status/PR linkage; runtime inputs unchanged. Independent exact-final
+review, actual required CI and protected reviewer merge remain gates.
