@@ -9423,3 +9423,5 @@ source changed; no macOS build/inference/native manual claim is added.
 Status Awaiting merge: plugin exact-tree publication, independent final-revision
 review, required CI and protected reviewer merge remain gates. Issue396 stays
 open for remaining profiles/capabilities; fullF22/F15 unchecked.
+
+Final fixture strengthening: target OPTIONS/preflight requests also count as target traffic; actual Chrome passed again with zero target requests including preflight. All364 final validation inputs match. Default8765 health is unavailable; no launch/inference claimed. Final review and updated required CI remain gates.

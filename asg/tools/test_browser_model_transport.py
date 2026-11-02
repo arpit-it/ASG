@@ -40,6 +40,9 @@ def main():
             self.wfile.write(body)
 
         def do_OPTIONS(self):
+            if self.server is target:
+                with lock:
+                    counts['target'] += 1
             self.send(204)
 
         def do_GET(self):
