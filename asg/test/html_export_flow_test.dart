@@ -30,6 +30,7 @@ class _Exporter implements HtmlSourceExport {
   final entered = Completer<void>();
   final proceed = Completer<void>();
   Object? failure;
+  bool honorFinalAuthority = true;
   @override
   bool get supported => available;
   @override
@@ -43,7 +44,7 @@ class _Exporter implements HtmlSourceExport {
     authorizeWrite();
     entered.complete();
     await proceed.future;
-    authorizeWrite();
+    if (honorFinalAuthority) authorizeWrite();
     if (failure != null) throw failure!;
     return '${request.parent}/${request.folderName}';
   }
@@ -181,6 +182,115 @@ void main() {
       },
     );
   }
+  for (final lateFailure in [false, true]) {
+    testWidgets(
+      'deadline retains pending ownership and refuses late ${lateFailure ? 'partial failure' : 'success'} at 320px/2x',
+      (tester) async {
+        final service = _Exporter()..honorFinalAuthority = false;
+        if (lateFailure) {
+          service.failure = const HtmlExportFailure(
+            '/tmp/my_site',
+            pendingDirectoryProcessId: 456,
+          );
+        }
+        final c = await _ready(service);
+        tester.view.physicalSize = const Size(320, 1000);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+        await tester.pumpWidget(
+          MaterialApp(
+            builder: (context, child) => MediaQuery(
+              data: MediaQuery.of(context)
+                  .copyWith(textScaler: TextScaler.linear(2)),
+              child: child!,
+            ),
+            home: HtmlExportScreen(controller: c),
+          ),
+        );
+        final review = c.review!;
+        final operation = c.confirm(review);
+        await tester.pump();
+        await tester.pump(const Duration(seconds: 9));
+        expect(c.stopped, false);
+        await tester.pump(const Duration(seconds: 1));
+        expect(c.stopped, true);
+        expect(c.busy, true);
+        expect(c.error, contains('10-second deadline'));
+        await c.confirm(review);
+        c.prepareReview();
+        c.edit(title: 'Ignored');
+        await c.pickParent();
+        expect(service.calls, 1);
+        expect(c.title, 'A site');
+        await tester.scrollUntilVisible(
+          find.textContaining('Export reached its 10-second deadline'),
+          180,
+          scrollable: find.byType(Scrollable).first,
+        );
+        await tester.ensureVisible(
+          find.textContaining('Export reached its 10-second deadline'),
+        );
+        await tester.pump();
+        expect(tester.takeException(), isNull);
+        service.proceed.complete();
+        await operation;
+        await tester.pump();
+        expect(c.busy, false);
+        expect(c.exportedDirectory, isNull);
+        expect(c.review, isNull);
+        expect(c.error, contains('pending export request has returned'));
+        expect(c.error, isNot(contains('Waiting for dispatched IO')));
+        expect(c.error, contains('10-second deadline'));
+        if (lateFailure) {
+          expect(c.error, contains('/tmp/my_site'));
+          expect(c.error, contains('456'));
+        }
+        await c.confirm(review);
+        expect(service.calls, 1);
+        c.edit(folder: 'new_site');
+        c.prepareReview();
+        expect(c.stopped, false);
+        expect(c.error, isNull);
+        expect(c.review!.folderName, 'new_site');
+        await tester.pumpWidget(const SizedBox());
+      },
+    );
+  }
+  testWidgets(
+    'manual Stop keeps its cause while IO waits beyond the deadline',
+    (tester) async {
+      final service = _Exporter();
+      final c = await _ready(service);
+      final operation = c.confirm(c.review!);
+      c.stop();
+      await tester.pump(const Duration(seconds: 11));
+      expect(c.busy, true);
+      expect(c.error, isNull);
+      service.proceed.complete();
+      await operation;
+      expect(c.error, contains('Export stopped'));
+      expect(c.error, isNot(contains('deadline')));
+      c.dispose();
+    },
+  );
+  testWidgets(
+    'disposal cancels export deadline without notifying or accepting late completion',
+    (tester) async {
+      final service = _Exporter()..honorFinalAuthority = false;
+      final c = await _ready(service);
+      var notifications = 0;
+      c.addListener(() => notifications++);
+      final operation = c.confirm(c.review!);
+      c.dispose();
+      final before = notifications;
+      await tester.pump(const Duration(seconds: 11));
+      service.proceed.complete();
+      await operation;
+      expect(notifications, before);
+      expect(c.exportedDirectory, isNull);
+    },
+  );
   test(
     'partial destination and unconfirmed PID retained; fresh review required',
     () async {
