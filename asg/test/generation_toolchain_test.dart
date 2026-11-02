@@ -7,6 +7,7 @@ import 'dart:io';
 import 'package:asg/controllers/source_generation_controller.dart';
 import 'package:asg/models/generation_toolchain.dart';
 import 'package:asg/services/generation_host.dart';
+import 'package:asg/services/generation_host_native.dart';
 import 'package:asg/services/generation_toolchain_native.dart';
 import 'package:asg/services/record_storage.dart';
 import 'package:asg/services/source_generation_store.dart';
@@ -19,6 +20,9 @@ import 'source_generation_controller_test.dart'
     show FixtureHost, project, definition;
 
 class InspectionHost extends FixtureHost implements GenerationToolchainSource {
+  bool generationSupported = true;
+  @override
+  bool get supported => generationSupported;
   Completer<GenerationToolchain>? gate;
   int toolInspections = 0;
   String? selectedSdk, selectedPython;
@@ -77,6 +81,30 @@ void main() {
         expect(await File('${root.path}/EXECUTED').exists(), isFalse);
       },
     );
+    test('native host observes files without enabling generation', () async {
+      await executable('sdk/bin/flutter');
+      await executable('sdk/bin/cache/dart-sdk/bin/dart');
+      final python = await executable('tools/python3');
+      final native = NativeGenerationHost();
+      try {
+        final report = await native.inspectToolchain(
+          '${root.path}/sdk',
+          python.path,
+        );
+        for (final value in [report.flutter, report.dart, report.python]) {
+          expect(value, contains('executable permission bits observed'));
+        }
+        expect(await File('${root.path}/EXECUTED').exists(), isFalse);
+        expect(native.supported, Platform.isMacOS);
+        expect(native.capabilities.starterCreation, Platform.isMacOS);
+        expect(native.capabilities.starterVerification, Platform.isMacOS);
+        expect(native.capabilities.candidateConfinement, Platform.isMacOS);
+        expect(native.capabilities.webPreview, Platform.isMacOS);
+      } finally {
+        await native.dispose();
+      }
+      await expectLater(native.inspectToolchain('', ''), throwsStateError);
+    });
     test('missing and relative inputs give private guidance', () async {
       final report = await inspectGenerationToolchain(
         '${root.path}/private-missing',
@@ -154,6 +182,60 @@ void main() {
   });
   tearDown(() {
     if (!controller.isDisposed) controller.dispose();
+  });
+  test('unsupported generation does not block inspection', () async {
+    host.generationSupported = false;
+    expect(controller.available, isFalse);
+    await controller.inspectToolchain('/selected sdk', '/selected python');
+    expect(controller.toolchain!.python, 'Python observed');
+    expect(host.toolInspections, 1);
+    expect(controller.available, isFalse);
+    expect(
+      await controller.generate(
+        parent: '/tmp',
+        name: 'test_app',
+        sdk: '/sdk',
+        python: 'python',
+        approved: true,
+      ),
+      isFalse,
+    );
+    expect(host.generations, 0);
+    expect(preferences.getKeys(), isEmpty);
+  });
+  testWidgets('unsupported host can enter and inspect paths', (tester) async {
+    host.generationSupported = false;
+    await tester.pumpWidget(
+      MaterialApp(home: SourceGenerationScreen(controller: controller)),
+    );
+    for (final entry in {
+      'Installed Flutter SDK directory': '/selected sdk',
+      'Installed Python 3 executable': '/selected python',
+    }.entries) {
+      final input = find.widgetWithText(TextField, entry.key);
+      await tester.scrollUntilVisible(
+        input,
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.enterText(input, entry.value);
+    }
+    final inspect = find.text('Inspect toolchain paths');
+    await tester.scrollUntilVisible(
+      inspect,
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.tap(inspect);
+    await tester.pumpAndSettle();
+    expect(find.text('Python: Python observed'), findsOneWidget);
+    expect(host.selectedSdk, '/selected sdk');
+    expect(host.selectedPython, '/selected python');
+    expect(controller.available, isFalse);
+    expect(host.generations, 0);
+    expect(preferences.getKeys(), isEmpty);
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox());
   });
   test('busy exclusion and exact draft, no writes or generation', () async {
     host.gate = Completer();

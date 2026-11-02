@@ -72,7 +72,8 @@ class NativeGenerationHost
     String python,
   ) async {
     checkOpen();
-    if (!supported) return const GenerationToolchain.unavailable();
+    // Read-only discovery has its own platform boundary; observing paths must
+    // not inherit or grant generation/verification support.
     return inspectGenerationToolchain(sdk, python);
   }
 

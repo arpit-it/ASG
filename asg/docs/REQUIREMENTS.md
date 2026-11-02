@@ -230,7 +230,8 @@ The saved development automation was updated through its management tool; active
   - Capability acceptance: free-form answers, structured edits, context limits and tool/JSON-format compatibility are explicit per model, not assumed from parameter count. Prompt/token accounting respects the selected model's verified budget; no silent truncation or cloud fallback. Show quality/speed/memory tradeoffs, and retain small-model choices for constrained devices. Quantized MoE models account for resident total weights rather than only active parameters.
   - Validation: simulated low/high-memory and CPU/Metal/CUDA profiles, missing/corrupt weights, incompatible formats, license/revision changes, busy-switch refusal, restart and failure recovery. Verify at least two compatible real local model profiles (including one larger than 9B on capable hardware); record exact quantization/context/peak memory/speed and F17 evidence. Unavailable larger-model hardware remains a blocker, not a fabricated memory-based support claim. Normal independent review/CI/verified merge gates apply.
 - [ ] F16 Portable generation host and capability reporting — In progress (reporting/toolchain increments delivered #401); depends on F03, F04, F05 and F15
-  - Independent operation reporting — Awaiting merge: #401, `401-operation-capabilities`; typed independent creation/verification/confinement/preview/cleanup reporting, unavailable defaults and mixed-host UI. No host enablement or execution-policy change; full F16 unchecked.
+  - Linux read-only toolchain inspection — Awaiting merge: #401, `401-linux-toolchain-inspection`; separate metadata observations from generation support; no platform enablement.
+  - Independent operation reporting — Done: #401, `401-operation-capabilities`, [PR #421](https://github.com/arpit-it/ASG/pull/421); final053d8a3b independently approved5731081654/finalgate5731102625, requiredCI41369115474 passed; verified reviewer merge37e39e6fb231fde25606d66742c1b699456df666 at2026-11-02T00:55:13Z; typed independent creation/verification/confinement/preview/cleanup reporting, unavailable defaults and mixed-host UI. No host enablement or execution-policy change; full F16 unchecked.
   - Configured toolchain path inspection — Done: #401, `401-toolchain-inspection`, [PR #420](https://github.com/arpit-it/ASG/pull/420), verified reviewer merge36c33ebe55a6e6e71abcb6c41e7d5d223f2fb6f2 at2026-11-02T00:40:19Z. Finalcc780fad approved5731022520/finalgate5731040723, requiredCI41367820531 passed; testedlocalf454cb39/tree503dccd6,1152Flutter/nine skips,71focused,format324/analyzer/web/macOS and9inventory passed; independent112tests/probes passed. Explicit read-only Build action checks real SDK directory, Flutter/Dart regular files and executable bits; Python absolute path or bounded absolute PATH lookup. No processes run, no install/settings write/support claim. Current delivered host/controller/view contracts satisfy prerequisites; external host acceptance Deferred #400. Acceptance: actual files/spaces/aliases, missing/nonexecutable/relative/oversized input, private failures/retry, busy exclusion/no writes, draft/disposal suppression and 320px2x UI. Full F16 remains unchecked; Linux/Windows operation delivery remains Pending.
   - Operation implementation-path report — Done: #401, `401-generation-capabilities`, [PR #419](https://github.com/arpit-it/ASG/pull/419), reviewer merge32df5903aa2171d206e69a719efb5f39d5e863ed at2026-11-02T00:23:59Z; finalbc7448dd approved5730965134/finalgate5730978754 and requiredCI41366478556 passed. Toolchain discovery and per-host delivery remain Pending; no new platform enabled.
   - Source/evidence: owner-requested score improvements on 28 October 2026; the product targets six Flutter platforms, but `NativeGenerationHost.supported` gates the independent generator to macOS and model-written candidate confinement uses macOS Seatbelt. A passing Linux trusted-starter CI fixture does not establish a safe Linux/Windows product host. F15 concerns inference, F11 concerns generated project types; neither covers host execution portability.
@@ -9234,3 +9235,63 @@ Recorded 2026-11-02T00:45:50.233519+00:00.
 
 
 Final independent-operation reporting validation:1155clean-sourceFlutter/nine explicit skips,three actualChrome production-host/IndexedDB refusals,formatter324unchanged,analyzer clean,web/Wasm andmacOSdebug builds andninehistoricalinventory checks passed. All346runtime/test/tool/asset inputs match. No model inference, host enablement or installedapp change. Awaiting merge: exact-tree plugin publication, independent final-revision review, required CI and reviewer protected merge remain gates. Recorded 2026-11-02T00:47:21.914471+00:00.
+
+
+### Independent generation-operation reporting verified merged — #401 / PR #421
+
+Bounded reporting increment Done on `401-operation-capabilities`. Exact final
+`053d8a3b020fc01904e2a372a16efc9c9e3b9dd5`, testedlocal
+`2486b25eee1da3b4bd91a1426c4f5e1be377b202`, identicaltree
+`1af2ab8c0758573818b9141c2dbb6377e13d9036`. All8published blobs matched;
+independent reviewer verified all821remote blobs/modes and346validationinputs.
+Independent80Flutterchecks/probes (all32operationcombinations, retainedUI
+transition, actualChrome included) andnineinventory passed. Approval5731081654/
+finalgate5731102625 found no blockers. Shared-owner formal selfapproval was
+rejected by GitHub; independent COMMENT verdict retained, protection unchanged.
+
+Parent1155clean-sourceFlutter/nine explicit skips,threeactualChrome production
+host/IndexedDB refusals,formatter324unchanged,analyzer clean,web/Wasm andmacOS
+debug builds andnineinventorychecks passed. No selected-tool execution/model
+inference/installedapp change; default8765health unavailable. Reporting only,
+separate capabilities do not authorize execution or enable any new platform.
+
+RequiredCI41369115474 completed/success: Flutter1250355329961149Ubuntu tests/
+12explicit skips,17actualChrome,web/Wasm and actual independent generated-project
+resolve/analyze/test/render/build/serve; Python125035533239141tests/fourCI skips.
+Independent reviewer protected-plugin squash merged
+https://github.com/arpit-it/ASG/pull/421 as
+`37e39e6fb231fde25606d66742c1b699456df666` at2026-11-02T00:55:13Z. Parent
+freshly verified mergedPR/currentmain model/issue401OPEN; signedexacttree and
+soleparent36c33ebe verified. Guarded local synchronization passed main/originmain
+0/0,indexempty,both unrelatedIDEedits byte-identical. Signed evidence and sync:
+/private/tmp/asg421-reviewed-merge.json,/private/tmp/asg421-safe-sync.py.
+Both automationlabels applied. No new issue; reused401.
+
+Remaining F16 host implementation Pending; external host acceptance Deferred400.
+FullF16/F22/F15 unchecked. Current Mac-verifiable queue continues under owner
+priority; no active implementation after this merge. Retain final bookkeeping
+for next normal reviewed development PR. No cadence/notification/modeldownload/
+install/stableapp/settings/deployment change.
+Current run time 2026-11-02T00:55:56.496910+00:00.
+
+
+### Independent Linux toolchain inspection — #401
+
+In progress on `401-linux-toolchain-inspection` from verified PR #421 merge
+37e39e6fb231fde25606d66742c1b699456df666. Fresh plugin search found no open
+PR; no competing active ASG run. Reused #401; no new issue. F16 configured
+toolchain discovery was unnecessarily gated by macOS generation support even
+though the bounded read-only inspector already supports Linux. Separate native
+inspection, controller and editable SDK/Python fields from generation availability.
+Normal Linux generation/verification/candidate/preview remain unavailable. No
+process execution, install, settings write or new platform support claim.
+
+Acceptance: actual executable fixture metadata through native host without
+execution; closed-host refusal; unsupported-generation controller/UI can enter
+and inspect paths without writes or generation. Focused19 tests passed; full
+format/analyze/tests/builds, inventory freshness, exact-tree plugin publication,
+independent final review, required CI and reviewer merge remain gates.
+Full F16/F15/F22 unchecked; external acceptance Deferred #400.
+2026-11-02T01:01:18.940469+00:00
+
+Final Linux inspection validation: 1158 clean-source Flutter tests/nine explicit skips,19 focused,three actual Chrome production-host/IndexedDB refusal checks,formatter324 unchanged,analyzer clean,web/Wasm andmacOSdebug builds andnineinventorychecks passed. All346 runtime/test/tool/asset inputs match clean copy /private/tmp/asg-linux-inspection-validation. No selected executable/model inference/installedapp change; default8765health unreachable. Awaiting merge: plugin exact-tree publication, independent final review, required CI and reviewer protected merge remain gates. FullF16/F15/F22 unchecked; unavailable-platform acceptance Deferred400. Recorded 2026-11-02T01:03:36.376076+00:00.
