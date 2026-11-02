@@ -8393,3 +8393,65 @@ Full F16/F15/F22 unchecked; external acceptance Deferred #400.
 2026-11-02T01:01:18.940469+00:00
 
 Final Linux inspection validation: 1158 clean-source Flutter tests/nine explicit skips,19 focused,three actual Chrome production-host/IndexedDB refusal checks,formatter324 unchanged,analyzer clean,web/Wasm andmacOSdebug builds andnineinventorychecks passed. All346 runtime/test/tool/asset inputs match clean copy /private/tmp/asg-linux-inspection-validation. No selected executable/model inference/installedapp change; default8765health unreachable. Awaiting merge: plugin exact-tree publication, independent final review, required CI and reviewer protected merge remain gates. FullF16/F15/F22 unchecked; unavailable-platform acceptance Deferred400. Recorded 2026-11-02T01:03:36.376076+00:00.
+
+
+### Linux read-only toolchain inspection verified merged — #401 / PR #422
+
+Bounded increment Done on `401-linux-toolchain-inspection`. Exact final
+`d4acc542cbab3d8d31f3af66cdbdcc3d544f1fd9`, tested local
+`9df5ab4d9bcf32c94768b82a95eb2af9df365bb8`, identical tree
+`e88570625e3f0ee0935066dc8ae44a9379a0ac2e`. All eight published blobs matched;
+independent reviewer verified all821remote blobs/modes. Independent80Flutter
+checks/probes (280/320px2x unavailable-host UI included) andnineinventory passed.
+Approval5731157699/finalgate5731176736 found no blockers. Formal selfapproval
+was rejected by GitHub; independent COMMENT verdict retained, protection unchanged.
+
+Parent1158clean-sourceFlutter/nine explicit skips,19focused,threeactualChrome
+production-host/IndexedDB refusals,formatter324unchanged,analyzer clean,web/Wasm
+andmacOSdebug builds andnineinventorychecks passed;346validationinputs matched.
+No selected-tool execution/model inference/installedapp change;8765health
+unreachable. Inspection observes metadata only, never readiness or permission.
+Linux generation/verification/candidate confinement/preview remain unavailable.
+
+RequiredCI41370705754 completed/success: Flutter1250403670091152Ubuntu tests/
+12explicit skips,17actualChrome,web/Wasm and actual independent generated-project
+resolve/analyze/test/render/build/serve; Python125040366676141tests/four skips.
+The new native-host metadata test actually passed Ubuntu. No Linux app launch or
+Linux generation-support claim. Independent reviewer protected-plugin squash
+merged https://github.com/arpit-it/ASG/pull/422 as
+`caa9e8925a127ecd5c652a6120aedcb51f06db4f` at2026-11-02T01:13:35Z. Parent
+freshly verified mergedPR/currentmain/issue401OPEN; signedexacttree andsoleparent
+37e39e6 verified. Guarded local sync passed main/originmain0/0,indexempty,both
+unrelatedIDEedits byte-identical. Evidence/private/tmp/asg-linux-publication.json,
+/private/tmp/asg422-reviewed-merge.json,/private/tmp/asg422-safe-sync.py. Both
+automationlabels applied. No new issue; reused401.
+
+Remaining F16 host implementation Pending; external acceptance Deferred400.
+FullF16/F22/F15 unchecked. No active implementation after this merge. Retain
+final merge bookkeeping for next normal reviewed development PR. No cadence/
+notification/modeldownload/install/stableapp/settings/deployment change.
+Current run time 2026-11-02T01:14:56.095211+00:00.
+
+
+### Bounded generation-helper capture — #401
+
+In progress on `401-helper-capture` from freshly plugin-verified PR #422 merge
+`caa9e8925a127ecd5c652a6120aedcb51f06db4f`. No open PR or competing active
+ASG chat at selection. Reuse #401; no new issue. Existing local merge evidence
+and both unrelated IDE edits retained. F16 requires bounded process/output
+behavior before extending host execution. Native host previously timed only
+helper exit, then joined unbounded pipes; real descendant-retained pipes and
+combined stdout/stderr floods exercise the missing boundary.
+
+Scope/acceptance: one deadline for helper exit and both pipe EOFs, aggregate
+512 KiB protocol ceiling (accommodates JSON-escaped 64 KiB tool output), strict
+stdout UTF-8 and existing tolerant stderr. Cancel subscriptions on completion or
+failure; existing host finally still terminates its helper. Closing a pipe never
+claims descendant cleanup. Real-process EOF/deadline/flood/UTF-8/error/retry tests
+and native-host same-session retry; fixed operation/consent/platform gates remain.
+Full validation, plugin exact-tree publication, independent final review, required
+CI and reviewer merge remain gates. No host enablement/model inference/installed
+app/settings change. Full F16/F15/F22 unchecked; external acceptance Deferred400.
+Recorded 2026-11-02T01:31:50.493715+00:00.
+
+Final helper-capture validation: 1163 clean-source Flutter tests/nine explicit skips,43 focused/one explicit real-generation skip,analyzer clean,formatter326,web/Wasm andmacOSdebug builds andninehistoricalinventory checks passed. All347 tracked/new runtime/test/tool/asset/package inputs match clean copy /private/tmp/asg-capture-validation. Default8765health unreachable; no inference or installedapp change. Exact-tree plugin publication, independent final-revision review, requiredCI and reviewer protected merge remain gates. Recorded 2026-11-02T01:33:34.784383+00:00.

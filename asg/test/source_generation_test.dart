@@ -861,6 +861,44 @@ void main() {
     },
   );
 
+  test('native helper flood refuses and same session retries valid protocol', () async {
+    for (final relative in [
+      'bin/cache/flutter_tools.snapshot',
+      'bin/cache/dart-sdk/bin/dart',
+      'packages/flutter_tools/.dart_tool/package_config.json',
+    ]) {
+      final file = File('$sdk/$relative');
+      await file.parent.create(recursive: true);
+      await file.writeAsString('fixture');
+    }
+    final generated = await generate();
+    var flood = true;
+    final guarded = NativeGenerationHost(
+      loadAsset: (_) async => flood
+          ? "import os, time; os.write(1, b'x' * 600000); time.sleep(30)"
+          : 'import json; print(json.dumps({"exitCode": 0, "output": "retry", '
+                '"timedOut": False, "outputLimitExceeded": False, "cancelled": False}))',
+    );
+    try {
+      await expectLater(
+        guarded.runFlutterOperation(generated, 'analyze'),
+        throwsA(
+          isA<FormatException>().having(
+            (e) => e.message,
+            'ceiling',
+            'Generation helper exceeded its output limit.',
+          ),
+        ),
+      );
+      flood = false;
+      final result = await guarded.runFlutterOperation(generated, 'analyze');
+      expect(result.succeeded, isTrue);
+      expect(result.output, 'retry');
+    } finally {
+      await guarded.dispose();
+    }
+  });
+
   test(
     'approval is checked after helper preparation before process launch',
     () async {
