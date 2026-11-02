@@ -114,3 +114,24 @@ without an ID remain unverified. A matching ID is still a server assertion, not
 weight authentication; reports state this scope explicitly. Synthetic HTTP
 fixtures validate the probe contract and never establish live model capability.
 The retained PR #432 observation is historical and is not relabeled by this fix.
+
+## Explicit connection-test runtime metrics
+
+After **Test model** or **Test JSON format** successfully completes, settings can
+show the local runtime's final prompt/completion token counts and optional
+reported generation tokens/second and process peak memory in GB. These values
+come from the server's final `metrics` object, not app timing or a token estimate.
+The current managed MLX runtime reports speed and memory; another backend or
+legacy server can omit them. Invalid/missing optional telemetry is unavailable
+and does not discard otherwise valid response text. Unknown telemetry fields
+are never displayed. Counts must be nonnegative integers within the bounded
+parser limits and the request output ceiling; speed/memory must be finite,
+nonnegative bounded numbers.
+
+SSE metrics remain hidden until `[DONE]`, and failed, truncated, stopped or
+incomplete tests do not publish them. New tests, draft connection changes and
+closing the dialog clear them. They are temporary: **Save test observation**
+retains its existing historical completion/latency fields, without speed,
+memory or token telemetry. These server assertions do not authenticate loaded
+weights or establish usable context, available memory, model fit or support.
+No additional request, benchmark, model load or settings change occurs.

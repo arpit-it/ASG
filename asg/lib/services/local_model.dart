@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http;
 
 import '../models/local_model_config.dart';
 import '../models/generation_event.dart';
+import '../models/model_runtime_metrics.dart';
 import 'model_provider.dart';
 
 // Only locally authored guidance may cross the transport error boundary.
@@ -16,7 +17,8 @@ class _SafeModelFailure extends StateError {
 }
 
 /// Token streaming with bounded startup, inactivity and total request duration.
-class LocalModelProvider implements StreamingModelProvider {
+class LocalModelProvider
+    implements StreamingModelProvider, ModelMetricsProvider {
   LocalModelProvider(
     this.config, {
     http.Client? client,
@@ -34,6 +36,11 @@ class LocalModelProvider implements StreamingModelProvider {
   final Duration idleTimeout, totalTimeout;
   final http.Client _client;
   bool _cancelled = false;
+  ModelRuntimeMetrics? _completedMetrics;
+  @override
+  ModelRuntimeMetrics? get completedMetrics => _completedMetrics;
+  ModelRuntimeMetrics? _pendingMetrics;
+  bool _transportSucceeded = false;
   @override
   Stream<String> generate(String prompt) async* {
     await for (final event in generateEvents(prompt)) {
@@ -61,6 +68,9 @@ class LocalModelProvider implements StreamingModelProvider {
 
     output = StreamController<GenerationEvent>(
       onListen: () {
+        _completedMetrics = null;
+        _pendingMetrics = null;
+        _transportSucceeded = false;
         deadline = Timer(totalTimeout, () {
           if (finished) return;
           finished = true;
@@ -79,6 +89,8 @@ class LocalModelProvider implements StreamingModelProvider {
           },
           onError: (Object error, StackTrace stack) {
             if (finished) return;
+            _pendingMetrics = null;
+            _transportSucceeded = false;
             // Raw errors can include echoed prompts, response bodies or URLs.
             final safe = error is _SafeModelFailure
                 ? error
@@ -93,6 +105,9 @@ class LocalModelProvider implements StreamingModelProvider {
           },
           onDone: () {
             if (finished) return;
+            if (!_cancelled && _transportSucceeded) {
+              _completedMetrics = _pendingMetrics;
+            }
             finished = true;
             deadline?.cancel();
             unawaited(output.close());
@@ -165,7 +180,13 @@ class LocalModelProvider implements StreamingModelProvider {
       if (content == null || content.trim().isEmpty) {
         throw _SafeModelFailure('Local model returned no text.');
       }
-      if (!_cancelled) yield GenerationEvent.text(content);
+      if (!_cancelled) {
+        _pendingMetrics = choice['finish_reason'] == 'stop'
+            ? ModelRuntimeMetrics.parse(data['metrics'], outputLimit: maxTokens)
+            : null;
+        yield GenerationEvent.text(content);
+        _transportSucceeded = true;
+      }
       return;
     }
     var eventName = 'message';
@@ -194,6 +215,7 @@ class LocalModelProvider implements StreamingModelProvider {
         if (!receivedText) {
           throw _SafeModelFailure('Local model returned no text.');
         }
+        _transportSucceeded = true;
         return;
       }
       final data = jsonDecode(payload) as Map<String, dynamic>;
@@ -222,6 +244,16 @@ class LocalModelProvider implements StreamingModelProvider {
         );
       }
       final content = (choice['delta'] as Map?)?['content'];
+      // Only the terminal successful choice can provide telemetry. It remains
+      // private until DONE; errors, truncation and EOF never publish it.
+      if (choice['finish_reason'] == 'stop') {
+        _pendingMetrics = ModelRuntimeMetrics.parse(
+          data['metrics'],
+          outputLimit: maxTokens,
+        );
+      } else if (content is String && content.isNotEmpty) {
+        _pendingMetrics = null;
+      }
       if (content is String && content.isNotEmpty) {
         receivedText = true;
         yield GenerationEvent.text(content);
@@ -279,6 +311,8 @@ class LocalModelProvider implements StreamingModelProvider {
   @override
   Future<void> cancel() async {
     _cancelled = true;
+    _completedMetrics = null;
+    _pendingMetrics = null;
     _client.close();
   }
 }

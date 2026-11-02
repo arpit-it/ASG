@@ -210,7 +210,8 @@ The saved development automation was updated through its management tool; active
   - Bounded delivery milestones: (1) backend contract/capability discovery and an MLX regression; (2) explicit CPU setup/inference on a supported non-Apple desktop with compatible weights; (3) explicit CUDA setup/inference on a CUDA host. Each milestone needs its own focused issue, saved settings/restart/error tests and real-host evidence. Non-Apple CPU/CUDA real-host acceptance is now Deferred in #400 until the queued implementation is delivered; this is not a dependency on eligible implementation. Isolate optional backend dependencies so missing MLX cannot prevent CPU/CUDA startup; validate configurable executable/model paths including spaces. Do not claim CPU adequacy for a 9B model without measured successful operation within the configured limits.
   - Delivery: create/reuse a narrowly scoped issue when selected; remain unchecked until all promised backend milestones, independent review, required checks and verified merges. CPU and CUDA evidence must be recorded separately; unavailable hardware is a recorded blocker, never a fixture-based completion claim.
 - [ ] F22 Hardware-aware local model catalog and selection — In progress; depends on delivered F09/F15 foundations; unavailable-platform validation Deferred
-  - Independent profile-note maintenance — Awaiting merge: #396, `396-profile-notes-update`; explicit notes-only update/clear with matching-draft and conditional-storage guards, preserving connection/test history/active settings. Full F22/F15 remain unchecked; see current ledger.
+  - Completed-test runtime metrics — Awaiting merge: #396, `396-test-runtime-metrics`, scope6576037605. Expose existing final server-reported prompt/completion tokens, optional generation speed and process peak memory only after successful completed explicit tests; temporary/unverified display, no saved capability/support/context claim. Legacy/malformed telemetry unavailable, failed/stopped/partial tests expose none. Acceptance: JSON/SSE actual HTTP, lifecycle/draft invalidation/privacy and narrow2x UI; full Flutter checks/web/macOS, independent final review/requiredCI/protected merge. Delivered transport/test foundations suffice; Deferred400 unnecessary.
+  - Independent profile-note maintenance — Done (bounded increment), [PR #445](https://github.com/arpit-it/ASG/pull/445), final73b6d32b approved5735637672/finalgate6575738078, requiredCI41434230777 passed, verified reviewer mergef5ab9b6d1e4397582c02b2f729f795273c1749bc at2026-11-02T11:14:45Z: #396, `396-profile-notes-update`; explicit notes-only update/clear with matching-draft and conditional-storage guards, preserving connection/test history/active settings. Full F22/F15 remain unchecked; see current ledger.
   - Historical test observation removal — Done (bounded increment), [PR #444](https://github.com/arpit-it/ASG/pull/444), final8a427cfe approved5735429518/finalgate6575400008, requiredCI41431807453 passed, verified reviewer mergeb460e302715fa08ab5ed7cd8533cd492aa41511a at2026-11-02T10:56:57Z: #396, `396-remove-test-observation`; explicit selected-preset metadata removal preserving connection/profile notes/active settings, conditional storage and lifecycle protection. No inference/support claim; see current ledger.
   - Saved explicit connection-test observations — Done (bounded increment): #396, `396-saved-test-observations`, [PR #443](https://github.com/arpit-it/ASG/pull/443); finalb675db0c approved5735118928/finalgate5735168584, requiredCI41428262924 passed; verified reviewer merge512482d30353ba0e37b2c3ba50cd524f8e55a237 at2026-11-02T10:29:20Z. Historical matching-preset test metadata only, never verified model support/context/loaded identity. FullF22/F15unchecked.
   - Draft connection observation invalidation — Done (bounded increment): #396, `396-draft-test-invalidation`, [PR #442](https://github.com/arpit-it/ASG/pull/442); finalc2f0bf93 approved5734706845/finalgate5734789352, requiredCI41423835194 passed; verified reviewer mergedf87e1c9a0bef0d46443bd8d04067cea5b13ce5f at2026-11-02T09:57:52Z. Clear stale response/latency/inventory on connection edits or preset restoration; preserve busy guards and cursor/note-only behavior. FullF22/F15unchecked.
@@ -10707,3 +10708,64 @@ change. Awaiting merge: plugin exact-tree publication, independent final review,
 required CI and protected reviewer merge remain gates. FullF22/F15 unchecked;
 external-platform acceptance Deferred400.
 Recorded 2026-11-02T11:05:30.660051+00:00
+
+
+### Independent profile-note maintenance verified merged — PR #445
+Bounded increment Done for F22/#396 on `396-profile-notes-update`.
+Tested local242284709629bdcfb8102f53efbf0e389f640758 and published final
+73b6d32bed751e2a29b57218ff71de8d0d8dbe9c share exacttree
+14fc17c6ad41448301ddb20b3868a043685779fb; all9publicationblobs match.
+Independent approval5735637672/finalgate6575738078 found no blockers;
+39independentFlutter/nineinventory/one retainedproject+Ask snapshot/no-inference
+probe passed. All848remote blobs/modes and371validationinputs match. RequiredCI
+41434230777 BOTH SUCCESS: Flutter125239984535 full1222Ubuntu/12explicit skips,
+17actualChrome/browsertransport/web/real independentgeneratedproject;
+Python125239984159165total/four explicitplatform skips. Parent1228Flutter/nine
+skips,format346/analyzer/web/macOSdebug/nineinventory passed. Exact matching
+draft and explicit notes-only save/clear preserve connection/name/order/history,
+pendingtest/otherpresets/active settings; stale/corrupt/failure/retry/busy/disposal
+protected. ActualHTTP confirms no extra request; native database reopen and
+320x600/2x save/clear interaction passed. Existing snapshots elsewhere retained.
+No runtime/model launch/inference/download/installedapp change.
+Independent reviewer protected-plugin squashmerged PR445 as
+f5ab9b6d1e4397582c02b2f729f795273c1749bc at2026-11-02T11:14:45Z.
+Parent freshplugin verified mergedPR/currentmain exactsourceblob/#396OPEN;
+signed exacttree/soleparentb460e302/objecthash verified before guarded local sync.
+Localmain/originmain0/0,emptyindex,both originalIDEedits byte-identical.
+FullF22/F15 remain unchecked; externalplatform acceptanceDeferred400. No active
+implementation aftermerge; remaining verified profiles/context/capability work
+Pending396. Final canonical bookkeeping retained for next normal reviewed PR.
+Bothautomationlabels applied; no newissue/cadence/notification change.
+Receipts:/private/tmp/asg-notes-publication.json,/private/tmp/asg-notes-inputs.json,
+/private/tmp/asg445-reviewed-merge.json,/private/tmp/asg445-review-summary.json,
+/private/tmp/asg445-safe-sync.py.
+Currentrun 2026-11-02T11:15:33.298473+00:00
+
+
+### Completed-test runtime metrics — F22 / #396
+In progress on `396-test-runtime-metrics` from verified PR #445 merge
+f5ab9b6d1e4397582c02b2f729f795273c1749bc. Scope comment6576037605.
+Existing runtime emits exact token counts and MLX speed/process peak metrics,
+but app discarded them. Typed optional allowlisted server assertions exposed
+only after completed JSON/SSE transport and successful explicit connection test.
+Temporary display only; never saved as capability or support/context evidence.
+Legacy/malformed optional metrics remain unavailable without invalidating text.
+Draft/new-test/Stop/failure/disposal guards, actual HTTP and narrow UI regressions
+being validated. No model launch/download or stable app change. FullF22/F15
+unchecked; external acceptanceDeferred400. No new issue. Preserve both IDE edits.
+Independent final review, full checks, CI and protected reviewer merge remain gates.
+Recorded 2026-11-02T11:32:53.684635+00:00
+
+Final local validation: 1233Flutter tests passed/nine explicit skips,27focused
+checks passed; formatter350 unchanged/analyzer clean/web including Wasm dryrun
+and isolated macOSdebug build passed. Nine inventory regressions passed after
+regenerating source-comparison inventory; initial expected stale inventory and
+widget-test HTTP override/import invocation/lint diagnostics corrected. All374
+source/validation inputs match; both original IDE edits byte-identical. Actual
+HTTP JSON/SSE validates temporary telemetry/no persistence, format-failure and
+Stop/draft/reopen exclusion; delayedDONE/error/EOF/truncation and malformed
+private metrics covered. Narrow320px2x rendered metrics/guidance pass. No model
+launch/inference/download/installedapp change. Awaiting merge: plugin exacttree
+publication, independent final review, requiredCI and protected reviewer merge
+remain gates. FullF22/F15unchecked; externalacceptanceDeferred400.
+Recorded 2026-11-02T11:39:34.602078+00:00
