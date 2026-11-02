@@ -250,6 +250,8 @@ class _ModelSettingsState extends State<ModelSettings> {
           const Text(ModelSettingsController.requestLimits),
           const SizedBox(height: 8),
           const Text(ModelFormatProbe.guidance),
+          const SizedBox(height: 8),
+          const Text(ModelSettingsController.timingGuidance),
           const SizedBox(height: 16),
           SelectableText(controller.status),
           if (controller.busy) const LinearProgressIndicator(),
