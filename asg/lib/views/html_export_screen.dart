@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 
 import '../controllers/html_export_controller.dart';
+import '../models/project_runner.dart';
 
 class HtmlExportScreen extends StatefulWidget {
   const HtmlExportScreen({super.key, required this.controller});
@@ -54,7 +55,42 @@ class _HtmlExportScreenState extends State<HtmlExportScreen> {
             padding: const EdgeInsets.all(20),
             children: [
               const Text(
-                'Export editable HTML, CSS, JavaScript and local SVG files from a fixed responsive starter. Your text fills its title and description. After export, preview this unchanged starter locally on macOS. Leaving this screen stops the preview. This does not create an ASG project. Full HTML runner integration is planned.',
+                'Export editable HTML, CSS, JavaScript and local SVG files from a fixed responsive starter. Your text fills its title and description. After export, preview this unchanged starter locally on macOS. Leaving this screen stops the preview. This does not create an ASG project. HTML project creation and arbitrary edited-source runners are planned.',
+              ),
+              ExpansionTile(
+                title: const Text('Runner capabilities'),
+                subtitle: Text(
+                  '${controller.runnerDescriptor.id} v${controller.runnerDescriptor.version}',
+                ),
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.all(12),
+                    child: Text(
+                      'Fixed starter only. Availability describes an action, not a passed check or verified browser. No external compiler or package manager is used.',
+                    ),
+                  ),
+                  for (final operation in RunnerOperation.values)
+                    ListTile(
+                      title: Text(switch (operation) {
+                        RunnerOperation.checkSources => 'Source identity',
+                        RunnerOperation.resolveDependencies =>
+                          'Resolve dependencies',
+                        RunnerOperation.compile => 'Compile',
+                        RunnerOperation.test => 'Project tests',
+                        RunnerOperation.run => 'Preview host',
+                        RunnerOperation.open => 'Browser launch',
+                        RunnerOperation.stop => 'Preview cleanup',
+                      }),
+                      subtitle: Text(
+                        '${switch (controller.runnerDescriptor.capability(operation).availability) {
+                          RunnerAvailability.available => 'Available',
+                          RunnerAvailability.unavailableHost => 'Unavailable on this host',
+                          RunnerAvailability.notApplicable => 'Not applicable',
+                          RunnerAvailability.notImplemented => 'Not implemented',
+                        }}: ${controller.runnerDescriptor.capability(operation).reason}',
+                      ),
+                    ),
+                ],
               ),
               if (!controller.supported)
                 const Text(
@@ -153,7 +189,7 @@ class _HtmlExportScreenState extends State<HtmlExportScreen> {
               ],
               if (controller.exportedDirectory != null) ...[
                 const Text(
-                  'Source export complete. Full runner integration remains planned.',
+                  'Source export complete. HTML project creation remains planned.',
                 ),
                 SelectableText(controller.exportedDirectory!),
                 if (!controller.checker.supported)

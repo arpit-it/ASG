@@ -7,7 +7,9 @@ import '../models/html/html_source_check.dart';
 import '../services/html/html_source_check.dart';
 
 import '../services/html/html_preview.dart';
-import '../services/html/html_preview_factory.dart';
+import '../services/html/html_starter_runner.dart';
+import '../services/project_runner_registry.dart';
+import '../models/project_runner.dart';
 import 'html_preview_controller.dart';
 import '../models/html/html_export_request.dart';
 import '../models/html/html_site_input.dart';
@@ -18,16 +20,33 @@ import 'base_controller.dart';
 /// Session confirmation only. Nothing here registers a runnable ASG project.
 class HtmlExportController extends BaseController {
   HtmlExportController({
-    required this.exporter,
+    required HtmlSourceExport exporter,
     FolderPicker? folderPicker,
     HtmlPreview? previewService,
     HtmlSourceChecker? sourceChecker,
-  }) : checker = sourceChecker ?? createHtmlSourceChecker(),
+  }) : this._(
+         exporter: exporter,
+         folderPicker: folderPicker,
+         registry: ProjectRunnerRegistry(
+           html: HtmlStarterRunner(
+             checker: sourceChecker,
+             preview: previewService,
+           ),
+         ),
+       );
+
+  HtmlExportController._({
+    required this.exporter,
+    FolderPicker? folderPicker,
+    required ProjectRunnerRegistry registry,
+  }) : runner = registry.htmlRunner('HTML')!,
        _picker = folderPicker ?? FolderPicker(),
-       preview = HtmlPreviewController(previewService ?? createHtmlPreview());
+       preview = HtmlPreviewController(registry.htmlRunner('HTML')!);
 
   final HtmlSourceExport exporter;
-  final HtmlSourceChecker checker;
+  final HtmlStarterRunner runner;
+  HtmlSourceChecker get checker => runner.sourceChecker;
+  ProjectRunnerDescriptor get runnerDescriptor => runner.descriptor;
   HtmlSourceCheck? _sourceCheck;
   String? _checkError;
   bool _checking = false, _checkStopped = false;
@@ -68,7 +87,7 @@ class HtmlExportController extends BaseController {
       }
     });
     try {
-      final result = await checker.check(
+      final result = await runner.checkSources(
         directory: directory,
         input: request.input,
         authorizeRead: authorize,
