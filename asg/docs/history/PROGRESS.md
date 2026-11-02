@@ -10521,3 +10521,69 @@ and reviewer protected merge remain gates. FullF11/#402 open; HTML runner/previe
 and project registration remain Planned.
 
 Isolated macOS debug build also passed; stable application was not replaced.
+
+
+### App-owned fixed HTML starter export verified merged — PR #457
+Bounded F11/#402 export flow Done on `402-html-export-flow`, scope6582414659.
+Tested local962208cfff8674f5b8725219ed27a04f901ec3cd and plugin-published final
+757edf1662c69d309375f7d97aa3087f50ba89a4 share exact tree
+26c6b2627bb1ce5c66b17b2f9f13b4046d3926aa; all12remote blobs/392source inputs match.
+Independent exact-final review5739945623/finalgate6582806250 approved unchanged head
+without blockers (COMMENT verdict/shared owner identity; no second-account claim).
+Independent21focused actual screen/filesystem/process/MVC andnine exact-rootinventory
+passed. Snapshot inventory JSON predated root refresh; exact committed root was
+independently tested, with no runtime source mismatch. Parent1286Flutter/nineexplicit
+skips,format368/analyzer/webWasm/isolatedmacOSdebug/nineinventory passed.
+RequiredCI41483465171 BOTH SUCCESS: Flutter125407533522/Python125407533801;
+actualLinux1269/23skips,17Chrome,transport/HTML,webWasm and independentgeneratedFlutter
+verification/serve passed; Python fixtures passed with explicitplatformskips.
+Reviewer protected-plugin squashmerged PR457 as
+950ce933c1eda778b7d26e5fc3a58a333bbf3f8f at2026-11-02T16:47:02Z.
+Parent freshly verified mergedPR/currentmain/#402OPEN/signedexacttree/soleparent
+209082ed; reconstructed commit hash verified before guarded local-ref sync.
+Localmain/originmain0/0, emptyindex, originalIDEedits byte-identical.
+Dashboard fixed-starter export now owns exact review/confirmation, stale/duplicate
+refusal, Stop/disposal later-write authority and retained partial/uncertain paths.
+Application-lifetime service retains process ownership across screen reopening.
+Already-dispatched writes may finish; no adversarial-filesystem sandbox claim.
+No project registration, model request, checks or preview; HTML full adapter
+creation/runner/preview stays Planned, fullF11/#402 open and Deferred400 retained.
+Existing8765health unavailable(URLError); no model launch/inference/stableapp change.
+No newissue/cadence/notification change; bothautomationlabels applied. Final merge
+bookkeeping retained for next normal reviewed PR without direct-main publication.
+Receipts:/private/tmp/asg457-publication.json,/private/tmp/asg457-validation-inputs.json,
+/private/tmp/asg457-reviewed-merge.json,/private/tmp/asg457-safe-sync.py.
+
+
+### Fixed HTML preview host foundation — F11 / #402
+In progress on `402-html-preview-host` from verified PR #457 merge
+950ce933c1eda778b7d26e5fc3a58a333bbf3f8f; scope6583108583. Existing export
+has no production HTML preview host. This bounded prerequisite reads the exact
+five fixed-template files for reviewed typed input, refuses missing/changed/
+oversize/symbolic sources, and serves four immutable allowlisted browser assets
+on a random tokenized IPv4 loopback URL. README/extra files are never served.
+GET/HEAD only, exact Host/URI and origin/fetch checks, no-store/nosniff/CSP,
+bounded file reads and idle sockets. Stop revokes startup and closes owned
+sockets; concurrent starts are refused and failures permit an explicit retry.
+Files remain untouched; no process/model/browser launch or dependency install.
+Not a hostile concurrent-filesystem sandbox. Snapshot remains the validated
+starter after disk edits; restarting refuses changed files. Mac-only foundation,
+not generic edited-source serving or an enabled adapter. HTML project wizard,
+app preview controls/browser launch, registered runner and full F11 remain
+Pending/open. Deferred #400 is unrelated to this Mac-verifiable prerequisite.
+Five real filesystem/HTTP regressions passed (exact output/security/HEAD/Stop,
+foreign hosts/origins/methods/paths, changed/missing/oversize/links, wrong input,
+startup cancellation/duplicate refusal/restart). Full checks/builds, plugin-only
+publication, independent final revision review and required CI/reviewer merge
+remain gates. Retains verified #457 merge bookkeeping in this normal reviewed PR.
+
+Final tracked-source validation: 1,291 Flutter tests passed/nine explicit skips;
+formatter370/analyzer clean; web/Wasm build and nine acceptance-inventory tests
+passed. All394 Dart/Python inputs match the isolated tested snapshot. Initial
+root suite license scan traversed existing ignoredtools/.mlx-venv third-party
+Python; tracked-source isolation passed without dependency or product changes.
+Five new tests use real Mac filesystem/loopback HTTP; other platforms are
+explicitly skipped, not claimed supported. Isolated macOSdebug build also passed;
+plugin publication, independent exact-final review, required CI and protected
+reviewer merge remain delivery gates. No browser interaction/inference/support
+claim or stable-app replacement.
