@@ -10,6 +10,7 @@ import '../models/local_model_config.dart';
 import '../models/model_profile_notes.dart';
 import '../models/model_format_probe.dart';
 import 'model_profile_notes_fields.dart';
+import 'model_test_observation_view.dart';
 
 class ModelSettings extends StatefulWidget {
   const ModelSettings({super.key, required this.store, this.inspectInventory});
@@ -249,6 +250,20 @@ class _ModelSettingsState extends State<ModelSettings> {
             ],
           ),
           Text(controller.presetStatus),
+          const Text(
+            'After a successful test, explicitly save its observation to a selected '
+            'preset with the same connection draft. Replacing a preset clears its '
+            'historical observation. Only the latest saved test is retained.',
+          ),
+          OutlinedButton(
+            onPressed: controller.canSaveTestObservation(config)
+                ? () => controller.saveTestObservation(config)
+                : null,
+            child: const Text('Save test observation to selected preset'),
+          ),
+          for (final preset in controller.presets)
+            if (preset.name == controller.selectedPreset)
+              ModelTestObservationView(preset: preset),
           const SizedBox(height: 16),
           OutlinedButton(
             onPressed: controller.busy || controller.settingsLoadFailed

@@ -9593,3 +9593,67 @@ Existing default8765health unavailable; no runtime launch/model inference/
 download/settings/installed-app change. Status Awaiting merge: exact-tested-tree
 plugin publication, independent final-revision review, required CI and protected
 reviewer merge remain gates. Keep396open/F22/F15unchecked/Deferred400.
+
+
+### Connection draft observation invalidation verified merged — PR #442
+Bounded increment Done for F22/#396 on `396-draft-test-invalidation`.
+Tested localb65fdd48573bf3060d623c4030ab2e2c2c744415 and published final
+c2f0bf93b0d17736c8f7d4c997ae41d5744c3f59 share exact tree
+e3812b61af05b314f481ae89395922cff7ae3ea8; all seven publication blobs match.
+Independent approval5734706845/finalgate5734789352 found no blockers;
+40 independent Flutter and nine inventory tests passed; all844remote blobs/
+modes and367validation inputs match. RequiredCI41423835194 BOTH SUCCESS:
+Flutter125205529577 full1198Ubuntu/12explicit skips,17actualChrome,actual
+browsertransport/web/real independent generated-project verification;
+Python125205530083165total/four explicit CI platform skips. Parent1204Flutter/
+nine skips,21focused,inventory9,format342/analyzer/web/macOSdebug passed.
+Connection URL/model/token edits and preset restoration clear stale response/
+latency/inventory observations. Cursor-only movement/profile notes/preset names/
+preset-only writes retain connection results; busy/disposal/load-failure guards
+preserved. No model launch/inference/download/settings/installed-app change.
+Independent reviewer protected-plugin squashmerged PR442 as
+df87e1c9a0bef0d46443bd8d04067cea5b13ce5f at2026-11-02T09:57:52Z.
+Parent freshplugin verified mergedPR/currentmain/#396OPEN; signed exacttree/
+soleparentfdc5dbd/objecthash verified before guarded local-only synchronization.
+Localmain/originmain0/0,emptyindex,both originalIDEedits byte-identical.
+FullF22/F15 remain unchecked; external-platform acceptance Deferred400. No
+active implementation aftermerge; remaining verified profiles/context/capability
+work Pending396. Final canonical bookkeeping retained for next normal reviewed
+development PR. Both automationlabels applied; no newissue/cadence/notification
+change. Receipts:/private/tmp/asg-draft-publication.json,
+/private/tmp/asg-draft-inputs.json,/private/tmp/asg442-reviewed-merge.json,
+/private/tmp/asg442-review-summary.json,/private/tmp/asg442-safe-sync.py.
+Currentrun 2026-11-02T09:58:53.658793+00:00
+
+
+### Saved explicit connection-test observations — F22 / #396
+In progress on `396-saved-test-observations` from verified PR #442 merge
+df87e1c9a0bef0d46443bd8d04067cea5b13ce5f. Previous owning chat is idle;
+fresh connected GitHub found no open PR or overlapping active ASG run. Scope
+comment6574575693 reuses #396; no new issue. Persist latest explicitly attached
+successful text/JSON-sentinel observation on an exact matching selected preset:
+UTC time, kind, fixed256 test ceiling and client first-text/completion latency.
+No prompts/output/logs or automatic writes. Historical requested-connection
+observation, never loaded-weight identity, verified context/general JSON/tool
+compatibility or supported-model evidence. Replacement clears history; removal
+deletes it; draft edits/restore/new test clear pending observations. Conditional
+storage, failure/retry/busy/disposal/corruption guards preserve records and active
+settings. Delivered transport/preset/storage foundations suffice; Deferred400
+unnecessary. FullF22/F15 unchecked. Validate strict legacy/additive schema,
+actual loopbackHTTP fixed256payload, native reopen, save-only retry and320px2x UI,
+full Flutter checks/web/macOS, regenerated inventory, independent exact-final
+review, requiredCI and protected reviewer merge. No inference/download/stable-app
+or cadence/notification change. Owner chat01a19bbf-aa58-78a0-84e2-694e1154b647.
+Recorded 2026-11-02T10:18:57.834587+00:00
+
+Final local validation:1216 Flutter tests passed/nine explicit skips in isolated
+tracked-source copy;33 focused controller/preset/native HTTP/reopen/widget tests
+passed. Formatter345 unchanged, analyzer clean, web and macOSdebug builds passed;
+regenerated acceptance inventory nine regressions passed. All370 validation inputs
+byte-identical. Test-only HTTP interception/override, fake async and duplicate
+teardown mistakes were corrected before final successful checks. Default8765
+health unavailable; no runtime launch/model inference/download/settings/installed
+app change. Awaiting merge: exact-tree plugin publication, independent final
+review, requiredCI and protected reviewer merge remain gates. Keep396open and
+fullF22/F15unchecked; external acceptanceDeferred400.
+Recorded 2026-11-02T10:20:23.731587+00:00
