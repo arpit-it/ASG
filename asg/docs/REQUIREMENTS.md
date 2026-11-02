@@ -271,7 +271,7 @@ The saved development automation was updated through its management tool; active
   - Acceptance: UI shows available and unavailable operations with actionable reasons; unsupported confinement refuses candidate execution before any source is run. Each enabled host passes real new-project resolve/analyze/test/web-build/serve, Stop/deadline/output-limit and descendant-cleanup checks, restart/uncertain-checkpoint refusal, stale-approval refusal and last-working-output preservation. Enabling starter generation must not implicitly enable candidate execution. Model-written candidate/repair support needs independently reviewed platform isolation and real deny-write/network/process-escape probes at the established boundary.
   - Validation/delivery: one narrowly scoped issue/PR per host/capability milestone, actual Linux/Windows builds and launches on their respective hosts, plus macOS regression coverage. Include paths with spaces, missing toolchains, occupied ports, failed previews and interrupted writes. Record tested versus unavailable capabilities separately; keep F16 unchecked until promised host increments satisfy acceptance and normal independent review/CI/verified merge. Broader generated targets remain F11.
 - [ ] F11 Multi-language project generation, runners and explicit stack selection — In progress (#402); depends on F04 and F05
-  - Saved fixed HTML starter library — In progress, #402, `402-html-starter-library`, scope6585714649. Explicit transactional save and dashboard reopen only; original inputs/destination retained, checks/preview require fresh actions. Full project registration/approved-task integration remains Pending; see delivery ledger.
+  - Saved fixed HTML starter library — Awaiting merge via [PR #462](https://github.com/arpit-it/ASG/pull/462), #402, `402-html-starter-library`, scope6585714649. Explicit transactional save and dashboard reopen only; original inputs/destination retained, checks/preview require fresh actions. Full project registration/approved-task integration remains Pending; see delivery ledger.
   - Registered fixed HTML runner — Done via [PR #461](https://github.com/arpit-it/ASG/pull/461), #402, `402-html-starter-runner`, scope6585030463; verified mergeef288141 at2026-11-02T18:43:47Z, finaleb4ad023 independently approved5741500365/finalgate5741571287, requiredCI41502225049 passed. Versioned host-aware exact-starter check/preview dispatch and typed unsupported operations only; full creation/registration/edited-source execution remain Pending.
   - Explicit fixed HTML source checks — Done via [PR #460](https://github.com/arpit-it/ASG/pull/460), #402, `402-html-export-check`, scope6584403638; verified mergef8a888ef at2026-11-02T18:19:48Z, final437e281e independently approved5741174433/finalgate5741267929, requiredCI41498268973 passed. Explicit read-only identity evidence and visible Stop/deadline/retry only; full HTML creation/registration/runner Pending.
   - App-owned fixed HTML preview — Done via [PR #459](https://github.com/arpit-it/ASG/pull/459), #402, `402-html-preview-flow`, scope6583757438; verified merge746b6749 at2026-11-02T17:53:20Z, final67579673 independently approved5740832776/finalgate5740906527, requiredCI41494387421 passed. Confirmed export identity, preview/browser/Stop controls and recovery only; full creation/registration/runner Pending.
@@ -11706,3 +11706,13 @@ Inventory regenerated for current runtime; nine inventory tests passed. Existing
 app-launch acceptance claimed. Stable installed app/original data unchanged.
 Awaiting exact-tree publication, independent review, actual required CI/reviewer
 merge. FullF11/#402 andDeferred400 stay open.
+
+### PR #462 — saved fixed HTML starter library
+Awaiting merge on `402-html-starter-library`, #402/F11 scope6585714649.
+PR https://github.com/arpit-it/ASG/pull/462 targets main; initial remote80cda33f
+and testedlocalf8002b0 share treefb9a658b, all16blobs/416sourceinputs match.
+Full1322Flutter/nineexplicit skips,40focused,formatter391/analyzer/freshwebWasm/
+isolatedmacOSdebug/nineinventory passed. This followup records PR/status only;
+no tested runtime changes. Independent exact-final review, actual required CI and
+protected reviewer merge remain gates; final review/merge evidence follows after
+verification. FullF11/#402 andDeferred400 stay open; no stableapp/model change.

@@ -10872,3 +10872,13 @@ Inventory regenerated for current runtime; nine inventory tests passed. Existing
 app-launch acceptance claimed. Stable installed app/original data unchanged.
 Awaiting exact-tree publication, independent review, actual required CI/reviewer
 merge. FullF11/#402 andDeferred400 stay open.
+
+### PR #462 — saved fixed HTML starter library
+Awaiting merge on `402-html-starter-library`, #402/F11 scope6585714649.
+PR https://github.com/arpit-it/ASG/pull/462 targets main; initial remote80cda33f
+and testedlocalf8002b0 share treefb9a658b, all16blobs/416sourceinputs match.
+Full1322Flutter/nineexplicit skips,40focused,formatter391/analyzer/freshwebWasm/
+isolatedmacOSdebug/nineinventory passed. This followup records PR/status only;
+no tested runtime changes. Independent exact-final review, actual required CI and
+protected reviewer merge remain gates; final review/merge evidence follows after
+verification. FullF11/#402 andDeferred400 stay open; no stableapp/model change.
