@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 
 import '../models/project.dart';
+import '../models/html/html_site_input.dart';
 import '../models/html/saved_html_starter.dart';
 import '../controllers/html_starter_library_controller.dart';
 import '../services/html/html_starter_store.dart';
@@ -69,10 +70,25 @@ class _DashboardState extends State<Dashboard> {
     super.dispose();
   }
 
+  Future<void> openHtmlDraft(HtmlSiteInput input) async {
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (_) => HtmlExportScreen(
+          controller: HtmlExportController(
+            exporter: createHtmlSourceExport(),
+            starterStore: htmlLibrary.store,
+            initialInput: input,
+          ),
+        ),
+      ),
+    );
+    if (mounted) htmlLibrary.reload();
+  }
+
   Future<void> create() async {
     final project = await showDialog<StudioProject>(
       context: context,
-      builder: (_) => const ProjectWizard(),
+      builder: (_) => ProjectWizard(onOpenHtmlStarter: openHtmlDraft),
     );
     if (project == null) return;
     final saved = await controller.add(project);

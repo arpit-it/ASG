@@ -2,6 +2,7 @@
 // Copyright 2026 Arpit Sinha
 
 import '../models/project.dart';
+import '../models/html/html_site_input.dart';
 import '../models/project_blueprint.dart';
 import '../models/output_stack.dart';
 import '../services/project_discovery.dart';
@@ -110,6 +111,25 @@ class ProjectWizardController extends BaseController {
       name,
       '$_idea\n\nSelected experience: ${approach!.title}\nInitial features: ${_features.isEmpty ? 'Basic starting screen' : _features.join(', ')}',
     );
+  }
+
+  /// A draft only: selected features/targets do not become generated promises.
+  HtmlSiteInput? htmlStarterDraft() {
+    if (isDisposed || _step != CreationStep.options || _type != 'HTML') {
+      return null;
+    }
+    try {
+      final input = HtmlSiteInput(
+        title: _blueprint?.suggestedName ?? '',
+        description: _idea,
+      );
+      error = null;
+      return input;
+    } on FormatException catch (failure) {
+      error = failure.message;
+      update();
+      return null;
+    }
   }
 
   static String? validateName(String? name) => StudioProject.validateName(name);

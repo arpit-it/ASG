@@ -26,6 +26,7 @@ class HtmlExportController extends BaseController {
     required HtmlSourceExport exporter,
     HtmlStarterStore? starterStore,
     SavedHtmlStarter? savedStarter,
+    HtmlSiteInput? initialInput,
     FolderPicker? folderPicker,
     HtmlPreview? previewService,
     HtmlSourceChecker? sourceChecker,
@@ -33,6 +34,7 @@ class HtmlExportController extends BaseController {
          exporter: exporter,
          starterStore: starterStore,
          savedStarter: savedStarter,
+         initialInput: initialInput,
          folderPicker: folderPicker,
          registry: ProjectRunnerRegistry(
            html: HtmlStarterRunner(
@@ -46,11 +48,19 @@ class HtmlExportController extends BaseController {
     required this.exporter,
     required this.starterStore,
     required SavedHtmlStarter? savedStarter,
+    required HtmlSiteInput? initialInput,
     FolderPicker? folderPicker,
     required ProjectRunnerRegistry registry,
   }) : runner = registry.htmlRunner('HTML')!,
        _picker = folderPicker ?? FolderPicker(),
        preview = HtmlPreviewController(registry.htmlRunner('HTML')!) {
+    if (initialInput != null && savedStarter != null) {
+      throw ArgumentError('Choose a new draft or a saved starter.');
+    }
+    if (initialInput != null) {
+      _title = initialInput.title;
+      _description = initialInput.description;
+    }
     if (savedStarter != null) {
       _title = savedStarter.input.title;
       _description = savedStarter.input.description;
