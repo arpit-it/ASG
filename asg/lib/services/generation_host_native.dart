@@ -20,6 +20,7 @@ import '../models/named_flutter_test_result.dart';
 import '../models/source_generation.dart';
 import 'flutter_source_template.dart';
 import 'generation_host.dart';
+import 'generation_process_capture.dart';
 import 'generation_toolchain_native.dart';
 import '../models/generation_toolchain.dart';
 import 'named_test_session.dart';
@@ -555,21 +556,13 @@ class NativeGenerationHost
       if (_closed || _verificationCancelled) {
         process.kill(ProcessSignal.sigterm);
       }
-      final stdout = process.stdout.transform(utf8.decoder).join();
-      final stderr = process.stderr
-          .transform(const Utf8Decoder(allowMalformed: true))
-          .join();
-      final code = await process.exitCode.timeout(
-        Duration(seconds: project.limits.commandTimeoutSeconds + 10),
-        onTimeout: () {
-          process?.kill(ProcessSignal.sigterm);
-          throw const FormatException(
-            'Generation helper exceeded its deadline.',
-          );
-        },
+      final captured = await captureGenerationProcess(
+        process,
+        timeout: Duration(seconds: project.limits.commandTimeoutSeconds + 10),
       );
-      final out = await stdout;
-      final error = await stderr;
+      final code = captured.exitCode;
+      final out = captured.stdout;
+      final error = captured.stderr;
       if (code != 0) {
         if (target != null) {
           throw const FormatException(
