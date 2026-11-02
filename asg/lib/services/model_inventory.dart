@@ -28,6 +28,7 @@ class ModelInventory {
     required http.Client client,
   }) async {
     try {
+      config.validateChatLimit();
       final base = config.endpoint;
       if (config.model.length > 256) throw const FormatException();
       return await (() async {
@@ -73,7 +74,7 @@ class ModelInventory {
           }
         }
         return ids.contains(config.model)
-            ? 'Server advertises the exact draft model ID. This is a server assertion; loaded weights, context limits, structured output and inference remain unverified.${selectedLimits == null ? '' : ' ${selectedLimits.description}'}'
+            ? 'Server advertises the exact draft model ID. This is a server assertion; loaded weights, context limits, structured output and inference remain unverified.${selectedLimits == null ? '' : ' ${selectedLimits.description} ${selectedLimits.describeDraftOutput(config.chatOutputTokens)}'}'
             : 'Server does not advertise the exact draft model ID. Check the ID and runtime before testing. Settings are unchanged.';
       })().timeout(timeout);
     } on TimeoutException {
