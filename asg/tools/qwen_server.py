@@ -111,7 +111,12 @@ def create_handler(backend, executor, model_id, model_path):
                     raise ValueError('Invalid text messages')
                 # Reviewed full-file source proposals request 4096 tokens. Chat
                 # retains its smaller caller-selected limit and 256 default.
-                tokens = min(4096, max(1, int(request.get('max_tokens', 256))))
+                tokens = request.get('max_tokens', 256)
+                # Preserve the caller's exact budget. bool is an int subclass
+                # in Python; coercion/clamping would change request provenance.
+                if type(tokens) is not int or not 1 <= tokens <= 4096:
+                    self.respond(400, {'error': 'max_tokens must be an integer from 1 to 4096; no budget was changed or generation started'})
+                    return
                 streaming = request.get('stream') is True
             except TimeoutError:
                 self.respond(408, {'error': 'Request body timed out; send the complete JSON request and retry'})
