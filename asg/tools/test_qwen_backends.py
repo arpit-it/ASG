@@ -1022,14 +1022,14 @@ class CPUBackendTests(unittest.TestCase):
 
     def test_streaming_and_length_are_actual_backend_results(self):
         events = []
-        self.assertEqual(self.backend.generate([], 2, lambda *e: events.append(e), Event(), time.monotonic()+10), {'finish_reason': 'stop'})
+        self.assertEqual(self.backend.generate([], 2, lambda *e: events.append(e), Event(), time.monotonic()+10), {'finish_reason': 'stop', 'prompt_tokens': 3, 'completion_tokens': 1})
         self.assertEqual(events, [('token', 'Hello '), ('token', 'CPU')])
         call = self.model.generate.call_args.kwargs
         self.assertEqual(call['max_new_tokens'], 2)
         self.assertFalse(call['do_sample'])
         self.assertEqual(call['streamer'].options, {'skip_prompt': True, 'skip_special_tokens': True})
         self.output_length = 5
-        self.assertEqual(self.backend.generate([], 2, lambda *_: None, Event(), time.monotonic()+10), {'finish_reason': 'length'})
+        self.assertEqual(self.backend.generate([], 2, lambda *_: None, Event(), time.monotonic()+10), {'finish_reason': 'length', 'prompt_tokens': 3, 'completion_tokens': 2})
 
     def test_checkpoint_structured_output_default_cannot_break_completion(self):
         from types import SimpleNamespace
@@ -1049,7 +1049,7 @@ class CPUBackendTests(unittest.TestCase):
                     self.expected_device = device
                     self.output_length = output_length
                     events = []
-                    self.assertEqual(backend.generate([], 2, lambda *e: events.append(e), Event(), time.monotonic()+10), {'finish_reason': reason})
+                    self.assertEqual(backend.generate([], 2, lambda *e: events.append(e), Event(), time.monotonic()+10), {'finish_reason': reason, 'prompt_tokens': 3, 'completion_tokens': output_length - 3})
                     self.assertEqual(events, [('token', 'Hello '), ('token', 'CPU')])
                     self.assertEqual(self.batch.device, device)
 
@@ -1073,7 +1073,7 @@ class CPUBackendTests(unittest.TestCase):
                     self.expected_device = device
                     self.output_length = output_length
                     events = []
-                    self.assertEqual(backend.generate([], 2, lambda *e: events.append(e), Event(), time.monotonic()+10), {'finish_reason': reason})
+                    self.assertEqual(backend.generate([], 2, lambda *e: events.append(e), Event(), time.monotonic()+10), {'finish_reason': reason, 'prompt_tokens': 3, 'completion_tokens': output_length - 3})
                     self.assertEqual(events, [('token', 'Hello '), ('token', 'CPU')])
                     self.assertEqual(self.batch.device, device)
 
@@ -1082,12 +1082,51 @@ class CPUBackendTests(unittest.TestCase):
         mps = object.__new__(backends.TorchMPSBackend)
         mps.model, mps.tokenizer = self.model, self.tokenizer
         events = []
-        self.assertEqual(mps.generate([], 2, lambda *e: events.append(e), Event(), time.monotonic()+10), {'finish_reason': 'stop'})
+        self.assertEqual(mps.generate([], 2, lambda *e: events.append(e), Event(), time.monotonic()+10), {'finish_reason': 'stop', 'prompt_tokens': 3, 'completion_tokens': 1})
         self.assertEqual(self.batch.device, 'mps')
         self.assertEqual(events, [('token', 'Hello '), ('token', 'CPU')])
 
+    def test_counts_and_limit_use_exact_untruncated_generation_tensors(self):
+        from types import SimpleNamespace
+        for device in ('cpu', 'mps'):
+            backend = self.backend if device == 'cpu' else object.__new__(backends.TorchMPSBackend)
+            backend.model, backend.tokenizer = self.model, self.tokenizer
+            self.expected_device = device
+            # Any separate encode result would misrepresent the real batch.
+            self.tokenizer.encode.side_effect = AssertionError('duplicate tokenization')
+            for length in (4096, 4097):
+                with self.subTest(device=device, length=length):
+                    self.model.generate.reset_mock()
+                    self.tokenizer.reset_mock()
+                    self.batch.pop('input_ids', None)
+                    self.batch.input_ids = SimpleNamespace(shape=(1, length))
+                    self.batch['input_ids'] = self.batch.input_ids
+                    if hasattr(self.batch, 'device'):
+                        del self.batch.device
+                    if length > 4096:
+                        with self.assertRaisesRegex(ValueError, '4096-token'):
+                            backend.generate([], 2, lambda *_: None, Event(), time.monotonic()+10)
+                        self.model.generate.assert_not_called()
+                        self.assertFalse(hasattr(self.batch, 'device'))
+                    else:
+                        for generated in (0, 1, 2):
+                            self.output_length = length + generated
+                            metrics = backend.generate([], 2, lambda *_: None, Event(), time.monotonic()+10)
+                            self.assertEqual(metrics, {'finish_reason': 'length' if generated == 2 else 'stop',
+                                                      'prompt_tokens': length, 'completion_tokens': generated})
+                        self.assertIs(self.model.generate.call_args.kwargs['input_ids'], self.batch.input_ids)
+                    self.tokenizer.assert_called_with('prompt', return_tensors='pt', truncation=False)
+                    self.tokenizer.encode.assert_not_called()
+            # A refused request does not poison a later request.
+            self.batch.input_ids = SimpleNamespace(shape=(1, 3))
+            self.batch['input_ids'] = self.batch.input_ids
+            self.output_length = 4
+            self.assertEqual(backend.generate([], 2, lambda *_: None, Event(), time.monotonic()+10)['prompt_tokens'], 3)
+
     def test_input_overflow_and_tokenizer_failures_do_not_generate(self):
-        self.tokenizer.encode.return_value = [0] * 4097
+        from types import SimpleNamespace
+        self.batch.input_ids = SimpleNamespace(shape=(1, 4097))
+        self.batch['input_ids'] = self.batch.input_ids
         with self.assertRaisesRegex(ValueError, '4096-token'):
             self.backend.generate([], 2, None, Event(), time.monotonic()+10)
         self.model.generate.assert_not_called()

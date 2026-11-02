@@ -61,6 +61,24 @@ class ServerTests(unittest.TestCase):
             health = json.load(response)
             self.assertTrue(health['streaming'])
             self.assertEqual(health['device'], 'fixture-device')
+    def test_actual_http_transports_preserve_backend_token_accounting(self):
+        original = self.backend.generate
+        def counted(*args):
+            return {**original(*args), 'prompt_tokens': 4096, 'completion_tokens': 2}
+        self.backend.generate = counted
+        for streaming in (True, False):
+            with self.subTest(streaming=streaming), self.request(streaming, max_tokens=2) as response:
+                if streaming:
+                    frames = [json.loads(line[6:]) for line in response.read().decode().splitlines()
+                              if line.startswith('data: {')]
+                    metrics = next(frame['metrics'] for frame in frames if 'metrics' in frame)
+                else:
+                    metrics = json.load(response)['metrics']
+                self.assertEqual(metrics, {'finish_reason': 'stop', 'prompt_tokens': 4096, 'completion_tokens': 2})
+        self.backend.generate = original
+        with self.request(False) as response:
+            self.assertEqual(json.load(response)['metrics'], {'finish_reason': 'stop'})
+
     def test_errors_are_not_successful_completions(self):
         with self.request(content='error') as response:
             text=response.read().decode()
