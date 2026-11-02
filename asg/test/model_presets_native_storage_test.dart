@@ -8,6 +8,7 @@ import 'dart:io';
 
 import 'package:asg/models/local_model_config.dart';
 import 'package:asg/models/model_connection_preset.dart';
+import 'package:asg/models/model_profile_notes.dart';
 import 'package:asg/services/model_settings_store.dart';
 import 'package:asg/services/studio_database.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -30,6 +31,10 @@ void main() {
           const ModelConnectionPreset(
             name: 'Local',
             config: LocalModelConfig(model: 'saved'),
+            profileNotes: ModelProfileNotes(
+              revision: 'exact-revision',
+              contextTokens: 8192,
+            ),
           ),
         ]);
         await db.close();
@@ -38,6 +43,40 @@ void main() {
         expect(
           ModelSettingsStore(records).loadPresets().single.config.model,
           'saved',
+        );
+        expect(
+          ModelSettingsStore(records)
+              .loadPresets()
+              .single
+              .profileNotes!
+              .contextTokens,
+          8192,
+        );
+        expect(
+          ModelSettingsStore(records)
+              .loadPresets()
+              .single
+              .profileNotes!
+              .revision,
+          'exact-revision',
+        );
+        // Real conditional storage refuses a stale profile-only replacement.
+        final store = ModelSettingsStore(records);
+        final before = store.loadPresets();
+        await store.savePresets([
+          const ModelConnectionPreset(
+            name: 'Local',
+            config: LocalModelConfig(model: 'saved'),
+            profileNotes: ModelProfileNotes(revision: 'new-revision'),
+          ),
+        ], expected: before);
+        await expectLater(
+          store.savePresets([], expected: before),
+          throwsStateError,
+        );
+        expect(
+          store.loadPresets().single.profileNotes!.revision,
+          'new-revision',
         );
         // Simulate disk corruption after a successful migration.
         await StoreRef<String, String>('records')

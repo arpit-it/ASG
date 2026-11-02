@@ -5,6 +5,7 @@ import 'dart:async';
 
 import '../models/local_model_config.dart';
 import '../models/model_connection_preset.dart';
+import '../models/model_profile_notes.dart';
 import '../services/model_settings_store.dart';
 import '../services/local_model.dart';
 import '../services/model_inventory.dart';
@@ -106,9 +107,14 @@ class ModelSettingsController extends BaseController {
     String name,
     LocalModelConfig config, {
     bool replace = false,
+    ModelProfileNotes? profileNotes,
   }) async {
     if (busy || presetsLoadFailed || settingsLoadFailed || isDisposed) return;
-    final preset = ModelConnectionPreset(name: name.trim(), config: config);
+    final preset = ModelConnectionPreset(
+      name: name.trim(),
+      config: config,
+      profileNotes: profileNotes,
+    );
     final exists = _presets.any((p) => p.name == preset.name);
     if ((replace && (!exists || selectedPreset != preset.name)) ||
         (!replace && exists)) {
@@ -150,7 +156,7 @@ class ModelSettingsController extends BaseController {
       if (!_presets.any((p) => p.name == selectedPreset)) selectedPreset = null;
       presetStatus = message;
     } on FormatException {
-      if (!isDisposed) presetStatus = 'Invalid preset. Use a unique name (1–64 characters), local URL (up to 512), model ID (up to 256) and supported token limit; at most 20 presets.';
+      if (!isDisposed) presetStatus = 'Invalid preset. Use a unique name (1–64 characters), local URL (up to 512), model ID (up to 256) and supported token limit; at most 20 presets. Profile notes must be trimmed text of up to 256 characters each, with a declared context limit of 1–1048576 tokens.';
     } catch (_) {
       if (!isDisposed) presetStatus = 'Presets could not be saved. Previous presets and draft are retained; check storage, close and reopen settings, then retry.';
     } finally {

@@ -8526,3 +8526,90 @@ Recorded 2026-11-02T01:51:17.434689+00:00.
 
 Final helper-result validation:1168clean-sourceFlutter/nine explicit skips,54focused/two explicit live skips,formatter328unchanged,analyzer clean,web/Wasm andmacOSdebug builds andnineinventorychecks passed. All349runtime/test/tool/asset/package inputs match clean copy /private/tmp/asg-result-validation. Actual generic/named helper malformed/oversized refusal and same-session retries passed; previous65537accepted-success/durable-refusal and raw-error retention reproduced at /private/tmp/asg-result-before.log. Default8765health unavailable; no model inference/installedapp change. Awaiting merge: exact-tree plugin publication, independent final-revision review, requiredCI and reviewer protected merge remain gates. FullF16/F15/F22unchecked; external acceptance Deferred400.
 Recorded 2026-11-02T01:52:30.952204+00:00.
+
+
+### Validated generation-helper results verified merged — #401 / PR #424
+
+Bounded increment Done on `401-helper-result-validation`. Final published head
+`f2285bd22e833a0239fb6c8e6dc6952bd0b676ac` and tested local
+`545b1776f87775dcba7f1cb136463ad00b6b7219` share exact tree
+`9bb683be592b4cf98575c5df25aac8b38ae93e32`. All nine published blobs match.
+Independent reviewer verified all 825 remote blobs/modes and 349 validation inputs.
+Approval 5731373150 and final gate 5731393391 found no blocking findings.
+Independent validation: 54 focused checks with two explicit live skips, nine
+inventory checks and 29 additional exit/flag/UTF-16 durability probes passed.
+
+The reproduced old boundary accepted successful 65,537-character output that
+saved-step reopening refused, and retained raw invalid JSON in errors. Typed
+fixed/named helper results now validate output and target evidence before
+persistence; parsing exceptions exclude the raw payload. Actual helper-process
+regressions cover uncertain checkpoint retention and same-session retry.
+
+Parent validation: 1,168 Flutter tests with nine explicit skips; 54 focused checks
+with two explicit live skips; formatter 328 unchanged; analyzer clean; web/Wasm
+and macOS debug builds; nine inventory checks. All 349 validation inputs match.
+Required CI 41375061766 succeeded: Flutter job 125053385798 passed 1,162 Ubuntu
+tests with 12 explicit skips, 17 actual Chrome checks, web/Wasm and independent
+generated-project resolve/analyze/test/render/build/serve. Python job
+125053386054 passed 141 tests with four explicit skips. Default model health
+was unavailable; no fresh inference, platform enablement or installed-app change.
+
+Independent reviewer merged https://github.com/arpit-it/ASG/pull/424 through the
+protected GitHub-plugin workflow as `d2e7a00aeabac0c29005c0cee72110ef30490e01`
+at 2026-11-02T02:03:59Z. Parent independently verified merged PR, current main,
+and issue #401 still OPEN. Signed commit, exact tree and sole parent b80945c
+verified. Two script approval reviews timed out before execution; short local
+Git commands then safely synchronized main after read-only guards. Main and
+origin/main have zero divergence; index empty and both unrelated IDE edits
+byte-identical before final bookkeeping. Final merge evidence comment 6567402669
+added to #401. Both automation labels applied; no new issue.
+
+Evidence: /private/tmp/asg-result-publication.json,
+/private/tmp/asg424-reviewed-merge.json, /private/tmp/asg424-verified-commit.raw,
+/private/tmp/asg-result-before.log and /private/tmp/asg-result-validation-inputs.json.
+
+Remaining F16 host implementation is Pending; external acceptance is Deferred
+under #400. Full F16/F15/F22 remain unchecked. No active implementation remains
+after this merge. Carry these local final ledger/history updates into the next
+normal reviewed development PR. No cadence, notification, model download,
+installation, stable-app, settings or deployment changes.
+Current run time 2026-11-02T02:11:18.408696+00:00.
+
+
+### User-declared model profile notes — #396
+
+In progress on `396-model-profile-notes` from plugin-verified main
+`d2e7a00aeabac0c29005c0cee72110ef30490e01` (PR #424 merge verified).
+No open PR/competing active run at selection; reused #396, created no issue.
+Preserved prior final merge bookkeeping and both unrelated IDE edits.
+F22 precedes remaining F16 host delivery: saved presets/storage are delivered
+prerequisites for bounded metadata work; live profiles/context accounting and
+unavailable-platform acceptance are separate Pending/Deferred #400 milestones.
+
+Scope: optional typed revision/license/architecture/quantization/backend notes
+and nullable declared context limit on named presets. Strict additive legacy
+schema; explicit unverified UI, save/replace/restore/clear, snapshot round trips,
+whole-record size and conditional stale-write guards retained. No request budget,
+backend, model, global settings or support claim changes. Corrupt/failed saves
+preserve prior records/draft; native database reopen and profile-only stale write
+refusal tested. Narrow 320px/2x UI covers restore, legacy clearing, replacement
+and invalid context retention. Full F22/F15/F16 remain unchecked.
+
+Focused15Flutter/native/architecture checks and analyzer passed; formatter331
+unchanged; web/Wasm and macOS debug builds passed. Initial checkout full suite
+license scan traversed ignored MLX environment; clean-source rerun requires
+tracked repository LICENSE/NOTICE context (first copy omitted those files).
+Final clean full suite and inventory result, publication, independent exact-final
+review, required CI and protected reviewer merge remain gates. No model inference,
+installation, stable-app change or settings/automation change.
+Recorded 2026-11-02T02:19:06.822120+00:00.
+
+Final profile-notes validation: 1,174 clean-source Flutter tests passed with nine
+explicit skips; final analyzer clean; formatter331 unchanged; web/Wasm and macOS
+debug builds passed. Nine historical inventory checks passed; inventory refreshed
+from the exact runtime/test sources, without support promotion. All352 runtime/
+test/tool/asset/package validation inputs match the clean copy. Ask/project snapshots
+retain original notes after preset replacement. No fresh inference or installed-app
+change. Awaiting merge: plugin exact-tree publication, independent final-revision
+review, required CI and protected reviewer merge remain gates. Full F22/F15/F16
+unchecked; external acceptance Deferred #400. Recorded 2026-11-02T02:20:20.179429+00:00.

@@ -149,6 +149,19 @@ compatibility/readiness claims belong here. The existing `studio.localModel.v1`
 active settings record is unchanged. Restoring a preset edits the settings draft;
 only the existing explicit Save applies it to future requests. Test remains separate.
 
+Optional `profileNotes` adds six strictly validated fields to the existing preset:
+revision, license, architecture, quantization and backend (trimmed, control-free
+text, at most 256 characters each), plus nullable integer contextTokens (1–1048576).
+Four-field legacy presets remain readable and serialize unchanged; malformed or
+explicit-null profileNotes are rejected. These are user declarations, never
+verified identity/license/capacity or execution permissions. They do not change
+request budgets or runtime selection. Settings restore all notes into the draft;
+selecting a legacy preset clears them. Save new/Replace selected persists them;
+active connection Save remains separate. Removing the draft notes and replacing
+explicitly removes notes from that preset. Existing Ask/project connection
+snapshots retain their own notes even after the preset changes; notes never become
+reply provenance. Invalid writes/corruption use the existing preservation policy.
+
 Presets use RecordStorage; production conditional transactions reject stale dialog
 updates. Invalid schemas, duplicate names and corruption are preserved and reported
 without blocking unrelated model settings or application startup after migration.
