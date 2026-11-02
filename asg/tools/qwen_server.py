@@ -77,7 +77,17 @@ def create_handler(backend, executor, model_id, model_path):
             if self.path == '/health':
                 self.respond(200, {'status': 'ready', 'phase': phase['value'], 'model': model_id, 'model_path': str(model_path), 'device': getattr(backend, 'device', 'unknown'), 'backend': backend.kind, 'streaming': True})
             elif self.path == '/v1/models':
-                self.respond(200, {'data': [{'id': model_id, 'object': 'model'}]})
+                entry = {'id': model_id, 'object': 'model'}
+                if backend.kind in ('mlx', 'torch'):
+                    # These are bridge policies and checkpoint declarations,
+                    # never measured usable capacity or model provenance.
+                    entry['asg_request_limits'] = {
+                        'schema_version': 1,
+                        'max_input_tokens': 4096,
+                        'max_output_tokens': 4096,
+                        'checkpoint_context_tokens': getattr(backend, 'declared_context_tokens', None),
+                    }
+                self.respond(200, {'data': [entry]})
             else:
                 self.respond(404, {'error': 'Unknown route'})
 

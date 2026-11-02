@@ -61,6 +61,25 @@ class ServerTests(unittest.TestCase):
             health = json.load(response)
             self.assertTrue(health['streaming'])
             self.assertEqual(health['device'], 'fixture-device')
+    def test_actual_inventory_reports_bridge_and_checkpoint_limits_without_generation(self):
+        for kind in ('mlx', 'torch', 'fixture'):
+            self.backend.kind = kind
+            for context in (None, 8192):
+                self.backend.declared_context_tokens = context
+                with self.subTest(kind=kind, context=context):
+                    with urllib.request.urlopen(self.url+'/v1/models', timeout=5) as response:
+                        entry = json.load(response)['data'][0]
+                    self.assertEqual(entry['id'], 'fixture')
+                    if kind == 'fixture':
+                        self.assertNotIn('asg_request_limits', entry)
+                    else:
+                        self.assertEqual(entry['asg_request_limits'], {
+                            'schema_version': 1, 'max_input_tokens': 4096,
+                            'max_output_tokens': 4096, 'checkpoint_context_tokens': context})
+                    self.assertIsNone(self.backend.tokens)
+        with self.request(False) as response:
+            self.assertEqual(json.load(response)['choices'][0]['message']['content'], 'Hello world')
+
     def test_actual_http_transports_preserve_backend_token_accounting(self):
         original = self.backend.generate
         def counted(*args):
