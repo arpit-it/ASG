@@ -7,6 +7,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import '../models/local_model_config.dart';
+import '../models/advertised_request_limits.dart';
 
 /// Read-only server assertion. Inventory membership never verifies loaded weights.
 class ModelInventory {
@@ -53,6 +54,7 @@ class ModelInventory {
           throw const FormatException();
         }
         final ids = <String>{};
+        AdvertisedRequestLimits? selectedLimits;
         for (final entry in body['data'] as List) {
           if (entry is! Map<String, dynamic>) throw const FormatException();
           final id = entry['id'];
@@ -64,9 +66,14 @@ class ModelInventory {
               !ids.add(id)) {
             throw const FormatException();
           }
+          if (id == config.model && entry.containsKey('asg_request_limits')) {
+            selectedLimits = AdvertisedRequestLimits.fromJson(
+              entry['asg_request_limits'],
+            );
+          }
         }
         return ids.contains(config.model)
-            ? 'Server advertises the exact draft model ID. This is a server assertion; loaded weights, context limits, structured output and inference remain unverified.'
+            ? 'Server advertises the exact draft model ID. This is a server assertion; loaded weights, context limits, structured output and inference remain unverified.${selectedLimits == null ? '' : ' ${selectedLimits.description}'}'
             : 'Server does not advertise the exact draft model ID. Check the ID and runtime before testing. Settings are unchanged.';
       })().timeout(timeout);
     } on TimeoutException {

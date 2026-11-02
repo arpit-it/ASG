@@ -6,6 +6,7 @@ import 'dart:io';
 
 import 'package:asg/controllers/model_settings_controller.dart';
 import 'package:asg/models/local_model_config.dart';
+import 'package:asg/models/advertised_request_limits.dart';
 import 'package:asg/services/model_inventory.dart';
 import 'package:asg/services/model_settings_store.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -18,7 +19,107 @@ import 'model_connection_presets_test.dart' show PresetRecords;
 
 class _RealHttp extends HttpOverrides {}
 
+Map<String, Object?> limits([Object? context = 8192]) => {
+  'schema_version': 1,
+  'max_input_tokens': 4096,
+  'max_output_tokens': 4096,
+  'checkpoint_context_tokens': context,
+};
+
 void main() {
+  test(
+    'exact selected inventory limits are assertions and never applied',
+    () async {
+      for (final context in [null, 8192]) {
+        final config = const LocalModelConfig(
+          model: 'chosen',
+          chatOutputTokens: 512,
+        );
+        final client = MockClient(
+          (_) async => http.Response(
+            jsonEncode({
+              'data': [
+                {'id': 'other', 'asg_request_limits': 'private sentinel'},
+                {'id': 'chosen', 'asg_request_limits': limits(context)},
+              ],
+            }),
+            200,
+          ),
+        );
+        addTearDown(client.close);
+        final result = await ModelInventory.check(config, client: client);
+        expect(result, contains('4096 input tokens, 4096 output tokens'));
+        expect(
+          result,
+          contains(
+            context == null
+                ? 'total context is unknown'
+                : 'total context: 8192',
+          ),
+        );
+        expect(result, contains('do not verify usable capacity'));
+        expect(result, contains('Requests and settings are unchanged'));
+        expect(result, isNot(contains('sentinel')));
+        expect(config.chatOutputTokens, 512);
+      }
+    },
+  );
+  test(
+    'malformed selected limits fail privately and valid retry recovers',
+    () async {
+      final invalid = <Object?>[
+        null,
+        [],
+        'sentinel',
+        {},
+        {...limits(), 'schema_version': 1.0},
+        {...limits(), 'schema_version': 2},
+        {...limits(), 'private': 'sentinel'},
+        {...limits()}..remove('checkpoint_context_tokens'),
+        for (final field in [
+          'max_input_tokens',
+          'max_output_tokens',
+          'checkpoint_context_tokens',
+        ])
+          for (final value in [true, '8192', 0, -1, 1.5, 9007199254740992])
+            {...limits(), field: value},
+        {...limits(), 'max_input_tokens': null},
+        {...limits(), 'max_output_tokens': null},
+      ];
+      for (final metadata in invalid) {
+        var retry = false;
+        final client = MockClient(
+          (_) async => http.Response(
+            jsonEncode({
+              'data': [
+                {
+                  'id': 'chosen',
+                  'asg_request_limits': retry ? limits() : metadata,
+                },
+              ],
+            }),
+            200,
+          ),
+        );
+        addTearDown(client.close);
+        final result = await ModelInventory.check(
+          const LocalModelConfig(model: 'chosen'),
+          client: client,
+        );
+        expect(result, contains('invalid or exceed'), reason: '$metadata');
+        expect(result, isNot(contains('sentinel')));
+        retry = true;
+        expect(
+          await ModelInventory.check(
+            const LocalModelConfig(model: 'chosen'),
+            client: client,
+          ),
+          contains('total context: 8192'),
+        );
+      }
+    },
+  );
+
   test(
     'actual HTTP uses draft base models route without inference',
     () => HttpOverrides.runWithHttpOverrides(() async {
@@ -28,7 +129,13 @@ void main() {
         expect(request.method, 'GET');
         expect(request.uri.path, '/custom/v1/models');
         expect(await utf8.decoder.bind(request).join(), isEmpty);
-        request.response.write('{"data":[{"id":"chosen"}]}');
+        request.response.write(
+          jsonEncode({
+            'data': [
+              {'id': 'chosen', 'asg_request_limits': limits()},
+            ],
+          }),
+        );
         await request.response.close();
       });
       final result = await ModelInventory.inspect(
@@ -40,6 +147,7 @@ void main() {
       await serving;
       expect(result, contains('advertises the exact'));
       expect(result, contains('context limits'));
+      expect(result, contains('total context: 8192'));
       expect(result, contains('unverified'));
     }, _RealHttp()),
   );
@@ -181,7 +289,8 @@ void main() {
           child: Scaffold(
             body: ModelSettings(
               store: ModelSettingsStore(records),
-              inspectInventory: (_) async => 'Observed draft only',
+              inspectInventory: (_) async =>
+                  'Observed draft only ${AdvertisedRequestLimits.fromJson(limits()).description}',
             ),
           ),
         ),
@@ -192,13 +301,13 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(inspect);
     await tester.pumpAndSettle();
-    expect(find.text('Observed draft only'), findsOneWidget);
+    expect(find.textContaining('Observed draft only'), findsOneWidget);
     final field = find.widgetWithText(TextField, 'Exact server model ID');
     await tester.ensureVisible(field);
     await tester.pumpAndSettle();
     await tester.enterText(field, 'other');
     await tester.pumpAndSettle();
-    expect(find.text('Observed draft only'), findsNothing);
+    expect(find.textContaining('Observed draft only'), findsNothing);
     expect(records.values, isEmpty);
     expect(tester.takeException(), isNull);
   });

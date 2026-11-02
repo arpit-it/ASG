@@ -149,3 +149,17 @@ user-declared preset notes cannot enlarge this limit. Missing metadata leaves
 capacity unknown and retains the independent 4096 input/output policies;
 malformed present limits fail before loading. A checkpoint declaration is not
 measured usable capacity, verified identity, memory fit or live-inference evidence.
+
+
+### Read-only advertised request limits
+
+For MLX and Torch, `GET /v1/models` includes optional `asg_request_limits`
+on the exact advertised model entry: schema_version 1, max_input_tokens 4096,
+max_output_tokens 4096 and checkpoint_context_tokens (positive declaration or
+null when unknown). The settings dialog's existing **Inspect draft model ID**
+action displays these as server assertions, including the combined prompt plus
+requested-output rule when declared. Older servers remain compatible and
+unknown; malformed selected-entry metadata fails privately. Inspection does not
+run generation, save settings, apply profile notes or alter request budgets.
+These policy/declaration values do not verify usable context, model identity,
+format compatibility, memory fit or successful inference.

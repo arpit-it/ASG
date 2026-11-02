@@ -8969,3 +8969,67 @@ Status Awaiting merge: independent exact-final review, requiredCI and protected
 reviewer merge remain gates. Logs /private/tmp/asg396-context-*.log and manifest
 /private/tmp/asg396-context-inputs.json. FullF22/F15unchecked; #396open.
 Recorded 2026-11-02T04:33:18.338811+00:00.
+
+
+### Checkpoint-declared combined context guard verified merged — PR #430
+
+Bounded increment Done on `396-declared-context-budget`. Tested local
+`a2c52e98473450cb6e774db7420a801ba48431bb` and published final
+`253f5efa2ef6b1ea9730a0332872f39c691ccca4` share exact tree
+`c58fc314126d8d4f3f833571f78ac15c668889ec`; all8 published blobs verified.
+Independent approval5732125204/finalgate5732145329: no blockers; all828remote
+blobs/modes and351validation inputs match. Independent37backend/actualHTTP,
+9inventory and additional MLX/CPU/MPS8191-refusal/8192-exact4096+4096,
+unknown-capacity/retry/no-input-cap-enlargement probes passed. RequiredCI
+41389247075 BOTH SUCCESS: Flutter125096782114 including actualChrome,
+web/Wasm and independent generated-project verification; Python125096782202
+156tests/fourCI skips. Parent156Python/two skips,1177Flutter/nine skips,
+formatter331/analyzer/webWasm/macOSdebug passed. This enforces a checkpoint
+metadata declaration, not verified usable capacity, identity or live inference.
+Default8765health was unavailable/ConnectionRefusedError; no model started.
+
+Reviewer protected-plugin merged https://github.com/arpit-it/ASG/pull/430 as
+`bd117a2db22eb5a6b2e5925924257343bbfadd5b` at2026-11-02T04:40:00Z.
+Parent freshly pluginverified mergedPR/currentmain/#396OPEN, verified signed
+exacttree/soleparent3835833e, then safely synchronized localmain/originmain0/0;
+indexempty and both unrelatedIDEedits byte-identical. Evidence:
+/private/tmp/asg396-context-publication.json,
+/private/tmp/asg430-reviewed-merge.json,/private/tmp/asg430-safe-sync.py.
+Remaining verified profiles/context/real-model evidence Pending #396; no active
+implementation after merge. FullF22/F15unchecked, externalacceptanceDeferred400.
+Finalcanonicalbookkeeping retained for next normal reviewed development PR.
+No newissue/download/stable-app/cadence/notificationchange; bothlabels applied.
+Current run time 2026-11-02T04:40:59.805932+00:00.
+
+
+### Advertised request limits — F22 / #396
+In progress on `396-advertised-request-limits`, base verified main
+`bd117a2db22eb5a6b2e5925924257343bbfadd5b` (PR #430). No competing active
+run/open PR at selection; owner chat 01a19a9f-3915-78e0-aefb-7536b5d30396.
+Gap: enforced bridge budgets/checkpoint declaration are absent from inventory.
+Scope: versioned /v1/models ASG request-limit metadata, pure typed validation
+and read-only exact-draft-ID inspection with explicit server-asserted/unverified
+capacity language. Legacy missing metadata stays unknown; malformed selected
+metadata fails privately. No request/settings mutation, user-note trust, model
+load/download or inference/support claim. Delivered backend/inventory foundations
+meet Mac prerequisites; real verified capacity/profiles remain Pending, external
+acceptance Deferred #400. Full F22/F15 unchecked. Validate actual HTTP/no
+generation, strict schema/types/bounds, exact-ID/privacy/legacy/retry and
+responsive UI, full Flutter/Python checks and web/macOS builds; independent
+exact-final review, required CI and protected reviewer merge remain gates.
+Recorded 2026-11-02T05:00:25.270167+00:00.
+
+
+Advertised request-limit final local validation: 157 Python tests/two explicit
+skips; 1179 tracked-source Flutter tests/nine skips, 10 focused inventory tests,
+formatter332 unchanged, analyzer clean, web/Wasm and macOS debug builds passed.
+All350 runtime/test inputs byte-identical in working and isolated source trees.
+Initial local full-suite license scan included installed third-party MLX files;
+tracked-source rerun passed. Required acceptance inventory regenerated after Dart
+changes and Python full retest passed. Initial test-only config field typo fixed
+before final validation. No live inference; existing runtime health unavailable,
+no model started/downloaded and stable app untouched. Awaiting merge: exact-final
+independent review, required CI and protected reviewer merge still required.
+Logs /private/tmp/asg396-limits-*.log; input manifest
+/private/tmp/asg396-limits-inputs.json. Full F22/F15 unchecked; #396 remains open.
+2026-11-02T05:03:25.454974+00:00.
