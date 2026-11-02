@@ -489,7 +489,7 @@ def main():
     deadline = cpu_load_deadline(args.cpu_load_timeout_seconds if args.cpu_load_timeout_seconds is not None else 180) if kind == 'cpu' else nullcontext()
     try:
         with deadline:
-            backend = executor.submit(load_backend, folder, kind, experimental_cpu=args.experimental_cpu, cpu_threads=args.cpu_threads if args.cpu_threads is not None else 2).result()
+            backend = executor.submit(load_backend, folder, kind, model_config=config, experimental_cpu=args.experimental_cpu, cpu_threads=args.cpu_threads if args.cpu_threads is not None else 2).result()
     except BaseException as error:
         executor.shutdown(wait=False, cancel_futures=True)
         if kind != 'cpu' or not isinstance(error, Exception):

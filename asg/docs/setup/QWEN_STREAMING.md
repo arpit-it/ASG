@@ -136,3 +136,16 @@ mlx-lm's BOS-prefix rule. The same token list is checked against the bridge's
 `generation_tokens` (including nontext/end tokens); no completion count is invented
 if the helper supplies no result. Counts are not text-fragment counts. This policy
 is not a verified model-specific total context window or a new inference benchmark.
+
+
+### Checkpoint-declared total context guard
+
+The managed bridge reserves the entire requested output budget against the
+local checkpoint's `text_config.max_position_embeddings` (or the top-level
+field only when `text_config` is absent). Exact untruncated input plus requested
+output must fit before device transfer or generation. Oversized requests fail;
+the bridge never silently truncates input or reduces output. RoPE scaling and
+user-declared preset notes cannot enlarge this limit. Missing metadata leaves
+capacity unknown and retains the independent 4096 input/output policies;
+malformed present limits fail before loading. A checkpoint declaration is not
+measured usable capacity, verified identity, memory fit or live-inference evidence.
