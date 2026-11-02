@@ -271,7 +271,8 @@ The saved development automation was updated through its management tool; active
   - Acceptance: UI shows available and unavailable operations with actionable reasons; unsupported confinement refuses candidate execution before any source is run. Each enabled host passes real new-project resolve/analyze/test/web-build/serve, Stop/deadline/output-limit and descendant-cleanup checks, restart/uncertain-checkpoint refusal, stale-approval refusal and last-working-output preservation. Enabling starter generation must not implicitly enable candidate execution. Model-written candidate/repair support needs independently reviewed platform isolation and real deny-write/network/process-escape probes at the established boundary.
   - Validation/delivery: one narrowly scoped issue/PR per host/capability milestone, actual Linux/Windows builds and launches on their respective hosts, plus macOS regression coverage. Include paths with spaces, missing toolchains, occupied ports, failed previews and interrupted writes. Record tested versus unavailable capabilities separately; keep F16 unchecked until promised host increments satisfy acceptance and normal independent review/CI/verified merge. Broader generated targets remain F11.
 - [ ] F11 Multi-language project generation, runners and explicit stack selection — In progress (selection groundwork #402); depends on F04 and F05
-  - Independent HTML source-template prerequisite — Awaiting merge, #402, `402-html-source-template`, scope6581048649. Fixed independent web sources and actualChrome source acceptance only; production HTML creation remains Planned until approval/runner/preview integration.
+  - Confirmed fixed HTML source export — In progress: #402, `402-html-source-export`, scope6581732988; exact content/destination confirmation, exclusive native fixed-template export and partial-file preservation. HTML creation/runner/preview remain Planned; see current ledger entry.
+  - Independent HTML source-template prerequisite — Done (bounded foundation), [PR #455](https://github.com/arpit-it/ASG/pull/455), final25eef994 approved5739190678/finalgate5739284468, requiredCI41474565132 passed; verified reviewer mergeebe9c6015e3c9783a138de4fcc58e06c05517c7a at2026-11-02T15:51:58Z: #402, `402-html-source-template`, scope6581048649. Fixed independent web sources and actualChrome source acceptance only; production HTML creation remains Planned until approval/runner/preview integration.
   - Explicit output-stack choice — Done (bounded groundwork), [PR #454](https://github.com/arpit-it/ASG/pull/454), final63dc1386 approved5738661277/finalgate6580720505, requiredCI41468685055 passed; verified reviewer merge4a693f7ee141e60a54b05aa1278b5380ad5495a7 at2026-11-02T15:15:08Z: [#402](https://github.com/arpit-it/ASG/issues/402), `402-explicit-output-stack`, scope6580406406. Typed Flutter/HTML/Python choices with honest implemented/planned status, target/toolchain guidance and review summary. Planned/unknown choices refuse review and direct creation; approach changes retain stack selection and changing a reviewed stack requires re-review. Preserve Flutter schema/current workflow. Does not deliver HTML/Python adapters or full F11. Delivered project/generation contracts suffice; F22 verified-model acceptance and F16 Linux host validation remain open/Deferred400, not a global implementation gate. Controller/widget narrow2x tests, full checks/builds, independent finalreview/requiredCI/protected merge required.
   - Source/evidence: owner request on 28 October 2026 extends the existing adapter task, including Java, Kotlin, PHP and the remaining mainstream languages, each with real runners; HTML projects styled with CSS are one adapter in that broader scope. The app's implementation language does not constrain the output language. Current delivered output remains the bounded Flutter web adapter; other stacks are planned until verified.
   - Priority/scope: after F16, deliver one complete adapter per issue/PR: HTML/CSS/JavaScript first, Python second, then JavaScript/TypeScript frameworks and all remaining mainstream stacks in the catalog below. This is a multi-language generator/runner commitment, not an HTML-only feature; every catalog language requires native source generation and a real executable adapter. Preserve stable F11 identity; do not create a competing adapter backlog or mark the umbrella Done after one adapter.
@@ -11199,3 +11200,68 @@ In progress on `402-html-source-template` from verified PR454 merge4a693f7, scop
 Final isolated tracked-source validation:1266 Flutter tests passed/nine explicit skips; formatter360/analyzer clean, web includingWasm dry run and macOSdebug builds passed; nine acceptance-inventory tests passed. Actual emitted-sourceChrome check passed local assets/anchors, semantic text, focus target/native details/theme toggling/navigation,320/1280px layouts and doubled text, including maximum unbroken input. Wide rendered fixture visually inspected; screenshot-only narrow capture is limited by Chrome window sizing, while iframe DOM layout asserts an actual320px viewport. All383tracked Dart/Python inputs match tested snapshot. One analyzer import-style finding fixed before final fullchecks; browser harness maximum-input extension separately retested. CI now runs emitted-sourceChrome checks. Awaiting exacttree plugin publication, independent finalrevision review, requiredCI and reviewer protected merge. No general HTMLrunner, production export/creation/preview lifecycle or model/inference claim; HTML remains Planned.
 
 CI correction before merge: requiredCI41473270951 Python125372116109 passed; Flutter125372115493 passed1260tests/12platformskips plus17actualChrome storage/UI tests and actualChrome transport, then failed the newHTML harness at viewport equality. Linux classic scrollbars reduce documentElement.clientWidth, unlike macOS overlay scrollbars. Corrected harness distinguishes iframe/window viewport width from available content width and checks overflow against actual clientWidth at normal/2x/max text. Final actualMacChrome retest passed; source runtime unchanged, prior fullchecks/builds remain applicable. Old205a5b17 approval5739088045 is superseded; fresh finalrevision review and new requiredCI remain gates. No merge/support claim from the failed run.
+
+
+### Independent HTML source-template prerequisite verified merged — PR #455
+Bounded F11/#402 source foundation Done on `402-html-source-template`, scope6581048649.
+Tested final local06f473ada164d6e67947f545e479f2b325aabf0e and pluginpublished
+25eef994b04d5000cc545a155d03f0d43e30b67c share exact tree
+31faf8e79b5cb30b45aac61a2617e98b914fa5c7; all10remote blobs and383tracked
+Dart/Python validation inputs match. Fresh independent exactfinal review5739190678/
+finalgate5739284468 approved unchanged finalhead without blockers (COMMENT verdict;
+shared-owner identity, no second-account claim). Independent3focusedFlutter, actual
+emitted-sourceChrome andnineinventory passed. RequiredCI41474565132 BOTH SUCCESS:
+Python125376621264 andFlutter125376621631 including correctedactualLinuxHTML,
+browserstorage/UI/transport, webbuild and independentgeneratedFlutter verification.
+Parent1266Flutter/nineexplicit skips,format360/analyzer/web/Wasm/macOSdebug and
+nineinventory passed. OldCI41473270951 exposed classic-scrollbarclientWidth assertion;
+fixed before merge, actualMacChrome retested and freshreview/CI obtained without bypass.
+Fixed independent HTML/CSS/JavaScript/localSVG output is immutable, bounded and
+plain-text encoded. Actualsource assets/anchors, semantictext, focus/native details,
+theme/retry/navigation and320/1280px/2x/maxtext layout checks pass. Test exporter and
+Chrome harness are not production creation/export/runner/preview-lifecycle delivery.
+HTML remainsPlanned and fullF11unchecked; remaining adapter integration follows
+canonicalF11/#402. Deferredplatformacceptance400 retained. Existing8765health unavailable
+(URLError); no model launch/download/inference, stableapp replacement or deployment.
+Reviewer protected-plugin squashmerged PR455 as
+ebe9c6015e3c9783a138de4fcc58e06c05517c7a at2026-11-02T15:51:58Z.
+Parent freshly verified mergedPR/currentmain/#402OPEN/signedexacttree/soleparent
+4a693f7e; commitobjecthash verified before guardedlocalsync. Localmain/originmain0/0,
+emptyindex and bothoriginalIDEedits byte-identical. Finalmerge bookkeeping retained
+for nextnormalreviewedPR. No newissue/cadence/notificationchange; bothautomationlabels applied.
+Receipts:/private/tmp/asg455-publication.json,/private/tmp/asg455-validation-inputs.json,
+/private/tmp/asg455-reviewed-merge.json,/private/tmp/asg455-safe-sync.py.
+Currentrun 2026-11-02T15:52:46.158399+00:00
+
+
+### F11 / #402 — confirmed fixed HTML source export
+In progress on `402-html-source-export` from verified PR #455 main
+`ebe9c6015e3c9783a138de4fcc58e06c05517c7a`, scope comment6581732988.
+Add a typed exact-content/destination request and macOS native export service for
+the fixed five-file HTML template. Caller-owned session confirmation and current
+authorization are checked before every mutation; changed/unconfirmed requests,
+invalid destinations, existing folders/files and symbolic parents/destinations
+are refused. Exclusive folder creation prevents simultaneous export replacement.
+Partial exports are retained with an explicit directory-bearing failure; no
+cleanup, model invocation, dependency installation, verification or execution.
+This service is not a sandbox against adversarial concurrent local filesystem
+actors. The app/controller must own actual user confirmation; service records
+alone do not establish user intent. HTML remains Planned until creation,
+approval/runner/preview/Stop/recovery integration is delivered. Full F11/#402 stays
+open. Existing template and generation contracts suffice; Deferred #400 hardware
+acceptance is unrelated. Real filesystem tests cover complete output, stale/no
+confirmation, revocation before and during writes, preserved existing paths and
+concurrent requests. Full checks, independent final-revision review, required CI
+and reviewer protected merge remain gates; this entry is not delivery evidence.
+
+Final isolated-source validation: 1,274 Flutter tests passed/nine explicit skips;
+formatter362/analyzer clean; web (including Wasm dry run) and isolated macOS debug
+builds passed. Eight export tests include exact filesystem output, normalized
+request binding, missing/stale confirmation, revocation, preserved files/folders/
+links and simultaneous exclusive export refusal. Nine acceptance-inventory tests
+passed after refreshing historical source comparisons. All386 tracked Dart/Python
+validation inputs match the source snapshot. One braces lint was corrected before
+the final checks. No app/controller creation enablement, new runner, model launch,
+inference, stable-app replacement or external deployment. Exact-tree plugin
+publication, independent final-revision review, required CI and reviewer protected
+merge remain gates; fullF11/#402 remains open and HTML stays Planned.
