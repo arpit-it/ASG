@@ -297,6 +297,23 @@ class ModelCatalogService {
     if (config is! Map<String, dynamic>) {
       throw const FormatException('Invalid configuration');
     }
+    // Match runtime text-config precedence; never substitute a vision/top-level
+    // limit or multiply a declaration by a RoPE scaling factor.
+    final textConfig = config.containsKey('text_config')
+        ? config['text_config']
+        : config;
+    if (textConfig is! Map<String, dynamic>) {
+      throw const FormatException('Invalid text context configuration');
+    }
+    int? declaredContextTokens;
+    if (textConfig.containsKey('max_position_embeddings')) {
+      final declared = textConfig['max_position_embeddings'];
+      // Bound public metadata independently of any runtime capability claim.
+      if (declared is! int || declared < 1 || declared > 2147483647) {
+        throw const FormatException('Invalid declared context');
+      }
+      declaredContextTokens = declared;
+    }
     final architectures = config['architectures'];
     if (architectures is! List ||
         architectures.length != 1 ||
@@ -331,6 +348,7 @@ class ModelCatalogService {
       weightBytes: weights,
       downloadBytes: download,
       checkedAt: _now().toUtc(),
+      declaredContextTokens: declaredContextTokens,
     );
   }
 }

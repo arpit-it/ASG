@@ -52,6 +52,7 @@ ModelCatalogMetadata metadata({
   int bytes = 5 * gib,
   String architecture = 'Qwen3_5ForConditionalGeneration',
   int bits = 4,
+  int? declaredContextTokens,
 }) => ModelCatalogMetadata(
   revision: revision,
   license: 'apache-2.0',
@@ -61,6 +62,7 @@ ModelCatalogMetadata metadata({
   weightBytes: bytes,
   downloadBytes: bytes + 300,
   checkedAt: now,
+  declaredContextTokens: declaredContextTokens,
 );
 ModelCatalogService service({
   Map<String, Object?>? modelApi,
@@ -78,8 +80,10 @@ ModelCatalogService service({
 
 class WidgetCatalogService extends ModelCatalogService {
   @override
-  Future<ModelCatalogMetadata> check(ModelCatalogEntry entry) async =>
-      metadata(bytes: entry.repository.contains('27B') ? 22 * gib : 5 * gib);
+  Future<ModelCatalogMetadata> check(ModelCatalogEntry entry) async => metadata(
+    bytes: entry.repository.contains('27B') ? 22 * gib : 5 * gib,
+    declaredContextTokens: 32768,
+  );
   @override
   void close() {}
 }
@@ -115,6 +119,134 @@ class PendingPreferredService extends ModelCatalogService {
 }
 
 void main() {
+  test(
+    'source context binds to pinned config and text context takes precedence',
+    () async {
+      for (final (extra, expected) in <(Map<String, Object?>, int?)>[
+        ({}, null),
+        ({'max_position_embeddings': 32768}, 32768),
+        ({'max_position_embeddings': 1}, 1),
+        ({'max_position_embeddings': 2147483647}, 2147483647),
+        ({'max_position_embeddings': 32768, 'text_config': {}}, null),
+        (
+          {
+            'max_position_embeddings': 32768,
+            'text_config': {'max_position_embeddings': 8192},
+          },
+          8192,
+        ),
+        (
+          {
+            'max_position_embeddings': 'PRIVATE',
+            'text_config': {'max_position_embeddings': 8192},
+          },
+          8192,
+        ),
+        (
+          {
+            'vision_config': {'max_position_embeddings': 100},
+          },
+          null,
+        ),
+        (
+          {
+            'max_position_embeddings': 8192,
+            'rope_scaling': {'factor': 4},
+          },
+          8192,
+        ),
+      ]) {
+        final requests = <Uri>[];
+        final s = ModelCatalogService(
+          client: MockClient((r) async {
+            requests.add(r.url);
+            expect(r.method, 'GET');
+            return response(
+              r.url.path.startsWith('/api/') ? api() : {...config(), ...extra},
+            );
+          }),
+        );
+        addTearDown(s.close);
+        final m = await s.check(entry);
+        expect(m.declaredContextTokens, expected);
+        expect(
+          requests.last.path,
+          '/${entry.repository}/resolve/$revision/config.json',
+        );
+        expect(m.revision, revision);
+        expect(ModelAssessment.assess(host, m).canChoose, true);
+        expect(
+          ModelAssessment.assess(host, m).estimatedBytes,
+          ModelAssessment.assess(host, metadata()).estimatedBytes,
+        );
+      }
+    },
+  );
+
+  test('malformed source text context fails privately and refresh removes stale declaration', () async {
+    for (final invalid in [
+      null,
+      true,
+      0,
+      -1,
+      1.5,
+      'PRIVATE',
+      2147483648,
+      [],
+      {},
+    ]) {
+      for (final nested in [false, true]) {
+        var failContext = false;
+        final s = service(
+          modelConfig: {
+            ...config(),
+            if (nested)
+              'text_config': {'max_position_embeddings': invalid}
+            else
+              'max_position_embeddings': invalid,
+          },
+        );
+        addTearDown(s.close);
+        try {
+          await s.check(entry);
+        } catch (e) {
+          failContext = true;
+          expect('$e', isNot(contains('PRIVATE')));
+        }
+        expect(failContext, true, reason: '$invalid nested=$nested');
+      }
+    }
+    for (final invalid in [null, [], true, 'PRIVATE']) {
+      final s = service(modelConfig: {...config(), 'text_config': invalid});
+      addTearDown(s.close);
+      await expectLater(s.check(entry), throwsA(isA<ModelCatalogFailure>()));
+    }
+    var invalid = false;
+    final c = ModelCatalogController(
+      probe: () async => host,
+      service: ModelCatalogService(
+        client: MockClient(
+          (r) async => response(
+            r.url.path.startsWith('/api/')
+                ? api()
+                : {...config(), 'max_position_embeddings': invalid ? 0 : 8192},
+          ),
+        ),
+      ),
+    );
+    addTearDown(c.dispose);
+    await c.initialize();
+    await c.check(entry);
+    expect(c.choose(entry)!.metadata.declaredContextTokens, 8192);
+    invalid = true;
+    await c.check(entry);
+    expect(c.metadata(entry), null);
+    expect(c.choose(entry), null);
+    invalid = false;
+    await c.check(entry);
+    expect(c.metadata(entry)!.declaredContextTokens, 8192);
+  });
+
   test('opening observes current model without public metadata checks and refresh clears stale identity', () async {
     var fail = false;
     final service = PreferredCatalogService({});
@@ -882,6 +1014,17 @@ void main() {
       c.metadata(entry),
       isNotNull,
       reason: 'busy=${c.busy}; error=${c.error(entry)}',
+    );
+    final contextText = find.textContaining(
+      'Source-declared text context: 32768 tokens',
+    );
+    await reveal(tester, contextText);
+    expect(contextText, findsOneWidget);
+    expect(
+      find.textContaining(
+        'usable capacity and loaded revision remain unverified',
+      ),
+      findsOneWidget,
     );
     expect(tester.takeException(), null);
     await tester.pumpWidget(const SizedBox());

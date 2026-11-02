@@ -9158,3 +9158,63 @@ All360 runtime/test/tool inputs match the isolated suite. Default8765health
 unavailable; no runtime launched, inference/download/settings/stable-app change.
 Awaiting merge: exact-tree plugin publication, independent final review, actual
 required CI and protected reviewer merge remain gates; fullF22/F15unchecked.
+
+
+### Draft output-budget compatibility verified merged — PR #435
+Bounded increment Done for F22 / issue #396 on `396-draft-budget-compatibility`.
+Tested local d4e8dc6dd4ac08a111509e2115daae12a92f72c5 and published final
+ af19cf3644196be0da44e888a7e9e94ec40b16c1 share exact tree
+7c160129d64a90e2c860a5881075a5d00586ff66; all seven publication blobs match.
+Independent approval 6570989807 / final gate 6571069288 found no blockers.
+Reviewer independently passed 27 focused Flutter tests and nine inventory tests;
+all 839 remote blobs/modes and 360 validation inputs match. Required CI
+41402289043 passed: Flutter job 125136524258 (1187 tests, 12 explicit skips,
+17 actual Chrome tests, format338/analyzer/web build and independent generated
+Flutter resolve/analyze/test/build/serve), Python job 125136524603 (163 tests,
+four platform skips). Parent validation: 1193 Flutter tests/nine explicit skips,
+27 focused tests, formatter338/analyzer, web/macOS debug builds and nine inventory
+tests passed. Exact selected-model comparisons, output/context boundaries,
+unknown metadata, invalid drafts before HTTP, actual GET-only loopback conflict
+and 320px 2x budget/ID stale clearing passed. No inference, download, settings,
+installed-app or support change. Declared ceilings remain unverified assertions;
+unknown prompt length prevents a fit verdict or request permission.
+Independent reviewer protected-plugin squash merged
+955f76e61f742e20781dff019c9df96981161b3b at 2026-11-02T06:55:45Z.
+Parent freshly verified merged PR/current remote main/#396 OPEN through plugin;
+signed exact-tree/sole-parent37b68218 receipt and guarded local-only sync passed.
+Local main/originmain have zero divergence; empty index and both unrelated IDE
+edits remain byte-identical. Full F22/F15 unchecked; external acceptance Deferred
+#400. No active implementation after merge. Remaining canonical verified model
+profiles/context/capability work is Pending under #396; no new issue created.
+Final canonical bookkeeping retained for the next normal reviewed development PR.
+Receipts: /private/tmp/asg396-budget-publication.json,
+/private/tmp/asg396-budget-inputs.json, /private/tmp/asg435-reviewed-merge.json,
+/private/tmp/asg435-review-summary.json, /private/tmp/asg435-safe-sync.py.
+Both automation labels applied; cadence and notification preference unchanged.
+Current run time: 2026-11-02T06:57:00.338960+00:00
+
+
+### Pinned catalog context declaration — F22 / #396
+In progress on `396-catalog-context-declaration`, base verified PR #435 merge
+955f76e61f742e20781dff019c9df96981161b3b; no competing run/open PR.
+Gap: source checks discard pinned config text-context declarations. Expose
+optional typed source context with runtime text_config precedence, no vision
+fallback or RoPE expansion. Positive integers up to 2147483647 are accepted
+for bounded public metadata; missing remains unknown, malformed fails privately.
+Show declaration beside pinned revision, distinct from measured capacity/loaded
+identity, without changing memory estimates, selection policy or request budgets.
+Acceptance: pinned GET path, nested/top-level/conflicting/missing/invalid values,
+failed refresh clears stale metadata and retry recovers, narrow doubled-text UI,
+full checks/builds and independent final review/required CI/reviewer merge.
+Existing catalog foundations satisfy prerequisites; unavailable hardware Deferred
+#400 is unnecessary. Reuse #396; full F22/F15 remain unchecked. Preserved prior
+PR #435 verified merge bookkeeping. Recorded 2026-11-02T07:01:33.291332+00:00.
+
+Final local validation: 1195 isolated tracked-source Flutter tests passed/nine
+explicit skips; 41 focused catalog tests, formatter338/analyzer, web and macOS
+debug builds, nine regenerated inventory regressions passed. All360 validation
+inputs match. Initial isolated macOS plugin links missing; pub get regenerated
+links and the retry passed. Default8765 runtime unavailable; no launch, inference,
+download, settings, installed-app or support change. Awaiting merge: exact-tree
+plugin publication, independent final review, required CI and protected reviewer
+merge remain gates. Full F22/F15 unchecked; issue396 remains open.

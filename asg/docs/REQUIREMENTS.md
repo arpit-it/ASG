@@ -210,7 +210,8 @@ The saved development automation was updated through its management tool; active
   - Bounded delivery milestones: (1) backend contract/capability discovery and an MLX regression; (2) explicit CPU setup/inference on a supported non-Apple desktop with compatible weights; (3) explicit CUDA setup/inference on a CUDA host. Each milestone needs its own focused issue, saved settings/restart/error tests and real-host evidence. Non-Apple CPU/CUDA real-host acceptance is now Deferred in #400 until the queued implementation is delivered; this is not a dependency on eligible implementation. Isolate optional backend dependencies so missing MLX cannot prevent CPU/CUDA startup; validate configurable executable/model paths including spaces. Do not claim CPU adequacy for a 9B model without measured successful operation within the configured limits.
   - Delivery: create/reuse a narrowly scoped issue when selected; remain unchecked until all promised backend milestones, independent review, required checks and verified merges. CPU and CUDA evidence must be recorded separately; unavailable hardware is a recorded blocker, never a fixture-based completion claim.
 - [ ] F22 Hardware-aware local model catalog and selection — In progress; depends on delivered F09/F15 foundations; unavailable-platform validation Deferred
-  - Draft output-budget compatibility — Awaiting merge: #396, `396-draft-budget-compatibility`; advisory exact-model declared-limit comparison, no capacity or request-permission claim; validation/review/merge gates below.
+  - Pinned catalog context declaration — Awaiting merge: #396, `396-catalog-context-declaration`; source declaration only, no capacity or request-budget change; normal validation/review/merge gates apply.
+  - Draft output-budget compatibility — Done (bounded increment): #396, `396-draft-budget-compatibility`, [PR #435](https://github.com/arpit-it/ASG/pull/435); final af19cf36 independently approved6570989807/finalgate6571069288, requiredCI41402289043 passed; verified reviewer merge955f76e61f742e20781dff019c9df96981161b3b at2026-11-02T06:55:45Z. Advisory exact-model declared-limit comparison only; fullF22/F15unchecked.
   - Bounded response transport — Done (bounded increment): #396, `396-bounded-model-responses`, [PR #434](https://github.com/arpit-it/ASG/pull/434). Finalcdd0d429 independently approved5732792793/finalgate5732815875, requiredCI41399534714 passed; reviewer merge37b68218010d92dc87105078803ef14402c6802f verified at2026-11-02T06:28:25Z. Aggregate1MiB predecode bound; no model context/capacity claim. FullF22/F15unchecked.
   - Historical observation catalog panel — Done (bounded increment): #396, `396-historical-model-observations`, PR #433; independent approval5732671750/finalgate5732688350, requiredCI41397735832 passed, verified reviewer merge57c42fefecac1b56b48c1ae6fa1ffcd913b201e9 at2026-11-02T06:10:34Z. Exact bundled PR #432 evidence separate from current runtime/estimates; no selection credit or full profile/support claim.
   - Existing 9B live MLX regression — Done (bounded evidence): #396, `396-live-mlx-profile`, [PR #432](https://github.com/arpit-it/ASG/pull/432); finald04930a3 independently approved5732572022/finalgate5732599186, requiredCI41396392001 passed, reviewer merge452ab15e7644bb5e0dc8e8c4ba4233712431718a verified at2026-11-02T05:56:25Z. Actual JSON/structuredSSE/tokenmetrics/disconnect/retry plus explicit-expiry deadline regressions. No verified total context, full profile, larger-model or new-platform claim; F22/F15 unchecked.
@@ -10073,3 +10074,63 @@ All360 runtime/test/tool inputs match the isolated suite. Default8765health
 unavailable; no runtime launched, inference/download/settings/stable-app change.
 Awaiting merge: exact-tree plugin publication, independent final review, actual
 required CI and protected reviewer merge remain gates; fullF22/F15unchecked.
+
+
+### Draft output-budget compatibility verified merged — PR #435
+Bounded increment Done for F22 / issue #396 on `396-draft-budget-compatibility`.
+Tested local d4e8dc6dd4ac08a111509e2115daae12a92f72c5 and published final
+ af19cf3644196be0da44e888a7e9e94ec40b16c1 share exact tree
+7c160129d64a90e2c860a5881075a5d00586ff66; all seven publication blobs match.
+Independent approval 6570989807 / final gate 6571069288 found no blockers.
+Reviewer independently passed 27 focused Flutter tests and nine inventory tests;
+all 839 remote blobs/modes and 360 validation inputs match. Required CI
+41402289043 passed: Flutter job 125136524258 (1187 tests, 12 explicit skips,
+17 actual Chrome tests, format338/analyzer/web build and independent generated
+Flutter resolve/analyze/test/build/serve), Python job 125136524603 (163 tests,
+four platform skips). Parent validation: 1193 Flutter tests/nine explicit skips,
+27 focused tests, formatter338/analyzer, web/macOS debug builds and nine inventory
+tests passed. Exact selected-model comparisons, output/context boundaries,
+unknown metadata, invalid drafts before HTTP, actual GET-only loopback conflict
+and 320px 2x budget/ID stale clearing passed. No inference, download, settings,
+installed-app or support change. Declared ceilings remain unverified assertions;
+unknown prompt length prevents a fit verdict or request permission.
+Independent reviewer protected-plugin squash merged
+955f76e61f742e20781dff019c9df96981161b3b at 2026-11-02T06:55:45Z.
+Parent freshly verified merged PR/current remote main/#396 OPEN through plugin;
+signed exact-tree/sole-parent37b68218 receipt and guarded local-only sync passed.
+Local main/originmain have zero divergence; empty index and both unrelated IDE
+edits remain byte-identical. Full F22/F15 unchecked; external acceptance Deferred
+#400. No active implementation after merge. Remaining canonical verified model
+profiles/context/capability work is Pending under #396; no new issue created.
+Final canonical bookkeeping retained for the next normal reviewed development PR.
+Receipts: /private/tmp/asg396-budget-publication.json,
+/private/tmp/asg396-budget-inputs.json, /private/tmp/asg435-reviewed-merge.json,
+/private/tmp/asg435-review-summary.json, /private/tmp/asg435-safe-sync.py.
+Both automation labels applied; cadence and notification preference unchanged.
+Current run time: 2026-11-02T06:57:00.338960+00:00
+
+
+### Pinned catalog context declaration — F22 / #396
+In progress on `396-catalog-context-declaration`, base verified PR #435 merge
+955f76e61f742e20781dff019c9df96981161b3b; no competing run/open PR.
+Gap: source checks discard pinned config text-context declarations. Expose
+optional typed source context with runtime text_config precedence, no vision
+fallback or RoPE expansion. Positive integers up to 2147483647 are accepted
+for bounded public metadata; missing remains unknown, malformed fails privately.
+Show declaration beside pinned revision, distinct from measured capacity/loaded
+identity, without changing memory estimates, selection policy or request budgets.
+Acceptance: pinned GET path, nested/top-level/conflicting/missing/invalid values,
+failed refresh clears stale metadata and retry recovers, narrow doubled-text UI,
+full checks/builds and independent final review/required CI/reviewer merge.
+Existing catalog foundations satisfy prerequisites; unavailable hardware Deferred
+#400 is unnecessary. Reuse #396; full F22/F15 remain unchecked. Preserved prior
+PR #435 verified merge bookkeeping. Recorded 2026-11-02T07:01:33.291332+00:00.
+
+Final local validation: 1195 isolated tracked-source Flutter tests passed/nine
+explicit skips; 41 focused catalog tests, formatter338/analyzer, web and macOS
+debug builds, nine regenerated inventory regressions passed. All360 validation
+inputs match. Initial isolated macOS plugin links missing; pub get regenerated
+links and the retry passed. Default8765 runtime unavailable; no launch, inference,
+download, settings, installed-app or support change. Awaiting merge: exact-tree
+plugin publication, independent final review, required CI and protected reviewer
+merge remain gates. Full F22/F15 unchecked; issue396 remains open.
