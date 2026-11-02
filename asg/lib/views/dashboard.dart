@@ -125,7 +125,7 @@ class _DashboardState extends State<Dashboard> {
             ProjectWorkspace(records: widget.store.records, project: project),
       ),
     );
-    if (mounted) controller.refreshBuildStatus();
+    if (mounted) controller.reloadProjects();
   }
 
   Future<void> openHtml([SavedHtmlStarter? starter]) async {

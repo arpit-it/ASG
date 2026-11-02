@@ -271,7 +271,7 @@ The saved development automation was updated through its management tool; active
   - Acceptance: UI shows available and unavailable operations with actionable reasons; unsupported confinement refuses candidate execution before any source is run. Each enabled host passes real new-project resolve/analyze/test/web-build/serve, Stop/deadline/output-limit and descendant-cleanup checks, restart/uncertain-checkpoint refusal, stale-approval refusal and last-working-output preservation. Enabling starter generation must not implicitly enable candidate execution. Model-written candidate/repair support needs independently reviewed platform isolation and real deny-write/network/process-escape probes at the established boundary.
   - Validation/delivery: one narrowly scoped issue/PR per host/capability milestone, actual Linux/Windows builds and launches on their respective hosts, plus macOS regression coverage. Include paths with spaces, missing toolchains, occupied ports, failed previews and interrupted writes. Record tested versus unavailable capabilities separately; keep F16 unchecked until promised host increments satisfy acceptance and normal independent review/CI/verified merge. Broader generated targets remain F11.
 - [ ] F11 Multi-language project generation, runners and explicit stack selection — In progress (#402); depends on F04 and F05
-  - Explicit fixed HTML starter registration — Awaiting merge, #402, `402-html-project-registration`, scope6588315396. Transactional Projects/original-starter registration and dedicated safe workspace; full synthesis/approved-task integration remain Pending. See delivery ledger.
+  - Explicit fixed HTML starter registration — Awaiting merge in [PR #466](https://github.com/arpit-it/ASG/pull/466), #402, `402-html-project-registration`, scope6588315396. Transactional Projects/original-starter registration and dedicated safe workspace; full synthesis/approved-task integration remain Pending. See delivery ledger.
   - Creation-time HTML runner discovery — Done via [PR #465](https://github.com/arpit-it/ASG/pull/465), verified reviewer merge661d59f8 at2026-11-02T20:43:18Z; approval5742966693/finalgate5743052822 and requiredCI41520539566 passed; #402, `402-creation-runner-discovery`, scope6587720764. Registry-derived version/adapter/operation boundaries before handoff, shared with export; full HTML registration remains Planned. See delivery ledger.
   - HTML creation-to-starter handoff — Done via [PR #464](https://github.com/arpit-it/ASG/pull/464), verified reviewer merge32735587 at2026-11-02T20:13:55Z; approval5742630791/finalgate5742708623 and requiredCI41516033301 passed; #402, `402-html-creation-handoff`, scope6587091875. Explicit starter navigation from both creation entry points retains the original plain-text idea and wizard choices without registration or Build approval; full HTML project integration remains Pending. See delivery ledger.
   - HTML export deadline — Done via [PR #463](https://github.com/arpit-it/ASG/pull/463), verified reviewer merge09d68c87 at2026-11-02T19:42:54Z; independent approval5742254710/finalgate5742343110 and requiredCI41511268868 passed. #402, `402-html-export-deadline`, scope6586482988. Ten-second authority revocation retains pending IO ownership and partial/process evidence; late completion cannot publish success. Full F11 remains open; see delivery ledger.
@@ -11970,3 +11970,16 @@ license scan traversed unrelated untracked tools/.mlx-venv; clean isolated sourc
 full rerun passed. Initial lazy-scroll/status-text test harness failures and lint
 findings corrected before final checks. Existing8765health unavailable; no model
 launch/inference/app-launch/support claim. Awaiting publication/review/CI/merge.
+
+PR #466 review followup: independent blocking review5743372095 at initial
+c1f78d78 reproduced nested registration followed by stale Dashboard addition
+erasing the registered project. Fixed nested-return refresh and durable-list
+conditional append, including duplicate-ID/corrupt-reread/concurrent-transaction
+refusal. HTML metadata edits now retain original starter inputs without creating
+a Flutter prototype record. Added nested-return, stale-list, corruption/conflict
+and metadata-edit regressions. Final inventory regenerated after all runtime
+edits; initial inventory mismatch was caught independently and corrected.
+PR: https://github.com/arpit-it/ASG/pull/466; issue #402, scope6588315396.
+Final followup full1,352Flutter/nine explicit skips,36focused,formatter398 and
+analyzer passed; fresh web/Wasm and isolated macOS debug rebuilds passed. Nine
+final inventory tests passed. Fresh final revision review and actual required CI remain mandatory; no merge claim.

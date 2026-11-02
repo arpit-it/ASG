@@ -50,8 +50,7 @@ class DashboardController extends BaseController {
     error = null;
     update();
     try {
-      final updated = [..._projects, project];
-      await store.save(updated);
+      final updated = await store.append(project);
       if (isDisposed) return false;
       _projects = updated;
       return true;

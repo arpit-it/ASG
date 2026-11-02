@@ -6,6 +6,9 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:asg/controllers/html_export_controller.dart';
+import 'package:asg/controllers/dashboard_controller.dart';
+import 'package:asg/controllers/project_details_controller.dart';
+import 'package:asg/services/project_details_store.dart';
 import 'package:asg/models/html/html_export_request.dart';
 import 'package:asg/models/html/html_site_input.dart';
 import 'package:asg/models/html/saved_html_starter.dart';
@@ -208,6 +211,23 @@ void main() {
     expect(fresh.exportedDirectory, isNull);
     fresh.dispose();
   });
+  test('HTML project metadata edits retain original starter without creating a Flutter prototype', () async {
+    final records = _Records();
+    final html = HtmlProjectStore(records);
+    final original = await html.register(starter(), authorize: () {});
+    final editor = ProjectDetailsController(
+      original,
+      ProjectDetailsStore(StudioStore(records)),
+    );
+    expect(
+      await editor.save('Renamed project', 'Changed project description'),
+      true,
+    );
+    expect(records.getString('studio.application.v1.${original.id}'), isNull);
+    expect(html.resolve(editor.project).input.title, 'Example site');
+    expect(StudioStore(records).load().single.name, 'Renamed project');
+    editor.dispose();
+  });
   test(
     'native database close/reopen retains registration without source IO',
     () async {
@@ -272,6 +292,94 @@ void main() {
     expect(reopened.preview.error, isNotNull);
     expect(await File('$directory/app.js').readAsString(), 'changed');
   }, skip: !Platform.isMacOS);
+  test('adding from a stale dashboard preserves later HTML registrations and rejects duplicate IDs', () async {
+    final records = _Records();
+    final store = StudioStore(records);
+    final dashboard = DashboardController(store, const []);
+    final html = await HtmlProjectStore(records)
+        .register(starter(), authorize: () {});
+    const flutter = StudioProject(
+      id: 'later',
+      name: 'Later',
+      description: '',
+      type: 'Flutter',
+      platforms: ['Web'],
+      location: '/tmp/later',
+    );
+    expect(await dashboard.add(flutter), true);
+    expect(store.load().map((p) => p.id), [html.id, flutter.id]);
+    expect(await dashboard.add(flutter), false);
+    expect(store.load().map((p) => p.id), [html.id, flutter.id]);
+    dashboard.dispose();
+  });
+  test('dashboard append refuses corrupt reread and concurrent registration without erasing records', () async {
+    final records = _Records();
+    final store = StudioStore(records);
+    final dashboard = DashboardController(store, const []);
+    const flutter = StudioProject(
+      id: 'later',
+      name: 'Later',
+      description: '',
+      type: 'Flutter',
+      platforms: ['Web'],
+      location: '/tmp/later',
+    );
+    records.data['studio.projects.v1'] = 'damaged';
+    expect(await dashboard.add(flutter), false);
+    expect(records.getString('studio.projects.v1'), 'damaged');
+    expect(records.writes, 0);
+    records.data.clear();
+    records.gate = Completer();
+    final pending = dashboard.add(flutter);
+    final registration = expectLater(
+      HtmlProjectStore(records).register(starter(), authorize: () {}),
+      throwsStateError,
+    );
+    records.gate!.complete();
+    expect(await pending, true);
+    await registration;
+    await HtmlProjectStore(records).register(starter(), authorize: () {});
+    expect(store.load().map((p) => p.type), ['Flutter', 'HTML']);
+    dashboard.dispose();
+  });
+  testWidgets(
+    'returning from nested registered HTML workspace refreshes Projects',
+    (tester) async {
+      final records = _Records();
+      final p = await HtmlProjectStore(records)
+          .register(starter(), authorize: () {});
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Dashboard(store: StudioStore(records), initialProjects: [p]),
+        ),
+      );
+      await tester.scrollUntilVisible(
+        find.widgetWithText(ListTile, 'HTML · Web'),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.ensureVisible(find.widgetWithText(ListTile, 'HTML · Web'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(ListTile, 'HTML · Web'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Open HTML starter'));
+      await tester.pumpAndSettle();
+      await HtmlProjectStore(records)
+          .register(starter('/tmp/second'), authorize: () {});
+      await tester.pageBack();
+      await tester.pumpAndSettle();
+      await tester.pageBack();
+      await tester.pumpAndSettle();
+      await tester.scrollUntilVisible(
+        find.text('Projects · 2'),
+        -200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(find.text('Projects · 2'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox());
+    },
+  );
   for (final narrow in [false, true]) {
     testWidgets(
       'register then Projects reopens dedicated HTML workspace narrow=$narrow',

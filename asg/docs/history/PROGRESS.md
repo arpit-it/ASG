@@ -11132,3 +11132,16 @@ license scan traversed unrelated untracked tools/.mlx-venv; clean isolated sourc
 full rerun passed. Initial lazy-scroll/status-text test harness failures and lint
 findings corrected before final checks. Existing8765health unavailable; no model
 launch/inference/app-launch/support claim. Awaiting publication/review/CI/merge.
+
+PR #466 review followup: independent blocking review5743372095 at initial
+c1f78d78 reproduced nested registration followed by stale Dashboard addition
+erasing the registered project. Fixed nested-return refresh and durable-list
+conditional append, including duplicate-ID/corrupt-reread/concurrent-transaction
+refusal. HTML metadata edits now retain original starter inputs without creating
+a Flutter prototype record. Added nested-return, stale-list, corruption/conflict
+and metadata-edit regressions. Final inventory regenerated after all runtime
+edits; initial inventory mismatch was caught independently and corrected.
+PR: https://github.com/arpit-it/ASG/pull/466; issue #402, scope6588315396.
+Final followup full1,352Flutter/nine explicit skips,36focused,formatter398 and
+analyzer passed; fresh web/Wasm and isolated macOS debug rebuilds passed. Nine
+final inventory tests passed. Fresh final revision review and actual required CI remain mandatory; no merge claim.
