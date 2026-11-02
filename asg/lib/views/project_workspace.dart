@@ -8,6 +8,7 @@ import '../services/requirement_check_report_store.dart';
 import 'requirement_check_report_screen.dart';
 
 import 'workspace_panes.dart';
+import 'html_project_workspace.dart';
 
 import '../controllers/portable_archive_controller.dart';
 import 'portable_archive_screen.dart';
@@ -30,7 +31,7 @@ import '../services/generation_host_factory.dart';
 import '../services/record_storage.dart';
 import '../services/application_store.dart';
 
-class ProjectWorkspace extends StatefulWidget {
+class ProjectWorkspace extends StatelessWidget {
   const ProjectWorkspace({
     super.key,
     required this.project,
@@ -45,10 +46,48 @@ class ProjectWorkspace extends StatefulWidget {
   final bool embedded;
   final AppWorkspaceController? controller;
   @override
-  State<ProjectWorkspace> createState() => _ProjectWorkspaceState();
+  Widget build(BuildContext context) {
+    if (project.type == 'HTML') {
+      final storage = records;
+      if (storage == null) {
+        return const Center(
+          child: Text('Local storage is required to open this HTML project.'),
+        );
+      }
+      return HtmlProjectWorkspace(
+        project: project,
+        records: storage,
+        embedded: embedded,
+      );
+    }
+    return _FlutterProjectWorkspace(
+      project: project,
+      embedded: embedded,
+      controller: controller,
+      records: records,
+      onPendingChanged: onPendingChanged,
+    );
+  }
 }
 
-class _ProjectWorkspaceState extends State<ProjectWorkspace> {
+class _FlutterProjectWorkspace extends StatefulWidget {
+  const _FlutterProjectWorkspace({
+    required this.project,
+    this.embedded = false,
+    this.controller,
+    this.records,
+    this.onPendingChanged,
+  });
+  final StudioProject project;
+  final RecordStorage? records;
+  final ValueChanged<bool>? onPendingChanged;
+  final bool embedded;
+  final AppWorkspaceController? controller;
+  @override
+  State<_FlutterProjectWorkspace> createState() => _ProjectWorkspaceState();
+}
+
+class _ProjectWorkspaceState extends State<_FlutterProjectWorkspace> {
   late final controller =
       widget.controller ??
       AppWorkspaceController(

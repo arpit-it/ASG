@@ -22,7 +22,7 @@ class RunnerCapabilities extends StatelessWidget {
           'describes an action, not a passed check or verified browser. No '
           'external compiler or package manager is used. A browser is needed '
           'to view the preview; browser installation and version are not '
-          'verified here. Full HTML project registration and approved-task '
+          'verified here. Full HTML project synthesis and approved-task '
           'integration remain planned.',
         ),
       ),

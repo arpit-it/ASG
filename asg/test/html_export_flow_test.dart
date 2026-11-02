@@ -433,7 +433,7 @@ void main() {
       await tester.pumpAndSettle();
       await tester.scrollUntilVisible(
         find.text(
-          'Source export complete. HTML project creation remains planned.',
+          'Source export complete. Full HTML project synthesis remains planned.',
         ),
         180,
         scrollable: find.byType(Scrollable).first,
@@ -441,7 +441,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(
         find.text(
-          'Source export complete. HTML project creation remains planned.',
+          'Source export complete. Full HTML project synthesis remains planned.',
         ),
         findsOneWidget,
       );

@@ -51,7 +51,8 @@ class _HtmlExportScreenState extends State<HtmlExportScreen> {
         controller.supported &&
         !controller.busy &&
         !controller.picking &&
-        !controller.saving;
+        !controller.saving &&
+        !controller.registering;
     return Scaffold(
       appBar: AppBar(title: const Text('Export HTML starter')),
       body: Center(
@@ -61,7 +62,7 @@ class _HtmlExportScreenState extends State<HtmlExportScreen> {
             padding: const EdgeInsets.all(20),
             children: [
               const Text(
-                'Export editable HTML, CSS, JavaScript and local SVG files from a fixed responsive starter. Your text fills its title and description. After export, preview this unchanged starter locally on macOS. Leaving this screen stops the preview. Optionally save this export in the local starter library to reopen its checks and preview. This does not create an ASG project. HTML project creation and arbitrary edited-source runners are planned.',
+                'Export editable HTML, CSS, JavaScript and local SVG files from a fixed responsive starter. Your text fills its title and description. After export, preview this unchanged starter locally on macOS. Leaving this screen stops the preview. Optionally save this export in the local starter library to reopen its checks and preview. You can explicitly register the exported starter in Projects. Full HTML project synthesis, approved-task integration and arbitrary edited-source runners remain planned.',
               ),
               RunnerCapabilities(descriptor: controller.runnerDescriptor),
               if (!controller.supported)
@@ -161,15 +162,38 @@ class _HtmlExportScreenState extends State<HtmlExportScreen> {
               ],
               if (controller.exportedDirectory != null) ...[
                 const Text(
-                  'Source export complete. HTML project creation remains planned.',
+                  'Source export complete. Full HTML project synthesis remains planned.',
                 ),
                 SelectableText(controller.exportedDirectory!),
                 if (controller.starterStore != null) ...[
                   const Text(
+                    'Register this original export in Projects. Registration also saves its starter record; it does not approve tasks, check files or start a preview.',
+                  ),
+                  OutlinedButton(
+                    onPressed:
+                        controller.registering ||
+                            controller.saving ||
+                            controller.registeredProject != null
+                        ? null
+                        : controller.registerProject,
+                    child: Text(
+                      controller.registering
+                          ? 'Registering HTML project…'
+                          : controller.registeredProject != null
+                          ? 'HTML project registered in Projects'
+                          : 'Register HTML starter in Projects',
+                    ),
+                  ),
+                  if (controller.registrationError != null)
+                    SelectableText(controller.registrationError!),
+                  const Text(
                     'Saving remembers the destination and original text only. Reopening does not run code or verify files; checks and preview refuse modified sources.',
                   ),
                   OutlinedButton(
-                    onPressed: controller.saving || controller.saved
+                    onPressed:
+                        controller.registering ||
+                            controller.saving ||
+                            controller.saved
                         ? null
                         : controller.saveStarter,
                     child: Text(

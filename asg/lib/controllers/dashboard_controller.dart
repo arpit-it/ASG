@@ -26,6 +26,17 @@ class DashboardController extends BaseController {
   List<StudioProject> get filtered => _projects
       .where((p) => p.name.toLowerCase().contains(_query.toLowerCase()))
       .toList();
+  void reloadProjects() {
+    if (busy || isDisposed) return;
+    try {
+      _projects = store.load();
+      error = null;
+    } catch (_) {
+      error = 'Project records could not be refreshed. Existing data is retained; retry opening Projects.';
+    }
+    update();
+  }
+
   void refreshBuildStatus() => update();
 
   void search(String value) {
@@ -39,8 +50,7 @@ class DashboardController extends BaseController {
     error = null;
     update();
     try {
-      final updated = [..._projects, project];
-      await store.save(updated);
+      final updated = await store.append(project);
       if (isDisposed) return false;
       _projects = updated;
       return true;

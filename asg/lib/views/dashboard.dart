@@ -82,7 +82,10 @@ class _DashboardState extends State<Dashboard> {
         ),
       ),
     );
-    if (mounted) htmlLibrary.reload();
+    if (mounted) {
+      htmlLibrary.reload();
+      controller.reloadProjects();
+    }
   }
 
   Future<void> create() async {
@@ -122,7 +125,7 @@ class _DashboardState extends State<Dashboard> {
             ProjectWorkspace(records: widget.store.records, project: project),
       ),
     );
-    if (mounted) controller.refreshBuildStatus();
+    if (mounted) controller.reloadProjects();
   }
 
   Future<void> openHtml([SavedHtmlStarter? starter]) async {
@@ -137,7 +140,10 @@ class _DashboardState extends State<Dashboard> {
         ),
       ),
     );
-    if (mounted) htmlLibrary.reload();
+    if (mounted) {
+      htmlLibrary.reload();
+      controller.reloadProjects();
+    }
   }
 
   @override
@@ -272,7 +278,7 @@ class _DashboardState extends State<Dashboard> {
                   style: TextStyle(fontSize: 20),
                 ),
                 const Text(
-                  'Fixed exports only; file checks and preview run on request. These are separate from software projects.',
+                  'Fixed exports only; file checks and preview run on request. Register a starter explicitly to also find it in Projects.',
                 ),
                 for (final starter in htmlLibrary.starters)
                   ListTile(
@@ -335,9 +341,12 @@ class _DashboardState extends State<Dashboard> {
                       children: [
                         Text('${p.type} · ${p.platforms.join(', ')}'),
                         const SizedBox(height: 6),
-                        ProjectBuildStatusView(
-                          summary: controller.buildSummary(p),
-                        ),
+                        if (p.type == 'HTML')
+                          const Text('Fixed starter · checks run on request')
+                        else
+                          ProjectBuildStatusView(
+                            summary: controller.buildSummary(p),
+                          ),
                       ],
                     ),
                     trailing: const Icon(Icons.arrow_forward),

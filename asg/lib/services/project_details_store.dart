@@ -26,6 +26,8 @@ class ProjectDetailsStore {
 
   Future<void> preserveApplication(StudioProject original) async {
     _currentRecords(original);
+    // Registered HTML uses its original starter record, never a Dart prototype.
+    if (original.type == 'HTML') return;
     final applications = ApplicationStore(projects.records);
     // A never-edited starter exists only in memory. Freeze it before changing
     // its metadata inputs, so reopening cannot silently create a different app.

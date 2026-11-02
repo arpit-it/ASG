@@ -22,6 +22,28 @@ class StudioStore {
         .toList();
   }
 
+  /// Append to the current durable list, refusing concurrent replacement.
+  Future<List<StudioProject>> append(StudioProject project) async {
+    const key = 'studio.projects.v1';
+    final before = records.getString(key);
+    final current = load();
+    if (current.any((saved) => saved.id == project.id)) {
+      throw StateError('Project identity already exists.');
+    }
+    final updated = [...current, project];
+    final storage = records;
+    if (storage is ConditionalRecordStorage) {
+      await storage.commitRecords(
+        expected: {key: before},
+        updates: {key: jsonEncode(updated.map((p) => p.toJson()).toList())},
+        authorize: () {},
+      );
+    } else {
+      await save(updated);
+    }
+    return updated;
+  }
+
   Future<void> save(List<StudioProject> projects) async {
     if (!await records.setString(
       'studio.projects.v1',
