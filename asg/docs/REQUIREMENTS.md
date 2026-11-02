@@ -210,7 +210,8 @@ The saved development automation was updated through its management tool; active
   - Bounded delivery milestones: (1) backend contract/capability discovery and an MLX regression; (2) explicit CPU setup/inference on a supported non-Apple desktop with compatible weights; (3) explicit CUDA setup/inference on a CUDA host. Each milestone needs its own focused issue, saved settings/restart/error tests and real-host evidence. Non-Apple CPU/CUDA real-host acceptance is now Deferred in #400 until the queued implementation is delivered; this is not a dependency on eligible implementation. Isolate optional backend dependencies so missing MLX cannot prevent CPU/CUDA startup; validate configurable executable/model paths including spaces. Do not claim CPU adequacy for a 9B model without measured successful operation within the configured limits.
   - Delivery: create/reuse a narrowly scoped issue when selected; remain unchecked until all promised backend milestones, independent review, required checks and verified merges. CPU and CUDA evidence must be recorded separately; unavailable hardware is a recorded blocker, never a fixture-based completion claim.
 - [ ] F22 Hardware-aware local model catalog and selection — In progress; depends on delivered F09/F15 foundations; unavailable-platform validation Deferred
-  - Model ID configuration/provenance integrity — Awaiting merge: #396, `396-model-id-validation`, scope6579374199. Reject control-character/over4096 IDs before settings writes or dispatch; preserve invalid stored records with explicit load failure. Exact valid IDs remain unchanged. Storage/controller/actualHTTP regression, full checks/builds and independent finalreview/CI/merge required. Delivered transport/provenance prerequisites suffice; external acceptance Deferred400.
+  - macOS memory-observation validation — Awaiting merge (bounded increment): #396, `396-memory-observation-validation`, scope6579709217. Reproduced missing vm_stat counters reported as measured zero; reject missing/malformed/duplicate/overflow/over-total observations and nonpositive/malformed total memory. Preserve valid Apple Silicon/total observations and true zero headroom; no load/support/backend changes. Delivered probe/catalog prerequisites suffice; external acceptance Deferred400. Actual read-only Mac probe, injected/catalog regressions and normal full checks/review/CI/protected merge required; umbrella unchecked.
+  - Model ID configuration/provenance integrity — Done (bounded increment), [PR #452](https://github.com/arpit-it/ASG/pull/452), finaldd3624c1 approved5737970691/finalgate6579594715, requiredCI41460858325 passed; verified reviewer merge359b85ffb9164982a478cff1c14bf1e6b249e94e at2026-11-02T14:25:21Z: #396, `396-model-id-validation`, scope6579374199. Reject control-character/over4096 IDs before settings writes or dispatch; preserve invalid stored records with explicit load failure. Exact valid IDs remain unchanged. Storage/controller/actualHTTP regression, full checks/builds and independent finalreview/CI/merge required. Delivered transport/provenance prerequisites suffice; external acceptance Deferred400.
   - Test-time saved profile declarations — Done (bounded increment), [PR #451](https://github.com/arpit-it/ASG/pull/451), finala60f87bf approved5737597723/finalgate6579021183, requiredCI41456422055 passed; verified reviewer mergeb4812e5d6aa4465ff633096f28d069cac39c5cbf at2026-11-02T13:59:10Z: #396, `396-test-profile-snapshot`, scope6578722759. Snapshot matching saved notes before dispatch, explicit successful observation save/retry/reopen, separate unverified UI; legacy/unmatched unavailable. Delivered presets/observations suffice; Deferred400 unnecessary. ActualHTTP/native-reopen/responsive/full checks and finalreview/CI/merge verified; umbrella unchecked.
   - Declared profile comparison context — Done (bounded increment), [PR #450](https://github.com/arpit-it/ASG/pull/450), finalacf3be6b approved5737350021/finalgate6578646206, requiredCI41453994650 passed; verified reviewer merge1b09709eee1883111f77632bd5a18802568f9e03 at2026-11-02T13:41:06Z: #396, `396-profile-comparison-context`, scope6578411126. Compare current saved revision/license/architecture/quantization/backend/context notes beside historical tests. Explicit unverified/current declarations, never a tested-configuration claim; missing/partial/legacy data honest. Delivered presets/notes/comparison suffice; external acceptance Deferred400. Responsive/no-mutation/full checks and independent review/CI/merge required; umbrella unchecked.
   - Saved preset observation comparison — Done (bounded increment), [PR #449](https://github.com/arpit-it/ASG/pull/449), final4788cd6 approved5737028780/finalgate6578071357, requiredCI41450135664 passed, verified reviewer mergebbb9cbc1b966eeb02b48db98e309fbc61c51d585 at2026-11-02T13:15:24Z: #396, `396-historical-profile-comparison`, scope6577758065. Read-only historical latency/speed/process-peak comparison with missing-data and unverified labels; no requests, settings mutation or ranking. Delivered test/preset foundations suffice; Deferred400 unnecessary. Final1248Flutter/nine skips,format353/analyzer/web/macOS/nineinventory pass; independent review/CI/merge verified. FullF22 remains unchecked.
@@ -11082,3 +11083,40 @@ build passed. ActualHTTP verifies zero invalid dispatch and exact valid ID
 roundtrip, settings write refusal and rawrecord preservation/recovery covered.
 Awaiting plugin publication, independent finalrevision review, requiredCI and
 protected reviewer merge. FullF22/F15 unchecked; no live inference claim.
+
+
+### Model ID configuration/provenance integrity verified merged — PR #452
+Bounded F22/#396 increment delivered on `396-model-id-validation`, scope6579374199.
+Tested local5cdb0386bbd34b377a8d73d73f33f76a8ac3b871 and pluginpublished
+ dd3624c163dd3152bb7f06c5a350ef65cf4831a5 share exacttree
+b033620128c55a4cf273bec3017a5e9e888fe576; all7publication blobs matched.
+Independent exactfinal review5737970691/finalgate6579594715 approved unchanged
+head without blockers (COMMENT verdict, shared-owner identity; no secondaccount
+approval claim). Independent39Flutter/nineinventory passed;375inputs matched.
+RequiredCI41460858325 BOTH SUCCESS: Flutter125329210699 fullsuite/actualChrome
+storage/browsertransport/web/independentgeneratedproject verification;
+Python125329211007 runtime/process/inventory/confinement fixtures.
+Parent1256Flutter/nineexplicit skips,format354/analyzer/web/Wasm/isolatedmacOSdebug
+andnineinventory passed. Three new regressions failed before fix and passed after.
+Sharedconfiguration rejects controlcharacters/over4096 IDs before settings writes
+or provider dispatch; loading invalidsettings fails explicitly, retaining rawdata.
+ActualHTTP confirms zero invaliddispatch and exact valid4096/Unicode/pathlike/
+whitespace-preserving identity; failure/retry and record preservation covered.
+Preset256 bound/schema unchanged. No model launch/download/liveinference or
+stableapp replacement. Reviewer protectedplugin squashmerged PR452 as
+359b85ffb9164982a478cff1c14bf1e6b249e94e at2026-11-02T14:25:21Z.
+Parent freshly verified mergedPR/currentmain/#396OPEN/signedexacttree/soleparent
+b4812e5d; commitobject hashverified before guarded localsync. Localmain/originmain
+0/0, emptyindex, bothoriginalIDEedits byteidentical. FullF22/F15unchecked; external
+acceptanceDeferred400, remaining verified profiles/context/capabilities Pending396.
+Finalmerge bookkeeping retained for next normal reviewed PR. No newissue,
+cadence or notification change. Bothautomationlabels applied.
+Receipts:/private/tmp/asg452-publication.json,/private/tmp/asg452-validation-inputs.json,
+/private/tmp/asg452-reviewed-merge.json,/private/tmp/asg452-safe-sync.py.
+Currentrun 2026-11-02T14:26:12.463879+00:00
+
+
+### macOS memory-observation validation — F22 / #396
+In progress on `396-memory-observation-validation` from verified PR452 merge359b85f, scope6579709217. Missing-counter regression failed before fix (availableBytes=0 instead of unavailable). Strict complete observations and wide arithmetic prevent numeric-prefix/duplicate/overflow/impossible headroom from influencing recommendations. Invalid total remains unknown without losing Apple Silicon detection. Valid zero remains zero. Focused50 tests including actual read-only Mac probe passed; final full checks/publication/independent review/CI/protected merge pending. Retained PR452 merge bookkeeping; F22/F15 unchecked, unavailable-platform acceptance Deferred400. No new issue, model launch/download/live inference or stable-app replacement.
+
+Final tracked-source validation:1258 Flutter tests passed/nine explicit skips; format354/analyzer clean, web includingWasm dryrun and isolatedmacOSdebug builds passed. Ninefinalinventory tests passed; all373tracked Dart/Python validation inputs match the tested snapshot. Actual Mac read-only probe plus missing/duplicate/malformed/nondecimal/zero/overflow/over-total reports and honest catalog fallback covered. Root first run included ignored thirdparty license files; clean tracked-source rerun passed. Existing8765health unavailable (URLError); no model launch/download/live inference or stableapp replacement. Awaiting exacttree plugin publication, independent finalrevision review, requiredCI and protected reviewer merge; fullF22/F15unchecked, Deferred400 retained.

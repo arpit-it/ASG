@@ -10169,3 +10169,40 @@ build passed. ActualHTTP verifies zero invalid dispatch and exact valid ID
 roundtrip, settings write refusal and rawrecord preservation/recovery covered.
 Awaiting plugin publication, independent finalrevision review, requiredCI and
 protected reviewer merge. FullF22/F15 unchecked; no live inference claim.
+
+
+### Model ID configuration/provenance integrity verified merged — PR #452
+Bounded F22/#396 increment delivered on `396-model-id-validation`, scope6579374199.
+Tested local5cdb0386bbd34b377a8d73d73f33f76a8ac3b871 and pluginpublished
+ dd3624c163dd3152bb7f06c5a350ef65cf4831a5 share exacttree
+b033620128c55a4cf273bec3017a5e9e888fe576; all7publication blobs matched.
+Independent exactfinal review5737970691/finalgate6579594715 approved unchanged
+head without blockers (COMMENT verdict, shared-owner identity; no secondaccount
+approval claim). Independent39Flutter/nineinventory passed;375inputs matched.
+RequiredCI41460858325 BOTH SUCCESS: Flutter125329210699 fullsuite/actualChrome
+storage/browsertransport/web/independentgeneratedproject verification;
+Python125329211007 runtime/process/inventory/confinement fixtures.
+Parent1256Flutter/nineexplicit skips,format354/analyzer/web/Wasm/isolatedmacOSdebug
+andnineinventory passed. Three new regressions failed before fix and passed after.
+Sharedconfiguration rejects controlcharacters/over4096 IDs before settings writes
+or provider dispatch; loading invalidsettings fails explicitly, retaining rawdata.
+ActualHTTP confirms zero invaliddispatch and exact valid4096/Unicode/pathlike/
+whitespace-preserving identity; failure/retry and record preservation covered.
+Preset256 bound/schema unchanged. No model launch/download/liveinference or
+stableapp replacement. Reviewer protectedplugin squashmerged PR452 as
+359b85ffb9164982a478cff1c14bf1e6b249e94e at2026-11-02T14:25:21Z.
+Parent freshly verified mergedPR/currentmain/#396OPEN/signedexacttree/soleparent
+b4812e5d; commitobject hashverified before guarded localsync. Localmain/originmain
+0/0, emptyindex, bothoriginalIDEedits byteidentical. FullF22/F15unchecked; external
+acceptanceDeferred400, remaining verified profiles/context/capabilities Pending396.
+Finalmerge bookkeeping retained for next normal reviewed PR. No newissue,
+cadence or notification change. Bothautomationlabels applied.
+Receipts:/private/tmp/asg452-publication.json,/private/tmp/asg452-validation-inputs.json,
+/private/tmp/asg452-reviewed-merge.json,/private/tmp/asg452-safe-sync.py.
+Currentrun 2026-11-02T14:26:12.463879+00:00
+
+
+### macOS memory-observation validation — F22 / #396
+In progress on `396-memory-observation-validation` from verified PR452 merge359b85f, scope6579709217. Reproduced missing-counter zero-headroom defect; strict observation completeness, unambiguous decimal counters/positive total and overflow-safe aggregate bounds preserve unknown data honestly. Actual Mac read-only probe and focused50 hardware/catalog tests passed. Final full checks, exact-tree plugin publication, independent final review, CI and reviewer protected merge pending. FullF22/F15 unchecked; external acceptance Deferred400. No new issue or model/stable-app changes.
+
+Final tracked-source validation:1258 Flutter tests passed/nine explicit skips; format354/analyzer clean, web includingWasm dryrun and isolatedmacOSdebug builds passed. Ninefinalinventory tests passed; all373tracked Dart/Python validation inputs match the tested snapshot. Actual Mac read-only probe plus missing/duplicate/malformed/nondecimal/zero/overflow/over-total reports and honest catalog fallback covered. Root first run included ignored thirdparty license files; clean tracked-source rerun passed. Existing8765health unavailable (URLError); no model launch/download/live inference or stableapp replacement. Awaiting exacttree plugin publication, independent finalrevision review, requiredCI and protected reviewer merge; fullF22/F15unchecked, Deferred400 retained.
