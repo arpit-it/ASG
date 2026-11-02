@@ -12,12 +12,14 @@ import 'dart:typed_data';
 Future<({int exitCode, String stdout, String stderr})> captureGenerationProcess(
   Process process, {
   required Duration timeout,
+  Future<void>? cancellation,
 }) async {
   const byteLimit = 512 * 1024;
   final output = BytesBuilder(copy: false);
   final error = BytesBuilder(copy: false);
   var captured = 0;
   final failure = Completer<Never>();
+  Timer? cancellationDeadline;
   final streams = <StreamSubscription<List<int>>>[];
   final ends = <Future<void>>[];
   void fail(Object reason, [StackTrace? stack]) {
@@ -62,9 +64,27 @@ Future<({int exitCode, String stdout, String stderr})> captureGenerationProcess(
         stderr: utf8.decode(error.takeBytes(), allowMalformed: true),
       );
     }();
-    return await Future.any([completed, failed]);
+    var listening = true;
+    cancellation?.then((_) {
+      if (!listening) return;
+      // Give the trusted helper a bounded chance to report cancellation and
+      // clean its owned tool group before interrupting protocol capture.
+      cancellationDeadline = Timer(const Duration(seconds: 3), () {
+        fail(
+          StateError(
+            'Generation helper capture stopped. Process cleanup is required.',
+          ),
+        );
+      });
+    });
+    try {
+      return await Future.any([completed, failed]);
+    } finally {
+      listening = false;
+    }
   } finally {
     deadline.cancel();
+    cancellationDeadline?.cancel();
     await Future.wait(streams.map((stream) => stream.cancel()));
   }
 }

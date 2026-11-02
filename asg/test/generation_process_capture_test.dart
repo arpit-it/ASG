@@ -4,6 +4,7 @@
 @TestOn('mac-os || linux')
 library;
 
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -63,6 +64,23 @@ os._exit(0)
       }
     },
   );
+
+  test('cancellation interrupts capture before the helper deadline', () async {
+    final process = await start('import time; time.sleep(30)');
+    final cancellation = Completer<void>();
+    try {
+      final captured = captureGenerationProcess(
+        process,
+        timeout: const Duration(seconds: 30),
+        cancellation: cancellation.future,
+      );
+      final stopped = expectLater(captured, throwsStateError);
+      cancellation.complete();
+      await stopped.timeout(const Duration(seconds: 5));
+    } finally {
+      await cleanup(process);
+    }
+  });
 
   test(
     'aggregate stdout and stderr flood refused before exit, retry succeeds',

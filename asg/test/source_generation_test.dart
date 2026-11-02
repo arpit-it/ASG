@@ -861,6 +861,72 @@ void main() {
     },
   );
 
+  for (final dispose in [false, true]) {
+    test(
+      'actual resistant helper capture stops on ${dispose ? 'dispose' : 'Stop'}',
+      () async {
+        for (final relative in [
+          'bin/cache/flutter_tools.snapshot',
+          'bin/cache/dart-sdk/bin/dart',
+          'packages/flutter_tools/.dart_tool/package_config.json',
+        ]) {
+          final file = File('$sdk/$relative');
+          await file.parent.create(recursive: true);
+          await file.writeAsString('fixture');
+        }
+        final generated = await generate();
+        final marker = File('${temp.path}/helper-ready');
+        final guarded = NativeGenerationHost(
+          loadAsset: (_) async =>
+              '''import os, signal, time
+signal.signal(signal.SIGTERM, signal.SIG_IGN)
+with open(${jsonEncode(marker.path)}, 'w') as stream:
+    stream.write(str(os.getpid()))
+time.sleep(30)
+''',
+        );
+        int? pid;
+        try {
+          final operation = guarded.runFlutterOperation(generated, 'analyze');
+          final stopped = expectLater(operation, throwsStateError);
+          final deadline = DateTime.now().add(const Duration(seconds: 5));
+          while (!await marker.exists() && DateTime.now().isBefore(deadline)) {
+            await Future<void>.delayed(const Duration(milliseconds: 20));
+          }
+          expect(await marker.exists(), isTrue);
+          pid = int.parse(await marker.readAsString());
+          final watch = Stopwatch()..start();
+          if (dispose) {
+            await guarded.dispose();
+          } else {
+            guarded.cancelVerification();
+          }
+          await stopped.timeout(const Duration(seconds: 10));
+          expect(watch.elapsed, lessThan(const Duration(seconds: 10)));
+          expect(Process.killPid(pid, ProcessSignal.sigkill), isFalse);
+          pid = null;
+          final retry = NativeGenerationHost(
+            loadAsset: (_) async =>
+                'import json; print(json.dumps({"exitCode": 0, "output": "retry", '
+                '"timedOut": False, "outputLimitExceeded": False, "cancelled": False}))',
+          );
+          try {
+            final result = await retry.runFlutterOperation(
+              generated,
+              'analyze',
+            );
+            expect(result.succeeded, isTrue);
+          } finally {
+            await retry.dispose();
+          }
+        } finally {
+          if (pid != null) Process.killPid(pid, ProcessSignal.sigkill);
+          await guarded.dispose();
+        }
+      },
+    );
+  }
+
   test('native helper flood refuses and same session retries valid protocol', () async {
     for (final relative in [
       'bin/cache/flutter_tools.snapshot',
