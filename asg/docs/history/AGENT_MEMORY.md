@@ -10115,3 +10115,57 @@ regressions passed. All374validation inputs match the tested snapshot. ActualHTT
 and native database reopen verify retained test-time declarations after notes
 edits. Awaiting plugin publication, independent exact-final review, required CI
 and protected reviewer merge. No live inference or supported-profile claim.
+
+
+### Test-time profile declarations verified merged — PR #451
+Bounded F22/#396 increment delivered on `396-test-profile-snapshot`,
+scope6578722759. Tested local48a4951 and pluginpublished
+a60f87bf3894ce4c5e5c35301af5da60226e432e share exact tree
+4aa6b661e6fc2536100927a709d88b006735d1b2; all11publication blobs matched.
+Independent exact-final review5737597723/finalgate6579021183 approved unchanged
+head without blockers (COMMENT verdict; shared-owner APPROVE returned HTTP422,
+not a second-account approval). RequiredCI41456422055 passed both jobs:
+Python125314136776 and Flutter125314137558, including actual Chrome storage,
+browser transport, web and independent generated-project verification.
+Parent1253Flutter/nine explicit skips,34focused,formatter353/analyzer/web/
+isolatedmacOSdebug/nineinventory passed;374trackedvalidationinputs matched.
+Independent34focused/nineinventory and actualdialog20max256notes/context1048576
+at320px2x passed, no overflow/record mutation. Matching saved preset declarations
+are captured before test dispatch and explicitly retained with successful saved
+observations, independent of later notes edits/clear/retry/reopen. Legacy/unmatched
+notes unavailable; comparisons label test-time/current declarations separately as
+unverified. No loaded identity, capacity, support or live inference claim.
+Fresh existing8765health unavailable (URLError); no runtime restart/download or
+stable-app replacement. Reviewer protected-plugin squashmerged PR451 as
+b4812e5d6aa4465ff633096f28d069cac39c5cbf at2026-11-02T13:59:10Z.
+Parent freshly verified mergedPR/currentmain/#396OPEN/signedexacttree/soleparent
+1b09709; verified commitobject hash before guarded synchronization. Localmain/
+originmain0/0, emptyindex; both originalIDEedits byteidentical. FullF22/F15 remain
+unchecked; external acceptance Deferred400, remaining verified profiles/context/
+capabilities Pending396. Merge bookkeeping retained for next normal reviewed PR.
+No new issue/cadence/notification change. Bothautomationlabels applied.
+Receipts:/private/tmp/asg451-publication.json,/private/tmp/asg451-validation-inputs.json,
+/private/tmp/asg451-reviewed-merge.json,/private/tmp/asg451-safe-sync.py.
+Currentrun 2026-11-02T14:00:29.309292+00:00
+
+
+### Model ID configuration/provenance integrity — F22 / #396
+In progress on `396-model-id-validation` from verified PR451 merge
+b4812e5d6aa4465ff633096f28d069cac39c5cbf; scope6579374199. Reproduced all three
+regression failures: settings accepted control characters and over4096 IDs that
+request provenance rejects; invalid stored IDs also loaded without an error.
+Shared config validation now rejects these before writes/provider dispatch;
+global load validates without rewriting invalid records. Exact valid Unicode,
+path-like, whitespace-preserving IDs and the established4096 boundary remain.
+Preset256 bound/schema unchanged. ActualHTTP/storage/controller failure/retry
+regressions added. Full validation/publication/independent review/CI/merge pending.
+Full F22/F15 unchecked; external acceptance Deferred400. PriorPR451 bookkeeping
+and unrelated IDE edits preserved. No model launch/download/inference claim.
+
+Final tracked-source validation: 1256Flutter passed/nine explicit skips, three
+new regressions reproduced before fix and passed afterward; formatter354/analyzer
+clean/web includingWasm passed. Ninefinalinventory tests passed; isolatedmacOSdebug
+build passed. ActualHTTP verifies zero invalid dispatch and exact valid ID
+roundtrip, settings write refusal and rawrecord preservation/recovery covered.
+Awaiting plugin publication, independent finalrevision review, requiredCI and
+protected reviewer merge. FullF22/F15 unchecked; no live inference claim.

@@ -31,9 +31,11 @@ class LocalModelConfig {
         'Use a local HTTP endpoint, for example http://127.0.0.1:8765/v1 (10.0.2.2 on Android Emulator).',
       );
     }
-    if (model.trim().isEmpty) {
+    if (model.trim().isEmpty ||
+        model.length > 4096 ||
+        RegExp(r'[\x00-\x1f\x7f]').hasMatch(model)) {
       throw const FormatException(
-        'Enter the exact model identifier reported by your server.',
+        'Enter the exact server model identifier (1–4096 characters, no control characters).',
       );
     }
     return uri.replace(path: '${uri.path.replaceFirst(RegExp(r'/+$'), '')}/');

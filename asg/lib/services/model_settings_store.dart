@@ -110,6 +110,7 @@ class ModelSettingsStore {
       model: data['model'] as String,
       chatOutputTokens: tokens,
     );
+    config.endpoint;
     config.validateChatLimit();
     return config;
   }
