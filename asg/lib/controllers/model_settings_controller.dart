@@ -33,6 +33,16 @@ class ModelSettingsController extends BaseController {
   final Future<String> Function(LocalModelConfig) _inspectInventory;
   String? inventoryStatus;
 
+  static const draftChangedGuidance =
+      'Connection draft changed. Test again to observe this draft; settings are unchanged.';
+
+  void connectionDraftChanged() {
+    if (busy || settingsLoadFailed || isDisposed) return;
+    inventoryStatus = null;
+    status = draftChangedGuidance;
+    update();
+  }
+
   void clearInventory() {
     if (inventoryStatus == null || isDisposed) return;
     inventoryStatus = null;
@@ -107,7 +117,7 @@ class ModelSettingsController extends BaseController {
     }
     for (final preset in _presets) {
       if (preset.name == name) {
-        clearInventory();
+        connectionDraftChanged();
         selectedPreset = name;
         presetStatus = 'Preset restored into the draft. Choose Save to apply it or Test model to check the connection.';
         update();

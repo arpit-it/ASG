@@ -9619,3 +9619,66 @@ Existing default8765health unavailable; no model launch/inference/download or
 installed-app/settings change. Status Awaiting merge: plugin exact-tested-tree
 publication, independent final-revision review, required CI and protected reviewer
 merge remain gates. Keep396open/fullF22/F15unchecked/platformDeferred400.
+
+
+### Temporary client-observed test latency verified merged — PR #441
+Bounded increment Done for F22/#396 on `396-model-test-latency`.
+Tested local56931784256377d445001076bea69c90d7230bcd and published final
+39ab35345b9aceda763a81c42510000527e4004d share exact tree
+ec037aac64b7b84d40c6f3d554659d539741e8b5; all eight publication blobs match.
+Independent approval5734353043/finalgate5734432234 found no blockers;
+19 independent Flutter/controller/actualHTTP/narrowUI/preset checks, one
+success/Stop/retry/wrongJSON timing-reset probe and nine inventory checks passed;
+all844 remote blobs/modes and367 validation inputs match. RequiredCI41419692986
+BOTH SUCCESS: Flutter125191996441 full1196Ubuntu/12explicit skips,17actualChrome,
+actual browsertransport/web/real independent generated-project verification;
+Python125191995961165tests/four explicit CI platform skips. Parent1202Flutter/
+nine skips,11focused,inventory9,formatter342/analyzer/web/macOSdebug passed.
+Temporary monotonic first-nonblank-text and completed-response timings cover
+one successful explicit draft test; no model token-speed/capacity/loaded-weight
+identity, saved verified profile or new inference/support claim. Default8765
+health unavailable; no model launch/download/settings/installed-app change.
+Independent reviewer protected-plugin squashmerged PR441 as
+fdc5dbd2928b110f1c89afe569694bda0c089751 at2026-11-02T09:28:02Z.
+Parent fresh plugin verified mergedPR/defaultmain exactsourceblob/#396OPEN.
+Signed exacttree/soleparentce0fa17/objecthash verified before guarded local-only
+sync. Localmain/originmain0/0,emptyindex,both originalIDEedits byte-identical.
+FullF22/F15 remain unchecked; externalacceptance Deferred400. No active
+implementation aftermerge; remaining verified profiles/context/capability work
+Pending396. Final canonical bookkeeping retained for next normal reviewed PR.
+Both automationlabels applied; no newissue/cadence/notification change.
+Receipts:/private/tmp/asg-latency-publication.json,/private/tmp/asg-latency-inputs.json,
+/private/tmp/asg441-reviewed-merge.json,/private/tmp/asg441-review-summary.json,
+/private/tmp/asg441-safe-sync.py.
+Currentrun 2026-11-02T09:29:14.415263+00:00
+
+
+### Connection draft observation invalidation — F22 / #396
+In progress on `396-draft-test-invalidation` from verified PR #441 merge
+`fdc5dbd2928b110f1c89afe569694bda0c089751`. Fresh connected GitHub
+verified PR441 merged and no open PR; app inventory found no competing active
+ASG run. Reuse #396, scope comment6573971778; no new issue. Code inspection
+found successful response/latency status survives changing URL/model/output
+budget or restoring a preset, presenting an old observation beside a new draft.
+Controller invalidates status/inventory with neutral retest guidance; active
+tests/busy/loading failures/disposal remain guarded. Cursor-only movement,
+preset names/profile notes and preset-only writes retain connection results.
+No inference, settings write, backend/support or saved-profile claim. Delivered
+F22 settings/test foundations suffice; unavailable-hardware acceptance Deferred
+#400 is unnecessary. FullF22/F15 remain unchecked. Validate lifecycle/retry,
+text/JSON success and failure, preset restore, UI field/token/note/cursor edits,
+actual HTTP regressions, full Flutter/inventory checks and web/macOS builds.
+Independent exact-final review, required CI and protected reviewer merge remain
+gates. Preserve prior441 final review/CI/merge bookkeeping in this normal PR.
+Recorded 2026-11-02T09:46:56.347029+00:00
+
+Final local validation: isolated tracked-source Flutter1204 passed/nine explicit
+skips, focused21 controller/UI/preset/actualHTTP tests passed, inventory9passed.
+Formatter342 unchanged, analyzer clean, web and macOS debug builds passed.
+All367 validation inputs byte-identical. Test-only duplicate disposal corrected
+before final successful checks. Cursor-only listeners retain status; URL/model/
+token/preset restore clears stale observations; active requests remain busy.
+Existing default8765health unavailable; no runtime launch/model inference/
+download/settings/installed-app change. Status Awaiting merge: exact-tested-tree
+plugin publication, independent final-revision review, required CI and protected
+reviewer merge remain gates. Keep396open/F22/F15unchecked/Deferred400.
