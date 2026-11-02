@@ -2,14 +2,11 @@
 // Copyright 2026 Arpit Sinha
 
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
-import 'package:path/path.dart' as path;
-
 import '../../models/html/html_site_input.dart';
-import 'html_site_template.dart';
+import 'html_starter_snapshot_native.dart';
 
 /// Read-only preview of an exact, unmodified fixed starter export on macOS.
 /// Serves an immutable snapshot, never arbitrary edited source or filesystem
@@ -46,40 +43,12 @@ class HtmlPreviewHostNative {
 
     HttpServer? bound;
     try {
-      if (!path.isAbsolute(directory) ||
-          await Directory(directory).resolveSymbolicLinks() !=
-              path.normalize(directory)) {
-        throw const FormatException('Choose a real absolute export directory.');
-      }
-      final sources = HtmlSiteTemplate().generate(input);
-      final snapshot = <String, List<int>>{};
-      for (final entry in sources.entries) {
-        check();
-        final file = File(path.join(directory, entry.key));
-        if (await FileSystemEntity.type(file.path, followLinks: false) !=
-                FileSystemEntityType.file ||
-            await file.resolveSymbolicLinks() != file.path) {
-          throw const FormatException('Export file is missing or symbolic.');
-        }
-        final expected = utf8.encode(entry.value);
-        // Bound reads even if the file grows after inspection; do not load an
-        // arbitrary file into memory. Exact bytes bind preview to this input.
-        final reader = await file.open();
-        late List<int> bytes;
-        try {
-          bytes = await reader.read(expected.length + 1);
-        } finally {
-          await reader.close();
-        }
-        if (bytes.length != expected.length ||
-            !Iterable<int>.generate(bytes.length)
-                .every((index) => bytes[index] == expected[index])) {
-          throw const FormatException(
-            'Export changed. Only the exact fixed starter can be previewed.',
-          );
-        }
-        if (entry.key != 'README.md') snapshot[entry.key] = bytes;
-      }
+      final snapshot = await readHtmlStarterSnapshot(
+        directory: directory,
+        input: input,
+        check: check,
+      );
+      snapshot.remove('README.md');
       check();
       bound = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
       check();

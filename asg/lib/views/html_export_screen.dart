@@ -137,11 +137,36 @@ class _HtmlExportScreenState extends State<HtmlExportScreen> {
                 ),
               ],
               if (controller.error != null) SelectableText(controller.error!),
+              if (controller.checking) ...[
+                const LinearProgressIndicator(),
+                Text(
+                  controller.checkStopped
+                      ? 'Waiting for prior source reads to settle…'
+                      : 'Checking exported file identity…',
+                ),
+                OutlinedButton(
+                  onPressed: controller.checkStopped
+                      ? null
+                      : controller.stopCheck,
+                  child: const Text('Stop check'),
+                ),
+              ],
               if (controller.exportedDirectory != null) ...[
                 const Text(
-                  'Source export complete. Full runner checks remain planned.',
+                  'Source export complete. Full runner integration remains planned.',
                 ),
                 SelectableText(controller.exportedDirectory!),
+                if (!controller.checker.supported)
+                  const Text('Source identity checks require macOS.'),
+                OutlinedButton(
+                  onPressed:
+                      controller.checker.supported && !controller.checking
+                      ? controller.checkExport
+                      : null,
+                  child: const Text('Check exported files'),
+                ),
+                if (controller.sourceCheck != null)
+                  SelectableText(controller.sourceCheck!.summary),
                 const Text(
                   'Preview serves a validated snapshot. Editing exported files requires a different workflow; restarting refuses changes.',
                 ),
@@ -202,6 +227,8 @@ class _HtmlExportScreenState extends State<HtmlExportScreen> {
                       : controller.preview.stop,
                   child: const Text('Retry Stop preview'),
                 ),
+              if (controller.checkError != null)
+                SelectableText(controller.checkError!),
               if (controller.preview.error != null)
                 SelectableText(controller.preview.error!),
               if (controller.preview.notice != null)
