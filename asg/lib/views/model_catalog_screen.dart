@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../controllers/model_catalog_controller.dart';
 import '../models/model_catalog.dart';
+import 'historical_model_observation_panel.dart';
 
 class ModelCatalogScreen extends StatefulWidget {
   const ModelCatalogScreen({super.key, required this.controller});
@@ -99,6 +100,7 @@ class _ModelCatalogScreenState extends State<ModelCatalogScreen> {
                   ),
                 ],
               ),
+              const HistoricalModelObservationPanel(),
               SwitchListTile(
                 contentPadding: EdgeInsets.zero,
                 title: const Text('Preferred models only'),

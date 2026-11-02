@@ -92,3 +92,17 @@ An older active family keeps its own accurate current label. Failed, busy or
 unavailable runtime observations clear stale identity and display **Current
 model: Not confirmed**. Source-check failures and known incompatible/oversized
 metadata cannot enable downloads or override the new-load assessment.
+
+
+## Retained workload observations
+
+The catalog's **Historical 9B MLX observation** panel explicitly loads the exact
+reviewed PR #432 report from bundled offline assets. It displays date/runtime
+source revision, counted weight bytes, tiny JSON/structured-SSE/retry token
+workloads, reported warm token speed, cumulative process high-water memory and
+disconnect-to-idle time. These are historical observations, never a current
+connection match, new-load memory credit, sustained benchmark, authenticated
+checkpoint/revision/license, verified total context or full model profile.
+Metadata/probe hashes remain in the retained report; weights were not hashed.
+A hash mismatch or unreadable asset shows a private retryable error. This panel
+does not make network requests, run inference, change settings or select models.
