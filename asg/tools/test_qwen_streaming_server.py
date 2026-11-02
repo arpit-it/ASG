@@ -79,6 +79,45 @@ class ServerTests(unittest.TestCase):
         with self.request(False) as response:
             self.assertEqual(json.load(response)['metrics'], {'finish_reason': 'stop'})
 
+    def test_actual_mlx_bridge_token_list_and_counts_over_both_transports(self):
+        from types import SimpleNamespace
+        from unittest.mock import Mock, patch
+        import sys
+        import qwen_backends
+        backend = object.__new__(qwen_backends.MLXBackend)
+        backend.model = object()
+        tokenizer = Mock(bos_token='<bos>')
+        tokenizer.apply_chat_template.return_value = '<bos>prompt'
+        ids = list(range(4096))
+        tokenizer.encode.return_value = ids
+        backend.tokenizer = tokenizer
+        stream = Mock(return_value=iter(()))
+        original = self.backend.generate
+        self.backend.generate = backend.generate
+        try:
+            with patch.dict(sys.modules, {
+                'mlx_lm': SimpleNamespace(stream_generate=stream),
+                'mlx_lm.sample_utils': SimpleNamespace(make_sampler=lambda **kw: kw),
+            }):
+                for streaming in (True, False):
+                    stream.return_value = iter([SimpleNamespace(
+                        text='actual bridge', finish_reason='stop', generation_tps=1,
+                        peak_memory=.1, generation_tokens=2)])
+                    with self.request(streaming, max_tokens=5) as response:
+                        if streaming:
+                            frames = [json.loads(line[6:]) for line in response.read().decode().splitlines()
+                                      if line.startswith('data: {')]
+                            metrics = next(frame['metrics'] for frame in frames if 'metrics' in frame)
+                        else:
+                            metrics = json.load(response)['metrics']
+                    self.assertEqual(metrics['prompt_tokens'], 4096)
+                    self.assertEqual(metrics['completion_tokens'], 2)
+                    self.assertIs(stream.call_args.kwargs['prompt'], ids)
+                    tokenizer.encode.assert_called_with(
+                        '<bos>prompt', add_special_tokens=False, truncation=False)
+        finally:
+            self.backend.generate = original
+
     def test_errors_are_not_successful_completions(self):
         with self.request(content='error') as response:
             text=response.read().decode()

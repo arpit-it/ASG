@@ -11,7 +11,8 @@ import sys
 from threading import Event
 import time
 import unittest
-from unittest.mock import patch
+from unittest.mock import Mock, patch
+from types import SimpleNamespace
 
 import qwen_backends as backends
 
@@ -1241,6 +1242,111 @@ class CPUAPIFixtureTests(unittest.TestCase):
          self.assertIn(metrics['finish_reason'], ('stop','length'))
          self.assertTrue(events)
          print(json.dumps({'scope':'synthetic tiny random model API fixture; not pretrained CPU acceptance','host':backends.platform.system()+' '+backends.platform.machine(),'torch':torch.__version__,'transformers':__import__('transformers').__version__,'parameters':params,'seconds':round(time.monotonic()-t,3),'events':len(events),'result':metrics,'all_parameters':'cpu/float32'}))
+
+
+class MLXTokenAccountingTests(unittest.TestCase):
+    def setUp(self):
+        self.backend = object.__new__(backends.MLXBackend)
+        self.backend.model = object()
+        self.tokenizer = Mock(bos_token='<bos>')
+        self.tokenizer.apply_chat_template.return_value = 'prompt'
+        self.ids = [1, 2, 3]
+        self.tokenizer.encode.return_value = self.ids
+        self.backend.tokenizer = self.tokenizer
+        self.cancelled = Event()
+        self.deadline = time.monotonic() + 10
+        self.events = []
+        self.results = [SimpleNamespace(text='answer', finish_reason='stop',
+                                       generation_tps=2.5, peak_memory=.1,
+                                       generation_tokens=2)]
+        self.stream = Mock(side_effect=lambda *a, **kw: iter(self.results))
+        self.patch = patch.dict(sys.modules, {
+            'mlx_lm': SimpleNamespace(stream_generate=self.stream),
+            'mlx_lm.sample_utils': SimpleNamespace(make_sampler=lambda **kw: kw),
+        })
+        self.patch.start()
+        self.addCleanup(self.patch.stop)
+
+    def generate(self):
+        return self.backend.generate([], 5, lambda *event: self.events.append(event),
+                                     self.cancelled, self.deadline)
+
+    def test_exact_tokens_follow_helpers_bos_policy_and_never_reencode(self):
+        for bos, prompt, special in [(None, 'prompt', True), ('<bos>', 'prompt', True),
+                                      ('<bos>', '<bos>prompt', False)]:
+            with self.subTest(bos=bos, prompt=prompt):
+                self.tokenizer.reset_mock()
+                self.tokenizer.bos_token = bos
+                self.tokenizer.apply_chat_template.return_value = prompt
+                metrics = self.generate()
+                self.tokenizer.encode.assert_called_once_with(
+                    prompt, add_special_tokens=special, truncation=False)
+                self.assertIs(self.stream.call_args.kwargs['prompt'], self.ids)
+                self.assertEqual(metrics['prompt_tokens'], 3)
+                self.assertEqual(metrics['completion_tokens'], 2)
+                self.assertEqual(metrics['tokens_per_second'], 2.5)
+                self.assertEqual(metrics['peak_memory_gb'], .1)
+                self.assertEqual(metrics['finish_reason'], 'stop')
+
+    def test_input_boundary_refuses_before_stream_and_allows_retry(self):
+        self.tokenizer.encode.return_value = list(range(4097))
+        with self.assertRaisesRegex(ValueError, '4096-token limit'):
+            self.generate()
+        self.stream.assert_not_called()
+        self.assertEqual(self.events, [])
+        self.tokenizer.encode.return_value = list(range(4096))
+        self.assertEqual(self.generate()['prompt_tokens'], 4096)
+        self.assertEqual(self.stream.call_args.kwargs['max_tokens'], 5)
+
+    def test_final_helper_count_includes_nontext_tokens_and_length_finish(self):
+        self.results += [SimpleNamespace(text='', finish_reason='length',
+                                        generation_tps=3, peak_memory=.2,
+                                        generation_tokens=5)]
+        metrics = self.generate()
+        self.assertEqual(metrics['completion_tokens'], 5)
+        self.assertEqual(metrics['finish_reason'], 'length')
+        self.assertEqual(self.events, [('token', 'answer')])
+
+    def test_absent_helper_result_does_not_fabricate_completion_count(self):
+        self.results = []
+        metrics = self.generate()
+        self.assertEqual(metrics['prompt_tokens'], 3)
+        self.assertNotIn('completion_tokens', metrics)
+        self.assertEqual(self.events, [])
+
+    def test_stop_and_deadline_after_encode_and_final_empty_stream(self):
+        for stage in ('encode', 'end'):
+            for reason in ('stop', 'deadline'):
+                with self.subTest(stage=stage, reason=reason):
+                    self.cancelled.clear()
+                    self.deadline = time.monotonic() + 10
+                    self.stream.reset_mock()
+                    self.events.clear()
+                    def interrupt():
+                        if reason == 'stop':
+                            self.cancelled.set()
+                        else:
+                            pass
+                    # Deadline is captured by generate: mock monotonic instead.
+                    clock = [0]
+                    def action():
+                        interrupt()
+                        clock[0] = 20 if reason == 'deadline' else 0
+                    def encode(*a, **kw):
+                        if stage == 'encode': action()
+                        return self.ids
+                    def stream(*a, **kw):
+                        action()
+                        return iter(())
+                    self.tokenizer.encode.side_effect = encode
+                    self.stream.side_effect = stream
+                    self.deadline = 10
+                    error = backends.GenerationCancelled if reason == 'stop' else TimeoutError
+                    with patch.object(backends.time, 'monotonic', side_effect=lambda: clock[0]):
+                        with self.assertRaises(error): self.generate()
+                    if stage == 'encode': self.stream.assert_not_called()
+                    self.assertEqual(self.events, [])
+
 
 
 if __name__ == '__main__':

@@ -112,16 +112,30 @@ class MLXBackend:
                 raise TimeoutError('Generation deadline exceeded')
         check()
         prompt = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True, enable_thinking=False)
-        if len(self.tokenizer.encode(prompt)) > 4096:
+        # Match mlx-lm's string/BOS policy, then pass these exact tokens so
+        # validation and generation cannot disagree through retokenization.
+        bos = self.tokenizer.bos_token
+        prompt_ids = self.tokenizer.encode(
+            prompt, add_special_tokens=bos is None or not prompt.startswith(bos),
+            truncation=False)
+        check()
+        if len(prompt_ids) > 4096:
             raise ValueError('Input exceeds 4096-token limit')
         from mlx_lm import stream_generate
         from mlx_lm.sample_utils import make_sampler
         result = None
-        for result in stream_generate(self.model, self.tokenizer, prompt=prompt, max_tokens=tokens, sampler=make_sampler(temp=0), prefill_step_size=256, prompt_progress_callback=check):
+        for result in stream_generate(self.model, self.tokenizer, prompt=prompt_ids, max_tokens=tokens, sampler=make_sampler(temp=0), prefill_step_size=256, prompt_progress_callback=check):
             check()
             if result.text:
                 publish('token', result.text)
-        return {'finish_reason': result.finish_reason if result else 'stop', 'tokens_per_second': result.generation_tps if result else 0, 'peak_memory_gb': result.peak_memory if result else 0}
+        check()
+        metrics = {'finish_reason': result.finish_reason if result else 'stop',
+                   'tokens_per_second': result.generation_tps if result else 0,
+                   'peak_memory_gb': result.peak_memory if result else 0,
+                   'prompt_tokens': len(prompt_ids)}
+        if result is not None:
+            metrics['completion_tokens'] = result.generation_tokens
+        return metrics
 
 
 class TorchMPSBackend:

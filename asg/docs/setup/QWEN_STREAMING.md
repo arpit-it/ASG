@@ -125,3 +125,14 @@ ceiling remains the exact caller request. Other backends retain their existing
 metrics; missing counts are unavailable rather than zero. CPU remains
 experimental and opt-in; deterministic tensor/HTTP regressions are not live
 inference acceptance.
+
+
+### MLX prompt-token accounting
+
+The MLX bridge encodes the rendered chat once with truncation disabled, using
+mlx-lm's BOS-prefix rule. The same token list is checked against the bridge's
+4096-input policy and passed to streaming generation. Completion metrics include
+`prompt_tokens` from that list and `completion_tokens` from the helper's final
+`generation_tokens` (including nontext/end tokens); no completion count is invented
+if the helper supplies no result. Counts are not text-fragment counts. This policy
+is not a verified model-specific total context window or a new inference benchmark.
