@@ -210,7 +210,7 @@ The saved development automation was updated through its management tool; active
   - Bounded delivery milestones: (1) backend contract/capability discovery and an MLX regression; (2) explicit CPU setup/inference on a supported non-Apple desktop with compatible weights; (3) explicit CUDA setup/inference on a CUDA host. Each milestone needs its own focused issue, saved settings/restart/error tests and real-host evidence. Non-Apple CPU/CUDA real-host acceptance is now Deferred in #400 until the queued implementation is delivered; this is not a dependency on eligible implementation. Isolate optional backend dependencies so missing MLX cannot prevent CPU/CUDA startup; validate configurable executable/model paths including spaces. Do not claim CPU adequacy for a 9B model without measured successful operation within the configured limits.
   - Delivery: create/reuse a narrowly scoped issue when selected; remain unchecked until all promised backend milestones, independent review, required checks and verified merges. CPU and CUDA evidence must be recorded separately; unavailable hardware is a recorded blocker, never a fixture-based completion claim.
 - [ ] F22 Hardware-aware local model catalog and selection — In progress; depends on delivered F09/F15 foundations; unavailable-platform validation Deferred
-  - Historical observation catalog panel — Awaiting merge: #396, `396-historical-model-observations`; exact bundled PR #432 evidence, separate from current runtime/estimates. No selection credit or full profile/support claim.
+  - Historical observation catalog panel — Done (bounded increment): #396, `396-historical-model-observations`, PR #433; independent approval5732671750/finalgate5732688350, requiredCI41397735832 passed, verified reviewer merge57c42fefecac1b56b48c1ae6fa1ffcd913b201e9 at2026-11-02T06:10:34Z. Exact bundled PR #432 evidence separate from current runtime/estimates; no selection credit or full profile/support claim.
   - Existing 9B live MLX regression — Done (bounded evidence): #396, `396-live-mlx-profile`, [PR #432](https://github.com/arpit-it/ASG/pull/432); finald04930a3 independently approved5732572022/finalgate5732599186, requiredCI41396392001 passed, reviewer merge452ab15e7644bb5e0dc8e8c4ba4233712431718a verified at2026-11-02T05:56:25Z. Actual JSON/structuredSSE/tokenmetrics/disconnect/retry plus explicit-expiry deadline regressions. No verified total context, full profile, larger-model or new-platform claim; F22/F15 unchecked.
   - Advertised request ceilings — Done (bounded increment): #396, `396-advertised-request-limits`, [PR #431](https://github.com/arpit-it/ASG/pull/431); finalf4509288 approved5732303549/finalgate5732338076, requiredCI41391979196 passed, verified reviewer merged3767cc6c9514ada6e0d6a22d98f428c7f828b89 at2026-11-02T05:12:43Z. Read-only exact-ID server assertions, legacy unknown and strict private validation; no capacity verification or request mutation.
   - Checkpoint-declared total context guard — Done (bounded increment): #396, `396-declared-context-budget`, [PR #430](https://github.com/arpit-it/ASG/pull/430); final253f5efa approved5732125204/finalgate5732145329, requiredCI41389247075 passed, verified reviewer mergebd117a2db22eb5a6b2e5925924257343bbfadd5b at2026-11-02T04:40:00Z. Exact prompt plus full output against conservative checkpoint declaration; no RoPE expansion or verified-capacity claim.
@@ -9962,3 +9962,57 @@ rerun passed. Controller readonly-field typo corrected before final full suite.
 No new inference, model/download/settings/stable-app change. Logs and exact
 input comparison: /private/tmp/asg396-history-*. Awaiting merge: independent
 exact-final review, required CI and protected reviewer merge remain gates.
+
+
+### Historical model observations verified merged — PR #433
+Bounded increment Done on396-historical-model-observations/#396. Testedlocal
+c6b19971bcb1eefba9ba569a8ac3b876d06e3278 and published39a1fe3310e70ed08b32af46566f244b772c7195
+share exacttreec8903663fad35a5e26af86e436ea341c36e6bf28. Independentapproval
+5732671750/finalgate5732688350:45Flutterincltamper/disposal+9inventorypassed,
+all838remote blobs/modesmatch. RequiredCI41397735832 bothSUCCESS:
+Flutter1251226235241177tests/12skips,17Chrome,web/actualgeneratedverification;
+Python125122623279163tests/fourplatformskips. Parent1183Flutter/nineskips,
+43focused,format337/analyzer/web/macOSdebug,9inventorypassed;355inputsmatch
+fulltrackedcheckout. Exact pinned report packaged in both web/macOS builds.
+Historical tinywarm/serverreported metrics remain separate from currentruntime,
+recommendations, authenticatedidentity, totalcontext or fullprofile claims.
+No inference/download/settings/stableapp change. FullF22/F15unchecked, #396OPEN,
+externalacceptanceDeferred400. Independent reviewer protected-plugin squashmerge
+57c42fefecac1b56b48c1ae6fa1ffcd913b201e9 at2026-11-02T06:10:34Z. Parentfresh
+pluginverified mergedPR/currentmain/#396OPEN, signedexacttree/soleparent452ab15e
+and safely synchronized localmain/originmain0/0; emptyindex, bothIDEedits byteidentical.
+Evidence:/private/tmp/asg396-history-publication.json,/private/tmp/asg396-history-inputs.json,
+/private/tmp/asg433-reviewed-merge.json,/private/tmp/asg433-review-summary.json,
+/private/tmp/asg433-safe-sync.py. Bothlabels applied; nonewissue/cadence/notificationchange.
+No activeimplementation aftermerge; finalcanonicalbookkeeping retained for next
+normal revieweddevelopmentPR. Remaining verifiedprofiles/context/largermodel
+evidence Pending396; continue next technicallyeligible Macincrement.
+Currentrun 2026-11-02T06:11:50.461259+00:00
+
+
+### Bounded local model response transport — F22 / #396
+In progress on `396-bounded-model-responses`, base verified PR #433 merge
+57c42fefecac1b56b48c1ae6fa1ffcd913b201e9. No competing active run/open PR.
+Evidence: JSON bytesToString and SSE LineSplitter buffered unbounded response
+bytes before application text/token checks. Bound total response bytes to 1 MiB
+before decoding, reject excessive declared length, close owned client and fail
+privately without completion/truncation. This transport ceiling is separate from
+model token/context capacity; no settings, inference or supported-backend change.
+Acceptance: exact boundary/UTF8, unknown-length JSON and newline-free SSE,
+aggregate small frames/partial-text failure, cleanup, actual chunked HTTP refusal
+and fresh-provider retry. Delivered transport is the technical prerequisite;
+external platform acceptance Deferred #400. Full F22/F15 remain unchecked.
+Initial async-generator wrapper exposed idle-timeout cancellation stall; replaced
+with synchronous byte transformer. Six boundary tests pass; full regressions,
+independent final review, required CI and protected reviewer merge remain gates.
+Includes preserved final PR #433 merge bookkeeping; no new issue.
+
+Final local response-bound validation: 36 focused transport/controller tests,
+including seven new response-bound tests; formatter338/analyzer, web and macOS
+debug builds passed. Full suite in tracked-source copy excludes ignored third-party
+model environments (direct checkout license scan saw upstream package headers).
+Baseline temporary copy initially lacked legal assets; copied required assets
+before the actual regression reproduction. No model inference or installed-app change.
+Exact final full-suite count and publication/review/merge evidence follow.
+
+Final tracked-source full suite:1190 passed/nine explicit skips; all360 runtime/test/tool inputs match isolated validation. Nine regenerated acceptance-inventory regressions passed. Awaiting merge: plugin exact-tree publication, independent final-revision review, required CI and protected reviewer merge remain gates. FullF22/F15unchecked; #396open.

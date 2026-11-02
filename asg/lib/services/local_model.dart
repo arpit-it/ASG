@@ -24,6 +24,11 @@ class LocalModelProvider implements StreamingModelProvider {
     this.idleTimeout = const Duration(seconds: 30),
     this.totalTimeout = const Duration(minutes: 3),
   }) : _client = client ?? http.Client();
+
+  /// Bounds all response bytes before UTF-8, JSON and SSE line buffering.
+  /// This is a transport safety ceiling, not a model token/context budget.
+  static const maxResponseBytes = 1024 * 1024;
+
   final LocalModelConfig config;
   final int maxTokens;
   final Duration idleTimeout, totalTimeout;
@@ -127,11 +132,17 @@ class LocalModelProvider implements StreamingModelProvider {
             : 'Local model request failed (HTTP ${response.statusCode}). Check the model ID and streaming runtime.',
       );
     }
+    if ((response.contentLength ?? 0) > maxResponseBytes) {
+      _responseTooLarge();
+    }
+    final bodyStream = _boundedResponse(response.stream);
     if (!(response.headers['content-type'] ?? '').contains(
       'text/event-stream',
     )) {
       // Compatibility with older non-streaming providers, without fake tokenization.
-      final body = await response.stream.bytesToString().timeout(idleTimeout);
+      final body = await http.ByteStream(bodyStream)
+          .bytesToString()
+          .timeout(idleTimeout);
       final data = jsonDecode(body) as Map<String, dynamic>;
       _validateResponseModel(data);
       final choice = (data['choices'] as List).first as Map;
@@ -151,7 +162,7 @@ class LocalModelProvider implements StreamingModelProvider {
     final dataLines = <String>[];
     var receivedText = false;
     await for (final line
-        in response.stream
+        in bodyStream
             .timeout(idleTimeout)
             .transform(utf8.decoder)
             .transform(const LineSplitter())) {
@@ -211,6 +222,35 @@ class LocalModelProvider implements StreamingModelProvider {
         'The model stream ended before completion. Your application was not changed.',
       );
     }
+  }
+
+  Stream<List<int>> _boundedResponse(Stream<List<int>> source) {
+    var bytes = 0;
+    return source.transform(
+      StreamTransformer<List<int>, List<int>>.fromHandlers(
+        handleData: (chunk, sink) {
+          if (chunk.length > maxResponseBytes - bytes) {
+            try {
+              _responseTooLarge();
+            } catch (error, stack) {
+              sink.addError(error, stack);
+              sink.close();
+            }
+            return;
+          }
+          bytes += chunk.length;
+          sink.add(chunk);
+        },
+      ),
+    );
+  }
+
+  Never _responseTooLarge() {
+    _client.close();
+    throw _SafeModelFailure(
+      'Local model response exceeded the 1 MiB transport limit. '
+      'Try a smaller output budget or check the local server; no completion was accepted.',
+    );
   }
 
   // A reported identity is a server assertion, not proof of loaded weights.
