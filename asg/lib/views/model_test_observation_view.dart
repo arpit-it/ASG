@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import '../models/model_connection_preset.dart';
 import '../models/model_test_observation.dart';
+import 'model_runtime_metrics_view.dart';
 
 class ModelTestObservationView extends StatelessWidget {
   const ModelTestObservationView({super.key, required this.preset});
@@ -29,6 +30,13 @@ class ModelTestObservationView extends StatelessWidget {
           'completed response: ${observation.completedMilliseconds} ms.',
         ),
         const Text(ModelTestObservation.guidance),
+        if (observation.runtimeMetrics != null)
+          ModelRuntimeMetricsView(
+            metrics: observation.runtimeMetrics!,
+            historical: true,
+          ),
+        if (observation.runtimeMetrics == null)
+          const Text('Historical runtime metrics unavailable for this test.'),
       ],
     );
   }

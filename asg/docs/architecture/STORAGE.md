@@ -163,11 +163,19 @@ snapshots retain their own notes even after the preset changes; notes never beco
 reply provenance. Invalid writes/corruption use the existing preservation policy.
 
 Optional `testObservation` retains the latest explicitly saved successful settings
-test for the exact preset connection. Its strict five-field schema contains
+test for the exact preset connection. Its legacy five-field schema contains
 `kind` (`nonblankText` or `jsonSentinel`), canonical UTC `observedAt`, fixed
 `outputTokens: 256`, and integer `firstTextMilliseconds`/`completedMilliseconds`
 (0 ≤ first ≤ completed ≤ 30000). Missing metadata remains legacy/unobserved;
 explicit null, unknown fields/kinds, invalid timestamps or limits fail closed.
+An optional sixth `runtimeMetrics` object retains allowlisted completed-test
+server assertions: integer prompt/completion tokens (0–2147483647 / 0–256),
+nullable finite nonnegative speed in tokens/s and process peak GB (each at most
+1e9). All four members are required when the object is present; null objects,
+unknown fields and malformed values fail closed. Legacy observations remain
+unchanged. Saving remains explicit; missing live metrics are never invented.
+Reopened figures are historical server assertions, never verified loaded identity,
+context, available memory or supported-model evidence. No extra request follows.
 No prompts, outputs or diagnostics are stored. The app requires a matching
 selected preset and unchanged tested URL/model/chat ceiling before attachment;
 saving is explicit and independent of settings Save. Draft edits/restore or a new

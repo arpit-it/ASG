@@ -6,6 +6,9 @@ import 'dart:convert';
 
 import 'package:asg/models/local_model_config.dart';
 import 'package:asg/models/model_runtime_metrics.dart';
+import 'package:asg/models/model_test_observation.dart';
+import 'package:asg/models/model_connection_preset.dart';
+import 'package:asg/views/model_test_observation_view.dart';
 import 'package:asg/services/local_model.dart';
 import 'package:asg/views/model_runtime_metrics_view.dart';
 import 'package:flutter/material.dart';
@@ -47,6 +50,102 @@ String streamStart({String reason = 'stop'}) =>
     });
 
 void main() {
+  test(
+    'historical schema preserves legacy and strictly rejects damaged metrics',
+    () {
+      final legacy = ModelTestObservation(
+        jsonFormat: false,
+        observedAt: DateTime.utc(2026),
+        firstTextMilliseconds: 1,
+        completedMilliseconds: 2,
+      );
+      expect(
+        ModelTestObservation.fromJson(legacy.toJson()).runtimeMetrics,
+        isNull,
+      );
+      final saved = {
+        ...legacy.toJson(),
+        'runtimeMetrics': ModelRuntimeMetrics.parse(
+          metrics,
+          outputLimit: 256,
+        )!.toJson(),
+      };
+      expect(
+        ModelTestObservation.fromJson(saved).runtimeMetrics!.peakMemoryGb,
+        6.25,
+      );
+      final valid = (saved['runtimeMetrics'] as Map).cast<String, Object?>();
+      for (final bad in [
+        null,
+        {},
+        {...valid, 'private': 'secret'},
+        {...valid, 'completion_tokens': 257},
+        {...valid, 'prompt_tokens': true},
+        {...valid, 'tokens_per_second': -1},
+        {...valid, 'peak_memory_gb': 'secret'},
+      ]) {
+        expect(
+          () => ModelTestObservation.fromJson({
+            ...legacy.toJson(),
+            'runtimeMetrics': bad,
+          }),
+          throwsFormatException,
+        );
+      }
+      expect(
+        () => const ModelRuntimeMetrics(
+          promptTokens: 1,
+          completionTokens: 257,
+        ).toJson(),
+        throwsFormatException,
+      );
+    },
+  );
+
+  testWidgets(
+    'reopened historical metrics remain explicitly unverified at 320px 2x',
+    (tester) async {
+      tester.view.physicalSize = const Size(320, 600);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final preset = ModelConnectionPreset.fromJson(
+        ModelConnectionPreset(
+          name: 'Local',
+          config: const LocalModelConfig(),
+          testObservation: ModelTestObservation(
+            jsonFormat: false,
+            observedAt: DateTime.utc(2026),
+            firstTextMilliseconds: 1,
+            completedMilliseconds: 2,
+            runtimeMetrics: ModelRuntimeMetrics.parse(
+              metrics,
+              outputLimit: 256,
+            ),
+          ),
+        ).toJson(),
+      );
+      await tester.pumpWidget(
+        MaterialApp(
+          home: MediaQuery(
+            data: const MediaQueryData(textScaler: TextScaler.linear(2)),
+            child: Scaffold(
+              body: SingleChildScrollView(
+                child: ModelTestObservationView(preset: preset),
+              ),
+            ),
+          ),
+        ),
+      );
+      expect(find.textContaining('12.50 tokens/s'), findsOneWidget);
+      await tester.ensureVisible(
+        find.text(ModelRuntimeMetrics.historicalGuidance),
+      );
+      expect(find.text(ModelRuntimeMetrics.historicalGuidance), findsOneWidget);
+      expect(find.text(ModelRuntimeMetrics.guidance), findsNothing);
+      expect(tester.takeException(), isNull);
+    },
+  );
   test(
     'optional telemetry validates bounded numbers without private fields',
     () {

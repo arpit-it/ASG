@@ -384,11 +384,16 @@ class ModelSettingsController extends BaseController {
               final firstTextLatency = firstText;
               final completed = _elapsed() - started;
               if (successful && firstTextLatency != null) {
+                final provider = _provider;
+                final metrics = provider is ModelMetricsProvider
+                    ? provider.completedMetrics
+                    : null;
                 final observation = ModelTestObservation(
                   jsonFormat: jsonFormat,
                   observedAt: _now().toUtc(),
                   firstTextMilliseconds: firstTextLatency.inMilliseconds,
                   completedMilliseconds: completed.inMilliseconds,
+                  runtimeMetrics: metrics,
                 );
                 // A late completion must never create an out-of-budget record.
                 if (firstTextLatency >= Duration.zero &&
@@ -396,10 +401,7 @@ class ModelSettingsController extends BaseController {
                     completed <= probeTimeout) {
                   _pendingObservation = observation;
                   _testedConfig = config;
-                  final provider = _provider;
-                  if (provider is ModelMetricsProvider) {
-                    runtimeMetrics = provider.completedMetrics;
-                  }
+                  runtimeMetrics = metrics;
                 }
               }
               final timing = successful && firstTextLatency != null
