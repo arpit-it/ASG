@@ -33,6 +33,8 @@ jobs:
       - run: flutter test --no-pub --platform chrome test/browser_storage_test.dart test/browser_ask_storage_test.dart test/ask_screen_test.dart test/browser_build_history_test.dart test/browser_archive_file_test.dart test/browser_generation_capability_test.dart
       - name: Verify actual browser local model transport
         run: python3 -B tools/test_browser_model_transport.py
+      - name: Verify independent static HTML source template
+        run: python3 -B tools/test_html_site_template.py
       - run: flutter build web --no-pub
       - name: Verify independent generated Flutter project
         run: flutter test --no-pub test/source_generation_test.dart --dart-define=ASG_REAL_GENERATION=true --plain-name 'real independent generated Flutter project'
