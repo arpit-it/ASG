@@ -17,8 +17,10 @@ class ModelSettingsController extends BaseController {
   ModelSettingsController(
     this.store, {
     ProviderFactory? createProvider,
+    Duration Function()? elapsed,
     Future<String> Function(LocalModelConfig)? inspectInventory,
-  }) : _inspectInventory = inspectInventory ?? ModelInventory.inspect,
+  }) : _elapsed = elapsed ?? _monotonicClock(),
+       _inspectInventory = inspectInventory ?? ModelInventory.inspect,
        _createProvider =
            createProvider ?? ((config) => LocalModelProvider(config)) {
     try {
@@ -55,6 +57,17 @@ class ModelSettingsController extends BaseController {
       update();
     }
   }
+
+  static Duration Function() _monotonicClock() {
+    final clock = Stopwatch()..start();
+    return () => clock.elapsed;
+  }
+
+  final Duration Function() _elapsed;
+  static const timingGuidance =
+      'Successful tests show temporary client-observed latency from dispatch to '
+      'first nonblank text and completed response, including connection and '
+      'transport overhead. These are not model token speed or capacity measurements.';
 
   final ModelSettingsStore store;
   final ProviderFactory _createProvider;
@@ -194,6 +207,8 @@ class ModelSettingsController extends BaseController {
     _completion = completion;
     status = 'Connection test active. Waiting for a completed model response…';
     update();
+    final started = _elapsed();
+    Duration? firstText;
     var characters = 0;
     var hasText = false;
     final response = StringBuffer();
@@ -215,7 +230,10 @@ class ModelSettingsController extends BaseController {
             (text) {
               if (request != _request || isDisposed) return;
               characters += text.length;
-              hasText = hasText || text.trim().isNotEmpty;
+              if (text.trim().isNotEmpty) {
+                firstText ??= _elapsed() - started;
+                hasText = true;
+              }
               if (characters > probeOutputLimit) {
                 _finish(
                   'Connection test stopped: response exceeded the text limit.',
@@ -234,14 +252,22 @@ class ModelSettingsController extends BaseController {
             },
             onDone: () {
               if (request != _request || isDisposed) return;
+              final successful = jsonFormat
+                  ? ModelFormatProbe.accepts(response.toString())
+                  : hasText;
+              final firstTextLatency = firstText;
+              final timing = successful && firstTextLatency != null
+                  ? ' Client-observed first text: ${firstTextLatency.inMilliseconds} ms; completed response: ${(_elapsed() - started).inMilliseconds} ms. Requested model ID: ${config.model}. This temporary observation is not saved.'
+                  : '';
               _finish(
-                jsonFormat
-                    ? ModelFormatProbe.accepts(response.toString())
-                          ? 'Draft connection returned the expected JSON object in one completed response. Requested model ID: ${config.model}. Loaded identity and general schema/tool compatibility remain unverified. Settings are unchanged; this observation is not saved.'
-                          : 'JSON format test failed: response did not match the expected JSON object. Response text is omitted. Check the model and retry; settings are unchanged.'
-                    : hasText
-                    ? 'Local server completed the connection test. Response text is omitted.'
-                    : 'Connection test failed: the server returned no text. Check the model ID and runtime.',
+                (jsonFormat
+                        ? successful
+                              ? 'Draft connection returned the expected JSON object in one completed response. Requested model ID: ${config.model}. Loaded identity and general schema/tool compatibility remain unverified. Settings are unchanged; this observation is not saved.'
+                              : 'JSON format test failed: response did not match the expected JSON object. Response text is omitted. Check the model and retry; settings are unchanged.'
+                        : hasText
+                        ? 'Local server completed the connection test. Response text is omitted.'
+                        : 'Connection test failed: the server returned no text. Check the model ID and runtime.') +
+                    timing,
               );
             },
           );

@@ -38,6 +38,46 @@ void main() {
       await SharedPreferences.getInstance(),
     );
   });
+  test(
+    'completed tests measure first nonblank text and total elapsed per request',
+    () async {
+      var now = const Duration(seconds: 4);
+      var provider = Probe();
+      final c = ModelSettingsController(
+        store,
+        createProvider: (_) => provider,
+        elapsed: () => now,
+      );
+      addTearDown(c.dispose);
+      for (final json in [false, true]) {
+        final pending = c.test(
+          const LocalModelConfig(model: 'timed'),
+          jsonFormat: json,
+        );
+        expect(c.status, isNot(contains('Client-observed first text:')));
+        now += const Duration(milliseconds: 50);
+        provider.output.add('  \n');
+        await Future<void>.delayed(Duration.zero);
+        now += const Duration(milliseconds: 75);
+        provider.output.add(json ? '{"asg_probe":"ok"}' : 'private-answer');
+        await Future<void>.delayed(Duration.zero);
+        expect(c.status, isNot(contains('Client-observed first text:')));
+        now += const Duration(milliseconds: 125);
+        await provider.output.close();
+        await pending;
+        expect(
+          c.status,
+          contains('first text: 125 ms; completed response: 250 ms'),
+        );
+        expect(c.status, contains('Requested model ID: timed'));
+        expect(c.status, isNot(contains('private-answer')));
+        expect(store.loadPresets(), isEmpty);
+        expect(store.load().model, const LocalModelConfig().model);
+        provider = Probe();
+      }
+    },
+  );
+
   test('JSON format observation requires one exact duplicate-free object', () {
     for (final text in [
       '{"asg_probe":"ok"}',
@@ -113,6 +153,7 @@ void main() {
           expect(c.status, contains('Requested model ID: chosen'));
           expect(c.status, contains('unverified'));
         } else {
+          expect(c.status, isNot(contains('Client-observed first text:')));
           expect(
             c.status,
             isNot(contains('expected JSON object in one completed')),
@@ -145,6 +186,7 @@ void main() {
           isNot(contains('expected JSON object in one completed')),
         );
         expect(p.cancelled, isTrue);
+        expect(c.status, isNot(contains('Client-observed first text:')));
         unawaited(p.output.close());
         if (!dispose) c.dispose();
       }

@@ -9556,3 +9556,66 @@ The PR will record exact tested/published revisions and final-review/CI/merge
 receipts; retain this issue open for remaining F22 verified profiles/context.
 FullF22/F15 unchecked; external platform acceptance remains Deferred #400.
 Recorded 2026-11-02T08:51:00Z.
+
+
+### Explicit draft JSON format observation verified merged — PR #440
+Bounded increment Done for F22/#396 on `396-json-format-probe`.
+Tested local `6ff075da7f042da1fdf2a801bf5cee9a8df40065` and published final
+`f391444d740820622d8c078c7fefba3bebbafd1c` share exact tree
+`0acdb6d0c006530401bc61debded7fa06fc274ed`; all ten publication blobs matched.
+Independent approval5734064466/finalgate5734104575 found no blockers;
+18 independent Flutter and nine inventory checks passed; all844 remote blobs/
+modes and367 validation inputs matched. RequiredCI41416191653 BOTH SUCCESS:
+Flutter125180502354 full1195Ubuntu/12 explicit skips,17actualChrome tests,
+actualbrowsertransport/web/real independent generated-project verification;
+Python125180501996 passed165tests/four explicit platform skips. Parent1201
+Flutter/nine skips,165Python/two skips,final10focused,formatter342/analyzer/
+web/macOSdebug passed. JSON-format success is one temporary completed response
+at the requested connection, never loaded-weight identity, saved capability,
+JSON-mode/general-schema/tool support or new real inference. Default8765health
+unavailable; no launch/modeldownload/settings/installed-app change.
+Independent reviewer protected-plugin squashmerged [PR #440](https://github.com/arpit-it/ASG/pull/440)
+as `ce0fa17f6b06e06e18ca19e7570daa71a6b1d6f1` at2026-11-02T08:58:41Z.
+Parent freshplugin verified mergedPR/currentmain exactmerge/defaultmain source
+blob/#396OPEN. Signed exacttree/soleparent4f8ea02/objecthash verified before
+guarded local-only sync. Localmain/originmain0/0,emptyindex,both unrelatedIDE
+edits byte-identical. FullF22/F15 unchecked; externalacceptance Deferred400.
+No activeimplementation aftermerge; remaining canonical verified profiles/
+context/capability work Pending396. Final canonical bookkeeping retained for
+next normal reviewed development PR. Bothautomationlabels applied; no newissue,
+cadence or notification change. Receipts:/private/tmp/asg-json-publication.json,
+/private/tmp/asg-json-inputs.json,/private/tmp/asg440-reviewed-merge.json,
+/private/tmp/asg440-review-summary.json,/private/tmp/asg440-safe-sync.py.
+Currentrun 2026-11-02T09:00:27.388728+00:00
+
+
+### Temporary client-observed model-test latency — F22 / #396
+In progress on `396-model-test-latency` from verified PR #440 merge
+`ce0fa17f6b06e06e18ca19e7570daa71a6b1d6f1`. Fresh app inventory found no
+competing active ASG run; connected GitHub found no open PR. Reuse #396,
+scoped in issue comment6573386743. F22 requires observed latency distinct from
+estimates: add monotonic client-observed first nonblank text and total completed
+response timings to explicit draft text/JSON tests. Successful completed response
+only; partial, empty, wrong JSON, error, Stop, deadline and disposal never publish
+successful timing. New request resets results; request IDs isolate stale callbacks.
+No persisted capability, endpoint/prompt/output capture, settings/profile writes,
+token-speed/loaded-weight/context/support or new inference claim. Existing
+F09/F22 test/transport prerequisites delivered; Deferred400 unnecessary.
+Deterministic delayed-stream tests and actual HTTP, lifecycle/private failures,
+320px2x UI, full Flutter/inventory checks and web/macOS builds are validation.
+Independent exact-final review, required CI and reviewer merge remain gates.
+Full F22/F15 unchecked. Prior440 verified merge bookkeeping preserved.
+Recorded 2026-11-02T09:17:34.586220+00:00.
+
+Final local validation: isolated tracked-source Flutter1202 passed/nine explicit
+skips; analyzer clean, formatter342 unchanged, web and macOS debug builds passed.
+Eleven focused checks cover deterministic per-request whitespace/first-text/full
+completion timing, private non-success/Stop/deadline/disposal and actual owned
+HTTP JSON refusal/SSE retry. Inventory9passed, historical comparison refreshed
+without support promotion; all367 validation inputs byte-identical. Initial
+checkout suite included ignored tools/.mlx-venv thirdparty files in its project
+license scan; tracked-source full suite passes without changing that environment.
+Existing default8765health unavailable; no model launch/inference/download or
+installed-app/settings change. Status Awaiting merge: plugin exact-tested-tree
+publication, independent final-revision review, required CI and protected reviewer
+merge remain gates. Keep396open/fullF22/F15unchecked/platformDeferred400.

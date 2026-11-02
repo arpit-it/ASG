@@ -65,6 +65,7 @@ void main() {
       );
       await c.test(draft, jsonFormat: true);
       expect(c.status, contains('JSON format test failed'));
+      expect(c.status, isNot(contains('Client-observed first text:')));
       expect(c.status, isNot(contains('private-marker')));
       await c.test(draft, jsonFormat: true);
       expect(
@@ -72,6 +73,12 @@ void main() {
         contains('expected JSON object in one completed response'),
       );
       expect(c.status, contains('Requested model ID: chosen-model'));
+      expect(
+        c.status,
+        matches(
+          RegExp(r'first text: [0-9]+ ms; completed response: [0-9]+ ms'),
+        ),
+      );
       expect(requests, hasLength(2));
       for (final request in requests) {
         expect(request['model'], 'chosen-model');
