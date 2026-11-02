@@ -114,6 +114,16 @@ def call(path, body=None):
 def request(text, tokens=128, stream=False):
     return {'model': args.model, 'messages': [{'role': 'user', 'content': text}], 'max_tokens': tokens, 'stream': stream}
 
+def validate_response_identity(value):
+    # Legacy events may omit identity. A present identity must never contradict
+    # the selected request; matching text still cannot authenticate the weights.
+    if not isinstance(value, dict):
+        raise ValueError('Invalid response envelope')
+    if 'model' in value and (not isinstance(value['model'], str)
+                             or value['model'] != args.model):
+        raise ValueError('Invalid response identity')
+
+
 def safe_metrics(value, budget):
     import math
     assert value['finish_reason'] == 'stop'
@@ -146,6 +156,7 @@ def run():
     folder = args.checkpoint
     assert folder.is_dir() and (not folder.is_symlink())
     assert h['model'] == args.model
+    report['response_identity_scope'] = 'Every observed present completion model ID must match the request. Missing legacy IDs remain unverified; matching IDs are server assertions, not weight authentication.'
     report['provenance'] = 'Operator-selected source revision and local checkpoint metadata; weights counted but not hashed; HTTP backend/device/model remain server assertions, not authentication.'
     report['metadata_sha256'] = {n: hashlib.sha256((folder / n).read_bytes()).hexdigest() for n in ['config.json', 'tokenizer_config.json', 'model.safetensors.index.json'] if (folder / n).is_file() and (not (folder / n).is_symlink()) and ((folder / n).stat().st_size <= 1048576)}
     assert len(report['metadata_sha256']) == 3
@@ -154,6 +165,7 @@ def run():
     report['weights'] = {'file_count': len(list(folder.glob('*.safetensors'))), 'disk_bytes': sum((p.stat().st_size for p in folder.glob('*.safetensors')))}
     start = time.monotonic()
     status, result = call('/v1/chat/completions', request('Reply with exactly the single word READY.', 32))
+    validate_response_identity(result)
     assert status == 200 and result['choices'][0]['finish_reason'] == 'stop'
     assert result['choices'][0]['message']['content'].strip() == 'READY'
     metrics = safe_metrics(result['metrics'], 32)
@@ -179,6 +191,7 @@ def run():
             done = True
             break
         value = json.loads(data)
+        validate_response_identity(value)
         if 'error' in value:
             raise AssertionError('Stream error')
         for choice in value.get('choices', []):
@@ -203,6 +216,7 @@ def run():
         assert len(line) <= 65536 and time.monotonic() - start < 90
         if line.startswith(b'data: '):
             v = json.loads(line[6:])
+            validate_response_identity(v)
             if any((x.get('delta', {}).get('content') for x in v.get('choices', []))):
                 observed = True
                 break
@@ -218,6 +232,7 @@ def run():
     assert h['phase'] == 'idle' and time.monotonic() - start < 15
     report['checks']['disconnect'] = {'idle_seconds': round(time.monotonic() - start, 3), 'scope': 'Client disconnect observed; not a native-kernel preemption or process-tree guarantee.'}
     status, result = call('/v1/chat/completions', request('Reply with exactly the single word READY.', 32))
+    validate_response_identity(result)
     assert status == 200 and result['choices'][0]['message']['content'].strip() == 'READY'
     report['checks']['retry'] = {'metrics': safe_metrics(result['metrics'], 32)}
     report['recorded_at'] = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())

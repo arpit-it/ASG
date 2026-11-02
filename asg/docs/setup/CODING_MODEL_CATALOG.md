@@ -106,3 +106,11 @@ checkpoint/revision/license, verified total context or full model profile.
 Metadata/probe hashes remain in the retained report; weights were not hashed.
 A hash mismatch or unreadable asset shows a private retryable error. This panel
 does not make network requests, run inference, change settings or select models.
+
+Future `live_mlx_profile.py` probes reject any observed completion envelope
+that explicitly names a different or invalid model ID, including JSON, each
+observed structured/disconnect SSE event, final metrics and retry. Legacy events
+without an ID remain unverified. A matching ID is still a server assertion, not
+weight authentication; reports state this scope explicitly. Synthetic HTTP
+fixtures validate the probe contract and never establish live model capability.
+The retained PR #432 observation is historical and is not relabeled by this fix.
