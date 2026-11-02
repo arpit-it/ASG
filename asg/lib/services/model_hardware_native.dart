@@ -23,25 +23,15 @@ Future<ModelHardware> probeModelHardware({
     }
 
     final arm = await sysctl('hw.optional.arm64') == '1';
-    final total = int.tryParse(await sysctl('hw.memsize'));
+    final totalText = await sysctl('hw.memsize');
+    final rawTotal = RegExp(r'^[0-9]+$').hasMatch(totalText)
+        ? int.tryParse(totalText)
+        : null;
+    final total = rawTotal != null && rawTotal > 0 ? rawTotal : null;
     int? available;
     try {
       final output = await runProbe('/usr/bin/vm_stat', []);
-      final page = int.tryParse(
-        RegExp(r'page size of (\d+) bytes').firstMatch(output)?.group(1) ?? '',
-      );
-      if (page != null) {
-        int pages(String key) =>
-            int.tryParse(
-              RegExp('$key:\\s+(\\d+)').firstMatch(output)?.group(1) ?? '',
-            ) ??
-            0;
-        available =
-            (pages('Pages free') +
-                pages('Pages inactive') +
-                pages('Pages speculative')) *
-            page;
-      }
+      available = _availableMemory(output, total);
     } catch (_) {
       /* Total memory is still useful; headroom stays unknown. */
     }
@@ -59,6 +49,36 @@ Future<ModelHardware> probeModelHardware({
       detail: 'Hardware detection failed. No compatibility claim can be made.',
     );
   }
+}
+
+/// A missing counter is not a measured zero. Reject ambiguous observations and
+/// use wide arithmetic so large counters cannot wrap into plausible headroom.
+int? _availableMemory(String output, int? total) {
+  if (total == null) return null;
+  final lines = output.split('\n').map((line) => line.trimRight()).toList();
+  final headers = lines
+      .where((line) => line.startsWith('Mach Virtual Memory Statistics:'))
+      .toList();
+  if (headers.length != 1) return null;
+  final header = RegExp(
+    r'^Mach Virtual Memory Statistics: \(page size of ([0-9]+) bytes\)$',
+  ).firstMatch(headers.single);
+  final page = BigInt.tryParse(header?.group(1) ?? '');
+  if (page == null || page <= BigInt.zero || page > BigInt.from(total)) {
+    return null;
+  }
+  var pages = BigInt.zero;
+  for (final name in ['Pages free', 'Pages inactive', 'Pages speculative']) {
+    final counters = lines.where((line) => line.startsWith('$name:')).toList();
+    if (counters.length != 1) return null;
+    final match = RegExp('^$name:[ \t]+([0-9]+)\\.\$')
+        .firstMatch(counters.single);
+    final count = BigInt.tryParse(match?.group(1) ?? '');
+    if (count == null) return null;
+    pages += count;
+  }
+  final bytes = pages * page;
+  return bytes <= BigInt.from(total) ? bytes.toInt() : null;
 }
 
 /// Run a fixed read-only hardware helper with bounded output and owned cleanup.
