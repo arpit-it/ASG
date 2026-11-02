@@ -74,14 +74,16 @@ frame.addEventListener('load', async () => {
   doc.querySelector('summary').click(); assert(details.open, 'Native details interaction');
   for (const width of [1280, 320]) {
    frame.style.width = width + 'px';
-   // Synchronous geometry forces layout at each actual viewport width.
-   assert(doc.documentElement.clientWidth === width, 'Viewport applied');
-   assert(doc.documentElement.scrollWidth <= width, 'No horizontal overflow');
+   // Flush the parent layout, then distinguish viewport from content width.
+   // Linux classic scrollbars consume space; macOS overlay scrollbars do not.
+   assert(frame.getBoundingClientRect().width === width, 'Frame size applied');
+   assert(win.innerWidth === width, 'Viewport applied');
+   assert(doc.documentElement.scrollWidth <= doc.documentElement.clientWidth, 'No horizontal overflow');
    const cards = doc.querySelectorAll('article');
    const a = cards[0].getBoundingClientRect(), b = cards[1].getBoundingClientRect();
    assert(width === 320 ? b.top > a.top : b.left > a.left, 'Responsive cards');
    doc.documentElement.style.fontSize = '200%';
-   assert(doc.documentElement.scrollWidth <= width, 'No overflow at 2x text');
+   assert(doc.documentElement.scrollWidth <= doc.documentElement.clientWidth, 'No overflow at 2x text');
    doc.documentElement.style.fontSize = '';
   }
   frame.style.width = '320px';
@@ -89,7 +91,8 @@ frame.addEventListener('load', async () => {
   doc.querySelector('h1').textContent = 'W'.repeat(120);
   doc.querySelector('.description').textContent = 'W'.repeat(2000);
   doc.documentElement.style.fontSize = '200%';
-  assert(doc.documentElement.scrollWidth <= 320, 'Bounded maximum text has no overflow');
+  assert(frame.getBoundingClientRect().width === 320 && win.innerWidth === 320, 'Maximum input viewport applied');
+  assert(doc.documentElement.scrollWidth <= doc.documentElement.clientWidth, 'Bounded maximum text has no overflow');
   doc.querySelector('nav a').click();
   assert(win.location.hash === '#overview', 'Real anchor navigation');
   result.textContent = 'PASS: emitted HTML assets, semantics, focus, details, theme, navigation, 320/1280px and 2x text';
