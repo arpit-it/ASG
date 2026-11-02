@@ -9781,3 +9781,64 @@ change. Awaiting merge: plugin exact-tree publication, independent final review,
 required CI and protected reviewer merge remain gates. FullF22/F15 unchecked;
 external-platform acceptance Deferred400.
 Recorded 2026-11-02T11:05:30.660051+00:00
+
+
+### Independent profile-note maintenance verified merged — PR #445
+Bounded increment Done for F22/#396 on `396-profile-notes-update`.
+Tested local242284709629bdcfb8102f53efbf0e389f640758 and published final
+73b6d32bed751e2a29b57218ff71de8d0d8dbe9c share exacttree
+14fc17c6ad41448301ddb20b3868a043685779fb; all9publicationblobs match.
+Independent approval5735637672/finalgate6575738078 found no blockers;
+39independentFlutter/nineinventory/one retainedproject+Ask snapshot/no-inference
+probe passed. All848remote blobs/modes and371validationinputs match. RequiredCI
+41434230777 BOTH SUCCESS: Flutter125239984535 full1222Ubuntu/12explicit skips,
+17actualChrome/browsertransport/web/real independentgeneratedproject;
+Python125239984159165total/four explicitplatform skips. Parent1228Flutter/nine
+skips,format346/analyzer/web/macOSdebug/nineinventory passed. Exact matching
+draft and explicit notes-only save/clear preserve connection/name/order/history,
+pendingtest/otherpresets/active settings; stale/corrupt/failure/retry/busy/disposal
+protected. ActualHTTP confirms no extra request; native database reopen and
+320x600/2x save/clear interaction passed. Existing snapshots elsewhere retained.
+No runtime/model launch/inference/download/installedapp change.
+Independent reviewer protected-plugin squashmerged PR445 as
+f5ab9b6d1e4397582c02b2f729f795273c1749bc at2026-11-02T11:14:45Z.
+Parent freshplugin verified mergedPR/currentmain exactsourceblob/#396OPEN;
+signed exacttree/soleparentb460e302/objecthash verified before guarded local sync.
+Localmain/originmain0/0,emptyindex,both originalIDEedits byte-identical.
+FullF22/F15 remain unchecked; externalplatform acceptanceDeferred400. No active
+implementation aftermerge; remaining verified profiles/context/capability work
+Pending396. Final canonical bookkeeping retained for next normal reviewed PR.
+Bothautomationlabels applied; no newissue/cadence/notification change.
+Receipts:/private/tmp/asg-notes-publication.json,/private/tmp/asg-notes-inputs.json,
+/private/tmp/asg445-reviewed-merge.json,/private/tmp/asg445-review-summary.json,
+/private/tmp/asg445-safe-sync.py.
+Currentrun 2026-11-02T11:15:33.298473+00:00
+
+
+### Completed-test runtime metrics — F22 / #396
+In progress on `396-test-runtime-metrics` from verified PR #445 merge
+f5ab9b6d1e4397582c02b2f729f795273c1749bc. Scope comment6576037605.
+Existing runtime emits exact token counts and MLX speed/process peak metrics,
+but app discarded them. Typed optional allowlisted server assertions exposed
+only after completed JSON/SSE transport and successful explicit connection test.
+Temporary display only; never saved as capability or support/context evidence.
+Legacy/malformed optional metrics remain unavailable without invalidating text.
+Draft/new-test/Stop/failure/disposal guards, actual HTTP and narrow UI regressions
+being validated. No model launch/download or stable app change. FullF22/F15
+unchecked; external acceptanceDeferred400. No new issue. Preserve both IDE edits.
+Independent final review, full checks, CI and protected reviewer merge remain gates.
+Recorded 2026-11-02T11:32:53.684635+00:00
+
+Final local validation: 1233Flutter tests passed/nine explicit skips,27focused
+checks passed; formatter350 unchanged/analyzer clean/web including Wasm dryrun
+and isolated macOSdebug build passed. Nine inventory regressions passed after
+regenerating source-comparison inventory; initial expected stale inventory and
+widget-test HTTP override/import invocation/lint diagnostics corrected. All374
+source/validation inputs match; both original IDE edits byte-identical. Actual
+HTTP JSON/SSE validates temporary telemetry/no persistence, format-failure and
+Stop/draft/reopen exclusion; delayedDONE/error/EOF/truncation and malformed
+private metrics covered. Narrow320px2x rendered metrics/guidance pass. No model
+launch/inference/download/installedapp change. Awaiting merge: plugin exacttree
+publication, independent final review, requiredCI and protected reviewer merge
+remain gates. FullF22/F15unchecked; externalacceptanceDeferred400.
+Recorded 2026-11-02T11:39:34.602078+00:00

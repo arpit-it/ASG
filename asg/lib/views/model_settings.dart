@@ -9,6 +9,7 @@ import '../controllers/model_settings_controller.dart';
 import '../models/local_model_config.dart';
 import '../models/model_profile_notes.dart';
 import '../models/model_format_probe.dart';
+import 'model_runtime_metrics_view.dart';
 import 'model_profile_notes_fields.dart';
 import 'model_test_observation_view.dart';
 
@@ -296,6 +297,8 @@ class _ModelSettingsState extends State<ModelSettings> {
           const Text(ModelSettingsController.timingGuidance),
           const SizedBox(height: 16),
           SelectableText(controller.status),
+          if (controller.runtimeMetrics case final metrics?)
+            ModelRuntimeMetricsView(metrics: metrics),
           if (controller.busy) const LinearProgressIndicator(),
         ],
       ),

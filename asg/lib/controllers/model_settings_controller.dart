@@ -8,6 +8,7 @@ import '../models/model_connection_preset.dart';
 import '../models/model_profile_notes.dart';
 import '../models/model_format_probe.dart';
 import '../models/model_test_observation.dart';
+import '../models/model_runtime_metrics.dart';
 import '../services/model_settings_store.dart';
 import '../services/local_model.dart';
 import '../services/model_inventory.dart';
@@ -35,6 +36,7 @@ class ModelSettingsController extends BaseController {
   }
   final Future<String> Function(LocalModelConfig) _inspectInventory;
   String? inventoryStatus;
+  ModelRuntimeMetrics? runtimeMetrics;
 
   static const draftChangedGuidance =
       'Connection draft changed. Test again to observe this draft; settings are unchanged.';
@@ -42,6 +44,7 @@ class ModelSettingsController extends BaseController {
   void connectionDraftChanged() {
     if (busy || settingsLoadFailed || isDisposed) return;
     inventoryStatus = null;
+    runtimeMetrics = null;
     _pendingObservation = null;
     _testedConfig = null;
     status = draftChangedGuidance;
@@ -322,6 +325,7 @@ class ModelSettingsController extends BaseController {
   Future<void> test(LocalModelConfig config, {bool jsonFormat = false}) async {
     if (busy || settingsLoadFailed || isDisposed) return;
     busy = true;
+    runtimeMetrics = null;
     _pendingObservation = null;
     _testedConfig = null;
     final request = ++_request;
@@ -392,6 +396,10 @@ class ModelSettingsController extends BaseController {
                     completed <= probeTimeout) {
                   _pendingObservation = observation;
                   _testedConfig = config;
+                  final provider = _provider;
+                  if (provider is ModelMetricsProvider) {
+                    runtimeMetrics = provider.completedMetrics;
+                  }
                 }
               }
               final timing = successful && firstTextLatency != null
@@ -423,6 +431,7 @@ class ModelSettingsController extends BaseController {
 
   void stopTest() {
     if (!testing || isDisposed) return;
+    runtimeMetrics = null;
     _finish(
       'Connection test stopped. App connection closed; server-side inference may continue.',
     );
@@ -457,6 +466,7 @@ class ModelSettingsController extends BaseController {
 
   @override
   void dispose() {
+    runtimeMetrics = null;
     _finish('Connection test closed.');
     super.dispose();
   }
