@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 
 import '../controllers/source_generation_controller.dart';
 import '../models/source_generation.dart';
+import '../models/generation_toolchain.dart';
 import '../models/build_history_entry.dart';
 import '../services/folder_picker.dart';
 import 'board_verification_progress.dart';
@@ -35,6 +36,8 @@ class _SourceGenerationScreenState extends State<SourceGenerationScreen> {
   void initState() {
     super.initState();
     controller.addListener(refresh);
+    sdk.addListener(controller.invalidateToolchain);
+    python.addListener(controller.invalidateToolchain);
   }
 
   void refresh() {
@@ -193,6 +196,22 @@ class _SourceGenerationScreenState extends State<SourceGenerationScreen> {
               ),
             ),
             const SizedBox(height: 12),
+            OutlinedButton.icon(
+              onPressed: controller.busy || !controller.available
+                  ? null
+                  : () => controller.inspectToolchain(
+                      sdk.text.trim(),
+                      python.text.trim(),
+                    ),
+              icon: const Icon(Icons.find_in_page_outlined),
+              label: const Text('Inspect toolchain paths'),
+            ),
+            if (controller.toolchain case final report?) ...[
+              Text('Flutter: ${report.flutter}'),
+              Text('Dart: ${report.dart}'),
+              Text('Python: ${report.python}'),
+              const Text(GenerationToolchain.limits),
+            ],
             const Text(
               'Approved operations: offline dependency resolution, Flutter analysis, tests, web build, and an optional loopback preview. At most four commands run, each with a 3-minute deadline and a 64 KiB combined output limit. These fixed limits are saved with verification evidence. Missing cached SDK packages cause a failure; no package/model installation is performed. These trusted tools run with your host permissions, not in a security sandbox.',
             ),
