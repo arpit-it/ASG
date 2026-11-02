@@ -11006,3 +11006,65 @@ share that prefix. No completion claim before verified merge.
 PR464 initial remote991a62fb/testedlocal37c7c8e share tree da0d1e20;
 allten published blobs and396 tested source inputs match. This followup only adds
 PR/status linkage; no tested runtime inputs changed. Final review/CI/merge pending.
+
+
+### HTML creation-to-starter handoff verified merged — PR #464
+Bounded F11/#402 increment Done on `402-html-creation-handoff`, scope6587091875.
+Final94c0e15a0abe5c036f65e32b73d236d40f6fb28c/testedlocal8e7f10541e8ab30b80a846abf63e37e0ffefb347
+share exacttree53068113613521c120dca838663bc74e209f3af7; allten publishedblobs/
+396testedsourceinputs match. Fresh independent approval5742630791/finalgate5742708623
+found no blockers; independent46focused/nineinventory passed. Parent1333Flutter/
+nineexplicit skips,46focused,formatter392/analyzer/freshwebWasm/isolatedmacOSdebug/
+nineinventory passed. Initial dialog-finder/lazy-scroll test harness errors were
+corrected before focused/full reruns. Final followup changed only PR/status docs.
+RequiredCI41516033301 BOTH SUCCESS: Flutter125520109264/Python125520108958;
+reviewer inspected actual1306Linux/33explicit skips,17Chrome,transport/staticHTML/
+webWasm/realgeneratedFlutter and eight Python fixture suites. No fixture or skipped
+inference is claimed as tested support. Reviewer protected-plugin expected-head
+squashmerge327355870fcb983e26d1aa7be6ea2543cacd8cc7 at2026-11-02T20:13:55Z.
+Parent freshly verified mergedPR/currentmain/#402OPEN/#400OPEN, signedexacttree/
+soleparent09d68c87, hash-reconstructed commit then atomically synchronized local
+main/originmain0/0,indexempty; both originalIDEedits byte-identical.
+Both creation entry points now explicitly hand the original idea/suggestedtitle to
+editable fixed HTML starter input. Returning preserves wizard choices; no implicit
+confirmation/destination/registration/Build authority. Full HTML registration,
+approved-task integration, edited-source execution and fullF11 remain Pending/open;
+Deferred400 retained. Existing8765health offline; no inference/model launch/native
+app-launch acceptance/stableapp replacement. Final merge bookkeeping retained
+locally for the next normal reviewed development PR; no direct-main publication,
+new issue/cadence/notification change. Receipts:/private/tmp/asg464-publication.json,
+/private/tmp/asg402-handoff-inputs.json,/private/tmp/asg464-reviewed-merge.json,
+/private/tmp/asg464-review-evidence.json,/private/tmp/asg464-safe-sync.py.
+
+
+### Creation-time HTML runner discovery — F11 / #402
+In progress on `402-creation-runner-discovery`, scope6587720764, from verified
+PR464 merge `327355870fcb983e26d1aa7be6ea2543cacd8cc7`. No earlier active run or
+open PR at selection. Reuses issue #402; no new requirement or issue.
+F11 requires stack capabilities/version/toolchain information before creation;
+the wizard previously showed only static Planned guidance, while the delivered
+HTML runner descriptor was only visible after handoff. Creation now discovers
+the selected stack through the same registry and shares the read-only capability
+view with export. Shows runner/version, adapter identity, actual per-operation
+host boundaries, inapplicable compilation/dependencies and unimplemented tests.
+Explains that browser installation/version and project readiness are unverified.
+HTML registration remains Planned; discovery grants no Build/task/export authority,
+checks, file reads, writes, model request or preview/browser launch. Switching to
+Flutter/Python/unknown clears the descriptor; existing handoff and choices remain.
+Actual Mac descriptor plus injected available/unavailable-host/mixed states and
+320px/2x/desktop interactions validate discovery without dispatch. Focused32 passed.
+Technical dependencies: delivered HTML registry/runner; no deferred hardware needed.
+Full HTML project registration, approved-task integration and edited-source runners
+remain Pending, full F11/#402 open and Deferred #400 retained. Full checks/builds,
+plugin publication, exact-final independent review, required CI and verified
+reviewer merge remain gates; no completion claim. Includes inherited verified
+PR464 merge bookkeeping. No stable app/data/model/cadence/notification change.
+
+Validation update: final isolated-source1339Flutter tests passed/nine explicit
+skips; focused32, formatter394unchanged after dependency resolution, analyzer
+clean, fresh web/Wasm dry run and isolated macOS debug build passed. Nine
+acceptance-inventory regressions passed. Runtime/test/tool/config input hashes
+match the validation manifest /private/tmp/asg402-discovery-inputs.json (421).
+Initial formatter ran before package resolution and reported include warnings;
+post-resolution final formatter is clean. No runtime/test failures or inference,
+app-launch/support claims. Awaiting plugin publication/review/CI/merge.
