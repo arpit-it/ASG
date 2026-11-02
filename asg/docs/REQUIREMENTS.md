@@ -271,7 +271,7 @@ The saved development automation was updated through its management tool; active
   - Acceptance: UI shows available and unavailable operations with actionable reasons; unsupported confinement refuses candidate execution before any source is run. Each enabled host passes real new-project resolve/analyze/test/web-build/serve, Stop/deadline/output-limit and descendant-cleanup checks, restart/uncertain-checkpoint refusal, stale-approval refusal and last-working-output preservation. Enabling starter generation must not implicitly enable candidate execution. Model-written candidate/repair support needs independently reviewed platform isolation and real deny-write/network/process-escape probes at the established boundary.
   - Validation/delivery: one narrowly scoped issue/PR per host/capability milestone, actual Linux/Windows builds and launches on their respective hosts, plus macOS regression coverage. Include paths with spaces, missing toolchains, occupied ports, failed previews and interrupted writes. Record tested versus unavailable capabilities separately; keep F16 unchecked until promised host increments satisfy acceptance and normal independent review/CI/verified merge. Broader generated targets remain F11.
 - [ ] F11 Multi-language project generation, runners and explicit stack selection — In progress (#402); depends on F04 and F05
-  - Explicit fixed HTML source checks — Awaiting merge, [PR #460](https://github.com/arpit-it/ASG/pull/460), #402, `402-html-export-check`, scope6584403638. Read-only exact-starter identity evidence, shared preview validator, visible Stop/deadline/retry. Blocking review5741098795 identified hidden pending reads after edit; corrected with global revoked-read progress and widget regression. Full F11 remains open; final-revision review/CI/protected merge still required.
+  - Explicit fixed HTML source checks — Done via [PR #460](https://github.com/arpit-it/ASG/pull/460), #402, `402-html-export-check`, scope6584403638; verified mergef8a888ef at2026-11-02T18:19:48Z, final437e281e independently approved5741174433/finalgate5741267929, requiredCI41498268973 passed. Explicit read-only identity evidence and visible Stop/deadline/retry only; full HTML creation/registration/runner Pending.
   - App-owned fixed HTML preview — Done via [PR #459](https://github.com/arpit-it/ASG/pull/459), #402, `402-html-preview-flow`, scope6583757438; verified merge746b6749 at2026-11-02T17:53:20Z, final67579673 independently approved5740832776/finalgate5740906527, requiredCI41494387421 passed. Confirmed export identity, preview/browser/Stop controls and recovery only; full creation/registration/runner Pending.
   - Fixed HTML preview host foundation — Done (bounded service), [PR #458](https://github.com/arpit-it/ASG/pull/458), final080ad07b approved5740409275, requiredCI41487788657 passed; reviewer merge371cf781c59f515008a3a78afb9324cb66546360 verified at2026-11-02T17:14:42Z. #402, `402-html-preview-host`, scope6583108583. App controls/browser launch and full runner remain Pending.
   - App-owned fixed HTML starter export — Done (bounded export flow), [PR #457](https://github.com/arpit-it/ASG/pull/457), final757edf16 approved5739945623/finalgate6582806250, requiredCI41483465171 passed; reviewer merge950ce933c1eda778b7d26e5fc3a58a333bbf3f8f verified at2026-11-02T16:47:02Z: #402, `402-html-export-flow`, scope6582414659. Dashboard exact review/confirmation, Stop/disposal and retained recovery; project registration/runner/preview remain Planned.
@@ -11576,3 +11576,65 @@ Fresh final web/Wasm and isolatedmacOSdebug builds are recorded in PR validation
 No old approval or CI authorizes the changed diff. Fresh exactfinalreview, actual
 requiredCI and protectedreviewermerge remain gates. FullF11/#402 andDeferred400
 stay open. No model launch/inference/stableapp/cadence/notification change.
+
+
+### Explicit fixed HTML source checks verified merged — PR #460
+Bounded F11/#402 source-identity increment Done on `402-html-export-check`,
+scope6584403638. Final437e281e34448e3e31269a5b6acd234ce03aa67f and testedlocal
+879a01e58c3386954c753ee7aa4089d4c018b70a share exacttree
+4f736277ec9659240ae5dff50f9f43f88945a72a; all14published blobs/407source inputs match.
+Independent blockingreview5741098795 reproduced hidden pending-read progress on
+input edits; corrected global waiting/Stop section and actual-edit widget before
+fresh approval5741174433/finalgate5741267929 of unchanged final revision.
+Blocking thread resolved. Independent32freshfocused/ninecurrentinventory passed.
+Parent final1308Flutter/nineexplicit skips,32focused,format382/analyzer/freshwebWasm/
+isolatedmacOSdebug/nineinventory passed. Initial checkout license traversal of
+ignoredMLXvenv was avoided by validating the tracked-source snapshot; no dependency
+files were modified. Saved acceptance reports remain historical.
+NEWrequiredCI41498268973 BOTH SUCCESS: Flutter125458831561/Python125458831241.
+Reviewer inspected actual logs including1283Linux/31skips,17Chrome, browsertransport,
+staticHTML,webWasm and independentgeneratedFlutter analyze/test/build/serve.
+Independent reviewer protected-plugin squashmerged PR460 as
+f8a888efc3215858c93614b58a7d4ce96aaf6a77 at2026-11-02T18:19:48Z. Parent freshly
+verified mergedPR/currentmain/#402OPEN/#400OPEN, signedexacttree/soleparent746b6749;
+reconstructed and hash-verified signed commit before atomic localref synchronization.
+Localmain/originmain0/0,indexempty,bothoriginalIDEedits byte-identical to PR459receipt.
+The app now explicitly checks unchanged fixed-starter source identity without
+starting preview/browser or changing files. Loading/Stop/deadline/retry and stale/
+disposal guards retain pending IO ownership and visible revoked-read status.
+Point-in-time file/byte evidence is not lint/browser/runtime acceptance. Full HTML
+creation/registration/runner and F11 stay Pending/open; Deferred400 retained.
+Existing8765health unavailable; no model launch/inference/stableapp replacement.
+Final canonical bookkeeping retained locally for next normal reviewed development
+PR; no unreviewed direct-main publication, new issue, cadence or notification change.
+Receipts:/private/tmp/asg460-publication.json,/private/tmp/asg460-validation-inputs.json,
+/private/tmp/asg460-reviewed-merge.json,/private/tmp/asg460-safe-sync.py.
+
+
+### Versioned fixed HTML runner — F11 / #402
+In progress on `402-html-starter-runner`, scope6585030463, from verified PR460
+mergef8a888ef. No competing active run/open PR at selection. Register the fixed
+starter runner with stable identity/version and typed per-operation capability
+results. Route app source checks and preview/start/open/stop through the same
+runner. Discovery performs no external actions; unknown stacks refuse lookup.
+Dependency resolution/compilation are explicitly inapplicable for this fixed
+local-assets template; project tests remain unimplemented, never passing no-ops.
+Retain exact-starter confinement, cancellation/deadline/disposal ownership and
+visible pending reads. Capability availability is not readiness or acceptance.
+Validate production Mac export→check→HTTP assets→Stop/retry, changed-source refusal,
+host/input/authority guards, narrow UI, full Flutter checks, web/macOS builds and
+inventory freshness. Exact-tree plugin publication, independent final review,
+required CI and protected reviewer merge remain gates. Full HTML creation,
+project registration, arbitrary edited-source runner and fullF11 remain Pending;
+Deferred400 retained. No model/stableapp/cadence/notification change.
+
+Validation: final33focused passed, including actual production Mac export→runner
+identity check→HTTP assets→Stop/retry and changed-file refusal, host/input/authority
+refusal and320px/2x expanded capability UI. Formatter387 unchanged/analyzer clean;
+fresh web build/Wasm dry run and isolatedmacOSdebug build passed. Nine current
+inventory regressions passed; saved acceptance remains historical. Initial
+new-screen test missed the expansion activation/animation; corrected the actual
+scroll/tap harness and retested. No runtime source changed after these builds.
+Full tracked-source suite1315passed/nineexplicit skips. Awaiting exact-tree
+publication, independent final review, required CI and protected reviewer merge;
+fullF11/#402 andDeferred400 remain open.

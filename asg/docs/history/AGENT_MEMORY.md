@@ -10655,3 +10655,65 @@ Fresh final web/Wasm and isolatedmacOSdebug builds are recorded in PR validation
 No old approval or CI authorizes the changed diff. Fresh exactfinalreview, actual
 requiredCI and protectedreviewermerge remain gates. FullF11/#402 andDeferred400
 stay open. No model launch/inference/stableapp/cadence/notification change.
+
+
+### Explicit fixed HTML source checks verified merged — PR #460
+Bounded F11/#402 source-identity increment Done on `402-html-export-check`,
+scope6584403638. Final437e281e34448e3e31269a5b6acd234ce03aa67f and testedlocal
+879a01e58c3386954c753ee7aa4089d4c018b70a share exacttree
+4f736277ec9659240ae5dff50f9f43f88945a72a; all14published blobs/407source inputs match.
+Independent blockingreview5741098795 reproduced hidden pending-read progress on
+input edits; corrected global waiting/Stop section and actual-edit widget before
+fresh approval5741174433/finalgate5741267929 of unchanged final revision.
+Blocking thread resolved. Independent32freshfocused/ninecurrentinventory passed.
+Parent final1308Flutter/nineexplicit skips,32focused,format382/analyzer/freshwebWasm/
+isolatedmacOSdebug/nineinventory passed. Initial checkout license traversal of
+ignoredMLXvenv was avoided by validating the tracked-source snapshot; no dependency
+files were modified. Saved acceptance reports remain historical.
+NEWrequiredCI41498268973 BOTH SUCCESS: Flutter125458831561/Python125458831241.
+Reviewer inspected actual logs including1283Linux/31skips,17Chrome, browsertransport,
+staticHTML,webWasm and independentgeneratedFlutter analyze/test/build/serve.
+Independent reviewer protected-plugin squashmerged PR460 as
+f8a888efc3215858c93614b58a7d4ce96aaf6a77 at2026-11-02T18:19:48Z. Parent freshly
+verified mergedPR/currentmain/#402OPEN/#400OPEN, signedexacttree/soleparent746b6749;
+reconstructed and hash-verified signed commit before atomic localref synchronization.
+Localmain/originmain0/0,indexempty,bothoriginalIDEedits byte-identical to PR459receipt.
+The app now explicitly checks unchanged fixed-starter source identity without
+starting preview/browser or changing files. Loading/Stop/deadline/retry and stale/
+disposal guards retain pending IO ownership and visible revoked-read status.
+Point-in-time file/byte evidence is not lint/browser/runtime acceptance. Full HTML
+creation/registration/runner and F11 stay Pending/open; Deferred400 retained.
+Existing8765health unavailable; no model launch/inference/stableapp replacement.
+Final canonical bookkeeping retained locally for next normal reviewed development
+PR; no unreviewed direct-main publication, new issue, cadence or notification change.
+Receipts:/private/tmp/asg460-publication.json,/private/tmp/asg460-validation-inputs.json,
+/private/tmp/asg460-reviewed-merge.json,/private/tmp/asg460-safe-sync.py.
+
+
+### Versioned fixed HTML runner — F11 / #402
+In progress on `402-html-starter-runner`, scope6585030463, from verified PR460
+mergef8a888ef. No competing active run/open PR at selection. Register the fixed
+starter runner with stable identity/version and typed per-operation capability
+results. Route app source checks and preview/start/open/stop through the same
+runner. Discovery performs no external actions; unknown stacks refuse lookup.
+Dependency resolution/compilation are explicitly inapplicable for this fixed
+local-assets template; project tests remain unimplemented, never passing no-ops.
+Retain exact-starter confinement, cancellation/deadline/disposal ownership and
+visible pending reads. Capability availability is not readiness or acceptance.
+Validate production Mac export→check→HTTP assets→Stop/retry, changed-source refusal,
+host/input/authority guards, narrow UI, full Flutter checks, web/macOS builds and
+inventory freshness. Exact-tree plugin publication, independent final review,
+required CI and protected reviewer merge remain gates. Full HTML creation,
+project registration, arbitrary edited-source runner and fullF11 remain Pending;
+Deferred400 retained. No model/stableapp/cadence/notification change.
+
+Validation: final33focused passed, including actual production Mac export→runner
+identity check→HTTP assets→Stop/retry and changed-file refusal, host/input/authority
+refusal and320px/2x expanded capability UI. Formatter387 unchanged/analyzer clean;
+fresh web build/Wasm dry run and isolatedmacOSdebug build passed. Nine current
+inventory regressions passed; saved acceptance remains historical. Initial
+new-screen test missed the expansion activation/animation; corrected the actual
+scroll/tap harness and retested. No runtime source changed after these builds.
+Full tracked-source suite1315passed/nineexplicit skips. Awaiting exact-tree
+publication, independent final review, required CI and protected reviewer merge;
+fullF11/#402 andDeferred400 remain open.

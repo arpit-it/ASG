@@ -214,6 +214,64 @@ void main() {
     },
   );
   testWidgets(
+    'runner limits are readable at 320px and doubled text without IO',
+    (tester) async {
+      tester.view.physicalSize = const Size(320, 700);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final checker = _Check();
+      final c = HtmlExportController(
+        exporter: _Export(),
+        sourceChecker: checker,
+      );
+      await tester.pumpWidget(
+        MaterialApp(
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(context)
+                .copyWith(textScaler: const TextScaler.linear(2)),
+            child: child!,
+          ),
+          home: HtmlExportScreen(controller: c),
+        ),
+      );
+      await tester.scrollUntilVisible(
+        find.text('Runner capabilities'),
+        160,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text('Runner capabilities'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Runner capabilities'));
+      await tester.pumpAndSettle();
+      for (final label in [
+        'Source identity',
+        'Resolve dependencies',
+        'Compile',
+        'Project tests',
+        'Preview cleanup',
+      ]) {
+        await tester.scrollUntilVisible(
+          find.text(label),
+          160,
+          scrollable: find.byType(Scrollable).first,
+        );
+        expect(find.text(label), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      }
+      expect(
+        find.textContaining('Not implemented: No project test runner'),
+        findsOneWidget,
+      );
+      expect(checker.calls, 0);
+      expect(c.exportedDirectory, isNull);
+      await tester.pumpWidget(const SizedBox());
+      expect(c.isDisposed, true);
+    },
+  );
+
+  testWidgets(
     'editing during pending check retains visible revoked-read progress',
     (tester) async {
       final checker = _Check();

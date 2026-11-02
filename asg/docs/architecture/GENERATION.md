@@ -127,3 +127,27 @@ The diagnosis itself starts no model request, command or source modification and
 After requesting a repair proposal, review its full diff and select a candidate parent folder. **I approve applying this repair and confined checks** enables **Apply reviewed repair and rerun checks** for that exact proposal. This creates a new separate candidate, then automatically reruns the complete approved offline resolve/analysis/test/web-build graph through the existing macOS sandbox, deadlines and output limits. Unsupported hosts fail closed. Ordinary proposals retain separate preparation and verification. The repair action makes no additional model request and does not promote output; promotion still requires its explicit action after actual successful checks.
 
 The controller stays busy across preparation and dispatch and rechecks approval, working-record identity and cancellation after progress notification. Stop during copy prevents checks; Stop during checks uses the host cancellation and durable actual-exit handling. Copy/check failures preserve working output and saved prior runs. Actual rerun exits are stored in the candidate verification journal, including failure/uncertain states; no proposal or successful copy implies successful verification. A new repair request remains a separately reviewed action and consumes the existing per-category budget. This is not yet a fully automatic multi-attempt model repair loop.
+
+
+### Fixed HTML runner dispatch contract
+
+The fixed HTML export screen uses the registered `asg-fixed-html` runner v1.0.0
+for adapter `asg-static-html-v1`. `ProjectRunnerRegistry` recognizes exact HTML
+selection only; the legacy Flutter workflow is separate and other languages have
+no registered runner. Discovery is side-effect-free host capability reporting,
+not project readiness, verified browser/toolchain versions or a support verdict.
+
+The same runner dispatches read-only exact-source checks and the existing
+immutable-snapshot preview, browser request and Stop. Controllers retain their
+deadlines, read-authority revocation, pending-IO guards and lifecycle cleanup.
+Compilation and dependency resolution return typed unsupported results marked
+inapplicable for this local-assets starter; project tests are not implemented.
+None is reported as a passed check. Unsupported hosts refuse check/run/open
+before external actions; Stop remains available for owned cleanup. Native
+source checks and preview still refuse modified, missing and symbolic files.
+
+This is a bounded runner prerequisite, not general HTML project registration,
+arbitrary edited-source execution, approved task integration or full F11.
+HTML remains Planned in project creation. Exported source is retained on Stop
+and failures. Actual browser interaction acceptance is separate from serving
+assets or accepting an OS browser launch request.
