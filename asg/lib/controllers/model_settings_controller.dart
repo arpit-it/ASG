@@ -7,6 +7,7 @@ import '../models/local_model_config.dart';
 import '../models/model_connection_preset.dart';
 import '../models/model_profile_notes.dart';
 import '../models/model_format_probe.dart';
+import '../models/model_test_observation.dart';
 import '../services/model_settings_store.dart';
 import '../services/local_model.dart';
 import '../services/model_inventory.dart';
@@ -18,8 +19,10 @@ class ModelSettingsController extends BaseController {
     this.store, {
     ProviderFactory? createProvider,
     Duration Function()? elapsed,
+    DateTime Function()? now,
     Future<String> Function(LocalModelConfig)? inspectInventory,
-  }) : _elapsed = elapsed ?? _monotonicClock(),
+  }) : _now = now ?? DateTime.now,
+       _elapsed = elapsed ?? _monotonicClock(),
        _inspectInventory = inspectInventory ?? ModelInventory.inspect,
        _createProvider =
            createProvider ?? ((config) => LocalModelProvider(config)) {
@@ -39,6 +42,8 @@ class ModelSettingsController extends BaseController {
   void connectionDraftChanged() {
     if (busy || settingsLoadFailed || isDisposed) return;
     inventoryStatus = null;
+    _pendingObservation = null;
+    _testedConfig = null;
     status = draftChangedGuidance;
     update();
   }
@@ -73,7 +78,48 @@ class ModelSettingsController extends BaseController {
     return () => clock.elapsed;
   }
 
+  final DateTime Function() _now;
   final Duration Function() _elapsed;
+  ModelTestObservation? _pendingObservation;
+  LocalModelConfig? _testedConfig;
+
+  static bool _sameConnection(LocalModelConfig a, LocalModelConfig b) =>
+      a.baseUrl == b.baseUrl &&
+      a.model == b.model &&
+      a.chatOutputTokens == b.chatOutputTokens;
+
+  bool canSaveTestObservation(LocalModelConfig draft) =>
+      !busy &&
+      !isDisposed &&
+      !settingsLoadFailed &&
+      !presetsLoadFailed &&
+      _pendingObservation != null &&
+      _testedConfig != null &&
+      _sameConnection(draft, _testedConfig!) &&
+      _presets.any(
+        (p) => p.name == selectedPreset && _sameConnection(p.config, draft),
+      );
+
+  Future<void> saveTestObservation(LocalModelConfig draft) async {
+    if (!canSaveTestObservation(draft)) return;
+    final observation = _pendingObservation!;
+    await _writePresets(
+      [
+        for (final p in _presets)
+          if (p.name == selectedPreset)
+            ModelConnectionPreset(
+              name: p.name,
+              config: p.config,
+              profileNotes: p.profileNotes,
+              testObservation: observation,
+            )
+          else
+            p,
+      ],
+      'Historical test observation saved to selected preset. Active settings are unchanged.',
+    );
+  }
+
   static const timingGuidance =
       'Successful tests show temporary client-observed latency from dispatch to '
       'first nonblank text and completed response, including connection and '
@@ -212,6 +258,8 @@ class ModelSettingsController extends BaseController {
   Future<void> test(LocalModelConfig config, {bool jsonFormat = false}) async {
     if (busy || settingsLoadFailed || isDisposed) return;
     busy = true;
+    _pendingObservation = null;
+    _testedConfig = null;
     final request = ++_request;
     final completion = Completer<void>();
     _completion = completion;
@@ -266,8 +314,24 @@ class ModelSettingsController extends BaseController {
                   ? ModelFormatProbe.accepts(response.toString())
                   : hasText;
               final firstTextLatency = firstText;
+              final completed = _elapsed() - started;
+              if (successful && firstTextLatency != null) {
+                final observation = ModelTestObservation(
+                  jsonFormat: jsonFormat,
+                  observedAt: _now().toUtc(),
+                  firstTextMilliseconds: firstTextLatency.inMilliseconds,
+                  completedMilliseconds: completed.inMilliseconds,
+                );
+                // A late completion must never create an out-of-budget record.
+                if (firstTextLatency >= Duration.zero &&
+                    completed >= firstTextLatency &&
+                    completed <= probeTimeout) {
+                  _pendingObservation = observation;
+                  _testedConfig = config;
+                }
+              }
               final timing = successful && firstTextLatency != null
-                  ? ' Client-observed first text: ${firstTextLatency.inMilliseconds} ms; completed response: ${(_elapsed() - started).inMilliseconds} ms. Requested model ID: ${config.model}. This temporary observation is not saved.'
+                  ? ' Client-observed first text: ${firstTextLatency.inMilliseconds} ms; completed response: ${completed.inMilliseconds} ms. Requested model ID: ${config.model}. This observation is not saved automatically.'
                   : '';
               _finish(
                 (jsonFormat

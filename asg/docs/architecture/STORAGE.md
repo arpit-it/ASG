@@ -162,6 +162,23 @@ explicitly removes notes from that preset. Existing Ask/project connection
 snapshots retain their own notes even after the preset changes; notes never become
 reply provenance. Invalid writes/corruption use the existing preservation policy.
 
+Optional `testObservation` retains the latest explicitly saved successful settings
+test for the exact preset connection. Its strict five-field schema contains
+`kind` (`nonblankText` or `jsonSentinel`), canonical UTC `observedAt`, fixed
+`outputTokens: 256`, and integer `firstTextMilliseconds`/`completedMilliseconds`
+(0 ≤ first ≤ completed ≤ 30000). Missing metadata remains legacy/unobserved;
+explicit null, unknown fields/kinds, invalid timestamps or limits fail closed.
+No prompts, outputs or diagnostics are stored. The app requires a matching
+selected preset and unchanged tested URL/model/chat ceiling before attachment;
+saving is explicit and independent of settings Save. Draft edits/restore or a new
+test clear pending observations. Failed writes retain the pending observation for
+save-only retry. Preset replacement clears its saved observation; removal deletes
+it. Connection snapshots may retain the historical metadata, but it is never
+reply provenance or evidence of current loaded weights, context, tool capability
+or supported models. Only settings shows it, labeled historical with requested
+connection, date, test kind and client latency. No automatic retest or routing
+change follows from saved observations. Corrupt/stale records are preserved.
+
 Presets use RecordStorage; production conditional transactions reject stale dialog
 updates. Invalid schemas, duplicate names and corruption are preserved and reported
 without blocking unrelated model settings or application startup after migration.

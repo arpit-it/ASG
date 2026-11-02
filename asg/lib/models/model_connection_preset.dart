@@ -3,6 +3,7 @@
 
 import 'local_model_config.dart';
 import 'model_profile_notes.dart';
+import 'model_test_observation.dart';
 
 /// A reusable connection draft, never evidence of model compatibility/readiness.
 class ModelConnectionPreset {
@@ -10,8 +11,10 @@ class ModelConnectionPreset {
     required this.name,
     required this.config,
     this.profileNotes,
+    this.testObservation,
   });
   final ModelProfileNotes? profileNotes;
+  final ModelTestObservation? testObservation;
   final String name;
   final LocalModelConfig config;
   static const maxPresets = 20;
@@ -28,6 +31,7 @@ class ModelConnectionPreset {
     config.endpoint;
     config.validateChatLimit();
     profileNotes?.validate();
+    testObservation?.validate();
   }
 
   Map<String, Object> toJson() {
@@ -38,12 +42,16 @@ class ModelConnectionPreset {
       'model': config.model,
       'chatOutputTokens': config.chatOutputTokens,
       if (profileNotes != null) 'profileNotes': profileNotes!.toJson(),
+      if (testObservation != null) 'testObservation': testObservation!.toJson(),
     };
   }
 
   factory ModelConnectionPreset.fromJson(Object? value) {
     if (value is! Map<String, dynamic> ||
-        (value.length != (value.containsKey('profileNotes') ? 5 : 4)) ||
+        (value.length !=
+            4 +
+                (value.containsKey('profileNotes') ? 1 : 0) +
+                (value.containsKey('testObservation') ? 1 : 0)) ||
         value['name'] is! String ||
         value['baseUrl'] is! String ||
         value['model'] is! String ||
@@ -52,6 +60,9 @@ class ModelConnectionPreset {
     }
     final preset = ModelConnectionPreset(
       name: value['name'] as String,
+      testObservation: value.containsKey('testObservation')
+          ? ModelTestObservation.fromJson(value['testObservation'])
+          : null,
       profileNotes: value.containsKey('profileNotes')
           ? ModelProfileNotes.fromJson(value['profileNotes'])
           : null,
