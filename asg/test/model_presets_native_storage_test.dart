@@ -73,6 +73,16 @@ void main() {
           expect(saved.config.model, 'exact-request');
           expect(saved.config.chatOutputTokens, 2048);
         }
+        await controller.saveProfileNotes(
+          config,
+          const ModelProfileNotes(revision: 'edited-without-inference'),
+        );
+        expect(store.loadPresets().single.testObservation!.jsonFormat, isTrue);
+        expect(
+          store.loadPresets().single.profileNotes!.revision,
+          'edited-without-inference',
+        );
+        expect(requests.length, 2);
         await controller.removeTestObservation();
         expect(store.loadPresets().single.testObservation, isNull);
         expect(store.loadPresets().single.config.model, 'exact-request');
@@ -144,6 +154,24 @@ void main() {
         expect(savedObservation.jsonFormat, isTrue);
         expect(savedObservation.observedAt, DateTime.utc(2026, 11, 2));
         expect(savedObservation.completedMilliseconds, 34);
+        final editor = ModelSettingsController(ModelSettingsStore(records));
+        final selectedConfig = editor.selectPreset('Local')!;
+        await editor.saveProfileNotes(
+          selectedConfig,
+          const ModelProfileNotes(
+            revision: 'edited-revision',
+            contextTokens: 4096,
+          ),
+        );
+        editor.dispose();
+        await db.close();
+        db = await databaseFactoryIo.openDatabase(path);
+        records = await StudioDatabase.migrate(db, prefs);
+        final afterEdit = ModelSettingsStore(records).loadPresets().single;
+        expect(afterEdit.profileNotes!.revision, 'edited-revision');
+        expect(afterEdit.profileNotes!.contextTokens, 4096);
+        expect(afterEdit.testObservation!.toJson(), savedObservation.toJson());
+        expect(afterEdit.config.model, 'saved');
         final removal = ModelSettingsController(ModelSettingsStore(records));
         removal.selectPreset('Local');
         await removal.removeTestObservation();
@@ -154,7 +182,7 @@ void main() {
         final afterRemoval = ModelSettingsStore(records).loadPresets().single;
         expect(afterRemoval.testObservation, isNull);
         expect(afterRemoval.config.model, 'saved');
-        expect(afterRemoval.profileNotes!.revision, 'exact-revision');
+        expect(afterRemoval.profileNotes!.revision, 'edited-revision');
         // Real conditional storage refuses a stale profile-only replacement.
         final store = ModelSettingsStore(records);
         final before = store.loadPresets();

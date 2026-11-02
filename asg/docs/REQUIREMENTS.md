@@ -210,7 +210,8 @@ The saved development automation was updated through its management tool; active
   - Bounded delivery milestones: (1) backend contract/capability discovery and an MLX regression; (2) explicit CPU setup/inference on a supported non-Apple desktop with compatible weights; (3) explicit CUDA setup/inference on a CUDA host. Each milestone needs its own focused issue, saved settings/restart/error tests and real-host evidence. Non-Apple CPU/CUDA real-host acceptance is now Deferred in #400 until the queued implementation is delivered; this is not a dependency on eligible implementation. Isolate optional backend dependencies so missing MLX cannot prevent CPU/CUDA startup; validate configurable executable/model paths including spaces. Do not claim CPU adequacy for a 9B model without measured successful operation within the configured limits.
   - Delivery: create/reuse a narrowly scoped issue when selected; remain unchecked until all promised backend milestones, independent review, required checks and verified merges. CPU and CUDA evidence must be recorded separately; unavailable hardware is a recorded blocker, never a fixture-based completion claim.
 - [ ] F22 Hardware-aware local model catalog and selection — In progress; depends on delivered F09/F15 foundations; unavailable-platform validation Deferred
-  - Historical test observation removal — Awaiting merge: #396, `396-remove-test-observation`; explicit selected-preset metadata removal preserving connection/profile notes/active settings, conditional storage and lifecycle protection. No inference/support claim; see current ledger.
+  - Independent profile-note maintenance — Awaiting merge: #396, `396-profile-notes-update`; explicit notes-only update/clear with matching-draft and conditional-storage guards, preserving connection/test history/active settings. Full F22/F15 remain unchecked; see current ledger.
+  - Historical test observation removal — Done (bounded increment), [PR #444](https://github.com/arpit-it/ASG/pull/444), final8a427cfe approved5735429518/finalgate6575400008, requiredCI41431807453 passed, verified reviewer mergeb460e302715fa08ab5ed7cd8533cd492aa41511a at2026-11-02T10:56:57Z: #396, `396-remove-test-observation`; explicit selected-preset metadata removal preserving connection/profile notes/active settings, conditional storage and lifecycle protection. No inference/support claim; see current ledger.
   - Saved explicit connection-test observations — Done (bounded increment): #396, `396-saved-test-observations`, [PR #443](https://github.com/arpit-it/ASG/pull/443); finalb675db0c approved5735118928/finalgate5735168584, requiredCI41428262924 passed; verified reviewer merge512482d30353ba0e37b2c3ba50cd524f8e55a237 at2026-11-02T10:29:20Z. Historical matching-preset test metadata only, never verified model support/context/loaded identity. FullF22/F15unchecked.
   - Draft connection observation invalidation — Done (bounded increment): #396, `396-draft-test-invalidation`, [PR #442](https://github.com/arpit-it/ASG/pull/442); finalc2f0bf93 approved5734706845/finalgate5734789352, requiredCI41423835194 passed; verified reviewer mergedf87e1c9a0bef0d46443bd8d04067cea5b13ce5f at2026-11-02T09:57:52Z. Clear stale response/latency/inventory on connection edits or preset restoration; preserve busy guards and cursor/note-only behavior. FullF22/F15unchecked.
   - Temporary client-observed test latency — Done (bounded increment): #396, `396-model-test-latency`, [PR #441](https://github.com/arpit-it/ASG/pull/441); final39ab3534 approved5734353043/finalgate5734432234, requiredCI41419692986 passed; verified reviewer mergefdc5dbd2928b110f1c89afe569694bda0c089751 at2026-11-02T09:28:02Z; monotonic first nonblank text/completed-response times for successful explicit draft tests, no token-speed/profile/support claim. Delivered test/transport prerequisites; Deferred400 unnecessary.
@@ -10643,3 +10644,66 @@ installed-app/settings change. Awaiting merge: exact-tree plugin publication,
 independent final review, requiredCI and protected reviewer merge remain gates.
 FullF22/F15 unchecked; external acceptanceDeferred400.
 Recorded 2026-11-02T10:47:46.890404+00:00
+
+
+### Explicit historical test removal verified merged — PR #444
+Bounded increment Done for F22/#396 on `396-remove-test-observation`.
+Tested localdf4dd79fb8af3e3be37dba343de1497236041d10 and published final
+8a427cfeda2edb4eab5709eef1a7d76f88b17175 share exacttree
+fd1f1daa27cb7c342efa170d9243ae05095e0871; all9publication blobs match.
+Independent approval5735429518/finalgate6575400008 found no blockers;
+39independentFlutter/nineinventory/oneextra preservation/noinference probe
+passed. All847remote blobs/modes and370validation inputs match. RequiredCI
+41431807453 BOTH SUCCESS: Flutter125231944548 full1215Ubuntu/12explicit
+skips,17actualChrome,actualbrowsertransport/web/real independent generated
+project; Python125231944736165total/four explicitCIplatform skips. Parent
+1221Flutter/nine skips,38focused,nineinventory,format345/analyzer/web/macOSdebug
+passed. Explicit removal retains connection/notes/otherpresets/active settings;
+successful conditionalwrite clears pending attachment, failures/staleness/
+corruption/disposal remain guarded. ActualHTTP verifies no newrequest; native
+reopen and320px2x interaction pass. Already retained snapshots elsewhere stay.
+No model launch/inference/download/settings/installedapp change.
+Independent reviewer protected-plugin squashmerged PR444 as
+b460e302715fa08ab5ed7cd8533cd492aa41511a at2026-11-02T10:56:57Z.
+Parent freshplugin verified mergedPR/currentmain exactsourceblob/#396OPEN;
+signed exacttree/soleparent512482d/objecthash verified before guarded local
+sync. Localmain/originmain0/0,emptyindex,both originalIDEedits byte-identical.
+FullF22/F15 remain unchecked; externalplatform acceptanceDeferred400. No active
+implementation aftermerge; remaining verified profiles/context/capability work
+Pending396. Final canonical bookkeeping retained for next normal reviewed PR.
+Bothautomationlabels applied; no newissue/cadence/notification change.
+Receipts:/private/tmp/asg-remove-publication.json,/private/tmp/asg-remove-inputs.json,
+/private/tmp/asg444-reviewed-merge.json,/private/tmp/asg444-review-summary.json,
+/private/tmp/asg444-safe-sync.py.
+Currentrun 2026-11-02T10:58:28.188316+00:00
+
+
+### Independent profile-note maintenance — F22 / #396
+In progress on `396-profile-notes-update` from verified PR #444 merge
+b460e302715fa08ab5ed7cd8533cd492aa41511a. Fresh plugin PR search and chat
+inventory found no open PR or competing active ASG run. Scope6575481042 reuses
+#396; no new issue. Current Replace selected reconstructs the preset and clears
+historical tests even for note-only edits. Add explicit notes-only update/clear,
+requiring exact matching connection draft and idle/valid lifecycle state.
+Preserve connection/name/order/other presets/active settings, saved historical
+test and pending attachment. Conditional storage preserves stale/corrupt/failing
+records; invalid notes fail safely. Reopen/disposal/narrow enlarged UI and actual
+HTTP no-reinference validation required. Existing F09/F22 notes/presets/storage
+satisfy technical prerequisites; Deferred400 unnecessary. FullF22/F15 unchecked.
+Independent exact-final review, required CI and protected reviewer merge remain
+gates. Prior444 finalmerge bookkeeping retained. No model download/launch or
+installed-app/cadence/notification change.
+Recorded 2026-11-02T11:02:48.108746+00:00
+
+Final local validation: 1228 Flutter tests passed/nine explicit skips in isolated
+tracked sources. Seven new controller/UI checks plus actual HTTP no-extra-request
+and real database reopen extensions passed in the full suite. Formatter346
+unchanged, analyzer clean, web and macOSdebug builds passed; nine inventory
+regressions passed. All371 validation inputs match; both original IDE edits
+byte-identical. Test teardown double-disposal, enlarged expansion target and a
+test-only analyzer warning corrected before final successful checks. Existing
+8765health unavailable; no runtime/model launch/inference/download/installed-app
+change. Awaiting merge: plugin exact-tree publication, independent final review,
+required CI and protected reviewer merge remain gates. FullF22/F15 unchecked;
+external-platform acceptance Deferred400.
+Recorded 2026-11-02T11:05:30.660051+00:00

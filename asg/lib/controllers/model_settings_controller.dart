@@ -88,6 +88,37 @@ class ModelSettingsController extends BaseController {
       a.model == b.model &&
       a.chatOutputTokens == b.chatOutputTokens;
 
+  bool canSaveProfileNotes(LocalModelConfig draft) =>
+      !busy &&
+      !isDisposed &&
+      !settingsLoadFailed &&
+      !presetsLoadFailed &&
+      _presets.any(
+        (p) => p.name == selectedPreset && _sameConnection(p.config, draft),
+      );
+
+  Future<void> saveProfileNotes(
+    LocalModelConfig draft,
+    ModelProfileNotes? notes,
+  ) async {
+    if (!canSaveProfileNotes(draft)) return;
+    await _writePresets(
+      [
+        for (final p in _presets)
+          if (p.name == selectedPreset)
+            ModelConnectionPreset(
+              name: p.name,
+              config: p.config,
+              profileNotes: notes?.isEmpty == true ? null : notes,
+              testObservation: p.testObservation,
+            )
+          else
+            p,
+      ],
+      'Profile notes saved to selected preset. Connection, historical test and active settings are unchanged.',
+    );
+  }
+
   bool canSaveTestObservation(LocalModelConfig draft) =>
       !busy &&
       !isDisposed &&
