@@ -2,10 +2,16 @@
 // Copyright 2026 Arpit Sinha
 
 import 'local_model_config.dart';
+import 'model_profile_notes.dart';
 
 /// A reusable connection draft, never evidence of model compatibility/readiness.
 class ModelConnectionPreset {
-  const ModelConnectionPreset({required this.name, required this.config});
+  const ModelConnectionPreset({
+    required this.name,
+    required this.config,
+    this.profileNotes,
+  });
+  final ModelProfileNotes? profileNotes;
   final String name;
   final LocalModelConfig config;
   static const maxPresets = 20;
@@ -21,6 +27,7 @@ class ModelConnectionPreset {
     }
     config.endpoint;
     config.validateChatLimit();
+    profileNotes?.validate();
   }
 
   Map<String, Object> toJson() {
@@ -30,12 +37,13 @@ class ModelConnectionPreset {
       'baseUrl': config.baseUrl,
       'model': config.model,
       'chatOutputTokens': config.chatOutputTokens,
+      if (profileNotes != null) 'profileNotes': profileNotes!.toJson(),
     };
   }
 
   factory ModelConnectionPreset.fromJson(Object? value) {
     if (value is! Map<String, dynamic> ||
-        value.length != 4 ||
+        (value.length != (value.containsKey('profileNotes') ? 5 : 4)) ||
         value['name'] is! String ||
         value['baseUrl'] is! String ||
         value['model'] is! String ||
@@ -44,6 +52,9 @@ class ModelConnectionPreset {
     }
     final preset = ModelConnectionPreset(
       name: value['name'] as String,
+      profileNotes: value.containsKey('profileNotes')
+          ? ModelProfileNotes.fromJson(value['profileNotes'])
+          : null,
       config: LocalModelConfig(
         baseUrl: value['baseUrl'] as String,
         model: value['model'] as String,

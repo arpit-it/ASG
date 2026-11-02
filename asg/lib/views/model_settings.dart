@@ -7,6 +7,8 @@ import '../services/model_settings_store.dart';
 import '../controllers/model_settings_controller.dart';
 
 import '../models/local_model_config.dart';
+import '../models/model_profile_notes.dart';
+import 'model_profile_notes_fields.dart';
 
 class ModelSettings extends StatefulWidget {
   const ModelSettings({super.key, required this.store, this.inspectInventory});
@@ -25,6 +27,34 @@ class _ModelSettingsState extends State<ModelSettings> {
   late final url = TextEditingController(text: initial.baseUrl);
   late final model = TextEditingController(text: initial.model);
   final presetName = TextEditingController();
+  final profileFields = List.generate(6, (_) => TextEditingController());
+  ModelProfileNotes? get profileNotes {
+    final context = profileFields[5].text.trim();
+    final notes = ModelProfileNotes(
+      revision: profileFields[0].text.trim(),
+      license: profileFields[1].text.trim(),
+      architecture: profileFields[2].text.trim(),
+      quantization: profileFields[3].text.trim(),
+      backend: profileFields[4].text.trim(),
+      contextTokens: context.isEmpty ? null : int.tryParse(context) ?? -1,
+    );
+    return notes.isEmpty ? null : notes;
+  }
+
+  void restoreNotes(ModelProfileNotes? notes) {
+    final values = [
+      notes?.revision ?? '',
+      notes?.license ?? '',
+      notes?.architecture ?? '',
+      notes?.quantization ?? '',
+      notes?.backend ?? '',
+      notes?.contextTokens?.toString() ?? '',
+    ];
+    for (var i = 0; i < profileFields.length; i++) {
+      profileFields[i].text = values[i];
+    }
+  }
+
   late int chatOutputTokens = initial.chatOutputTokens;
   LocalModelConfig get config => LocalModelConfig(
     baseUrl: url.text.trim(),
@@ -50,6 +80,9 @@ class _ModelSettingsState extends State<ModelSettings> {
     url.dispose();
     model.dispose();
     presetName.dispose();
+    for (final field in profileFields) {
+      field.dispose();
+    }
     super.dispose();
   }
 
@@ -135,6 +168,11 @@ class _ModelSettingsState extends State<ModelSettings> {
                       model.text = restored.model;
                       chatOutputTokens = restored.chatOutputTokens;
                       presetName.text = name;
+                      restoreNotes(
+                        controller.presets
+                            .firstWhere((p) => p.name == name)
+                            .profileNotes,
+                      );
                     });
                   },
           ),
@@ -147,6 +185,13 @@ class _ModelSettingsState extends State<ModelSettings> {
             maxLength: 64,
             decoration: const InputDecoration(labelText: 'New preset name'),
           ),
+          ModelProfileNotesFields(
+            fields: profileFields,
+            enabled:
+                !controller.busy &&
+                !controller.presetsLoadFailed &&
+                !controller.settingsLoadFailed,
+          ),
           Wrap(
             spacing: 8,
             children: [
@@ -156,7 +201,11 @@ class _ModelSettingsState extends State<ModelSettings> {
                         controller.presetsLoadFailed ||
                         controller.settingsLoadFailed
                     ? null
-                    : () => controller.savePreset(presetName.text, config),
+                    : () => controller.savePreset(
+                        presetName.text,
+                        config,
+                        profileNotes: profileNotes,
+                      ),
                 child: const Text('Save new preset'),
               ),
               OutlinedButton(
@@ -170,6 +219,7 @@ class _ModelSettingsState extends State<ModelSettings> {
                         controller.selectedPreset!,
                         config,
                         replace: true,
+                        profileNotes: profileNotes,
                       ),
                 child: const Text('Replace selected'),
               ),
