@@ -3,6 +3,7 @@
 
 import '../models/app_definition.dart';
 import '../models/generation_capabilities.dart';
+import '../models/generation_toolchain.dart';
 import '../models/project.dart';
 import '../models/source_generation.dart';
 
@@ -41,4 +42,9 @@ abstract interface class GenerationHost {
 /// Optional reporting contract; unknown integrations do not inherit capabilities.
 abstract interface class GenerationCapabilitySource {
   GenerationCapabilities get capabilities;
+}
+
+/// Optional read-only inspection; does not enable any generation operation.
+abstract interface class GenerationToolchainSource {
+  Future<GenerationToolchain> inspectToolchain(String sdk, String python);
 }

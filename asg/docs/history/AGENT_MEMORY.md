@@ -8206,3 +8206,69 @@ plugin-only exact-tree publication, independent final-revision review, required
 CI and reviewer merge remain completion gates. Recorded 2026-11-02T00:16:53.357207+00:00.
 
 Final validation so far: formatter321 unchanged, analyzer clean,1143 clean-source Flutter tests/nine explicit skips,three actual Chrome production-host/IndexedDB refusal checks and web/Wasm build passed;340 runtime/test/tool/asset inputs match. Historical acceptance inventory regenerated for current runtime sources;all nine inventory checks pass. macOS debug build running. No source changes after these tests. Awaiting merge gates remain. Recorded 2026-11-02T00:17:53.446787+00:00.
+
+
+### Generation-host operation reporting verified merged — #401 / PR #419
+
+Bounded reporting increment Done on `401-generation-capabilities`. Exact final
+`bc7448dde78ebec964280b6b26c361d00b3b7049`, testedlocal
+`0bab360f0343e48868049232024c89f95c7e4520`, identical tree
+`f1f0015a38b67f2e623e23b38fe5ef87f1c5ad81`. All14published blobs matched;
+independent reviewer verified all818remote blobs/modes and340validationinputs.
+Independent101Flutter/native/controller/architecture checks passed with one
+explicit live-generation skip; nine acceptance-inventory checks passed. Final
+approval5730965134/finalgate5730978754 found no blockers.
+
+Parent1143clean-sourceFlutter tests/nine explicit skips,three actualChrome
+production-host/IndexedDB refusal checks,format321/analyzer clean,web/Wasm and
+macOSdebug builds andnineinventorychecks passed. Original in-place license scan
+failed on existing ignored MLX third-party environment; byte-matched clean source
+passed. No stable app/runtime settings changed; health8765 unreachable and no
+fresh inference attempted. The report labels implemented operation paths versus
+unavailable/uninspected hosts, not probes/readiness/permission or device support.
+
+RequiredCI41366478556 completed/success: Flutter125027599765 allsteps including
+actualChrome/web/generated-project resolve/analyze/test/render/build/serve;
+Python125027599988141tests/four explicit CI skips. Independent reviewer protected
+plugin squash merged https://github.com/arpit-it/ASG/pull/419 as
+`32df5903aa2171d206e69a719efb5f39d5e863ed` at2026-11-02T00:23:59Z. Parent
+freshly verified mergedPR/currentmain/serviceblob/issue401OPEN, signedexacttree
+and soleparent5e8ce35e; guarded local sync passed main/origin-main0/0,indexempty,
+both unrelated IDE edits byte-identical. Signed evidence and safe-sync script:
+/private/tmp/asg419-reviewed-merge.json,/private/tmp/asg419-safe-sync.py.
+Both automation labels applied.
+
+Remaining F16 toolchain discovery/per-host milestones Pending; fullF16/F22/F15
+remain unchecked. F22 verified profile/context/model evidence Pending, unavailable
+platform acceptance Deferred400. No active implementation after this merge.
+Keep final bookkeeping for the next normal reviewed development PR. No cadence/
+notification/modeldownload/install/stableapp/deployment change.
+Current run time 2026-11-02T00:24:46.413589+00:00.
+
+
+### F16 configured toolchain path inspection — issue #401
+
+In progress on `401-toolchain-inspection` from freshly plugin-verified PR #419
+merge32df5903aa2171d206e69a719efb5f39d5e863ed. No competing active run or
+open PR at selection; reuse401, no new issue. Actual host/controller/view
+foundations allow this Mac-verifiable increment; platform acceptance Deferred400
+is not a gate. Full F16/F22/F15 remain unchecked.
+
+Explicit Build action reports canonical SDK and Flutter/Dart/Python ordinary-file
+and executable-bit metadata. Python command lookup uses at most64PATH entries,
+ignoring relative/empty entries. No configured process is run or installed; no
+version/dependency/readiness/permission/safe-content claim or host enablement.
+Three-second metadata observation deadline; timed-out filesystem operations can
+finish but cannot publish late. Controller busy exclusion, private retry,
+draft invalidation/disposal suppression and no storage writes.
+
+71focused tests passed, including nine new actual-filesystem/controller/320px2x
+UI checks. Test temporary-path canonicalization, inherited field naming and lazy
+scroll targeting corrected before passing rerun. Full clean-source suite/analyzer
+and web/macOS builds in progress.346validation inputs copied byte-for-byte.
+Exact-tree plugin publication, independent final review, required CI and reviewer
+merge remain gates. No modeldownload/inference/stableapp/settings change.
+Recorded 2026-11-02T00:31:44.791309+00:00.
+
+
+Final configured-toolchain validation:1152clean-sourceFlutter tests/nine explicit skips,71focused,analyzer clean,formatter324unchanged,web/Wasm andmacOSdebug builds passed.346runtime/test/tool/asset inputs match clean testedcopy. Nine historicalinventory checks passed with refreshed source comparison; historical observations unchanged. No configured tool execution/inference/install/stableapp change. Awaiting merge: exact-tree plugin publication, independent final-revision review, requiredCI and reviewer merge remain gates. Logs/private/tmp/asg-toolchain-{focused,full,analyze-final,web,macos,inventory}.log. Recorded 2026-11-02T00:32:31.445901+00:00.

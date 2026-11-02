@@ -6,6 +6,7 @@ import 'dart:convert';
 
 import '../models/app_definition.dart';
 import '../models/generation_capabilities.dart';
+import '../models/generation_toolchain.dart';
 import '../models/build_history_entry.dart';
 import '../models/artifact_inspection.dart';
 import '../models/build_plan.dart';
@@ -54,6 +55,40 @@ class SourceGenerationController extends BaseController {
       ? (_host as GenerationCapabilitySource).capabilities
       : const GenerationCapabilities.unknown();
   GenerationInput? _input;
+  GenerationToolchain? _toolchain;
+  GenerationToolchain? get toolchain => _toolchain;
+  int _toolchainRevision = 0;
+
+  void invalidateToolchain() {
+    _toolchainRevision++;
+    _toolchain = null;
+    update();
+  }
+
+  Future<void> inspectToolchain(String sdk, String python) async {
+    if (_busy || isDisposed || !available) return;
+    final revision = ++_toolchainRevision;
+    _toolchain = null;
+    _busy = true;
+    update();
+    try {
+      final source = host;
+      final report = source is GenerationToolchainSource
+          ? await (source as GenerationToolchainSource)
+                .inspectToolchain(sdk, python)
+                .timeout(const Duration(seconds: 4))
+          : const GenerationToolchain.unavailable();
+      if (!isDisposed && revision == _toolchainRevision) _toolchain = report;
+    } catch (_) {
+      if (!isDisposed && revision == _toolchainRevision) {
+        _toolchain = const GenerationToolchain.failed();
+      }
+    } finally {
+      _busy = false;
+      update();
+    }
+  }
+
   GeneratedSnapshotStatus get snapshotStatus =>
       _input?.compare(_result) ?? GeneratedSnapshotStatus.unknown;
   GeneratedProject? _result;

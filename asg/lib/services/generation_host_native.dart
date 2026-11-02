@@ -20,6 +20,8 @@ import '../models/named_flutter_test_result.dart';
 import '../models/source_generation.dart';
 import 'flutter_source_template.dart';
 import 'generation_host.dart';
+import 'generation_toolchain_native.dart';
+import '../models/generation_toolchain.dart';
 import 'named_test_session.dart';
 
 GenerationHost createGenerationHost() => NativeGenerationHost();
@@ -29,7 +31,8 @@ class NativeGenerationHost
         GenerationHost,
         ArtifactInspector,
         NamedTestSession,
-        GenerationCapabilitySource {
+        GenerationCapabilitySource,
+        GenerationToolchainSource {
   NativeGenerationHost({
     this.loadAsset = _loadAsset,
     Future<GenerationStep> Function(GeneratedProject, String)? runOperation,
@@ -63,6 +66,16 @@ class NativeGenerationHost
   Uri? _preview;
   @override
   bool get supported => Platform.isMacOS;
+  @override
+  Future<GenerationToolchain> inspectToolchain(
+    String sdk,
+    String python,
+  ) async {
+    checkOpen();
+    if (!supported) return const GenerationToolchain.unavailable();
+    return inspectGenerationToolchain(sdk, python);
+  }
+
   @override
   GenerationCapabilities get capabilities => Platform.isMacOS
       ? const GenerationCapabilities.macOS()
