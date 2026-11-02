@@ -61,9 +61,88 @@ void main() {
         expect(result, contains('Requests and settings are unchanged'));
         expect(result, isNot(contains('sentinel')));
         expect(config.chatOutputTokens, 512);
+        expect(result, contains('Draft chat output budget: 512 tokens'));
+        expect(result, contains('does not exceed the server-declared output'));
+        expect(result, contains('Prompt tokens have not been counted'));
       }
     },
   );
+  test('draft budget comparisons never certify prompt fit', () {
+    for (final ceiling in [511, 512, 513]) {
+      for (final context in [null, 511, 512, 513]) {
+        final declared = AdvertisedRequestLimits.fromJson({
+          ...limits(context),
+          'max_output_tokens': ceiling,
+        });
+        final result = declared.describeDraftOutput(512);
+        expect(
+          result,
+          contains(
+            ceiling < 512
+                ? 'tokens; exceeds the server-declared output'
+                : 'tokens; does not exceed the server-declared output',
+          ),
+        );
+        expect(
+          result,
+          contains(
+            context == null
+                ? 'Total context is unknown'
+                : context < 512
+                ? 'alone exceeds'
+                : context == 512
+                ? 'leaving no room for a prompt'
+                : 'alone is below',
+          ),
+        );
+        expect(
+          result,
+          contains(
+            'prompt-plus-output fit and usable model capacity remain unverified',
+          ),
+        );
+        expect(
+          result,
+          contains('does not change budgets or authorize a request'),
+        );
+      }
+    }
+  });
+  test('invalid draft budget refuses before inventory HTTP', () async {
+    final client = MockClient((_) async => fail('must not send'));
+    addTearDown(client.close);
+    for (final tokens in [-1, 0, 513, 4096]) {
+      final result = await ModelInventory.check(
+        LocalModelConfig(chatOutputTokens: tokens),
+        client: client,
+      );
+      expect(result, contains('invalid or exceed limits'));
+    }
+  });
+  test('missing selected limits cannot compare draft budget', () async {
+    final client = MockClient(
+      (_) async => http.Response(
+        jsonEncode({
+          'data': [
+            {
+              'id': 'other',
+              'asg_request_limits': {...limits(), 'max_output_tokens': 1},
+            },
+            {'id': 'chosen'},
+          ],
+        }),
+        200,
+      ),
+    );
+    addTearDown(client.close);
+    final result = await ModelInventory.check(
+      const LocalModelConfig(model: 'chosen'),
+      client: client,
+    );
+    expect(result, contains('unverified'));
+    expect(result, isNot(contains('Draft chat output budget')));
+    expect(result, isNot(contains('ceiling of 1')));
+  });
   test(
     'malformed selected limits fail privately and valid retry recovers',
     () async {
@@ -132,7 +211,14 @@ void main() {
         request.response.write(
           jsonEncode({
             'data': [
-              {'id': 'chosen', 'asg_request_limits': limits()},
+              {'id': 'other', 'asg_request_limits': limits()},
+              {
+                'id': 'chosen',
+                'asg_request_limits': {
+                  ...limits(1024),
+                  'max_output_tokens': 512,
+                },
+              },
             ],
           }),
         );
@@ -147,7 +233,13 @@ void main() {
       await serving;
       expect(result, contains('advertises the exact'));
       expect(result, contains('context limits'));
-      expect(result, contains('total context: 8192'));
+      expect(result, contains('total context: 1024'));
+      expect(result, contains('Draft chat output budget: 1536 tokens'));
+      expect(
+        result,
+        contains('exceeds the server-declared output ceiling of 512'),
+      );
+      expect(result, contains('alone exceeds the checkpoint-declared'));
       expect(result, contains('unverified'));
     }, _RealHttp()),
   );
@@ -274,7 +366,7 @@ void main() {
     await c.inspectInventory(const LocalModelConfig());
     expect(calls, 1);
   });
-  testWidgets('narrow enlarged draft inspection clears after ID edit', (
+  testWidgets('narrow enlarged comparison clears after budget and ID edits', (
     tester,
   ) async {
     tester.view.physicalSize = const Size(320, 900);
@@ -289,8 +381,8 @@ void main() {
           child: Scaffold(
             body: ModelSettings(
               store: ModelSettingsStore(records),
-              inspectInventory: (_) async =>
-                  'Observed draft only ${AdvertisedRequestLimits.fromJson(limits()).description}',
+              inspectInventory: (config) async =>
+                  'Observed draft only ${AdvertisedRequestLimits.fromJson({...limits(1024), 'max_output_tokens': 512}).describeDraftOutput(config.chatOutputTokens)}',
             ),
           ),
         ),
@@ -302,6 +394,31 @@ void main() {
     await tester.tap(inspect);
     await tester.pumpAndSettle();
     expect(find.textContaining('Observed draft only'), findsOneWidget);
+    expect(
+      find.textContaining('exceeds the server-declared output ceiling of 512'),
+      findsOneWidget,
+    );
+    expect(tester.takeException(), isNull);
+    final budget = find.byType(DropdownButtonFormField<int>);
+    await tester.ensureVisible(budget);
+    await tester.pumpAndSettle();
+    await tester.tap(budget);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('512').last);
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Observed draft only'), findsNothing);
+    await tester.ensureVisible(inspect);
+    await tester.pumpAndSettle();
+    await tester.tap(inspect);
+    await tester.pumpAndSettle();
+    expect(
+      find.textContaining('Draft chat output budget: 512 tokens'),
+      findsOneWidget,
+    );
+    expect(
+      find.textContaining('does not exceed the server-declared output'),
+      findsOneWidget,
+    );
     final field = find.widgetWithText(TextField, 'Exact server model ID');
     await tester.ensureVisible(field);
     await tester.pumpAndSettle();

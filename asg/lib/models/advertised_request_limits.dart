@@ -35,6 +35,28 @@ class AdvertisedRequestLimits {
     );
   }
 
+  /// Compare only the reserved output. The actual prompt has not been counted.
+  /// Server assertions can reveal a conflict but cannot establish compatibility.
+  String describeDraftOutput(int tokens) {
+    if (tokens < 1) {
+      throw const FormatException('Invalid draft output budget.');
+    }
+    final outputComparison = tokens > output
+        ? 'exceeds the server-declared output ceiling of $output tokens'
+        : 'does not exceed the server-declared output ceiling of $output tokens';
+    final contextComparison = context == null
+        ? 'Total context is unknown.'
+        : tokens > context!
+        ? 'The output reservation alone exceeds the checkpoint-declared total context of $context tokens.'
+        : tokens == context
+        ? 'The output reservation uses the entire checkpoint-declared total context of $context tokens, leaving no room for a prompt.'
+        : 'The output reservation alone is below the checkpoint-declared total context of $context tokens.';
+    return 'Draft chat output budget: $tokens tokens; $outputComparison. '
+        '$contextComparison '
+        'Prompt tokens have not been counted; prompt-plus-output fit and usable model capacity remain unverified. '
+        'This comparison does not change budgets or authorize a request.';
+  }
+
   String get description =>
       'Server-declared request ceilings: $input input tokens, $output output tokens. '
       '${context == null ? 'Checkpoint total context is unknown.' : 'Checkpoint-declared total context: $context tokens; prompt plus full requested output must fit.'} '

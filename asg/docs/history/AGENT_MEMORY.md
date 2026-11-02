@@ -9103,3 +9103,58 @@ before the actual regression reproduction. No model inference or installed-app c
 Exact final full-suite count and publication/review/merge evidence follow.
 
 Final tracked-source full suite:1190 passed/nine explicit skips; all360 runtime/test/tool inputs match isolated validation. Nine regenerated acceptance-inventory regressions passed. Awaiting merge: plugin exact-tree publication, independent final-revision review, required CI and protected reviewer merge remain gates. FullF22/F15unchecked; #396open.
+
+
+### Bounded model responses verified merged — PR #434
+Bounded increment Done on `396-bounded-model-responses` / #396. Testedlocal
+ d87dff6fe683f53e7e6ddc74287982ca038ccddf and publishedfinal
+ cdd0d4295d85205a225e0d8c709bb9f7fd4af60a share exacttree
+8ad672694b044ed2f9ae9979e630b89c91780f51; all6publicationblobs verified.
+Independent approval5732792793/finalgate5732815875: no findings;36focused
+Flutter+3adversarial gzip/noncancelling-listener/perrequest-counter probes and
+9inventory passed;839remote blobs/modes and360validationinputs match.
+RequiredCI41399534714 BOTH SUCCESS: Flutter1251281252831184tests/12skips,
+17Chrome,web/actualindependentgeneratedproject; Python125128125065163tests/
+fourplatformskips. Parent1190Flutter/nineskips,36focused,format338/analyzer,
+web/macOSdebug and9inventory passed. Baseline valid oversized JSON accepted
+Ready; final refuses. Original async-generator wrapper idle-cancellation stall
+fixed before final validation. Initial direct-checkout license scan saw ignored
+upstream model-environment headers; complete tracked-repo validation passed.
+1MiB aggregate predecode response ceiling is transport safety, not model capacity.
+No inference/download/settings/stable-app change; default8765health unavailable,
+no runtime launched. FullF22/F15 unchecked;396OPEN,externalacceptanceDeferred400.
+Independent reviewer protected-plugin squashmerged37b68218010d92dc87105078803ef14402c6802f
+at2026-11-02T06:28:25Z. Parent freshlypluginverified mergedPR/currentmain/396OPEN,
+signedexacttree/soleparent57c42fef; guarded localmain/originmain sync0/0,emptyindex,
+both unrelatedIDEedits byte-identical. No activeimplementation after merge;
+remaining profiles/context/larger-model evidence Pending396. Finalcanonical
+bookkeeping retained for next normal revieweddevelopmentPR. Bothautomationlabels
+applied; no newissue/cadence/notificationchange. Receipts:
+/private/tmp/asg396-response-publication.json,/private/tmp/asg396-response-inputs.json,
+/private/tmp/asg434-reviewed-merge.json,/private/tmp/asg434-review-summary.json,
+/private/tmp/asg434-safe-sync.py. Currentrun 2026-11-02T06:29:30.645265+00:00
+
+
+### Draft output-budget compatibility — F22 / #396
+In progress on `396-draft-budget-compatibility`, base verified PR #434 merge
+37b68218010d92dc87105078803ef14402c6802f. No competing active run/open PR.
+Gap: exact draft model inventory shows declared ceilings without comparing the
+selected chat output budget. Add explicit above/equal/below output-ceiling
+comparison and unknown/exceeded/fully-reserved/below total-context guidance.
+Prompt tokens are not counted; no fit, verified capacity, request permission,
+automatic clamp, settings mutation, loading or support claim follows.
+Acceptance: exact selected ID only; invalid draft budgets refuse before HTTP;
+boundaries, missing metadata, actual loopback GET-only conflict, unchanged
+records/budgets and narrow2x UI stale clearing on budget/ID edits. Delivered
+F09/F22 inventory is sufficient; unavailable hardware Deferred400 unnecessary.
+FullF22/F15 remain unchecked and396open. Includes prior verified434 merge
+bookkeeping. Full checks/builds, independent final review, required CI and
+protected reviewer merge remain gates.
+
+Final local validation: 1193 tracked-source Flutter tests passed/nine explicit
+skips; 27 focused inventory/preset/profile tests passed. Formatter338/analyzer,
+web and macOS debug builds, nine regenerated inventory regressions passed.
+All360 runtime/test/tool inputs match the isolated suite. Default8765health
+unavailable; no runtime launched, inference/download/settings/stable-app change.
+Awaiting merge: exact-tree plugin publication, independent final review, actual
+required CI and protected reviewer merge remain gates; fullF22/F15unchecked.
