@@ -199,6 +199,8 @@ void main() {
         100,
         scrollable: find.byType(Scrollable).first,
       );
+      await tester.ensureVisible(find.text('Stop check'));
+      await tester.pump();
       await tester.tap(find.text('Stop check'));
       checker.completion.complete(result);
       await tester.pumpAndSettle();

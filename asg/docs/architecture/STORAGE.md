@@ -283,3 +283,15 @@ Legacy/missing snapshots stay unavailable, never inferred; explicit null and
 malformed snapshots fail closed with records preserved. These are historical
 user declarations, never proof of loaded weights, license, backend, capacity or
 support. Comparisons separate them from current notes. Size bounds remain.
+
+
+### Fixed HTML starter library (F11 / issue #402)
+
+`studio.htmlStarters.v1` is a bounded list of at most100 version-1 records with
+fixed adapter/runner versions, absolute destination, original title and description.
+It is separate from software project records and portable project archives.
+Conditional durable commits reject stale snapshots; matching records deduplicate
+and different inputs at one destination refuse replacement. Strict readers retain
+corrupt/unknown data and report it locally without blocking unrelated project
+bootstrap. New writes require ConditionalRecordStorage; no preferences fallback.
+Remembered metadata grants no filesystem trust or execution authority.

@@ -26,8 +26,9 @@ class OutputStack {
       'HTML',
       'HTML / CSS / JavaScript',
       OutputStackStatus.planned,
-      'Planned: editable web files and browser preview. No HTML adapter or '
-          'verified toolchain/version is available yet. Creation is unavailable; '
+      'Fixed HTML starter export, saved-starter library and exact-starter preview '
+          'are available separately on macOS. Full HTML project creation and '
+          'approved-task integration remain planned. Creation is unavailable; '
           'this choice will not create a Flutter project.',
     ),
     OutputStack(

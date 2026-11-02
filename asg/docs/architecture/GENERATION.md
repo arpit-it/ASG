@@ -151,3 +151,17 @@ arbitrary edited-source execution, approved task integration or full F11.
 HTML remains Planned in project creation. Exported source is retained on Stop
 and failures. Actual browser interaction acceptance is separate from serving
 assets or accepting an OS browser launch request.
+
+
+#### Remembered fixed HTML exports
+The export screen offers explicit **Save starter in library** after export.
+`studio.htmlStarters.v1` stores at most100 versioned starter records in transactional
+local storage, separate from `studio.projects.v1`. Dashboard reopening restores
+original inputs and destination only; checks and preview require fresh user actions
+and exact original file identity. No automatic preview, source approval, project
+registration, or arbitrary edited-source execution is implied. Failed saves retain
+exported files and permit saving again without exporting again. Conflicting writes,
+unknown versions and damaged data fail without replacement; unrelated project
+bootstrap remains usable. Save already dispatched may complete after leaving the
+screen; no success is published into a disposed controller. Library deletion and
+relocation are not delivered by this increment.
