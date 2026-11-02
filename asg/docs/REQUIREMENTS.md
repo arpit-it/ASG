@@ -271,7 +271,8 @@ The saved development automation was updated through its management tool; active
   - Acceptance: UI shows available and unavailable operations with actionable reasons; unsupported confinement refuses candidate execution before any source is run. Each enabled host passes real new-project resolve/analyze/test/web-build/serve, Stop/deadline/output-limit and descendant-cleanup checks, restart/uncertain-checkpoint refusal, stale-approval refusal and last-working-output preservation. Enabling starter generation must not implicitly enable candidate execution. Model-written candidate/repair support needs independently reviewed platform isolation and real deny-write/network/process-escape probes at the established boundary.
   - Validation/delivery: one narrowly scoped issue/PR per host/capability milestone, actual Linux/Windows builds and launches on their respective hosts, plus macOS regression coverage. Include paths with spaces, missing toolchains, occupied ports, failed previews and interrupted writes. Record tested versus unavailable capabilities separately; keep F16 unchecked until promised host increments satisfy acceptance and normal independent review/CI/verified merge. Broader generated targets remain F11.
 - [ ] F11 Multi-language project generation, runners and explicit stack selection — In progress (#402); depends on F04 and F05
-  - HTML creation-to-starter handoff — Awaiting merge in [PR #464](https://github.com/arpit-it/ASG/pull/464), #402, `402-html-creation-handoff`, scope6587091875. Explicit starter navigation from both creation entry points retains the original plain-text idea and wizard choices without registration or Build approval; full HTML project integration remains Pending. See delivery ledger.
+  - Creation-time HTML runner discovery — Awaiting merge in [PR #465](https://github.com/arpit-it/ASG/pull/465), #402, `402-creation-runner-discovery`, scope6587720764. Registry-derived version/adapter/operation boundaries before handoff, shared with export; full HTML registration remains Planned. See delivery ledger.
+  - HTML creation-to-starter handoff — Done via [PR #464](https://github.com/arpit-it/ASG/pull/464), verified reviewer merge32735587 at2026-11-02T20:13:55Z; approval5742630791/finalgate5742708623 and requiredCI41516033301 passed; #402, `402-html-creation-handoff`, scope6587091875. Explicit starter navigation from both creation entry points retains the original plain-text idea and wizard choices without registration or Build approval; full HTML project integration remains Pending. See delivery ledger.
   - HTML export deadline — Done via [PR #463](https://github.com/arpit-it/ASG/pull/463), verified reviewer merge09d68c87 at2026-11-02T19:42:54Z; independent approval5742254710/finalgate5742343110 and requiredCI41511268868 passed. #402, `402-html-export-deadline`, scope6586482988. Ten-second authority revocation retains pending IO ownership and partial/process evidence; late completion cannot publish success. Full F11 remains open; see delivery ledger.
   - Saved fixed HTML starter library — Done via [PR #462](https://github.com/arpit-it/ASG/pull/462), verified merge5a01fe9c at2026-11-02T19:17:47Z; independent approval5741906435/finalgate5742006032 and requiredCI41507154019 passed; #402, `402-html-starter-library`, scope6585714649. Explicit transactional save and dashboard reopen only; original inputs/destination retained, checks/preview require fresh actions. Full project registration/approved-task integration remains Pending; see delivery ledger.
   - Registered fixed HTML runner — Done via [PR #461](https://github.com/arpit-it/ASG/pull/461), #402, `402-html-starter-runner`, scope6585030463; verified mergeef288141 at2026-11-02T18:43:47Z, finaleb4ad023 independently approved5741500365/finalgate5741571287, requiredCI41502225049 passed. Versioned host-aware exact-starter check/preview dispatch and typed unsupported operations only; full creation/registration/edited-source execution remain Pending.
@@ -11842,3 +11843,71 @@ share that prefix. No completion claim before verified merge.
 PR464 initial remote991a62fb/testedlocal37c7c8e share tree da0d1e20;
 allten published blobs and396 tested source inputs match. This followup only adds
 PR/status linkage; no tested runtime inputs changed. Final review/CI/merge pending.
+
+
+### HTML creation-to-starter handoff verified merged — PR #464
+Bounded F11/#402 increment Done on `402-html-creation-handoff`, scope6587091875.
+Final94c0e15a0abe5c036f65e32b73d236d40f6fb28c/testedlocal8e7f10541e8ab30b80a846abf63e37e0ffefb347
+share exacttree53068113613521c120dca838663bc74e209f3af7; allten publishedblobs/
+396testedsourceinputs match. Fresh independent approval5742630791/finalgate5742708623
+found no blockers; independent46focused/nineinventory passed. Parent1333Flutter/
+nineexplicit skips,46focused,formatter392/analyzer/freshwebWasm/isolatedmacOSdebug/
+nineinventory passed. Initial dialog-finder/lazy-scroll test harness errors were
+corrected before focused/full reruns. Final followup changed only PR/status docs.
+RequiredCI41516033301 BOTH SUCCESS: Flutter125520109264/Python125520108958;
+reviewer inspected actual1306Linux/33explicit skips,17Chrome,transport/staticHTML/
+webWasm/realgeneratedFlutter and eight Python fixture suites. No fixture or skipped
+inference is claimed as tested support. Reviewer protected-plugin expected-head
+squashmerge327355870fcb983e26d1aa7be6ea2543cacd8cc7 at2026-11-02T20:13:55Z.
+Parent freshly verified mergedPR/currentmain/#402OPEN/#400OPEN, signedexacttree/
+soleparent09d68c87, hash-reconstructed commit then atomically synchronized local
+main/originmain0/0,indexempty; both originalIDEedits byte-identical.
+Both creation entry points now explicitly hand the original idea/suggestedtitle to
+editable fixed HTML starter input. Returning preserves wizard choices; no implicit
+confirmation/destination/registration/Build authority. Full HTML registration,
+approved-task integration, edited-source execution and fullF11 remain Pending/open;
+Deferred400 retained. Existing8765health offline; no inference/model launch/native
+app-launch acceptance/stableapp replacement. Final merge bookkeeping retained
+locally for the next normal reviewed development PR; no direct-main publication,
+new issue/cadence/notification change. Receipts:/private/tmp/asg464-publication.json,
+/private/tmp/asg402-handoff-inputs.json,/private/tmp/asg464-reviewed-merge.json,
+/private/tmp/asg464-review-evidence.json,/private/tmp/asg464-safe-sync.py.
+
+
+### Creation-time HTML runner discovery — F11 / #402
+Awaiting merge in [PR #465](https://github.com/arpit-it/ASG/pull/465) on
+`402-creation-runner-discovery`, scope6587720764, from verified
+PR464 merge `327355870fcb983e26d1aa7be6ea2543cacd8cc7`. No earlier active run or
+open PR at selection. Reuses issue #402; no new requirement or issue.
+F11 requires stack capabilities/version/toolchain information before creation;
+the wizard previously showed only static Planned guidance, while the delivered
+HTML runner descriptor was only visible after handoff. Creation now discovers
+the selected stack through the same registry and shares the read-only capability
+view with export. Shows runner/version, adapter identity, actual per-operation
+host boundaries, inapplicable compilation/dependencies and unimplemented tests.
+Explains that browser installation/version and project readiness are unverified.
+HTML registration remains Planned; discovery grants no Build/task/export authority,
+checks, file reads, writes, model request or preview/browser launch. Switching to
+Flutter/Python/unknown clears the descriptor; existing handoff and choices remain.
+Actual Mac descriptor plus injected available/unavailable-host/mixed states and
+320px/2x/desktop interactions validate discovery without dispatch. Focused32 passed.
+Technical dependencies: delivered HTML registry/runner; no deferred hardware needed.
+Full HTML project registration, approved-task integration and edited-source runners
+remain Pending, full F11/#402 open and Deferred #400 retained. Full checks/builds,
+plugin publication, exact-final independent review, required CI and verified
+reviewer merge remain gates; no completion claim. Includes inherited verified
+PR464 merge bookkeeping. No stable app/data/model/cadence/notification change.
+
+Validation update: final isolated-source1339Flutter tests passed/nine explicit
+skips; focused32, formatter394unchanged after dependency resolution, analyzer
+clean, fresh web/Wasm dry run and isolated macOS debug build passed. Nine
+acceptance-inventory regressions passed. Runtime/test/tool/config input hashes
+match the validation manifest /private/tmp/asg402-discovery-inputs.json (421).
+Initial formatter ran before package resolution and reported include warnings;
+post-resolution final formatter is clean. No runtime/test failures or inference,
+app-launch/support claims. Awaiting plugin publication/review/CI/merge.
+
+PR465 publication: tested local cb2ed40e/plugin20e8072a share exacttree5962cdd4;
+all nine remote blobs and421validation inputs match. This followup changes
+only status/PR linkage; runtime inputs unchanged. Independent exact-final
+review, actual required CI and protected reviewer merge remain gates.

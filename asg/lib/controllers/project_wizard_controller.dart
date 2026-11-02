@@ -2,6 +2,8 @@
 // Copyright 2026 Arpit Sinha
 
 import '../models/project.dart';
+import '../models/project_runner.dart';
+import '../services/project_runner_registry.dart';
 import '../models/html/html_site_input.dart';
 import '../models/project_blueprint.dart';
 import '../models/output_stack.dart';
@@ -10,9 +12,17 @@ import '../services/folder_picker.dart';
 import 'base_controller.dart';
 
 class ProjectWizardController extends BaseController {
-  ProjectWizardController({FolderPicker? picker, ProjectDiscovery? discovery})
-    : picker = picker ?? FolderPicker(),
-      discovery = discovery ?? ProjectDiscovery();
+  ProjectWizardController({
+    FolderPicker? picker,
+    ProjectDiscovery? discovery,
+    ProjectRunnerRegistry? runners,
+  }) : picker = picker ?? FolderPicker(),
+       discovery = discovery ?? ProjectDiscovery(),
+       _runners = runners ?? ProjectRunnerRegistry();
+  final ProjectRunnerRegistry _runners;
+
+  /// Read-only discovery never dispatches a tool or changes creation authority.
+  ProjectRunnerDescriptor? get runnerDescriptor => _runners.discover(_type);
   final ProjectDiscovery discovery;
   final FolderPicker picker;
   String _type = 'Flutter';

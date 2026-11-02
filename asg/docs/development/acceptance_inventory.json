@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "claim": "separate-historical-observations-only",
   "manifestSha256": "0505c640aa4a9170a73946648bd6205062942bcc3a2a37704e7a37fa0cbcbe1c",
-  "comparisonRuntimeSha256": "444a9dc845caf4d1637f6482d78241dfd5955526bcc50fe8d22529f57a274a6e",
+  "comparisonRuntimeSha256": "1e721f88d61f4650381973349b6a5d3eef9f67e65d7c3f2f7b1d9bc41ed5c4f7",
   "limitations": [
     "No combined identity, current pass, support verdict or authenticated observation.",
     "Recorded source hashes do not prove bundle equivalence or unaffected behavior.",
@@ -688,6 +688,7 @@
           "lib/views/model_runtime_metrics_view.dart",
           "lib/views/model_test_observation_view.dart",
           "lib/views/prototype_connection_view.dart",
+          "lib/views/runner_capabilities.dart",
           "lib/views/runtime_capability_panel.dart",
           "lib/views/source_connection_view.dart"
         ]
@@ -1002,6 +1003,7 @@
           "lib/views/model_runtime_metrics_view.dart",
           "lib/views/model_test_observation_view.dart",
           "lib/views/prototype_connection_view.dart",
+          "lib/views/runner_capabilities.dart",
           "lib/views/runtime_capability_panel.dart",
           "lib/views/source_connection_view.dart"
         ]
@@ -1285,6 +1287,7 @@
           "lib/views/model_runtime_metrics_view.dart",
           "lib/views/model_test_observation_view.dart",
           "lib/views/prototype_connection_view.dart",
+          "lib/views/runner_capabilities.dart",
           "lib/views/runtime_capability_panel.dart",
           "lib/views/source_connection_view.dart"
         ]
@@ -1496,6 +1499,7 @@
           "lib/views/model_runtime_metrics_view.dart",
           "lib/views/model_test_observation_view.dart",
           "lib/views/prototype_connection_view.dart",
+          "lib/views/runner_capabilities.dart",
           "lib/views/runtime_capability_panel.dart",
           "lib/views/source_connection_view.dart"
         ]
@@ -1949,6 +1953,7 @@
           "lib/views/model_runtime_metrics_view.dart",
           "lib/views/model_test_observation_view.dart",
           "lib/views/prototype_connection_view.dart",
+          "lib/views/runner_capabilities.dart",
           "lib/views/runtime_capability_panel.dart",
           "lib/views/source_connection_view.dart"
         ]
@@ -2151,6 +2156,7 @@
           "lib/views/model_runtime_metrics_view.dart",
           "lib/views/model_test_observation_view.dart",
           "lib/views/prototype_connection_view.dart",
+          "lib/views/runner_capabilities.dart",
           "lib/views/runtime_capability_panel.dart",
           "lib/views/source_connection_view.dart"
         ]
@@ -2335,6 +2341,7 @@
           "lib/views/model_runtime_metrics_view.dart",
           "lib/views/model_test_observation_view.dart",
           "lib/views/prototype_connection_view.dart",
+          "lib/views/runner_capabilities.dart",
           "lib/views/runtime_capability_panel.dart",
           "lib/views/source_connection_view.dart"
         ]
@@ -2537,6 +2544,7 @@
           "lib/views/model_runtime_metrics_view.dart",
           "lib/views/model_test_observation_view.dart",
           "lib/views/prototype_connection_view.dart",
+          "lib/views/runner_capabilities.dart",
           "lib/views/runtime_capability_panel.dart",
           "lib/views/source_connection_view.dart"
         ]
@@ -2739,6 +2747,7 @@
           "lib/views/model_runtime_metrics_view.dart",
           "lib/views/model_test_observation_view.dart",
           "lib/views/prototype_connection_view.dart",
+          "lib/views/runner_capabilities.dart",
           "lib/views/runtime_capability_panel.dart",
           "lib/views/source_connection_view.dart"
         ]
@@ -2941,6 +2950,7 @@
           "lib/views/model_runtime_metrics_view.dart",
           "lib/views/model_test_observation_view.dart",
           "lib/views/prototype_connection_view.dart",
+          "lib/views/runner_capabilities.dart",
           "lib/views/runtime_capability_panel.dart",
           "lib/views/source_connection_view.dart"
         ]
@@ -3143,6 +3153,7 @@
           "lib/views/model_runtime_metrics_view.dart",
           "lib/views/model_test_observation_view.dart",
           "lib/views/prototype_connection_view.dart",
+          "lib/views/runner_capabilities.dart",
           "lib/views/runtime_capability_panel.dart",
           "lib/views/source_connection_view.dart"
         ]
@@ -3335,6 +3346,7 @@
           "lib/views/model_runtime_metrics_view.dart",
           "lib/views/model_test_observation_view.dart",
           "lib/views/prototype_connection_view.dart",
+          "lib/views/runner_capabilities.dart",
           "lib/views/runtime_capability_panel.dart",
           "lib/views/source_connection_view.dart"
         ]
@@ -3526,6 +3538,7 @@
           "lib/views/model_runtime_metrics_view.dart",
           "lib/views/model_test_observation_view.dart",
           "lib/views/prototype_connection_view.dart",
+          "lib/views/runner_capabilities.dart",
           "lib/views/runtime_capability_panel.dart",
           "lib/views/source_connection_view.dart"
         ]
@@ -3717,6 +3730,7 @@
           "lib/views/model_runtime_metrics_view.dart",
           "lib/views/model_test_observation_view.dart",
           "lib/views/prototype_connection_view.dart",
+          "lib/views/runner_capabilities.dart",
           "lib/views/runtime_capability_panel.dart",
           "lib/views/source_connection_view.dart"
         ]
@@ -3950,6 +3964,7 @@
           "lib/views/model_runtime_metrics_view.dart",
           "lib/views/model_test_observation_view.dart",
           "lib/views/prototype_connection_view.dart",
+          "lib/views/runner_capabilities.dart",
           "lib/views/runtime_capability_panel.dart",
           "lib/views/source_connection_view.dart"
         ]
@@ -4203,6 +4218,7 @@
           "lib/views/model_runtime_metrics_view.dart",
           "lib/views/model_test_observation_view.dart",
           "lib/views/prototype_connection_view.dart",
+          "lib/views/runner_capabilities.dart",
           "lib/views/runtime_capability_panel.dart",
           "lib/views/source_connection_view.dart"
         ]

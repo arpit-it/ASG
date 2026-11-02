@@ -4,12 +4,15 @@
 import 'package:flutter/material.dart';
 
 import '../controllers/project_wizard_controller.dart';
+import '../services/project_runner_registry.dart';
+import 'runner_capabilities.dart';
 import '../models/project_blueprint.dart';
 import '../models/output_stack.dart';
 import '../models/html/html_site_input.dart';
 
 class ProjectWizard extends StatefulWidget {
-  const ProjectWizard({super.key, this.onOpenHtmlStarter});
+  const ProjectWizard({super.key, this.onOpenHtmlStarter, this.runners});
+  final ProjectRunnerRegistry? runners;
   final Future<void> Function(HtmlSiteInput input)? onOpenHtmlStarter;
   @override
   State<ProjectWizard> createState() => _ProjectWizardState();
@@ -17,7 +20,7 @@ class ProjectWizard extends StatefulWidget {
 
 class _ProjectWizardState extends State<ProjectWizard> {
   final name = TextEditingController(), idea = TextEditingController();
-  final controller = ProjectWizardController();
+  late final controller = ProjectWizardController(runners: widget.runners);
   @override
   void initState() {
     super.initState();
@@ -139,6 +142,8 @@ class _ProjectWizardState extends State<ProjectWizard> {
       const SizedBox(height: 8),
       Text(controller.outputStack?.detail ?? 'Unknown output stack.'),
       const Text('Additional languages and frameworks remain planned.'),
+      if (controller.runnerDescriptor case final descriptor?)
+        RunnerCapabilities(descriptor: descriptor),
       if (controller.type == 'HTML' && widget.onOpenHtmlStarter != null) ...[
         const SizedBox(height: 12),
         const Text(
