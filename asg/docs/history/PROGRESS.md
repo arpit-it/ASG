@@ -8163,3 +8163,68 @@ merge remain required. FullF22/F15 unchecked, profiles/context/real-model eviden
 Pending and unavailable-platform acceptance Deferred400. Logs/private/tmp/asg-
 identity-{focused-final,full-final,analyze-final,format-final,web,macos,inventory}.log.
 Recorded 2026-11-01T23:47:26.062342+00:00.
+
+
+### Contradictory response identity rejection verified merged — #396 / PR #417
+
+Bounded increment Done on `396-response-model-identity`. Final
+`92260d9c28d61488b7229b238e9873de71871802` independently approved5730855594 /
+finalgate5730876269; testedlocal21a2dff4de72953753ff69601044b07c7b2e9e10 shares
+exacttreead0fd8bce9952966b8ef9777fa4cc70206247e51. Independent60focused/probes
+and9inventory passed; all813remote blobs/modes match. RequiredCI41363879462
+completed/success: Flutter125019823512format316/analyzer1124Ubuntu12explicit
+skips,17actualChrome,web/Wasm and independent generated-project verification;
+Python125019823235141tests/fourCI skips. Parent1130cleanFlutter/nine skips,
+42focused,format/analyzer/web/macOS and9inventory passed. All337validation
+inputs match. No fresh inference/default8765offline; no support claim.
+
+Independent reviewer protected-plugin squash merged
+https://github.com/arpit-it/ASG/pull/417 as
+`9e7e9c0efc63346b07c3f41da1ea304fc0563dd6` at2026-11-01T23:55:28Z. Parent
+freshly plugin-verified mergedPR,currentmain,signedtree/soleparentec14b432,
+requiredCI and issue396stillopen. Guarded local sync passed main/origin-main0/0,
+emptyindex and both unrelatedIDE edits byte-identical. Evidence/private/tmp/asg-
+identity-publication.json,/private/tmp/asg417-reviewed-merge.json and
+/private/tmp/asg417-safe-sync.py. Both labels applied; no PR attachment tool found.
+
+Status Pending remaining verified F22 profiles/context/real-model capability
+evidence; no active implementation after this merge. Missing response identity
+remains legacy/unverified; contradictory or malformed reported identity now
+fails privately, including late SSE identity changes. Ask discards failed partial
+replies without completed provenance and permits retry. FullF22/F15 unchecked,
+unavailable-platform acceptance Deferred400. No modeldownload/install/stableapp/
+settings/deployment/cadence/notification change. Merge bookkeeping retained for
+the next normal reviewed development PR.
+Current run time 2026-11-01T23:56:08.552139+00:00.
+
+
+### F22 draft model inventory inspection — issue #396
+
+In progress on `396-model-inventory` from verified PR #417 merge
+`9e7e9c0efc63346b07c3f41da1ea304fc0563dd6`. No competing active run or open
+PR at selection; reused #396. Existing settings can generate a test answer but
+cannot explicitly check selected-ID membership in the server's models inventory.
+Delivered F09/F22 settings and local HTTP transport are prerequisites; Deferred
+platform acceptance #400 is not a gate. Full F22/F15 remain unchecked.
+
+Scope: explicit read-only draft model-ID inspection, local-only GET at the base
+models route, redirects refused, three-second whole-request deadline, 64KiB body
+and 1000-model limits, strictly bounded unique IDs and exact membership. Outcomes
+are locally authored; arbitrary server IDs/metadata/private failures are omitted.
+An advertised ID is only a server assertion; loaded weights, context, structured
+output and inference remain unverified. No model load, settings write or automatic
+switch. UI clears observations after draft edits/preset restore; busy/disposal
+guards prevent concurrent settings work and late UI publication.
+
+Validation:22 focused tests passed, including actual loopback HTTP/custom base
+route, mismatch/case sensitivity, malformed/duplicate/oversized inventories, local
+destination/redirect restrictions, private failure/timeout guidance, busy/no-write/
+disposal and320px2x actual UI inspection/edit invalidation. Initial HTTP regression
+hung because widget binding replaces HTTP; explicit real-HTTP override corrected
+and final focused suite passed. Analyzer brace finding fixed; final analysis clean
+and formatter318 unchanged. Full clean-source tests/web/macOS builds in progress;
+exact-tree plugin publication, independent final review, required CI and reviewer
+merge remain gates. No fresh inference/support claim or stable-app change.
+Recorded 2026-11-02T00:02:27.623484+00:00.
+
+Final draft inventory validation:1138clean-sourceFlutter tests/nine explicit skips,22focused,format318/analyzer clean,web/Wasm andmacOSdebug builds passed;340validationinputs byte-match clean copy. Historicalinventory9passed; observations unchanged. No inference. Awaiting merge: exact-tree plugin publication, independent final review, required CI and reviewer merge remain gates. FullF22/F15 unchecked, verified profiles/context/live evidence Pending and platform acceptance Deferred400. Recorded 2026-11-02T00:02:57.314707+00:00.

@@ -7,13 +7,18 @@ import '../models/local_model_config.dart';
 import '../models/model_connection_preset.dart';
 import '../services/model_settings_store.dart';
 import '../services/local_model.dart';
+import '../services/model_inventory.dart';
 import '../services/model_provider.dart';
 import 'base_controller.dart';
 
 class ModelSettingsController extends BaseController {
-  ModelSettingsController(this.store, {ProviderFactory? createProvider})
-    : _createProvider =
-          createProvider ?? ((config) => LocalModelProvider(config)) {
+  ModelSettingsController(
+    this.store, {
+    ProviderFactory? createProvider,
+    Future<String> Function(LocalModelConfig)? inspectInventory,
+  }) : _inspectInventory = inspectInventory ?? ModelInventory.inspect,
+       _createProvider =
+           createProvider ?? ((config) => LocalModelProvider(config)) {
     try {
       _presets = store.loadPresets();
     } catch (_) {
@@ -21,6 +26,34 @@ class ModelSettingsController extends BaseController {
       presetStatus = 'Saved connection presets could not be read. Records are preserved; restore valid presets before editing them.';
     }
   }
+  final Future<String> Function(LocalModelConfig) _inspectInventory;
+  String? inventoryStatus;
+
+  void clearInventory() {
+    if (inventoryStatus == null || isDisposed) return;
+    inventoryStatus = null;
+    update();
+  }
+
+  Future<void> inspectInventory(LocalModelConfig config) async {
+    if (busy || settingsLoadFailed || isDisposed) return;
+    busy = true;
+    inventoryStatus = 'Checking draft model inventory (3 seconds maximum)…';
+    update();
+    try {
+      final result = await _inspectInventory(config);
+      if (!isDisposed) inventoryStatus = result;
+    } catch (_) {
+      if (!isDisposed) {
+        inventoryStatus =
+            'Model inventory check failed. Check the local server and retry.';
+      }
+    } finally {
+      busy = false;
+      update();
+    }
+  }
+
   final ModelSettingsStore store;
   final ProviderFactory _createProvider;
   ModelProvider? _provider;
@@ -59,6 +92,7 @@ class ModelSettingsController extends BaseController {
     }
     for (final preset in _presets) {
       if (preset.name == name) {
+        clearInventory();
         selectedPreset = name;
         presetStatus = 'Preset restored into the draft. Choose Save to apply it or Test model to check the connection.';
         update();
