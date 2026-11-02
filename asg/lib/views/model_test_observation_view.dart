@@ -29,6 +29,12 @@ class ModelTestObservationView extends StatelessWidget {
           'Client-observed first text: ${observation.firstTextMilliseconds} ms; '
           'completed response: ${observation.completedMilliseconds} ms.',
         ),
+        Text(
+          observation.responseModel == null
+              ? 'Historical response model ID: unavailable (not recorded).'
+              : 'Historical response model ID: ${observation.responseModel}',
+        ),
+        const Text(ModelTestObservation.responseModelGuidance),
         const Text(ModelTestObservation.guidance),
         if (observation.runtimeMetrics != null)
           ModelRuntimeMetricsView(

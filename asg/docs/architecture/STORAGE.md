@@ -168,7 +168,7 @@ test for the exact preset connection. Its legacy five-field schema contains
 `outputTokens: 256`, and integer `firstTextMilliseconds`/`completedMilliseconds`
 (0 ≤ first ≤ completed ≤ 30000). Missing metadata remains legacy/unobserved;
 explicit null, unknown fields/kinds, invalid timestamps or limits fail closed.
-An optional sixth `runtimeMetrics` object retains allowlisted completed-test
+An optional `runtimeMetrics` object retains allowlisted completed-test
 server assertions: integer prompt/completion tokens (0–2147483647 / 0–256),
 nullable finite nonnegative speed in tokens/s and process peak GB (each at most
 1e9). All four members are required when the object is present; null objects,
@@ -176,6 +176,12 @@ unknown fields and malformed values fail closed. Legacy observations remain
 unchanged. Saving remains explicit; missing live metrics are never invented.
 Reopened figures are historical server assertions, never verified loaded identity,
 context, available memory or supported-model evidence. No extra request follows.
+Completed tests may also explicitly save an optional `responseModel` string. It is
+a historical server assertion, never loaded-weight/revision proof. Omitted legacy
+metadata stays unavailable; null, blank, oversized, control-character and
+contradictory preset-model metadata fail closed. JSON and SSE transport expose it
+only after successful completion; error, Stop or incomplete streams expose none.
+No prompt/response content, endpoint expansion or automatic persistence is added.
 No prompts, outputs or diagnostics are stored. The app requires a matching
 selected preset and unchanged tested URL/model/chat ceiling before attachment;
 saving is explicit and independent of settings Save. Draft edits/restore or a new

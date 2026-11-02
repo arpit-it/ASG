@@ -32,6 +32,12 @@ class ModelConnectionPreset {
     config.validateChatLimit();
     profileNotes?.validate();
     testObservation?.validate();
+    final responseModel = testObservation?.responseModel;
+    if (responseModel != null && responseModel != config.model) {
+      throw const FormatException(
+        'Saved response model does not match preset.',
+      );
+    }
   }
 
   Map<String, Object> toJson() {

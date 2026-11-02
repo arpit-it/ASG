@@ -11,12 +11,17 @@ class ModelTestObservation {
     required this.firstTextMilliseconds,
     required this.completedMilliseconds,
     this.runtimeMetrics,
+    this.responseModel,
   });
 
   final bool jsonFormat;
   final DateTime observedAt;
   final int firstTextMilliseconds, completedMilliseconds;
   final ModelRuntimeMetrics? runtimeMetrics;
+  final String? responseModel;
+  static const responseModelGuidance =
+      'Response model ID is an unverified server assertion from this completed '
+      'historical test, not proof of loaded weights, revision or support.';
   static const outputTokens = 256;
   static const guidance =
       'Historical app-observed test at the preset’s requested connection. '
@@ -27,6 +32,12 @@ class ModelTestObservation {
 
   void validate() {
     runtimeMetrics?.toJson();
+    if (responseModel != null &&
+        (responseModel!.trim().isEmpty ||
+            responseModel!.length > 256 ||
+            RegExp(r'[\x00-\x1f\x7f]').hasMatch(responseModel!))) {
+      throw const FormatException('Invalid saved response model ID.');
+    }
     if (!observedAt.isUtc ||
         observedAt.millisecondsSinceEpoch < 0 ||
         firstTextMilliseconds < 0 ||
@@ -45,12 +56,23 @@ class ModelTestObservation {
       'firstTextMilliseconds': firstTextMilliseconds,
       'completedMilliseconds': completedMilliseconds,
       if (runtimeMetrics != null) 'runtimeMetrics': runtimeMetrics!.toJson(),
+      'responseModel': ?responseModel,
     };
   }
 
   factory ModelTestObservation.fromJson(Object? value) {
     if (value is! Map<String, dynamic> ||
-        (value.length != 5 && value.length != 6) ||
+        value.keys.any(
+          (key) => !const {
+            'kind',
+            'observedAt',
+            'outputTokens',
+            'firstTextMilliseconds',
+            'completedMilliseconds',
+            'runtimeMetrics',
+            'responseModel',
+          }.contains(key),
+        ) ||
         !value.keys.toSet().containsAll([
           'kind',
           'observedAt',
@@ -58,7 +80,8 @@ class ModelTestObservation {
           'firstTextMilliseconds',
           'completedMilliseconds',
         ]) ||
-        (value.length == 6 && !value.containsKey('runtimeMetrics')) ||
+        (value.containsKey('responseModel') &&
+            value['responseModel'] is! String) ||
         !['jsonSentinel', 'nonblankText'].contains(value['kind']) ||
         value['observedAt'] is! String ||
         value['outputTokens'] is! int ||
@@ -73,6 +96,7 @@ class ModelTestObservation {
     }
     final result = ModelTestObservation(
       jsonFormat: value['kind'] == 'jsonSentinel',
+      responseModel: value['responseModel'] as String?,
       observedAt: time,
       firstTextMilliseconds: value['firstTextMilliseconds'] as int,
       completedMilliseconds: value['completedMilliseconds'] as int,

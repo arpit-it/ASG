@@ -22,3 +22,9 @@ abstract interface class StreamingModelProvider implements ModelProvider {
 abstract interface class ModelMetricsProvider implements ModelProvider {
   ModelRuntimeMetrics? get completedMetrics;
 }
+
+/// Optional server assertion; it never proves which weights were loaded.
+abstract interface class ModelResponseIdentityProvider
+    implements ModelProvider {
+  String? get completedResponseModel;
+}

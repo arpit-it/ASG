@@ -9895,3 +9895,61 @@ Recorded 2026-11-02T12:03:42.190310+00:00
 Final tracked-source validation passed: 1235Flutter tests/nine explicit skips, analyzer clean, formatter350, web includingWasm dryrun and isolatedmacOSdebug build; nineinventory regressions passed. ActualHTTP JSON/SSE explicit save/failure/retry and native database reopen/strictschema/320px2x historical guidance covered. No live inference or installedapp change. Source/test/tool snapshot hashes match. Awaiting merge: plugin exacttree publication, independent finalrevision review, requiredCI and protected reviewer merge remain gates. FullF22/F15 unchecked; issue396 stays open. Recorded 2026-11-02T12:04:55.696351+00:00
 
 Independent review5736304782 at9459ac5f found blocking stale acceptance-inventory comparison hash in requiredCI41441992616/Python125265865558. Source tests/builds still valid; nineinventory tests had passed before final braces lint fix. Regenerated final inventory to c5768759876bf2f2bbe466f03da2a41cec1144251846aa6b27fb74f0c6f8ca32; all nine inventory regressions now pass against final source. Reviewer independently39focusedFlutter passed; no other blocker reported. Fresh finalrevision review and new requiredCI remain gates; no merge claimed. Recorded 2026-11-02T12:08:07.516916+00:00
+
+
+### Historical runtime metrics verified merged — PR #447
+Bounded increment Done for F22/#396 on `396-historical-runtime-metrics`.
+Final testedlocal10d9f7fda87efa0d2e868f723857fbef1c631630 and pluginpublished
+ae594243d20a8517f18689092d2982ee2782548f share exacttree
+d81ee09f4c3a4534fb7d16d434180ab8e45d0820; all13initial/fourcorrection blobs match.
+Independent fresh review5736322515/finalgate6576890090 approved final revision.
+Initial staleinventory blocker5736304782 fixed, ninefinalinventory tests passed
+and fresh review obtained. Independent39focusedFlutter passed; parent1235Flutter
+nineexplicit skips,25focused,format350/analyzer/web/Wasm/isolatedmacOSdebug
+passed. RequiredCI41442298507 BOTH SUCCESS: Flutter125267094077 fulltests,
+actualChrome storage/browsertransport/web/real independentgeneratedproject;
+Python125267094459 runtime/processfixtures including corrected inventory.
+Optional allowlisted server token/speed/processpeak metrics now persist only
+with explicit matchingpreset testobservation save; legacy compatibility,
+strictcorruption refusal, failure/saveonlyretry, actualHTTP/native reopen and
+320px2x historical/unverified guidance validated. No verifiedcontext/loadedmodel/
+support claim, automaticpersistence, extra request or backend enablement.
+Default8765health freshly unavailable; no model launch/inference/download or
+stableapp change. Reviewer protectedplugin squashmerged PR447 as
+94b04cc879909c1a282d9986afd9276262240cf6 at2026-11-02T12:15:56Z.
+Parent freshlyverified mergedPR/currentmain/#396OPEN and signed exacttree/
+soleparent86dadc81; commitobject hashverified before guarded local sync.
+Localmain/originmain0/0,emptyindex,both originalIDEedits byteidentical.
+FullF22/F15 unchecked; unavailableplatform acceptanceDeferred400. No active
+implementation aftermerge; verified profiles/context/capability work Pending396.
+Final bookkeeping retained for next normal reviewed development PR. Both
+automationlabels applied; no newissue/cadence/notification change.
+Receipts:/private/tmp/asg447-publication.json,/private/tmp/asg447-validation-inputs.json,
+/private/tmp/asg447-reviewed-merge.json,/private/tmp/asg447-safe-sync.py.
+Currentrun 2026-11-02T12:17:01.629972+00:00
+
+
+### Completed-response identity observation — F22 / #396
+In progress on `396-response-model-observation` from verified PR #447 merge
+94b04cc879909c1a282d9986afd9276262240cf6. Scope comment6577175867.
+Transport previously validated reported IDs then discarded whether a completed
+response reported any identity. Optional server-asserted responseModel now follows
+explicit matching-preset test saves, with legacy omission shown unavailable.
+Strict schema/preset agreement, completion-only capture, historical unverified
+labels, no support/context/loaded-weights proof. Existing test/transport/storage
+foundations satisfy dependencies; unavailable-host acceptance Deferred400.
+JSON/SSE contradiction/truncation/omission, real HTTP failed-save/retry and native
+reopen/corruption, 320px2x UI covered. Initial27focused tests passed; full final
+validation, inventory regeneration, plugin publication, independent final review,
+requiredCI and protected reviewer merge pending. FullF22/F15 unchecked.
+
+Final tracked-source validation: 1244Flutter tests passed/nine explicit skips,
+formatter351/analyzer clean, web includingWasm dryrun and isolatedmacOSdebug
+build passed. Ninefinalinventory regressions passed after final source formatting
+and regeneration; all372source/test/tool inputs match validated snapshot.
+ActualHTTP JSON/SSE explicit save/failure/retry, native database reopen, strict
+schema and preset consistency, legacy/unreported/contradictory/failed/truncated
+responses and320px2x historical labels covered. Existing8765runtime unavailable;
+no model launch/download/live inference/stableapp replacement. Awaiting merge:
+plugin exacttree publication, independent finalrevision review, requiredCI and
+protected reviewer merge remain gates. FullF22/F15unchecked; Deferred400 retained.
