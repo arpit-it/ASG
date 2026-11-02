@@ -4,6 +4,9 @@
 import 'package:flutter/material.dart';
 
 import '../models/project.dart';
+import '../models/html/saved_html_starter.dart';
+import '../controllers/html_starter_library_controller.dart';
+import '../services/html/html_starter_store.dart';
 import '../controllers/dashboard_controller.dart';
 import '../services/studio_store.dart';
 import '../services/model_settings_store.dart';
@@ -42,11 +45,15 @@ class _DashboardState extends State<Dashboard> {
     widget.store,
     widget.initialProjects,
   );
+  late final htmlLibrary = HtmlStarterLibraryController(
+    HtmlStarterStore(widget.store.records),
+  );
   late final picker = widget.folderPicker ?? FolderPicker();
   @override
   void initState() {
     super.initState();
     controller.addListener(refresh);
+    htmlLibrary.addListener(refresh);
   }
 
   void refresh() {
@@ -55,6 +62,8 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   void dispose() {
+    htmlLibrary.removeListener(refresh);
+    htmlLibrary.dispose();
     controller.removeListener(refresh);
     controller.dispose();
     super.dispose();
@@ -98,6 +107,21 @@ class _DashboardState extends State<Dashboard> {
       ),
     );
     if (mounted) controller.refreshBuildStatus();
+  }
+
+  Future<void> openHtml([SavedHtmlStarter? starter]) async {
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => HtmlExportScreen(
+          controller: HtmlExportController(
+            exporter: createHtmlSourceExport(),
+            starterStore: htmlLibrary.store,
+            savedStarter: starter,
+          ),
+        ),
+      ),
+    );
+    if (mounted) htmlLibrary.reload();
   }
 
   @override
@@ -172,15 +196,7 @@ class _DashboardState extends State<Dashboard> {
                     label: const Text('Let’s create something'),
                   ),
                   OutlinedButton.icon(
-                    onPressed: () => Navigator.of(context).push(
-                      MaterialPageRoute<void>(
-                        builder: (_) => HtmlExportScreen(
-                          controller: HtmlExportController(
-                            exporter: createHtmlSourceExport(),
-                          ),
-                        ),
-                      ),
-                    ),
+                    onPressed: openHtml,
                     icon: const Icon(Icons.html),
                     label: const Text('Export HTML starter'),
                   ),
@@ -226,6 +242,30 @@ class _DashboardState extends State<Dashboard> {
                   ),
                 ],
               ),
+              const SizedBox(height: 24),
+              if (htmlLibrary.error != null) ...[
+                Text(htmlLibrary.error!),
+                OutlinedButton(
+                  onPressed: htmlLibrary.reload,
+                  child: const Text('Retry starter library'),
+                ),
+              ],
+              if (htmlLibrary.starters.isNotEmpty) ...[
+                const Text(
+                  'Saved HTML starters',
+                  style: TextStyle(fontSize: 20),
+                ),
+                const Text(
+                  'Fixed exports only; file checks and preview run on request. These are separate from software projects.',
+                ),
+                for (final starter in htmlLibrary.starters)
+                  ListTile(
+                    leading: const Icon(Icons.html),
+                    title: Text(starter.input.title),
+                    subtitle: Text(starter.directory),
+                    onTap: () => openHtml(starter),
+                  ),
+              ],
               const SizedBox(height: 36),
               Text(
                 'Projects · ${controller.projects.length}',

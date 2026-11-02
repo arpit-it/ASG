@@ -30,6 +30,7 @@ import 'record_storage.dart';
 import 'inspected_folder_store.dart';
 import 'runtime_setup_store.dart';
 import 'studio_store.dart';
+import 'html/html_starter_store.dart';
 
 /// One database/session per application isolate. Original preferences are retained.
 class StudioDatabase implements ConditionalRecordStorage {
@@ -94,6 +95,7 @@ class StudioDatabase implements ConditionalRecordStorage {
         validate(record.key, record.value);
       } catch (_) {
         if (record.key != AskStore.key &&
+            record.key != HtmlStarterStore.key &&
             record.key != ModelSettingsStore.presetsKey &&
             !record.key.startsWith(ConversationStore.selectionPrefix) &&
             !record.key.startsWith('studio.historicalRevisions.v1.') &&
@@ -153,6 +155,8 @@ class StudioDatabase implements ConditionalRecordStorage {
       ImportedPlan.fromJson(decoded as Map<String, dynamic>);
     } else if (key == InspectedFolderStore.key) {
       InspectedFolderStore(source).load();
+    } else if (key == HtmlStarterStore.key) {
+      HtmlStarterStore(source).load();
     } else if (key == 'studio.projects.v1') {
       StudioStore(source).load();
     } else if (key == ModelSettingsStore.presetsKey) {

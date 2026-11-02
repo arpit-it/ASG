@@ -22,6 +22,9 @@ class _HtmlExportScreenState extends State<HtmlExportScreen> {
   @override
   void initState() {
     super.initState();
+    title.text = controller.title;
+    description.text = controller.description;
+    folder.text = controller.folder;
     controller.addListener(refresh);
     controller.preview.addListener(refresh);
   }
@@ -45,7 +48,10 @@ class _HtmlExportScreenState extends State<HtmlExportScreen> {
   Widget build(BuildContext context) {
     final review = controller.review;
     final enabled =
-        controller.supported && !controller.busy && !controller.picking;
+        controller.supported &&
+        !controller.busy &&
+        !controller.picking &&
+        !controller.saving;
     return Scaffold(
       appBar: AppBar(title: const Text('Export HTML starter')),
       body: Center(
@@ -55,7 +61,7 @@ class _HtmlExportScreenState extends State<HtmlExportScreen> {
             padding: const EdgeInsets.all(20),
             children: [
               const Text(
-                'Export editable HTML, CSS, JavaScript and local SVG files from a fixed responsive starter. Your text fills its title and description. After export, preview this unchanged starter locally on macOS. Leaving this screen stops the preview. This does not create an ASG project. HTML project creation and arbitrary edited-source runners are planned.',
+                'Export editable HTML, CSS, JavaScript and local SVG files from a fixed responsive starter. Your text fills its title and description. After export, preview this unchanged starter locally on macOS. Leaving this screen stops the preview. Optionally save this export in the local starter library to reopen its checks and preview. This does not create an ASG project. HTML project creation and arbitrary edited-source runners are planned.',
               ),
               ExpansionTile(
                 title: const Text('Runner capabilities'),
@@ -192,6 +198,23 @@ class _HtmlExportScreenState extends State<HtmlExportScreen> {
                   'Source export complete. HTML project creation remains planned.',
                 ),
                 SelectableText(controller.exportedDirectory!),
+                if (controller.starterStore != null) ...[
+                  const Text(
+                    'Saving remembers the destination and original text only. Reopening does not run code or verify files; checks and preview refuse modified sources.',
+                  ),
+                  OutlinedButton(
+                    onPressed: controller.saving || controller.saved
+                        ? null
+                        : controller.saveStarter,
+                    child: Text(
+                      controller.saving
+                          ? 'Saving starter…'
+                          : controller.saved
+                          ? 'Starter saved in library'
+                          : 'Save starter in library',
+                    ),
+                  ),
+                ],
                 if (!controller.checker.supported)
                   const Text('Source identity checks require macOS.'),
                 OutlinedButton(
@@ -263,6 +286,9 @@ class _HtmlExportScreenState extends State<HtmlExportScreen> {
                       : controller.preview.stop,
                   child: const Text('Retry Stop preview'),
                 ),
+              if (controller.saving) const LinearProgressIndicator(),
+              if (controller.saveError != null)
+                SelectableText(controller.saveError!),
               if (controller.checkError != null)
                 SelectableText(controller.checkError!),
               if (controller.preview.error != null)

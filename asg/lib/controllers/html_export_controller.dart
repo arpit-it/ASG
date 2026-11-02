@@ -3,6 +3,9 @@
 
 import 'dart:async';
 
+import '../models/html/saved_html_starter.dart';
+import '../services/html/html_starter_store.dart';
+
 import '../models/html/html_source_check.dart';
 import '../services/html/html_source_check.dart';
 
@@ -21,11 +24,15 @@ import 'base_controller.dart';
 class HtmlExportController extends BaseController {
   HtmlExportController({
     required HtmlSourceExport exporter,
+    HtmlStarterStore? starterStore,
+    SavedHtmlStarter? savedStarter,
     FolderPicker? folderPicker,
     HtmlPreview? previewService,
     HtmlSourceChecker? sourceChecker,
   }) : this._(
          exporter: exporter,
+         starterStore: starterStore,
+         savedStarter: savedStarter,
          folderPicker: folderPicker,
          registry: ProjectRunnerRegistry(
            html: HtmlStarterRunner(
@@ -37,11 +44,68 @@ class HtmlExportController extends BaseController {
 
   HtmlExportController._({
     required this.exporter,
+    required this.starterStore,
+    required SavedHtmlStarter? savedStarter,
     FolderPicker? folderPicker,
     required ProjectRunnerRegistry registry,
   }) : runner = registry.htmlRunner('HTML')!,
        _picker = folderPicker ?? FolderPicker(),
-       preview = HtmlPreviewController(registry.htmlRunner('HTML')!);
+       preview = HtmlPreviewController(registry.htmlRunner('HTML')!) {
+    if (savedStarter != null) {
+      _title = savedStarter.input.title;
+      _description = savedStarter.input.description;
+      _exportedDirectory = savedStarter.directory;
+      // Reopen grants no checks, preview or write authority.
+      final slash = savedStarter.directory.lastIndexOf('/');
+      _parent = slash == 0 ? '/' : savedStarter.directory.substring(0, slash);
+      _folder = savedStarter.directory.substring(slash + 1);
+      _exportedRequest = HtmlExportRequest(
+        input: savedStarter.input,
+        parent: _parent,
+        folderName: _folder,
+      );
+      _saved = true;
+    }
+  }
+
+  final HtmlStarterStore? starterStore;
+  bool _saving = false, _saved = false;
+  String? _saveError;
+  bool get saving => _saving;
+  bool get saved => _saved;
+  String? get saveError => _saveError;
+  String get title => _title;
+  String get description => _description;
+  String get folder => _folder;
+
+  Future<void> saveStarter() async {
+    final store = starterStore;
+    final request = _exportedRequest;
+    final directory = _exportedDirectory;
+    if (isDisposed ||
+        _saving ||
+        _saved ||
+        _busy ||
+        store == null ||
+        request == null ||
+        directory == null) {
+      return;
+    }
+    _saving = true;
+    _saveError = null;
+    update();
+    try {
+      await store.save(
+        SavedHtmlStarter(directory: directory, input: request.input),
+      );
+      if (!isDisposed) _saved = true;
+    } catch (_) {
+      if (!isDisposed) _saveError = 'Starter could not be saved. Exported files are retained. Check local storage and retry saving; do not export again.';
+    } finally {
+      _saving = false;
+      update();
+    }
+  }
 
   final HtmlSourceExport exporter;
   final HtmlStarterRunner runner;
@@ -133,7 +197,7 @@ class HtmlExportController extends BaseController {
   HtmlExportRequest? get review => _review;
 
   void edit({String? title, String? description, String? folder}) {
-    if (isDisposed || _busy || _picking) return;
+    if (isDisposed || _busy || _picking || _saving) return;
     _title = title ?? _title;
     _description = description ?? _description;
     _folder = folder ?? _folder;
@@ -156,6 +220,8 @@ class HtmlExportController extends BaseController {
         ? 'Source check invalidated by changed inputs. Its late result will be ignored; no files were changed.'
         : null;
     _exportedRequest = null;
+    _saved = false;
+    _saveError = null;
     if (preview.url != null || preview.busy || preview.cleanupFailed) {
       unawaited(preview.stop());
     }
@@ -167,7 +233,7 @@ class HtmlExportController extends BaseController {
   }
 
   Future<void> pickParent() async {
-    if (isDisposed || _busy || _picking || !supported) return;
+    if (isDisposed || _busy || _picking || _saving || !supported) return;
     _invalidate();
     _picking = true;
     update();
@@ -185,7 +251,7 @@ class HtmlExportController extends BaseController {
   }
 
   void prepareReview() {
-    if (isDisposed || _busy || _picking) return;
+    if (isDisposed || _busy || _picking || _saving) return;
     _invalidate();
     try {
       if (!supported) {
@@ -214,6 +280,7 @@ class HtmlExportController extends BaseController {
     if (isDisposed ||
         _busy ||
         _picking ||
+        _saving ||
         !supported ||
         !identical(displayedReview, _review)) {
       return;

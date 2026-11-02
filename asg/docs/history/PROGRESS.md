@@ -10806,3 +10806,69 @@ scroll/tap harness and retested. No runtime source changed after these builds.
 Full tracked-source suite1315passed/nineexplicit skips. Awaiting exact-tree
 publication, independent final review, required CI and protected reviewer merge;
 fullF11/#402 andDeferred400 remain open.
+
+
+### Versioned fixed HTML runner verified merged — PR #461
+Bounded F11/#402 runner prerequisite Done on `402-html-starter-runner`,
+scope6585030463. Finaleb4ad02364b8f8a1036c4febca6e5b14150b59c6 and testedlocal
+908d5a1ccd357008bdbdd5eb37c2586511cb5711 share exacttree
+847647d128165b26e80a8f6754eada1230a52dd1; all14published blobs/412inputs match.
+Independent approval5741500365/finalgate5741571287 found no blockers; independent
+33focused/nineinventory passed. Parent final1315Flutter/nineexplicit skips,
+33focused,format387/analyzer/freshwebWasm/isolatedmacOSdebug/nineinventory passed.
+New320px/2x capability test initially missed expansion activation/animation;
+corrected actual scroll/tap/settle harness, focused/full reruns passed.
+RequiredCI41502225049 BOTH SUCCESS: Flutter125472320266/Python125472319498.
+Reviewer inspected actual logs:1289Linux/32explicit skips,17Chrome, browser
+redirect/JSON/SSE transport,staticHTML,webWasm and realindependentgeneratedFlutter
+analyze/test/build/serve. Independent protected-plugin expected-head squashmerge
+ef288141d96fb9ead0abd67725f3c7104552d836 at2026-11-02T18:43:47Z freshly verified
+mergedPR/currentmain/#402OPEN/#400OPEN and signedexacttree/soleparentf8a888ef.
+Parent reconstructed/hash-verified signed commit before atomic localref sync;
+localmain/originmain0/0,indexempty,originalIDEedits byte-identical.
+Registered asg-fixed-html v1.0.0/asg-static-html-v1 now routes app source checks
+and preview/start/open/Stop through one runner; side-effect-free discovery and
+typed unsupported/inapplicable/unimplemented boundaries prevent passing no-ops.
+Actual Mac export→sourcecheck→HTTPassets→Stop/retry/changed-source refusal and
+320px/2x capability controls passed. Availability is not readiness or acceptance;
+saved evidence remains historical. Full HTML creation/registration, approved-task
+integration, arbitrary edited-source execution and fullF11 remain Pending/open.
+Deferred400 retained. Existing8765health freshly unavailable; no inference, model
+launch or stableapp replacement. Final canonical bookkeeping retained locally
+for next normal reviewed development PR; no direct-main publication or new issue.
+Receipts:/private/tmp/asg461-publication.json,/private/tmp/asg461-validation-inputs.json,
+/private/tmp/asg461-reviewed-merge.json,/private/tmp/asg461-review-evidence.json,
+/private/tmp/asg461-safe-sync.py. Cadence/notification preference unchanged.
+
+
+### Saved fixed HTML starter library — F11 / #402
+In progress on `402-html-starter-library` from verified PR461 merge
+`ef288141d96fb9ead0abd67725f3c7104552d836`, scope6585714649. No competing
+active run/open PR at selection. Delivered runner/export left no persistent
+reopen path. Adds explicit transactional save of original plain-text input and
+canonical export destination, versioned adapter/runner identity, dashboard library
+and reopen into existing exact-starter source checks/preview. Reopen never starts
+checks/preview, creates a software project or grants arbitrary execution. Save
+failure retains export for retry; edits/duplicates are guarded while saving;
+completion after disposal never notifies. Conditional commits reject concurrent
+lost updates; same records deduplicate, conflicting input refuses replacement.
+Damaged/unknown/oversized/duplicate records are retained and reported, including
+bootstrap isolation from unrelated projects. Saved paths confer no source trust;
+checks/preview still reread and refuse modified or symbolic files. Full HTML
+project creation, approved-task integration, edited-source runners and F11 remain
+Pending/open; Deferred400 retained. No model/stableapp/cadence change.
+Validation and exact-tree publication, independent final review, actual required
+CI and protected reviewer merge remain gates; no completion claim yet.
+
+Validation: final40focused tests passed, including real Mac export→durable
+database close/reopen→sourcecheck→HTTP preview→Stop and changed-source refusal;
+actual320px/2x save failure/retry and dashboard reopen passed. Full tracked-source
+Flutter suite1322passed/nineexplicit skips; analyzer clean; formatter391unchanged
+after package resolution; fresh web/Wasm dryrun and isolatedmacOSdebug build passed.
+Initial test harnesses used a wrong scrollable/needed layout settlement and a
+binding-stubbed HttpClient; corrected harnesses and reran all affected tests/full
+suite. Existing narrowStop test now ensures visibility before actual tap.
+Inventory regenerated for current runtime; nine inventory tests passed. Existing8765health unavailable; no fresh model inference or native
+app-launch acceptance claimed. Stable installed app/original data unchanged.
+Awaiting exact-tree publication, independent review, actual required CI/reviewer
+merge. FullF11/#402 andDeferred400 stay open.
