@@ -66,7 +66,7 @@ class SourceGenerationController extends BaseController {
   }
 
   Future<void> inspectToolchain(String sdk, String python) async {
-    if (_busy || isDisposed || !available) return;
+    if (_busy || isDisposed) return;
     final revision = ++_toolchainRevision;
     _toolchain = null;
     _busy = true;

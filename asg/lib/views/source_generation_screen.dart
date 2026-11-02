@@ -96,12 +96,16 @@ class _SourceGenerationScreenState extends State<SourceGenerationScreen> {
     await controller.rollback(entry, expectedWorking: working, confirmed: true);
   }
 
-  Widget directory(TextEditingController input, String label) => Row(
+  Widget directory(
+    TextEditingController input,
+    String label, {
+    bool forInspection = false,
+  }) => Row(
     children: [
       Expanded(
         child: TextField(
           controller: input,
-          enabled: !controller.busy && controller.available,
+          enabled: !controller.busy && (forInspection || controller.available),
           decoration: InputDecoration(labelText: label),
         ),
       ),
@@ -187,17 +191,21 @@ class _SourceGenerationScreenState extends State<SourceGenerationScreen> {
                 labelText: 'New folder name (lowercase_with_underscores)',
               ),
             ),
-            directory(sdk, 'Installed Flutter SDK directory'),
+            directory(
+              sdk,
+              'Installed Flutter SDK directory',
+              forInspection: true,
+            ),
             TextField(
               controller: python,
-              enabled: !controller.busy && controller.available,
+              enabled: !controller.busy,
               decoration: const InputDecoration(
                 labelText: 'Installed Python 3 executable',
               ),
             ),
             const SizedBox(height: 12),
             OutlinedButton.icon(
-              onPressed: controller.busy || !controller.available
+              onPressed: controller.busy
                   ? null
                   : () => controller.inspectToolchain(
                       sdk.text.trim(),
