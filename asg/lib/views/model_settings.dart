@@ -206,6 +206,15 @@ class _ModelSettingsState extends State<ModelSettings> {
                 !controller.presetsLoadFailed &&
                 !controller.settingsLoadFailed,
           ),
+          OutlinedButton(
+            onPressed: controller.canSaveProfileNotes(config)
+                ? () => controller.saveProfileNotes(config, profileNotes)
+                : null,
+            child: const Text('Save profile notes only'),
+          ),
+          const Text(
+            'Select a preset with matching connection fields to update or clear its notes. This keeps its saved historical test. Blank notes remove the notes only; active settings are unchanged.',
+          ),
           Wrap(
             spacing: 8,
             children: [
