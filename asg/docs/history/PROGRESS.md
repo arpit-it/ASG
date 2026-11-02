@@ -9306,3 +9306,57 @@ links and the retry passed. Default8765 runtime unavailable; no launch, inferenc
 download, settings, installed-app or support change. Awaiting merge: exact-tree
 plugin publication, independent final review, required CI and protected reviewer
 merge remain gates. Full F22/F15 unchecked; issue396 remains open.
+
+
+### Pinned catalog context declaration verified merged — PR #436
+Bounded increment Done for F22 / #396 on `396-catalog-context-declaration`.
+Tested local cde20bcd8303110e5e0fd6294b35bac519423372 and published final
+8943b42f984fdf5abba1e3ffcd1116ac3ca1d00a share exact tree
+66663488a8472c3ecebec29d2daea38babc48750; all eight published blobs match.
+Independent approval5733087001/finalgate5733127254 found no blockers; 41 catalog
+and nine inventory tests passed, all839 remote blobs/modes and360 inputs match.
+Required CI41404081123 both success: Flutter125142057241 passed1189 tests/12
+explicit skips, actual Chrome storage/UI, web and independent generated-project
+verification; Python125142057476 passed163 tests/four platform skips. Parent
+1195 Flutter/nine skips, 41 focused, formatter338/analyzer, web/macOS debug and
+nine inventory tests passed. Isolated macOS plugin links regenerated before
+successful retry. No inference/download/settings/stable-app/support change.
+Source-declared context is pinned metadata, not verified usable capacity or
+loaded identity; missing stays unknown and budgets/memory estimates unchanged.
+Reviewer protected-plugin squash merge fae261b34220562462235d59e2061be5e4765dc6
+at2026-11-02T07:13:05Z freshly verified by parent with merged PR/default-main
+blob/#396 OPEN; signed exact-tree/sole-parent955f76e6 receipt verified before
+guarded local-only sync. Local main/originmain0/0, empty index, both unrelated
+IDE edits byte-identical. Full F22/F15 unchecked; external acceptance Deferred
+#400. No active implementation after merge; remaining verified profiles/context
+capacity/capability work Pending396. Final canonical bookkeeping retained for
+next normal reviewed development PR. Both automation labels applied; no new
+issue/cadence/notification change. Receipts: /private/tmp/asg396-catalog-context-
+publication.json, /private/tmp/asg396-catalog-context-inputs.json,
+/private/tmp/asg436-reviewed-merge.json, /private/tmp/asg436-review-summary.json,
+/private/tmp/asg436-safe-sync.py. Current run time: 2026-11-02T07:14:50.837722+00:00
+
+
+### Selected local generation connection redirect refusal — F22 / #396
+In progress on `396-local-request-redirects`, base verified PR #436 merge
+fae261b34220562462235d59e2061be5e4765dc6. Owner chat01a19b28; no competing
+active run or open PR found. Baseline actual native POST303 followed Location
+to another owned loopback server and accepted `Wrong source` as completion.
+This violates selected-connection provenance and local-only request boundaries.
+Disable automatic redirects; refuse all3xx with private actionable guidance and
+close the client without awaiting an untrusted response body. Actual native
+301/302/303/307/308 must send zero requests to the target, and direct retry must
+succeed. Stalled-body/private-Location probes cover300/301/302/303/304/307/308/399.
+Installed http1.6 BrowserClient maps followRedirects=false to fetch redirect:error;
+web build is not a fresh actual browser redirect probe. No redirect URL is shown.
+Delivered F09/F22 transport is sufficient; external hardware Deferred #400 is
+unnecessary. This reproducible defect extends #396; no new issue/backlog entry.
+Keep F22/F15 unchecked. Prior436 finalreview/CI/merge evidence retained above.
+Validation: full isolated tracked-source Flutter1197passed/nine explicit skips,
+analyzer clean, formatter339 and web build passed; nine regenerated inventory
+regressions passed. macOS build, final exact-tree publication, independent final
+review, required CI and protected reviewer merge remain gates. No model launch,
+inference, download, installed-app or settings change; default8765 unavailable.
+Recorded 2026-11-02T07:33:15.166378+00:00
+
+Final local validation: macOS debug build and34focused transport regressions passed; formatter339 unchanged after package resolution. All362runtime/test/tool/asset/package validation inputs match the isolated copy. Required final review/CI/merge remain pending; status Awaiting merge upon publication.

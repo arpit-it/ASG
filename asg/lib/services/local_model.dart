@@ -109,6 +109,9 @@ class LocalModelProvider implements StreamingModelProvider {
     yield const GenerationEvent.phase(GenerationPhase.thinking);
     final request =
         http.Request('POST', config.endpoint.resolve('chat/completions'))
+          // A redirect must not change the selected connection or send prompts
+          // to another destination. BrowserClient also uses fetch redirect:error.
+          ..followRedirects = false
           ..headers['Content-Type'] = 'application/json'
           ..body = jsonEncode({
             'model': config.model,
@@ -124,6 +127,13 @@ class LocalModelProvider implements StreamingModelProvider {
         .timeout(const Duration(seconds: 15));
     if (_cancelled) return;
     if (response.statusCode != 200) {
+      if (response.statusCode >= 300 && response.statusCode < 400) {
+        // Do not await an untrusted redirect body before refusing it.
+        _client.close();
+        throw _SafeModelFailure(
+          'Local model redirects are refused. Check the selected local endpoint and retry.',
+        );
+      }
       // Close the response stream even on a rejected request.
       await response.stream.take(1).drain<void>();
       throw _SafeModelFailure(
