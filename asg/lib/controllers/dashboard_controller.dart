@@ -26,6 +26,17 @@ class DashboardController extends BaseController {
   List<StudioProject> get filtered => _projects
       .where((p) => p.name.toLowerCase().contains(_query.toLowerCase()))
       .toList();
+  void reloadProjects() {
+    if (busy || isDisposed) return;
+    try {
+      _projects = store.load();
+      error = null;
+    } catch (_) {
+      error = 'Project records could not be refreshed. Existing data is retained; retry opening Projects.';
+    }
+    update();
+  }
+
   void refreshBuildStatus() => update();
 
   void search(String value) {

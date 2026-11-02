@@ -3,6 +3,9 @@
 
 import 'dart:async';
 
+import '../models/project.dart';
+import '../services/html/html_project_store.dart';
+
 import '../models/html/saved_html_starter.dart';
 import '../services/html/html_starter_store.dart';
 
@@ -20,7 +23,7 @@ import '../services/folder_picker.dart';
 import '../services/html/html_source_export.dart';
 import 'base_controller.dart';
 
-/// Session confirmation only. Nothing here registers a runnable ASG project.
+/// Explicit export and metadata registration; neither grants Build authority.
 class HtmlExportController extends BaseController {
   HtmlExportController({
     required HtmlSourceExport exporter,
@@ -79,6 +82,50 @@ class HtmlExportController extends BaseController {
   }
 
   final HtmlStarterStore? starterStore;
+  bool _registering = false;
+  StudioProject? _registeredProject;
+  String? _registrationError;
+  bool get registering => _registering;
+  StudioProject? get registeredProject => _registeredProject;
+  String? get registrationError => _registrationError;
+
+  Future<void> registerProject() async {
+    final store = starterStore;
+    final request = _exportedRequest;
+    final directory = _exportedDirectory;
+    if (isDisposed ||
+        _registering ||
+        _saving ||
+        _busy ||
+        _picking ||
+        _registeredProject != null ||
+        store == null ||
+        request == null ||
+        directory == null) {
+      return;
+    }
+    _registering = true;
+    _registrationError = null;
+    update();
+    try {
+      final project = await HtmlProjectStore(store.records).register(
+        SavedHtmlStarter(directory: directory, input: request.input),
+        authorize: () {
+          if (isDisposed) throw StateError('Registration revoked.');
+        },
+      );
+      if (!isDisposed) {
+        _registeredProject = project;
+        _saved = true;
+      }
+    } catch (_) {
+      if (!isDisposed) _registrationError = 'HTML project could not be registered. Exported files are retained. Check local storage and retry registration; do not export again.';
+    } finally {
+      _registering = false;
+      update();
+    }
+  }
+
   bool _saving = false, _saved = false;
   String? _saveError;
   bool get saving => _saving;
@@ -94,6 +141,7 @@ class HtmlExportController extends BaseController {
     final directory = _exportedDirectory;
     if (isDisposed ||
         _saving ||
+        _registering ||
         _saved ||
         _busy ||
         store == null ||
@@ -208,7 +256,7 @@ class HtmlExportController extends BaseController {
   HtmlExportRequest? get review => _review;
 
   void edit({String? title, String? description, String? folder}) {
-    if (isDisposed || _busy || _picking || _saving) return;
+    if (isDisposed || _busy || _picking || _saving || _registering) return;
     _title = title ?? _title;
     _description = description ?? _description;
     _folder = folder ?? _folder;
@@ -232,6 +280,8 @@ class HtmlExportController extends BaseController {
         : null;
     _exportedRequest = null;
     _saved = false;
+    _registeredProject = null;
+    _registrationError = null;
     _saveError = null;
     if (preview.url != null || preview.busy || preview.cleanupFailed) {
       unawaited(preview.stop());
@@ -244,7 +294,14 @@ class HtmlExportController extends BaseController {
   }
 
   Future<void> pickParent() async {
-    if (isDisposed || _busy || _picking || _saving || !supported) return;
+    if (isDisposed ||
+        _busy ||
+        _picking ||
+        _saving ||
+        _registering ||
+        !supported) {
+      return;
+    }
     _invalidate();
     _picking = true;
     update();
@@ -262,7 +319,7 @@ class HtmlExportController extends BaseController {
   }
 
   void prepareReview() {
-    if (isDisposed || _busy || _picking || _saving) return;
+    if (isDisposed || _busy || _picking || _saving || _registering) return;
     _invalidate();
     try {
       if (!supported) {
@@ -292,6 +349,7 @@ class HtmlExportController extends BaseController {
         _busy ||
         _picking ||
         _saving ||
+        _registering ||
         !supported ||
         !identical(displayedReview, _review)) {
       return;

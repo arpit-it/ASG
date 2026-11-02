@@ -11074,3 +11074,61 @@ PR465 publication: tested local cb2ed40e/plugin20e8072a share exacttree5962cdd4;
 all nine remote blobs and421validation inputs match. This followup changes
 only status/PR linkage; runtime inputs unchanged. Independent exact-final
 review, actual required CI and protected reviewer merge remain gates.
+
+
+### Creation-time HTML runner discovery verified merged — PR #465
+Bounded F11/#402 increment Done on `402-creation-runner-discovery`, scope6587720764.
+Final352acbb0cf7c2a4535597ef397e2ac319ef5102a/testedlocal99a495528aeaec88d92f94c21ed8b821269d6720
+share exacttree1891caaf79ee50c43abf7cb2e36b0e0b45bc4b7f; allnineblobs/421inputs match.
+Independent approval5742966693/finalgate5743052822 found no blockers; reviewer32focused/
+nineinventory passed. Parent1339Flutter/nine explicit skips,32focused,format394,
+analyzer, freshweb/Wasm/isolatedmacOSdebug/nineinventory passed. Actual required
+CI41520539566 BOTH SUCCESS: Flutter125535567002/Python125535567521; reviewer inspected
+1312Linux/33skips,17Chrome,transport/staticHTML/webWasm/realgeneratedFlutter and eight
+Python fixture suites. Protected expected-head reviewer plugin squash merge
+661d59f840eab612637f39a4bc78ad95ed4a3e8e at2026-11-02T20:43:18Z freshly verified by parent
+as currentmain/mergedPR; #402 and Deferred#400 remain OPEN. Signed merge tree/sole
+parent32735587 hash-verified/reconstructed before atomic localref synchronization;
+localmain/originmain0/0,indexempty,both originalIDEedits byte-identical. Creation and
+export now share the read-only versioned HTML capability panel; discovery grants
+no registration/check/preview/Build authority. Full HTML registration, approved-task
+integration, edited-source execution and fullF11 remain Pending. Existing8765health
+unavailable; no inference/model/app launch/stableapp replacement/support claim.
+Finalmerge bookkeeping retained locally for next normal reviewed PR; no direct-main
+publication,newissue,cadence/notification change. Receipts:/private/tmp/asg465-publication.json,
+/private/tmp/asg402-discovery-inputs.json,/private/tmp/asg465-reviewed-merge.json,
+/private/tmp/asg465-review-evidence.json,/private/tmp/asg465-safe-sync.py.
+
+
+### Explicit fixed HTML starter registration — F11 / #402
+In progress on `402-html-project-registration`, scope6588315396, from verified
+PR465 merge661d59f840eab612637f39a4bc78ad95ed4a3e8e. No competing active run or
+open PR at selection. Existing exports could only reopen through a separate
+starter library. Explicit registration now conditionally commits Projects and
+original starter metadata together; failures retain exports and offer save-only
+retry. Conflicting/corrupt/ambiguous identities refuse replacement. Registration
+also remembers the starter, without selecting a project or granting Build rights.
+Projects and restored Home route HTML to its dedicated workspace before creating
+a Flutter controller. Missing/changed metadata refuses; opening requests no file
+checks/model/preview. Fresh starter checks and preview remain explicit and refuse
+edited source. Dashboard refreshes after export registration and labels HTML
+status without Flutter build evidence. Existing preference/record formats retained.
+Acceptance: durable database reopen, transaction conflicts/failure/retry/disposal,
+unchanged unrelated projects, desktop/320px2x export registration and Projects/Home
+reopen, real fixed-file export/check/preview/Stop and edited-source refusal.
+Dependencies: delivered HTML export/store/runner; no deferred hardware required.
+Full synthesis, approved-task integration, edited-source execution and full F11
+remain Pending/open; Deferred #400 retained. Independent exact-final review,
+actual required CI and reviewer merge remain gates. No new issue/model download/
+installed-app replacement/deployment or cadence/notification change.
+
+Validation: final isolated-source 1,348 Flutter tests passed, nine explicit skips;
+49 focused tests and nine registration-specific tests passed, including actual
+fixed-file export/check/preview/Stop/refusal. Formatter398 unchanged, analyzer
+clean, fresh web/Wasm and isolated macOS debug builds, nine inventory regressions
+passed. Source/test/tool/config validation inputs match manifest
+/private/tmp/asg402-registration-inputs.json (453). Initial checkout full suite
+license scan traversed unrelated untracked tools/.mlx-venv; clean isolated source
+full rerun passed. Initial lazy-scroll/status-text test harness failures and lint
+findings corrected before final checks. Existing8765health unavailable; no model
+launch/inference/app-launch/support claim. Awaiting publication/review/CI/merge.
