@@ -10206,3 +10206,41 @@ Currentrun 2026-11-02T14:26:12.463879+00:00
 In progress on `396-memory-observation-validation` from verified PR452 merge359b85f, scope6579709217. Reproduced missing-counter zero-headroom defect; strict observation completeness, unambiguous decimal counters/positive total and overflow-safe aggregate bounds preserve unknown data honestly. Actual Mac read-only probe and focused50 hardware/catalog tests passed. Final full checks, exact-tree plugin publication, independent final review, CI and reviewer protected merge pending. FullF22/F15 unchecked; external acceptance Deferred400. No new issue or model/stable-app changes.
 
 Final tracked-source validation:1258 Flutter tests passed/nine explicit skips; format354/analyzer clean, web includingWasm dryrun and isolatedmacOSdebug builds passed. Ninefinalinventory tests passed; all373tracked Dart/Python validation inputs match the tested snapshot. Actual Mac read-only probe plus missing/duplicate/malformed/nondecimal/zero/overflow/over-total reports and honest catalog fallback covered. Root first run included ignored thirdparty license files; clean tracked-source rerun passed. Existing8765health unavailable (URLError); no model launch/download/live inference or stableapp replacement. Awaiting exacttree plugin publication, independent finalrevision review, requiredCI and protected reviewer merge; fullF22/F15unchecked, Deferred400 retained.
+
+
+### macOS memory-observation validation verified merged — PR #453
+Bounded F22/#396 increment Done on `396-memory-observation-validation`, scope6579709217.
+Tested local e8bfb1c4634558cd89fb4ee9d54252fe19305e3a and plugin-published
+ ea47f782f59ac948232e671b582bf9bc9aebdb5d share exact tree
+f3515d9a4f7fe0702a0624d416ae9e7bd802c2bc; all six publication blobs matched.
+Independent exact-final review5738306894/finalgate6580174570 approved unchanged
+head without blockers (COMMENT verdict, shared-owner identity; no second-account claim).
+Independent50Flutter/nineinventory and actual nonnull consistent Mac read-only
+memory probe passed; all373tracked Dart/Python validation inputs matched.
+RequiredCI41464683183 BOTH SUCCESS: Flutter125342355074 fullsuite/actualChrome
+storage/browsertransport/web/independentgeneratedproject verification;
+Python125342355672 runtime/process/inventory/confinement fixtures.
+Parent1258Flutter/nineexplicit skips,format354/analyzer/web/Wasm/isolatedmacOSdebug
+andnineinventory passed. Missing-counter zero regression reproduced before fix;
+nondecimal totals fixed before final isolated-source full retest. Missing,
+malformed, duplicate, overflow and over-total observations remain unavailable;
+valid zero and known total/Apple Silicon observations preserved. No model launch,
+download, inference/support claim or stable-app replacement. Existing8765health unavailable.
+Reviewer protected-plugin squashmerged PR453 as
+dd9fd7385c75f2456158d527d7db57cfb6bd38e6 at2026-11-02T14:51:09Z.
+Parent freshly verified mergedPR/currentmain/#396OPEN/signedexacttree/soleparent
+359b85ff; commit-object hash verified before guarded local synchronization.
+Localmain/originmain0/0, emptyindex, both originalIDEedits byte-identical.
+FullF22/F15 remain unchecked; external acceptanceDeferred400. Remaining verified
+profiles/context/capabilities Pending396. Final merge bookkeeping retained for
+next normal reviewed development PR; no new issue/cadence/notification change.
+Both automation labels applied. Receipts:/private/tmp/asg453-publication.json,
+/private/tmp/asg453-validation-inputs.json,/private/tmp/asg453-reviewed-merge.json,
+/private/tmp/asg453-safe-sync.py.
+Currentrun 2026-11-02T14:52:16.625627+00:00
+
+
+### Explicit output-stack selection — F11 / #402
+In progress on `402-explicit-output-stack` from verified PR453 merge dd9fd738, scope6580406406. No competing active run/open PR. Wizard previously unconditionally chose Flutter for every approach and exposed no output stack choice. Typed initial Flutter/HTML/Python catalog and visible status/requirements now distinguish existing prototype/fixed-web paths from planned adapters. Planned/unknown stacks refuse review/direct creation; changing approach cannot silently replace the stack; changing a reviewed stack invalidates review. Existing Flutter schema and flow retained. Focused17 tests including actual wizard refusal/recovery at desktop and320px2x passed. Full checks/builds, plugin publication, independent exact-final review, requiredCI and reviewer merge pending. F11/F22/F15 remain unchecked; Linux and external platform acceptance Deferred400. No new issue, model download/inference or stable-app change.
+
+Final isolated tracked-source checks:1263 Flutter tests passed/nine explicit skips; formatter356/analyzer clean, web includingWasm dry run and macOS debug builds passed; nine acceptance-inventory tests passed. Focused17 controller/widget regressions include planned/unknown/direct creation refusal, approach/back retention, stale review/disposal and real dialog refusal→explicitFlutter recovery at desktop/320px2x. All378tracked Dart/Python inputs match tested snapshot. Toolchain guidance explicitly avoids version/readiness claims. Awaiting exact-tree plugin publication, independent final-revision review, requiredCI and protected reviewer merge; F11 remains In progress and HTML/Python runners Planned. Retained PR453 verified merge bookkeeping; no model launch/inference/stable-app replacement.
