@@ -270,8 +270,9 @@ The saved development automation was updated through its management tool; active
   - Scope: extend existing host interfaces with capabilities for starter creation, verification, candidate confinement, preview and process cleanup. Discover configured SDK/Python executables and validate paths without machine-specific defaults. Preserve the fixed operation allowlist, consent/approval binding, exclusive output folders and current macOS behavior. Mobile/web clients retain explicit unsupported host operations; remote execution is outside this task.
   - Acceptance: UI shows available and unavailable operations with actionable reasons; unsupported confinement refuses candidate execution before any source is run. Each enabled host passes real new-project resolve/analyze/test/web-build/serve, Stop/deadline/output-limit and descendant-cleanup checks, restart/uncertain-checkpoint refusal, stale-approval refusal and last-working-output preservation. Enabling starter generation must not implicitly enable candidate execution. Model-written candidate/repair support needs independently reviewed platform isolation and real deny-write/network/process-escape probes at the established boundary.
   - Validation/delivery: one narrowly scoped issue/PR per host/capability milestone, actual Linux/Windows builds and launches on their respective hosts, plus macOS regression coverage. Include paths with spaces, missing toolchains, occupied ports, failed previews and interrupted writes. Record tested versus unavailable capabilities separately; keep F16 unchecked until promised host increments satisfy acceptance and normal independent review/CI/verified merge. Broader generated targets remain F11.
-- [ ] F11 Multi-language project generation, runners and explicit stack selection — In progress (selection groundwork #402); depends on F04 and F05
-  - Confirmed fixed HTML source export — Awaiting merge through [PR #456](https://github.com/arpit-it/ASG/pull/456): #402, `402-html-source-export`, scope6581732988; exact content/destination confirmation, exclusive native fixed-template export and partial-file preservation. HTML creation/runner/preview remain Planned; see current ledger entry.
+- [ ] F11 Multi-language project generation, runners and explicit stack selection — In progress (#402); depends on F04 and F05
+  - App-owned fixed HTML starter export — In progress, #402, `402-html-export-flow`, scope6582414659. Dashboard export-only screen, exact review/confirmation, Stop/disposal write-authority revocation and retained partial-path recovery; no project registration or runner/preview claim.
+  - Confirmed fixed HTML source export — Done (bounded service foundation), [PR #456](https://github.com/arpit-it/ASG/pull/456), finala5700218 approved5739630203/finalgate6582307464, requiredCI41479787991 passed; reviewer merge209082edcd307baf80ac68b14e6fcc04b41657c1 verified at2026-11-02T16:24:45Z: #402, `402-html-source-export`, scope6581732988; exact content/destination confirmation, exclusive native fixed-template export and partial-file preservation. HTML creation/runner/preview remain Planned; see current ledger entry.
   - Independent HTML source-template prerequisite — Done (bounded foundation), [PR #455](https://github.com/arpit-it/ASG/pull/455), final25eef994 approved5739190678/finalgate5739284468, requiredCI41474565132 passed; verified reviewer mergeebe9c6015e3c9783a138de4fcc58e06c05517c7a at2026-11-02T15:51:58Z: #402, `402-html-source-template`, scope6581048649. Fixed independent web sources and actualChrome source acceptance only; production HTML creation remains Planned until approval/runner/preview integration.
   - Explicit output-stack choice — Done (bounded groundwork), [PR #454](https://github.com/arpit-it/ASG/pull/454), final63dc1386 approved5738661277/finalgate6580720505, requiredCI41468685055 passed; verified reviewer merge4a693f7ee141e60a54b05aa1278b5380ad5495a7 at2026-11-02T15:15:08Z: [#402](https://github.com/arpit-it/ASG/issues/402), `402-explicit-output-stack`, scope6580406406. Typed Flutter/HTML/Python choices with honest implemented/planned status, target/toolchain guidance and review summary. Planned/unknown choices refuse review and direct creation; approach changes retain stack selection and changing a reviewed stack requires re-review. Preserve Flutter schema/current workflow. Does not deliver HTML/Python adapters or full F11. Delivered project/generation contracts suffice; F22 verified-model acceptance and F16 Linux host validation remain open/Deferred400, not a global implementation gate. Controller/widget narrow2x tests, full checks/builds, independent finalreview/requiredCI/protected merge required.
   - Source/evidence: owner request on 28 October 2026 extends the existing adapter task, including Java, Kotlin, PHP and the remaining mainstream languages, each with real runners; HTML projects styled with CSS are one adapter in that broader scope. The app's implementation language does not constrain the output language. Current delivered output remains the bounded Flutter web adapter; other stacks are planned until verified.
@@ -11286,3 +11287,66 @@ also rechecked at every authorization/write boundary after asynchronous path
 inspection, covering a concurrent call admitted before uncertainty is observed.
 Awaiting merge through PR #456 after plugin publication, fresh independent exact-
 revision review and fresh required CI; initial c19da9bc approval is not claimed.
+
+
+### Confirmed fixed HTML source export verified merged — PR #456
+Bounded F11/#402 service foundation Done on `402-html-source-export`, scope6581732988.
+Tested local8582c8dbbd348acd68d6dd11cb4866dc2717c590 and plugin-published final
+a57002180148d1d4ddd7ac4e7d5c9212afd57b94 share exact tree
+1a383a87b2a3afaeda92e30c3291945e21b63e28; allseven remote blobs/386source inputs match.
+Fresh independent final review5739630203/finalgate6582307464 approved unchanged head
+with no blockers (COMMENT verdict, shared-owner identity; no separate-account claim).
+Initial review5739536897 mkdir-timeout blocker was fixed and freshly reviewed.
+Independent14focused/nineinventory passed, including actual delayed-helper kill/reap,
+launch failure, unconfirmed-exit/no-replay/reconciliation and real filesystem cases.
+Parent1277Flutter/nine explicit skips,format362/analyzer/fresh web/Wasm/macOSdebug
+andnineinventory passed. RequiredCI41479787991 BOTH SUCCESS: Python125394702426
+and Flutter125394702486 (1261Linux/22skips,17Chrome,actualtransport/HTML,web/Wasm,
+independentgeneratedFlutter verification). No fixture result is live inference.
+Reviewer protected-plugin squashmerged PR456 as
+209082edcd307baf80ac68b14e6fcc04b41657c1 at2026-11-02T16:24:45Z.
+Parent freshly verified mergedPR/currentmain/#402OPEN/signedexacttree/soleparent
+ ebe9c601; reconstructed commit hash verified before guarded atomic local-ref sync.
+Localmain/originmain0/0, emptyindex, both originalIDE edits byte-identical.
+Fixed confirmed export service is delivered; actual app confirmation/creation,
+registered runner, preview/Stop/recovery remain Pending. HTML stays Planned and
+fullF11/#402 unchecked/open; Deferred400 retained. No model launch/download/inference,
+stable-app replacement or deployment. Local8765health check could not connect;
+no model readiness or inference claim. No newissue/cadence/notification change;
+bothautomationlabels applied. Final merge bookkeeping retained for the next normal
+reviewed development PR, without direct-main publication.
+Receipts:/private/tmp/asg456-publication.json,/private/tmp/asg456-validation-inputs.json,
+/private/tmp/asg456-reviewed-merge.json,/private/tmp/asg456-safe-sync.py.
+
+
+### App-owned fixed HTML starter export — F11 / #402
+In progress on `402-html-export-flow` from verified PR #456 merge
+209082edcd307baf80ac68b14e6fcc04b41657c1, scope6582414659. Dashboard export
+screen owns bounded text/folder input, exact review and explicit confirmation.
+Controller invalidates edited/stale reviews, refuses duplicate dispatch and revokes
+later write authority on Stop/disposal; already-dispatched writes may finish.
+Partial/uncertain paths remain visible and require fresh review. Application-lifetime
+native exporter retains uncertain process ownership across screen reopening.
+Export is fixed HTML/CSS/JavaScript/local SVG only, with no project registration,
+model request, checks or preview. HTML adapter creation/runner/preview integration
+remains Planned and full F11/#402 open. Delivered template/export services suffice;
+Deferred #400 hardware is unrelated. Preserve verified #456 merge bookkeeping.
+Controller, real-filesystem screen and 320px/2x layout checks, full Flutter checks,
+web/macOS builds, plugin publication, independent exact-final review, required CI
+and reviewer protected merge remain delivery gates. No new issue/model/stable-app
+or cadence/notification changes.
+
+Final isolated-source checks: 1,286 Flutter tests passed/nine explicit skips;
+formatter368/analyzer clean, web including Wasm dry run passed. Nine acceptance-
+inventory tests passed after refreshing historical comparisons. Focused nine tests
+cover dashboard navigation without record writes, unsupported host, stale/duplicate
+confirmation, Stop/disposal authority, retained uncertain PID/path, and actual
+five-file export through the screen at320px/2x. Widget harness was corrected to
+settle real scrolling/keyboard and initiate filesystem work in its real async zone;
+no failed harness run is claimed as acceptance. Existing8765health could not connect;
+no model launch/inference/support claim. All392 Dart/Python inputs match the tested
+isolated copy. Exact-tree plugin publication, independent final review, required CI
+and reviewer protected merge remain gates. FullF11/#402 open; HTML runner/preview
+and project registration remain Planned.
+
+Isolated macOS debug build also passed; stable application was not replaced.

@@ -9,6 +9,9 @@ import '../services/studio_store.dart';
 import '../services/model_settings_store.dart';
 import '../services/folder_picker.dart';
 import 'model_settings.dart';
+import '../controllers/html_export_controller.dart';
+import '../services/html/html_source_export_factory.dart';
+import 'html_export_screen.dart';
 import 'app_licenses_button.dart';
 import 'runtime_setup_screen.dart';
 import '../controllers/runtime_setup_controller.dart';
@@ -167,6 +170,19 @@ class _DashboardState extends State<Dashboard> {
                     onPressed: create,
                     icon: const Icon(Icons.add),
                     label: const Text('Let’s create something'),
+                  ),
+                  OutlinedButton.icon(
+                    onPressed: () => Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => HtmlExportScreen(
+                          controller: HtmlExportController(
+                            exporter: createHtmlSourceExport(),
+                          ),
+                        ),
+                      ),
+                    ),
+                    icon: const Icon(Icons.html),
+                    label: const Text('Export HTML starter'),
                   ),
                   OutlinedButton.icon(
                     onPressed: () async {
