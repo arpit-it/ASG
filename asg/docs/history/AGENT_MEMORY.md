@@ -8945,3 +8945,54 @@ independent review, required CI and protected reviewer merge still required.
 Logs /private/tmp/asg396-limits-*.log; input manifest
 /private/tmp/asg396-limits-inputs.json. Full F22/F15 unchecked; #396 remains open.
 2026-11-02T05:03:25.454974+00:00.
+
+
+### Advertised model request limits verified merged — PR #431
+
+Bounded increment Done on `396-advertised-request-limits`, issue #396.
+Tested local `67e31aad34fdcca03a74aa589f18369797c42929` and published final
+`f4509288cab26fc73904293b564329d0676ff990` share exact tree
+`9a911a52dcdbdb5c00cc13add8e751e59c4c2c29`; all10 published blobs verified.
+Independent approval5732303549/finalgate5732338076: no blockers; all829remote
+blob SHAs/modes and350validationinputs match. Independent10Flutter inventory
+(actualHTTP/320px2x),27Python actualHTTP and9inventory tests passed. RequiredCI
+41391979196 BOTH SUCCESS: Flutter125105151926 full suite,actualChrome,web and
+actual independent generated-project verification;Python125105152010157tests/
+fourplatformskips. Parent157Python/two skips,1179tracked-sourceFlutter/nine
+skips,10focused,formatter332/analyzer/webWasm/macOSdebug passed. Initial local
+MLX environment license-scan contamination excluded by exact tracked-source
+retest; regenerated source-comparison inventory passed final Python retest.
+Read-only server-declared ceilings/context remain unverified assertions; no
+request/settings mutation, verified capacity/model identity or inference claim.
+Existing runtime unavailable; no model started/downloaded/stable-app change.
+
+Reviewer protected-plugin merged https://github.com/arpit-it/ASG/pull/431 as
+`d3767cc6c9514ada6e0d6a22d98f428c7f828b89` at2026-11-02T05:12:43Z. Parent
+freshly pluginverified mergedPR/currentmain/#396OPEN and verified signed
+exacttree/soleparentbd117a2 before guarded sync. Localmain/originmain0/0,
+indexempty and both unrelatedIDEedits byte-identical. Evidence:
+/private/tmp/asg396-limits-publication.json,/private/tmp/asg396-limits-inputs.json,
+/private/tmp/asg431-reviewed-merge.json,/private/tmp/asg431-safe-sync.py.
+Remaining verified profiles/context/real-model evidence Pending #396; no active
+implementation after merge. FullF22/F15unchecked, externalacceptanceDeferred400.
+Finalcanonicalbookkeeping retained for next normal reviewed development PR.
+No newissue/download/stable-app/cadence/notificationchange; bothlabels applied.
+Current run time 2026-11-02T05:13:48.507697+00:00.
+
+
+### Existing 9B live MLX regression — issue #396
+Awaiting merge on `396-live-mlx-profile`, base d3767cc (verified PR #431).
+No competing active run/open PR at selection. Explicit reusable probe and
+actual offline 9B observations: JSON, structured SSE/nine chunks, reported
+token counts20/2 and31/10, disconnect release0.111s, successful retry. Warm
+throughput79–144tok/s and process-high-water5.32GB are bounded observations,
+not verified capacity. Metadata/bridge/probe hashes retained; weights counted,
+not hashed. Upstream revision/license/HTTP identity unverified. Existing offline
+checkpoint/environment, isolated18765bridge; no download/install/stable-app or
+settings change. Sandbox Metal refusal resolved with authorized native access.
+Evidence: development/acceptance/2026-11-02-live-mlx-profile/. FullF22/F15
+unchecked; remaining profiles/context/larger-model evidence Pending and
+externalacceptanceDeferred400. Independent exact-final review, required CI
+and protected reviewer merge remain gates.
+
+Final local validation: actual final-probe offline MLX run passed; five CLI refusal and nine acceptance-inventory regressions passed. Backend/actual HTTP suites passed (counts recorded in PR). No application/runtime source changed, so no redundant local Flutter build; required CI still runs full Flutter/Chrome/web/generated-project checks. Final probe/bridge hashes recorded in observations.json. Owned model process stopped after validation.

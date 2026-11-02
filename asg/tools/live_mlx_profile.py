@@ -1,0 +1,167 @@
+# SPDX-License-Identifier: MPL-2.0
+# Copyright 2026 Arpit Sinha
+"""Opt-in synthetic regression for an ALREADY RUNNING offline MLX bridge.
+
+Never starts, downloads or changes a model. Synthetic prompts only. Reports
+observations, not authenticated identity, verified context or product support.
+Run alone: the disconnect check intentionally interrupts its owned request.
+"""
+import argparse
+import http.client, json, time, hashlib, platform, importlib.metadata, sys
+from urllib.parse import urlsplit
+from pathlib import Path
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--origin', required=True)
+parser.add_argument('--checkpoint', type=Path, required=True)
+parser.add_argument('--model', required=True)
+parser.add_argument('--source-revision', required=True)
+parser.add_argument('--output', type=Path, required=True)
+parser.add_argument('--confirm-live', action='store_true', required=True)
+args = parser.parse_args()
+try:
+    origin = urlsplit(args.origin)
+    origin.port
+except ValueError:
+    parser.error('Use a valid numeric loopback HTTP origin.')
+if origin.scheme != 'http' or origin.hostname not in ('127.0.0.1', '::1') or origin.username or origin.password or origin.path or origin.query or origin.fragment:
+    parser.error('Use a bare numeric loopback HTTP origin.')
+if not args.model or len(args.model) > 256 or args.model.strip() != args.model or any((ord(c) < 32 or ord(c) == 127 for c in args.model)):
+    parser.error('Use the exact configured model ID.')
+if len(args.source_revision) != 40 or any((c not in '0123456789abcdef' for c in args.source_revision)):
+    parser.error('Use the tested 40-character source commit.')
+if args.output.exists():
+    parser.error('Output already exists; choose a new report path.')
+
+def connection():
+    return http.client.HTTPConnection(origin.hostname, origin.port or 80, timeout=30)
+
+def call(path, body=None):
+    c = connection()
+    c.request('GET' if body is None else 'POST', path, body=None if body is None else json.dumps(body), headers={'Content-Type': 'application/json'})
+    r = c.getresponse()
+    status = r.status
+    raw = r.read(65537)
+    assert len(raw) <= 65536
+    data = json.loads(raw)
+    c.close()
+    return (status, data)
+
+def request(text, tokens=128, stream=False):
+    return {'model': args.model, 'messages': [{'role': 'user', 'content': text}], 'max_tokens': tokens, 'stream': stream}
+
+def safe_metrics(value, budget):
+    import math
+    assert value['finish_reason'] == 'stop'
+    result = {'finish_reason': 'stop'}
+    for key, limit in [('prompt_tokens', 4096), ('completion_tokens', budget)]:
+        count = value[key]
+        assert type(count) is int and 0 < count <= limit
+        result[key] = count
+    for key in ['tokens_per_second', 'peak_memory_gb']:
+        number = value[key]
+        assert type(number) in (int, float) and math.isfinite(number) and (0 < number < 1000000)
+        result[key] = number
+    return result
+
+def run():
+    if not __debug__:
+        raise RuntimeError('Assertions must be enabled')
+    report = {'schema_version': 1, 'scope': 'Observed isolated live 9B MLX regression only; no verified total context, model identity authentication, app/manual acceptance, larger model or other platform support.', 'source_revision': args.source_revision, 'host': platform.mac_ver()[0], 'architecture': platform.machine(), 'dependencies': {n: importlib.metadata.version(n) for n in ['mlx', 'mlx-lm', 'transformers', 'tokenizers']}, 'checks': {}}
+    status, h = call('/health')
+    assert status == 200 and h['backend'] == 'mlx' and (h['device'] == 'metal') and (h['phase'] == 'idle')
+    status, inv = call('/v1/models')
+    assert status == 200
+    assert inv['data'][0]['id'] == args.model
+    require_limits = inv['data'][0]['asg_request_limits']
+    assert require_limits == {'schema_version': 1, 'max_input_tokens': 4096, 'max_output_tokens': 4096, 'checkpoint_context_tokens': require_limits['checkpoint_context_tokens']}
+    assert all(type(require_limits[k]) is int for k in ('schema_version', 'max_input_tokens', 'max_output_tokens'))
+    context = require_limits['checkpoint_context_tokens']
+    assert context is None or (type(context) is int and 0 < context <= 9007199254740991)
+    report['advertised_limits'] = require_limits
+    folder = args.checkpoint
+    assert folder.is_dir() and (not folder.is_symlink())
+    assert h['model'] == args.model
+    report['provenance'] = 'Operator-selected source revision and local checkpoint metadata; weights counted but not hashed; HTTP backend/device/model remain server assertions, not authentication.'
+    report['metadata_sha256'] = {n: hashlib.sha256((folder / n).read_bytes()).hexdigest() for n in ['config.json', 'tokenizer_config.json', 'model.safetensors.index.json'] if (folder / n).is_file() and (not (folder / n).is_symlink()) and ((folder / n).stat().st_size <= 1048576)}
+    assert len(report['metadata_sha256']) == 3
+    weights = list(folder.glob('*.safetensors'))
+    assert weights and all(p.is_file() and not p.is_symlink() for p in weights)
+    report['weights'] = {'file_count': len(list(folder.glob('*.safetensors'))), 'disk_bytes': sum((p.stat().st_size for p in folder.glob('*.safetensors')))}
+    start = time.monotonic()
+    status, result = call('/v1/chat/completions', request('Reply with exactly the single word READY.', 32))
+    assert status == 200 and result['choices'][0]['finish_reason'] == 'stop'
+    assert result['choices'][0]['message']['content'].strip() == 'READY'
+    metrics = safe_metrics(result['metrics'], 32)
+    assert type(metrics['prompt_tokens']) is int and metrics['prompt_tokens'] > 0 and (0 < metrics['completion_tokens'] <= 32)
+    report['checks']['json'] = {'seconds': round(time.monotonic() - start, 3), 'metrics': metrics}
+    c = connection()
+    c.request('POST', '/v1/chat/completions', json.dumps(request('Return only this exact JSON object, without markdown: {"status":"ready","count":3}', 128, True)), {'Content-Type': 'application/json'})
+    r = c.getresponse()
+    assert r.status == 200
+    parts = []
+    final = None
+    done = False
+    start = time.monotonic()
+    total = 0
+    for line in iter(lambda: r.readline(65537), b''):
+        total += len(line)
+        assert total <= 65536
+        assert len(line) <= 65536 and time.monotonic() - start < 90
+        if not line.startswith(b'data: '):
+            continue
+        data = line[6:].strip()
+        if data == b'[DONE]':
+            done = True
+            break
+        value = json.loads(data)
+        if 'error' in value:
+            raise AssertionError('Stream error')
+        for choice in value.get('choices', []):
+            if choice.get('delta', {}).get('content'):
+                parts.append(choice['delta']['content'])
+        if 'metrics' in value:
+            final = safe_metrics(value['metrics'], 128)
+    c.close()
+    assert done and final['finish_reason'] == 'stop' and (len(parts) > 1)
+    assert json.loads(''.join(parts).strip()) == {'status': 'ready', 'count': 3}
+    report['checks']['structured_sse'] = {'seconds': round(time.monotonic() - start, 3), 'content_chunks': len(parts), 'metrics': final}
+    start = time.monotonic()
+    observed = False
+    c = connection()
+    c.request('POST', '/v1/chat/completions', json.dumps(request('List the integers from 1 through 1000, one integer per line.', 4096, True)), {'Content-Type': 'application/json'})
+    r = c.getresponse()
+    assert r.status == 200
+    total = 0
+    for line in iter(lambda: r.readline(65537), b''):
+        total += len(line)
+        assert total <= 65536
+        assert len(line) <= 65536 and time.monotonic() - start < 90
+        if line.startswith(b'data: '):
+            v = json.loads(line[6:])
+            if any((x.get('delta', {}).get('content') for x in v.get('choices', []))):
+                observed = True
+                break
+    r.close()
+    c.close()
+    assert observed
+    start = time.monotonic()
+    while time.monotonic() - start < 15:
+        status, h = call('/health')
+        if h['phase'] == 'idle':
+            break
+        time.sleep(0.1)
+    assert h['phase'] == 'idle' and time.monotonic() - start < 15
+    report['checks']['disconnect'] = {'idle_seconds': round(time.monotonic() - start, 3), 'scope': 'Client disconnect observed; not a native-kernel preemption or process-tree guarantee.'}
+    status, result = call('/v1/chat/completions', request('Reply with exactly the single word READY.', 32))
+    assert status == 200 and result['choices'][0]['message']['content'].strip() == 'READY'
+    report['checks']['retry'] = {'metrics': safe_metrics(result['metrics'], 32)}
+    report['recorded_at'] = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
+    with args.output.open('x') as output:
+        output.write(json.dumps(report, indent=2, allow_nan=False) + '\n')
+    print('MLX synthetic regression passed; sanitized observations saved.')
+if __name__ == '__main__':
+    try:
+        run()
+    except Exception:
+        print('Live regression failed; no passing report written. Check the owned runtime and retry with a new output path.', file=sys.stderr)
+        sys.exit(1)

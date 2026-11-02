@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "scope": "Observed isolated live 9B MLX regression only; no verified total context, model identity authentication, app/manual acceptance, larger model or other platform support.",
+  "source_revision": "d3767cc6c9514ada6e0d6a22d98f428c7f828b89",
+  "host": "27.0.1",
+  "architecture": "arm64",
+  "dependencies": {
+    "mlx": "0.32.4",
+    "mlx-lm": "0.32.2",
+    "transformers": "5.20.2",
+    "tokenizers": "0.23.3"
+  },
+  "checks": {
+    "json": {
+      "seconds": 0.183,
+      "metrics": {
+        "finish_reason": "stop",
+        "prompt_tokens": 20,
+        "completion_tokens": 2,
+        "tokens_per_second": 138.05361676872747,
+        "peak_memory_gb": 5.317321244
+      }
+    },
+    "structured_sse": {
+      "seconds": 0.211,
+      "content_chunks": 9,
+      "metrics": {
+        "finish_reason": "stop",
+        "prompt_tokens": 31,
+        "completion_tokens": 10,
+        "tokens_per_second": 78.63278547535243,
+        "peak_memory_gb": 5.317321244
+      }
+    },
+    "disconnect": {
+      "idle_seconds": 0.111,
+      "scope": "Client disconnect observed; not a native-kernel preemption or process-tree guarantee."
+    },
+    "retry": {
+      "metrics": {
+        "finish_reason": "stop",
+        "prompt_tokens": 20,
+        "completion_tokens": 2,
+        "tokens_per_second": 139.72171795780466,
+        "peak_memory_gb": 5.317321244
+      }
+    }
+  },
+  "advertised_limits": {
+    "schema_version": 1,
+    "max_input_tokens": 4096,
+    "max_output_tokens": 4096,
+    "checkpoint_context_tokens": 262144
+  },
+  "provenance": "Operator-selected source revision and local checkpoint metadata; weights counted but not hashed; HTTP backend/device/model remain server assertions, not authentication.",
+  "metadata_sha256": {
+    "config.json": "15303ca367065b31713bb4573030718cdf1fc31d5bca5b4a989a68ef20e9540d",
+    "tokenizer_config.json": "86f01837a638275f2d3479804e79802aaff0e3ccef15e5f29dd6afbe6551daed",
+    "model.safetensors.index.json": "d50465249b0ec7eb602558c4d4b7d0c7516bc99548d8d2a3b3c3a3805a93e607"
+  },
+  "weights": {
+    "file_count": 1,
+    "disk_bytes": 5038162465
+  },
+  "recorded_at": "2026-11-02T05:34:52Z",
+  "validation_inputs_sha256": {
+    "tools/qwen_server.py": "7093a6d3d6d466a3f7beaae60841d47fc400227c535ddc3ef91f3dc4ed12b0e8",
+    "tools/qwen_backends.py": "be3565f381e277ea8eae20435551568d111e02e2eb903003897abbadf7646750",
+    "tools/live_mlx_profile.py": "f8aacd3efdb8315cbcfc10f642a3fd36900d9ac1e69516b981bacb1ce6623697"
+  }
+}
