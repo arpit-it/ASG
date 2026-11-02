@@ -9657,3 +9657,64 @@ app change. Awaiting merge: exact-tree plugin publication, independent final
 review, requiredCI and protected reviewer merge remain gates. Keep396open and
 fullF22/F15unchecked; external acceptanceDeferred400.
 Recorded 2026-11-02T10:20:23.731587+00:00
+
+
+### Saved explicit connection-test observations verified merged — PR #443
+Bounded increment Done for F22/#396 on `396-saved-test-observations`.
+Tested local a12f940e18d7223739944548d15a27095e8acb95 and published final
+b675db0cbc8f40e1dcb30dd7bf478faac81c5d27 share exact tree
+f7ba801a6df4ef826db8116ed26f4ebebe4c63f3; all12 publication blobs match.
+Independent approval5735118928/finalgate5735168584 found no blockers;
+40focusedFlutter/nineinventory and actual settings Test→explicitSave→historical
+UI probe passed, exactly1HTTPrequest/no automaticwrite/no reinference. All847
+remote blobs/modes and370validation inputs match. RequiredCI41428262924 BOTH
+SUCCESS: Flutter125220081068 full1210Ubuntu/12explicit skips,17actualChrome,
+actualbrowsertransport/web/Wasmdryrun/realindependentgeneratedproject;
+Python125220081365165total/four explicit CI platform skips. Parent1216Flutter/
+nine skips,33focused,nineinventory,format345/analyzer/web/macOSdebug passed.
+Explicitly retained metadata is historical requested-connection evidence only;
+not loaded-weight identity, verified context, general JSON/tool compatibility or
+model support. Draft edits/restore/new test invalidate pending observations;
+replacement clears history; stale/corrupt/failure/retry/busy/disposal preserved.
+No runtime launch/model inference/download/settings/installed-app change.
+Independent reviewer protected-plugin squashmerged PR443 as
+512482d30353ba0e37b2c3ba50cd524f8e55a237 at2026-11-02T10:29:20Z.
+Parent freshplugin verified mergedPR/currentmain/#396OPEN; signed exacttree/
+soleparentdf87e1c9/objecthash verified before guarded local-only synchronization.
+Localmain/originmain0/0,emptyindex,both originalIDEedits byte-identical.
+FullF22/F15 remain unchecked; external-platform acceptance Deferred400. No
+active implementation aftermerge; remaining verified profiles/context/capability
+work Pending396. Final canonical bookkeeping retained for next normal reviewed
+development PR. Both automationlabels applied; no newissue/cadence/notification
+change. Receipts:/private/tmp/asg-observation-publication.json,
+/private/tmp/asg-observation-inputs.json,/private/tmp/asg443-reviewed-merge.json,
+/private/tmp/asg443-review-summary.json,/private/tmp/asg443-safe-sync.py.
+Currentrun 2026-11-02T10:30:28.422996+00:00
+
+
+### Explicit historical model test removal — F22 / #396
+In progress on `396-remove-test-observation` from verified PR #443 merge
+512482d30353ba0e37b2c3ba50cd524f8e55a237. Fresh plugin PR search found no
+open PR and app inventory no competing active ASG run. Scope comment6575179968;
+no new issue. Remove selected preset’s saved test metadata explicitly while
+preserving connection, notes, other presets and active settings. Clear pending
+attachment only after successful conditional storage; failures retain retry,
+stale/corrupt records remain preserved, busy/disposal guards apply. Historical
+snapshots elsewhere are retained, no global erasure/retest/inference/support claim.
+Delivered F09/F22 foundations satisfy dependencies; deferred hardware #400 is
+unnecessary. Validate transactional failure/staleness/retry/disposal, native
+reopen and320px2x UI plus full Flutter checks/web/macOS/inventory. Independent
+exact-final review, requiredCI and protected reviewer merge remain gates.
+FullF22/F15 unchecked. Prior443 final delivery bookkeeping retained.
+
+Final local validation:1221Flutter tests passed/nine explicit skips in isolated
+tracked-source copy;38focused controller/preset/nativeHTTP/reopen/UI checks
+passed (full suite includes final native removal assertions). Formatter345
+unchanged/analyzer clean, web and macOSdebug builds passed; nine inventory
+regressions passed. All370 validation inputs byte-identical. Test compilation
+error from assumed config serialization corrected before successful checks.
+Default8765health unavailable; no runtime/model launch/inference/download or
+installed-app/settings change. Awaiting merge: exact-tree plugin publication,
+independent final review, requiredCI and protected reviewer merge remain gates.
+FullF22/F15 unchecked; external acceptanceDeferred400.
+Recorded 2026-11-02T10:47:46.890404+00:00

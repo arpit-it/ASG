@@ -120,6 +120,34 @@ class ModelSettingsController extends BaseController {
     );
   }
 
+  bool get canRemoveTestObservation =>
+      !busy &&
+      !isDisposed &&
+      !settingsLoadFailed &&
+      !presetsLoadFailed &&
+      _presets.any(
+        (p) => p.name == selectedPreset && p.testObservation != null,
+      );
+
+  Future<void> removeTestObservation() async {
+    if (!canRemoveTestObservation) return;
+    await _writePresets(
+      [
+        for (final p in _presets)
+          if (p.name == selectedPreset)
+            ModelConnectionPreset(
+              name: p.name,
+              config: p.config,
+              profileNotes: p.profileNotes,
+            )
+          else
+            p,
+      ],
+      'Saved historical test removed from selected preset. Connection, profile notes and active settings are unchanged.',
+      clearPendingObservation: true,
+    );
+  }
+
   static const timingGuidance =
       'Successful tests show temporary client-observed latency from dispatch to '
       'first nonblank text and completed response, including connection and '
@@ -215,14 +243,19 @@ class ModelSettingsController extends BaseController {
 
   Future<void> _writePresets(
     List<ModelConnectionPreset> next,
-    String message,
-  ) async {
+    String message, {
+    bool clearPendingObservation = false,
+  }) async {
     busy = true;
     update();
     try {
       await store.savePresets(next, expected: _presets);
       if (isDisposed) return;
       _presets = List.unmodifiable(next);
+      if (clearPendingObservation) {
+        _pendingObservation = null;
+        _testedConfig = null;
+      }
       if (!_presets.any((p) => p.name == selectedPreset)) selectedPreset = null;
       presetStatus = message;
     } on FormatException {

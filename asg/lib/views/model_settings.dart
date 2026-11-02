@@ -261,6 +261,12 @@ class _ModelSettingsState extends State<ModelSettings> {
                 : null,
             child: const Text('Save test observation to selected preset'),
           ),
+          OutlinedButton(
+            onPressed: controller.canRemoveTestObservation
+                ? controller.removeTestObservation
+                : null,
+            child: const Text('Remove saved test observation only'),
+          ),
           for (final preset in controller.presets)
             if (preset.name == controller.selectedPreset)
               ModelTestObservationView(preset: preset),

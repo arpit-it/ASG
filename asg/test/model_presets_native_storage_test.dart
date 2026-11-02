@@ -73,6 +73,9 @@ void main() {
           expect(saved.config.model, 'exact-request');
           expect(saved.config.chatOutputTokens, 2048);
         }
+        await controller.removeTestObservation();
+        expect(store.loadPresets().single.testObservation, isNull);
+        expect(store.loadPresets().single.config.model, 'exact-request');
         expect(requests.length, 2);
         for (final request in requests) {
           expect(request['max_tokens'], 256);
@@ -141,6 +144,17 @@ void main() {
         expect(savedObservation.jsonFormat, isTrue);
         expect(savedObservation.observedAt, DateTime.utc(2026, 11, 2));
         expect(savedObservation.completedMilliseconds, 34);
+        final removal = ModelSettingsController(ModelSettingsStore(records));
+        removal.selectPreset('Local');
+        await removal.removeTestObservation();
+        removal.dispose();
+        await db.close();
+        db = await databaseFactoryIo.openDatabase(path);
+        records = await StudioDatabase.migrate(db, prefs);
+        final afterRemoval = ModelSettingsStore(records).loadPresets().single;
+        expect(afterRemoval.testObservation, isNull);
+        expect(afterRemoval.config.model, 'saved');
+        expect(afterRemoval.profileNotes!.revision, 'exact-revision');
         // Real conditional storage refuses a stale profile-only replacement.
         final store = ModelSettingsStore(records);
         final before = store.loadPresets();
