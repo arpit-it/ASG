@@ -3,6 +3,7 @@
 
 import '../models/project.dart';
 import '../models/project_blueprint.dart';
+import '../models/output_stack.dart';
 import '../services/project_discovery.dart';
 import '../services/folder_picker.dart';
 import 'base_controller.dart';
@@ -13,7 +14,10 @@ class ProjectWizardController extends BaseController {
       discovery = discovery ?? ProjectDiscovery();
   final ProjectDiscovery discovery;
   final FolderPicker picker;
-  String type = 'Flutter', location = '';
+  String _type = 'Flutter';
+  String get type => _type;
+  OutputStack? get outputStack => OutputStack.forType(_type);
+  String location = '';
   final Set<String> _platforms = {'macOS'};
   Set<String> get platforms => Set.unmodifiable(_platforms);
   String? error;
@@ -61,7 +65,6 @@ class ProjectWizardController extends BaseController {
         .firstOrNull;
     if (option == null) return;
     _approachId = id;
-    type = 'Flutter';
     _platforms
       ..clear()
       ..addAll(option.platforms);
@@ -75,6 +78,7 @@ class ProjectWizardController extends BaseController {
   }
 
   bool review() {
+    if (!_validateStack()) return false;
     if (_blueprint == null || approach == null) {
       error = 'Choose how people will use your app.';
       update();
@@ -111,8 +115,22 @@ class ProjectWizardController extends BaseController {
   static String? validateName(String? name) => StudioProject.validateName(name);
 
   void selectType(String value) {
-    type = value;
+    if (isDisposed) return;
+    _type = value;
+    if (_step == CreationStep.review) _step = CreationStep.options;
+    error = null;
     update();
+  }
+
+  bool _validateStack() {
+    final stack = outputStack;
+    if (stack != null && stack.canCreate) return true;
+    error = stack == null
+        ? 'Unknown output stack. Choose an available stack before creating.'
+        : '${stack.label} is planned and cannot be created yet. Your choices '
+              'are retained. Select Flutter / Dart explicitly to use the current adapter.';
+    update();
+    return false;
   }
 
   void selectPlatform(String value, bool selected) {
@@ -135,6 +153,7 @@ class ProjectWizardController extends BaseController {
   }
 
   StudioProject? create(String name, String description) {
+    if (isDisposed || !_validateStack()) return null;
     error = validateName(name);
     if (error == null && _platforms.isEmpty) {
       error = 'Choose at least one platform.';

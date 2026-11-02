@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import '../controllers/project_wizard_controller.dart';
 import '../models/project_blueprint.dart';
+import '../models/output_stack.dart';
 
 class ProjectWizard extends StatefulWidget {
   const ProjectWizard({super.key});
@@ -98,6 +99,29 @@ class _ProjectWizardState extends State<ProjectWizard> {
     mainAxisSize: MainAxisSize.min,
     children: [
       Text('You want to create: ${controller.idea}'),
+      const SizedBox(height: 16),
+      DropdownButtonFormField<String>(
+        initialValue: controller.type,
+        isExpanded: true,
+        decoration: const InputDecoration(labelText: 'Output stack'),
+        items: [
+          for (final stack in OutputStack.catalog)
+            DropdownMenuItem(
+              value: stack.type,
+              child: Text(
+                '${stack.label} · ${stack.canCreate ? 'Implemented path' : 'Planned'}',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+        ],
+        onChanged: (value) {
+          if (value != null) controller.selectType(value);
+        },
+      ),
+      const SizedBox(height: 8),
+      Text(controller.outputStack?.detail ?? 'Unknown output stack.'),
+      const Text('Additional languages and frameworks remain planned.'),
       const SizedBox(height: 20),
       const Text(
         'How should people use it?',
@@ -158,6 +182,8 @@ class _ProjectWizardState extends State<ProjectWizard> {
       Text(controller.idea),
       const SizedBox(height: 16),
       Text('Experience: ${controller.approach?.title}'),
+      const SizedBox(height: 8),
+      Text('Output stack: ${controller.outputStack?.label}'),
       const SizedBox(height: 8),
       Text('Platforms: ${controller.platforms.join(', ')}'),
       const SizedBox(height: 8),
