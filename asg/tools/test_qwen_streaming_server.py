@@ -74,20 +74,36 @@ class ServerTests(unittest.TestCase):
         self.assertEqual(error.exception.code,403)
     def test_source_proposal_budget_and_bounded_chat_limits(self):
         for streaming in (True, False):
-            for requested, expected in ((4096, 4096), (9000, 4096),
-                                        (1536, 1536), (2048, 2048), (0, 1)):
+            for requested in (1, 256, 512, 1024, 1536, 2048, 4095, 4096):
                 with self.subTest(streaming=streaming, requested=requested):
                     with self.request(streaming, max_tokens=requested) as response:
                         response.read()
-                    self.assertEqual(self.backend.tokens, expected)
+                    self.assertEqual(self.backend.tokens, requested)
             with self.request(streaming) as response:
                 response.read()
             self.assertEqual(self.backend.tokens, 256)
     def test_invalid_token_budget_is_rejected_before_inference(self):
-        with self.assertRaises(urllib.error.HTTPError) as error:
-            self.request(max_tokens='invalid')
-        self.assertEqual(error.exception.code, 400)
-        self.assertIsNone(self.backend.tokens)
+        from unittest.mock import patch
+        invalid = (0, -1, 4097, 9000, 10**100, True, False, None,
+                   1.0, 1.5, '256', 'PRIVATE_BUDGET', [], {})
+        for streaming in (True, False):
+            for requested in invalid:
+                with self.subTest(streaming=streaming, requested=requested):
+                    self.backend.tokens = None
+                    with patch.object(self.executor, 'submit', wraps=self.executor.submit) as submit:
+                        with self.assertRaises(urllib.error.HTTPError) as error:
+                            self.request(streaming, max_tokens=requested)
+                        with error.exception as response:
+                            self.assertEqual(response.code, 400)
+                            self.assertEqual(json.load(response), {'error': 'max_tokens must be an integer from 1 to 4096; no budget was changed or generation started'})
+                        submit.assert_not_called()
+                    self.assertIsNone(self.backend.tokens)
+                    with urllib.request.urlopen(self.url+'/health') as response:
+                        self.assertEqual(json.load(response)['phase'], 'idle')
+                    # Rejection never owns the model lock or poisons a retry.
+                    with self.request(streaming, max_tokens=1536) as response:
+                        self.assertIn('Hello ', response.read().decode())
+                    self.assertEqual(self.backend.tokens, 1536)
 
     def test_real_executor_thread_start_failure_discards_queued_legacy_request(self):
         from unittest.mock import patch
@@ -241,7 +257,7 @@ class CPUHTTPTests(unittest.TestCase):
                         self.request(streaming, raw_budget=budget)
                     self.assertEqual(failure.exception.code, 400)
                     self.assertEqual(json.load(failure.exception),
-                                     {'error': 'Invalid request or model ID'})
+                                     {'error': 'max_tokens must be an integer from 1 to 4096; no budget was changed or generation started'})
                     self.fixture.tokenizer.apply_chat_template.assert_not_called()
                     self.fixture.model.generate.assert_not_called()
                     with urllib.request.urlopen(self.url+'/health', timeout=5) as response:

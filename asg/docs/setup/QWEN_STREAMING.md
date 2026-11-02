@@ -54,6 +54,13 @@ Limits: 15-second connection/header timeout, 30-second inactive-stream timeout, 
 
 ## Validation
 
+The HTTP bridge accepts an exact JSON integer `max_tokens` from 1 through
+4096, or defaults to 256 when omitted. Zero, negative, oversized, fractional,
+boolean, string and null values return HTTP 400 before inference. The bridge
+never coerces or silently clamps a requested output budget. This contract does
+not establish a model-specific verified context window or token-accounting
+profile; the existing input limit and per-backend checks still apply.
+
 Run regular Flutter checks and the opt-in live test:
 
 ```sh

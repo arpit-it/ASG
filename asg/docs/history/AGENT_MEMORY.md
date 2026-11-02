@@ -8682,3 +8682,78 @@ merge remain required. Full F16 unchecked; external acceptance Deferred #400.
 Recorded 2026-11-02T02:50:30.731233+00:00.
 
 Final bounded-cancellation validation: 1,177 clean-source Flutter tests passed, nine explicit skips; 47 focused process/host tests passed, one opt-in skip; analyzer clean, formatter331 unchanged, web/Wasm and macOS debug builds passed, nine inventory tests passed. All352validation inputs match clean tested copy. Initial two process regressions fixed and retested. No installed-app or inference change. Awaiting merge: plugin publication, independent final-revision review, required CI and protected reviewer merge remain gates. Recorded 2026-11-02T02:53:14.615463+00:00.
+
+
+### Bounded helper cancellation verified merged — F16 / #401 / PR #426
+
+Bounded increment Done on `401-helper-cancellation`. Tested local
+`7fd9ae70e5bc2bd64a8f3c703ce6b09fdbc8c774` and published final
+`24d0008122731ebca8c197efe3a1aba6452857e7` share exact tree
+`1b5d853351275068b240919ac47ff45dd0ca0c94`; all eight published blobs match.
+Independent reviewer verified all828remote blobs/modes and352validationinputs,
+approved5731655537/finalgate5731673135 with no blockers. Independent48focused
+checks/one opt-in skip, three additional actual-process probes and nine inventory
+checks passed. Probes cover precompleted cancellation/cooperative response, late
+cancellation without unhandled errors and root-exited inherited descendant pipes.
+
+Parent1177clean-sourceFlutter/nine explicit skips,47focused/one skip,formatter331
+unchanged,analyzer clean,web/Wasm and macOS debug builds,nine inventory passed.
+Actual requiredCI41380341917 succeeded: Flutter125069550799 full checks, actual
+Chrome,web and independent generated-project resolve/analyze/test/render/build/
+serve; Python125069550500141tests/four skips. Initial cooperative-evidence loss
+and kill/reap race were fixed and retested. Default8765health unavailable; no
+inference, stable-app replacement, installation or model change.
+
+Independent reviewer protected-plugin squash merged
+https://github.com/arpit-it/ASG/pull/426 as
+`c08fe6eab0b184bb946260f2d8f8ca53f1c33822` at2026-11-02T03:04:04Z. Parent
+freshly plugin-verified mergedPR/currentmain/issue401OPEN. Signed merge SHA,
+exacttree and soleparentd89656bc verified before guarded local synchronization;
+main/originmain0/0, empty index and both unrelated IDE edits byte-identical.
+Both automation labels applied; no new issue. Evidence
+/private/tmp/asg401-cancel-publication.json,/private/tmp/asg426-reviewed-merge.json,
+/private/tmp/asg426-verified-commit.raw and clean validation logs.
+
+Stop/disposal now gives the trusted helper three seconds to return cancellation
+evidence before interrupting capture and bounded termination/reaping. This does
+not enable another host or establish descendant-cleanup or inference support.
+FullF16 remains unchecked; unavailable-platform acceptance Deferred400. No active
+implementation after this merge. Carry this final merge bookkeeping into the
+next normal reviewed development PR; cadence and notification policy unchanged.
+Current run time 2026-11-02T03:07:00.074626+00:00.
+
+
+### Exact HTTP output-token budgets — F22 / #396
+
+In progress on `396-exact-token-budget`, based on verified main c08fe6ea.
+Reused #396; no new issue. The actual handler and prior HTTP regression
+showed silent 9000-to-4096 and 0-to-1 clamping, plus type coercion, contrary
+to F22's honest token-budget contract. Scope: exact JSON integer1–4096,
+omitted default256, fixed actionable400 before model-lock/executor dispatch
+for other values. Both SSE and JSON accept valid budgets unchanged; actual
+loopback tests cover boundaries, boolean/fraction/string/null/container/huge
+values, no inference, idle health and valid retries. Existing nonfinite CPU
+HTTP tests retain pre-inference refusal with the new actionable message.
+
+No backend implementation, context-profile verification, inference or host
+support claim; fullF22/F15 remain unchecked and external acceptance Deferred400.
+Delivered transport foundations suffice on this Mac; this is a reproducible
+F22 request-budget defect, not a reopened CPU implementation micro-fix.
+Preserved prior426 final merge bookkeeping and unrelated IDE edits.
+Validation/review/CI/plugin publication/protected reviewer merge pending.
+Recorded 2026-11-02T03:16:00.067052+00:00.
+
+
+Final exact-budget validation: 141 Python tests passed/two explicit skips;
+22 actual HTTP tests passed, including both transports and no-dispatch/retry
+budget matrix. Initial sandbox loopback denial retried with authorized access;
+initial old-message assertion updated and full suite retested successfully.
+1,177 isolated tracked-source Flutter tests passed/nine explicit skips; analyzer
+clean, formatter331 unchanged, web/Wasm dry-run and macOS debug builds passed.
+All354validation inputs match the clean copy. No live model inference, model
+download, installed-app replacement or platform-support claim. Logs are
+/private/tmp/asg396-budget-{python-final,http,flutter,analyze,format,web,macos}.log;
+input manifest /private/tmp/asg396-budget-inputs.json. Awaiting merge: publication,
+independent exact-final revision review, required CI and protected reviewer
+merge remain gates. FullF22 stays unchecked; #396 remains open for profiles/context.
+Recorded 2026-11-02T03:18:05.356321+00:00.
