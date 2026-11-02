@@ -210,7 +210,8 @@ The saved development automation was updated through its management tool; active
   - Bounded delivery milestones: (1) backend contract/capability discovery and an MLX regression; (2) explicit CPU setup/inference on a supported non-Apple desktop with compatible weights; (3) explicit CUDA setup/inference on a CUDA host. Each milestone needs its own focused issue, saved settings/restart/error tests and real-host evidence. Non-Apple CPU/CUDA real-host acceptance is now Deferred in #400 until the queued implementation is delivered; this is not a dependency on eligible implementation. Isolate optional backend dependencies so missing MLX cannot prevent CPU/CUDA startup; validate configurable executable/model paths including spaces. Do not claim CPU adequacy for a 9B model without measured successful operation within the configured limits.
   - Delivery: create/reuse a narrowly scoped issue when selected; remain unchecked until all promised backend milestones, independent review, required checks and verified merges. CPU and CUDA evidence must be recorded separately; unavailable hardware is a recorded blocker, never a fixture-based completion claim.
 - [ ] F22 Hardware-aware local model catalog and selection — In progress; depends on delivered F09/F15 foundations; unavailable-platform validation Deferred
-  - Advertised request ceilings — Awaiting merge: #396, `396-advertised-request-limits`; read-only exact-ID server assertions, legacy unknown and strict private validation; no capacity verification or request mutation.
+  - Existing 9B live MLX regression — Awaiting merge (bounded evidence): #396, `396-live-mlx-profile`; explicit reusable probe and real JSON/SSE/structured output, token metrics and disconnect/retry on this Mac. Evidence: `development/acceptance/2026-11-02-live-mlx-profile/`. No verified total context, full profile, larger-model or new-platform claim; F22/F15 unchecked.
+  - Advertised request ceilings — Done (bounded increment): #396, `396-advertised-request-limits`, [PR #431](https://github.com/arpit-it/ASG/pull/431); finalf4509288 approved5732303549/finalgate5732338076, requiredCI41391979196 passed, verified reviewer merged3767cc6c9514ada6e0d6a22d98f428c7f828b89 at2026-11-02T05:12:43Z. Read-only exact-ID server assertions, legacy unknown and strict private validation; no capacity verification or request mutation.
   - Checkpoint-declared total context guard — Done (bounded increment): #396, `396-declared-context-budget`, [PR #430](https://github.com/arpit-it/ASG/pull/430); final253f5efa approved5732125204/finalgate5732145329, requiredCI41389247075 passed, verified reviewer mergebd117a2db22eb5a6b2e5925924257343bbfadd5b at2026-11-02T04:40:00Z. Exact prompt plus full output against conservative checkpoint declaration; no RoPE expansion or verified-capacity claim.
   - MLX exact prompt-token accounting — Done (bounded increment): #396, `396-mlx-token-accounting`, PR #429; final130b89ff approved6568772280/finalgate6568845592, requiredCI41386356572 passed, verified reviewer merge3835833eaebcc8cff649f129c97f8ea44f1b8c2f at2026-11-02T04:11:02Z. One BOS-aware encoding shared by validation/generation, prompt/helper completion counts. Verified total context remains Pending.
   - Exact generation-tensor token accounting — Done (bounded increment): #396, `396-tensor-token-accounting`, PR #428; final0f916849 independently approved5731844574/finalgate5731868491, requiredCI41383859748 passed, verified reviewer mergea93323c70822612e5567d8adde7f47b11b3b37ec at2026-11-02T03:42:03Z. Exact untruncated input/output counts and actual tensor-bound enforcement; verified context capacity remains Pending.
@@ -9856,3 +9857,58 @@ independent review, required CI and protected reviewer merge still required.
 Logs /private/tmp/asg396-limits-*.log; input manifest
 /private/tmp/asg396-limits-inputs.json. Full F22/F15 unchecked; #396 remains open.
 2026-11-02T05:03:25.454974+00:00.
+
+
+### Advertised model request limits verified merged — PR #431
+
+Bounded increment Done on `396-advertised-request-limits`, issue #396.
+Tested local `67e31aad34fdcca03a74aa589f18369797c42929` and published final
+`f4509288cab26fc73904293b564329d0676ff990` share exact tree
+`9a911a52dcdbdb5c00cc13add8e751e59c4c2c29`; all10 published blobs verified.
+Independent approval5732303549/finalgate5732338076: no blockers; all829remote
+blob SHAs/modes and350validationinputs match. Independent10Flutter inventory
+(actualHTTP/320px2x),27Python actualHTTP and9inventory tests passed. RequiredCI
+41391979196 BOTH SUCCESS: Flutter125105151926 full suite,actualChrome,web and
+actual independent generated-project verification;Python125105152010157tests/
+fourplatformskips. Parent157Python/two skips,1179tracked-sourceFlutter/nine
+skips,10focused,formatter332/analyzer/webWasm/macOSdebug passed. Initial local
+MLX environment license-scan contamination excluded by exact tracked-source
+retest; regenerated source-comparison inventory passed final Python retest.
+Read-only server-declared ceilings/context remain unverified assertions; no
+request/settings mutation, verified capacity/model identity or inference claim.
+Existing runtime unavailable; no model started/downloaded/stable-app change.
+
+Reviewer protected-plugin merged https://github.com/arpit-it/ASG/pull/431 as
+`d3767cc6c9514ada6e0d6a22d98f428c7f828b89` at2026-11-02T05:12:43Z. Parent
+freshly pluginverified mergedPR/currentmain/#396OPEN and verified signed
+exacttree/soleparentbd117a2 before guarded sync. Localmain/originmain0/0,
+indexempty and both unrelatedIDEedits byte-identical. Evidence:
+/private/tmp/asg396-limits-publication.json,/private/tmp/asg396-limits-inputs.json,
+/private/tmp/asg431-reviewed-merge.json,/private/tmp/asg431-safe-sync.py.
+Remaining verified profiles/context/real-model evidence Pending #396; no active
+implementation after merge. FullF22/F15unchecked, externalacceptanceDeferred400.
+Finalcanonicalbookkeeping retained for next normal reviewed development PR.
+No newissue/download/stable-app/cadence/notificationchange; bothlabels applied.
+Current run time 2026-11-02T05:13:48.507697+00:00.
+
+
+### Existing 9B live MLX regression — issue #396
+Awaiting merge on `396-live-mlx-profile`, base d3767cc (verified PR #431).
+No competing active run/open PR at selection. Explicit reusable probe and
+actual offline 9B observations: JSON, structured SSE/nine chunks, reported
+token counts20/2 and31/10, disconnect release0.111s, successful retry. Warm
+throughput79–144tok/s and process-high-water5.32GB are bounded observations,
+not verified capacity. Metadata/bridge/probe hashes retained; weights counted,
+not hashed. Upstream revision/license/HTTP identity unverified. Existing offline
+checkpoint/environment, isolated18765bridge; no download/install/stable-app or
+settings change. Sandbox Metal refusal resolved with authorized native access.
+Evidence: development/acceptance/2026-11-02-live-mlx-profile/. FullF22/F15
+unchecked; remaining profiles/context/larger-model evidence Pending and
+externalacceptanceDeferred400. Independent exact-final review, required CI
+and protected reviewer merge remain gates.
+
+Final local validation: actual final-probe offline MLX run passed; five CLI refusal and nine acceptance-inventory regressions passed. Backend/actual HTTP suites passed (counts recorded in PR). No application/runtime source changed, so no redundant local Flutter build; required CI still runs full Flutter/Chrome/web/generated-project checks. Final probe/bridge hashes recorded in observations.json. Owned model process stopped after validation.
+
+Review5732497016 deadline finding resolved: absolute timer shuts down owned duplicate socket across header/body/detached HTTP1.0 reads. Six CLI/deadline tests pass, including four actual slow-drip fixture stages (headers,JSON,structured SSE,disconnect SSE), no passing report on failure. Final fixed probe separately passed real offline9B JSON/SSE/tokenmetrics/disconnect/retry; exact refreshed hashes/observations retained. Fresh independent final-revision review/new required CI remain gates. Prior warm figures above are historical; authoritative final metrics are observations.json.
+
+Follow-up review5732556762 expiry false-pass fixed: explicit expired state and monotonic deadline checked at normal completion; cleanup nonthrowing. Six CLI/deadline tests/five slowdrip stages pass, including validJSON+whitespace refusing before inventory. Exact expiry-aware probe separately passed actual offline9B inference; refreshed authoritative observations/input hashes retained. Fresh final review and new exact-head CI required; no merge claim yet.
