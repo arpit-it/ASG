@@ -10,14 +10,19 @@ import argparse
 import http.client, json, time, hashlib, platform, importlib.metadata, sys
 from urllib.parse import urlsplit
 from pathlib import Path
+import socket
+from threading import Lock, Timer
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--origin', required=True)
 parser.add_argument('--checkpoint', type=Path, required=True)
 parser.add_argument('--model', required=True)
 parser.add_argument('--source-revision', required=True)
 parser.add_argument('--output', type=Path, required=True)
+parser.add_argument('--operation-timeout', type=float, default=90)
 parser.add_argument('--confirm-live', action='store_true', required=True)
 args = parser.parse_args()
+if not 0.1 <= args.operation_timeout <= 90:
+    parser.error('Operation timeout must be between 0.1 and 90 seconds.')
 try:
     origin = urlsplit(args.origin)
     origin.port
@@ -32,8 +37,54 @@ if len(args.source_revision) != 40 or any((c not in '0123456789abcdef' for c in 
 if args.output.exists():
     parser.error('Output already exists; choose a new report path.')
 
+class DeadlineConnection(http.client.HTTPConnection):
+    """Own a duplicate socket so deadline interrupts detached response reads."""
+    def __init__(self):
+        super().__init__(origin.hostname, origin.port or 80,
+                         timeout=min(30, args.operation_timeout))
+        self.deadline = time.monotonic() + args.operation_timeout
+        self.guard = Lock()
+        self.owned_socket = None
+        self.timer = None
+
+    def connect(self):
+        super().connect()
+        # HTTP/1.0 getresponse() can detach/close HTTPConnection.sock while the
+        # response file retains the descriptor. Shutdown via a separately owned
+        # duplicate interrupts that file's pending header/body reads as well.
+        with self.guard:
+            self.owned_socket = self.sock.dup()
+        remaining = self.deadline - time.monotonic()
+        if remaining <= 0:
+            self.interrupt()
+            raise TimeoutError('Operation deadline')
+        self.timer = Timer(remaining, self.interrupt)
+        self.timer.daemon = True
+        self.timer.start()
+
+    def interrupt(self):
+        with self.guard:
+            owned, self.owned_socket = self.owned_socket, None
+        if owned is not None:
+            try:
+                owned.shutdown(socket.SHUT_RDWR)
+            except OSError:
+                pass
+            finally:
+                owned.close()
+
+    def finish(self):
+        if self.timer is not None:
+            self.timer.cancel()
+        self.interrupt()
+        self.close()
+
+connections = []
+
 def connection():
-    return http.client.HTTPConnection(origin.hostname, origin.port or 80, timeout=30)
+    result = DeadlineConnection()
+    connections.append(result)
+    return result
 
 def call(path, body=None):
     c = connection()
@@ -43,7 +94,7 @@ def call(path, body=None):
     raw = r.read(65537)
     assert len(raw) <= 65536
     data = json.loads(raw)
-    c.close()
+    c.finish()
     return (status, data)
 
 def request(text, tokens=128, stream=False):
@@ -66,7 +117,7 @@ def safe_metrics(value, budget):
 def run():
     if not __debug__:
         raise RuntimeError('Assertions must be enabled')
-    report = {'schema_version': 1, 'scope': 'Observed isolated live 9B MLX regression only; no verified total context, model identity authentication, app/manual acceptance, larger model or other platform support.', 'source_revision': args.source_revision, 'host': platform.mac_ver()[0], 'architecture': platform.machine(), 'dependencies': {n: importlib.metadata.version(n) for n in ['mlx', 'mlx-lm', 'transformers', 'tokenizers']}, 'checks': {}}
+    report = {'schema_version': 1, 'scope': 'Observed isolated selected-checkpoint MLX regression only; no verified total context, model identity authentication, app/manual acceptance, larger model or other platform support.', 'source_revision': args.source_revision, 'host': platform.mac_ver()[0], 'architecture': platform.machine(), 'dependencies': {n: importlib.metadata.version(n) for n in ['mlx', 'mlx-lm', 'transformers', 'tokenizers']}, 'checks': {}}
     status, h = call('/health')
     assert status == 200 and h['backend'] == 'mlx' and (h['device'] == 'metal') and (h['phase'] == 'idle')
     status, inv = call('/v1/models')
@@ -121,7 +172,7 @@ def run():
                 parts.append(choice['delta']['content'])
         if 'metrics' in value:
             final = safe_metrics(value['metrics'], 128)
-    c.close()
+    c.finish()
     assert done and final['finish_reason'] == 'stop' and (len(parts) > 1)
     assert json.loads(''.join(parts).strip()) == {'status': 'ready', 'count': 3}
     report['checks']['structured_sse'] = {'seconds': round(time.monotonic() - start, 3), 'content_chunks': len(parts), 'metrics': final}
@@ -142,7 +193,7 @@ def run():
                 observed = True
                 break
     r.close()
-    c.close()
+    c.finish()
     assert observed
     start = time.monotonic()
     while time.monotonic() - start < 15:
@@ -165,3 +216,6 @@ if __name__ == '__main__':
     except Exception:
         print('Live regression failed; no passing report written. Check the owned runtime and retry with a new output path.', file=sys.stderr)
         sys.exit(1)
+    finally:
+        for connection in connections:
+            connection.finish()

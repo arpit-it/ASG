@@ -8996,3 +8996,5 @@ externalacceptanceDeferred400. Independent exact-final review, required CI
 and protected reviewer merge remain gates.
 
 Final local validation: actual final-probe offline MLX run passed; five CLI refusal and nine acceptance-inventory regressions passed. Backend/actual HTTP suites passed (counts recorded in PR). No application/runtime source changed, so no redundant local Flutter build; required CI still runs full Flutter/Chrome/web/generated-project checks. Final probe/bridge hashes recorded in observations.json. Owned model process stopped after validation.
+
+Review5732497016 deadline finding resolved: absolute timer shuts down owned duplicate socket across header/body/detached HTTP1.0 reads. Six CLI/deadline tests pass, including four actual slow-drip fixture stages (headers,JSON,structured SSE,disconnect SSE), no passing report on failure. Final fixed probe separately passed real offline9B JSON/SSE/tokenmetrics/disconnect/retry; exact refreshed hashes/observations retained. Fresh independent final-revision review/new required CI remain gates. Prior warm figures above are historical; authoritative final metrics are observations.json.

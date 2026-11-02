@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "scope": "Observed isolated live 9B MLX regression only; no verified total context, model identity authentication, app/manual acceptance, larger model or other platform support.",
+  "scope": "Observed isolated selected-checkpoint MLX regression only; no verified total context, model identity authentication, app/manual acceptance, larger model or other platform support.",
   "source_revision": "d3767cc6c9514ada6e0d6a22d98f428c7f828b89",
   "host": "27.0.1",
   "architecture": "arm64",
@@ -12,28 +12,28 @@
   },
   "checks": {
     "json": {
-      "seconds": 0.183,
+      "seconds": 0.511,
       "metrics": {
         "finish_reason": "stop",
         "prompt_tokens": 20,
         "completion_tokens": 2,
-        "tokens_per_second": 138.05361676872747,
-        "peak_memory_gb": 5.317321244
+        "tokens_per_second": 138.24606496639234,
+        "peak_memory_gb": 5.253651661
       }
     },
     "structured_sse": {
-      "seconds": 0.211,
+      "seconds": 0.213,
       "content_chunks": 9,
       "metrics": {
         "finish_reason": "stop",
         "prompt_tokens": 31,
         "completion_tokens": 10,
-        "tokens_per_second": 78.63278547535243,
-        "peak_memory_gb": 5.317321244
+        "tokens_per_second": 77.94189270241723,
+        "peak_memory_gb": 5.317272092
       }
     },
     "disconnect": {
-      "idle_seconds": 0.111,
+      "idle_seconds": 0.107,
       "scope": "Client disconnect observed; not a native-kernel preemption or process-tree guarantee."
     },
     "retry": {
@@ -41,8 +41,8 @@
         "finish_reason": "stop",
         "prompt_tokens": 20,
         "completion_tokens": 2,
-        "tokens_per_second": 139.72171795780466,
-        "peak_memory_gb": 5.317321244
+        "tokens_per_second": 135.1161192996018,
+        "peak_memory_gb": 5.317272092
       }
     }
   },
@@ -62,10 +62,10 @@
     "file_count": 1,
     "disk_bytes": 5038162465
   },
-  "recorded_at": "2026-11-02T05:34:52Z",
+  "recorded_at": "2026-11-02T05:40:49Z",
   "validation_inputs_sha256": {
     "tools/qwen_server.py": "7093a6d3d6d466a3f7beaae60841d47fc400227c535ddc3ef91f3dc4ed12b0e8",
     "tools/qwen_backends.py": "be3565f381e277ea8eae20435551568d111e02e2eb903003897abbadf7646750",
-    "tools/live_mlx_profile.py": "f8aacd3efdb8315cbcfc10f642a3fd36900d9ac1e69516b981bacb1ce6623697"
+    "tools/live_mlx_profile.py": "70e9224d999ae61f5d43e1ecc6276756eeafbccd33492125cc104b4ff43da773"
   }
 }
