@@ -274,3 +274,12 @@ invalid records are retained and isolated by project, with requests blocked.
 Selection only routes Discuss/Plan/Review, never Build/source/repair or model loading.
 Presets may be removed without changing a saved snapshot. The record contains a
 connection destination and stays local; portable project archives do not include it.
+
+Optional `testObservation.profileNotes` uses the strict six-field notes schema.
+It snapshots the selected preset's saved notes before dispatch only for an exact
+connection match. Unsaved note edits are excluded. Explicit observation save
+retains this snapshot across later notes edits/clearing, retry and reopen.
+Legacy/missing snapshots stay unavailable, never inferred; explicit null and
+malformed snapshots fail closed with records preserved. These are historical
+user declarations, never proof of loaded weights, license, backend, capacity or
+support. Comparisons separate them from current notes. Size bounds remain.

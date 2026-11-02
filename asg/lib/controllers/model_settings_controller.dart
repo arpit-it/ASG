@@ -328,6 +328,16 @@ class ModelSettingsController extends BaseController {
     runtimeMetrics = null;
     _pendingObservation = null;
     _testedConfig = null;
+    // Snapshot only saved notes from the exact selected connection before any
+    // asynchronous work. Later note edits must not rewrite test-time context.
+    ModelProfileNotes? testedNotes;
+    for (final preset in _presets) {
+      if (preset.name == selectedPreset &&
+          _sameConnection(preset.config, config)) {
+        testedNotes = preset.profileNotes;
+        break;
+      }
+    }
     final request = ++_request;
     final completion = Completer<void>();
     _completion = completion;
@@ -390,6 +400,7 @@ class ModelSettingsController extends BaseController {
                     : null;
                 final observation = ModelTestObservation(
                   jsonFormat: jsonFormat,
+                  profileNotes: testedNotes,
                   observedAt: _now().toUtc(),
                   firstTextMilliseconds: firstTextLatency.inMilliseconds,
                   completedMilliseconds: completed.inMilliseconds,

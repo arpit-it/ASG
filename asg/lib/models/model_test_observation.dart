@@ -2,6 +2,7 @@
 // Copyright 2026 Arpit Sinha
 
 import 'model_runtime_metrics.dart';
+import 'model_profile_notes.dart';
 
 /// Historical app-observed completion, never a verified model capability.
 class ModelTestObservation {
@@ -12,6 +13,7 @@ class ModelTestObservation {
     required this.completedMilliseconds,
     this.runtimeMetrics,
     this.responseModel,
+    this.profileNotes,
   });
 
   final bool jsonFormat;
@@ -19,6 +21,13 @@ class ModelTestObservation {
   final int firstTextMilliseconds, completedMilliseconds;
   final ModelRuntimeMetrics? runtimeMetrics;
   final String? responseModel;
+
+  /// Saved preset declarations captured before dispatch, never verified identity.
+  final ModelProfileNotes? profileNotes;
+  static const profileGuidance =
+      'Test-time saved preset notes: user-declared and unverified. Captured before '
+      'this test, excluding unsaved note edits. They do not prove the server used '
+      'these weights, revision, backend or context capacity.';
   static const responseModelGuidance =
       'Response model ID is an unverified server assertion from this completed '
       'historical test, not proof of loaded weights, revision or support.';
@@ -32,6 +41,7 @@ class ModelTestObservation {
 
   void validate() {
     runtimeMetrics?.toJson();
+    profileNotes?.validate();
     if (responseModel != null &&
         (responseModel!.trim().isEmpty ||
             responseModel!.length > 256 ||
@@ -57,6 +67,7 @@ class ModelTestObservation {
       'completedMilliseconds': completedMilliseconds,
       if (runtimeMetrics != null) 'runtimeMetrics': runtimeMetrics!.toJson(),
       'responseModel': ?responseModel,
+      if (profileNotes != null) 'profileNotes': profileNotes!.toJson(),
     };
   }
 
@@ -71,6 +82,7 @@ class ModelTestObservation {
             'completedMilliseconds',
             'runtimeMetrics',
             'responseModel',
+            'profileNotes',
           }.contains(key),
         ) ||
         !value.keys.toSet().containsAll([
@@ -97,6 +109,9 @@ class ModelTestObservation {
     final result = ModelTestObservation(
       jsonFormat: value['kind'] == 'jsonSentinel',
       responseModel: value['responseModel'] as String?,
+      profileNotes: value.containsKey('profileNotes')
+          ? ModelProfileNotes.fromJson(value['profileNotes'])
+          : null,
       observedAt: time,
       firstTextMilliseconds: value['firstTextMilliseconds'] as int,
       completedMilliseconds: value['completedMilliseconds'] as int,
