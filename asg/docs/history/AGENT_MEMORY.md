@@ -10011,3 +10011,55 @@ Initial dialog intrinsic-layout defect and old ambiguous test selector corrected
 full suite retested successfully. Awaiting merge: plugin exacttree publication,
 independent finalrevision review, requiredCI and protected reviewer merge remain
 gates. FullF22/F15unchecked; issue396OPEN and Deferred400 retained.
+
+
+### Saved preset observation comparison verified merged — PR #449
+Bounded increment Done for F22/#396 on `396-historical-profile-comparison`,
+scope6577758065. Testedlocal6fb149e10bb11a3c0ae043950a2327167bc3e33a and
+pluginpublished4788cd695dd3be5d0d811024d7bd4583d6ddb467 share exacttree
+13882b8bf02cc858856d74f9802c20bb2e3016eb; all8publication blobs match.
+Independent exactfinal review5737028780/finalgate6578071357 approved unchanged
+head, no blockers; independent32focusedFlutter plus1actualdialog20longpresets
+320px2x probe and9inventory passed. All374validationinputs matched.
+RequiredCI41450135664 BOTH SUCCESS: Python125293015038 runtime/processfixtures;
+Flutter125293015344 fullsuite/actualChrome storage/browsertransport/web/real
+independentgeneratedproject verification. Parent1248Flutter/nine explicit skips,
+formatter353/analyzer/web/Wasm/isolatedmacOSdebug/ninefinalinventory passed.
+Read-only expandable historical preset comparison shows distinct requested
+connections/modelIDs/date/kind/clientlatency and optional server speed/processpeak
+metrics. Missing data unavailable; explicit historical/unverified/non-benchmark
+guidance, no ranking/support/context claims, requests or settings/storage changes.
+Initial intrinsic-dialog-layout defect and old ambiguous test finder fixed before
+full retest/publication. Existing8765health unavailable; no live inference/model
+launch/download or stableapp replacement. Reviewer protected-plugin squashmerged
+PR449 as bbb9cbc1b966eeb02b48db98e309fbc61c51d585 at2026-11-02T13:15:24Z.
+Parent freshly verified mergedPR/currentmain/#396OPEN/signed exacttree/soleparent
+c17efdcc; commitobject hash verified before guarded local sync. Localmain and
+originmain0/0, emptyindex, both originalIDEedits byteidentical. FullF22/F15unchecked;
+externalplatform acceptanceDeferred400. No active implementation aftermerge;
+remaining verified profile/context/capability work Pending396. Final canonical
+bookkeeping retained for next normal reviewed development PR. Bothautomation
+labels applied; no newissue/cadence/notification change.
+Receipts:/private/tmp/asg449-publication.json,/private/tmp/asg449-validation-inputs.json,
+/private/tmp/asg449-reviewed-merge.json,/private/tmp/asg449-safe-sync.py.
+Currentrun 2026-11-02T13:16:17.526722+00:00
+
+
+### Declared profile comparison context — F22 / #396
+In progress on `396-profile-comparison-context`, scope6578411126, from verified
+PR449 merge bbb9cbc1b966eeb02b48db98e309fbc61c51d585. Saved test comparisons omitted
+existing profile declarations. Compare revision/license/architecture/quantization/
+backend/context with explicit current/user-declared/unverified labels and a warning
+that notes may have changed since the test. Empty/legacy/partial values remain
+unavailable. No requests, settings mutation, schema change or capacity/support
+claim. Existing typed preset/notes foundations suffice; hardware acceptance
+Deferred400. Focused11Flutter tests passed, including 320px2x distinct/partial/
+legacy/refreshed notes. Full validation/publication/review/CI/merge pending.
+Keep F22/F15 unchecked and #396 open. Retained prior merge bookkeeping and IDE edits.
+
+Final validation: tracked-source snapshot 1249Flutter passed/nine explicit skips;
+format353/analyzer/web (Wasm dry run) and isolatedmacOSdebug passed; nine inventory
+regressions passed. The first full working-tree run encountered ignored third-party
+virtualenv Python files in the license scan; the clean tracked-source rerun passed.
+No live inference or stable app replacement. Awaiting plugin publication, independent
+exact-final review, required CI and protected reviewer merge. FullF22/F15 unchecked.

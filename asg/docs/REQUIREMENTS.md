@@ -210,7 +210,8 @@ The saved development automation was updated through its management tool; active
   - Bounded delivery milestones: (1) backend contract/capability discovery and an MLX regression; (2) explicit CPU setup/inference on a supported non-Apple desktop with compatible weights; (3) explicit CUDA setup/inference on a CUDA host. Each milestone needs its own focused issue, saved settings/restart/error tests and real-host evidence. Non-Apple CPU/CUDA real-host acceptance is now Deferred in #400 until the queued implementation is delivered; this is not a dependency on eligible implementation. Isolate optional backend dependencies so missing MLX cannot prevent CPU/CUDA startup; validate configurable executable/model paths including spaces. Do not claim CPU adequacy for a 9B model without measured successful operation within the configured limits.
   - Delivery: create/reuse a narrowly scoped issue when selected; remain unchecked until all promised backend milestones, independent review, required checks and verified merges. CPU and CUDA evidence must be recorded separately; unavailable hardware is a recorded blocker, never a fixture-based completion claim.
 - [ ] F22 Hardware-aware local model catalog and selection — In progress; depends on delivered F09/F15 foundations; unavailable-platform validation Deferred
-  - Saved preset observation comparison — Awaiting merge: #396, `396-historical-profile-comparison`, scope6577758065. Read-only historical latency/speed/process-peak comparison with missing-data and unverified labels; no requests, settings mutation or ranking. Delivered test/preset foundations suffice; Deferred400 unnecessary. Final1248Flutter/nine skips,format353/analyzer/web/macOS/nineinventory pass; independent review/CI/merge pending.
+  - Declared profile comparison context — Awaiting merge: #396, `396-profile-comparison-context`, scope6578411126. Compare current saved revision/license/architecture/quantization/backend/context notes beside historical tests. Explicit unverified/current declarations, never a tested-configuration claim; missing/partial/legacy data honest. Delivered presets/notes/comparison suffice; external acceptance Deferred400. Responsive/no-mutation/full checks and independent review/CI/merge required; umbrella unchecked.
+  - Saved preset observation comparison — Done (bounded increment), [PR #449](https://github.com/arpit-it/ASG/pull/449), final4788cd6 approved5737028780/finalgate6578071357, requiredCI41450135664 passed, verified reviewer mergebbb9cbc1b966eeb02b48db98e309fbc61c51d585 at2026-11-02T13:15:24Z: #396, `396-historical-profile-comparison`, scope6577758065. Read-only historical latency/speed/process-peak comparison with missing-data and unverified labels; no requests, settings mutation or ranking. Delivered test/preset foundations suffice; Deferred400 unnecessary. Final1248Flutter/nine skips,format353/analyzer/web/macOS/nineinventory pass; independent review/CI/merge verified. FullF22 remains unchecked.
   - Completed-response identity observation — Done (bounded increment), [PR #448](https://github.com/arpit-it/ASG/pull/448), final676a3fa6 approved5736649748/finalgate6577425973, requiredCI41445931639 passed, verified reviewer mergec17efdccc50476c5c20ab86695e9ad18fd4ddcb8 at2026-11-02T12:42:29Z: #396, `396-response-model-observation`, scope6577175867. Retain only successful completed-test server model assertions on explicit save; missing/legacy unavailable, strict schema and preset agreement, historical unverified labels. ActualHTTP JSON/SSE/failure/retry, native reopen and narrow UI; final checks/review/CI/merge verified. Full F22 remains unchecked.
   - Historical runtime metrics — Done (bounded increment), [PR #447](https://github.com/arpit-it/ASG/pull/447), finalae594243 approved5736322515/finalgate6576890090, requiredCI41442298507 passed, verified reviewer merge94b04cc879909c1a282d9986afd9276262240cf6 at2026-11-02T12:15:56Z: #396, `396-historical-runtime-metrics`, scope6576598565. Explicitly retain optional completed-test server assertions with a matching preset observation; legacy compatibility, strict corruption refusal, failed-write retry, actualHTTP/native reopen and narrow UI. Historical/unverified only, no support/context/backend claim. Final checks/independent review/CI/merge verified; full F22 stays unchecked.
   - Completed-test runtime metrics — Done (bounded increment), [PR #446](https://github.com/arpit-it/ASG/pull/446), final8a5f636c approved5736018950/finalgate6576372712, requiredCI41438740167 passed, verified reviewer merge86dadc817798b92a6bbef92fbf1c9f64b5a8325b at2026-11-02T11:48:46Z: #396, `396-test-runtime-metrics`, scope6576037605. Expose existing final server-reported prompt/completion tokens, optional generation speed and process peak memory only after successful completed explicit tests; temporary/unverified display, no saved capability/support/context claim. Legacy/malformed telemetry unavailable, failed/stopped/partial tests expose none. Acceptance: JSON/SSE actual HTTP, lifecycle/draft invalidation/privacy and narrow2x UI; full Flutter checks/web/macOS, independent final review/requiredCI/protected merge. Delivered transport/test foundations suffice; Deferred400 unnecessary.
@@ -10941,3 +10942,35 @@ Initial dialog intrinsic-layout defect and old ambiguous test selector corrected
 full suite retested successfully. Awaiting merge: plugin exacttree publication,
 independent finalrevision review, requiredCI and protected reviewer merge remain
 gates. FullF22/F15unchecked; issue396OPEN and Deferred400 retained.
+
+
+### Saved preset observation comparison verified merged — PR #449
+Bounded increment Done for F22/#396 on `396-historical-profile-comparison`,
+scope6577758065. Testedlocal6fb149e10bb11a3c0ae043950a2327167bc3e33a and
+pluginpublished4788cd695dd3be5d0d811024d7bd4583d6ddb467 share exacttree
+13882b8bf02cc858856d74f9802c20bb2e3016eb; all8publication blobs match.
+Independent exactfinal review5737028780/finalgate6578071357 approved unchanged
+head, no blockers; independent32focusedFlutter plus1actualdialog20longpresets
+320px2x probe and9inventory passed. All374validationinputs matched.
+RequiredCI41450135664 BOTH SUCCESS: Python125293015038 runtime/processfixtures;
+Flutter125293015344 fullsuite/actualChrome storage/browsertransport/web/real
+independentgeneratedproject verification. Parent1248Flutter/nine explicit skips,
+formatter353/analyzer/web/Wasm/isolatedmacOSdebug/ninefinalinventory passed.
+Read-only expandable historical preset comparison shows distinct requested
+connections/modelIDs/date/kind/clientlatency and optional server speed/processpeak
+metrics. Missing data unavailable; explicit historical/unverified/non-benchmark
+guidance, no ranking/support/context claims, requests or settings/storage changes.
+Initial intrinsic-dialog-layout defect and old ambiguous test finder fixed before
+full retest/publication. Existing8765health unavailable; no live inference/model
+launch/download or stableapp replacement. Reviewer protected-plugin squashmerged
+PR449 as bbb9cbc1b966eeb02b48db98e309fbc61c51d585 at2026-11-02T13:15:24Z.
+Parent freshly verified mergedPR/currentmain/#396OPEN/signed exacttree/soleparent
+c17efdcc; commitobject hash verified before guarded local sync. Localmain and
+originmain0/0, emptyindex, both originalIDEedits byteidentical. FullF22/F15unchecked;
+externalplatform acceptanceDeferred400. No active implementation aftermerge;
+remaining verified profile/context/capability work Pending396. Final canonical
+bookkeeping retained for next normal reviewed development PR. Bothautomation
+labels applied; no newissue/cadence/notification change.
+Receipts:/private/tmp/asg449-publication.json,/private/tmp/asg449-validation-inputs.json,
+/private/tmp/asg449-reviewed-merge.json,/private/tmp/asg449-safe-sync.py.
+Currentrun 2026-11-02T13:16:17.526722+00:00

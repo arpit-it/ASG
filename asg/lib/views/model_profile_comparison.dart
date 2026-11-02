@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import '../models/model_connection_preset.dart';
 import '../models/model_test_observation.dart';
+import '../models/model_profile_notes.dart';
 
 /// Read-only comparison of saved observations, never a model recommendation.
 class ModelProfileComparison extends StatelessWidget {
@@ -52,6 +53,7 @@ class _PresetObservation extends StatelessWidget {
   Widget build(BuildContext context) {
     final observation = preset.testObservation;
     final metrics = observation?.runtimeMetrics;
+    final notes = preset.profileNotes;
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -61,6 +63,7 @@ class _PresetObservation extends StatelessWidget {
             Text(preset.name, style: Theme.of(context).textTheme.titleSmall),
             Text('Requested model ID: ${preset.config.model}'),
             Text('Requested connection: ${preset.config.baseUrl}'),
+            _DeclaredProfile(notes),
             if (observation == null)
               const Text('Historical test: unavailable (not saved).'),
             if (observation != null) ...[
@@ -89,6 +92,49 @@ class _PresetObservation extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Current declarations are deliberately separate from historical observations.
+class _DeclaredProfile extends StatelessWidget {
+  const _DeclaredProfile(this.notes);
+  final ModelProfileNotes? notes;
+
+  static const guidance =
+      'Current saved notes: user-declared and unverified. These may have changed '
+      'since the test and do not describe a verified tested configuration. '
+      'Declared context is not measured capacity and does not change request budgets.';
+
+  @override
+  Widget build(BuildContext context) {
+    final profile = notes;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Divider(),
+        const Text(guidance),
+        if (profile == null || profile.isEmpty)
+          const Text('Profile declarations: unavailable (not saved).')
+        else ...[
+          for (final entry in {
+            'Revision': profile.revision,
+            'License': profile.license,
+            'Architecture': profile.architecture,
+            'Quantization': profile.quantization,
+            'Backend': profile.backend,
+          }.entries)
+            Text(
+              'Declared ${entry.key.toLowerCase()}: '
+              '${entry.value.isEmpty ? 'unavailable (not saved)' : entry.value}',
+            ),
+          Text(
+            'Declared context tokens: '
+            '${profile.contextTokens ?? 'unavailable (not saved)'}',
+          ),
+        ],
+        const Divider(),
+      ],
     );
   }
 }

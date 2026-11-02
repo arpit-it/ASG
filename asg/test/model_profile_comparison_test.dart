@@ -4,6 +4,7 @@
 import 'package:asg/models/local_model_config.dart';
 import 'package:asg/models/model_connection_preset.dart';
 import 'package:asg/models/model_runtime_metrics.dart';
+import 'package:asg/models/model_profile_notes.dart';
 import 'package:asg/models/model_test_observation.dart';
 import 'package:asg/services/model_settings_store.dart';
 import 'package:asg/views/model_profile_comparison.dart';
@@ -35,6 +36,91 @@ ModelConnectionPreset preset(String name, {bool metrics = false}) =>
     );
 
 void main() {
+  testWidgets('declarations stay distinct from historical tests and refresh', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(320, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    ModelConnectionPreset declared(String name, ModelProfileNotes? notes) =>
+        ModelConnectionPreset(
+          name: name,
+          config: const LocalModelConfig(),
+          profileNotes: notes,
+          testObservation: preset('Test').testObservation,
+        );
+    Future<void> show(List<ModelConnectionPreset> profiles) =>
+        tester.pumpWidget(
+          MaterialApp(
+            home: MediaQuery(
+              data: const MediaQueryData(textScaler: TextScaler.linear(2)),
+              child: Scaffold(
+                body: SingleChildScrollView(
+                  child: ModelProfileComparison(presets: profiles),
+                ),
+              ),
+            ),
+          ),
+        );
+    await show([
+      declared(
+        'Full',
+        const ModelProfileNotes(
+          revision: 'rev-one',
+          license: 'license-one',
+          architecture: 'arch-one',
+          quantization: '4-bit',
+          backend: 'MLX',
+          contextTokens: 8192,
+        ),
+      ),
+      declared('Partial', const ModelProfileNotes(quantization: '8-bit')),
+      declared('Empty', const ModelProfileNotes()),
+      declared('Legacy', null),
+    ]);
+    await tester.tap(find.text('Compare saved preset observations'));
+    await tester.pumpAndSettle();
+    Finder card(String name) =>
+        find.ancestor(of: find.text(name), matching: find.byType(Card));
+    void within(String name, String value) => expect(
+      find.descendant(of: card(name), matching: find.text(value)),
+      findsOneWidget,
+    );
+    within('Full', 'Declared revision: rev-one');
+    within('Full', 'Declared license: license-one');
+    within('Full', 'Declared architecture: arch-one');
+    within('Full', 'Declared quantization: 4-bit');
+    within('Full', 'Declared backend: MLX');
+    within('Full', 'Declared context tokens: 8192');
+    within('Partial', 'Declared quantization: 8-bit');
+    within('Partial', 'Declared context tokens: unavailable (not saved)');
+    within('Partial', 'Declared revision: unavailable (not saved)');
+    for (final name in ['Empty', 'Legacy']) {
+      within(name, 'Profile declarations: unavailable (not saved).');
+    }
+    expect(
+      find.textContaining('may have changed since the test'),
+      findsNWidgets(4),
+    );
+    expect(find.textContaining('not measured capacity'), findsNWidgets(4));
+    await tester.ensureVisible(find.text('Legacy'));
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    await show([
+      declared('Full', const ModelProfileNotes(revision: 'rev-two')),
+    ]);
+    await tester.pumpAndSettle();
+    expect(find.text('Declared revision: rev-one'), findsNothing);
+    within('Full', 'Declared revision: rev-two');
+    within('Full', 'Declared quantization: unavailable (not saved)');
+    expect(
+      find.textContaining('Historical response model ID:'),
+      findsOneWidget,
+    );
+    expect(tester.takeException(), isNull);
+  });
+
   for (final width in [320.0, 1000.0]) {
     testWidgets('comparison preserves distinct observations at width $width', (
       tester,
