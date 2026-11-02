@@ -9,14 +9,18 @@ import '../controllers/model_settings_controller.dart';
 import '../models/local_model_config.dart';
 
 class ModelSettings extends StatefulWidget {
-  const ModelSettings({super.key, required this.store});
+  const ModelSettings({super.key, required this.store, this.inspectInventory});
   final ModelSettingsStore store;
+  final Future<String> Function(LocalModelConfig)? inspectInventory;
   @override
   State<ModelSettings> createState() => _ModelSettingsState();
 }
 
 class _ModelSettingsState extends State<ModelSettings> {
-  late final controller = ModelSettingsController(widget.store);
+  late final controller = ModelSettingsController(
+    widget.store,
+    inspectInventory: widget.inspectInventory,
+  );
   late final initial = controller.initial;
   late final url = TextEditingController(text: initial.baseUrl);
   late final model = TextEditingController(text: initial.model);
@@ -31,6 +35,8 @@ class _ModelSettingsState extends State<ModelSettings> {
   void initState() {
     super.initState();
     controller.addListener(refresh);
+    url.addListener(controller.clearInventory);
+    model.addListener(controller.clearInventory);
   }
 
   void refresh() {
@@ -89,6 +95,7 @@ class _ModelSettingsState extends State<ModelSettings> {
                 ? null
                 : (value) {
                     if (value != null) {
+                      controller.clearInventory();
                       setState(() => chatOutputTokens = value);
                     }
                   },
@@ -179,6 +186,15 @@ class _ModelSettingsState extends State<ModelSettings> {
             ],
           ),
           Text(controller.presetStatus),
+          const SizedBox(height: 16),
+          OutlinedButton(
+            onPressed: controller.busy || controller.settingsLoadFailed
+                ? null
+                : () => controller.inspectInventory(config),
+            child: const Text('Inspect draft model ID'),
+          ),
+          if (controller.inventoryStatus != null)
+            Text(controller.inventoryStatus!),
           const SizedBox(height: 16),
           const Text(ModelSettingsController.requestLimits),
           const SizedBox(height: 16),
