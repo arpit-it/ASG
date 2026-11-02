@@ -210,7 +210,8 @@ The saved development automation was updated through its management tool; active
   - Bounded delivery milestones: (1) backend contract/capability discovery and an MLX regression; (2) explicit CPU setup/inference on a supported non-Apple desktop with compatible weights; (3) explicit CUDA setup/inference on a CUDA host. Each milestone needs its own focused issue, saved settings/restart/error tests and real-host evidence. Non-Apple CPU/CUDA real-host acceptance is now Deferred in #400 until the queued implementation is delivered; this is not a dependency on eligible implementation. Isolate optional backend dependencies so missing MLX cannot prevent CPU/CUDA startup; validate configurable executable/model paths including spaces. Do not claim CPU adequacy for a 9B model without measured successful operation within the configured limits.
   - Delivery: create/reuse a narrowly scoped issue when selected; remain unchecked until all promised backend milestones, independent review, required checks and verified merges. CPU and CUDA evidence must be recorded separately; unavailable hardware is a recorded blocker, never a fixture-based completion claim.
 - [ ] F22 Hardware-aware local model catalog and selection — In progress; depends on delivered F09/F15 foundations; unavailable-platform validation Deferred
-  - Actual Chrome selected-connection redirect acceptance — Awaiting merge: #396, `396-browser-redirect-acceptance`; real loopback source/target counts, private refusal and JSON/SSE retry; full F22/F15 unchecked.
+  - Profile response identity integrity — Awaiting merge (bounded increment): #396, `396-profile-response-identity`; refuse contradictory observed completion IDs before passing profile evidence. Synthetic HTTP contract only; fullF22/F15unchecked.
+  - Actual Chrome selected-connection redirect acceptance — Done (bounded increment): #396, `396-browser-redirect-acceptance`, [PR #438](https://github.com/arpit-it/ASG/pull/438); finalcff94f8d approved6571995803/finalgate6572105934, requiredCI41409297327 passed; reviewer mergeb8ee1ee5ce390b5f06fc0a2b19f4b2cbac87413c verified at2026-11-02T08:02:08Z. Actual Chrome zero-target/private refusal/JSON+SSE retry; fullF22/F15unchecked.
   - Selected-connection redirect refusal — Done (bounded increment): #396, `396-local-request-redirects`, [PR #437](https://github.com/arpit-it/ASG/pull/437); finalfe7caf74 approved5733303794/finalgate5733334273, requiredCI41407199433 passed; verified reviewer mergea79da07c2b8159544b6fbfbffa3eb9f5da3a12fa at2026-11-02T07:40:22Z. Actual native redirects refused, zero target traffic/direct retry; fullF22/F15unchecked.
   - Pinned catalog context declaration — Done (bounded increment): #396, `396-catalog-context-declaration`, [PR #436](https://github.com/arpit-it/ASG/pull/436); final8943b42f approved5733087001/finalgate5733127254, requiredCI41404081123 passed; verified reviewer mergefae261b34220562462235d59e2061be5e4765dc6 at2026-11-02T07:13:05Z. Source declaration only; fullF22/F15unchecked.
   - Draft output-budget compatibility — Done (bounded increment): #396, `396-draft-budget-compatibility`, [PR #435](https://github.com/arpit-it/ASG/pull/435); final af19cf36 independently approved6570989807/finalgate6571069288, requiredCI41402289043 passed; verified reviewer merge955f76e61f742e20781dff019c9df96981161b3b at2026-11-02T06:55:45Z. Advisory exact-model declared-limit comparison only; fullF22/F15unchecked.
@@ -10255,3 +10256,66 @@ review, required CI and protected reviewer merge remain gates. Issue396 stays
 open for remaining profiles/capabilities; fullF22/F15 unchecked.
 
 Final fixture strengthening: target OPTIONS/preflight requests also count as target traffic; actual Chrome passed again with zero target requests including preflight. All364 final validation inputs match. Default8765 health is unavailable; no launch/inference claimed. Final review and updated required CI remain gates.
+
+
+### Actual Chrome redirect acceptance verified merged — PR #438
+Bounded increment Done for F22/#396 on `396-browser-redirect-acceptance`.
+Testedlocal0f73585ff44e1982a5ecb64d62c8c7b7fdaddf24 and publishedfinal
+cff94f8dfa08cacc61b8f08e6c0638c626390ff4 share exacttree
+06a652a0258c2121e4b9c006ec365071312046bf; allsix publication blobs matched.
+Independent approval6571995803/finalgate6572105934 found no blockers. Independent
+actualChrome and9inventory passed;842remote blobs/modes and364validation inputs
+matched. Forced runner timeout killed/reaped its owned process group and shut
+fixture servers down. RequiredCI41409297327 BOTH SUCCESS:Flutter125158475787
+full suite/existingactualChrome/NEW actualChrome transport/web/real independent
+generated-project verification;Python125158475577 passed163tests/four explicit
+platform skips. Parent1197Flutter/nine explicit skips,formatter340/analyzer/web,
+actualChrome and9inventory passed. Browser redirect-following mutation accepted
+`Wrong source` and correctly failed; restored final refusal passed. Zero target
+traffic includes preflight; exact selected-source payload/counters plus direct
+JSON/SSE retry passed. No runtime source, model, inference, settings, stable-app,
+profile or platform-support change. Default8765 health unavailable; no launch.
+Independent reviewer protected-plugin squashmerged
+b8ee1ee5ce390b5f06fc0a2b19f4b2cbac87413c at2026-11-02T08:02:08Z. Parent freshly
+pluginverified mergedPR/currentmain/#396OPEN; signed exacttree/soleparenta79da07c
+verified before guarded local-only sync. Localmain/originmain0/0,emptyindex,
+bothunrelatedIDEeditsbyte-identical. FullF22/F15 unchecked; externalacceptance
+Deferred400. No activeimplementation aftermerge; remaining verified profile/
+context/capability work Pending396. Final canonical bookkeeping retained for
+next normal reviewed development PR. Bothautomationlabels applied; no newissue,
+modeldownload, installedapp or cadence/notification change. Receipts:
+/private/tmp/asg438-publication.json,/private/tmp/asg438-inputs.json,
+/private/tmp/asg438-reviewed-merge.json,/private/tmp/asg438-review-summary.json,
+/private/tmp/asg438-safe-sync.py. Currentrun 2026-11-02T08:03:11.691026+00:00
+
+
+### Profile completion identity integrity — F22 / #396
+In progress on `396-profile-response-identity`, base verified PR #438 merge
+`b8ee1ee5ce390b5f06fc0a2b19f4b2cbac87413c`; owner chat01a19b51. Fresh app
+state found no competing active ASG run; GitHub found no open PR. Reuse #396.
+Gap: live_mlx_profile.py ignored completion model IDs after checking health and
+inventory, allowing contradictory responses to yield a passing observation.
+Reject every observed present invalid/different ID in JSON, structured SSE
+(including late/final events), disconnect observations and retry. Missing legacy
+IDs remain explicitly unverified; matching IDs do not authenticate weights.
+Owned synthetic HTTP fixtures cover successful full sequence and each failure
+stage, private errors/no passing report/no later request. No inference or model
+launch/download/settings/installed-app/support change. Historical PR #432 is
+retained without relabeling. Existing probe/F09/F22 foundations suffice; external
+hardware acceptance Deferred #400 is unnecessary. Full F22/F15 unchecked.
+Prior438 final-review/required-CI/verified-merge bookkeeping retained above.
+Actual local final probe8tests passed (30 invalid-ID stage/type combinations plus
+matching/legacy full sequences and existing deadlines/refusals). Full Python and
+Flutter checks, mutation confirmation, final publication/review/CI/reviewer merge
+remain gates. Recorded 2026-11-02T08:19:12.289917+00:00.
+
+Final local validation: isolated tracked-source Flutter1197passed/nine explicit
+skips, analyzer clean and formatter340unchanged; Python165tests passed/two
+explicit platform skips, including eight probe tests. Disposable original-probe
+mutation failed all30 identity combinations by falsely accepting them; final
+probe passed all30 refusals and both valid/legacy full sequences. All364
+runtime/test/tool/asset/package inputs match the tested copy. No Dart/runtime
+source change; required CI supplies web build and actual browser regressions.
+Status Awaiting merge: plugin exact-tree publication, independent exact-final
+review, required CI and protected reviewer merge remain gates. Issue396 stays
+open, F22/F15unchecked, platform acceptance Deferred400.

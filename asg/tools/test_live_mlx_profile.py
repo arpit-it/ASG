@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MPL-2.0
 # Copyright 2026 Arpit Sinha
-"""CLI refusal regressions only; these tests never claim live inference."""
+"""CLI, identity and deadline fixtures; these never claim live inference."""
 from pathlib import Path
 import subprocess
 import sys
@@ -171,6 +171,114 @@ class ProbeDeadlineTest(unittest.TestCase):
                     server.server_close()
                     worker.join(timeout=1)
 
+
+
+class ProbeIdentityTest(unittest.TestCase):
+    """Owned synthetic HTTP checks only; never evidence of real inference."""
+
+    def probe(self, folder, stage=None, identity='other-model', omit=False):
+        import json
+        from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+        from threading import Thread
+        seen = []
+
+        class Handler(BaseHTTPRequestHandler):
+            def log_message(self, *_):
+                pass
+
+            def respond(self, value):
+                body = json.dumps(value).encode()
+                self.send_response(200)
+                self.send_header('Content-Length', str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+
+            def do_GET(self):
+                if self.path == '/health':
+                    self.respond({'backend': 'mlx', 'device': 'metal',
+                        'phase': 'idle', 'model': 'synthetic'})
+                else:
+                    self.respond({'data': [{'id': 'synthetic', 'asg_request_limits': {
+                        'schema_version': 1, 'max_input_tokens': 4096,
+                        'max_output_tokens': 4096, 'checkpoint_context_tokens': None}}]})
+
+            def identified(self, value, name):
+                if not omit:
+                    value['model'] = identity if stage == name else 'synthetic'
+                return value
+
+            def do_POST(self):
+                request = json.loads(self.rfile.read(int(self.headers['Content-Length'])))
+                name = ('json' if not seen else 'retry') if not request['stream'] else (
+                    'disconnect' if request['max_tokens'] == 4096 else 'structured')
+                seen.append(name)
+                metric = {'finish_reason': 'stop', 'prompt_tokens': 20,
+                    'completion_tokens': 2, 'tokens_per_second': 10, 'peak_memory_gb': 5}
+                if not request['stream']:
+                    self.respond(self.identified({'choices': [{'finish_reason': 'stop',
+                        'message': {'content': 'READY'}}], 'metrics': metric}, name))
+                    return
+                events = []
+                parts = ('1',) if name == 'disconnect' else ('{"status":', '"ready","count":3}')
+                for index, part in enumerate(parts):
+                    event_name = name + '-late' if index else name
+                    events.append(self.identified({'choices': [{'delta': {'content': part}}]}, event_name))
+                events.append(self.identified({'choices': [{'delta': {}, 'finish_reason': 'stop'}],
+                    'metrics': metric}, name + '-finish'))
+                body = b''.join(b'data: ' + json.dumps(e).encode() + b'\n\n' for e in events)
+                body += b'data: [DONE]\n\n'
+                self.send_response(200)
+                self.send_header('Content-Length', str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+
+        server = ThreadingHTTPServer(('127.0.0.1', 0), Handler)
+        worker = Thread(target=server.serve_forever, daemon=True)
+        worker.start()
+        checkpoint = Path(folder) / 'checkpoint'
+        checkpoint.mkdir()
+        for name in ('config.json', 'tokenizer_config.json',
+                     'model.safetensors.index.json', 'weights.safetensors'):
+            (checkpoint / name).write_text('{}')
+        output = Path(folder) / 'report.json'
+        wrapper = ('import importlib.metadata,runpy,sys; '
+            'importlib.metadata.version=lambda _: "fixture-only"; '
+            'sys.argv=sys.argv[1:];runpy.run_path(sys.argv[0],run_name="__main__")')
+        try:
+            result = subprocess.run([sys.executable, '-B', '-c', wrapper, str(SCRIPT),
+                '--origin', 'http://127.0.0.1:' + str(server.server_port),
+                '--checkpoint', str(checkpoint), '--model', 'synthetic',
+                '--source-revision', 'a' * 40, '--output', str(output),
+                '--confirm-live'], capture_output=True, timeout=5)
+            return result, output, seen
+        finally:
+            server.shutdown()
+            server.server_close()
+            worker.join(timeout=1)
+
+    def test_valid_and_legacy_missing_identity_complete_fixture(self):
+        for omit in (False, True):
+            with self.subTest(omit=omit), tempfile.TemporaryDirectory() as folder:
+                result, output, seen = self.probe(folder, omit=omit)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertTrue(output.exists())
+                import json
+                report = json.loads(output.read_text())
+                self.assertIn('Missing legacy IDs remain unverified', report['response_identity_scope'])
+                self.assertEqual(seen, ['json', 'structured', 'disconnect', 'retry'])
+
+    def test_contradictory_or_invalid_identity_refuses_report(self):
+        for stage, expected in (('json', 1), ('structured', 2), ('structured-late', 2),
+                ('structured-finish', 2), ('disconnect', 3), ('retry', 4)):
+            for identity in ('other-model', '', None, 7, ['synthetic']):
+                with self.subTest(stage=stage, identity=identity), tempfile.TemporaryDirectory() as folder:
+                    result, output, seen = self.probe(folder, stage, identity)
+                    self.assertNotEqual(result.returncode, 0)
+                    self.assertFalse(output.exists())
+                    self.assertEqual(len(seen), expected)
+                    self.assertNotIn(b'Traceback', result.stderr)
+                    self.assertNotIn(b'other-model', result.stderr)
+                    self.assertNotIn(folder.encode(), result.stderr)
 
 if __name__ == '__main__':
     unittest.main()
