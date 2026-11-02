@@ -76,6 +76,10 @@ void main() {
   testWidgets('dashboard opens export flow without creating a project record', (
     tester,
   ) async {
+    tester.view.physicalSize = const Size(320, 1000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
     await tester.pumpWidget(
       MaterialApp(
         home: Dashboard(
@@ -87,6 +91,13 @@ void main() {
     await tester.tap(find.text('Export HTML starter'));
     await tester.pumpAndSettle();
     expect(find.byType(HtmlExportScreen), findsOneWidget);
+    // Lazy children need real scrolling on unsupported hosts and narrow layouts.
+    await tester.scrollUntilVisible(
+      find.text('Review export'),
+      180,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
     expect(find.text('Review export'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
@@ -100,6 +111,11 @@ void main() {
         'HTML source export requires macOS. This host is not supported.',
       ),
       findsOneWidget,
+    );
+    await tester.scrollUntilVisible(
+      find.text('Review export'),
+      180,
+      scrollable: find.byType(Scrollable).first,
     );
     final review = tester.widget<FilledButton>(
       find.widgetWithText(FilledButton, 'Review export'),
@@ -300,8 +316,16 @@ void main() {
       });
       await tester.pumpAndSettle();
       expect(c.exportedDirectory, '${temporary.path}/exported_site');
+      await tester.drag(find.byType(Scrollable).first, const Offset(0, 10000));
+      await tester.pumpAndSettle();
+      await tester.scrollUntilVisible(
+        find.text('Source export complete. Full runner checks remain planned.'),
+        180,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.pumpAndSettle();
       expect(
-        find.text('Source export complete. No checks or preview were run.'),
+        find.text('Source export complete. Full runner checks remain planned.'),
         findsOneWidget,
       );
       expect(tester.takeException(), isNull);

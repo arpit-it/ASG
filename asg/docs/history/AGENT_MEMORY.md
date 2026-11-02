@@ -10498,3 +10498,88 @@ explicitly skipped, not claimed supported. Isolated macOSdebug build also passed
 plugin publication, independent exact-final review, required CI and protected
 reviewer merge remain delivery gates. No browser interaction/inference/support
 claim or stable-app replacement.
+
+
+### Fixed HTML preview host foundation verified merged — PR #458
+Bounded F11/#402 service foundation Done on `402-html-preview-host`, scope6583108583.
+Final080ad07b27ae04f07201ec299f872ca6c57b92df and tested local279b2d5 share exact
+tree66d10cced32f9bf418aec29d9573104e8bbc335e; six published blobs and394 source inputs match.
+Initial independent approval5740304239 and resumed exact-final approval5740409275
+found no blockers (shared-owner COMMENT verdict, no separate-account claim).
+Prior independent26focused/nineinventory and resumed six actual Mac preview/MVC tests passed.
+RequiredCI41487788657 BOTH SUCCESS: Flutter125422562347/Python125422561612;
+reviewer inspected actual logs. Parent prior1291Flutter/nine explicit skips,
+format370/analyzer/webWasm/isolatedmacOSdebug/nineinventory passed.
+Reviewer protected-plugin squashmerged PR458 as
+371cf781c59f515008a3a78afb9324cb66546360 at2026-11-02T17:14:42Z.
+Parent freshly verified mergedPR/currentmain/#402OPEN/signedexacttree/soleparent950ce933,
+then guarded local-ref sync reconstructed/verified the commit object. Local main/originmain
+0/0, index empty and both original IDE edits byte-identical. Initial sandbox denied local
+object write; authorized filesystem escalation succeeded without network Git.
+Exact fixed-template immutable loopback preview/Stop foundation delivered only.
+App controls/browser launch, registration and complete runner remain Pending;
+fullF11/#402 stays open and Deferred400 retained. No model/inference/stable-app change.
+This final bookkeeping is retained locally for the next normal reviewed development PR;
+no direct-main publication. Next eligible increment is app-owned preview controls/browser
+integration for the fixed export, with real browser/Stop/recovery acceptance.
+Receipts: /private/tmp/asg458-publication.json, /private/tmp/asg458-validation-inputs.json,
+/private/tmp/asg458-reviewed-merge.json, /private/tmp/asg458-safe-sync.py.
+
+
+### App-owned fixed HTML preview — F11 / #402
+In progress on `402-html-preview-flow` from verified PR #458/main
+371cf781c59f515008a3a78afb9324cb66546360; scope6583757438.
+Existing export screen had no path to the delivered preview host. A successful
+confirmed export now retains its exact typed input for explicit Start preview,
+Open in browser and Stop controls. Dedicated MVC controller owns duplicate/start
+and browser dispatch, 10-second startup deadline, late-result suppression,
+Stop/disposal revocation and cleanup retry. Edits revoke preview/export identity.
+Native conditional service launches only its own loopback URL through the OS;
+spawn/exit deadlines retain late-helper cleanup ownership. Browser request success
+does not prove visible browser state. Stops preserve source and may not retract
+an already-dispatched browser launch. Unsupported hosts have explicit guidance.
+Acceptance: actual confirmed export-to-HTTP screen flow at 320px/2x, Stop/retry,
+changed-file refusal, edit invalidation, duplicate/late/disposed/deadline handling,
+cleanup retry and browser failure tests; actual installed Chrome with production
+host verifies assets, console, keyboard focus, theme/details/navigation and
+320/1280px/2x layouts. Initial harness failures (Flutter HTTP override and lazy
+scrolling) were corrected; only final passes count. No model inference or generic
+edited-source execution. Existing template/export/preview foundations suffice;
+Deferred #400 hardware is unrelated. HTML creation/registration/complete runner
+and full F11 remain Pending/open. Full checks/builds, exact-tree plugin publication,
+independent final review, required CI and protected reviewer merge remain gates.
+Prior #458 final merge bookkeeping is carried in this reviewed increment.
+
+Final validation: 1,299 Flutter tests passed with nine explicit skips in the
+tracked-source snapshot; formatter377/analyzer clean, final web/Wasm dry-run and
+isolated macOS debug builds passed. Nine acceptance-inventory tests passed.
+Twenty-three focused tests include actual export/screen/HTTP/Stop/retry/changed
+source and disposal at320px/2x; deterministic lifecycle tests include a late
+cleanup failure that remains visible and blocks restart. Actual installed Chrome
+production-host acceptance passed, including dispatched Space-key activation,
+assets/console/focus/theme/details/navigation,320/1280px/2x and Stop/retry.
+OS browser launch request accepted; visible default-browser state is not asserted.
+Final browser-tool changes were separately run against production native services;
+no runtime/controller/test input changed after full-suite/build validation.
+Existing8765health unavailable; no model launch/inference/support claim.
+Exact-tree plugin publication, independent final review, required CI and protected
+reviewer merge remain delivery gates; fullF11/#402 open. Stable app untouched.
+
+
+### PR #459 Linux CI harness recovery — F11 / #402
+Awaiting merge: [PR #459](https://github.com/arpit-it/ASG/pull/459),
+`402-html-preview-flow`, scope6583757438. Initialfinala90e3db0/tree968d46d8
+was independently approved5740758303 after34focused/nineinventory passed,
+but requiredCI41493294300 Flutter125441607829 failed on Linux; Python125441608298
+passed. Actual failure: dashboard navigation test expected lazy Review export
+without scrolling, below unsupported-host guidance. Independentblockingreview
+5740787519 withheld merge. Corrected only the navigation harness:320px viewport,
+real scrolling before assertion; testblobf3709ec75487a270d6415f739f57bb4f3752747c. No product runtime,
+controller, service or browser-tool change; prior final web/Wasm/macOSdebug and
+actualChrome acceptance remain applicable. Corrected23focused and full1299Flutter
+/nine explicit skips passed again; formatter377/analyzer clean. Tested runtime
+revision9161b199 is unchanged; normal followup final commit/tree, fresh independent
+review and actual required CI are authoritative in the linked PR. No previous
+approval authorizes merging the changed diff. FullF11/#402 and Deferred400 stay
+open. Final review/CI/verified merge bookkeeping will be retained in the canonical
+ledger after verification and carried in the next normal reviewed PR.

@@ -1,6 +1,11 @@
 // SPDX-License-Identifier: MPL-2.0
 // Copyright 2026 Arpit Sinha
 
+import 'dart:async';
+
+import '../services/html/html_preview.dart';
+import '../services/html/html_preview_factory.dart';
+import 'html_preview_controller.dart';
 import '../models/html/html_export_request.dart';
 import '../models/html/html_site_input.dart';
 import '../services/folder_picker.dart';
@@ -9,11 +14,17 @@ import 'base_controller.dart';
 
 /// Session confirmation only. Nothing here registers a runnable ASG project.
 class HtmlExportController extends BaseController {
-  HtmlExportController({required this.exporter, FolderPicker? folderPicker})
-    : _picker = folderPicker ?? FolderPicker();
+  HtmlExportController({
+    required this.exporter,
+    FolderPicker? folderPicker,
+    HtmlPreview? previewService,
+  }) : _picker = folderPicker ?? FolderPicker(),
+       preview = HtmlPreviewController(previewService ?? createHtmlPreview());
 
   final HtmlSourceExport exporter;
   final FolderPicker _picker;
+  final HtmlPreviewController preview;
+  HtmlExportRequest? _exportedRequest;
   String _title = '', _description = '', _parent = '', _folder = '';
   HtmlExportRequest? _review;
   bool _busy = false, _picking = false, _stopped = false;
@@ -38,7 +49,18 @@ class HtmlExportController extends BaseController {
     update();
   }
 
+  Future<void> startPreview() async {
+    final request = _exportedRequest;
+    final directory = _exportedDirectory;
+    if (isDisposed || _busy || request == null || directory == null) return;
+    await preview.start(directory, request);
+  }
+
   void _invalidate() {
+    _exportedRequest = null;
+    if (preview.url != null || preview.busy || preview.cleanupFailed) {
+      unawaited(preview.stop());
+    }
     _authority++;
     _review = null;
     _error = null;
@@ -120,6 +142,7 @@ class HtmlExportController extends BaseController {
       // Completion after Stop/disposal cannot publish success.
       authorize();
       _exportedDirectory = destination;
+      _exportedRequest = displayedReview;
     } on HtmlExportFailure catch (failure) {
       if (!isDisposed) _error = failure.toString();
     } catch (_) {
@@ -145,6 +168,8 @@ class HtmlExportController extends BaseController {
 
   @override
   void dispose() {
+    preview.dispose();
+    _exportedRequest = null;
     _authority++;
     _review = null;
     super.dispose();
