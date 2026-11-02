@@ -10042,3 +10042,61 @@ responses and320px2x historical labels covered. Existing8765runtime unavailable;
 no model launch/download/live inference/stableapp replacement. Awaiting merge:
 plugin exacttree publication, independent finalrevision review, requiredCI and
 protected reviewer merge remain gates. FullF22/F15unchecked; Deferred400 retained.
+
+
+### Completed-response identity observation verified merged — PR #448
+Bounded increment Done for F22/#396 on `396-response-model-observation`, scope6577175867.
+Testedlocal3ccdc40f1d850b35bb45a3196cea6cc7eeb103d0 and pluginpublished
+676a3fa63bd87c5fe86ff18cb62d9a9d3c0abebf share exacttree
+e820e66762574ba9d42f69a38c34b744bcc6fc6f; all14publicationblobs match.
+Independent finalreview5736649748/finalgate6577425973 approved unchanged head,
+34independentFlutter+9inventory passed; all14pluginreadblobs/372inputs matched.
+RequiredCI41445931639 BOTH SUCCESS: Flutter125278876829 fulltests/actualChrome
+storage/browsertransport/web and independentgeneratedproject verification;
+Python125278877142 runtime/processfixtures. Parent1244Flutter/nineexplicit
+skips,format351/analyzer/web/Wasm/isolatedmacOSdebug/ninefinalinventory passed.
+Optional completed-response server assertion now survives explicit test save and
+reopen with legacy unavailable, strict schema/preset agreement and historical
+unverified guidance. JSON/SSE/latefailure/truncation/omission, actualHTTP save-only
+retry/native reopen and320px2x UI covered. No loadedidentity/revision/context/
+support claim, model launch/download/live inference or stableapp replacement.
+Existing8765health unavailable. Independent reviewer protected-plugin squashmerged
+PR448 as c17efdccc50476c5c20ab86695e9ad18fd4ddcb8 at2026-11-02T12:42:29Z.
+Parent freshly verified mergedPR/currentmain/#396OPEN/signed exacttree/soleparent
+94b04cc8; commitobject hash verified before guarded local sync. Localmain/originmain
+0/0,emptyindex,both originalIDEedits byteidentical. FullF22/F15unchecked; external
+platform acceptanceDeferred400. No active implementation aftermerge; remaining
+verified profiles/context/capability work Pending396. Final canonical bookkeeping
+retained for next normal reviewed PR; bothautomationlabels applied. No newissue,
+cadence or notification change. Receipts:/private/tmp/asg448-publication.json,
+/private/tmp/asg448-validation-inputs.json,/private/tmp/asg448-reviewed-merge.json,
+/private/tmp/asg448-safe-sync.py.
+Currentrun 2026-11-02T12:43:24.003146+00:00
+
+
+### Saved preset observation comparison — F22 / #396
+In progress on `396-historical-profile-comparison` from verified PR #448 merge
+c17efdccc50476c5c20ab86695e9ad18fd4ddcb8; scope comment6577758065.
+F22 latency/speed/memory tradeoffs previously required selecting each preset to
+see its historical test. An expandable read-only panel now compares saved presets
+by requested connection/model, UTC test date and kind, client first-text/completion
+latency and optional server-reported speed/process peak memory. Missing tests and
+metrics stay unavailable. Explicit historical/unverified/non-benchmark guidance;
+no ranking, quality/support/context claim, new requests or settings/storage writes.
+Delivered presets/metrics satisfy prerequisites; unavailable platforms Deferred400.
+Initial dialog intrinsic-layout failure fixed; focused20 tests passed. Full suite
+found one old test assuming a single ExpansionTile; narrowed its finder to the
+profile-notes tile and retesting. Full validation/review/CI/merge remain gates.
+Full F22/F15 remain unchecked; #396 stays open. No new issue, model launch/download,
+live inference or stable app replacement; existing8765health unavailable.
+
+Final tracked-source validation: 1248Flutter tests passed/nine explicit skips,
+formatter353/analyzer clean, web includingWasm dryrun and isolatedmacOSdebug build
+passed. Ninefinalinventory regressions passed after source formatting/regeneration.
+All374source/test/tool inputs match the validated snapshot. Fournew comparison
+widget tests cover320px2x/wide, distinct/legacy/missing metrics, data updates/removal
+and settings integration with unchanged durable records/active settings.
+Initial dialog intrinsic-layout defect and old ambiguous test selector corrected;
+full suite retested successfully. Awaiting merge: plugin exacttree publication,
+independent finalrevision review, requiredCI and protected reviewer merge remain
+gates. FullF22/F15unchecked; issue396OPEN and Deferred400 retained.

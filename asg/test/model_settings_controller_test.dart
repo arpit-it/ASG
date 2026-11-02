@@ -165,7 +165,10 @@ void main() {
       await tester.pumpAndSettle();
       fields[2].controller!.text = 'name';
       model.selection = const TextSelection.collapsed(offset: 1);
-      final tile = find.byType(ExpansionTile);
+      final tile = find.widgetWithText(
+        ExpansionTile,
+        'Unverified model profile notes',
+      );
       await tester.ensureVisible(tile);
       await tester.tap(tile);
       await tester.pumpAndSettle();

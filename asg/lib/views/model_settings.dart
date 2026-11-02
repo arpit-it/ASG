@@ -12,6 +12,7 @@ import '../models/model_format_probe.dart';
 import 'model_runtime_metrics_view.dart';
 import 'model_profile_notes_fields.dart';
 import 'model_test_observation_view.dart';
+import 'model_profile_comparison.dart';
 
 class ModelSettings extends StatefulWidget {
   const ModelSettings({super.key, required this.store, this.inspectInventory});
@@ -280,6 +281,8 @@ class _ModelSettingsState extends State<ModelSettings> {
           for (final preset in controller.presets)
             if (preset.name == controller.selectedPreset)
               ModelTestObservationView(preset: preset),
+          if (!controller.presetsLoadFailed)
+            ModelProfileComparison(presets: controller.presets),
           const SizedBox(height: 16),
           OutlinedButton(
             onPressed: controller.busy || controller.settingsLoadFailed
