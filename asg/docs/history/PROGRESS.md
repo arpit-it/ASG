@@ -10437,3 +10437,24 @@ the final checks. No app/controller creation enablement, new runner, model launc
 inference, stable-app replacement or external deployment. Exact-tree plugin
 publication, independent final-revision review, required CI and reviewer protected
 merge remain gates; fullF11/#402 remains open and HTML stays Planned.
+
+Independent review5739536897 requested changes at initial c19da9bc: mkdir used
+Future.timeout without owning termination and outside partial-export reporting.
+Corrected before merge: fixed mkdir dispatch now uses an owned Process and bounded
+shared capture; failed/deadline capture requests SIGKILL and observes exit within
+two seconds. Unconfirmed exits retain process ownership/PID, block further export
+and reconcile only after observed exit. All dispatch/deadline failures report the
+exact uncertain destination without replay/deletion; an already-dispatched mutation
+may finish. Actual delayed-helper deadline/kill/reap and explicit retry passed;
+launch-failure and simulated unconfirmed-exit/no-replay/reconciliation tests passed.
+Fresh14focused tests passed. Old review is blocking/superseded only after a fresh
+final-revision approval; full corrected-source checks/builds and required CI remain
+gates. HTML stays Planned and #402/fullF11 open.
+
+Corrected final-source validation passed: 1,277 Flutter tests/nine explicit skips,
+formatter362/analyzer clean, fresh web/Wasm and isolated macOS debug builds and
+nine inventory tests. All386 source inputs match. The pending-process gate is
+also rechecked at every authorization/write boundary after asynchronous path
+inspection, covering a concurrent call admitted before uncertainty is observed.
+Awaiting merge through PR #456 after plugin publication, fresh independent exact-
+revision review and fresh required CI; initial c19da9bc approval is not claimed.

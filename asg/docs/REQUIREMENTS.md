@@ -271,7 +271,7 @@ The saved development automation was updated through its management tool; active
   - Acceptance: UI shows available and unavailable operations with actionable reasons; unsupported confinement refuses candidate execution before any source is run. Each enabled host passes real new-project resolve/analyze/test/web-build/serve, Stop/deadline/output-limit and descendant-cleanup checks, restart/uncertain-checkpoint refusal, stale-approval refusal and last-working-output preservation. Enabling starter generation must not implicitly enable candidate execution. Model-written candidate/repair support needs independently reviewed platform isolation and real deny-write/network/process-escape probes at the established boundary.
   - Validation/delivery: one narrowly scoped issue/PR per host/capability milestone, actual Linux/Windows builds and launches on their respective hosts, plus macOS regression coverage. Include paths with spaces, missing toolchains, occupied ports, failed previews and interrupted writes. Record tested versus unavailable capabilities separately; keep F16 unchecked until promised host increments satisfy acceptance and normal independent review/CI/verified merge. Broader generated targets remain F11.
 - [ ] F11 Multi-language project generation, runners and explicit stack selection — In progress (selection groundwork #402); depends on F04 and F05
-  - Confirmed fixed HTML source export — In progress: #402, `402-html-source-export`, scope6581732988; exact content/destination confirmation, exclusive native fixed-template export and partial-file preservation. HTML creation/runner/preview remain Planned; see current ledger entry.
+  - Confirmed fixed HTML source export — Awaiting merge through [PR #456](https://github.com/arpit-it/ASG/pull/456): #402, `402-html-source-export`, scope6581732988; exact content/destination confirmation, exclusive native fixed-template export and partial-file preservation. HTML creation/runner/preview remain Planned; see current ledger entry.
   - Independent HTML source-template prerequisite — Done (bounded foundation), [PR #455](https://github.com/arpit-it/ASG/pull/455), final25eef994 approved5739190678/finalgate5739284468, requiredCI41474565132 passed; verified reviewer mergeebe9c6015e3c9783a138de4fcc58e06c05517c7a at2026-11-02T15:51:58Z: #402, `402-html-source-template`, scope6581048649. Fixed independent web sources and actualChrome source acceptance only; production HTML creation remains Planned until approval/runner/preview integration.
   - Explicit output-stack choice — Done (bounded groundwork), [PR #454](https://github.com/arpit-it/ASG/pull/454), final63dc1386 approved5738661277/finalgate6580720505, requiredCI41468685055 passed; verified reviewer merge4a693f7ee141e60a54b05aa1278b5380ad5495a7 at2026-11-02T15:15:08Z: [#402](https://github.com/arpit-it/ASG/issues/402), `402-explicit-output-stack`, scope6580406406. Typed Flutter/HTML/Python choices with honest implemented/planned status, target/toolchain guidance and review summary. Planned/unknown choices refuse review and direct creation; approach changes retain stack selection and changing a reviewed stack requires re-review. Preserve Flutter schema/current workflow. Does not deliver HTML/Python adapters or full F11. Delivered project/generation contracts suffice; F22 verified-model acceptance and F16 Linux host validation remain open/Deferred400, not a global implementation gate. Controller/widget narrow2x tests, full checks/builds, independent finalreview/requiredCI/protected merge required.
   - Source/evidence: owner request on 28 October 2026 extends the existing adapter task, including Java, Kotlin, PHP and the remaining mainstream languages, each with real runners; HTML projects styled with CSS are one adapter in that broader scope. The app's implementation language does not constrain the output language. Current delivered output remains the bounded Flutter web adapter; other stacks are planned until verified.
@@ -11265,3 +11265,24 @@ the final checks. No app/controller creation enablement, new runner, model launc
 inference, stable-app replacement or external deployment. Exact-tree plugin
 publication, independent final-revision review, required CI and reviewer protected
 merge remain gates; fullF11/#402 remains open and HTML stays Planned.
+
+Independent review5739536897 requested changes at initial c19da9bc: mkdir used
+Future.timeout without owning termination and outside partial-export reporting.
+Corrected before merge: fixed mkdir dispatch now uses an owned Process and bounded
+shared capture; failed/deadline capture requests SIGKILL and observes exit within
+two seconds. Unconfirmed exits retain process ownership/PID, block further export
+and reconcile only after observed exit. All dispatch/deadline failures report the
+exact uncertain destination without replay/deletion; an already-dispatched mutation
+may finish. Actual delayed-helper deadline/kill/reap and explicit retry passed;
+launch-failure and simulated unconfirmed-exit/no-replay/reconciliation tests passed.
+Fresh14focused tests passed. Old review is blocking/superseded only after a fresh
+final-revision approval; full corrected-source checks/builds and required CI remain
+gates. HTML stays Planned and #402/fullF11 open.
+
+Corrected final-source validation passed: 1,277 Flutter tests/nine explicit skips,
+formatter362/analyzer clean, fresh web/Wasm and isolated macOS debug builds and
+nine inventory tests. All386 source inputs match. The pending-process gate is
+also rechecked at every authorization/write boundary after asynchronous path
+inspection, covering a concurrent call admitted before uncertainty is observed.
+Awaiting merge through PR #456 after plugin publication, fresh independent exact-
+revision review and fresh required CI; initial c19da9bc approval is not claimed.

@@ -25,11 +25,13 @@ class HtmlExportRequest {
 /// Failure after folder creation retains the partial export for inspection.
 /// Its existence never means that export, verification or preview succeeded.
 class HtmlExportFailure implements Exception {
-  const HtmlExportFailure(this.directory);
+  const HtmlExportFailure(this.directory, {this.pendingDirectoryProcessId});
   final String directory;
+  final int? pendingDirectoryProcessId;
 
   @override
   String toString() =>
       'HTML export did not complete. Partial files may remain in $directory. '
-      'Nothing was removed; inspect them and choose a new folder to retry.';
+      'Nothing was removed. '
+      '${pendingDirectoryProcessId == null ? 'Inspect the files and choose a new folder to retry.' : 'Folder process $pendingDirectoryProcessId exit is unconfirmed; wait for reconciliation before retrying.'}';
 }

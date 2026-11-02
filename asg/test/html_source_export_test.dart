@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // Copyright 2026 Arpit Sinha
 
+import 'dart:async';
 import 'dart:io';
 
 import 'package:asg/models/html/html_export_request.dart';
@@ -209,6 +210,138 @@ void main() {
           expect(await Directory(destination).exists(), true);
         },
       );
+      test('directory deadline kills and reaps the owned helper before failure', () async {
+        final plan = request(temporary.path);
+        final destination = path.join(temporary.path, plan.folderName);
+        Process? helper;
+        final stalled = HtmlSourceExportNative(
+          startDirectoryProcess: (directory) async {
+            helper = await Process.start('python3', [
+              '-I',
+              '-B',
+              '-c',
+              'import os,sys,time; time.sleep(30); os.mkdir(sys.argv[1])',
+              directory,
+            ]);
+            return helper!;
+          },
+        );
+        final watch = Stopwatch()..start();
+        try {
+          await expectLater(
+            stalled.export(
+              request: plan,
+              confirmedRequest: plan,
+              authorizeWrite: () {},
+            ),
+            throwsA(
+              isA<HtmlExportFailure>()
+                  .having(
+                    (failure) => failure.directory,
+                    'uncertain location',
+                    destination,
+                  )
+                  .having(
+                    (failure) => failure.pendingDirectoryProcessId,
+                    'reaped child',
+                    isNull,
+                  ),
+            ),
+          );
+          expect(watch.elapsed, lessThan(const Duration(seconds: 10)));
+          expect(await helper!.exitCode, isNot(0));
+          expect(stalled.pendingDirectoryProcessIds, isEmpty);
+          expect(await Directory(destination).exists(), false);
+          // Successful retry uses a new explicit service request after cleanup,
+          // never an automatic replay of the stalled dispatch.
+          expect(
+            await exporter.export(
+              request: plan,
+              confirmedRequest: plan,
+              authorizeWrite: () {},
+            ),
+            destination,
+          );
+        } finally {
+          helper?.kill(ProcessSignal.sigkill);
+          await helper?.exitCode;
+        }
+      });
+
+      test(
+        'directory dispatch failure reports its destination without writes',
+        () async {
+          final plan = request(temporary.path);
+          final failed = HtmlSourceExportNative(
+            startDirectoryProcess: (_) async {
+              throw ProcessException('/bin/mkdir', [], 'launch failed');
+            },
+          );
+          await expectLater(
+            failed.export(
+              request: plan,
+              confirmedRequest: plan,
+              authorizeWrite: () {},
+            ),
+            throwsA(
+              isA<HtmlExportFailure>().having(
+                (failure) => failure.directory,
+                'uncertain location',
+                path.join(temporary.path, plan.folderName),
+              ),
+            ),
+          );
+          expect(await temporary.list().toList(), isEmpty);
+        },
+      );
+
+      test(
+        'unconfirmed child exit blocks replay until reconciliation',
+        () async {
+          final plan = request(temporary.path);
+          final child = _UnconfirmedDirectoryProcess();
+          var dispatches = 0;
+          final stalled = HtmlSourceExportNative(
+            startDirectoryProcess: (_) async {
+              dispatches++;
+              return child;
+            },
+          );
+          try {
+            await expectLater(
+              stalled.export(
+                request: plan,
+                confirmedRequest: plan,
+                authorizeWrite: () {},
+              ),
+              throwsA(
+                isA<HtmlExportFailure>().having(
+                  (failure) => failure.pendingDirectoryProcessId,
+                  'pending child',
+                  child.pid,
+                ),
+              ),
+            );
+            expect(child.killRequested, true);
+            expect(stalled.pendingDirectoryProcessIds, [child.pid]);
+            await expectLater(
+              stalled.export(
+                request: plan,
+                confirmedRequest: plan,
+                authorizeWrite: () {},
+              ),
+              throwsStateError,
+            );
+            expect(dispatches, 1);
+            expect(await temporary.list().toList(), isEmpty);
+          } finally {
+            child.exited.complete(-9);
+            await Future<void>.delayed(Duration.zero);
+          }
+          expect(stalled.pendingDirectoryProcessIds, isEmpty);
+        },
+      );
+
       test('concurrent exports cannot replace the winning folder', () async {
         final plan = request(temporary.path);
         final results = await Future.wait(
@@ -239,4 +372,26 @@ void main() {
         ? 'Native HTML export is Mac-verifiable only.'
         : false,
   );
+}
+
+// Models an OS child whose termination was requested but exit is not observed.
+// The actual helper deadline regression above separately proves real cleanup.
+class _UnconfirmedDirectoryProcess implements Process {
+  final exited = Completer<int>();
+  bool killRequested = false;
+  @override
+  int get pid => 424242;
+  @override
+  Future<int> get exitCode => exited.future;
+  @override
+  Stream<List<int>> get stdout => Stream.error(StateError('capture failed'));
+  @override
+  Stream<List<int>> get stderr => const Stream.empty();
+  @override
+  IOSink get stdin => throw UnsupportedError('No input for mkdir.');
+  @override
+  bool kill([ProcessSignal signal = ProcessSignal.sigterm]) {
+    killRequested = true;
+    return true;
+  }
 }

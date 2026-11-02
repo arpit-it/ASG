@@ -6,12 +6,27 @@ import 'dart:io';
 import 'package:path/path.dart' as path;
 
 import '../../models/html/html_export_request.dart';
+import '../generation_process_capture.dart';
 import 'html_site_template.dart';
 
 /// Fixed-source export only; no model input, shell, verification or preview.
 /// The caller owns confirmation and must revalidate current session authority
 /// in [authorizeWrite]. This is not a sandbox against concurrent local actors.
+/// An already-dispatched mutation may finish. Uncertain directory dispatches
+/// report their destination, and unconfirmed child exits block further export.
 class HtmlSourceExportNative {
+  HtmlSourceExportNative({
+    Future<Process> Function(String directory)? startDirectoryProcess,
+  }) : _startDirectoryProcess = startDirectoryProcess ?? _startDirectory;
+
+  final Future<Process> Function(String) _startDirectoryProcess;
+  final Map<int, Process> _unconfirmedProcesses = {};
+  List<int> get pendingDirectoryProcessIds =>
+      List.unmodifiable(_unconfirmedProcesses.keys);
+
+  static Future<Process> _startDirectory(String directory) =>
+      Process.start('/bin/mkdir', ['-m', '700', directory], runInShell: false);
+
   bool get supported => Platform.isMacOS;
 
   Future<String> export({
@@ -28,6 +43,11 @@ class HtmlSourceExportNative {
       if (confirmedRequest == null || !request.matches(confirmedRequest)) {
         throw StateError(
           'Confirm the exact HTML content and destination first.',
+        );
+      }
+      if (_unconfirmedProcesses.isNotEmpty) {
+        throw StateError(
+          'A previous folder process has not exited; export is blocked.',
         );
       }
       authorizeWrite();
@@ -52,14 +72,42 @@ class HtmlSourceExportNative {
     final sources = HtmlSiteTemplate().generate(request.input);
     check();
     // Unlike Directory.create, mkdir refuses an existing directory atomically.
-    final created = await Process.run('/bin/mkdir', [
-      '-m',
-      '700',
-      destination,
-    ], runInShell: false).timeout(const Duration(seconds: 5));
-    if (created.exitCode != 0) {
+    Process? directoryProcess;
+    int directoryExit;
+    try {
+      directoryProcess = await _startDirectoryProcess(destination);
+      final captured = await captureGenerationProcess(
+        directoryProcess,
+        timeout: const Duration(seconds: 5),
+      );
+      directoryExit = captured.exitCode;
+    } catch (_) {
+      int? pendingPid;
+      if (directoryProcess != null) {
+        final process = directoryProcess;
+        process.kill(ProcessSignal.sigkill);
+        try {
+          await process.exitCode.timeout(const Duration(seconds: 2));
+        } catch (_) {
+          // Retain ownership and refuse another export until exit is observed.
+          pendingPid = process.pid;
+          _unconfirmedProcesses[process.pid] = process;
+          process.exitCode.then((_) {
+            _unconfirmedProcesses.remove(process.pid);
+          }, onError: (Object _) {});
+        }
+      }
+      // Dispatch/deadline failure is uncertain even if no directory is visible
+      // yet. Report its exact location, never replay mkdir or remove the path.
+      throw HtmlExportFailure(
+        destination,
+        pendingDirectoryProcessId: pendingPid,
+      );
+    }
+    if (directoryExit != 0) {
       throw StateError(
-        'Could not create a new export folder; nothing overwritten.',
+        'Could not exclusively create $destination; inspect it before retrying. '
+        'Nothing was overwritten.',
       );
     }
     try {
