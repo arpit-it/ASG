@@ -18,7 +18,10 @@ class _SafeModelFailure extends StateError {
 
 /// Token streaming with bounded startup, inactivity and total request duration.
 class LocalModelProvider
-    implements StreamingModelProvider, ModelMetricsProvider {
+    implements
+        StreamingModelProvider,
+        ModelMetricsProvider,
+        ModelResponseIdentityProvider {
   LocalModelProvider(
     this.config, {
     http.Client? client,
@@ -39,6 +42,10 @@ class LocalModelProvider
   ModelRuntimeMetrics? _completedMetrics;
   @override
   ModelRuntimeMetrics? get completedMetrics => _completedMetrics;
+  String? _pendingResponseModel;
+  String? _completedResponseModel;
+  @override
+  String? get completedResponseModel => _completedResponseModel;
   ModelRuntimeMetrics? _pendingMetrics;
   bool _transportSucceeded = false;
   @override
@@ -68,6 +75,8 @@ class LocalModelProvider
 
     output = StreamController<GenerationEvent>(
       onListen: () {
+        _completedResponseModel = null;
+        _pendingResponseModel = null;
         _completedMetrics = null;
         _pendingMetrics = null;
         _transportSucceeded = false;
@@ -89,6 +98,7 @@ class LocalModelProvider
           },
           onError: (Object error, StackTrace stack) {
             if (finished) return;
+            _pendingResponseModel = null;
             _pendingMetrics = null;
             _transportSucceeded = false;
             // Raw errors can include echoed prompts, response bodies or URLs.
@@ -106,6 +116,7 @@ class LocalModelProvider
           onDone: () {
             if (finished) return;
             if (!_cancelled && _transportSucceeded) {
+              _completedResponseModel = _pendingResponseModel;
               _completedMetrics = _pendingMetrics;
             }
             finished = true;
@@ -306,11 +317,16 @@ class LocalModelProvider
         'Local server reported a different or invalid model ID. Check the selected model and local runtime, then retry.',
       );
     }
+    if (data.containsKey('model')) {
+      _pendingResponseModel = data['model'] as String;
+    }
   }
 
   @override
   Future<void> cancel() async {
     _cancelled = true;
+    _completedResponseModel = null;
+    _pendingResponseModel = null;
     _completedMetrics = null;
     _pendingMetrics = null;
     _client.close();

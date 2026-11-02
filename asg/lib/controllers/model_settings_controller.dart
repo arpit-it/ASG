@@ -394,6 +394,9 @@ class ModelSettingsController extends BaseController {
                   firstTextMilliseconds: firstTextLatency.inMilliseconds,
                   completedMilliseconds: completed.inMilliseconds,
                   runtimeMetrics: metrics,
+                  responseModel: provider is ModelResponseIdentityProvider
+                      ? provider.completedResponseModel
+                      : null,
                 );
                 // A late completion must never create an out-of-budget record.
                 if (firstTextLatency >= Duration.zero &&

@@ -38,6 +38,7 @@ void main() {
         request.response.headers.contentType = ContentType.json;
         request.response.write(
           jsonEncode({
+            'model': body['model'],
             'choices': [
               {
                 'message': {
@@ -70,6 +71,7 @@ void main() {
           await controller.saveTestObservation(config);
           final saved = store.loadPresets().single;
           expect(saved.testObservation!.jsonFormat, json);
+          expect(saved.testObservation!.responseModel, 'exact-request');
           expect(saved.config.baseUrl, config.baseUrl);
           expect(saved.config.model, 'exact-request');
           expect(saved.config.chatOutputTokens, 2048);
@@ -117,6 +119,7 @@ void main() {
               observedAt: DateTime.utc(2026, 11, 2),
               firstTextMilliseconds: 12,
               completedMilliseconds: 34,
+              responseModel: 'saved',
               runtimeMetrics: const ModelRuntimeMetrics(
                 promptTokens: 42,
                 completionTokens: 2,
@@ -159,6 +162,7 @@ void main() {
             .single
             .testObservation!;
         expect(savedObservation.jsonFormat, isTrue);
+        expect(savedObservation.responseModel, 'saved');
         expect(savedObservation.observedAt, DateTime.utc(2026, 11, 2));
         expect(savedObservation.runtimeMetrics!.promptTokens, 42);
         expect(savedObservation.runtimeMetrics!.tokensPerSecond, 12.5);
