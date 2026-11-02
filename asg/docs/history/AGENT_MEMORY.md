@@ -10283,3 +10283,89 @@ In progress on `402-html-source-template` from verified PR454 merge4a693f7, scop
 Final isolated tracked-source validation:1266 Flutter tests passed/nine explicit skips; formatter360/analyzer clean, web includingWasm dry run and macOSdebug builds passed; nine acceptance-inventory tests passed. Actual emitted-sourceChrome check passed local assets/anchors, semantic text, focus target/native details/theme toggling/navigation,320/1280px layouts and doubled text, including maximum unbroken input. Wide rendered fixture visually inspected; screenshot-only narrow capture is limited by Chrome window sizing, while iframe DOM layout asserts an actual320px viewport. All383tracked Dart/Python inputs match tested snapshot. One analyzer import-style finding fixed before final fullchecks; browser harness maximum-input extension separately retested. CI now runs emitted-sourceChrome checks. Awaiting exacttree plugin publication, independent finalrevision review, requiredCI and reviewer protected merge. No general HTMLrunner, production export/creation/preview lifecycle or model/inference claim; HTML remains Planned.
 
 CI correction before merge: requiredCI41473270951 Python125372116109 passed; Flutter125372115493 passed1260tests/12platformskips plus17actualChrome storage/UI tests and actualChrome transport, then failed the newHTML harness at viewport equality. Linux classic scrollbars reduce documentElement.clientWidth, unlike macOS overlay scrollbars. Corrected harness distinguishes iframe/window viewport width from available content width and checks overflow against actual clientWidth at normal/2x/max text. Final actualMacChrome retest passed; source runtime unchanged, prior fullchecks/builds remain applicable. Old205a5b17 approval5739088045 is superseded; fresh finalrevision review and new requiredCI remain gates. No merge/support claim from the failed run.
+
+
+### Independent HTML source-template prerequisite verified merged — PR #455
+Bounded F11/#402 source foundation Done on `402-html-source-template`, scope6581048649.
+Tested final local06f473ada164d6e67947f545e479f2b325aabf0e and pluginpublished
+25eef994b04d5000cc545a155d03f0d43e30b67c share exact tree
+31faf8e79b5cb30b45aac61a2617e98b914fa5c7; all10remote blobs and383tracked
+Dart/Python validation inputs match. Fresh independent exactfinal review5739190678/
+finalgate5739284468 approved unchanged finalhead without blockers (COMMENT verdict;
+shared-owner identity, no second-account claim). Independent3focusedFlutter, actual
+emitted-sourceChrome andnineinventory passed. RequiredCI41474565132 BOTH SUCCESS:
+Python125376621264 andFlutter125376621631 including correctedactualLinuxHTML,
+browserstorage/UI/transport, webbuild and independentgeneratedFlutter verification.
+Parent1266Flutter/nineexplicit skips,format360/analyzer/web/Wasm/macOSdebug and
+nineinventory passed. OldCI41473270951 exposed classic-scrollbarclientWidth assertion;
+fixed before merge, actualMacChrome retested and freshreview/CI obtained without bypass.
+Fixed independent HTML/CSS/JavaScript/localSVG output is immutable, bounded and
+plain-text encoded. Actualsource assets/anchors, semantictext, focus/native details,
+theme/retry/navigation and320/1280px/2x/maxtext layout checks pass. Test exporter and
+Chrome harness are not production creation/export/runner/preview-lifecycle delivery.
+HTML remainsPlanned and fullF11unchecked; remaining adapter integration follows
+canonicalF11/#402. Deferredplatformacceptance400 retained. Existing8765health unavailable
+(URLError); no model launch/download/inference, stableapp replacement or deployment.
+Reviewer protected-plugin squashmerged PR455 as
+ebe9c6015e3c9783a138de4fcc58e06c05517c7a at2026-11-02T15:51:58Z.
+Parent freshly verified mergedPR/currentmain/#402OPEN/signedexacttree/soleparent
+4a693f7e; commitobjecthash verified before guardedlocalsync. Localmain/originmain0/0,
+emptyindex and bothoriginalIDEedits byte-identical. Finalmerge bookkeeping retained
+for nextnormalreviewedPR. No newissue/cadence/notificationchange; bothautomationlabels applied.
+Receipts:/private/tmp/asg455-publication.json,/private/tmp/asg455-validation-inputs.json,
+/private/tmp/asg455-reviewed-merge.json,/private/tmp/asg455-safe-sync.py.
+Currentrun 2026-11-02T15:52:46.158399+00:00
+
+
+### F11 / #402 — confirmed fixed HTML source export
+In progress on `402-html-source-export` from verified PR #455 main
+`ebe9c6015e3c9783a138de4fcc58e06c05517c7a`, scope comment6581732988.
+Add a typed exact-content/destination request and macOS native export service for
+the fixed five-file HTML template. Caller-owned session confirmation and current
+authorization are checked before every mutation; changed/unconfirmed requests,
+invalid destinations, existing folders/files and symbolic parents/destinations
+are refused. Exclusive folder creation prevents simultaneous export replacement.
+Partial exports are retained with an explicit directory-bearing failure; no
+cleanup, model invocation, dependency installation, verification or execution.
+This service is not a sandbox against adversarial concurrent local filesystem
+actors. The app/controller must own actual user confirmation; service records
+alone do not establish user intent. HTML remains Planned until creation,
+approval/runner/preview/Stop/recovery integration is delivered. Full F11/#402 stays
+open. Existing template and generation contracts suffice; Deferred #400 hardware
+acceptance is unrelated. Real filesystem tests cover complete output, stale/no
+confirmation, revocation before and during writes, preserved existing paths and
+concurrent requests. Full checks, independent final-revision review, required CI
+and reviewer protected merge remain gates; this entry is not delivery evidence.
+
+Final isolated-source validation: 1,274 Flutter tests passed/nine explicit skips;
+formatter362/analyzer clean; web (including Wasm dry run) and isolated macOS debug
+builds passed. Eight export tests include exact filesystem output, normalized
+request binding, missing/stale confirmation, revocation, preserved files/folders/
+links and simultaneous exclusive export refusal. Nine acceptance-inventory tests
+passed after refreshing historical source comparisons. All386 tracked Dart/Python
+validation inputs match the source snapshot. One braces lint was corrected before
+the final checks. No app/controller creation enablement, new runner, model launch,
+inference, stable-app replacement or external deployment. Exact-tree plugin
+publication, independent final-revision review, required CI and reviewer protected
+merge remain gates; fullF11/#402 remains open and HTML stays Planned.
+
+Independent review5739536897 requested changes at initial c19da9bc: mkdir used
+Future.timeout without owning termination and outside partial-export reporting.
+Corrected before merge: fixed mkdir dispatch now uses an owned Process and bounded
+shared capture; failed/deadline capture requests SIGKILL and observes exit within
+two seconds. Unconfirmed exits retain process ownership/PID, block further export
+and reconcile only after observed exit. All dispatch/deadline failures report the
+exact uncertain destination without replay/deletion; an already-dispatched mutation
+may finish. Actual delayed-helper deadline/kill/reap and explicit retry passed;
+launch-failure and simulated unconfirmed-exit/no-replay/reconciliation tests passed.
+Fresh14focused tests passed. Old review is blocking/superseded only after a fresh
+final-revision approval; full corrected-source checks/builds and required CI remain
+gates. HTML stays Planned and #402/fullF11 open.
+
+Corrected final-source validation passed: 1,277 Flutter tests/nine explicit skips,
+formatter362/analyzer clean, fresh web/Wasm and isolated macOS debug builds and
+nine inventory tests. All386 source inputs match. The pending-process gate is
+also rechecked at every authorization/write boundary after asynchronous path
+inspection, covering a concurrent call admitted before uncertainty is observed.
+Awaiting merge through PR #456 after plugin publication, fresh independent exact-
+revision review and fresh required CI; initial c19da9bc approval is not claimed.
