@@ -50,7 +50,7 @@ void main() {
       addTearDown(host.dispose);
       expect(host.supported, isFalse);
       final report = (host as GenerationCapabilitySource).capabilities;
-      expect(report.implemented, isFalse);
+      expect(report.operations.any((entry) => entry.implemented), isFalse);
       expect(report.host, 'Browser or unsupported host');
       expect(report.operations.every((entry) => !entry.implemented), isTrue);
       expect(FolderPicker().supported, isFalse);

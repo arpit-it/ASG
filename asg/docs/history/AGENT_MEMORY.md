@@ -8272,3 +8272,64 @@ Recorded 2026-11-02T00:31:44.791309+00:00.
 
 
 Final configured-toolchain validation:1152clean-sourceFlutter tests/nine explicit skips,71focused,analyzer clean,formatter324unchanged,web/Wasm andmacOSdebug builds passed.346runtime/test/tool/asset inputs match clean testedcopy. Nine historicalinventory checks passed with refreshed source comparison; historical observations unchanged. No configured tool execution/inference/install/stableapp change. Awaiting merge: exact-tree plugin publication, independent final-revision review, requiredCI and reviewer merge remain gates. Logs/private/tmp/asg-toolchain-{focused,full,analyze-final,web,macos,inventory}.log. Recorded 2026-11-02T00:32:31.445901+00:00.
+
+
+### Configured toolchain path inspection verified merged — #401 / PR #420
+
+Bounded increment Done on `401-toolchain-inspection`. Exact final
+`cc780fad247dd077ffbd51849ec0464e7079adce`, testedlocal
+`f454cb39973c8862673f8215137bf8e930d494ec`, identicaltree
+`503dccd6489485b114e869be1ba00e5615803ab5`. All11published blobs match;
+reviewer independently verified all821remote blobs/modes and346runtime inputs.
+Independent112focused/native/architecture/deadline4s/late-retry/unknown-host
+checks passed with one explicit live-generation skip; nine final-source inventory
+checks passed. Approval5731022520/finalgate5731040723 found no blockers.
+
+Parent1152clean-sourceFlutter/nine explicit skips,71focused,formatter324unchanged,
+analyzer clean,web/Wasm andmacOSdebug builds andnineinventorychecks passed.
+RequiredCI41367820531 completed/success: Flutter1250316545861146Ubuntu tests/
+12explicit skips,17actualChrome,web/Wasm and actual independent generated-project
+resolve/analyze/test/render/build/serve; Python125031654910141tests/four skips.
+Default8765health unavailable; no fresh inference or selected-tool execution.
+
+Independent reviewer protected-plugin squash merged
+https://github.com/arpit-it/ASG/pull/420 as
+`36c33ebe55a6e6e71abcb6c41e7d5d223f2fb6f2` at2026-11-02T00:40:19Z. Parent
+freshly verified mergedPR/mainserviceblob/issue401OPEN and signed exacttree/
+soleparent32df5903. Guarded local sync passed main/origin-main0/0,indexempty,
+both unrelatedIDE edits byte-identical. Evidence/private/tmp/asg-toolchain-
+publication.json,/private/tmp/asg420-reviewed-merge.json and
+/private/tmp/asg420-safe-sync.py. Both automation labels applied.
+
+Remaining F16 per-host implementation Pending; fullF16/F22/F15 unchecked,
+F22verified profiles/context/model evidence Pending, external platform acceptance
+Deferred400. No active implementation after this merge. Retain this verified-merge
+bookkeeping for next normal reviewed development PR. No modeldownload/install/
+stableapp/settings/deployment/cadence/notification change.
+Current run time 2026-11-02T00:41:07.853263+00:00.
+
+
+### Independent generation-operation reporting — #401
+
+In progress on `401-operation-capabilities` from verified PR #420 merge
+`36c33ebe55a6e6e71abcb6c41e7d5d223f2fb6f2`. Fresh plugin search found no open
+PR; active-chat inventory and prior completed run showed no competing owner.
+Reused #401, no new issue. F16 explicitly requires starter-only delivery without
+candidate confinement. The previous aggregate implementation flag could not
+represent that boundary. Add immutable typed per-operation reporting, default
+unavailable; retain current macOS/browser/native host behavior and non-readiness
+limits. No execution authorization, host enablement, runtime probe or platform
+support claim. This is a Mac-verifiable reporting prerequisite for later host
+increments; external acceptance remains Deferred #400. Full F16 stays unchecked.
+
+Acceptance: independently reported creation/verification/confinement/preview/
+cleanup, fail-closed unknown hosts, stable ordered immutable reports, mixed-host
+320px/2x UI and unchanged native/browser refusals. Initial compile checks exposed
+old aggregate-field assertions in controller/browser tests; migrated all callers
+and retest final source. Full format/analyze/tests, browser refusal checks,
+web/macOS builds, inventory freshness, exact-tree plugin publication, independent
+final review, required CI and reviewer protected merge remain gates.
+Recorded 2026-11-02T00:45:50.233519+00:00.
+
+
+Final independent-operation reporting validation:1155clean-sourceFlutter/nine explicit skips,three actualChrome production-host/IndexedDB refusals,formatter324unchanged,analyzer clean,web/Wasm andmacOSdebug builds andninehistoricalinventory checks passed. All346runtime/test/tool/asset inputs match. No model inference, host enablement or installedapp change. Awaiting merge: exact-tree plugin publication, independent final-revision review, required CI and reviewer protected merge remain gates. Recorded 2026-11-02T00:47:21.914471+00:00.
