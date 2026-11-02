@@ -271,7 +271,8 @@ The saved development automation was updated through its management tool; active
   - Acceptance: UI shows available and unavailable operations with actionable reasons; unsupported confinement refuses candidate execution before any source is run. Each enabled host passes real new-project resolve/analyze/test/web-build/serve, Stop/deadline/output-limit and descendant-cleanup checks, restart/uncertain-checkpoint refusal, stale-approval refusal and last-working-output preservation. Enabling starter generation must not implicitly enable candidate execution. Model-written candidate/repair support needs independently reviewed platform isolation and real deny-write/network/process-escape probes at the established boundary.
   - Validation/delivery: one narrowly scoped issue/PR per host/capability milestone, actual Linux/Windows builds and launches on their respective hosts, plus macOS regression coverage. Include paths with spaces, missing toolchains, occupied ports, failed previews and interrupted writes. Record tested versus unavailable capabilities separately; keep F16 unchecked until promised host increments satisfy acceptance and normal independent review/CI/verified merge. Broader generated targets remain F11.
 - [ ] F11 Multi-language project generation, runners and explicit stack selection — In progress (#402); depends on F04 and F05
-  - HTML export deadline — Awaiting merge in [PR #463](https://github.com/arpit-it/ASG/pull/463), #402, `402-html-export-deadline`, scope6586482988. Ten-second authority revocation retains pending IO ownership and partial/process evidence; late completion cannot publish success. Full F11 remains open. Final-revision independent review, required CI and protected reviewer merge remain gates; see delivery ledger.
+  - HTML creation-to-starter handoff — Awaiting merge in [PR #464](https://github.com/arpit-it/ASG/pull/464), #402, `402-html-creation-handoff`, scope6587091875. Explicit starter navigation from both creation entry points retains the original plain-text idea and wizard choices without registration or Build approval; full HTML project integration remains Pending. See delivery ledger.
+  - HTML export deadline — Done via [PR #463](https://github.com/arpit-it/ASG/pull/463), verified reviewer merge09d68c87 at2026-11-02T19:42:54Z; independent approval5742254710/finalgate5742343110 and requiredCI41511268868 passed. #402, `402-html-export-deadline`, scope6586482988. Ten-second authority revocation retains pending IO ownership and partial/process evidence; late completion cannot publish success. Full F11 remains open; see delivery ledger.
   - Saved fixed HTML starter library — Done via [PR #462](https://github.com/arpit-it/ASG/pull/462), verified merge5a01fe9c at2026-11-02T19:17:47Z; independent approval5741906435/finalgate5742006032 and requiredCI41507154019 passed; #402, `402-html-starter-library`, scope6585714649. Explicit transactional save and dashboard reopen only; original inputs/destination retained, checks/preview require fresh actions. Full project registration/approved-task integration remains Pending; see delivery ledger.
   - Registered fixed HTML runner — Done via [PR #461](https://github.com/arpit-it/ASG/pull/461), #402, `402-html-starter-runner`, scope6585030463; verified mergeef288141 at2026-11-02T18:43:47Z, finaleb4ad023 independently approved5741500365/finalgate5741571287, requiredCI41502225049 passed. Versioned host-aware exact-starter check/preview dispatch and typed unsupported operations only; full creation/registration/edited-source execution remain Pending.
   - Explicit fixed HTML source checks — Done via [PR #460](https://github.com/arpit-it/ASG/pull/460), #402, `402-html-export-check`, scope6584403638; verified mergef8a888ef at2026-11-02T18:19:48Z, final437e281e independently approved5741174433/finalgate5741267929, requiredCI41498268973 passed. Explicit read-only identity evidence and visible Stop/deadline/retry only; full HTML creation/registration/runner Pending.
@@ -11780,3 +11781,64 @@ publication, independent final-revision review, actual required CI and protected
 reviewer merge remain delivery gates. No stable-app/model/data/cadence/notification
 change, no new issue or unavailable-platform probe. Tested inputs receipt:
 /private/tmp/asg402-deadline-inputs.json; focused/full/build logs share that prefix.
+
+
+### HTML export deadline verified merged — PR #463
+Bounded F11/#402 fix Done on `402-html-export-deadline`, scope6586482988.
+Final2e90fa6f16452cbdc6672aa9ff98ecaf98c7e904/testedlocal103ab6ce37eb17e9a87e77416a30fa43e6d914f5
+share exacttreed0079e8d387d8334c3404ec314192b122a43db2f; allsixpublishedblobs/416inputs match.
+Independent approval5742254710/finalgate5742343110 found no blockers; fresh55focused/
+nineinventory passed. Parent final1326Flutter/nineexplicit skips,55focused,format391/
+analyzer/freshwebWasm/isolatedmacOSdebug/nineinventory passed. Initial null-aware lint
+corrected before final full checks/builds. RequiredCI41511268868 BOTH SUCCESS:
+Flutter125504179577/Python125504179192; reviewer inspected actual logs including
+1299Linux/33explicit skips,17Chrome,transport/staticHTML/webWasm/realgeneratedFlutter.
+Reviewer protected-plugin expected-head squashmerged09d68c8783ebdb36f95189913e86fc3a5a0d1b36
+at2026-11-02T19:42:54Z. Parent freshly verified mergedPR/currentmain/#402OPEN/#400OPEN,
+exacttree/signedcommit/soleparent5a01fe9c; reconstructed and hash-verified commit before
+atomic localref synchronization. Localmain/originmain0/0,indexempty,originalIDEedits
+byte-identical to PR462manifest. Export now revokes authority after10seconds; it
+retains pending ownership, refuses late success and preserves partial/PID evidence.
+No claim to cancel dispatched IO. Full HTML creation/approved-task integration,
+F11/#402 andDeferred400 remain open. Existing8765health unavailable; no inference,
+model launch or stableapp replacement. Final canonical merge bookkeeping retained
+locally for next normal reviewed development PR; no direct-main publication/new
+issue/cadence/notification change. Receipts:/private/tmp/asg463-publication.json,
+/private/tmp/asg402-deadline-inputs.json,/private/tmp/asg463-reviewed-merge.json,
+/private/tmp/asg463-review-evidence.json,/private/tmp/asg463-safe-sync.py.
+
+
+### HTML creation-to-starter handoff — F11 / #402
+Awaiting merge in [PR #464](https://github.com/arpit-it/ASG/pull/464) on
+`402-html-creation-handoff` from verified PR463 merge
+09d68c8783ebdb36f95189913e86fc3a5a0d1b36; scope6587091875.
+No competing active run/open PR at selection; currentmain and mergedPR463 verified
+through the GitHub plugin. The creation wizard previously refused HTML and its
+original idea could not reach the delivered starter flow. Both dashboard and
+studio creation dialogs now offer an explicitly labeled fixed-starter handoff
+for selected HTML. The bounded original idea and suggested title become editable
+plain text; the handoff grants no destination, export confirmation, saved record,
+source-check/preview result or Build approval. Feature/experience choices remain
+in the wizard and are explicitly outside the fixed template. Returning preserves
+choices; pending navigation cannot duplicate; disposal cannot notify the view.
+Wrong-stack/step/disposed or invalid drafts cannot hand off. Flutter creation and
+planned/unknown stack refusal remain intact. Full HTML registration/approved-task
+integration/edited-source execution, F11/#402 and Deferred400 remain open.
+Acceptance: both production entry points with actual desktop/320px2x interactions,
+return/cancel/no-record-write, draft bounds/authority/disposal, existing real Mac
+export/check/HTTPpreview/durable-library flows. Focused46passed; final isolated
+tracked-source Flutter suite1333passed/nineexplicit skips, formatter392unchanged,
+analyzer clean, nine inventory tests passed. Initial test failures came from
+selecting the underlying dashboard search field and a lazy/offscreen control;
+corrected test scoping/scrolling and reran affected tests/fullsuite. No inference,
+model launch, native app-launch acceptance or stableapp/data replacement claimed.
+Final fresh web/Wasm dryrun and isolatedmacOSdebug builds passed. Exact-tree
+plugin publication, independent finalreview, actual required CI and protected
+reviewer merge remain delivery gates. Includes
+prior PR463 final merge bookkeeping. No new issue/cadence/notification change.
+Validation inputs: /private/tmp/asg402-handoff-inputs.json; focused/full/build logs
+share that prefix. No completion claim before verified merge.
+
+PR464 initial remote991a62fb/testedlocal37c7c8e share tree da0d1e20;
+allten published blobs and396 tested source inputs match. This followup only adds
+PR/status linkage; no tested runtime inputs changed. Final review/CI/merge pending.

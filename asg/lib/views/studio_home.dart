@@ -23,6 +23,11 @@ import '../services/project_details_store.dart';
 import 'project_details_dialog.dart';
 import 'dashboard.dart';
 import 'project_wizard.dart';
+import '../models/html/html_site_input.dart';
+import '../controllers/html_export_controller.dart';
+import '../services/html/html_source_export_factory.dart';
+import '../services/html/html_starter_store.dart';
+import 'html_export_screen.dart';
 import 'project_workspace.dart';
 import 'runtime_setup_screen.dart';
 import 'app_licenses_button.dart';
@@ -68,10 +73,23 @@ class _StudioHomeState extends State<StudioHome> {
     ),
   );
 
+  Future<void> openHtmlDraft(HtmlSiteInput input) =>
+      Navigator.of(context).push<void>(
+        MaterialPageRoute<void>(
+          builder: (_) => HtmlExportScreen(
+            controller: HtmlExportController(
+              exporter: createHtmlSourceExport(),
+              starterStore: HtmlStarterStore(widget.store.records),
+              initialInput: input,
+            ),
+          ),
+        ),
+      );
+
   Future<void> create() async {
     final project = await showDialog<StudioProject>(
       context: context,
-      builder: (_) => const ProjectWizard(),
+      builder: (_) => ProjectWizard(onOpenHtmlStarter: openHtmlDraft),
     );
     if (project != null) await controller.create(project);
   }

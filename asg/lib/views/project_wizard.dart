@@ -6,9 +6,11 @@ import 'package:flutter/material.dart';
 import '../controllers/project_wizard_controller.dart';
 import '../models/project_blueprint.dart';
 import '../models/output_stack.dart';
+import '../models/html/html_site_input.dart';
 
 class ProjectWizard extends StatefulWidget {
-  const ProjectWizard({super.key});
+  const ProjectWizard({super.key, this.onOpenHtmlStarter});
+  final Future<void> Function(HtmlSiteInput input)? onOpenHtmlStarter;
   @override
   State<ProjectWizard> createState() => _ProjectWizardState();
 }
@@ -33,6 +35,21 @@ class _ProjectWizardState extends State<ProjectWizard> {
     name.dispose();
     idea.dispose();
     super.dispose();
+  }
+
+  bool openingHtml = false;
+
+  Future<void> openHtmlStarter() async {
+    if (openingHtml) return;
+    final open = widget.onOpenHtmlStarter;
+    final draft = controller.htmlStarterDraft();
+    if (open == null || draft == null) return;
+    setState(() => openingHtml = true);
+    try {
+      await open(draft);
+    } finally {
+      if (mounted) setState(() => openingHtml = false);
+    }
   }
 
   void next() {
@@ -122,6 +139,21 @@ class _ProjectWizardState extends State<ProjectWizard> {
       const SizedBox(height: 8),
       Text(controller.outputStack?.detail ?? 'Unknown output stack.'),
       const Text('Additional languages and frameworks remain planned.'),
+      if (controller.type == 'HTML' && widget.onOpenHtmlStarter != null) ...[
+        const SizedBox(height: 12),
+        const Text(
+          'Use the fixed HTML starter with your idea as plain text. Review and '
+          'edit its title and description before confirming a destination. '
+          'The experience and feature choices below are retained here; they '
+          'are not implemented by this starter. Returning keeps your choices. '
+          'This does not register an ASG project or approve a Build task.',
+        ),
+        const SizedBox(height: 8),
+        OutlinedButton(
+          onPressed: openingHtml ? null : openHtmlStarter,
+          child: Text(openingHtml ? 'Starter open' : 'Open fixed HTML starter'),
+        ),
+      ],
       const SizedBox(height: 20),
       const Text(
         'How should people use it?',
@@ -243,13 +275,16 @@ class _ProjectWizardState extends State<ProjectWizard> {
     ),
     actions: [
       TextButton(
-        onPressed: () => Navigator.pop(context),
+        onPressed: openingHtml ? null : () => Navigator.pop(context),
         child: const Text('Cancel'),
       ),
       if (controller.step != CreationStep.idea)
-        TextButton(onPressed: controller.back, child: const Text('Back')),
+        TextButton(
+          onPressed: openingHtml ? null : controller.back,
+          child: const Text('Back'),
+        ),
       FilledButton(
-        onPressed: next,
+        onPressed: openingHtml ? null : next,
         child: Text(switch (controller.step) {
           CreationStep.idea => 'Show my options',
           CreationStep.options => 'Review project',
