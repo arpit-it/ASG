@@ -22,6 +22,7 @@ class _HtmlExportScreenState extends State<HtmlExportScreen> {
   void initState() {
     super.initState();
     controller.addListener(refresh);
+    controller.preview.addListener(refresh);
   }
 
   void refresh() {
@@ -31,6 +32,7 @@ class _HtmlExportScreenState extends State<HtmlExportScreen> {
   @override
   void dispose() {
     controller.removeListener(refresh);
+    controller.preview.removeListener(refresh);
     controller.dispose();
     title.dispose();
     description.dispose();
@@ -52,7 +54,7 @@ class _HtmlExportScreenState extends State<HtmlExportScreen> {
             padding: const EdgeInsets.all(20),
             children: [
               const Text(
-                'Export editable HTML, CSS, JavaScript and local SVG files from a fixed responsive starter. Your text fills its title and description. This does not create an ASG project or run a preview. HTML runner integration is planned.',
+                'Export editable HTML, CSS, JavaScript and local SVG files from a fixed responsive starter. Your text fills its title and description. After export, preview this unchanged starter locally on macOS. Leaving this screen stops the preview. This does not create an ASG project. Full HTML runner integration is planned.',
               ),
               if (!controller.supported)
                 const Text(
@@ -137,10 +139,73 @@ class _HtmlExportScreenState extends State<HtmlExportScreen> {
               if (controller.error != null) SelectableText(controller.error!),
               if (controller.exportedDirectory != null) ...[
                 const Text(
-                  'Source export complete. No checks or preview were run.',
+                  'Source export complete. Full runner checks remain planned.',
                 ),
                 SelectableText(controller.exportedDirectory!),
+                const Text(
+                  'Preview serves a validated snapshot. Editing exported files requires a different workflow; restarting refuses changes.',
+                ),
+                if (!controller.preview.supported)
+                  const Text('Fixed HTML preview requires macOS.'),
+                if (controller.preview.starting || controller.preview.stopping)
+                  const LinearProgressIndicator(),
+                if (controller.preview.starting)
+                  const Text('Validating files and starting local preview…'),
+                if (controller.preview.stopping)
+                  const Text('Stopping local preview…'),
+                Wrap(
+                  spacing: 12,
+                  runSpacing: 8,
+                  children: [
+                    FilledButton(
+                      onPressed:
+                          controller.preview.supported &&
+                              !controller.preview.busy &&
+                              !controller.preview.cleanupFailed &&
+                              controller.preview.url == null
+                          ? controller.startPreview
+                          : null,
+                      child: const Text('Start preview'),
+                    ),
+                    OutlinedButton(
+                      onPressed:
+                          controller.preview.url != null &&
+                              !controller.preview.busy
+                          ? controller.preview.open
+                          : null,
+                      child: Text(
+                        controller.preview.opening
+                            ? 'Opening browser…'
+                            : 'Open in browser',
+                      ),
+                    ),
+                    OutlinedButton(
+                      onPressed:
+                          !controller.preview.stopping &&
+                              (controller.preview.url != null ||
+                                  controller.preview.starting ||
+                                  controller.preview.cleanupFailed)
+                          ? controller.preview.stop
+                          : null,
+                      child: const Text('Stop preview'),
+                    ),
+                  ],
+                ),
+                if (controller.preview.url != null)
+                  SelectableText(controller.preview.url.toString()),
               ],
+              if (controller.exportedDirectory == null &&
+                  controller.preview.cleanupFailed)
+                OutlinedButton(
+                  onPressed: controller.preview.stopping
+                      ? null
+                      : controller.preview.stop,
+                  child: const Text('Retry Stop preview'),
+                ),
+              if (controller.preview.error != null)
+                SelectableText(controller.preview.error!),
+              if (controller.preview.notice != null)
+                Text(controller.preview.notice!),
             ],
           ),
         ),

@@ -101,6 +101,11 @@ void main() {
       ),
       findsOneWidget,
     );
+    await tester.scrollUntilVisible(
+      find.text('Review export'),
+      180,
+      scrollable: find.byType(Scrollable).first,
+    );
     final review = tester.widget<FilledButton>(
       find.widgetWithText(FilledButton, 'Review export'),
     );
@@ -300,8 +305,16 @@ void main() {
       });
       await tester.pumpAndSettle();
       expect(c.exportedDirectory, '${temporary.path}/exported_site');
+      await tester.drag(find.byType(Scrollable).first, const Offset(0, 10000));
+      await tester.pumpAndSettle();
+      await tester.scrollUntilVisible(
+        find.text('Source export complete. Full runner checks remain planned.'),
+        180,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.pumpAndSettle();
       expect(
-        find.text('Source export complete. No checks or preview were run.'),
+        find.text('Source export complete. Full runner checks remain planned.'),
         findsOneWidget,
       );
       expect(tester.takeException(), isNull);

@@ -271,7 +271,8 @@ The saved development automation was updated through its management tool; active
   - Acceptance: UI shows available and unavailable operations with actionable reasons; unsupported confinement refuses candidate execution before any source is run. Each enabled host passes real new-project resolve/analyze/test/web-build/serve, Stop/deadline/output-limit and descendant-cleanup checks, restart/uncertain-checkpoint refusal, stale-approval refusal and last-working-output preservation. Enabling starter generation must not implicitly enable candidate execution. Model-written candidate/repair support needs independently reviewed platform isolation and real deny-write/network/process-escape probes at the established boundary.
   - Validation/delivery: one narrowly scoped issue/PR per host/capability milestone, actual Linux/Windows builds and launches on their respective hosts, plus macOS regression coverage. Include paths with spaces, missing toolchains, occupied ports, failed previews and interrupted writes. Record tested versus unavailable capabilities separately; keep F16 unchecked until promised host increments satisfy acceptance and normal independent review/CI/verified merge. Broader generated targets remain F11.
 - [ ] F11 Multi-language project generation, runners and explicit stack selection — In progress (#402); depends on F04 and F05
-  - Fixed HTML preview host foundation — In progress, #402, `402-html-preview-host`, scope6583108583. Exact fixed-export immutable loopback snapshot and Stop/failure lifecycle only; app controls/browser launch and full runner remain Pending.
+  - App-owned fixed HTML preview — In progress, #402, `402-html-preview-flow`, scope6583757438. Confirmed export identity, preview/browser/Stop controls and recovery only; full creation/registration/runner Pending.
+  - Fixed HTML preview host foundation — Done (bounded service), [PR #458](https://github.com/arpit-it/ASG/pull/458), final080ad07b approved5740409275, requiredCI41487788657 passed; reviewer merge371cf781c59f515008a3a78afb9324cb66546360 verified at2026-11-02T17:14:42Z. #402, `402-html-preview-host`, scope6583108583. App controls/browser launch and full runner remain Pending.
   - App-owned fixed HTML starter export — Done (bounded export flow), [PR #457](https://github.com/arpit-it/ASG/pull/457), final757edf16 approved5739945623/finalgate6582806250, requiredCI41483465171 passed; reviewer merge950ce933c1eda778b7d26e5fc3a58a333bbf3f8f verified at2026-11-02T16:47:02Z: #402, `402-html-export-flow`, scope6582414659. Dashboard exact review/confirmation, Stop/disposal and retained recovery; project registration/runner/preview remain Planned.
   - Confirmed fixed HTML source export — Done (bounded service foundation), [PR #456](https://github.com/arpit-it/ASG/pull/456), finala5700218 approved5739630203/finalgate6582307464, requiredCI41479787991 passed; reviewer merge209082edcd307baf80ac68b14e6fcc04b41657c1 verified at2026-11-02T16:24:45Z: #402, `402-html-source-export`, scope6581732988; exact content/destination confirmation, exclusive native fixed-template export and partial-file preservation. HTML creation/runner/preview remain Planned; see current ledger entry.
   - Independent HTML source-template prerequisite — Done (bounded foundation), [PR #455](https://github.com/arpit-it/ASG/pull/455), final25eef994 approved5739190678/finalgate5739284468, requiredCI41474565132 passed; verified reviewer mergeebe9c6015e3c9783a138de4fcc58e06c05517c7a at2026-11-02T15:51:58Z: #402, `402-html-source-template`, scope6581048649. Fixed independent web sources and actualChrome source acceptance only; production HTML creation remains Planned until approval/runner/preview integration.
@@ -11417,3 +11418,69 @@ explicitly skipped, not claimed supported. Isolated macOSdebug build also passed
 plugin publication, independent exact-final review, required CI and protected
 reviewer merge remain delivery gates. No browser interaction/inference/support
 claim or stable-app replacement.
+
+
+### Fixed HTML preview host foundation verified merged — PR #458
+Bounded F11/#402 service foundation Done on `402-html-preview-host`, scope6583108583.
+Final080ad07b27ae04f07201ec299f872ca6c57b92df and tested local279b2d5 share exact
+tree66d10cced32f9bf418aec29d9573104e8bbc335e; six published blobs and394 source inputs match.
+Initial independent approval5740304239 and resumed exact-final approval5740409275
+found no blockers (shared-owner COMMENT verdict, no separate-account claim).
+Prior independent26focused/nineinventory and resumed six actual Mac preview/MVC tests passed.
+RequiredCI41487788657 BOTH SUCCESS: Flutter125422562347/Python125422561612;
+reviewer inspected actual logs. Parent prior1291Flutter/nine explicit skips,
+format370/analyzer/webWasm/isolatedmacOSdebug/nineinventory passed.
+Reviewer protected-plugin squashmerged PR458 as
+371cf781c59f515008a3a78afb9324cb66546360 at2026-11-02T17:14:42Z.
+Parent freshly verified mergedPR/currentmain/#402OPEN/signedexacttree/soleparent950ce933,
+then guarded local-ref sync reconstructed/verified the commit object. Local main/originmain
+0/0, index empty and both original IDE edits byte-identical. Initial sandbox denied local
+object write; authorized filesystem escalation succeeded without network Git.
+Exact fixed-template immutable loopback preview/Stop foundation delivered only.
+App controls/browser launch, registration and complete runner remain Pending;
+fullF11/#402 stays open and Deferred400 retained. No model/inference/stable-app change.
+This final bookkeeping is retained locally for the next normal reviewed development PR;
+no direct-main publication. Next eligible increment is app-owned preview controls/browser
+integration for the fixed export, with real browser/Stop/recovery acceptance.
+Receipts: /private/tmp/asg458-publication.json, /private/tmp/asg458-validation-inputs.json,
+/private/tmp/asg458-reviewed-merge.json, /private/tmp/asg458-safe-sync.py.
+
+
+### App-owned fixed HTML preview — F11 / #402
+In progress on `402-html-preview-flow` from verified PR #458/main
+371cf781c59f515008a3a78afb9324cb66546360; scope6583757438.
+Existing export screen had no path to the delivered preview host. A successful
+confirmed export now retains its exact typed input for explicit Start preview,
+Open in browser and Stop controls. Dedicated MVC controller owns duplicate/start
+and browser dispatch, 10-second startup deadline, late-result suppression,
+Stop/disposal revocation and cleanup retry. Edits revoke preview/export identity.
+Native conditional service launches only its own loopback URL through the OS;
+spawn/exit deadlines retain late-helper cleanup ownership. Browser request success
+does not prove visible browser state. Stops preserve source and may not retract
+an already-dispatched browser launch. Unsupported hosts have explicit guidance.
+Acceptance: actual confirmed export-to-HTTP screen flow at 320px/2x, Stop/retry,
+changed-file refusal, edit invalidation, duplicate/late/disposed/deadline handling,
+cleanup retry and browser failure tests; actual installed Chrome with production
+host verifies assets, console, keyboard focus, theme/details/navigation and
+320/1280px/2x layouts. Initial harness failures (Flutter HTTP override and lazy
+scrolling) were corrected; only final passes count. No model inference or generic
+edited-source execution. Existing template/export/preview foundations suffice;
+Deferred #400 hardware is unrelated. HTML creation/registration/complete runner
+and full F11 remain Pending/open. Full checks/builds, exact-tree plugin publication,
+independent final review, required CI and protected reviewer merge remain gates.
+Prior #458 final merge bookkeeping is carried in this reviewed increment.
+
+Final validation: 1,299 Flutter tests passed with nine explicit skips in the
+tracked-source snapshot; formatter377/analyzer clean, final web/Wasm dry-run and
+isolated macOS debug builds passed. Nine acceptance-inventory tests passed.
+Twenty-three focused tests include actual export/screen/HTTP/Stop/retry/changed
+source and disposal at320px/2x; deterministic lifecycle tests include a late
+cleanup failure that remains visible and blocks restart. Actual installed Chrome
+production-host acceptance passed, including dispatched Space-key activation,
+assets/console/focus/theme/details/navigation,320/1280px/2x and Stop/retry.
+OS browser launch request accepted; visible default-browser state is not asserted.
+Final browser-tool changes were separately run against production native services;
+no runtime/controller/test input changed after full-suite/build validation.
+Existing8765health unavailable; no model launch/inference/support claim.
+Exact-tree plugin publication, independent final review, required CI and protected
+reviewer merge remain delivery gates; fullF11/#402 open. Stable app untouched.
