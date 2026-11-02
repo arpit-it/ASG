@@ -107,3 +107,21 @@ foundation: app capability display, persisted explicit backend/device selection,
 consented fallback and CPU/CUDA delivery still require later F15 increments.
 Actual MLX generation/restart evidence is saved separately in
 [the bounded regression record](../development/acceptance/2026-10-31-backend-contract/mlx-smoke.json).
+
+
+## Torch prompt and completion token metrics
+
+The shared Torch generation path tokenizes the rendered chat template once with
+truncation disabled and checks the exact input tensor length before device
+transfer. Inputs over the bridge's existing 4,096-token policy fail without
+generation or silent truncation. Successful JSON and SSE completion `metrics`
+include `prompt_tokens` from those tensors and `completion_tokens` from the
+returned sequence length minus the prompt, including generated special/end
+tokens. Counts describe model tokens, not displayed text fragments.
+
+These counts do not establish the model's verified total context capacity,
+remaining usable context, memory fit or backend support. The output-token
+ceiling remains the exact caller request. Other backends retain their existing
+metrics; missing counts are unavailable rather than zero. CPU remains
+experimental and opt-in; deterministic tensor/HTTP regressions are not live
+inference acceptance.

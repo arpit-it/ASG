@@ -144,8 +144,6 @@ class TorchMPSBackend:
                 raise TimeoutError('Generation deadline exceeded')
         check()
         prompt = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True, enable_thinking=False)
-        if len(self.tokenizer.encode(prompt)) > 4096:
-            raise ValueError('Input exceeds 4096-token limit')
         import torch
         from transformers import TextStreamer, StoppingCriteria, StoppingCriteriaList
         class TokenStreamer(TextStreamer):
@@ -156,7 +154,15 @@ class TorchMPSBackend:
         class Stop(StoppingCriteria):
             def __call__(self, *_args, **_kwargs):
                 return cancelled.is_set() or time.monotonic() > deadline
-        inputs = self.tokenizer(prompt, return_tensors='pt').to(self.device)
+        # Count the exact untruncated tensors passed to generation, rather than
+        # a separate encode call whose options/result may differ. Refuse before
+        # accelerator transfer; the cap is bridge policy, not verified capacity.
+        inputs = self.tokenizer(prompt, return_tensors='pt', truncation=False)
+        check()
+        prompt_tokens = inputs.input_ids.shape[-1]
+        if prompt_tokens > 4096:
+            raise ValueError('Input exceeds 4096-token limit')
+        inputs = inputs.to(self.device)
         check()
         with torch.inference_mode():
             # Streaming supports one greedy sequence, regardless of checkpoint
@@ -166,8 +172,10 @@ class TorchMPSBackend:
             # or a GenerateOutput object; override that default per request.
             output = self.model.generate(**inputs, max_new_tokens=tokens, do_sample=False, num_beams=1, num_return_sequences=1, return_dict_in_generate=False, streamer=TokenStreamer(self.tokenizer, skip_prompt=True, skip_special_tokens=True), stopping_criteria=StoppingCriteriaList([Stop()]))
         check()
-        reason = 'length' if output.shape[-1] - inputs.input_ids.shape[-1] >= tokens else 'stop'
-        return {'finish_reason': reason}
+        completion_tokens = output.shape[-1] - prompt_tokens
+        reason = 'length' if completion_tokens >= tokens else 'stop'
+        return {'finish_reason': reason, 'prompt_tokens': prompt_tokens,
+                'completion_tokens': completion_tokens}
 
 
 

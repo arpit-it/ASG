@@ -210,7 +210,8 @@ The saved development automation was updated through its management tool; active
   - Bounded delivery milestones: (1) backend contract/capability discovery and an MLX regression; (2) explicit CPU setup/inference on a supported non-Apple desktop with compatible weights; (3) explicit CUDA setup/inference on a CUDA host. Each milestone needs its own focused issue, saved settings/restart/error tests and real-host evidence. Non-Apple CPU/CUDA real-host acceptance is now Deferred in #400 until the queued implementation is delivered; this is not a dependency on eligible implementation. Isolate optional backend dependencies so missing MLX cannot prevent CPU/CUDA startup; validate configurable executable/model paths including spaces. Do not claim CPU adequacy for a 9B model without measured successful operation within the configured limits.
   - Delivery: create/reuse a narrowly scoped issue when selected; remain unchecked until all promised backend milestones, independent review, required checks and verified merges. CPU and CUDA evidence must be recorded separately; unavailable hardware is a recorded blocker, never a fixture-based completion claim.
 - [ ] F22 Hardware-aware local model catalog and selection — In progress; depends on delivered F09/F15 foundations; unavailable-platform validation Deferred
-  - Exact HTTP output-token budgets — Awaiting merge: #396, `396-exact-token-budget`. Reject unsupported/type-coerced output budgets before inference instead of silently altering them; preserve omitted256 default and exact1–4096 values. Actual HTTP SSE/JSON rejection/retry and boundary tests; final review/CI/merge pending. Verified context/profile accounting remains Pending.
+  - Exact generation-tensor token accounting — Awaiting merge: #396, `396-tensor-token-accounting`; exact untruncated input/output counts and actual tensor-bound enforcement. Verified context capacity remains Pending.
+  - Exact HTTP output-token budgets — Done (bounded increment): #396, `396-exact-token-budget`, [PR #427](https://github.com/arpit-it/ASG/pull/427). Finalf7cab3e7 independently approved5731752138/finalgate5731796054; requiredCI41382464431 passed; verified reviewer merge `b7fc4bd3db94702f04cf46f5ad1d95cb17133ddb` at2026-11-02T03:26:27Z. Reject altered/type-coerced budgets before dispatch; preserve omitted256 and exact integer1–4096. ActualHTTP/independent busy-boundary probes passed. Verified context/profile accounting remains Pending; fullF22unchecked.
   - User-declared profile notes — Done (bounded declarations only): #396, `396-model-profile-notes`, [PR #425](https://github.com/arpit-it/ASG/pull/425). Final92837795 independently approved5731481952/finalgate5731499935; requiredCI41377296431 passed; verified reviewer merge `d89656bc76b7bd0954a2177e4cf47ec54a076e19` at2026-11-02T02:27:27Z. Durable optional revision/license/architecture/quantization/backend/context notes with legacy compatibility, snapshot preservation and explicit unverified UI. No request-budget/backend/support change; verified profiles/context accounting/live evidence remain Pending and F22 unchecked.
   - Draft model inventory inspection — Done: #396, `396-model-inventory`, [PR #418](https://github.com/arpit-it/ASG/pull/418); final2941fce6 independently approved5730913744/finalgate5730932058, requiredCI41365292083 passed; verified reviewer merge5e8ce35e6eee0842e0964e3a106f9e4b814c0c0f at2026-11-02T00:11:15Z. Advertised IDs remain server assertions; profiles/context/live evidence Pending.
   - Contradictory response identity safeguard — Done: #396, `396-response-model-identity`, [PR #417](https://github.com/arpit-it/ASG/pull/417); final92260d9c independently approved5730855594/finalgate5730876269, requiredCI41363879462 passed; verified reviewer merge9e7e9c0efc63346b07c3f41da1ea304fc0563dd6 at2026-11-01T23:55:28Z. Missing identity remains unverified; profiles/context/live capability evidence Pending.
@@ -9664,3 +9665,77 @@ input manifest /private/tmp/asg396-budget-inputs.json. Awaiting merge: publicati
 independent exact-final revision review, required CI and protected reviewer
 merge remain gates. FullF22 stays unchecked; #396 remains open for profiles/context.
 Recorded 2026-11-02T03:18:05.356321+00:00.
+
+
+### Exact HTTP token budgets verified merged — F22 / #396 / PR #427
+
+Bounded increment Done on `396-exact-token-budget`. Tested local
+`09f86f2f9f0f79cc56e4758050044b7ff7604b8f` and published final
+`f7cab3e7f2aa6b7a4fafc4e1ecc36f464854e766` share exact tree
+`7d4f3d0e157237c7426bbc6645e8cd087437fd1e`; all six published blobs match.
+Independent reviewer verified all828remote blobs/modes and354validationinputs;
+approval5731752138/finalgate5731796054 found no blockers. Independent22HTTP,
+three additional actualHTTP probes (busy-invalid isolation/retry, numeric edge
+refusal and exact non-menu valid budgets), and nine inventory tests passed.
+
+Parent141Python/two explicit skips,22HTTP,1177cleanFlutter/nine explicit skips,
+formatter331unchanged,analyzer clean,web/Wasm dry run andmacOSdebug passed.
+Actual requiredCI41382464431 succeeded: Flutter1250760281201171Ubuntu/12skips,
+17actualChrome,web/Wasm and real independent generated-project verification;
+Python125076028448141tests/four platform skips. Initial old-message expectation
+was updated and full suite retested; initial sandbox loopback denial retried
+with authorized access. Default8765health unavailable; no inference attempted.
+
+Reviewer protected-plugin squash merged https://github.com/arpit-it/ASG/pull/427
+as `b7fc4bd3db94702f04cf46f5ad1d95cb17133ddb` at2026-11-02T03:26:27Z. Parent
+freshly plugin-verified mergedPR/currentmain/issue396OPEN. Signed exacttree and
+soleparentc08fe6ea verified before guarded synchronization; main/originmain0/0,
+empty index and both unrelated IDE edits byte-identical. Evidence:
+/private/tmp/asg396-budget-publication.json,/private/tmp/asg427-reviewed-merge.json,
+/private/tmp/asg427-verified-commit.raw,/private/tmp/asg396-budget-inputs.json.
+Optional automation labels were auto-review rejected under naming preference;
+left off without bypass. No new issue, model download or stable-app change.
+
+Invalid output budgets now fail before dispatch instead of silently changing;
+omitted256 and exact integer1–4096 remain accepted. This does not establish
+verified context accounting, profiles or live inference. FullF22/F15 stay
+unchecked; remaining profile/context evidence Pending396, external acceptance
+Deferred400. No active implementation after merge. Carry final local ledger
+into the next normal reviewed development PR; cadence/notifications unchanged.
+Current run time 2026-11-02T03:27:36.054942+00:00.
+
+
+### Exact generation-tensor token accounting — F22 / #396
+
+In progress on `396-tensor-token-accounting`, base verified main
+`b7fc4bd3db94702f04cf46f5ad1d95cb17133ddb` (PR #427 merged; prior
+final review/CI/merge evidence retained above). Reused #396; no new issue or
+competing run/open PR at selection. The shared Torch path checked a separate
+encode result before constructing its actual generation tensors, and exposed
+no prompt/completion token counts. F22 requires honest prompt/token accounting.
+
+Scope: tokenize once with explicit truncation disabled; enforce the existing
+4096-input policy on exact input_ids before device transfer/generation; return
+actual prompt and generated sequence counts in existing completion metrics.
+Regression acceptance covers CPU/MPS shared code, divergent encode/tensor
+lengths,4096/4097 boundary,zero/exact completion, refusal before transfer, retry
+and actual JSON/SSE metric forwarding without fabricating absent counts.
+This is a bounded F22 accounting foundation, not verified total context
+capacity, model identity or live inference. MLX/Auto and experimental CPU
+selection remain unchanged; fullF22/F15 unchecked, hardware acceptance
+Deferred400. Delivered backend/transport prerequisites allow Mac validation.
+Validation, plugin publication, independent final-head review, requiredCI and
+protected reviewer merge pending. Recorded 2026-11-02T03:31:47.787931+00:00.
+
+
+Exact tensor-accounting validation: 143 Python tests completed/two explicit
+skips, including 57 backend tests/one opt-in skip and 23 actualHTTP tests.
+Isolated tracked-source Flutter1,177passed/nine explicit skips; formatter331
+unchanged, analyzer clean, web/Wasm dry run andmacOSdebug builds passed. All349
+source-validation inputs match both copies; no source fixes after these checks.
+Logs /private/tmp/asg396-tensor-{python,backends,flutter,format,analyze,web,macos}.log;
+manifest /private/tmp/asg396-tensor-inputs.json. No live inference, weight load,
+model download, stable-app replacement or platform support claim. Status
+Awaiting merge: plugin publication, independent final-head review, requiredCI
+and protected reviewer merge remain gates. FullF22/F15unchecked; #396open.
+Recorded 2026-11-02T03:33:46.428612+00:00.
