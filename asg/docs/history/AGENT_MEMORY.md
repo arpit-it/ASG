@@ -8613,3 +8613,72 @@ retain original notes after preset replacement. No fresh inference or installed-
 change. Awaiting merge: plugin exact-tree publication, independent final-revision
 review, required CI and protected reviewer merge remain gates. Full F22/F15/F16
 unchecked; external acceptance Deferred #400. Recorded 2026-11-02T02:20:20.179429+00:00.
+
+
+### Declared model profile notes verified merged — #396 / PR #425
+
+Bounded increment Done on `396-model-profile-notes`. Published final
+`92837795fee1c03fa1baa90c9afe7041d841645d` and tested local
+`18dfcb563dbfc51a70883674c95154119653e15b` share exact tree
+`25a7008df79d8389516b76ff6f0dc87421da936f`; all twelve published blobs match.
+Independent reviewer verified all828remote blobs/modes and352validationinputs;
+approval5731481952/finalgate5731499935 found no blocking findings. Independent
+35focused settings/presets/native/Ask/project/architecture checks, three additional
+boundary probes and nine inventory tests passed. No source fixes were needed.
+
+Parent1174clean-sourceFlutter/nine explicit skips,formatter331 unchanged,analyzer
+clean,web/Wasm and macOS debug builds,nine inventory passed. Actual requiredCI
+41377296431 succeeded: Flutter1250602117051168Ubuntu tests/12explicit skips,
+17actualChrome,web/Wasm and independent generated-project resolve/analyze/test/
+render/build/serve; Python125060211933141tests/four skips. Initial checkout scan
+included ignored MLX files; final clean-source suite includes canonical LICENSE/
+NOTICE and passes. Default8765health refused connection; no fresh inference.
+
+Typed optional user-declared revision/license/architecture/quantization/backend/
+context notes retain additive legacy compatibility and explicit unverified UI.
+Actual native reopen/profile-only conditional stale-write refusal, failed replacement/
+retry/corruption retention, Ask/project snapshots and320px2x form passed. Notes
+do not change request budgets, enable a backend or establish model support.
+
+Independent reviewer protected-plugin squash merged
+https://github.com/arpit-it/ASG/pull/425 as
+`d89656bc76b7bd0954a2177e4cf47ec54a076e19` at2026-11-02T02:27:27Z. Parent
+freshly verified mergedPR/currentmain/issue396OPEN; signed exacttree/soleparent
+d2e7a00 verified. Guarded local synchronization passed main/originmain0/0, empty
+index and both unrelated IDE edits byte-identical before final bookkeeping. Both
+automation labels applied; no new issue. Evidence /private/tmp/asg-profile-publication.json,
+/private/tmp/asg425-reviewed-merge.json,/private/tmp/asg425-verified-commit.raw,
+/private/tmp/asg-profile-validation-inputs.json and clean validation logs.
+
+Remaining verified F22 profiles/context accounting/live evidence are Pending;
+fullF22/F15/F16 remain unchecked and external acceptance Deferred400. No active
+implementation after this merge. Carry final local ledger/history evidence into
+the next normal reviewed development PR. No cadence/notification/model download/
+installation/stable-app/settings/deployment change.
+Current run time 2026-11-02T02:28:55.152690+00:00.
+
+
+### Bounded helper cancellation — F16 / #401
+
+In progress on `401-helper-cancellation` from verified main d89656bc. No open
+PR or overlapping active run at selection. Existing #425 profile-note merge
+evidence retained above; six fresh profile tests passed, no defect there.
+
+Gap: Stop/disposal sent SIGTERM while protocol capture could await the full
+command deadline when a helper ignored SIGTERM or retained pipes. Cancellation
+now allows three seconds for cooperative cleanup/protocol evidence, interrupts
+capture, then uses bounded termination and waits for the killed helper's exit.
+No new host enablement, descendant-cleanup or inference claim. Existing real
+helper cancellation still records actual cancelled evidence; interrupted capture
+has no invented command result. Tests use actual resistant Python helpers for
+Stop and disposal, check reaping and fresh-session retry, plus capture interruption.
+Initial tests caught loss of cooperative cancellation evidence and a kill/reap
+race; both fixed and all 47 focused tests passed (one opt-in generation skip).
+
+Acceptance: bounded Stop/disposal, retained consent/checkpoint behavior, no
+success after cancellation, unchanged output/deadline bounds and retry. Full
+checks/builds, independent exact-final review, required CI and protected reviewer
+merge remain required. Full F16 unchecked; external acceptance Deferred #400.
+Recorded 2026-11-02T02:50:30.731233+00:00.
+
+Final bounded-cancellation validation: 1,177 clean-source Flutter tests passed, nine explicit skips; 47 focused process/host tests passed, one opt-in skip; analyzer clean, formatter331 unchanged, web/Wasm and macOS debug builds passed, nine inventory tests passed. All352validation inputs match clean tested copy. Initial two process regressions fixed and retested. No installed-app or inference change. Awaiting merge: plugin publication, independent final-revision review, required CI and protected reviewer merge remain gates. Recorded 2026-11-02T02:53:14.615463+00:00.

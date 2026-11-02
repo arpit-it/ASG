@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // Copyright 2026 Arpit Sinha
 
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:isolate';
@@ -44,11 +45,20 @@ class NativeGenerationHost
   _operationOverride;
   bool _closed = false;
   Process? _activeProcess;
+  Completer<void>? _activeCaptureCancellation;
   bool _verificationCancelled = false;
   @override
   void cancelVerification() {
     _verificationCancelled = true;
+    _stopCapture();
     _activeProcess?.kill(ProcessSignal.sigterm);
+  }
+
+  void _stopCapture() {
+    final cancellation = _activeCaptureCancellation;
+    if (cancellation != null && !cancellation.isCompleted) {
+      cancellation.complete();
+    }
   }
 
   void checkVerification() {
@@ -515,6 +525,7 @@ class NativeGenerationHost
       'asg-command-',
     );
     Process? process;
+    final cancellation = Completer<void>();
     try {
       final helper = File(
         path.join(helperDirectory.path, 'generation_command.py'),
@@ -527,6 +538,7 @@ class NativeGenerationHost
       // launch boundary; no further awaits occur before starting the process.
       await beforeStart?.call();
       checkVerification();
+      _activeCaptureCancellation = cancellation;
       process = await Process.start(project.python, [
         '-I',
         '-B',
@@ -551,12 +563,15 @@ class NativeGenerationHost
       ], runInShell: false);
       _activeProcess = process;
       if (_closed || _verificationCancelled) {
+        _stopCapture();
         process.kill(ProcessSignal.sigterm);
       }
       final captured = await captureGenerationProcess(
         process,
         timeout: Duration(seconds: project.limits.commandTimeoutSeconds + 10),
+        cancellation: cancellation.future,
       );
+      checkOpen();
       final code = captured.exitCode;
       final out = captured.stdout;
       final error = captured.stderr;
@@ -575,15 +590,17 @@ class NativeGenerationHost
     } finally {
       if (process != null) {
         process.kill(ProcessSignal.sigterm);
-        await process.exitCode.timeout(
-          const Duration(seconds: 3),
-          onTimeout: () {
-            process?.kill(ProcessSignal.sigkill);
-            return -1;
-          },
-        );
+        try {
+          await process.exitCode.timeout(const Duration(seconds: 3));
+        } on TimeoutException {
+          process.kill(ProcessSignal.sigkill);
+          await process.exitCode.timeout(const Duration(seconds: 3));
+        }
       }
       _activeProcess = null;
+      _activeCaptureCancellation = null;
+      // Release the cancellation listener after normal completion as well.
+      if (!cancellation.isCompleted) cancellation.complete();
       await helperDirectory.delete(recursive: true);
     }
   }
@@ -755,6 +772,7 @@ class NativeGenerationHost
   @override
   Future<void> dispose() async {
     _closed = true;
+    _stopCapture();
     _activeProcess?.kill(ProcessSignal.sigterm);
     await stopPreview();
   }

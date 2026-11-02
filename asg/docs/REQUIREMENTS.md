@@ -210,7 +210,7 @@ The saved development automation was updated through its management tool; active
   - Bounded delivery milestones: (1) backend contract/capability discovery and an MLX regression; (2) explicit CPU setup/inference on a supported non-Apple desktop with compatible weights; (3) explicit CUDA setup/inference on a CUDA host. Each milestone needs its own focused issue, saved settings/restart/error tests and real-host evidence. Non-Apple CPU/CUDA real-host acceptance is now Deferred in #400 until the queued implementation is delivered; this is not a dependency on eligible implementation. Isolate optional backend dependencies so missing MLX cannot prevent CPU/CUDA startup; validate configurable executable/model paths including spaces. Do not claim CPU adequacy for a 9B model without measured successful operation within the configured limits.
   - Delivery: create/reuse a narrowly scoped issue when selected; remain unchecked until all promised backend milestones, independent review, required checks and verified merges. CPU and CUDA evidence must be recorded separately; unavailable hardware is a recorded blocker, never a fixture-based completion claim.
 - [ ] F22 Hardware-aware local model catalog and selection — In progress; depends on delivered F09/F15 foundations; unavailable-platform validation Deferred
-  - User-declared profile notes — Awaiting merge: #396, `396-model-profile-notes`. Persist bounded revision/license/architecture/quantization/backend notes and optional declared context limit with named presets; restore and snapshot round trips remain unverified. No request budget change, backend enablement or inference claim. Existing presets/storage provide Mac-verifiable prerequisites; verified model/context profiles and live evidence remain Pending.
+  - User-declared profile notes — Done (bounded declarations only): #396, `396-model-profile-notes`, [PR #425](https://github.com/arpit-it/ASG/pull/425). Final92837795 independently approved5731481952/finalgate5731499935; requiredCI41377296431 passed; verified reviewer merge `d89656bc76b7bd0954a2177e4cf47ec54a076e19` at2026-11-02T02:27:27Z. Durable optional revision/license/architecture/quantization/backend/context notes with legacy compatibility, snapshot preservation and explicit unverified UI. No request-budget/backend/support change; verified profiles/context accounting/live evidence remain Pending and F22 unchecked.
   - Draft model inventory inspection — Done: #396, `396-model-inventory`, [PR #418](https://github.com/arpit-it/ASG/pull/418); final2941fce6 independently approved5730913744/finalgate5730932058, requiredCI41365292083 passed; verified reviewer merge5e8ce35e6eee0842e0964e3a106f9e4b814c0c0f at2026-11-02T00:11:15Z. Advertised IDs remain server assertions; profiles/context/live evidence Pending.
   - Contradictory response identity safeguard — Done: #396, `396-response-model-identity`, [PR #417](https://github.com/arpit-it/ASG/pull/417); final92260d9c independently approved5730855594/finalgate5730876269, requiredCI41363879462 passed; verified reviewer merge9e7e9c0efc63346b07c3f41da1ea304fc0563dd6 at2026-11-01T23:55:28Z. Missing identity remains unverified; profiles/context/live capability evidence Pending.
   - Source/repair review-session selection — Done: #396, `396-source-run-selection`, [PR #416](https://github.com/arpit-it/ASG/pull/416); finalaef77308 independently approved5730802096/finalgate5730821144, requiredCI41362708614 passed, verified reviewer mergeec14b432411ca0947b17bf907ad25b3695fecbb0 at2026-11-01T23:40:31Z. Verified profiles/context/real-model evidence remain Pending.
@@ -231,6 +231,7 @@ The saved development automation was updated through its management tool; active
   - Capability acceptance: free-form answers, structured edits, context limits and tool/JSON-format compatibility are explicit per model, not assumed from parameter count. Prompt/token accounting respects the selected model's verified budget; no silent truncation or cloud fallback. Show quality/speed/memory tradeoffs, and retain small-model choices for constrained devices. Quantized MoE models account for resident total weights rather than only active parameters.
   - Validation: simulated low/high-memory and CPU/Metal/CUDA profiles, missing/corrupt weights, incompatible formats, license/revision changes, busy-switch refusal, restart and failure recovery. Verify at least two compatible real local model profiles (including one larger than 9B on capable hardware); record exact quantization/context/peak memory/speed and F17 evidence. Unavailable larger-model hardware remains a blocker, not a fabricated memory-based support claim. Normal independent review/CI/verified merge gates apply.
 - [ ] F16 Portable generation host and capability reporting — In progress (reporting/toolchain increments delivered #401); depends on F03, F04, F05 and F15
+  - Bounded helper cancellation — Awaiting merge: #401, `401-helper-cancellation`. Stop/disposal interrupts resistant helper capture after a three-second cooperative grace, then bounded termination waits for helper reaping; no host enablement or descendant-cleanup claim. Actual resistant-helper Stop/disposal/retry and existing cooperative evidence regressions pass; final review/CI/merge pending. See ledger below.
   - Helper result validation — Done: #401, `401-helper-result-validation`, [PR #424](https://github.com/arpit-it/ASG/pull/424). Final `f2285bd` independently approved in review 5731373150 / final gate 5731393391; required CI 41375061766 passed. Verified reviewer merge `d2e7a00aeabac0c29005c0cee72110ef30490e01` at 2026-11-02T02:03:59Z. Fixed/named helper protocol and output validate before durable evidence; parsing failures are sanitized; actual-process refusal/retry passed. No host enablement; full F16 remains unchecked.
   - Bounded helper protocol capture — Done: #401, `401-helper-capture`, [PR #423](https://github.com/arpit-it/ASG/pull/423), final6221d97a independently approved5731269418/finalgate5731290917, requiredCI41373195082 passed; verified reviewer mergeb80945cea7ecb63e654d38a84adf2fc1a8086f7b at2026-11-02T01:41:15Z. Bound aggregate helper stdout/stderr and cover pipe EOF with the execution deadline; no platform enablement or descendant-cleanup claim.
   - Linux read-only toolchain inspection — Done: #401, `401-linux-toolchain-inspection`, [PR #422](https://github.com/arpit-it/ASG/pull/422), finald4acc542 independently approved5731157699/finalgate5731176736; requiredCI41370705754 passed, reviewer mergecaa9e8925a127ecd5c652a6120aedcb51f06db4f at2026-11-02T01:13:35Z; separate metadata observations from generation support; no platform enablement.
@@ -9518,3 +9519,72 @@ retain original notes after preset replacement. No fresh inference or installed-
 change. Awaiting merge: plugin exact-tree publication, independent final-revision
 review, required CI and protected reviewer merge remain gates. Full F22/F15/F16
 unchecked; external acceptance Deferred #400. Recorded 2026-11-02T02:20:20.179429+00:00.
+
+
+### Declared model profile notes verified merged — #396 / PR #425
+
+Bounded increment Done on `396-model-profile-notes`. Published final
+`92837795fee1c03fa1baa90c9afe7041d841645d` and tested local
+`18dfcb563dbfc51a70883674c95154119653e15b` share exact tree
+`25a7008df79d8389516b76ff6f0dc87421da936f`; all twelve published blobs match.
+Independent reviewer verified all828remote blobs/modes and352validationinputs;
+approval5731481952/finalgate5731499935 found no blocking findings. Independent
+35focused settings/presets/native/Ask/project/architecture checks, three additional
+boundary probes and nine inventory tests passed. No source fixes were needed.
+
+Parent1174clean-sourceFlutter/nine explicit skips,formatter331 unchanged,analyzer
+clean,web/Wasm and macOS debug builds,nine inventory passed. Actual requiredCI
+41377296431 succeeded: Flutter1250602117051168Ubuntu tests/12explicit skips,
+17actualChrome,web/Wasm and independent generated-project resolve/analyze/test/
+render/build/serve; Python125060211933141tests/four skips. Initial checkout scan
+included ignored MLX files; final clean-source suite includes canonical LICENSE/
+NOTICE and passes. Default8765health refused connection; no fresh inference.
+
+Typed optional user-declared revision/license/architecture/quantization/backend/
+context notes retain additive legacy compatibility and explicit unverified UI.
+Actual native reopen/profile-only conditional stale-write refusal, failed replacement/
+retry/corruption retention, Ask/project snapshots and320px2x form passed. Notes
+do not change request budgets, enable a backend or establish model support.
+
+Independent reviewer protected-plugin squash merged
+https://github.com/arpit-it/ASG/pull/425 as
+`d89656bc76b7bd0954a2177e4cf47ec54a076e19` at2026-11-02T02:27:27Z. Parent
+freshly verified mergedPR/currentmain/issue396OPEN; signed exacttree/soleparent
+d2e7a00 verified. Guarded local synchronization passed main/originmain0/0, empty
+index and both unrelated IDE edits byte-identical before final bookkeeping. Both
+automation labels applied; no new issue. Evidence /private/tmp/asg-profile-publication.json,
+/private/tmp/asg425-reviewed-merge.json,/private/tmp/asg425-verified-commit.raw,
+/private/tmp/asg-profile-validation-inputs.json and clean validation logs.
+
+Remaining verified F22 profiles/context accounting/live evidence are Pending;
+fullF22/F15/F16 remain unchecked and external acceptance Deferred400. No active
+implementation after this merge. Carry final local ledger/history evidence into
+the next normal reviewed development PR. No cadence/notification/model download/
+installation/stable-app/settings/deployment change.
+Current run time 2026-11-02T02:28:55.152690+00:00.
+
+
+### Bounded helper cancellation — F16 / #401
+
+In progress on `401-helper-cancellation` from verified main d89656bc. No open
+PR or overlapping active run at selection. Existing #425 profile-note merge
+evidence retained above; six fresh profile tests passed, no defect there.
+
+Gap: Stop/disposal sent SIGTERM while protocol capture could await the full
+command deadline when a helper ignored SIGTERM or retained pipes. Cancellation
+now allows three seconds for cooperative cleanup/protocol evidence, interrupts
+capture, then uses bounded termination and waits for the killed helper's exit.
+No new host enablement, descendant-cleanup or inference claim. Existing real
+helper cancellation still records actual cancelled evidence; interrupted capture
+has no invented command result. Tests use actual resistant Python helpers for
+Stop and disposal, check reaping and fresh-session retry, plus capture interruption.
+Initial tests caught loss of cooperative cancellation evidence and a kill/reap
+race; both fixed and all 47 focused tests passed (one opt-in generation skip).
+
+Acceptance: bounded Stop/disposal, retained consent/checkpoint behavior, no
+success after cancellation, unchanged output/deadline bounds and retry. Full
+checks/builds, independent exact-final review, required CI and protected reviewer
+merge remain required. Full F16 unchecked; external acceptance Deferred #400.
+Recorded 2026-11-02T02:50:30.731233+00:00.
+
+Final bounded-cancellation validation: 1,177 clean-source Flutter tests passed, nine explicit skips; 47 focused process/host tests passed, one opt-in skip; analyzer clean, formatter331 unchanged, web/Wasm and macOS debug builds passed, nine inventory tests passed. All352validation inputs match clean tested copy. Initial two process regressions fixed and retested. No installed-app or inference change. Awaiting merge: plugin publication, independent final-revision review, required CI and protected reviewer merge remain gates. Recorded 2026-11-02T02:53:14.615463+00:00.
