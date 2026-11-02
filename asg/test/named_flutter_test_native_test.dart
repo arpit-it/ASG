@@ -20,7 +20,7 @@ args=sys.argv[1:]
 def arg(name): return args[args.index(name)+1]
 assert '--confined' in args
 assert arg('--operation') == 'test'
-print(json.dumps({'exitCode':0,'timedOut':False,'cancelled':False,'outputLimitExceeded':False,
+print(json.dumps({'exitCode':0,'output':'Named Flutter test passed.','timedOut':False,'cancelled':False,'outputLimitExceeded':False,
  'targetedTest':{'file':arg('--test-file'),'name':arg('--test-name'),'status':'passed','reason':'executedExactTest'}}))
 ''';
 void main() {
@@ -213,15 +213,50 @@ void main() {
     );
     await expectLater(
       generic.runFlutterOperation(project, 'test'),
-      throwsA(isA<TypeError>()),
+      throwsFormatException,
     );
     await generic.dispose();
   });
   test(
+    'actual named helper rejects invalid output and recovers in session',
+    () async {
+      var code = helper;
+      final guarded = NativeGenerationHost(loadAsset: (_) async => code);
+      try {
+        for (final replacement in ['None', '123', "'x' * 65537"]) {
+          code = helper.replaceFirst(
+            "'Named Flutter test passed.'",
+            replacement,
+          );
+          await expectLater(
+            guarded.runNamedFlutterTest(
+              project,
+              target,
+              beforeStart: () async {},
+            ),
+            throwsFormatException,
+          );
+          code = helper;
+          expect(
+            (await guarded.runNamedFlutterTest(
+              project,
+              target,
+              beforeStart: () async {},
+            )).passed,
+            isTrue,
+          );
+        }
+      } finally {
+        await guarded.dispose();
+      }
+    },
+  );
+
+  test(
     'generic zero exit without target metadata cannot establish pass',
     () async {
       final generic = NativeGenerationHost(
-        loadAsset: (_) async => "print('{\"exitCode\":0,\"timedOut\":false,\"cancelled\":false,\"outputLimitExceeded\":false}')",
+        loadAsset: (_) async => "print('{\"exitCode\":0,\"output\":\"fixture\",\"timedOut\":false,\"cancelled\":false,\"outputLimitExceeded\":false}')",
       );
       await expectLater(
         generic.runNamedFlutterTest(project, target, beforeStart: () async {}),

@@ -230,7 +230,8 @@ The saved development automation was updated through its management tool; active
   - Capability acceptance: free-form answers, structured edits, context limits and tool/JSON-format compatibility are explicit per model, not assumed from parameter count. Prompt/token accounting respects the selected model's verified budget; no silent truncation or cloud fallback. Show quality/speed/memory tradeoffs, and retain small-model choices for constrained devices. Quantized MoE models account for resident total weights rather than only active parameters.
   - Validation: simulated low/high-memory and CPU/Metal/CUDA profiles, missing/corrupt weights, incompatible formats, license/revision changes, busy-switch refusal, restart and failure recovery. Verify at least two compatible real local model profiles (including one larger than 9B on capable hardware); record exact quantization/context/peak memory/speed and F17 evidence. Unavailable larger-model hardware remains a blocker, not a fabricated memory-based support claim. Normal independent review/CI/verified merge gates apply.
 - [ ] F16 Portable generation host and capability reporting — In progress (reporting/toolchain increments delivered #401); depends on F03, F04, F05 and F15
-  - Bounded helper protocol capture — Awaiting merge: #401, `401-helper-capture`; bound aggregate helper stdout/stderr and cover pipe EOF with the execution deadline before extending host execution. No platform enablement.
+  - Helper result validation — Awaiting merge: #401, `401-helper-result-validation`; validated fixed/named helper protocol before durable evidence, sanitized parsing failures, actual-process refusal/retry. Final local1168Flutter/nine skips,54focused/two live skips,format328/analyze/web/macOS and9inventory passed. Independent final review, requiredCI and verified reviewer merge pending; no host enablement.
+  - Bounded helper protocol capture — Done: #401, `401-helper-capture`, [PR #423](https://github.com/arpit-it/ASG/pull/423), final6221d97a independently approved5731269418/finalgate5731290917, requiredCI41373195082 passed; verified reviewer mergeb80945cea7ecb63e654d38a84adf2fc1a8086f7b at2026-11-02T01:41:15Z. Bound aggregate helper stdout/stderr and cover pipe EOF with the execution deadline; no platform enablement or descendant-cleanup claim.
   - Linux read-only toolchain inspection — Done: #401, `401-linux-toolchain-inspection`, [PR #422](https://github.com/arpit-it/ASG/pull/422), finald4acc542 independently approved5731157699/finalgate5731176736; requiredCI41370705754 passed, reviewer mergecaa9e8925a127ecd5c652a6120aedcb51f06db4f at2026-11-02T01:13:35Z; separate metadata observations from generation support; no platform enablement.
   - Independent operation reporting — Done: #401, `401-operation-capabilities`, [PR #421](https://github.com/arpit-it/ASG/pull/421); final053d8a3b independently approved5731081654/finalgate5731102625, requiredCI41369115474 passed; verified reviewer merge37e39e6fb231fde25606d66742c1b699456df666 at2026-11-02T00:55:13Z; typed independent creation/verification/confinement/preview/cleanup reporting, unavailable defaults and mixed-host UI. No host enablement or execution-policy change; full F16 unchecked.
   - Configured toolchain path inspection — Done: #401, `401-toolchain-inspection`, [PR #420](https://github.com/arpit-it/ASG/pull/420), verified reviewer merge36c33ebe55a6e6e71abcb6c41e7d5d223f2fb6f2 at2026-11-02T00:40:19Z. Finalcc780fad approved5731022520/finalgate5731040723, requiredCI41367820531 passed; testedlocalf454cb39/tree503dccd6,1152Flutter/nine skips,71focused,format324/analyzer/web/macOS and9inventory passed; independent112tests/probes passed. Explicit read-only Build action checks real SDK directory, Flutter/Dart regular files and executable bits; Python absolute path or bounded absolute PATH lookup. No processes run, no install/settings write/support claim. Current delivered host/controller/view contracts satisfy prerequisites; external host acceptance Deferred #400. Acceptance: actual files/spaces/aliases, missing/nonexecutable/relative/oversized input, private failures/retry, busy exclusion/no writes, draft/disposal suppression and 320px2x UI. Full F16 remains unchecked; Linux/Windows operation delivery remains Pending.
@@ -9358,3 +9359,74 @@ app/settings change. Full F16/F15/F22 unchecked; external acceptance Deferred400
 Recorded 2026-11-02T01:31:50.493715+00:00.
 
 Final helper-capture validation: 1163 clean-source Flutter tests/nine explicit skips,43 focused/one explicit real-generation skip,analyzer clean,formatter326,web/Wasm andmacOSdebug builds andninehistoricalinventory checks passed. All347 tracked/new runtime/test/tool/asset/package inputs match clean copy /private/tmp/asg-capture-validation. Default8765health unreachable; no inference or installedapp change. Exact-tree plugin publication, independent final-revision review, requiredCI and reviewer protected merge remain gates. Recorded 2026-11-02T01:33:34.784383+00:00.
+
+
+### Bounded generation-helper capture verified merged — #401 / PR #423
+
+Bounded increment Done on `401-helper-capture`. Exact final
+`6221d97a35a628e027d1cc378a31caef5a70ed4a`, tested local
+`6ee094c5b791ee364f0a822fb99f7ff117693ab3`, identical tree
+`6ef3e5eca9cb499014a9102dfc89a5f367c50cd5`. All eight published blobs
+matched; independent reviewer verified all823remote blobs/modes and347validation
+inputs. Independent44Flutter/native/architecture checks/one explicit live skip,
+four actual-process probes (live root/retained pipes/exact512KiB/512KiB+1) and
+nineinventory tests passed. Approval5731269418/finalgate5731290917 found no
+blocking findings; no diff changes. Actual pre-fix reproduction retained pipe
+joins after exit0 beyond602ms despite a200ms exit-only deadline; fixture child
+was explicitly killed and pipes drained.
+
+Parent1163clean-sourceFlutter/nine explicit skips,43focused/one live skip,
+formatter326unchanged,analyzer clean,web/Wasm andmacOSdebug builds andnine
+inventory checks passed. RequiredCI41373195082 completed/success:
+Flutter1250478389401157Ubuntu tests/12explicit skips,17actualChrome,web/Wasm
+and independent generated-project resolve/analyze/test/render/build/serve;
+Python125047839144141tests/four explicit skips. Default8765health unavailable;
+no fresh model inference/installedapp change. Capture bounds helper exit and
+pipe EOF/output, not descendant-cleanup proof or platform enablement.
+
+Independent reviewer protected-plugin squash merged
+https://github.com/arpit-it/ASG/pull/423 as
+`b80945cea7ecb63e654d38a84adf2fc1a8086f7b` at2026-11-02T01:41:15Z. Parent
+freshly plugin-verified mergedPR/currentmain captureblob/issue401OPEN. Signed
+exacttree andsoleparentcaa9e892 verified; guarded local sync passed main/originmain
+0/0,indexempty,both unrelatedIDEedits byte-identical. Evidence
+/private/tmp/asg-capture-publication.json,/private/tmp/asg423-reviewed-merge.json,
+/private/tmp/asg423-safe-sync.py and/private/tmp/asg-capture-before.log. Both
+automationlabels applied. Reused401; no new issue.
+
+Remaining F16 host implementation Pending; external acceptance Deferred400.
+FullF16/F15/F22 unchecked. No active implementation after this merge. Retain
+this final bookkeeping for next normal reviewed development PR. No cadence/
+notification/modeldownload/install/stableapp/settings/deployment change.
+Current run time 2026-11-02T01:41:59.539726+00:00.
+
+
+### Validated generation-helper results — #401
+
+In progress on `401-helper-result-validation` from plugin-verified PR #423 merge
+`b80945cea7ecb63e654d38a84adf2fc1a8086f7b`. No open PR/competing active
+ASG chat at selection; reused #401, no new issue. Preserved prior final merge
+bookkeeping and unrelated IDE edits. Reproduction: previous boundary accepted
+successful output length65537, then durable GenerationStep reopen rejected it;
+JSON parse error retained raw synthetic sensitive payload. F16 fixed-operation
+protocol validation is required before extending host execution.
+
+Scope/acceptance: typed helper result, required field types/shape and65536-code-
+unit output bound before persistence; expected named-test metadata only, checked
+against exact target; sanitized parsing exceptions retain no raw payload. Keep
+nonzero helper stderr behavior, capture deadline/output limit and consent gates.
+Real helper subprocess tests cover failed/uncertain checkpoint without success,
+same-session retries and named invalid output/refusal. No platform enablement,
+model inference, installedapp/settings change. Full F16/F15/F22 unchecked;
+external platform acceptance Deferred400.
+
+Focused46checks/one live-generation skip and analyzer clean; web/Wasm built.
+Initial full suite exposed two incomplete old helper fixtures and one old
+TypeError assertion; updated actual output fixtures and FormatException contract,
+added actual named-helper retry test. Full retest, remaining checks, plugin exact-
+tree publication, independent final-revision review, requiredCI and reviewer
+protected merge remain gates. Do not overlap active branch.
+Recorded 2026-11-02T01:51:17.434689+00:00.
+
+Final helper-result validation:1168clean-sourceFlutter/nine explicit skips,54focused/two explicit live skips,formatter328unchanged,analyzer clean,web/Wasm andmacOSdebug builds andnineinventorychecks passed. All349runtime/test/tool/asset/package inputs match clean copy /private/tmp/asg-result-validation. Actual generic/named helper malformed/oversized refusal and same-session retries passed; previous65537accepted-success/durable-refusal and raw-error retention reproduced at /private/tmp/asg-result-before.log. Default8765health unavailable; no model inference/installedapp change. Awaiting merge: exact-tree plugin publication, independent final-revision review, requiredCI and reviewer protected merge remain gates. FullF16/F15/F22unchecked; external acceptance Deferred400.
+Recorded 2026-11-02T01:52:30.952204+00:00.

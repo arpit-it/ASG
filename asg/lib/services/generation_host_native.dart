@@ -12,6 +12,7 @@ import 'package:path/path.dart' as path;
 
 import '../models/app_definition.dart';
 import '../models/generation_capabilities.dart';
+import '../models/generation_command_result.dart';
 import '../models/artifact_inspection.dart';
 import '../models/build_task.dart';
 import '../models/project.dart';
@@ -428,14 +429,7 @@ class NativeGenerationHost
       operation,
       beforeStart: beforeStart,
     );
-    return GenerationStep(
-      operation: operation,
-      exitCode: data['exitCode'] as int,
-      output: data['output'] as String,
-      timedOut: data['timedOut'] as bool,
-      outputLimitExceeded: data['outputLimitExceeded'] as bool,
-      cancelled: data['cancelled'] as bool,
-    );
+    return data.step(operation);
   }
 
   @override
@@ -469,10 +463,13 @@ class NativeGenerationHost
       beforeStart: beforeStart,
     );
     checkVerification();
-    return NamedFlutterTestResult.fromCommand(data, target);
+    return data.namedTest ??
+        (throw const FormatException(
+          'Named test helper did not return evidence.',
+        ));
   }
 
-  Future<Map<String, dynamic>> _runFlutterCommand(
+  Future<GenerationCommandResult> _runFlutterCommand(
     GeneratedProject project,
     String operation, {
     FlutterTestTarget? target,
@@ -493,7 +490,7 @@ class NativeGenerationHost
   }
 
   bool _commandRunning = false;
-  Future<Map<String, dynamic>> _dispatchFlutterCommand(
+  Future<GenerationCommandResult> _dispatchFlutterCommand(
     GeneratedProject project,
     String operation, {
     FlutterTestTarget? target,
@@ -569,15 +566,12 @@ class NativeGenerationHost
             'Named test helper did not return evidence.',
           );
         }
-        return {
-          'exitCode': code,
-          'output': error.substring(0, min(error.length, 65536)),
-          'timedOut': false,
-          'outputLimitExceeded': false,
-          'cancelled': false,
-        };
+        return GenerationCommandResult(
+          exitCode: code,
+          output: error.substring(0, min(error.length, 65536)),
+        );
       }
-      return jsonDecode(out) as Map<String, dynamic>;
+      return GenerationCommandResult.decode(out, target: target);
     } finally {
       if (process != null) {
         process.kill(ProcessSignal.sigterm);

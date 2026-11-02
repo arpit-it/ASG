@@ -900,6 +900,87 @@ void main() {
   });
 
   test(
+    'actual helper protocol failures retain checkpoint and allow retry',
+    () async {
+      for (final relative in [
+        'bin/cache/flutter_tools.snapshot',
+        'bin/cache/dart-sdk/bin/dart',
+        'packages/flutter_tools/.dart_tool/package_config.json',
+      ]) {
+        final file = File('$sdk/$relative');
+        await file.parent.create(recursive: true);
+        await file.writeAsString('fixture');
+      }
+      final generated = await generate();
+      const privatePayload = '/private/sensitive-request';
+      var payload = '';
+      final guarded = NativeGenerationHost(
+        loadAsset: (_) async =>
+            'import sys; sys.stdout.write(${jsonEncode(privatePayload)})',
+      );
+      try {
+        final checkpoints = <GeneratedProject>[];
+        await expectLater(
+          guarded.verify(generated, (value) async => checkpoints.add(value)),
+          throwsA(
+            isA<FormatException>().having(
+              (error) => error.toString(),
+              'sanitized',
+              'FormatException: Invalid generation helper result.',
+            ),
+          ),
+        );
+        expect(checkpoints.last.phase, SourceGenerationPhase.failed);
+        expect(checkpoints.last.failedOperation, 'resolve');
+        expect(checkpoints.last.pendingOperation, 'resolve');
+        expect(checkpoints.last.steps, isEmpty);
+        expect(checkpoints.last.error, isNot(contains(privatePayload)));
+        expect(
+          GeneratedProject.fromJson(checkpoints.last.toJson()).resumeRefusal,
+          isNotNull,
+        );
+      } finally {
+        await guarded.dispose();
+      }
+      final retrying = NativeGenerationHost(
+        loadAsset: (_) async =>
+            'import sys; sys.stdout.write(${jsonEncode(payload)})',
+      );
+      try {
+        for (final bad in [
+          jsonEncode({'exitCode': 0}),
+          jsonEncode({
+            'exitCode': 0,
+            'output': 'x' * 65537,
+            'timedOut': false,
+            'outputLimitExceeded': false,
+            'cancelled': false,
+          }),
+          '[]',
+        ]) {
+          payload = bad;
+          await expectLater(
+            retrying.runFlutterOperation(generated, 'analyze'),
+            throwsFormatException,
+          );
+          payload = jsonEncode({
+            'exitCode': 0,
+            'output': 'retried',
+            'timedOut': false,
+            'outputLimitExceeded': false,
+            'cancelled': false,
+          });
+          final step = await retrying.runFlutterOperation(generated, 'analyze');
+          expect(step.succeeded, isTrue);
+          expect(GenerationStep.fromJson(step.toJson()).output, 'retried');
+        }
+      } finally {
+        await retrying.dispose();
+      }
+    },
+  );
+
+  test(
     'approval is checked after helper preparation before process launch',
     () async {
       final marker = File('${temp.path}/command-started');
