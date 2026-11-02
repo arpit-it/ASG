@@ -67,7 +67,7 @@ class ProbeDeadlineTest(unittest.TestCase):
         import time
         from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
         from threading import Thread
-        for stage in ('headers', 'json', 'structured-sse', 'disconnect-sse'):
+        for stage in ('headers', 'json', 'valid-json', 'structured-sse', 'disconnect-sse'):
             with self.subTest(stage=stage), tempfile.TemporaryDirectory() as folder:
                 seen = []
                 class Handler(BaseHTTPRequestHandler):
@@ -94,6 +94,11 @@ class ProbeDeadlineTest(unittest.TestCase):
                         try:
                             if stage == 'headers':
                                 self.drip(b'HTTP/1.0 200 OK\r\nX-Drip: ')
+                            elif stage == 'valid-json':
+                                self.send_response(200)
+                                self.end_headers()
+                                self.drip(json.dumps({'backend': 'mlx', 'device': 'metal',
+                                    'phase': 'idle', 'model': 'synthetic'}).encode())
                             elif stage == 'json':
                                 self.send_response(200)
                                 self.end_headers()
@@ -155,6 +160,8 @@ class ProbeDeadlineTest(unittest.TestCase):
                     self.assertNotEqual(result.returncode, 0)
                     self.assertFalse(output.exists())
                     self.assertNotIn(b'Traceback', result.stderr)
+                    if stage == 'valid-json':
+                        self.assertEqual(seen, ['/health'], 'Expired valid JSON must not advance to inventory')
                     if stage == 'structured-sse':
                         self.assertEqual(seen.count('stream'), 1)
                     if stage == 'disconnect-sse':

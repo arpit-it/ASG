@@ -46,6 +46,8 @@ class DeadlineConnection(http.client.HTTPConnection):
         self.guard = Lock()
         self.owned_socket = None
         self.timer = None
+        self.expired = False
+        self.finished = False
 
     def connect(self):
         super().connect()
@@ -56,11 +58,18 @@ class DeadlineConnection(http.client.HTTPConnection):
             self.owned_socket = self.sock.dup()
         remaining = self.deadline - time.monotonic()
         if remaining <= 0:
-            self.interrupt()
+            self.expire()
             raise TimeoutError('Operation deadline')
-        self.timer = Timer(remaining, self.interrupt)
+        self.timer = Timer(remaining, self.expire)
         self.timer.daemon = True
         self.timer.start()
+
+    def expire(self):
+        with self.guard:
+            if self.finished:
+                return
+            self.expired = True
+        self.interrupt()
 
     def interrupt(self):
         with self.guard:
@@ -73,11 +82,16 @@ class DeadlineConnection(http.client.HTTPConnection):
             finally:
                 owned.close()
 
-    def finish(self):
+    def finish(self, check=False):
+        with self.guard:
+            timed_out = self.expired or time.monotonic() >= self.deadline
+            self.finished = True
         if self.timer is not None:
             self.timer.cancel()
         self.interrupt()
         self.close()
+        if check and timed_out:
+            raise TimeoutError('Operation deadline')
 
 connections = []
 
@@ -94,7 +108,7 @@ def call(path, body=None):
     raw = r.read(65537)
     assert len(raw) <= 65536
     data = json.loads(raw)
-    c.finish()
+    c.finish(check=True)
     return (status, data)
 
 def request(text, tokens=128, stream=False):
@@ -172,7 +186,7 @@ def run():
                 parts.append(choice['delta']['content'])
         if 'metrics' in value:
             final = safe_metrics(value['metrics'], 128)
-    c.finish()
+    c.finish(check=True)
     assert done and final['finish_reason'] == 'stop' and (len(parts) > 1)
     assert json.loads(''.join(parts).strip()) == {'status': 'ready', 'count': 3}
     report['checks']['structured_sse'] = {'seconds': round(time.monotonic() - start, 3), 'content_chunks': len(parts), 'metrics': final}
@@ -193,7 +207,7 @@ def run():
                 observed = True
                 break
     r.close()
-    c.finish()
+    c.finish(check=True)
     assert observed
     start = time.monotonic()
     while time.monotonic() - start < 15:
