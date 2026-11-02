@@ -10728,3 +10728,19 @@ passed without that environment. Initial text/scroll harness failures corrected
 and retested. Final runtime is unchanged since full suite/builds; final extra real
 export assertion passed in finalfocused. FullF11/#402 andDeferred400 remain open.
 Awaiting exact-tree publication, independent review, required CI and reviewer merge.
+
+### PR #460 independent review recovery — F11 / #402
+Awaiting merge on `402-html-export-check`, scope6584403638. Initial plugin
+headd6bc3c6c/tree54ad8486 matched testedlocald7a59a8; all14blobs/407inputs matched.
+Independent31focused/nineinventory passed, but blockingreview5741098795 reproduced
+that editing during pending IO hid progress/Stop behind cleared export state.
+Merge withheld. Corrected global pending progress/Stop and explicit invalidated
+waiting status; active duplicate guard retained until IO settles. New widget
+actually edits title during pending reads, verifies visible waiting/disabledStop,
+then settles late success and verifies no result or stale progress.320px/2x Stop
+test now scrolls to the global section.32focused and full1308Flutter/nineexplicit
+skips passed; formatter382/analyzer clean; nineinventory passed after regeneration.
+Fresh final web/Wasm and isolatedmacOSdebug builds are recorded in PR validation.
+No old approval or CI authorizes the changed diff. Fresh exactfinalreview, actual
+requiredCI and protectedreviewermerge remain gates. FullF11/#402 andDeferred400
+stay open. No model launch/inference/stableapp/cadence/notification change.

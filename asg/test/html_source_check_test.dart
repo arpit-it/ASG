@@ -190,6 +190,9 @@ void main() {
       await reveal('Check exported files');
       await tester.tap(find.text('Check exported files'));
       await tester.pump();
+      // The global Stop section can precede the export after layout changes.
+      await tester.drag(find.byType(Scrollable).first, const Offset(0, 10000));
+      await tester.pump();
       // A busy progress indicator animates; avoid pumpAndSettle until stopped.
       await tester.scrollUntilVisible(
         find.text('Stop check'),
@@ -207,6 +210,54 @@ void main() {
       await tester.pumpAndSettle();
       await reveal(result.summary);
       expect(find.text(result.summary), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    },
+  );
+  testWidgets(
+    'editing during pending check retains visible revoked-read progress',
+    (tester) async {
+      final checker = _Check();
+      final c = await _ready(checker);
+      await tester.pumpWidget(
+        MaterialApp(home: HtmlExportScreen(controller: c)),
+      );
+      final operation = c.checkExport();
+      await tester.pump();
+      await tester.enterText(
+        find.widgetWithText(TextField, 'Site title'),
+        'Changed title',
+      );
+      await tester.pump();
+      expect(c.exportedDirectory, isNull);
+      expect(c.checking, true);
+      expect(c.checkStopped, true);
+      await tester.scrollUntilVisible(
+        find.text('Waiting for prior source reads to settle…'),
+        180,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(
+        find.text('Waiting for prior source reads to settle…'),
+        findsOneWidget,
+      );
+      expect(find.widgetWithText(OutlinedButton, 'Stop check'), findsOneWidget);
+      expect(
+        tester
+            .widget<OutlinedButton>(
+              find.widgetWithText(OutlinedButton, 'Stop check'),
+            )
+            .onPressed,
+        isNull,
+      );
+      checker.completion.complete(result);
+      await operation;
+      await tester.pumpAndSettle();
+      expect(c.sourceCheck, isNull);
+      expect(c.checking, false);
+      expect(
+        find.text('Waiting for prior source reads to settle…'),
+        findsNothing,
+      );
       expect(tester.takeException(), isNull);
     },
   );

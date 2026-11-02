@@ -271,6 +271,7 @@ The saved development automation was updated through its management tool; active
   - Acceptance: UI shows available and unavailable operations with actionable reasons; unsupported confinement refuses candidate execution before any source is run. Each enabled host passes real new-project resolve/analyze/test/web-build/serve, Stop/deadline/output-limit and descendant-cleanup checks, restart/uncertain-checkpoint refusal, stale-approval refusal and last-working-output preservation. Enabling starter generation must not implicitly enable candidate execution. Model-written candidate/repair support needs independently reviewed platform isolation and real deny-write/network/process-escape probes at the established boundary.
   - Validation/delivery: one narrowly scoped issue/PR per host/capability milestone, actual Linux/Windows builds and launches on their respective hosts, plus macOS regression coverage. Include paths with spaces, missing toolchains, occupied ports, failed previews and interrupted writes. Record tested versus unavailable capabilities separately; keep F16 unchecked until promised host increments satisfy acceptance and normal independent review/CI/verified merge. Broader generated targets remain F11.
 - [ ] F11 Multi-language project generation, runners and explicit stack selection — In progress (#402); depends on F04 and F05
+  - Explicit fixed HTML source checks — Awaiting merge, [PR #460](https://github.com/arpit-it/ASG/pull/460), #402, `402-html-export-check`, scope6584403638. Read-only exact-starter identity evidence, shared preview validator, visible Stop/deadline/retry. Blocking review5741098795 identified hidden pending reads after edit; corrected with global revoked-read progress and widget regression. Full F11 remains open; final-revision review/CI/protected merge still required.
   - App-owned fixed HTML preview — Done via [PR #459](https://github.com/arpit-it/ASG/pull/459), #402, `402-html-preview-flow`, scope6583757438; verified merge746b6749 at2026-11-02T17:53:20Z, final67579673 independently approved5740832776/finalgate5740906527, requiredCI41494387421 passed. Confirmed export identity, preview/browser/Stop controls and recovery only; full creation/registration/runner Pending.
   - Fixed HTML preview host foundation — Done (bounded service), [PR #458](https://github.com/arpit-it/ASG/pull/458), final080ad07b approved5740409275, requiredCI41487788657 passed; reviewer merge371cf781c59f515008a3a78afb9324cb66546360 verified at2026-11-02T17:14:42Z. #402, `402-html-preview-host`, scope6583108583. App controls/browser launch and full runner remain Pending.
   - App-owned fixed HTML starter export — Done (bounded export flow), [PR #457](https://github.com/arpit-it/ASG/pull/457), final757edf16 approved5739945623/finalgate6582806250, requiredCI41483465171 passed; reviewer merge950ce933c1eda778b7d26e5fc3a58a333bbf3f8f verified at2026-11-02T16:47:02Z: #402, `402-html-export-flow`, scope6582414659. Dashboard exact review/confirmation, Stop/disposal and retained recovery; project registration/runner/preview remain Planned.
@@ -11559,3 +11560,19 @@ passed without that environment. Initial text/scroll harness failures corrected
 and retested. Final runtime is unchanged since full suite/builds; final extra real
 export assertion passed in finalfocused. FullF11/#402 andDeferred400 remain open.
 Awaiting exact-tree publication, independent review, required CI and reviewer merge.
+
+### PR #460 independent review recovery — F11 / #402
+Awaiting merge on `402-html-export-check`, scope6584403638. Initial plugin
+headd6bc3c6c/tree54ad8486 matched testedlocald7a59a8; all14blobs/407inputs matched.
+Independent31focused/nineinventory passed, but blockingreview5741098795 reproduced
+that editing during pending IO hid progress/Stop behind cleared export state.
+Merge withheld. Corrected global pending progress/Stop and explicit invalidated
+waiting status; active duplicate guard retained until IO settles. New widget
+actually edits title during pending reads, verifies visible waiting/disabledStop,
+then settles late success and verifies no result or stale progress.320px/2x Stop
+test now scrolls to the global section.32focused and full1308Flutter/nineexplicit
+skips passed; formatter382/analyzer clean; nineinventory passed after regeneration.
+Fresh final web/Wasm and isolatedmacOSdebug builds are recorded in PR validation.
+No old approval or CI authorizes the changed diff. Fresh exactfinalreview, actual
+requiredCI and protectedreviewermerge remain gates. FullF11/#402 andDeferred400
+stay open. No model launch/inference/stableapp/cadence/notification change.

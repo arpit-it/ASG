@@ -137,6 +137,20 @@ class _HtmlExportScreenState extends State<HtmlExportScreen> {
                 ),
               ],
               if (controller.error != null) SelectableText(controller.error!),
+              if (controller.checking) ...[
+                const LinearProgressIndicator(),
+                Text(
+                  controller.checkStopped
+                      ? 'Waiting for prior source reads to settle…'
+                      : 'Checking exported file identity…',
+                ),
+                OutlinedButton(
+                  onPressed: controller.checkStopped
+                      ? null
+                      : controller.stopCheck,
+                  child: const Text('Stop check'),
+                ),
+              ],
               if (controller.exportedDirectory != null) ...[
                 const Text(
                   'Source export complete. Full runner integration remains planned.',
@@ -144,33 +158,12 @@ class _HtmlExportScreenState extends State<HtmlExportScreen> {
                 SelectableText(controller.exportedDirectory!),
                 if (!controller.checker.supported)
                   const Text('Source identity checks require macOS.'),
-                if (controller.checking) ...[
-                  const LinearProgressIndicator(),
-                  Text(
-                    controller.checkStopped
-                        ? 'Waiting for pending source reads to settle…'
-                        : 'Checking exported file identity…',
-                  ),
-                ],
-                Wrap(
-                  spacing: 12,
-                  runSpacing: 8,
-                  children: [
-                    OutlinedButton(
-                      onPressed:
-                          controller.checker.supported && !controller.checking
-                          ? controller.checkExport
-                          : null,
-                      child: const Text('Check exported files'),
-                    ),
-                    if (controller.checking)
-                      OutlinedButton(
-                        onPressed: controller.checkStopped
-                            ? null
-                            : controller.stopCheck,
-                        child: const Text('Stop check'),
-                      ),
-                  ],
+                OutlinedButton(
+                  onPressed:
+                      controller.checker.supported && !controller.checking
+                      ? controller.checkExport
+                      : null,
+                  child: const Text('Check exported files'),
                 ),
                 if (controller.sourceCheck != null)
                   SelectableText(controller.sourceCheck!.summary),

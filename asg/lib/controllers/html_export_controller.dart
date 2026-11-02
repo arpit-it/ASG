@@ -132,7 +132,10 @@ class HtmlExportController extends BaseController {
   void _invalidate() {
     _checkGeneration++;
     _sourceCheck = null;
-    _checkError = null;
+    if (_checking) _checkStopped = true;
+    _checkError = _checking
+        ? 'Source check invalidated by changed inputs. Its late result will be ignored; no files were changed.'
+        : null;
     _exportedRequest = null;
     if (preview.url != null || preview.busy || preview.cleanupFailed) {
       unawaited(preview.stop());
