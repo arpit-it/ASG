@@ -17,7 +17,7 @@ void main() {
       final host = NativeGenerationHost(
         loadAsset: (_) async => throw StateError('No asset read permitted'),
       );
-      expect(host.capabilities.implemented, Platform.isMacOS);
+      expect(host.capabilities.starterCreation, Platform.isMacOS);
       expect(
         host.capabilities.operations.every(
           (entry) => entry.implemented == host.supported,
@@ -35,7 +35,7 @@ void main() {
     'unsupported and unknown reports never inherit execution support',
     () async {
       final host = UnsupportedGenerationHost();
-      expect(host.capabilities.implemented, isFalse);
+      expect(host.capabilities.starterCreation, isFalse);
       expect(
         const GenerationCapabilities.unknown().operations.every(
           (entry) => !entry.implemented,
@@ -45,9 +45,63 @@ void main() {
       await host.dispose();
     },
   );
+  test('starter reporting cannot inherit candidate confinement', () {
+    const report = GenerationCapabilities(
+      host: 'Starter-only reporting fixture',
+      starterCreation: true,
+      starterVerification: true,
+      webPreview: true,
+      processCleanup: true,
+    );
+    expect(report.candidateConfinement, isFalse);
+    expect(
+      report.operations
+          .singleWhere(
+            (entry) =>
+                entry.operation == GenerationOperation.candidateConfinement,
+          )
+          .implemented,
+      isFalse,
+    );
+    expect(report.implementsOperation(GenerationOperation.webPreview), isTrue);
+    expect(() => report.operations.clear(), throwsUnsupportedError);
+  });
+  test('each operation reports only its explicit implementation', () {
+    for (final enabled in GenerationOperation.values) {
+      final report = GenerationCapabilities(
+        host: 'Independent operation fixture',
+        starterCreation: enabled == GenerationOperation.starterCreation,
+        starterVerification: enabled == GenerationOperation.starterVerification,
+        candidateConfinement:
+            enabled == GenerationOperation.candidateConfinement,
+        webPreview: enabled == GenerationOperation.webPreview,
+        processCleanup: enabled == GenerationOperation.processCleanup,
+      );
+      expect(
+        report.operations.map((entry) => entry.operation),
+        GenerationOperation.values,
+      );
+      expect(
+        report.operations.where((entry) => entry.implemented).single.operation,
+        enabled,
+      );
+      for (final operation in GenerationOperation.values) {
+        expect(report.implementsOperation(operation), operation == enabled);
+      }
+    }
+    const unknown = GenerationCapabilities(host: 'Future host');
+    expect(unknown.operations.any((entry) => entry.implemented), isFalse);
+  });
   for (final report in [
     const GenerationCapabilities.macOS(),
     const GenerationCapabilities.unavailable('Windows'),
+    const GenerationCapabilities(
+      host: 'Starter-only reporting fixture',
+      starterCreation: true,
+      starterVerification: true,
+      webPreview: true,
+      processCleanup: true,
+    ),
   ]) {
     testWidgets('narrow enlarged report: ${report.host}', (tester) async {
       tester.view.physicalSize = const Size(320, 600);
@@ -69,6 +123,12 @@ void main() {
       await tester.tap(find.text('Generation host capabilities'));
       await tester.pumpAndSettle();
       expect(find.text(GenerationCapabilities.limits), findsOneWidget);
+      expect(
+        find.text(
+          'Candidate confinement: ${report.candidateConfinement ? 'Implemented path' : 'Unavailable / unverified'}',
+        ),
+        findsOneWidget,
+      );
       final cleanup = find.textContaining('Process cleanup:');
       await tester.ensureVisible(cleanup);
       await tester.pumpAndSettle();

@@ -242,7 +242,10 @@ void main() {
   test(
     'custom host without report stays uninspected despite supported flag',
     () async {
-      expect(c.capabilities.implemented, isFalse);
+      expect(
+        c.capabilities.operations.any((entry) => entry.implemented),
+        isFalse,
+      );
       expect(c.capabilities.host, 'Uninspected host');
     },
   );
