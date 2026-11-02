@@ -239,6 +239,14 @@ void main() {
     if (!c.isDisposed) c.dispose();
   });
 
+  test(
+    'custom host without report stays uninspected despite supported flag',
+    () async {
+      expect(c.capabilities.implemented, isFalse);
+      expect(c.capabilities.host, 'Uninspected host');
+    },
+  );
+
   test('new preparation failure does not inherit previous Stop', () async {
     host.afterResolve = () async => c.stopVerification();
     expect(await generate(true), isFalse);

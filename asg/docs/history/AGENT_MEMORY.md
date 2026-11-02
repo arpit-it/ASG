@@ -8140,3 +8140,69 @@ merge remain gates. No fresh inference/support claim or stable-app change.
 Recorded 2026-11-02T00:02:27.623484+00:00.
 
 Final draft inventory validation:1138clean-sourceFlutter tests/nine explicit skips,22focused,format318/analyzer clean,web/Wasm andmacOSdebug builds passed;340validationinputs byte-match clean copy. Historicalinventory9passed; observations unchanged. No inference. Awaiting merge: exact-tree plugin publication, independent final review, required CI and reviewer merge remain gates. FullF22/F15 unchecked, verified profiles/context/live evidence Pending and platform acceptance Deferred400. Recorded 2026-11-02T00:02:57.314707+00:00.
+
+
+### Draft model inventory inspection verified merged — #396 / PR #418
+
+Bounded increment Done on `396-model-inventory`. Corrected final
+`2941fce622716062225b63688342bf3e1956e2c5` independently approved5730913744 /
+finalgate5730932058; testedlocal3cea8ca3ce638cead5715efd8ae4799c5f5d9f8a shares
+treee49e5a323560fae7def49e527d8eca77fb44485f. All815remote blobs/modes matched;
+independent27focusedFlutter, three hostileHTTP probes (actual three-second stalled
+body deadline, unknown-length flood, invalidUTF8) and9inventory tests passed.
+Review caught stale inventory digest after final formatting/controller fix;
+regenerated against final source, retested and obtained fresh final review/CI.
+
+RequiredCI41365292083 completed/success: Flutter125024120916format318/analyzer
+clean,1132Ubuntu tests/12explicit skips,17actualChrome,web/Wasm and independent
+generated-project resolve/analyze/test/render/build/serve; Python125024120580
+141tests/four explicit CI skips. Parent1138cleanFlutter/nine skips,22focused,
+format/analyzer/web/macOS and9inventory passed;340validationinputs match.
+Default8765health unreachable, no fresh inference or platform-support claim.
+
+Independent reviewer protected-plugin squash merged
+https://github.com/arpit-it/ASG/pull/418 as
+`5e8ce35e6eee0842e0964e3a106f9e4b814c0c0f` at2026-11-02T00:11:15Z. Parent
+freshly plugin-verified mergedPR/currentmain/serviceblob/issue396stillopen, signed
+exacttree/soleparent9e7e9c0 and requiredCI. Guarded local sync passed main/origin-main
+0/0,indexempty,both unrelatedIDE edits byte-identical. Evidence/private/tmp/asg-
+inventory-publication.json,/private/tmp/asg418-reviewed-merge.json and
+/private/tmp/asg418-safe-sync.py. Both labels applied.
+
+Status Pending remaining verified profiles/context/real-model capability evidence;
+no active implementation after this merge. Explicit draft inventory check is now
+delivered; inventory membership remains an unverified server assertion. FullF22/F15
+unchecked, unavailable-platform acceptance Deferred400. No modeldownload/install/
+stableapp/settings/deployment/cadence/notification change. Final merge bookkeeping
+retained for the next normal reviewed development PR.
+Current run time 2026-11-02T00:12:11.423645+00:00.
+
+
+### F16 generation-host operation reporting — issue #401
+
+In progress on `401-generation-capabilities` from verified PR #418 merge
+`5e8ce35e6eee0842e0964e3a106f9e4b814c0c0f`. Fresh GitHub search found no open
+PR and active-chat inventory found no competing ASG run. Reused existing #401;
+no new issue. Named presets, per-chat/project/run selection, provenance and draft
+inventory are delivered; actual verified F22 profile/context/model measurements
+remain Pending. F03/F04/F05 host/controller/view foundations are sufficient for
+this Mac-verifiable F16 reporting increment under the owner's explicit priority
+exception; deferred platform acceptance #400 is not a global gate.
+
+Scope/acceptance: immutable operation report for starter creation, fixed
+verification, candidate confinement, web preview and cleanup, displayed in Build.
+Mac paths are labeled implemented, never probed/ready/verified; other native and
+browser hosts remain unavailable, unknown integrations uninspected. SDK/Python,
+project/history, consent/approval, artifact and execution checks still apply.
+No new platform enablement, runtime probe, model support or inference claim.
+No installed app/data change. Full F16/F22/F15 remain unchecked.
+
+Validation: initial62 focused checks passed; full in-place test found an existing
+ignored tools/.mlx-venv third-party license scan failure, not a source regression.
+Use the byte-matched clean source copy excluding ignored runtime environments for
+full validation. An added regression initially had an incorrect storage adapter;
+corrected to exercise the initialized controller. Final full checks/builds,
+plugin-only exact-tree publication, independent final-revision review, required
+CI and reviewer merge remain completion gates. Recorded 2026-11-02T00:16:53.357207+00:00.
+
+Final validation so far: formatter321 unchanged, analyzer clean,1143 clean-source Flutter tests/nine explicit skips,three actual Chrome production-host/IndexedDB refusal checks and web/Wasm build passed;340 runtime/test/tool/asset inputs match. Historical acceptance inventory regenerated for current runtime sources;all nine inventory checks pass. macOS debug build running. No source changes after these tests. Awaiting merge gates remain. Recorded 2026-11-02T00:17:53.446787+00:00.

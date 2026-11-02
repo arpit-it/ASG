@@ -20,6 +20,7 @@ import 'package:asg/models/source_generation.dart';
 import 'package:asg/services/application_store.dart';
 import 'package:asg/services/folder_picker.dart';
 import 'package:asg/services/generation_host_factory.dart';
+import 'package:asg/services/generation_host.dart';
 import 'package:asg/services/source_generation_store.dart';
 import 'package:asg/services/studio_database.dart';
 import 'package:asg/views/source_generation_screen.dart';
@@ -48,6 +49,10 @@ void main() {
       final host = createGenerationHost();
       addTearDown(host.dispose);
       expect(host.supported, isFalse);
+      final report = (host as GenerationCapabilitySource).capabilities;
+      expect(report.implemented, isFalse);
+      expect(report.host, 'Browser or unsupported host');
+      expect(report.operations.every((entry) => !entry.implemented), isTrue);
       expect(FolderPicker().supported, isFalse);
       final generated = GeneratedProject(
         directory: '/disposable-generated',

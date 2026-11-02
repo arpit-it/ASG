@@ -11,6 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:path/path.dart' as path;
 
 import '../models/app_definition.dart';
+import '../models/generation_capabilities.dart';
 import '../models/artifact_inspection.dart';
 import '../models/build_task.dart';
 import '../models/project.dart';
@@ -24,7 +25,11 @@ import 'named_test_session.dart';
 GenerationHost createGenerationHost() => NativeGenerationHost();
 
 class NativeGenerationHost
-    implements GenerationHost, ArtifactInspector, NamedTestSession {
+    implements
+        GenerationHost,
+        ArtifactInspector,
+        NamedTestSession,
+        GenerationCapabilitySource {
   NativeGenerationHost({
     this.loadAsset = _loadAsset,
     Future<GenerationStep> Function(GeneratedProject, String)? runOperation,
@@ -58,6 +63,16 @@ class NativeGenerationHost
   Uri? _preview;
   @override
   bool get supported => Platform.isMacOS;
+  @override
+  GenerationCapabilities get capabilities => Platform.isMacOS
+      ? const GenerationCapabilities.macOS()
+      : GenerationCapabilities.unavailable(switch (Platform.operatingSystem) {
+          'linux' => 'Linux',
+          'windows' => 'Windows',
+          'android' => 'Android',
+          'ios' => 'iOS',
+          _ => 'Unsupported native host',
+        });
   static Future<String> _loadAsset(String name) => rootBundle.loadString(name);
 
   @override

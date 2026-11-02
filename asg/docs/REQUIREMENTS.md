@@ -210,6 +210,7 @@ The saved development automation was updated through its management tool; active
   - Bounded delivery milestones: (1) backend contract/capability discovery and an MLX regression; (2) explicit CPU setup/inference on a supported non-Apple desktop with compatible weights; (3) explicit CUDA setup/inference on a CUDA host. Each milestone needs its own focused issue, saved settings/restart/error tests and real-host evidence. Non-Apple CPU/CUDA real-host acceptance is now Deferred in #400 until the queued implementation is delivered; this is not a dependency on eligible implementation. Isolate optional backend dependencies so missing MLX cannot prevent CPU/CUDA startup; validate configurable executable/model paths including spaces. Do not claim CPU adequacy for a 9B model without measured successful operation within the configured limits.
   - Delivery: create/reuse a narrowly scoped issue when selected; remain unchecked until all promised backend milestones, independent review, required checks and verified merges. CPU and CUDA evidence must be recorded separately; unavailable hardware is a recorded blocker, never a fixture-based completion claim.
 - [ ] F22 Hardware-aware local model catalog and selection — In progress; depends on delivered F09/F15 foundations; unavailable-platform validation Deferred
+  - Draft model inventory inspection — Done: #396, `396-model-inventory`, [PR #418](https://github.com/arpit-it/ASG/pull/418); final2941fce6 independently approved5730913744/finalgate5730932058, requiredCI41365292083 passed; verified reviewer merge5e8ce35e6eee0842e0964e3a106f9e4b814c0c0f at2026-11-02T00:11:15Z. Advertised IDs remain server assertions; profiles/context/live evidence Pending.
   - Contradictory response identity safeguard — Done: #396, `396-response-model-identity`, [PR #417](https://github.com/arpit-it/ASG/pull/417); final92260d9c independently approved5730855594/finalgate5730876269, requiredCI41363879462 passed; verified reviewer merge9e7e9c0efc63346b07c3f41da1ea304fc0563dd6 at2026-11-01T23:55:28Z. Missing identity remains unverified; profiles/context/live capability evidence Pending.
   - Source/repair review-session selection — Done: #396, `396-source-run-selection`, [PR #416](https://github.com/arpit-it/ASG/pull/416); finalaef77308 independently approved5730802096/finalgate5730821144, requiredCI41362708614 passed, verified reviewer mergeec14b432411ca0947b17bf907ad25b3695fecbb0 at2026-11-01T23:40:31Z. Verified profiles/context/real-model evidence remain Pending.
   - Prototype workspace-session request selection — Done: issue #396, `396-prototype-run-selection`, [PR #415](https://github.com/arpit-it/ASG/pull/415); final9a7738a5 approved5730751295/finalgate5730767381, requiredCI41361474548 passed; reviewer protectedmerge21b5a9889a79f68c7c0258427b85740438090066 at2026-11-01T23:24:29Z verified. Session-only choice, persisted completion provenance; source/repair selection and verified profiles Pending, fullF22unchecked.
@@ -228,7 +229,7 @@ The saved development automation was updated through its management tool; active
   - Acceptance: choose model per chat/project/run, persist profiles and request provenance, load/unload or connect/test supported models, and safely switch only at an idle boundary. Recommend compatible candidates using weight size plus cache/activation/runtime/OS headroom and measured latency/throughput; label estimates versus actual measurements. Larger local models must pass real load/generation/check-format/cancellation tests before being advertised as supported. Unsupported architecture/quantization fails actionably and preserves the prior working model/settings.
   - Capability acceptance: free-form answers, structured edits, context limits and tool/JSON-format compatibility are explicit per model, not assumed from parameter count. Prompt/token accounting respects the selected model's verified budget; no silent truncation or cloud fallback. Show quality/speed/memory tradeoffs, and retain small-model choices for constrained devices. Quantized MoE models account for resident total weights rather than only active parameters.
   - Validation: simulated low/high-memory and CPU/Metal/CUDA profiles, missing/corrupt weights, incompatible formats, license/revision changes, busy-switch refusal, restart and failure recovery. Verify at least two compatible real local model profiles (including one larger than 9B on capable hardware); record exact quantization/context/peak memory/speed and F17 evidence. Unavailable larger-model hardware remains a blocker, not a fabricated memory-based support claim. Normal independent review/CI/verified merge gates apply.
-- [ ] F16 Portable generation host and capability reporting — Queued; depends on F03, F04, F05 and F15
+- [ ] F16 Portable generation host and capability reporting — In progress (operation reporting #401); depends on F03, F04, F05 and F15
   - Source/evidence: owner-requested score improvements on 28 October 2026; the product targets six Flutter platforms, but `NativeGenerationHost.supported` gates the independent generator to macOS and model-written candidate confinement uses macOS Seatbelt. A passing Linux trusted-starter CI fixture does not establish a safe Linux/Windows product host. F15 concerns inference, F11 concerns generated project types; neither covers host execution portability.
   - User value/priority: after eligible F15/F22 implementation increments (external platform acceptance is Deferred), let desktop users discover exactly which generation/edit/repair operations their host can safely perform. Deliver Linux trusted-starter support first, then confined candidate verification, then Windows as separate increments; do not delay honest capability reporting until every host is supported.
   - Scope: extend existing host interfaces with capabilities for starter creation, verification, candidate confinement, preview and process cleanup. Discover configured SDK/Python executables and validate paths without machine-specific defaults. Preserve the fixed operation allowlist, consent/approval binding, exclusive output folders and current macOS behavior. Mobile/web clients retain explicit unsupported host operations; remote execution is outside this task.
@@ -9065,3 +9066,69 @@ merge remain gates. No fresh inference/support claim or stable-app change.
 Recorded 2026-11-02T00:02:27.623484+00:00.
 
 Final draft inventory validation:1138clean-sourceFlutter tests/nine explicit skips,22focused,format318/analyzer clean,web/Wasm andmacOSdebug builds passed;340validationinputs byte-match clean copy. Historicalinventory9passed; observations unchanged. No inference. Awaiting merge: exact-tree plugin publication, independent final review, required CI and reviewer merge remain gates. FullF22/F15 unchecked, verified profiles/context/live evidence Pending and platform acceptance Deferred400. Recorded 2026-11-02T00:02:57.314707+00:00.
+
+
+### Draft model inventory inspection verified merged — #396 / PR #418
+
+Bounded increment Done on `396-model-inventory`. Corrected final
+`2941fce622716062225b63688342bf3e1956e2c5` independently approved5730913744 /
+finalgate5730932058; testedlocal3cea8ca3ce638cead5715efd8ae4799c5f5d9f8a shares
+treee49e5a323560fae7def49e527d8eca77fb44485f. All815remote blobs/modes matched;
+independent27focusedFlutter, three hostileHTTP probes (actual three-second stalled
+body deadline, unknown-length flood, invalidUTF8) and9inventory tests passed.
+Review caught stale inventory digest after final formatting/controller fix;
+regenerated against final source, retested and obtained fresh final review/CI.
+
+RequiredCI41365292083 completed/success: Flutter125024120916format318/analyzer
+clean,1132Ubuntu tests/12explicit skips,17actualChrome,web/Wasm and independent
+generated-project resolve/analyze/test/render/build/serve; Python125024120580
+141tests/four explicit CI skips. Parent1138cleanFlutter/nine skips,22focused,
+format/analyzer/web/macOS and9inventory passed;340validationinputs match.
+Default8765health unreachable, no fresh inference or platform-support claim.
+
+Independent reviewer protected-plugin squash merged
+https://github.com/arpit-it/ASG/pull/418 as
+`5e8ce35e6eee0842e0964e3a106f9e4b814c0c0f` at2026-11-02T00:11:15Z. Parent
+freshly plugin-verified mergedPR/currentmain/serviceblob/issue396stillopen, signed
+exacttree/soleparent9e7e9c0 and requiredCI. Guarded local sync passed main/origin-main
+0/0,indexempty,both unrelatedIDE edits byte-identical. Evidence/private/tmp/asg-
+inventory-publication.json,/private/tmp/asg418-reviewed-merge.json and
+/private/tmp/asg418-safe-sync.py. Both labels applied.
+
+Status Pending remaining verified profiles/context/real-model capability evidence;
+no active implementation after this merge. Explicit draft inventory check is now
+delivered; inventory membership remains an unverified server assertion. FullF22/F15
+unchecked, unavailable-platform acceptance Deferred400. No modeldownload/install/
+stableapp/settings/deployment/cadence/notification change. Final merge bookkeeping
+retained for the next normal reviewed development PR.
+Current run time 2026-11-02T00:12:11.423645+00:00.
+
+
+### F16 generation-host operation reporting — issue #401
+
+In progress on `401-generation-capabilities` from verified PR #418 merge
+`5e8ce35e6eee0842e0964e3a106f9e4b814c0c0f`. Fresh GitHub search found no open
+PR and active-chat inventory found no competing ASG run. Reused existing #401;
+no new issue. Named presets, per-chat/project/run selection, provenance and draft
+inventory are delivered; actual verified F22 profile/context/model measurements
+remain Pending. F03/F04/F05 host/controller/view foundations are sufficient for
+this Mac-verifiable F16 reporting increment under the owner's explicit priority
+exception; deferred platform acceptance #400 is not a global gate.
+
+Scope/acceptance: immutable operation report for starter creation, fixed
+verification, candidate confinement, web preview and cleanup, displayed in Build.
+Mac paths are labeled implemented, never probed/ready/verified; other native and
+browser hosts remain unavailable, unknown integrations uninspected. SDK/Python,
+project/history, consent/approval, artifact and execution checks still apply.
+No new platform enablement, runtime probe, model support or inference claim.
+No installed app/data change. Full F16/F22/F15 remain unchecked.
+
+Validation: initial62 focused checks passed; full in-place test found an existing
+ignored tools/.mlx-venv third-party license scan failure, not a source regression.
+Use the byte-matched clean source copy excluding ignored runtime environments for
+full validation. An added regression initially had an incorrect storage adapter;
+corrected to exercise the initialized controller. Final full checks/builds,
+plugin-only exact-tree publication, independent final-revision review, required
+CI and reviewer merge remain completion gates. Recorded 2026-11-02T00:16:53.357207+00:00.
+
+Final validation so far: formatter321 unchanged, analyzer clean,1143 clean-source Flutter tests/nine explicit skips,three actual Chrome production-host/IndexedDB refusal checks and web/Wasm build passed;340 runtime/test/tool/asset inputs match. Historical acceptance inventory regenerated for current runtime sources;all nine inventory checks pass. macOS debug build running. No source changes after these tests. Awaiting merge gates remain. Recorded 2026-11-02T00:17:53.446787+00:00.
