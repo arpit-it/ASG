@@ -10458,3 +10458,66 @@ also rechecked at every authorization/write boundary after asynchronous path
 inspection, covering a concurrent call admitted before uncertainty is observed.
 Awaiting merge through PR #456 after plugin publication, fresh independent exact-
 revision review and fresh required CI; initial c19da9bc approval is not claimed.
+
+
+### Confirmed fixed HTML source export verified merged — PR #456
+Bounded F11/#402 service foundation Done on `402-html-source-export`, scope6581732988.
+Tested local8582c8dbbd348acd68d6dd11cb4866dc2717c590 and plugin-published final
+a57002180148d1d4ddd7ac4e7d5c9212afd57b94 share exact tree
+1a383a87b2a3afaeda92e30c3291945e21b63e28; allseven remote blobs/386source inputs match.
+Fresh independent final review5739630203/finalgate6582307464 approved unchanged head
+with no blockers (COMMENT verdict, shared-owner identity; no separate-account claim).
+Initial review5739536897 mkdir-timeout blocker was fixed and freshly reviewed.
+Independent14focused/nineinventory passed, including actual delayed-helper kill/reap,
+launch failure, unconfirmed-exit/no-replay/reconciliation and real filesystem cases.
+Parent1277Flutter/nine explicit skips,format362/analyzer/fresh web/Wasm/macOSdebug
+andnineinventory passed. RequiredCI41479787991 BOTH SUCCESS: Python125394702426
+and Flutter125394702486 (1261Linux/22skips,17Chrome,actualtransport/HTML,web/Wasm,
+independentgeneratedFlutter verification). No fixture result is live inference.
+Reviewer protected-plugin squashmerged PR456 as
+209082edcd307baf80ac68b14e6fcc04b41657c1 at2026-11-02T16:24:45Z.
+Parent freshly verified mergedPR/currentmain/#402OPEN/signedexacttree/soleparent
+ ebe9c601; reconstructed commit hash verified before guarded atomic local-ref sync.
+Localmain/originmain0/0, emptyindex, both originalIDE edits byte-identical.
+Fixed confirmed export service is delivered; actual app confirmation/creation,
+registered runner, preview/Stop/recovery remain Pending. HTML stays Planned and
+fullF11/#402 unchecked/open; Deferred400 retained. No model launch/download/inference,
+stable-app replacement or deployment. Local8765health check could not connect;
+no model readiness or inference claim. No newissue/cadence/notification change;
+bothautomationlabels applied. Final merge bookkeeping retained for the next normal
+reviewed development PR, without direct-main publication.
+Receipts:/private/tmp/asg456-publication.json,/private/tmp/asg456-validation-inputs.json,
+/private/tmp/asg456-reviewed-merge.json,/private/tmp/asg456-safe-sync.py.
+
+
+### App-owned fixed HTML starter export — F11 / #402
+In progress on `402-html-export-flow` from verified PR #456 merge
+209082edcd307baf80ac68b14e6fcc04b41657c1, scope6582414659. Dashboard export
+screen owns bounded text/folder input, exact review and explicit confirmation.
+Controller invalidates edited/stale reviews, refuses duplicate dispatch and revokes
+later write authority on Stop/disposal; already-dispatched writes may finish.
+Partial/uncertain paths remain visible and require fresh review. Application-lifetime
+native exporter retains uncertain process ownership across screen reopening.
+Export is fixed HTML/CSS/JavaScript/local SVG only, with no project registration,
+model request, checks or preview. HTML adapter creation/runner/preview integration
+remains Planned and full F11/#402 open. Delivered template/export services suffice;
+Deferred #400 hardware is unrelated. Preserve verified #456 merge bookkeeping.
+Controller, real-filesystem screen and 320px/2x layout checks, full Flutter checks,
+web/macOS builds, plugin publication, independent exact-final review, required CI
+and reviewer protected merge remain delivery gates. No new issue/model/stable-app
+or cadence/notification changes.
+
+Final isolated-source checks: 1,286 Flutter tests passed/nine explicit skips;
+formatter368/analyzer clean, web including Wasm dry run passed. Nine acceptance-
+inventory tests passed after refreshing historical comparisons. Focused nine tests
+cover dashboard navigation without record writes, unsupported host, stale/duplicate
+confirmation, Stop/disposal authority, retained uncertain PID/path, and actual
+five-file export through the screen at320px/2x. Widget harness was corrected to
+settle real scrolling/keyboard and initiate filesystem work in its real async zone;
+no failed harness run is claimed as acceptance. Existing8765health could not connect;
+no model launch/inference/support claim. All392 Dart/Python inputs match the tested
+isolated copy. Exact-tree plugin publication, independent final review, required CI
+and reviewer protected merge remain gates. FullF11/#402 open; HTML runner/preview
+and project registration remain Planned.
+
+Isolated macOS debug build also passed; stable application was not replaced.

@@ -8,13 +8,14 @@ import 'package:path/path.dart' as path;
 import '../../models/html/html_export_request.dart';
 import '../generation_process_capture.dart';
 import 'html_site_template.dart';
+import 'html_source_export.dart';
 
 /// Fixed-source export only; no model input, shell, verification or preview.
 /// The caller owns confirmation and must revalidate current session authority
 /// in [authorizeWrite]. This is not a sandbox against concurrent local actors.
 /// An already-dispatched mutation may finish. Uncertain directory dispatches
 /// report their destination, and unconfirmed child exits block further export.
-class HtmlSourceExportNative {
+class HtmlSourceExportNative implements HtmlSourceExport {
   HtmlSourceExportNative({
     Future<Process> Function(String directory)? startDirectoryProcess,
   }) : _startDirectoryProcess = startDirectoryProcess ?? _startDirectory;
@@ -27,8 +28,10 @@ class HtmlSourceExportNative {
   static Future<Process> _startDirectory(String directory) =>
       Process.start('/bin/mkdir', ['-m', '700', directory], runInShell: false);
 
+  @override
   bool get supported => Platform.isMacOS;
 
+  @override
   Future<String> export({
     required HtmlExportRequest request,
     required HtmlExportRequest? confirmedRequest,
@@ -148,3 +151,7 @@ class HtmlSourceExportNative {
     }
   }
 }
+
+// Keep uncertain process ownership across screen closure and reopening.
+final HtmlSourceExport _appExporter = HtmlSourceExportNative();
+HtmlSourceExport createHtmlSourceExport() => _appExporter;
