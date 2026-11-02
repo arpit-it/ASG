@@ -185,6 +185,7 @@ class HtmlExportController extends BaseController {
   HtmlExportRequest? _review;
   bool _busy = false, _picking = false, _stopped = false;
   int _authority = 0;
+  Timer? _exportDeadline;
   String? _error, _exportedDirectory;
 
   bool get supported => exporter.supported;
@@ -298,6 +299,13 @@ class HtmlExportController extends BaseController {
       }
     }
 
+    _exportDeadline = Timer(const Duration(seconds: 10), () {
+      if (!isDisposed && _busy && authority == _authority) {
+        stop();
+        _error = 'Export reached its 10-second deadline. Waiting for dispatched IO to settle before retry. Already-dispatched writes may finish; inspect the confirmed destination. Nothing was removed.';
+        update();
+      }
+    });
     try {
       final destination = await exporter.export(
         request: displayedReview,
@@ -309,14 +317,23 @@ class HtmlExportController extends BaseController {
       _exportedDirectory = destination;
       _exportedRequest = displayedReview;
     } on HtmlExportFailure catch (failure) {
-      if (!isDisposed) _error = failure.toString();
-    } catch (_) {
       if (!isDisposed) {
+        // Keep any deadline explanation alongside partial-path/process evidence.
+        _error = [?_error, failure.toString()].join('\n');
+      }
+    } catch (_) {
+      if (!isDisposed && _error == null) {
         _error = _stopped
             ? 'Export stopped. An already-dispatched write may have completed. Inspect the selected destination before a fresh review; nothing was removed.'
             : 'Export failed. Inspect the selected destination and choose a new folder before a fresh review. Nothing was removed.';
       }
     } finally {
+      _exportDeadline?.cancel();
+      _exportDeadline = null;
+      _error = _error?.replaceFirst(
+        'Waiting for dispatched IO to settle before retry.',
+        'The pending export request has returned. Inspect the destination and choose a new folder before a fresh review.',
+      );
       _review = null;
       _authority++;
       _busy = false;
@@ -333,6 +350,8 @@ class HtmlExportController extends BaseController {
 
   @override
   void dispose() {
+    _exportDeadline?.cancel();
+    _exportDeadline = null;
     _checkGeneration++;
     preview.dispose();
     _exportedRequest = null;

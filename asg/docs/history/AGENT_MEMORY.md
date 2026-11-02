@@ -10793,3 +10793,66 @@ isolatedmacOSdebug/nineinventory passed. This followup records PR/status only;
 no tested runtime changes. Independent exact-final review, actual required CI and
 protected reviewer merge remain gates; final review/merge evidence follows after
 verification. FullF11/#402 andDeferred400 stay open; no stableapp/model change.
+
+
+### Saved fixed HTML starter library verified merged — PR #462
+Bounded F11/#402 library increment Done on `402-html-starter-library`,
+scope6585714649. Final79e1c1f1e935b6c9114f37e6d8138fefcdcbec2a and local
+1aea74c7d2dcbbd0497c94a11059cea7d3d9c414 share exacttree
+374a047eaff39270da4cc557fd8960ab499ec278; all16publishedblobs/416sourceinputs match.
+Fresh independent approval5741906435/finalgate5742006032 found no blockers;
+independent40focused/nineinventory/416committedinputs passed. Parent1322Flutter/
+nineexplicit skips,40focused,formatter391/analyzer/freshwebWasm/isolatedmacOSdebug/
+nineinventory passed. Initial test scroll/settlement and realHTTP binding harness
+failures were corrected before focused/full reruns. Final followup changed only
+canonical PR/status linkage; no runtime source changed after tests/builds.
+NEWrequiredCI41507154019 BOTH SUCCESS: Flutter125489971616/Python125489972073.
+Reviewer inspected actual logs:1295Linux/33explicit skips,17Chrome, browsertransport,
+staticHTML,webWasm,realindependentgeneratedFlutter and Python fixtures. No skipped
+inference is claimed as tested support. Independent protected-plugin expected-head
+squashmerge5a01fe9ce58e711c72fd791ebecae31d78ab7a77 at2026-11-02T19:17:47Z
+freshly verified by parent: mergedPR/currentmain/#402OPEN/#400OPEN, signedexacttree/
+soleparentef288141. Parent hash-reconstructed signed commit before atomic localref
+synchronization; localmain/originmain0/0,indexempty,originalIDEedits byte-identical.
+Explicit save now remembers original fixed-export input/destination transactionally;
+dashboard reopen restores controls without checks/preview/writes, and fresh checks/
+preview refuse changed sources. Failed saves retain files for retry; unknown/corrupt
+records are preserved and isolated. This is a starter library, not general project
+registration/approved-task execution. Full HTML creation/registration/approved-task
+integration/edited-source execution and fullF11 remain Pending/open; Deferred400
+retained. Existing8765health unavailable; no inference/model launch/nativeapp-launch
+acceptance/stableapp replacement. Final merge bookkeeping is retained locally for
+the next normal reviewed development PR; no direct-main publication/new issue or
+cadence/notification change. Receipts:/private/tmp/asg462-publication.json,
+/private/tmp/asg462-validation-inputs.json,/private/tmp/asg462-reviewed-merge.json,
+/private/tmp/asg462-review-evidence.json,/private/tmp/asg462-safe-sync.py.
+
+
+### HTML export deadline — F11 / #402 / PR #463
+Awaiting merge on `402-html-export-deadline` from verified PR462 merge
+5a01fe9ce58e711c72fd791ebecae31d78ab7a77; scope6586482988.
+No competing active run/open PR at selection; current main/PR462 freshly verified
+through the GitHub plugin. Reproduced gap: HtmlExportController.confirm had no
+whole-operation deadline, leaving stalled file IO active indefinitely. Ten-second
+authority revocation now shows pending-request status and retains the duplicate
+guard until the export future returns. It cannot cancel dispatched filesystem IO
+or prove a child exited. Late success is refused; partial destination/unconfirmed
+PID evidence survives alongside the deadline. Returned requests show inspection
+and fresh-review guidance; no automatic replay or deletion. Manual Stop retains
+its cause; disposal cancels the timer and suppresses notification/publication.
+Acceptance: deadline/late-success/partial-PID/duplicate/edit/picker/Stop/disposal
+regressions; actual narrow320px/2x deadline controls; existing production Mac
+export/check/HTTP preview/reopen remain passing. Full F11 project creation,
+approved-task integration, edited-source execution and #402 remain open;
+Deferred400 retained. Prior PR462 final merge bookkeeping included in this PR.
+Validation: final55 focused passed including native actual exports, HTTP preview,
+durable reopen and changed-source refusal. Formatter391 unchanged/analyzer clean;
+full tracked-source suite1326passed/nineexplicit skips; fresh final web build
+including Wasm dry run and isolated macOS debug build passed. Nine current acceptance-inventory tests passed;
+saved reports are historical, not fresh inference or browser acceptance.
+Initial analyzer null-aware-element lint corrected and all affected checks rerun.
+PR https://github.com/arpit-it/ASG/pull/463 targets main. Exact-tree plugin
+publication, independent final-revision review, actual required CI and protected
+reviewer merge remain delivery gates. No stable-app/model/data/cadence/notification
+change, no new issue or unavailable-platform probe. Tested inputs receipt:
+/private/tmp/asg402-deadline-inputs.json; focused/full/build logs share that prefix.
