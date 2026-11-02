@@ -271,7 +271,7 @@ The saved development automation was updated through its management tool; active
   - Acceptance: UI shows available and unavailable operations with actionable reasons; unsupported confinement refuses candidate execution before any source is run. Each enabled host passes real new-project resolve/analyze/test/web-build/serve, Stop/deadline/output-limit and descendant-cleanup checks, restart/uncertain-checkpoint refusal, stale-approval refusal and last-working-output preservation. Enabling starter generation must not implicitly enable candidate execution. Model-written candidate/repair support needs independently reviewed platform isolation and real deny-write/network/process-escape probes at the established boundary.
   - Validation/delivery: one narrowly scoped issue/PR per host/capability milestone, actual Linux/Windows builds and launches on their respective hosts, plus macOS regression coverage. Include paths with spaces, missing toolchains, occupied ports, failed previews and interrupted writes. Record tested versus unavailable capabilities separately; keep F16 unchecked until promised host increments satisfy acceptance and normal independent review/CI/verified merge. Broader generated targets remain F11.
 - [ ] F11 Multi-language project generation, runners and explicit stack selection — In progress (#402); depends on F04 and F05
-  - App-owned fixed HTML preview — In progress, #402, `402-html-preview-flow`, scope6583757438. Confirmed export identity, preview/browser/Stop controls and recovery only; full creation/registration/runner Pending.
+  - App-owned fixed HTML preview — Awaiting merge, #402, [PR #459](https://github.com/arpit-it/ASG/pull/459), `402-html-preview-flow`, scope6583757438. Confirmed export identity, preview/browser/Stop controls and recovery only; full creation/registration/runner Pending.
   - Fixed HTML preview host foundation — Done (bounded service), [PR #458](https://github.com/arpit-it/ASG/pull/458), final080ad07b approved5740409275, requiredCI41487788657 passed; reviewer merge371cf781c59f515008a3a78afb9324cb66546360 verified at2026-11-02T17:14:42Z. #402, `402-html-preview-host`, scope6583108583. App controls/browser launch and full runner remain Pending.
   - App-owned fixed HTML starter export — Done (bounded export flow), [PR #457](https://github.com/arpit-it/ASG/pull/457), final757edf16 approved5739945623/finalgate6582806250, requiredCI41483465171 passed; reviewer merge950ce933c1eda778b7d26e5fc3a58a333bbf3f8f verified at2026-11-02T16:47:02Z: #402, `402-html-export-flow`, scope6582414659. Dashboard exact review/confirmation, Stop/disposal and retained recovery; project registration/runner/preview remain Planned.
   - Confirmed fixed HTML source export — Done (bounded service foundation), [PR #456](https://github.com/arpit-it/ASG/pull/456), finala5700218 approved5739630203/finalgate6582307464, requiredCI41479787991 passed; reviewer merge209082edcd307baf80ac68b14e6fcc04b41657c1 verified at2026-11-02T16:24:45Z: #402, `402-html-source-export`, scope6581732988; exact content/destination confirmation, exclusive native fixed-template export and partial-file preservation. HTML creation/runner/preview remain Planned; see current ledger entry.
@@ -11484,3 +11484,22 @@ no runtime/controller/test input changed after full-suite/build validation.
 Existing8765health unavailable; no model launch/inference/support claim.
 Exact-tree plugin publication, independent final review, required CI and protected
 reviewer merge remain delivery gates; fullF11/#402 open. Stable app untouched.
+
+
+### PR #459 Linux CI harness recovery — F11 / #402
+Awaiting merge: [PR #459](https://github.com/arpit-it/ASG/pull/459),
+`402-html-preview-flow`, scope6583757438. Initialfinala90e3db0/tree968d46d8
+was independently approved5740758303 after34focused/nineinventory passed,
+but requiredCI41493294300 Flutter125441607829 failed on Linux; Python125441608298
+passed. Actual failure: dashboard navigation test expected lazy Review export
+without scrolling, below unsupported-host guidance. Independentblockingreview
+5740787519 withheld merge. Corrected only the navigation harness:320px viewport,
+real scrolling before assertion; testblobf3709ec75487a270d6415f739f57bb4f3752747c. No product runtime,
+controller, service or browser-tool change; prior final web/Wasm/macOSdebug and
+actualChrome acceptance remain applicable. Corrected23focused and full1299Flutter
+/nine explicit skips passed again; formatter377/analyzer clean. Tested runtime
+revision9161b199 is unchanged; normal followup final commit/tree, fresh independent
+review and actual required CI are authoritative in the linked PR. No previous
+approval authorizes merging the changed diff. FullF11/#402 and Deferred400 stay
+open. Final review/CI/verified merge bookkeeping will be retained in the canonical
+ledger after verification and carried in the next normal reviewed PR.

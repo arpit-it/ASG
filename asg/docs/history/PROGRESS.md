@@ -10653,3 +10653,22 @@ no runtime/controller/test input changed after full-suite/build validation.
 Existing8765health unavailable; no model launch/inference/support claim.
 Exact-tree plugin publication, independent final review, required CI and protected
 reviewer merge remain delivery gates; fullF11/#402 open. Stable app untouched.
+
+
+### PR #459 Linux CI harness recovery — F11 / #402
+Awaiting merge: [PR #459](https://github.com/arpit-it/ASG/pull/459),
+`402-html-preview-flow`, scope6583757438. Initialfinala90e3db0/tree968d46d8
+was independently approved5740758303 after34focused/nineinventory passed,
+but requiredCI41493294300 Flutter125441607829 failed on Linux; Python125441608298
+passed. Actual failure: dashboard navigation test expected lazy Review export
+without scrolling, below unsupported-host guidance. Independentblockingreview
+5740787519 withheld merge. Corrected only the navigation harness:320px viewport,
+real scrolling before assertion; testblobf3709ec75487a270d6415f739f57bb4f3752747c. No product runtime,
+controller, service or browser-tool change; prior final web/Wasm/macOSdebug and
+actualChrome acceptance remain applicable. Corrected23focused and full1299Flutter
+/nine explicit skips passed again; formatter377/analyzer clean. Tested runtime
+revision9161b199 is unchanged; normal followup final commit/tree, fresh independent
+review and actual required CI are authoritative in the linked PR. No previous
+approval authorizes merging the changed diff. FullF11/#402 and Deferred400 stay
+open. Final review/CI/verified merge bookkeeping will be retained in the canonical
+ledger after verification and carried in the next normal reviewed PR.
