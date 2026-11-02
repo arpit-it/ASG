@@ -19,6 +19,40 @@ import qwen_backends as backends
 CONFIG = {'architectures': ['Qwen3_5ForConditionalGeneration']}
 
 
+class DeclaredContextTests(unittest.TestCase):
+    def test_text_config_precedence_unknown_and_no_rope_expansion(self):
+        for config, expected in [({}, None),
+                ({'max_position_embeddings': 8}, 8),
+                ({'max_position_embeddings': 100, 'text_config': {}}, None),
+                ({'max_position_embeddings': 100, 'text_config': {'max_position_embeddings': 8}}, 8),
+                ({'max_position_embeddings': 8, 'rope_scaling': {'factor': 4}}, 8)]:
+            with self.subTest(config=config):
+                self.assertEqual(backends.declared_context_limit(config), expected)
+
+    def test_malformed_declarations_refuse_before_loader(self):
+        for value in (None, True, False, 0, -1, 8.0, '8', [], {}):
+            for config in ({'max_position_embeddings': value},
+                           {'text_config': {'max_position_embeddings': value}}):
+                with self.subTest(config=config), patch.object(backends, '_load_backend') as load:
+                    with self.assertRaisesRegex(ValueError, 'declared context'):
+                        backends.load_backend('/unused', 'mlx', model_config={**CONFIG, **config})
+                    load.assert_not_called()
+                    with self.assertRaises(ValueError):
+                        backends.validate_model_config('mlx', {**CONFIG, **config})
+        for text in (None, [], 'invalid'):
+            with self.assertRaisesRegex(ValueError, 'text context'):
+                backends.declared_context_limit({'text_config': text})
+
+    def test_loader_binds_exact_config_declaration_to_every_backend(self):
+        for kind in ('mlx', 'torch', 'cpu'):
+            backend = SimpleNamespace()
+            with patch.object(backends, '_load_backend', return_value=backend) as load:
+                self.assertIs(backends.load_backend('/local', kind, experimental_cpu=True,
+                    cpu_threads=3, model_config={'text_config': {'max_position_embeddings': 8}}), backend)
+                self.assertEqual(backend.declared_context_tokens, 8)
+                load.assert_called_once_with('/local', kind, True, 3)
+
+
 class CPULoadDeadlineTests(unittest.TestCase):
     def run_cli_fixture(self, mode):
         # Execute the real main/worker/watchdog in a dedicated process, replacing
@@ -246,8 +280,9 @@ print('HELPER_REAPED_PIPES_CLOSED', flush=True)
                     server.serve_forever.side_effect = KeyboardInterrupt()
                     arguments = ['qwen_server.py', '--model', str(folder), '--backend', kind, *flags]
                     if kind == 'cpu': arguments.append('--experimental-cpu')
-                    with patch.object(sys, 'argv', arguments), patch.object(qwen_server, 'select_backend', return_value=kind), patch.object(qwen_server, 'load_backend', return_value=backend), patch.object(qwen_server, 'ThreadingHTTPServer', return_value=server), patch.object(qwen_server, 'cpu_load_deadline') as guard, redirect_stdout(StringIO()):
+                    with patch.object(sys, 'argv', arguments), patch.object(qwen_server, 'select_backend', return_value=kind), patch.object(qwen_server, 'load_backend', return_value=backend) as load, patch.object(qwen_server, 'ThreadingHTTPServer', return_value=server), patch.object(qwen_server, 'cpu_load_deadline') as guard, redirect_stdout(StringIO()):
                         qwen_server.main()
+                    self.assertEqual(load.call_args.kwargs['model_config'], CONFIG)
                     if seconds is None: guard.assert_not_called()
                     else: guard.assert_called_once_with(seconds)
 
@@ -934,6 +969,23 @@ class CPUBackendTests(unittest.TestCase):
         self.addCleanup(self.modules.stop)
         self.backend = backends.load_backend(Path('/local model with spaces'), 'cpu', experimental_cpu=True, cpu_threads=3)
 
+    def test_declared_context_refuses_before_transfer_and_retry_on_cpu_and_mps(self):
+        for cls in (backends.TorchCPUBackend, backends.TorchMPSBackend):
+            backend = object.__new__(cls)
+            backend.model, backend.tokenizer = self.model, self.tokenizer
+            backend.declared_context_tokens = 7
+            self.expected_device = backend.device
+            self.model.generate.reset_mock()
+            if hasattr(self.batch, 'device'): del self.batch.device
+            with self.assertRaisesRegex(ValueError, 'Prompt plus requested output'):
+                backend.generate([], 5, lambda *a: self.fail('published'), Event(), time.monotonic()+10)
+            self.model.generate.assert_not_called()
+            self.assertFalse(hasattr(self.batch, 'device'))
+            backend.declared_context_tokens = 8
+            result = backend.generate([], 5, lambda *a: None, Event(), time.monotonic()+10)
+            self.assertEqual(result['prompt_tokens'], 3)
+            self.assertEqual(self.model.generate.call_args.kwargs['max_new_tokens'], 5)
+
     def caps(self, system='Linux', missing=()):
         return backends.discover_capabilities(system, 'x86_64', lambda name: name not in missing, experimental_cpu=True)
 
@@ -1270,6 +1322,16 @@ class MLXTokenAccountingTests(unittest.TestCase):
     def generate(self):
         return self.backend.generate([], 5, lambda *event: self.events.append(event),
                                      self.cancelled, self.deadline)
+
+    def test_declared_context_reserves_full_output_before_dispatch_and_retry(self):
+        self.backend.declared_context_tokens = 7
+        with self.assertRaisesRegex(ValueError, 'Prompt plus requested output'):
+            self.generate()
+        self.stream.assert_not_called()
+        self.assertEqual(self.events, [])
+        self.backend.declared_context_tokens = 8
+        self.assertEqual(self.generate()['prompt_tokens'], 3)
+        self.assertEqual(self.stream.call_args.kwargs['max_tokens'], 5)
 
     def test_exact_tokens_follow_helpers_bos_policy_and_never_reencode(self):
         for bos, prompt, special in [(None, 'prompt', True), ('<bos>', 'prompt', True),

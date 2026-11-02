@@ -210,7 +210,8 @@ The saved development automation was updated through its management tool; active
   - Bounded delivery milestones: (1) backend contract/capability discovery and an MLX regression; (2) explicit CPU setup/inference on a supported non-Apple desktop with compatible weights; (3) explicit CUDA setup/inference on a CUDA host. Each milestone needs its own focused issue, saved settings/restart/error tests and real-host evidence. Non-Apple CPU/CUDA real-host acceptance is now Deferred in #400 until the queued implementation is delivered; this is not a dependency on eligible implementation. Isolate optional backend dependencies so missing MLX cannot prevent CPU/CUDA startup; validate configurable executable/model paths including spaces. Do not claim CPU adequacy for a 9B model without measured successful operation within the configured limits.
   - Delivery: create/reuse a narrowly scoped issue when selected; remain unchecked until all promised backend milestones, independent review, required checks and verified merges. CPU and CUDA evidence must be recorded separately; unavailable hardware is a recorded blocker, never a fixture-based completion claim.
 - [ ] F22 Hardware-aware local model catalog and selection — In progress; depends on delivered F09/F15 foundations; unavailable-platform validation Deferred
-  - MLX exact prompt-token accounting — Awaiting merge: #396, `396-mlx-token-accounting`; one BOS-aware encoding shared by validation/generation, prompt/helper completion counts. Verified total context remains Pending.
+  - Checkpoint-declared total context guard — Awaiting merge: #396, `396-declared-context-budget`; exact prompt plus full requested output against conservative local declaration, no RoPE expansion or capacity verification.
+  - MLX exact prompt-token accounting — Done (bounded increment): #396, `396-mlx-token-accounting`, PR #429; final130b89ff approved6568772280/finalgate6568845592, requiredCI41386356572 passed, verified reviewer merge3835833eaebcc8cff649f129c97f8ea44f1b8c2f at2026-11-02T04:11:02Z. One BOS-aware encoding shared by validation/generation, prompt/helper completion counts. Verified total context remains Pending.
   - Exact generation-tensor token accounting — Done (bounded increment): #396, `396-tensor-token-accounting`, PR #428; final0f916849 independently approved5731844574/finalgate5731868491, requiredCI41383859748 passed, verified reviewer mergea93323c70822612e5567d8adde7f47b11b3b37ec at2026-11-02T03:42:03Z. Exact untruncated input/output counts and actual tensor-bound enforcement; verified context capacity remains Pending.
   - Exact HTTP output-token budgets — Done (bounded increment): #396, `396-exact-token-budget`, [PR #427](https://github.com/arpit-it/ASG/pull/427). Finalf7cab3e7 independently approved5731752138/finalgate5731796054; requiredCI41382464431 passed; verified reviewer merge `b7fc4bd3db94702f04cf46f5ad1d95cb17133ddb` at2026-11-02T03:26:27Z. Reject altered/type-coerced budgets before dispatch; preserve omitted256 and exact integer1–4096. ActualHTTP/independent busy-boundary probes passed. Verified context/profile accounting remains Pending; fullF22unchecked.
   - User-declared profile notes — Done (bounded declarations only): #396, `396-model-profile-notes`, [PR #425](https://github.com/arpit-it/ASG/pull/425). Final92837795 independently approved5731481952/finalgate5731499935; requiredCI41377296431 passed; verified reviewer merge `d89656bc76b7bd0954a2177e4cf47ec54a076e19` at2026-11-02T02:27:27Z. Durable optional revision/license/architecture/quantization/backend/context notes with legacy compatibility, snapshot preservation and explicit unverified UI. No request-budget/backend/support change; verified profiles/context accounting/live evidence remain Pending and F22 unchecked.
@@ -9753,3 +9754,40 @@ Current run time 2026-11-02T03:43:09.687Z.
 In progress on `396-mlx-token-accounting`, base verified main a93323c70822612e5567d8adde7f47b11b3b37ec (PR #428). Owner chat 01a19a68-46e2-7fe3-af75-995b631a9368; avoid overlap. No competing run or open PR found. MLX checked a separate default encoding before mlx-lm retokenized the string using BOS-dependent options. Encode once with that BOS rule and explicit truncation disabled, enforce the existing4096 policy on the exact generation list, and expose prompt/helper completion counts. Acceptance covers BOS/no-BOS/prefixed inputs,4096/4097 refusal/retry, final nontext counts, missing results, cancellation/deadline after preprocessing/end, and actual JSON/SSE forwarding. Installed-helper contract check uses a mocked token kernel without weights; no live inference, verified total context or support claim. Delivered MLX/HTTP foundations allow Mac validation; external acceptance Deferred400, fullF22/F15unchecked. Reuse #396; no new issue. Tests, independent exact-final review, requiredCI and protected reviewer merge pending. Recorded 2026-11-02T04:01:32.661191+00:00.
 
 Final local validation:149 Python tests/two explicit skips, including actual shared MLX bridge JSON/SSE forwarding;1177 isolated tracked-source Flutter tests/nine skips, analyzer clean, formatter331unchanged, web/Wasm dry-run andmacOSdebug builds passed. Runtime/test inputs byte-identical to validation copy. Installed mlx-lm0.32.2 real stream_generate passed three BOS cases with mocked generate_step and wired-limit context, no weights/inference; initial fixture wrapper/tuple errors corrected before pass. Logs /private/tmp/asg396-mlx-{python-final,flutter,analyze,format,web,macos}.log; reproducible helper probe /private/tmp/asg396-mlx-helper-check.py. Status Awaiting merge: independent exact-final review, requiredCI and protected reviewer merge remain gates. No model downloads, stable-app change or new support/context claim. Recorded 2026-11-02T04:02:26.085072+00:00.
+
+
+### MLX exact prompt accounting verified merged — PR #429
+Bounded increment Done on396-mlx-token-accounting. Testedlocal337b62036f842d365f6b3a31e1b29cd1a4d9dcf6 and publishedfinal130b89ff49cad7445108936ceb24de13b77e7ae6 share exacttree77f7ec6257346a9f6d9751412a5f0d4540d1661b; all7publishedblobs verified. Independentreview6568772280/finalgate6568845592 approved; no blockers. All828remote blobs/modes and352validationinputs matched. Independent29MLX/actualHTTP, extraoverflow/no-dispatch/retry,progress-callback Stop/deadline,installed-helper3BOS no-weight and9inventory checks passed. RequiredCI41386356572 bothjobsSUCCESS: Flutter1250879546041171Ubuntu/12skips,17Chrome,web/Wasm and actualindependent generated-project verification; Python125087954258149total/fourplatformskips. Parent149Python/two skips,1177Flutter/nine skips,format331/analyzer/webWasm/macOSdebug passed. No live inference or verified totalcontext/support claim; default8765health unavailable.
+Reviewer protected-plugin squash merged https://github.com/arpit-it/ASG/pull/429 as3835833eaebcc8cff649f129c97f8ea44f1b8c2f at2026-11-02T04:11:02Z. Parent freshlypluginverified mergedPR/currentbackendblob; signed exacttree/soleparenta93323c verified before guarded sync. Localmain/originmain0/0,emptyindex,both unrelatedIDEedits byte-identical. Issue396 remainsOPEN/Pending remaining verified profiles/context/realmodel evidence; no activeimplementation after merge. FullF22/F15unchecked; externalacceptanceDeferred400. Finalcanonicalbookkeeping retained for next normalreviewedPR. Bothautomationlabels applied; no newissue/modeldownload/stableapp/cadence/notificationchange. Evidence /private/tmp/asg396-mlx-publication.json,/private/tmp/asg429-reviewed-merge.json,/private/tmp/asg429-safe-sync.py andvalidationlogs. Current run time 2026-11-02T04:11:48.262406+00:00.
+
+
+### Checkpoint-declared combined context guard — F22 / #396
+
+In progress on `396-declared-context-budget`, base verified main
+`3835833eaebcc8cff649f129c97f8ea44f1b8c2f` (PR #429 review/CI/merge verified).
+Owner chat 01a19a83-bf6c-7452-83fb-be3010ab2623; no competing active run/open PR.
+Current bridge enforces input/output separately but not combined reservation
+against checkpoint max_position_embeddings. Reuse #396; no new issue.
+Scope: local text_config.max_position_embeddings, top-level only without
+text_config, as a conservative additional limit; no RoPE or user-note expansion.
+Missing remains unknown/legacy; malformed fails before load. Exact prompt plus
+requested output must fit before generation/transfer, never truncate/reduce.
+Validate types/precedence/boundary/refusal/retry across MLX/shared Torch, actual
+HTTP JSON/SSE recovery and startup binding. Delivered backend/token-counting
+foundations satisfy Mac prerequisites. This does not verify usable context,
+profiles, inference or new support; F22/F15 unchecked, acceptance Deferred #400.
+Tests, independent final review, required CI and reviewer merge pending.
+Recorded 2026-11-02T04:31:03.702980+00:00.
+
+
+Final local validation passed:156 Python tests/two explicit skips (actual
+MLX and shared Torch HTTP refusal/retry included),1177 isolated tracked-source
+Flutter tests/nine skips, formatter331 unchanged, analyzer clean, web/Wasm and
+macOSdebug builds. All351 runtime/test/Flutter validation inputs match both
+copies. Initial sandbox loopback refusal retried with authorized process/socket
+access; a JSON failure assertion corrected to expect HTTP500, then full retest
+passed. No live inference, download, stable-app replacement or support claim.
+Status Awaiting merge: independent exact-final review, requiredCI and protected
+reviewer merge remain gates. Logs /private/tmp/asg396-context-*.log and manifest
+/private/tmp/asg396-context-inputs.json. FullF22/F15unchecked; #396open.
+Recorded 2026-11-02T04:33:18.338811+00:00.

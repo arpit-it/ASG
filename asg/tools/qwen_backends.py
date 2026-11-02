@@ -85,8 +85,32 @@ def select_backend(requested, config, capabilities=None, experimental_cpu=False)
     return kind
 
 
+def declared_context_limit(config):
+    """Conservative checkpoint declaration, never measured usable capacity.
+
+    Qwen multimodal configs own text limits in text_config. Never substitute a
+    vision/top-level limit when that text config omits one, or expand by RoPE.
+    """
+    text = config.get('text_config', config)
+    if not isinstance(text, dict):
+        raise ValueError('Invalid checkpoint text context configuration')
+    if 'max_position_embeddings' not in text:
+        return None
+    limit = text['max_position_embeddings']
+    if type(limit) is not int or limit < 1:
+        raise ValueError('Invalid checkpoint declared context limit')
+    return limit
+
+
+def check_context_budget(backend, prompt_tokens, output_tokens):
+    limit = getattr(backend, 'declared_context_tokens', None)
+    if limit is not None and prompt_tokens + output_tokens > limit:
+        raise ValueError('Prompt plus requested output exceeds checkpoint declared context limit; shorten the request or reduce output tokens')
+
+
 def validate_model_config(kind, config):
     """Check declared format only; no dependencies, tensor reads or readiness claim."""
+    declared_context_limit(config)
     if config.get('architectures') != ['Qwen3_5ForConditionalGeneration']:
         raise ValueError('Unsupported model architecture')
     if kind in ('torch', 'cpu') and (config.get('quantization') is not None or config.get('quantization_config') is not None):
@@ -121,6 +145,7 @@ class MLXBackend:
         check()
         if len(prompt_ids) > 4096:
             raise ValueError('Input exceeds 4096-token limit')
+        check_context_budget(self, len(prompt_ids), tokens)
         from mlx_lm import stream_generate
         from mlx_lm.sample_utils import make_sampler
         result = None
@@ -176,6 +201,7 @@ class TorchMPSBackend:
         prompt_tokens = inputs.input_ids.shape[-1]
         if prompt_tokens > 4096:
             raise ValueError('Input exceeds 4096-token limit')
+        check_context_budget(self, prompt_tokens, tokens)
         inputs = inputs.to(self.device)
         check()
         with torch.inference_mode():
@@ -216,7 +242,14 @@ class TorchCPUBackend(TorchMPSBackend):
                 attn_implementation='eager').to('cpu').eval()
 
 
-def load_backend(folder, kind, experimental_cpu=False, cpu_threads=2):
+def load_backend(folder, kind, experimental_cpu=False, cpu_threads=2, model_config=None):
+    limit = declared_context_limit(model_config) if model_config is not None else None
+    backend = _load_backend(folder, kind, experimental_cpu, cpu_threads)
+    backend.declared_context_tokens = limit
+    return backend
+
+
+def _load_backend(folder, kind, experimental_cpu=False, cpu_threads=2):
     if kind == 'mlx':
         return MLXBackend(folder)
     if kind == 'torch':

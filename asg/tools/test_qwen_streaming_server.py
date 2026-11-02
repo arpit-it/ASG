@@ -118,6 +118,48 @@ class ServerTests(unittest.TestCase):
         finally:
             self.backend.generate = original
 
+    def test_actual_context_refusal_and_retry_over_json_and_sse(self):
+        from types import SimpleNamespace
+        from unittest.mock import Mock, patch
+        import sys
+        import qwen_backends
+        backend = object.__new__(qwen_backends.MLXBackend)
+        backend.model = object()
+        backend.tokenizer = Mock(bos_token=None)
+        backend.tokenizer.apply_chat_template.return_value = 'prompt'
+        backend.tokenizer.encode.return_value = [1, 2, 3]
+        stream = Mock()
+        original = self.backend.generate
+        self.backend.generate = backend.generate
+        try:
+            with patch.dict(sys.modules, {
+                'mlx_lm': SimpleNamespace(stream_generate=stream),
+                'mlx_lm.sample_utils': SimpleNamespace(make_sampler=lambda **kw: kw),
+            }):
+                for streaming in (True, False):
+                    backend.declared_context_tokens = 7
+                    stream.reset_mock()
+                    if streaming:
+                        with self.request(True, max_tokens=5) as response:
+                            refused = response.read().decode()
+                    else:
+                        with self.assertRaises(urllib.error.HTTPError) as failure:
+                            self.request(False, max_tokens=5)
+                        self.assertEqual(failure.exception.code, 500)
+                        refused = failure.exception.read().decode()
+                    self.assertIn('error', refused)
+                    self.assertNotIn('completion_tokens', refused)
+                    stream.assert_not_called()
+                    backend.declared_context_tokens = 8
+                    stream.return_value = iter([SimpleNamespace(text='ok', finish_reason='stop',
+                        generation_tps=1, peak_memory=.1, generation_tokens=2)])
+                    with self.request(streaming, max_tokens=5) as response:
+                        accepted = response.read().decode()
+                    self.assertIn('completion_tokens', accepted)
+                    self.assertEqual(stream.call_args.kwargs['max_tokens'], 5)
+        finally:
+            self.backend.generate = original
+
     def test_errors_are_not_successful_completions(self):
         with self.request(content='error') as response:
             text=response.read().decode()
@@ -209,6 +251,27 @@ class CPUHTTPTests(unittest.TestCase):
         if raw_budget is not None:
             body = body.replace(b'"max_tokens": 2', b'"max_tokens": ' + raw_budget.encode())
         return urllib.request.urlopen(urllib.request.Request(self.url+'/v1/chat/completions', data=body, headers={'Content-Type': 'application/json'}), timeout=5)
+
+    def test_actual_shared_torch_context_refusal_and_retry(self):
+        for streaming in (True, False):
+            self.fixture.backend.declared_context_tokens = 4
+            self.fixture.model.generate.reset_mock()
+            if streaming:
+                with self.request() as response:
+                    refused = response.read().decode()
+            else:
+                with self.assertRaises(urllib.error.HTTPError) as failure:
+                    self.request(False)
+                self.assertEqual(failure.exception.code, 500)
+                refused = failure.exception.read().decode()
+            self.assertIn('CPU generation failed; check input length', refused)
+            self.assertNotIn('completion_tokens', refused)
+            self.fixture.model.generate.assert_not_called()
+            self.fixture.backend.declared_context_tokens = 5
+            with self.request(streaming) as response:
+                accepted = response.read().decode()
+            self.assertIn('completion_tokens', accepted)
+            self.assertEqual(self.fixture.model.generate.call_args.kwargs['max_new_tokens'], 2)
 
     def test_dispatch_failure_is_private_idle_and_retryable_before_sse(self):
         from unittest.mock import patch
