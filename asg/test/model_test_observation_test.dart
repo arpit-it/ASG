@@ -8,6 +8,7 @@ import 'package:asg/controllers/model_settings_controller.dart';
 import 'package:asg/models/local_model_config.dart';
 import 'package:asg/models/model_connection_preset.dart';
 import 'package:asg/models/model_test_observation.dart';
+import 'package:asg/models/model_profile_notes.dart';
 import 'package:asg/services/model_settings_store.dart';
 import 'package:asg/views/model_test_observation_view.dart';
 import 'package:asg/views/model_settings.dart';
@@ -82,6 +83,137 @@ void main() {
       },
     );
   }
+  test(
+    'remove only history preserves notes, other presets and active settings',
+    () async {
+      const notes = ModelProfileNotes(revision: 'pinned', contextTokens: 4096);
+      await controller.savePreset(
+        'Selected',
+        config,
+        replace: true,
+        profileNotes: notes,
+      );
+      await controller.savePreset(
+        'Other',
+        const LocalModelConfig(model: 'other'),
+      );
+      controller.selectPreset('Selected');
+      await complete();
+      await controller.saveTestObservation(config);
+      final active = (
+        store.load().baseUrl,
+        store.load().model,
+        store.load().chatOutputTokens,
+      );
+      final other = controller.presets.last.toJson();
+      expect(controller.canRemoveTestObservation, isTrue);
+      await controller.removeTestObservation();
+      final reopened = ModelSettingsController(ModelSettingsStore(records));
+      addTearDown(reopened.dispose);
+      final selected = reopened.presets.first;
+      expect(selected.testObservation, isNull);
+      expect(
+        (
+          selected.config.baseUrl,
+          selected.config.model,
+          selected.config.chatOutputTokens,
+        ),
+        (config.baseUrl, config.model, config.chatOutputTokens),
+      );
+      expect(selected.profileNotes!.toJson(), notes.toJson());
+      expect(reopened.presets.last.toJson(), other);
+      expect((
+        store.load().baseUrl,
+        store.load().model,
+        store.load().chatOutputTokens,
+      ), active);
+      expect(controller.selectedPreset, 'Selected');
+      expect(controller.canRemoveTestObservation, isFalse);
+      expect(controller.canSaveTestObservation(config), isFalse);
+      await controller.saveTestObservation(config);
+      expect(store.loadPresets().first.testObservation, isNull);
+      expect(probe.cancelled, isTrue);
+    },
+  );
+  test(
+    'remove failure retains history and pending result for save-only retry',
+    () async {
+      await complete();
+      await controller.saveTestObservation(config);
+      final original = records.values[ModelSettingsStore.presetsKey];
+      records.fail = true;
+      await controller.removeTestObservation();
+      expect(records.values[ModelSettingsStore.presetsKey], original);
+      expect(controller.presets.single.testObservation, isNotNull);
+      expect(controller.canRemoveTestObservation, isTrue);
+      expect(controller.canSaveTestObservation(config), isTrue);
+      records.fail = false;
+      await controller.removeTestObservation();
+      expect(store.loadPresets().single.testObservation, isNull);
+      expect(controller.canSaveTestObservation(config), isFalse);
+    },
+  );
+  test(
+    'remove refuses stale or corrupt storage without overwriting it',
+    () async {
+      await complete();
+      await controller.saveTestObservation(config);
+      await store.savePresets([
+        const ModelConnectionPreset(name: 'External', config: config),
+      ]);
+      final external = records.values[ModelSettingsStore.presetsKey];
+      await controller.removeTestObservation();
+      expect(records.values[ModelSettingsStore.presetsKey], external);
+      expect(controller.presets.single.testObservation, isNotNull);
+      records.values[ModelSettingsStore.presetsKey] = '{broken';
+      await controller.removeTestObservation();
+      expect(records.values[ModelSettingsStore.presetsKey], '{broken');
+      final reopened = ModelSettingsController(store);
+      addTearDown(reopened.dispose);
+      expect(reopened.canRemoveTestObservation, isFalse);
+    },
+  );
+  test(
+    'remove gates busy writes, tests, missing selection and disposal',
+    () async {
+      await complete();
+      await controller.saveTestObservation(config);
+      records.held = Completer<void>();
+      final pending = controller.removeTestObservation();
+      expect(controller.busy, isTrue);
+      expect(controller.canRemoveTestObservation, isFalse);
+      await controller.removeTestObservation();
+      expect(controller.selectPreset('Selected'), isNull);
+      expect(controller.presets.single.testObservation, isNotNull);
+      controller.dispose();
+      records.held!.complete();
+      await pending;
+      expect(controller.presets.single.testObservation, isNotNull);
+      expect(store.loadPresets().single.testObservation, isNull);
+      expect(controller.canRemoveTestObservation, isFalse);
+    },
+  );
+  test(
+    'active inference and selection without history refuse removal',
+    () async {
+      expect(controller.canRemoveTestObservation, isFalse);
+      await controller.removeTestObservation();
+      await complete();
+      await controller.saveTestObservation(config);
+      controller.selectedPreset = null;
+      expect(controller.canRemoveTestObservation, isFalse);
+      controller.selectedPreset = 'Selected';
+      probe = Probe();
+      final pending = controller.test(config);
+      final original = records.values[ModelSettingsStore.presetsKey];
+      await controller.removeTestObservation();
+      expect(records.values[ModelSettingsStore.presetsKey], original);
+      controller.stopTest();
+      await pending;
+      await controller.removeTestObservation();
+      expect(store.loadPresets().single.testObservation, isNull);
+    },
+  );
   test('failed save retains pending observation for save-only retry', () async {
     await complete();
     final original = records.values[ModelSettingsStore.presetsKey];
@@ -288,6 +420,17 @@ void main() {
       ),
     );
     expect(button.onPressed, isNull);
+    final remove = find.widgetWithText(
+      OutlinedButton,
+      'Remove saved test observation only',
+    );
+    await tester.ensureVisible(remove);
+    await tester.tap(remove);
+    await tester.pumpAndSettle();
+    expect(find.text('Saved historical test · Selected'), findsNothing);
+    expect(store.loadPresets().single.testObservation, isNull);
+    expect(store.loadPresets().single.config.model, 'requested');
+    expect(tester.widget<OutlinedButton>(remove).onPressed, isNull);
     expect(tester.takeException(), isNull);
   });
 }
