@@ -11199,3 +11199,68 @@ and testedlocal776bb322 share tree16b12da93ab07c7ed44b7bf4dc75513c9bd80277.
 This publication bookkeeping changes docs only; runtime/test inputs unchanged.
 Status: Awaiting merge; reviewer/root/review_467 must approve the final follow-up
 revision and both required CI checks must pass before protected reviewer merge.
+
+
+### HTML workspace requirements/task board verified merged — PR #467
+Bounded F11/#402 prerequisite Done on `402-html-requirements-board`, scope6624498548.
+Final55b222708100466f7a6fb6d86fb780af6da71142/testedlocald76163c4a0344ed76f2e1b3a15a2a284e69ce04c
+share exacttreec00d7987f93772d56986fcf89759ea7493d9a98d. Six remote plugin blobs
+and425 runtime/test/config inputs independently verified. Final independent
+approval5764405325/finalgate6624718827 found no blockers;28 focused and nine
+inventory tests passed. Parent16 focused/1,355 full Flutter tests with nine skips,
+formatter398/analyzer/webWasm/macOSdebug/nineinventory passed; clean tracked-file
+copy excluded installed third-party MLX packages from repository license scan.
+Actual required CI41788259622 BOTH SUCCESS Flutter126435683463/Python126435683247:
+reviewer inspected1,327Linux/34skips,17Chrome, browser transport, static HTML,
+webWasm, real generated Flutter verification and all eight Python suites.
+Protected expected-head reviewer squash merge `dda031887f83c6b56f1db1d06f54dde9a0d46a2c`
+at2026-11-04T06:58:22Z independently reverified as mergedPR/currentmain. Raw signed
+merge tree/soleparent1359416c hash-verified before guarded local-only sync;
+localmain/originmain0/0, indexempty, both originalIDEedits byte-identical.
+Registered HTML projects now retain their own structured requirements and manual
+task records; opening the board grants no checks/preview/export/Build authority.
+Full HTML approved-task execution and F11/#402 remain OPEN; Deferred#400OPEN.
+Existing8765health unavailable; no inference/model launch/app-launch acceptance
+or stable-app replacement claim. Final merge bookkeeping retained locally for
+the next normal reviewed PR; no direct-main publication, new issue or cadence/
+notification change. Receipts:/private/tmp/asg467-publication.json,
+/private/tmp/asg467-review-evidence.json,/private/tmp/asg467-reviewed-merge.json,
+/private/tmp/asg467-safe-sync.py.
+
+
+### HTML discussion and advisory task planning — F11 / #402
+In progress on `402-html-planning`, from verified PR #467 merge
+`dda031887f83c6b56f1db1d06f54dde9a0d46a2c`; scope comment6624996674.
+No competing active ASG run or open PR at selection. The registered HTML
+workspace lacked instruction/Plan authoring despite its durable board. Reuse
+streaming project chat, local history, explicit connection selection and validated
+additive task import with HTML-specific prompts. Bind saved Plan identity to exact
+registered project, requirements revision and original HTML starter metadata;
+never load a Flutter prototype for HTML planning. HTML executable task mapping
+and approval remain unavailable, centrally refused without a Flutter fallback.
+Review mode remains unavailable because its evidence is Flutter-specific.
+Acceptance: project-scoped saved/reopened chat and imported tasks, actual native
+database reopen, stale/corrupt project/board/starter refusal, failed-import retry,
+320px/2x text navigation and honest advisory UI, no source/runner side effects.
+Delivered chat/HTML registration/board prerequisites suffice on this Mac; deferred
+platform issue #400 is unnecessary. Full HTML execution/synthesis and F11/#402
+remain open. Final checks, independent final-revision review, required CI and
+protected reviewer merge remain pending. No model invocation/download, stable-app
+replacement, new issue, deployment or automation preference change.
+
+Validation: 42 focused Flutter tests and all1,364 full Flutter tests passed
+(nine explicit opt-in/platform skips), formatter399 unchanged, analyzer clean,
+web/Wasm and clean-source macOS debug builds passed; nine refreshed inventory
+tests passed. Full suite used a tracked-source copy excluding installed third-
+party environments. Native database reopen and320px/2x HTML chat entry/mode
+selection were exercised. Initial new test harness errors (event constructor,
+lazy/horizontal scrolling and invalid production-storage seed) corrected before
+final checks. Existing8765health unavailable; no live inference claimed.
+Status: Awaiting publication and independent review/CI/merge.
+
+PR: https://github.com/arpit-it/ASG/pull/468; initial published revision
+0f45f6ab38b92808a4debf598bde7f5aabb8e476 and tested local821fb73c share
+exact tree261a51ac8b34a17e151db0ee2e3d133fa5b98f49; all nine plugin blobs
+verified. Status: Awaiting merge. This PR bookkeeping changes documentation only;
+runtime/test inputs remain unchanged. Independent review of the final revision
+and both required CI checks are mandatory before protected reviewer merge.

@@ -8,6 +8,7 @@ import '../models/plan_approval.dart';
 import '../models/project.dart';
 import 'conversation_store.dart';
 import 'application_store.dart';
+import 'html/html_project_store.dart';
 import 'record_storage.dart';
 import 'requirements_store.dart';
 import 'studio_store.dart';
@@ -19,6 +20,18 @@ class PlanApprovalStore {
   String contextFor(StudioProject project) {
     final board = RequirementsStore(records).load(project.id);
     board.planDocument(project.name);
+    if (project.type == 'HTML') {
+      final current = currentProject(project.id);
+      if (context(current) != context(project)) {
+        throw StateError('HTML project changed. Reopen before planning.');
+      }
+      final starter = HtmlProjectStore(records).resolve(project);
+      return jsonEncode({
+        'project': project.toJson(),
+        'requirementsRevision': board.revision,
+        'htmlStarter': starter.toJson(),
+      });
+    }
     final application = ApplicationStore(records).load(project);
     return jsonEncode({
       'project': project.toJson(),
@@ -53,6 +66,11 @@ class PlanApprovalStore {
 
   /// Re-read durable evidence at the execution boundary; never trust UI state.
   PlanApproval requireCurrentApproval(StudioProject project) {
+    if (project.type == 'HTML') {
+      throw StateError(
+        'HTML Plan execution is not implemented. No Flutter fallback is allowed.',
+      );
+    }
     final current = currentProject(project.id);
     final messages = ConversationStore(records).load(project.id);
     final index = latestPlan(messages);
@@ -77,6 +95,11 @@ class PlanApprovalStore {
     List<ChatMessage> messages,
     bool approved,
   ) async {
+    if (approved && project.type == 'HTML') {
+      throw StateError(
+        'HTML Plans are advisory; execution approval is unavailable.',
+      );
+    }
     // Refuse to replace unreadable approval evidence.
     load(project.id);
     final current = currentProject(project.id);

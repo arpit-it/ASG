@@ -63,7 +63,9 @@ class _ModelChatState extends State<ModelChat> {
         padding: const EdgeInsets.all(16),
         child: Text(
           controller.mode == ConversationMode.plan
-              ? 'Review the saved draft. Build needs a structured fixed-starter Plan; starting it requires separate operation consent. Request fixed Flutter web starter generation and verification. Other plans are advisory. Messages stay on this device.'
+              ? controller.isHtml
+                    ? 'HTML discussion and advisory planning only. Proposed tasks need explicit import. HTML execution approval is unavailable; no source changes or checks are performed.'
+                    : 'Review the saved draft. Build needs a structured fixed-starter Plan; starting it requires separate operation consent. Request fixed Flutter web starter generation and verification. Other plans are advisory. Messages stay on this device.'
               : controller.mode == ConversationMode.review
               ? 'Advisory review of the current prototype and saved build evidence. No source inspection or new checks. Reports are saved on this device.'
               : 'Local Qwen discussion · Messages are saved on this device. No file changes or commands are executed.',
@@ -82,16 +84,22 @@ class _ModelChatState extends State<ModelChat> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                controller.approvalError ??
-                    (controller.planApproved
-                        ? 'Latest saved plan approved for these requirements.'
-                        : controller.outdatedApproval
-                        ? 'Earlier approval is outdated. Review a current draft.'
-                        : 'No current plan approval. Only newly saved Plan drafts can be approved.'),
+                controller.isHtml
+                    ? 'HTML Plans are advisory; execution approval is unavailable.'
+                    : controller.approvalError ??
+                          (controller.planApproved
+                              ? 'Latest saved plan approved for these requirements.'
+                              : controller.outdatedApproval
+                              ? 'Earlier approval is outdated. Review a current draft.'
+                              : 'No current plan approval. Only newly saved Plan drafts can be approved.'),
               ),
               if (controller.latestPlan != null) ...[
                 const SizedBox(height: 12),
-                const Text('Executable tasks — review before approval'),
+                Text(
+                  controller.isHtml
+                      ? 'Execution availability'
+                      : 'Executable tasks — review before approval',
+                ),
                 SelectableText(controller.executionPlanPreview),
                 const SizedBox(height: 12),
               ],
@@ -112,27 +120,28 @@ class _ModelChatState extends State<ModelChat> {
                   child: const Text('Add proposed tasks to board'),
                 ),
               ],
-              Wrap(
-                spacing: 12,
-                children: [
-                  FilledButton(
-                    onPressed: controller.canApprovePlan
-                        ? () => controller.setPlanApproval(true)
-                        : null,
-                    child: const Text('Approve latest saved plan'),
-                  ),
-                  if (controller.hasApproval)
-                    TextButton(
-                      onPressed:
-                          controller.busy ||
-                              controller.hasUnsavedResponse ||
-                              controller.approvalError != null
-                          ? null
-                          : () => controller.setPlanApproval(false),
-                      child: const Text('Withdraw approval'),
+              if (!controller.isHtml)
+                Wrap(
+                  spacing: 12,
+                  children: [
+                    FilledButton(
+                      onPressed: controller.canApprovePlan
+                          ? () => controller.setPlanApproval(true)
+                          : null,
+                      child: const Text('Approve latest saved plan'),
                     ),
-                ],
-              ),
+                    if (controller.hasApproval)
+                      TextButton(
+                        onPressed:
+                            controller.busy ||
+                                controller.hasUnsavedResponse ||
+                                controller.approvalError != null
+                            ? null
+                            : () => controller.setPlanApproval(false),
+                        child: const Text('Withdraw approval'),
+                      ),
+                  ],
+                ),
             ],
           ),
         ),
@@ -354,7 +363,7 @@ class _ModelChatState extends State<ModelChat> {
                 child: SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: SegmentedButton<ConversationMode>(
-                    segments: const [
+                    segments: [
                       ButtonSegment(
                         value: ConversationMode.discuss,
                         label: Text('Discuss'),
@@ -363,10 +372,11 @@ class _ModelChatState extends State<ModelChat> {
                         value: ConversationMode.plan,
                         label: Text('Plan'),
                       ),
-                      ButtonSegment(
-                        value: ConversationMode.review,
-                        label: Text('Review'),
-                      ),
+                      if (!controller.isHtml)
+                        const ButtonSegment(
+                          value: ConversationMode.review,
+                          label: Text('Review'),
+                        ),
                     ],
                     selected: {controller.mode},
                     onSelectionChanged:

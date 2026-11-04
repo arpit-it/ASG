@@ -7,6 +7,8 @@ import '../controllers/html_project_controller.dart';
 import '../controllers/requirements_controller.dart';
 import '../services/requirements_store.dart';
 import 'requirements_screen.dart';
+import 'model_chat.dart';
+import '../services/conversation_store.dart';
 import '../controllers/html_export_controller.dart';
 import '../models/project.dart';
 import '../services/record_storage.dart';
@@ -65,6 +67,17 @@ class _HtmlProjectWorkspaceState extends State<HtmlProjectWorkspace> {
     );
   }
 
+  Future<void> chat() async {
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute(
+        builder: (_) => ModelChat(
+          project: widget.project,
+          openStore: () async => ConversationStore(widget.records),
+        ),
+      ),
+    );
+  }
+
   Future<void> open() async {
     controller.reload();
     final starter = controller.starter;
@@ -116,6 +129,10 @@ class _HtmlProjectWorkspaceState extends State<HtmlProjectWorkspace> {
         FilledButton(
           onPressed: controller.starter == null ? null : open,
           child: const Text('Open HTML starter'),
+        ),
+        OutlinedButton(
+          onPressed: controller.starter == null ? null : chat,
+          child: const Text('Discuss and plan HTML'),
         ),
       ],
     );
