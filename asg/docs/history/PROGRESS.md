@@ -11145,3 +11145,57 @@ PR: https://github.com/arpit-it/ASG/pull/466; issue #402, scope6588315396.
 Final followup full1,352Flutter/nine explicit skips,36focused,formatter398 and
 analyzer passed; fresh web/Wasm and isolated macOS debug rebuilds passed. Nine
 final inventory tests passed. Fresh final revision review and actual required CI remain mandatory; no merge claim.
+
+
+### Explicit fixed HTML starter registration verified merged — PR #466
+Bounded F11/#402 increment Done on `402-html-project-registration`, scope6588315396.
+Final0aed9055bc61ef3d0940d512378d9d817b88b21d/testedlocal914589ab2180102d1dd30031119cc59ce44fdf46
+share exacttreeb90dd406d5004f6399ac6304516cde2f4789b2fd; all17remote blobs and453
+validation inputs match. Initial independent blocker5743372095 reproduced nested
+registration loss; fixed durable conditional append/refresh, corruption/conflict
+guards and HTML metadata isolation. Initial inventory hash mismatch corrected
+after all runtime edits. Fresh independent approval5743433197/finalgate5743506734
+found no blockers;77focused/originalretentionrepro/nineinventory passed. Parent
+final1352Flutter/nine explicit skips,36focused,formatter398/analyzer,freshwebWasm/
+isolatedmacOSdebug/nineinventory passed. Actual required CI41526232872 BOTH SUCCESS:
+Flutter125554844086/Python125554843537. Reviewer inspected1324Linux/34skips,17Chrome,
+actualtransport/staticHTML/webWasm/realgeneratedFlutter and all eight Python
+suites; no skipped inference is claimed as support. Protected expected-head
+reviewer plugin squash merge1359416c6f3bbed31a0a4a446543920507383d33 at2026-11-02T21:19:50Z.
+Parent freshly verified mergedPR/currentmain/exactsignedtree/soleparent661d59f8,
+#402OPEN/#400OPEN; hash-reconstructed commit before guarded atomic localref sync.
+Localmain/originmain0/0,indexempty,bothoriginalIDEedits byte-identical. Explicit
+registration now retains original fixed exports in Projects and safely reopens
+HTML-specific checks/preview on request. No implicit Build or Flutter execution.
+Full synthesis/approved-task integration/edited-source execution and full F11
+remain Pending; Deferred400 retained. Existing8765health unavailable; no inference,
+model launch, app-launch acceptance or stableapp replacement/support claim.
+Final merge bookkeeping retained locally for the next normal reviewed development
+PR; no direct-main publication, new issue, cadence or notification change.
+Receipts:/private/tmp/asg466-publication.json,/private/tmp/asg402-registration-inputs.json,
+/private/tmp/asg466-review-evidence.json,/private/tmp/asg466-reviewed-merge.json,
+/private/tmp/asg466-safe-sync.py.
+
+
+### HTML workspace requirements/task board — 4 November 2026
+Issue #402 / F11; branch `402-html-requirements-board`; scope comment6624498548.
+Registered HTML workspaces now open the existing project-scoped requirements and
+task editor. Requirements/tasks persist and reopen independently of original
+starter metadata, with explicit manual-progress/no-source-approval guidance.
+No HTML checks, preview, export, Flutter Build or requirement-check execution
+is dispatched by opening this board. Full approved-task HTML integration remains
+Pending; F11 and deferred platform issue #400 remain open.
+Acceptance: per-project durable authoring/reopen, isolation, corrupt-record retry,
+320px/2x text layout, original project/starter preservation and no source effects.
+Focused HTML registration suite16 passed; analyzer and web/Wasm/macOS debug builds
+passed; nine refreshed acceptance-inventory tests passed. Initial full suite
+encountered the existing repository license audit scanning installed third-party
+`tools/.mlx-venv` packages; clean tracked-file full suite passed1,355 tests with
+nine explicit skips.
+No model inference or app-launch acceptance claimed. Final full-suite results,
+exact-revision independent review, required CI and verified merge remain pending.
+PR: https://github.com/arpit-it/ASG/pull/467. Initial published ded1ee8091b3a3085b4d0744fe72bf22a40916c3
+and testedlocal776bb322 share tree16b12da93ab07c7ed44b7bf4dc75513c9bd80277.
+This publication bookkeeping changes docs only; runtime/test inputs unchanged.
+Status: Awaiting merge; reviewer/root/review_467 must approve the final follow-up
+revision and both required CI checks must pass before protected reviewer merge.

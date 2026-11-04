@@ -6,6 +6,10 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:asg/controllers/html_export_controller.dart';
+import 'package:asg/controllers/requirements_controller.dart';
+import 'package:asg/models/requirements_board.dart';
+import 'package:asg/services/requirements_store.dart';
+import 'package:asg/views/requirements_screen.dart';
 import 'package:asg/controllers/dashboard_controller.dart';
 import 'package:asg/controllers/project_details_controller.dart';
 import 'package:asg/services/project_details_store.dart';
@@ -84,6 +88,132 @@ HtmlExportController _controller(_Records records) => HtmlExportController(
 );
 
 void main() {
+  for (final narrow in [false, true]) {
+    testWidgets(
+      'HTML board retains project-scoped edits without source actions narrow=$narrow',
+      (tester) async {
+        tester.view.physicalSize = Size(narrow ? 320 : 1200, 1000);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+        final records = _Records();
+        final p = await HtmlProjectStore(records)
+            .register(starter(), authorize: () {});
+        final original = Map<String, String>.of(records.data);
+        await tester.pumpWidget(
+          MaterialApp(
+            builder: (context, child) => MediaQuery(
+              data: MediaQuery.of(context)
+                  .copyWith(textScaler: TextScaler.linear(narrow ? 2 : 1)),
+              child: child!,
+            ),
+            home: HtmlProjectWorkspace(project: p, records: records),
+          ),
+        );
+        Future<void> openBoard() async {
+          final entry = find.widgetWithText(
+            OutlinedButton,
+            'Requirements and tasks',
+          );
+          await tester.scrollUntilVisible(
+            entry,
+            180,
+            scrollable: find.byType(Scrollable).first,
+          );
+          await tester.ensureVisible(entry);
+          await tester.tap(entry);
+          await tester.pumpAndSettle();
+        }
+
+        await openBoard();
+        expect(records.data, original);
+        final board = tester
+            .widget<RequirementsScreen>(find.byType(RequirementsScreen))
+            .controller;
+        expect(
+          await board.saveRequirement(
+            ProjectRequirement(
+              id: 'R1',
+              title: 'HTML navigation',
+              acceptance: 'Links work using the keyboard.',
+            ),
+          ),
+          true,
+        );
+        expect(
+          await board.saveTask(
+            DevelopmentTask(
+              id: 'T1',
+              title: 'Check navigation',
+              requirementId: 'R1',
+              dependencies: const [],
+              status: TaskStatus.queued,
+            ),
+          ),
+          true,
+        );
+        await tester.pumpAndSettle();
+        await tester.pageBack();
+        await tester.pumpAndSettle();
+        await openBoard();
+        final reopened = tester
+            .widget<RequirementsScreen>(find.byType(RequirementsScreen))
+            .controller;
+        expect(reopened.board!.requirements.single.title, 'HTML navigation');
+        expect(reopened.board!.tasks.single.id, 'T1');
+        final other = RequirementsController(
+          'another-project',
+          RequirementsStore(records),
+        )..load();
+        expect(other.board!.requirements, isEmpty);
+        other.dispose();
+        for (final entry in original.entries) {
+          expect(records.data[entry.key], entry.value);
+        }
+        expect(records.data.keys.toSet().difference(original.keys.toSet()), {
+          RequirementsStore.key(p.id),
+        });
+        expect(find.text('Requirement check report'), findsNothing);
+        expect(tester.takeException(), isNull);
+        await tester.pumpWidget(const SizedBox());
+      },
+    );
+  }
+  testWidgets(
+    'HTML board preserves corrupt requirements and allows retry independently of starter metadata',
+    (tester) async {
+      final records = _Records();
+      final p = await HtmlProjectStore(records)
+          .register(starter(), authorize: () {});
+      records.data[RequirementsStore.key(p.id)] = 'damaged';
+      records.data[HtmlStarterStore.key] = 'damaged';
+      await tester.pumpWidget(
+        MaterialApp(
+          home: HtmlProjectWorkspace(project: p, records: records),
+        ),
+      );
+      final entry = find.widgetWithText(
+        OutlinedButton,
+        'Requirements and tasks',
+      );
+      await tester.ensureVisible(entry);
+      await tester.tap(entry);
+      await tester.pumpAndSettle();
+      expect(
+        find.textContaining('Saved requirements are unreadable'),
+        findsOneWidget,
+      );
+      expect(records.data[RequirementsStore.key(p.id)], 'damaged');
+      records.data.remove(RequirementsStore.key(p.id));
+      await tester.tap(find.text('Retry loading'));
+      await tester.pumpAndSettle();
+      expect(find.text('No structured requirements yet.'), findsOneWidget);
+      expect(records.data[HtmlStarterStore.key], 'damaged');
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox());
+    },
+  );
+
   test('atomic registration preserves unrelated data; retry deduplicates and resolves original inputs', () async {
     final records = _Records();
     const unrelated = StudioProject(
