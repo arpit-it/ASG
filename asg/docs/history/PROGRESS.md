@@ -11505,3 +11505,12 @@ tracked inputs match the tested copy. Existing8765health unavailable; no model
 invocation, inference, app-launch acceptance or stable-app replacement claimed.
 Status: Awaiting publication, independent final-revision review, required CI and
 protected reviewer merge. Full F11/#402 and Deferred #400 remain open.
+
+PR: https://github.com/arpit-it/ASG/pull/472. Initial plugin revision
+7b963d0a20659dadff7b04ac5bfe3d4576e6e544 and tested local
+2c1e522bde63d33cdd6bb31ccd952d1f9ed8acde share exact tree
+ebdadda187415697eda16d77dc590af47e5f3862; all13 remote blobs match.
+All573 tracked non-documentation inputs match the tested snapshot. This PR
+bookkeeping changes documentation only; runtime/test inputs unchanged.
+Status: Awaiting merge. Independent final-revision review and both required CI
+checks must pass before protected reviewer merge; full F11/#402 remain open.

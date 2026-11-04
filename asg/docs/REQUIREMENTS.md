@@ -271,7 +271,7 @@ The saved development automation was updated through its management tool; active
   - Acceptance: UI shows available and unavailable operations with actionable reasons; unsupported confinement refuses candidate execution before any source is run. Each enabled host passes real new-project resolve/analyze/test/web-build/serve, Stop/deadline/output-limit and descendant-cleanup checks, restart/uncertain-checkpoint refusal, stale-approval refusal and last-working-output preservation. Enabling starter generation must not implicitly enable candidate execution. Model-written candidate/repair support needs independently reviewed platform isolation and real deny-write/network/process-escape probes at the established boundary.
   - Validation/delivery: one narrowly scoped issue/PR per host/capability milestone, actual Linux/Windows builds and launches on their respective hosts, plus macOS regression coverage. Include paths with spaces, missing toolchains, occupied ports, failed previews and interrupted writes. Record tested versus unavailable capabilities separately; keep F16 unchecked until promised host increments satisfy acceptance and normal independent review/CI/verified merge. Broader generated targets remain F11.
 - [ ] F11 Multi-language project generation, runners and explicit stack selection — In progress (#402); depends on F04 and F05
-  - HTML preview read authority — In progress (#402), `402-html-preview-authority`, scope6627144961. Caller authority across snapshot/bind/HTTP serving boundaries is a prerequisite for approved preview dispatch; full adapter remains open.
+  - HTML preview read authority — Awaiting merge ([PR #472](https://github.com/arpit-it/ASG/pull/472), #402), `402-html-preview-authority`, scope6627144961. Caller authority across snapshot/bind/HTTP serving boundaries is a prerequisite for approved preview dispatch; full adapter remains open.
   - Approved HTML source-check dispatch — Done (bounded increment), [PR #471](https://github.com/arpit-it/ASG/pull/471), reviewer merge22c94c5e at2026-11-04T09:01:32Z, finalfa744566 approved5765784106/finalgate6626881076, requiredCI41802864733 passed; #402, `402-approved-html-source-check`, scope6626567528. Explicit first-operation execution under exact durable consent; preview/full Plan completion remain Pending. See delivery ledger.
   - Durable HTML Plan consent — Done (bounded prerequisite), [PR #470](https://github.com/arpit-it/ASG/pull/470), verified reviewer merge5144a757 at2026-11-04T08:32:54Z, final32738c31 approved5765417065/finalgate6626357516, requiredCI41799040481 passed. Consent starts no action; full F11 remains open.
   - HTML operation-plan review — Done (bounded foundation) via [PR #469](https://github.com/arpit-it/ASG/pull/469), verified reviewer merge7872995f at2026-11-04T08:02:25Z, approval5765064843/finalgate6625789862 and requiredCI41795280990 passed; #402, `402-html-plan-preview`, scope6625491601. Read-only current-context check/preview graph and board prerequisite review only; approval/dispatch/synthesis remain Pending. Full F11 remains open.
@@ -12348,3 +12348,12 @@ tracked inputs match the tested copy. Existing8765health unavailable; no model
 invocation, inference, app-launch acceptance or stable-app replacement claimed.
 Status: Awaiting publication, independent final-revision review, required CI and
 protected reviewer merge. Full F11/#402 and Deferred #400 remain open.
+
+PR: https://github.com/arpit-it/ASG/pull/472. Initial plugin revision
+7b963d0a20659dadff7b04ac5bfe3d4576e6e544 and tested local
+2c1e522bde63d33cdd6bb31ccd952d1f9ed8acde share exact tree
+ebdadda187415697eda16d77dc590af47e5f3862; all13 remote blobs match.
+All573 tracked non-documentation inputs match the tested snapshot. This PR
+bookkeeping changes documentation only; runtime/test inputs unchanged.
+Status: Awaiting merge. Independent final-revision review and both required CI
+checks must pass before protected reviewer merge; full F11/#402 remain open.
