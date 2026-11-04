@@ -14,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'html_planning_test.dart' as seed;
+import 'html_source_draft_test.dart' as drafts;
 import 'html_source_proposer_test.dart' show Provider;
 import 'html_source_review_test.dart' show response;
 
@@ -76,6 +77,52 @@ void main() {
     },
   );
 
+  test('failed edited diagnostics retry exact editor without reviving export authority', () async {
+    final records = await seed.seed();
+    final before = Map.of(records.values);
+    final provider = Provider();
+    var inspections = 0, calls = 0;
+    final c = HtmlSourceReviewController(
+      project: seed.project,
+      records: records,
+      proposer: HtmlSourceProposer(
+        createProvider: (_) {
+          calls++;
+          return provider;
+        },
+      ),
+      inspectReferences: (_) async {
+        inspections++;
+        if (inspections == 2 || inspections == 3) throw StateError('PRIVATE');
+        return report();
+      },
+    );
+    addTearDown(c.dispose);
+    final request = c.request('Greeting');
+    provider.stream.add(response());
+    await provider.stream.close();
+    await request;
+    final old = c.proposal!;
+    final files = {...old.files, 'index.html': '<main>Retried edit</main>'};
+    for (var attempt = 0; attempt < 2; attempt++) {
+      await c.revise(old, files);
+      expect(c.proposal, isNull);
+      expect(c.error, contains('inspection failed'));
+      expect(() => c.authorizeProposal(old), throwsStateError);
+    }
+    final corrected = {...files, 'styles.css': 'main{color:orange}'};
+    await c.revise(old, corrected);
+    expect(c.proposal!.files, corrected);
+    expect(c.proposal, isNot(same(old)));
+    expect(c.locallyEdited, true);
+    expect(c.error, isNull);
+    c.authorizeProposal(c.proposal!);
+    expect(() => c.authorizeProposal(old), throwsStateError);
+    expect(inspections, 4);
+    expect(calls, 1);
+    expect(records.values, before);
+  });
+
   test('invalid edits retain draft authority; inspection errors never restore old authority', () async {
     final provider = Provider();
     var inspections = 0;
@@ -109,6 +156,89 @@ void main() {
     expect(c.error, isNot(contains('PRIVATE')));
     expect(() => c.authorizeProposal(old), throwsStateError);
   });
+
+  for (final replacement in ['request', 'restore']) {
+    test('new $replacement revokes failed editor retry', () async {
+      final provider = Provider();
+      var inspections = 0;
+      final c = HtmlSourceReviewController(
+        project: seed.project,
+        records: await drafts.records(),
+        proposer: HtmlSourceProposer(createProvider: (_) => provider),
+        inspectReferences: (_) async {
+          if (++inspections == 2) throw StateError('PRIVATE');
+          return report();
+        },
+      );
+      addTearDown(c.dispose);
+      final request = c.request('Greeting');
+      provider.stream.add(response());
+      await provider.stream.close();
+      await request;
+      final old = c.proposal!;
+      await c.saveDraft();
+      expect(c.savedDraftAvailable, true);
+      await c.revise(old, old.files);
+      expect(c.error, contains('inspection failed'));
+      if (replacement == 'request') {
+        await c.request('New request');
+      } else {
+        await c.restoreDraft();
+        expect(c.proposal, isNotNull);
+      }
+      final current = c.proposal;
+      final count = inspections;
+      await c.revise(old, old.files);
+      expect(inspections, count);
+      expect(c.proposal, same(current));
+      expect(() => c.authorizeProposal(old), throwsStateError);
+    });
+  }
+
+  for (final action in ['stop', 'dispose', 'context', 'deadline']) {
+    testWidgets('failed edit retry is revoked by $action', (tester) async {
+      final records = await seed.seed();
+      final provider = Provider();
+      var inspections = 0;
+      final analysis = Completer<HtmlReferenceReport>();
+      final c = HtmlSourceReviewController(
+        project: seed.project,
+        records: records,
+        requestDeadline: const Duration(seconds: 1),
+        proposer: HtmlSourceProposer(createProvider: (_) => provider),
+        inspectReferences: (_) {
+          inspections++;
+          if (inspections == 1) return Future.value(report());
+          if (inspections == 2) return Future.error(StateError('PRIVATE'));
+          return analysis.future;
+        },
+      );
+      final request = c.request('Greeting');
+      provider.stream.add(response());
+      await provider.stream.close();
+      await request;
+      final old = c.proposal!;
+      await c.revise(old, old.files);
+      expect(c.proposal, isNull);
+      final retry = c.revise(old, old.files);
+      expect(inspections, 3);
+      if (action == 'stop') c.stop();
+      if (action == 'dispose') c.dispose();
+      if (action == 'context') {
+        records.values['studio.chat.v1.html-plan'] = 'changed';
+      }
+      if (action == 'deadline') await tester.pump(const Duration(seconds: 2));
+      analysis.completeError(StateError('PRIVATE retry'));
+      await retry;
+      await c.revise(old, old.files);
+      expect(inspections, 3);
+      expect(c.proposal, isNull);
+      expect(c.busy, false);
+      expect(() => c.authorizeProposal(old), throwsStateError);
+      expect(c.error, isNot(contains('PRIVATE')));
+      if (action != 'dispose') c.dispose();
+    });
+  }
 
   for (final action in ['stop', 'dispose', 'context', 'deadline', 'listener']) {
     testWidgets('$action excludes late edited result and prior authority', (
@@ -236,7 +366,7 @@ void main() {
         records: await seed.seed(),
         proposer: HtmlSourceProposer(createProvider: (_) => provider),
         inspectReferences: (_) =>
-            ++inspections == 1 ? Future.value(report()) : analysis.future,
+            ++inspections == 2 ? analysis.future : Future.value(report()),
       );
       final request = c.request('Greeting');
       provider.stream.add(response());
@@ -296,6 +426,19 @@ void main() {
         contains('Retain this draft'),
       );
       expect(() => c.authorizeProposal(old), throwsStateError);
+      await tester.enterText(field(), '<main>Retry corrected draft</main>');
+      await tap('Save edits for review');
+      await tester.pumpAndSettle();
+      expect(c.error, isNull);
+      expect(
+        c.proposal!.files['index.html'],
+        '<main>Retry corrected draft</main>',
+      );
+      expect(c.proposal, isNot(same(old)));
+      expect(find.byType(HtmlSourceEditor), findsNothing);
+      expect(() => c.authorizeProposal(old), throwsStateError);
+      c.authorizeProposal(c.proposal!);
+      expect(inspections, 3);
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox());
     },

@@ -41,6 +41,9 @@ class HtmlSourceReviewController extends BaseController {
   bool _busy = false, _revoked = false, _inspecting = false;
   bool _locallyEdited = false;
   bool _saving = false;
+  // Edit-only retry handle. It never authorizes export or preview, and exists
+  // only while the same editor/context survives a diagnostics failure.
+  HtmlSourceProposal? _retryEditBase;
   bool _savedDraftAvailable = false;
   bool get savedDraftAvailable => _savedDraftAvailable;
   String? _savedDraftError;
@@ -123,6 +126,7 @@ class HtmlSourceReviewController extends BaseController {
     _busy = true;
     _inspecting = true;
     _revoked = false;
+    _retryEditBase = null;
     _snapshot = context;
     _proposal = null;
     _references = null;
@@ -248,6 +252,7 @@ class HtmlSourceReviewController extends BaseController {
     _busy = true;
     _revoked = false;
     _cleanup = null;
+    _retryEditBase = null;
     _proposal = null;
     _references = null;
     _provenance = null;
@@ -319,7 +324,10 @@ class HtmlSourceReviewController extends BaseController {
     if (isDisposed || _busy) return;
     HtmlSourceProposal candidate;
     try {
-      authorizeProposal(displayed);
+      _requireCurrent();
+      if (!identical(displayed, _retryEditBase)) {
+        authorizeProposal(displayed);
+      }
       candidate = HtmlSourceProposal.decode(
         jsonEncode({'summary': displayed.summary, 'files': files}),
       );
@@ -334,6 +342,7 @@ class HtmlSourceReviewController extends BaseController {
     _references = null;
     _error = null;
     _cleanup = null;
+    _retryEditBase = null;
     _status = 'Inspecting edited HTML references…';
     final timer = Timer(requestDeadline, () {
       if (isDisposed || !_busy || _revoked) return;
@@ -352,7 +361,15 @@ class HtmlSourceReviewController extends BaseController {
       _status = 'Locally edited proposal ready for review. No files changed.';
     } catch (_) {
       if (!isDisposed && !_revoked) {
-        _error = 'Edited-source inspection failed or project context changed. Request a new proposal. No files changed.';
+        try {
+          _requireCurrent();
+          _retryEditBase = displayed;
+        } catch (_) {
+          // Changed inputs cannot regain edit, export or preview authority.
+        }
+        _error = _retryEditBase == null
+            ? 'Edited-source inspection failed or project context changed. Request a new proposal. No files changed.'
+            : 'Edited-source inspection failed. Your editor is retained; correct or retry Save edits for review. No files changed.';
         _status = 'No current proposal available.';
       }
     } finally {
@@ -371,6 +388,7 @@ class HtmlSourceReviewController extends BaseController {
   void stop() {
     if (isDisposed || !_busy || _revoked) return;
     _revoked = true;
+    _retryEditBase = null;
     _proposal = null;
     if (_saving) {
       _status = 'Draft save stopped. An already-committed write may remain; inspect the saved draft after the write returns.';
@@ -393,6 +411,7 @@ class HtmlSourceReviewController extends BaseController {
   @override
   void dispose() {
     _revoked = true;
+    _retryEditBase = null;
     unawaited(_proposer.cancel().catchError((Object _) {}));
     super.dispose();
   }

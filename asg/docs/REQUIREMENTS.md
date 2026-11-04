@@ -271,7 +271,8 @@ The saved development automation was updated through its management tool; active
   - Acceptance: UI shows available and unavailable operations with actionable reasons; unsupported confinement refuses candidate execution before any source is run. Each enabled host passes real new-project resolve/analyze/test/web-build/serve, Stop/deadline/output-limit and descendant-cleanup checks, restart/uncertain-checkpoint refusal, stale-approval refusal and last-working-output preservation. Enabling starter generation must not implicitly enable candidate execution. Model-written candidate/repair support needs independently reviewed platform isolation and real deny-write/network/process-escape probes at the established boundary.
   - Validation/delivery: one narrowly scoped issue/PR per host/capability milestone, actual Linux/Windows builds and launches on their respective hosts, plus macOS regression coverage. Include paths with spaces, missing toolchains, occupied ports, failed previews and interrupted writes. Record tested versus unavailable capabilities separately; keep F16 unchecked until promised host increments satisfy acceptance and normal independent review/CI/verified merge. Broader generated targets remain F11.
 - [ ] F11 Multi-language project generation, runners and explicit stack selection — In progress (#402); depends on F04 and F05
-  - Failed HTML draft restoration recovery — Awaiting merge; #402, `402-html-restore-recovery`, scope6638049014. Diagnostics failure retains prior unsaved reviewed files/provenance/edit attribution under fresh identity; Stop/deadline/disposal/context changes cannot recover authority. Full F11 stays open.
+  - Failed edited HTML diagnostics retry — Awaiting merge; #402, `402-html-edit-retry`, scope6638724578. Same retained editor may retry after diagnostics failure without restoring old export/preview authority. Full adapter remains open.
+  - Failed HTML draft restoration recovery — Done through [PR #486](https://github.com/arpit-it/ASG/pull/486), verified reviewer merge9669b56a at2026-11-04T18:15:54Z; finalreview5773448207/requiredCI41883612296 passed; #402, `402-html-restore-recovery`, scope6638049014. Diagnostics failure retains prior unsaved reviewed files/provenance/edit attribution under fresh identity; Stop/deadline/disposal/context changes cannot recover authority. Full F11 stays open.
   - Durable reviewed HTML source drafts — Done through [PR #485](https://github.com/arpit-it/ASG/pull/485), verified reviewer merge6a38ba54 at2026-11-04T17:55:23Z; finalreview5773154862/requiredCI41879462450 both passed; #402, `402-html-source-drafts`, scope6637428076. One explicit local draft with exact files, provenance/edit attribution, conditional writes and context-bound fresh-diagnostics restoration. No approval/execution/portable-archive authority; full adapter remains open.
   - HTML workspace route ownership correction — Done through [PR #484](https://github.com/arpit-it/ASG/pull/484), reviewer merge77940352 at2026-11-04T17:20:51Z; finalreview5772689832 and requiredCI41875463830 passed; #402, `402-html-route-ownership`, scope6636734628. Reproduced theme-rebuild requirements/export owner replacement; retain owners through theme/resize and dispose on Back. Verified final review/CI/merge recorded in delivery ledger.
   - Temporary reviewed-source editing — Done through [PR #483](https://github.com/arpit-it/ASG/pull/483), verified reviewer merge469d0265 at2026-11-04T16:44:51Z, finalreview5772164100/requiredCI41864155169 both passed; #402, `402-edit-reviewed-html`, scope6634699765. Explicit view-owned drafts, new review identity and reference reinspection; no files/model/execution. Delivery ledger below; full adapter remains open.
@@ -13449,7 +13450,7 @@ cadence or notification preference change. Receipts:/private/tmp/asg485-publicat
 
 
 ### Failed HTML draft restoration preserves current review — F11 / #402
-In progress on `402-html-restore-recovery`, scope6638049014, from verified main
+Done through PR #486, verified reviewer merge9669b56a at2026-11-04T18:15:54Z; finalreview5773448207/requiredCI41883612296 passed. Branch `402-html-restore-recovery`, scope6638049014, from verified main
 6a38ba549f648cc6c5eaa24f3392ff9b1e7f3c8c. No competing active ASG owner/open PR
 at selection. Existing #402 covers this reproducible data-loss correction; no new
 issue/task. Failed saved-draft diagnostics previously erased current unsaved source.
@@ -13474,3 +13475,81 @@ local model health unavailable; no inference claim. The isolated full-test copy
 excludes pre-existing local MLX-venv license-scan contamination without modifying
 that environment. Publication, exact-final independent review, required CI and
 protected reviewer merge remain mandatory; fullF11/#402 and Deferred400 stay open.
+
+Published [PR #486](https://github.com/arpit-it/ASG/pull/486), Awaiting merge.
+Tested local0ad5814f67a44e7a2dcef5bcebfdb2ef50de90a7 and final plugin remote
+0dc28ce3d7b8010664cac1c5906463168d0a9df6 share exacttree
+cf714eecf52d240d981738b101026d687e04d0ba; allsixpublished blobs and all462
+validationinputs match. Final1556Flutter/nine skips,48focused,437format/analyzer/
+webWasm/macOSdebug/nineinventory pass. Independent /root/review_486 owns exact
+finalrevision review, actualrequiredCI and protected expected-head merge.
+FullF11/#402 and Deferred400 remainopen; no inference/fulladapter claim.
+
+Independent exact-final code approval5773341715 at0dc28ce3/treecf714eec;
+all943remote blobs/modes and CI test-merge tree match. Reviewer64focused, six
+additional repeated-failure/all-five-context probes and nineinventory PASS.
+RequiredCI41883612296 initially hit unchanged Python optimized-fixture5s timeout;
+all8fixturetests pass locally, baselinefixtureSHA identical. Retry remains gated
+while workflow runs; no finalCI/merge claim. Reviewer retains retry/protectedmerge.
+
+
+### Failed HTML draft restore recovery verified merged — 2026-11-04T18:17:22.435786+00:00
+Bounded F11/#402 correction Done through [PR #486](https://github.com/arpit-it/ASG/pull/486),
+branch `402-html-restore-recovery`, scope6638049014. Tested local
+0ad5814f67a44e7a2dcef5bcebfdb2ef50de90a7 and final plugin remote
+0dc28ce3d7b8010664cac1c5906463168d0a9df6 share exacttree
+cf714eecf52d240d981738b101026d687e04d0ba. All six published blobs and all462
+validation inputs match; reviewer independently verified all943 remote blobs/modes
+and the CI test-merge tree. Final approval5773448207; independent64focused, six
+repeated-failure/all-context probes and nineinventory pass. Parent1556Flutter/nine
+explicit skips,48focused,437formatzerochange/analyzer/webWasm/macOSdebug and
+nineinventory pass. Baseline regression fails on PR485 controller; final passes.
+Required CI41883612296 BOTH direct checks completed/success:
+Flutter126767088627 (carried original126762123674), Python126767084698. Actual
+1509Linux/53explicit skips including allfive newregressions,17Chrome, browser
+transport/staticHTML/webWasm/independentgeneratedFlutter resolve/analyze/test/build/
+serve and all8Python suites inspected. Original unchanged Python fixture5s timeout
+retained; one failed-job retry passed unchanged, no source/timeout changes.
+Protected expected-head reviewer squash merge9669b56a73949658e098e85cb7dc410c42fbc578
+at2026-11-04T18:15:54Z independently parent-verified on PR/currentmain. Signed
+commit hash, exacttree and soleparent6a38ba54 verified before guarded local-only
+sync. Localmain/originmain0/0, indexempty; originaltwoIDE edits and allthreelocal
+handoffdocs preserved byte-for-byte. Diagnostics failure now retains unsaved
+reviewed files/provenance/edit attribution under fresh identity; old preview/export
+authority stays revoked. Stop/deadline/disposal/changed context cannot recover
+authority; successful retry replaces review, savedbytes unchanged. FullF11/#402
+and Deferred400 remainOPEN/unchecked. No inference, JavaScript execution, source
+promotion, fulladapter, stableapp, cadence or notification change. Final canonical
+merge bookkeeping retained locally for next normal reviewed development PR.
+Receipts: /private/tmp/asg486-publication.json, /private/tmp/asg486-review-evidence.json,
+/private/tmp/asg486-verified-pr.json, /private/tmp/asg486-sync-record.json.
+
+
+### Failed edited HTML diagnostics retry — F11 / #402
+In progress on `402-html-edit-retry` from verified main9669b56a;
+scope6638724578. PR486 merge/finalreview5773448207/requiredCI41883612296
+verified via GitHub plugin; no open PR or competing active owner at selection.
+Evidence: retained HtmlSourceEditor buffers could never Save again after diagnostic
+failure because their old proposal identity was revoked. Edit-only retry handle
+allows the same editor and unchanged context to correct/retry diagnostics, without
+restoring export/preview authority. Fresh inspected proposal identity is required
+for all downstream actions. Repeated failure keeps buffers; Stop/deadline/disposal,
+changed context and new request/restoration revoke retry. No writes or inference.
+Acceptance: baseline regression fails; repeated failure/corrected retry and actual
+editor Save pass, old authority stays revoked, lifecycle/context cases refuse late
+results and subsequent retries. Existing MVC/draft persistence remains unchanged.
+This available-Mac correction needs delivered editing/reference diagnostics only;
+full F11/#402 and Deferred#400 stay open/unchecked. Full checks/builds, independent
+exact-final review, required CI and protected reviewer merge remain gates.
+
+Final selected-source validation: 1,563 Flutter tests passed with nine explicit
+skips;55 focused HTML review/edit/draft tests,437-file zero-change formatter,
+clean analysis, web/Wasm dry-run and macOS debug builds, nine regenerated
+historical-inventory regressions passed. All462 runtime/test/tool inputs match
+the isolated full-suite copy; pre-existing local MLX-venv license contamination
+excluded without modifying that environment. Baseline retry regression fails;
+final actual editor Save after failed diagnostics succeeds. Existing health8765
+unavailable; no inference needed or claimed. Plugin publication, exact-final
+independent review, actual required CI and protected reviewer merge remain gates.
+Full F11/#402 and Deferred#400 stay open. Prior PR486 verified merge bookkeeping
+included; original two IDE edits excluded from publication.
