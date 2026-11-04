@@ -11964,3 +11964,11 @@ includes both html and csslib licenses. All runtime/test/package inputs are
 validated in the isolated tracked copy; unrelated IDE files retain their original
 SHA256 values. Awaiting linked PR, exact-revision independent review, required CI
 and protected reviewer merge; this is not full F11 acceptance or live inference.
+
+[PR #479](https://github.com/arpit-it/ASG/pull/479) targets main; Awaiting merge.
+Initial plugin head523bc4d0057872a11f4f6fb74a5ae1de1af85f4d/localbadeaf84
+share tested treeef842cd6c8e2927ddfdd5eedf2936ddddc6d7278. Full final clean
+1499Flutter/nine skips,22focused,formatter423/analyzer/webWasm/macOSdebug and
+nine inventory tests pass. This docs-only followup records publication evidence;
+runtime/test inputs unchanged. Independent final-revision review and actual
+required CI remain merge gates. FullF11/#402 and Deferred400 remain open.
