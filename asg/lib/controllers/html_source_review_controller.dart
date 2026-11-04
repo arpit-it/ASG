@@ -2,6 +2,7 @@
 // Copyright 2026 Arpit Sinha
 
 import 'dart:async';
+import 'dart:convert';
 
 import '../models/html/html_source_proposal.dart';
 import '../models/html/html_reference_report.dart';
@@ -34,6 +35,8 @@ class HtmlSourceReviewController extends BaseController {
   _inspectReferences;
   final Duration requestDeadline;
   bool _busy = false, _revoked = false, _inspecting = false;
+  bool _locallyEdited = false;
+  bool get locallyEdited => _locallyEdited;
   bool get busy => _busy;
   String? _error;
   String? get error => _error;
@@ -70,7 +73,7 @@ class HtmlSourceReviewController extends BaseController {
   }
 
   HtmlSourceProposal? get proposal {
-    if (_proposal == null) return null;
+    if (_proposal == null || _busy) return null;
     try {
       _requireCurrent();
       return _proposal;
@@ -104,6 +107,7 @@ class HtmlSourceReviewController extends BaseController {
     _proposal = null;
     _references = null;
     _provenance = null;
+    _locallyEdited = false;
     _error = null;
     Timer? deadline;
     try {
@@ -158,6 +162,64 @@ class HtmlSourceReviewController extends BaseController {
         );
       }
       _busy = false;
+      update();
+    }
+  }
+
+  /// Valid edits replace review identity before asynchronous inspection. Existing
+  /// exports/previews retain only the old object and immediately lose authority.
+  Future<void> revise(
+    HtmlSourceProposal displayed,
+    Map<String, String> files,
+  ) async {
+    if (isDisposed || _busy) return;
+    HtmlSourceProposal candidate;
+    try {
+      authorizeProposal(displayed);
+      candidate = HtmlSourceProposal.decode(
+        jsonEncode({'summary': displayed.summary, 'files': files}),
+      );
+    } catch (_) {
+      _error = 'Edits are invalid or this review is stale. Keep nonempty HTML/CSS, optional nonempty JavaScript and the existing file/size limits.';
+      update();
+      return;
+    }
+    _busy = true;
+    _inspecting = true;
+    _proposal = null;
+    _references = null;
+    _error = null;
+    _cleanup = null;
+    _status = 'Inspecting edited HTML references…';
+    final timer = Timer(requestDeadline, () {
+      if (isDisposed || !_busy || _revoked) return;
+      stop();
+      _status = 'HTML diagnostics deadline reached. Waiting for analysis to settle. No files changed.';
+      update();
+    });
+    try {
+      update();
+      _requireCurrent();
+      final references = await _inspectReferences(candidate);
+      _requireCurrent();
+      _proposal = candidate;
+      _references = references;
+      _locallyEdited = true;
+      _status = 'Locally edited proposal ready for review. No files changed.';
+    } catch (_) {
+      if (!isDisposed && !_revoked) {
+        _error = 'Edited-source inspection failed or project context changed. Request a new proposal. No files changed.';
+        _status = 'No current proposal available.';
+      }
+    } finally {
+      timer.cancel();
+      await _cleanup;
+      _inspecting = false;
+      _busy = false;
+      _status = _status.replaceFirst(
+        'Waiting for analysis to settle.',
+        'The analysis request has returned; result ignored.',
+      );
       update();
     }
   }

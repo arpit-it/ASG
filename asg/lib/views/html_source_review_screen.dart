@@ -5,9 +5,11 @@ import 'package:flutter/material.dart';
 
 import '../controllers/html_source_review_controller.dart';
 import '../models/html/html_reference_report.dart';
+import '../models/html/html_source_proposal.dart';
 import '../controllers/html_reviewed_export_controller.dart';
 import '../services/html/html_source_export_factory.dart';
 import 'html_reviewed_export_screen.dart';
+import 'html_source_editor.dart';
 
 class HtmlSourceReviewScreen extends StatefulWidget {
   const HtmlSourceReviewScreen({super.key, required this.controller});
@@ -18,6 +20,7 @@ class HtmlSourceReviewScreen extends StatefulWidget {
 
 class _HtmlSourceReviewScreenState extends State<HtmlSourceReviewScreen> {
   final instruction = TextEditingController();
+  HtmlSourceProposal? editingProposal;
   @override
   void initState() {
     super.initState();
@@ -25,7 +28,13 @@ class _HtmlSourceReviewScreenState extends State<HtmlSourceReviewScreen> {
   }
 
   void refresh() {
-    if (mounted) setState(() {});
+    if (mounted) {
+      final current = widget.controller.proposal;
+      if (current != null && !identical(current, editingProposal)) {
+        editingProposal = null;
+      }
+      setState(() {});
+    }
   }
 
   @override
@@ -71,7 +80,24 @@ class _HtmlSourceReviewScreenState extends State<HtmlSourceReviewScreen> {
             const Text(
               'Saved project context changed. Request a new proposal.',
             ),
+          if (editingProposal case final draft?)
+            HtmlSourceEditor(
+              key: ObjectKey(draft),
+              enabled: !c.busy,
+              proposal: draft,
+              onSave: (files) => c.revise(draft, files),
+              onCancel: () => setState(() => editingProposal = null),
+            ),
           if (proposal != null) ...[
+            if (editingProposal == null)
+              OutlinedButton(
+                onPressed: () => setState(() => editingProposal = proposal),
+                child: const Text('Edit reviewed source…'),
+              ),
+            if (c.locallyEdited)
+              const Text(
+                'Locally edited source. Model provenance below describes the original request, not these edited bytes.',
+              ),
             OutlinedButton(
               onPressed: c.busy
                   ? null

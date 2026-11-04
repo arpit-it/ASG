@@ -12144,3 +12144,66 @@ Final1,524Flutter/nine skips, formatter432/analyzer/webWasm/macOSdebug, nine
 inventory regressions and actualChrome passive-preview checks all pass again.
 Corrected final publication and fresh independent approval/actual requiredCI
 remain mandatory; approval5770576703 and CI41853205944 are superseded.
+
+
+### Script-disabled reviewed HTML preview verified merged — [PR #482](https://github.com/arpit-it/ASG/pull/482)
+Bounded F11/#402 increment Done on `402-reviewed-passive-preview`, scope6633616965.
+Final eb21e780fcd66460b413bb799bf46fc8cfad4ea4/local878435535709b137d682cc258b2d9520a77a06f7
+share exacttree5fba07d68160d9176713aa595c533faf95283998. All937remote blobs/modes
+independently match; all changed runtime/test/tool inputs match isolated validation.
+Parent1,524Flutter/nine skips,formatter432/analyzer/webWasm/macOSdebug, nine
+regenerated historical-inventory tests and actualChrome passive preview passed.
+Independent41focused/probe cases,nineinventory,actualChrome passed. Theme-change
+route-owner leak5770638593 fixed: controller created once before route building.
+Actual live-host fail-before/pass-after retains owner/URL across theme/resize;
+pageBack disposes owner and socket connection is refused. Fresh finalreview
+5770734518/finalgate6634489987 approves corrected exact head, no blockers.
+RequiredCI41855325969 BOTH SUCCESS Flutter126662274469/Python126662273220;
+reviewer inspected actual1477Linux/53skips,17Chrome,transport/staticHTML/webWasm/
+independentgeneratedFlutter resolve-analyze-test-build-serve and8Python suites.
+Protected expected-head reviewer squash merge9f738bc9b98f8f0b3ce42ad1757d634eb382d426
+at2026-11-04T15:21:41Z freshly parent-verified on PR/currentmain. Signed commit
+hash/exacttree/soleparent0f44f142 verified before guarded local-only sync.
+Localmain/originmain0/0,indexempty; both originalIDEedits byte-identical.
+
+App-owned exact-source confirmation now gates passive immutable HTML/CSS preview
+after export-identity recheck; tokenized loopback routes retain request/source
+authority, Stop/deadline/disposal guards. Opaque sandbox/CSP blocks scripts, forms
+and connections; app.js not served. ActualChrome CSS320/1280, script/form/storage
+denial verified. Navigation may leave preview/policy. No interactiveJavaScript,
+safety, registration, promotion or live synthesis acceptance claim. FullF11/#402
+staysOPEN/unchecked; Deferred400OPEN. Health8765Connectionrefused; no inference,
+stableapp replacement, deployment, cadence or notification change. Final merge
+bookkeeping retained for next normal reviewed development PR.
+Receipts:/private/tmp/asg482-publication.json,/private/tmp/asg482-review-evidence.json,
+/private/tmp/asg482-verified-pr.json,/private/tmp/asg482-sync-record.json,
+/private/tmp/asg482-safe-sync.py.
+
+
+### Edit temporary reviewed HTML source — F11 / #402
+In progress on `402-edit-reviewed-html` from verified PR #482 merge
+9f738bc9b98f8f0b3ce42ad1757d634eb382d426; scope comment6634699765.
+The review screen previously exposed source as read-only text. Add app-owned
+HTML/CSS/optional JavaScript draft buffers, strict existing proposal schema/byte
+limits and asynchronous reference reinspection. Valid Save immediately revokes
+old proposal/export/preview identity; typing/Cancel/invalid fields retain the
+existing artifact. No file writes, model calls, automatic execution or promotion.
+Original request provenance is explicitly separate from locally edited bytes.
+Busy/Stop/deadline/context/disposal refuse late publication and overlapping work.
+View retains draft buffers across inspection/error/progress for copying/recovery.
+Delivered proposal/export/preview foundations suffice on Mac; no deferred host
+acceptance prerequisite. Full F11/#402 and Deferred #400 remain open/unchecked.
+Relevant tests, builds, publication, independent exact-final review, required CI
+and verified protected reviewer merge remain mandatory before delivery.
+
+Final selected-source validation passed:1,533Flutter tests/nine explicit skips,
+formatter433, analyzer, webbuild/Wasm dry run, macOSdebug and nine regenerated
+historical-inventory regressions. Nine new editing tests include immutable
+replacement/reinspection, no writes/inference, invalid byte/schema fields, old
+authority refusal, Stop/dispose/context/deadline/reentrant-listener exclusion,
+320px2x valid/invalid/optionalJS editing, Cancel/reopen and retained draft after
+inspection failure. Corrected error-row widget identity and test scroll direction.
+All changed runtime/test inputs match the isolated selected-source validation.
+Awaiting exact-final independent review, actual required CI and protected
+reviewer merge. No model inference, stable-app replacement or adapter completion
+claim. Existing IDE edits and PR482 final merge bookkeeping preserved.
