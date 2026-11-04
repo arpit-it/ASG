@@ -225,7 +225,14 @@ void main() {
           .first,
     );
     expect(preview, findsOneWidget);
-    expect(find.text('Approve latest saved plan'), findsNothing);
+    expect(
+      tester
+          .widget<FilledButton>(
+            find.widgetWithText(FilledButton, 'Approve latest saved plan'),
+          )
+          .onPressed,
+      isNull,
+    );
     expect(tester.takeException(), isNull);
     expect(PlanApprovalStore(records).load(html.project.id), isNull);
   });

@@ -295,3 +295,17 @@ and different inputs at one destination refuse replacement. Strict readers retai
 corrupt/unknown data and report it locally without blocking unrelated project
 bootstrap. New writes require ConditionalRecordStorage; no preferences fallback.
 Remembered metadata grants no filesystem trust or execution authority.
+
+
+### HTML Plan consent
+
+Fixed HTML `asg-html-plan` proposals can retain approval/withdrawal in the existing
+`studio.planApproval.v1.<projectId>` record. Approval is consent evidence only:
+`requireCurrentApproval` still rejects HTML execution and no Flutter fallback is
+allowed. The service validates the exact durable Plan, project, requirements
+revision, original starter metadata and strict operation graph. Conditional
+transaction publication checks all five records plus prior approval; corrupt or
+concurrently changed records are preserved. Screen disposal revokes pending
+publication. Withdrawal can revoke a retained decision after its Plan is stale.
+Source identity checks, preview consent and future execution authorization remain
+separate; this record alone starts nothing and proves no checks or inference.

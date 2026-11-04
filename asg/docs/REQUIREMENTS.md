@@ -271,6 +271,7 @@ The saved development automation was updated through its management tool; active
   - Acceptance: UI shows available and unavailable operations with actionable reasons; unsupported confinement refuses candidate execution before any source is run. Each enabled host passes real new-project resolve/analyze/test/web-build/serve, Stop/deadline/output-limit and descendant-cleanup checks, restart/uncertain-checkpoint refusal, stale-approval refusal and last-working-output preservation. Enabling starter generation must not implicitly enable candidate execution. Model-written candidate/repair support needs independently reviewed platform isolation and real deny-write/network/process-escape probes at the established boundary.
   - Validation/delivery: one narrowly scoped issue/PR per host/capability milestone, actual Linux/Windows builds and launches on their respective hosts, plus macOS regression coverage. Include paths with spaces, missing toolchains, occupied ports, failed previews and interrupted writes. Record tested versus unavailable capabilities separately; keep F16 unchecked until promised host increments satisfy acceptance and normal independent review/CI/verified merge. Broader generated targets remain F11.
 - [ ] F11 Multi-language project generation, runners and explicit stack selection — In progress (#402); depends on F04 and F05
+  - HTML operation-plan review — Done (bounded foundation) via [PR #469](https://github.com/arpit-it/ASG/pull/469), verified reviewer merge7872995f at2026-11-04T08:02:25Z, approval5765064843/finalgate6625789862 and requiredCI41795280990 passed; #402, `402-html-plan-preview`, scope6625491601. Read-only current-context check/preview graph and board prerequisite review only; approval/dispatch/synthesis remain Pending. Full F11 remains open.
   - HTML workspace requirements/task board — Done via [PR #467](https://github.com/arpit-it/ASG/pull/467), verified reviewer merge `dda031887f83c6b56f1db1d06f54dde9a0d46a2c` at2026-11-04T06:58:22Z; #402, `402-html-requirements-board`, scope6624498548. Reuse per-project structured authoring and durable task records before future approval-bound HTML execution; no source execution or verification authority. Full F11 remains open.
   - Explicit fixed HTML starter registration — Done via [PR #466](https://github.com/arpit-it/ASG/pull/466), verified reviewer merge1359416c at2026-11-02T21:19:50Z, approval5743433197/finalgate5743506734 and requiredCI41526232872 passed; #402, `402-html-project-registration`, scope6588315396. Transactional Projects/original-starter registration and dedicated safe workspace; full synthesis/approved-task integration remain Pending. See delivery ledger.
   - Creation-time HTML runner discovery — Done via [PR #465](https://github.com/arpit-it/ASG/pull/465), verified reviewer merge661d59f8 at2026-11-02T20:43:18Z; approval5742966693/finalgate5743052822 and requiredCI41520539566 passed; #402, `402-creation-runner-discovery`, scope6587720764. Registry-derived version/adapter/operation boundaries before handoff, shared with export; full HTML registration remains Planned. See delivery ledger.
@@ -12133,7 +12134,7 @@ direct-main publication, deployment or cadence/notification change. Receipts:
 
 
 ### HTML operation-plan review — F11 / #402
-In progress on `402-html-plan-preview` from verified PR #468 merge
+Done (bounded increment) on `402-html-plan-preview` from verified PR #468 merge
 `a159d61ee1343d2bef41432f3f795d024a626ad2`; scope comment6625491601.
 No competing active ASG run or open PR at selection. A constant HTML advisory
 message prevented review of runner operations and board dependencies. Add a
@@ -12167,3 +12168,58 @@ PR: https://github.com/arpit-it/ASG/pull/469. Initial published
 Status: Awaiting merge. Publication bookkeeping changes documentation only;
 runtime/test inputs remain unchanged. Independent final-revision review and
 both required CI checks are mandatory before protected reviewer merge.
+
+
+### HTML operation-plan review verified merged — PR #469
+Bounded F11/#402 foundation Done on `402-html-plan-preview`, scope6625491601.
+Final `ca967b9353f422fbe2ab4fbdc20cc96104cbf4d5` and tested local
+`32cf91368a0257fb2cd7491cf6b0c8c1129a4a0d` share exact tree
+`baf72936a7e9f81cccef2af872e779c50b9270e6`. All seven remote blobs and433
+validation inputs independently matched. Final independent approval5765064843
+and finalgate6625789862 found no blockers;48 focused/nine inventory passed.
+Parent25focused/1371fullFlutter/nine explicit skips,formatter401/analyzer,
+webWasm/macOSdebug/nineinventory passed. Actual required CI41795280990 BOTH
+SUCCESS Flutter126458280164/Python126458280792: reviewer inspected1343Linux/
+34skips,17Chrome, browser transport/staticHTML/web and independent real generated
+Flutter verification, plus all eight Python suites. Protected expected-head
+reviewer squash merge `7872995f9f0c08d574728b7825bcfd291d252d01` at
+2026-11-04T08:02:25Z independently reverified as merged PR/currentmain. Signed
+exact-tree/soleparenta159d61e hash-verified before guarded local-only synchronization;
+localmain/originmain0/0,indexempty,both originalIDEedits byte-identical.
+HTML saved Plan proposals can now expose original-starter identity check and
+preview order, with validated optional board prerequisites, without granting
+approval or dispatch. Full HTML approved execution/synthesis and F11/#402 remain
+OPEN; Deferred#400OPEN. Existing8765health unavailable; no inference, app-launch
+acceptance or installed-app replacement claim. Final merge bookkeeping retained
+locally for the next normal reviewed development PR. No new issue, direct-main
+publication, deployment or cadence/notification change. Receipts:
+/private/tmp/asg469-publication.json,/private/tmp/asg469-inputs.json,
+/private/tmp/asg469-review-evidence.json,/private/tmp/asg469-reviewed-merge.json,
+/private/tmp/asg469-safe-sync.py.
+
+
+### Durable HTML Plan consent — F11 / #402
+In progress on `402-html-plan-consent`, from verified PR #469 merge
+`7872995f9f0c08d574728b7825bcfd291d252d01`; scope comment6626012879.
+No active competing run or open PR at selection. Explicit approval/withdrawal now
+retains only strict fixed HTML checkSources→run Plan consent against exact saved
+conversation/project/requirements/original-starter context. Conditional transaction
+checks all context records and prior approval; storage failure permits save-only
+retry, conflicts/corruption preserve data, disposal revokes pending publication.
+Reopen and stale withdrawal supported; responsive approval/withdraw UI explains
+execution remains unavailable. Central HTML execution refusal remains mandatory.
+Acceptance: native database reopen, exact/stale/malformed/corrupt contexts,
+concurrent changes to each bound record, failed-save retry, disposal and320px2x
+actual button interactions without source/runner effects. Delivered planning,
+board and transactional storage suffice on this Mac; Deferred #400 not required.
+Full HTML dispatch/synthesis and F11/#402 remain open. No model invocation,
+installed-app replacement or deployment. Final checks/review/CI/merge pending.
+
+Validation: all1,386 Flutter tests passed with nine explicit skips in an isolated
+tracked-source copy; formatter402, analyzer clean, web build/Wasm dry run and
+macOS debug build passed. Nine refreshed inventory tests passed; all571 captured
+validation inputs match the tested copy. Initial test enum import and expected
+unsupported-storage/button assertions corrected before successful final full
+suite. Existing8765health unavailable; no live inference or app-launch acceptance
+claimed. Status: Awaiting publication, exact-final independent review, required
+CI and protected reviewer merge. FullF11/#402 and Deferred#400 remain open.

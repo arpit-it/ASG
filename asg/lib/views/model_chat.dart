@@ -64,7 +64,7 @@ class _ModelChatState extends State<ModelChat> {
         child: Text(
           controller.mode == ConversationMode.plan
               ? controller.isHtml
-                    ? 'HTML discussion and advisory planning only. Proposed tasks need explicit import. HTML execution approval is unavailable; no source changes or checks are performed.'
+                    ? 'Review fixed HTML operation Plans and save consent for their exact context. Execution integration remains unavailable; approval starts nothing. Proposed board tasks need explicit import.'
                     : 'Review the saved draft. Build needs a structured fixed-starter Plan; starting it requires separate operation consent. Request fixed Flutter web starter generation and verification. Other plans are advisory. Messages stay on this device.'
               : controller.mode == ConversationMode.review
               ? 'Advisory review of the current prototype and saved build evidence. No source inspection or new checks. Reports are saved on this device.'
@@ -84,14 +84,14 @@ class _ModelChatState extends State<ModelChat> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                controller.isHtml
-                    ? 'HTML Plans are advisory; execution approval is unavailable.'
-                    : controller.approvalError ??
-                          (controller.planApproved
-                              ? 'Latest saved plan approved for these requirements.'
-                              : controller.outdatedApproval
-                              ? 'Earlier approval is outdated. Review a current draft.'
-                              : 'No current plan approval. Only newly saved Plan drafts can be approved.'),
+                controller.approvalError ??
+                    (controller.planApproved
+                        ? (controller.isHtml
+                              ? 'Latest HTML Plan consent saved. Execution remains unavailable.'
+                              : 'Latest saved plan approved for these requirements.')
+                        : controller.outdatedApproval
+                        ? 'Earlier approval is outdated. Review a current draft.'
+                        : 'No current plan approval. Only newly saved Plan drafts can be approved.'),
               ),
               if (controller.latestPlan != null) ...[
                 const SizedBox(height: 12),
@@ -120,7 +120,10 @@ class _ModelChatState extends State<ModelChat> {
                   child: const Text('Add proposed tasks to board'),
                 ),
               ],
-              if (!controller.isHtml)
+              if (!controller.isHtml ||
+                  controller.latestPlan?.content.contains('```asg-html-plan') ==
+                      true ||
+                  controller.hasApproval)
                 Wrap(
                   spacing: 12,
                   children: [
