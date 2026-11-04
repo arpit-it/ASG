@@ -271,6 +271,8 @@ The saved development automation was updated through its management tool; active
   - Acceptance: UI shows available and unavailable operations with actionable reasons; unsupported confinement refuses candidate execution before any source is run. Each enabled host passes real new-project resolve/analyze/test/web-build/serve, Stop/deadline/output-limit and descendant-cleanup checks, restart/uncertain-checkpoint refusal, stale-approval refusal and last-working-output preservation. Enabling starter generation must not implicitly enable candidate execution. Model-written candidate/repair support needs independently reviewed platform isolation and real deny-write/network/process-escape probes at the established boundary.
   - Validation/delivery: one narrowly scoped issue/PR per host/capability milestone, actual Linux/Windows builds and launches on their respective hosts, plus macOS regression coverage. Include paths with spaces, missing toolchains, occupied ports, failed previews and interrupted writes. Record tested versus unavailable capabilities separately; keep F16 unchecked until promised host increments satisfy acceptance and normal independent review/CI/verified merge. Broader generated targets remain F11.
 - [ ] F11 Multi-language project generation, runners and explicit stack selection — In progress (#402); depends on F04 and F05
+  - Temporary reviewed-source editing — Awaiting merge through [PR #483](https://github.com/arpit-it/ASG/pull/483), #402, `402-edit-reviewed-html`, scope6634699765. Explicit view-owned drafts, new review identity and reference reinspection; no files/model/execution. Delivery ledger below; full adapter remains open.
+  - Script-disabled reviewed HTML preview — Done through [PR #482](https://github.com/arpit-it/ASG/pull/482), verified reviewer merge9f738bc9 on2026-11-04; finalreview5770734518/finalgate6634489987 and requiredCI41855325969 passed. Passive exact-source HTML/CSS only; JavaScript/interactive acceptance and full F11 remain Pending.
   - Responsive-image reference diagnostics — Done through [PR #481](https://github.com/arpit-it/ASG/pull/481), verified reviewer merge0f44f142 on2026-11-04; finalreview5769946115/requiredCI41846705680 passed. Advisory img/source srcset and link imagesrcset candidate URLs only; descriptor omissions explicit. Full adapter/browser/visual acceptance remains Pending; delivery ledger below.
   - Parsed CSS reference diagnostics — Done (bounded increment), [PR #480](https://github.com/arpit-it/ASG/pull/480), reviewer merge4553db0b at2026-11-04T14:04:21Z, finala647d61d approved5769526289/finalgate6632671143, requiredCI41842533590 both passed; #402, `402-css-reference-diagnostics`, scope6632224646. Advisory stylesheet/inline URL/import targets with explicit parser limitations; full adapter remains open.
   - Confirmed reviewed HTML export service — Done (bounded increment; [PR #476](https://github.com/arpit-it/ASG/pull/476), verified reviewer merge5e895d69 at2026-11-04T12:00:52Z, #402), `402-reviewed-html-export`, scope6629733756. Exact proposal/destination confirmation, exclusive new folder, current-write authority and partial/owned-process recovery; no execution. App export UI/browser validation/promotion/full adapter remain open.
@@ -13082,3 +13084,108 @@ Final1,524Flutter/nine skips, formatter432/analyzer/webWasm/macOSdebug, nine
 inventory regressions and actualChrome passive-preview checks all pass again.
 Corrected final publication and fresh independent approval/actual requiredCI
 remain mandatory; approval5770576703 and CI41853205944 are superseded.
+
+
+### Script-disabled reviewed HTML preview verified merged — [PR #482](https://github.com/arpit-it/ASG/pull/482)
+Bounded F11/#402 increment Done on `402-reviewed-passive-preview`, scope6633616965.
+Final eb21e780fcd66460b413bb799bf46fc8cfad4ea4/local878435535709b137d682cc258b2d9520a77a06f7
+share exacttree5fba07d68160d9176713aa595c533faf95283998. All937remote blobs/modes
+independently match; all changed runtime/test/tool inputs match isolated validation.
+Parent1,524Flutter/nine skips,formatter432/analyzer/webWasm/macOSdebug, nine
+regenerated historical-inventory tests and actualChrome passive preview passed.
+Independent41focused/probe cases,nineinventory,actualChrome passed. Theme-change
+route-owner leak5770638593 fixed: controller created once before route building.
+Actual live-host fail-before/pass-after retains owner/URL across theme/resize;
+pageBack disposes owner and socket connection is refused. Fresh finalreview
+5770734518/finalgate6634489987 approves corrected exact head, no blockers.
+RequiredCI41855325969 BOTH SUCCESS Flutter126662274469/Python126662273220;
+reviewer inspected actual1477Linux/53skips,17Chrome,transport/staticHTML/webWasm/
+independentgeneratedFlutter resolve-analyze-test-build-serve and8Python suites.
+Protected expected-head reviewer squash merge9f738bc9b98f8f0b3ce42ad1757d634eb382d426
+at2026-11-04T15:21:41Z freshly parent-verified on PR/currentmain. Signed commit
+hash/exacttree/soleparent0f44f142 verified before guarded local-only sync.
+Localmain/originmain0/0,indexempty; both originalIDEedits byte-identical.
+
+App-owned exact-source confirmation now gates passive immutable HTML/CSS preview
+after export-identity recheck; tokenized loopback routes retain request/source
+authority, Stop/deadline/disposal guards. Opaque sandbox/CSP blocks scripts, forms
+and connections; app.js not served. ActualChrome CSS320/1280, script/form/storage
+denial verified. Navigation may leave preview/policy. No interactiveJavaScript,
+safety, registration, promotion or live synthesis acceptance claim. FullF11/#402
+staysOPEN/unchecked; Deferred400OPEN. Health8765Connectionrefused; no inference,
+stableapp replacement, deployment, cadence or notification change. Final merge
+bookkeeping retained for next normal reviewed development PR.
+Receipts:/private/tmp/asg482-publication.json,/private/tmp/asg482-review-evidence.json,
+/private/tmp/asg482-verified-pr.json,/private/tmp/asg482-sync-record.json,
+/private/tmp/asg482-safe-sync.py.
+
+
+### Edit temporary reviewed HTML source — F11 / #402
+Awaiting merge through [PR #483](https://github.com/arpit-it/ASG/pull/483) on `402-edit-reviewed-html` from verified PR #482 merge
+9f738bc9b98f8f0b3ce42ad1757d634eb382d426; scope comment6634699765.
+The review screen previously exposed source as read-only text. Add app-owned
+HTML/CSS/optional JavaScript draft buffers, strict existing proposal schema/byte
+limits and asynchronous reference reinspection. Valid Save immediately revokes
+old proposal/export/preview identity; typing/Cancel/invalid fields retain the
+existing artifact. No file writes, model calls, automatic execution or promotion.
+Original request provenance is explicitly separate from locally edited bytes.
+Busy/Stop/deadline/context/disposal refuse late publication and overlapping work.
+View retains draft buffers across inspection/error/progress for copying/recovery.
+Delivered proposal/export/preview foundations suffice on Mac; no deferred host
+acceptance prerequisite. Full F11/#402 and Deferred #400 remain open/unchecked.
+Relevant tests, builds, publication, independent exact-final review, required CI
+and verified protected reviewer merge remain mandatory before delivery.
+
+Final selected-source validation passed:1,533Flutter tests/nine explicit skips,
+formatter433, analyzer, webbuild/Wasm dry run, macOSdebug and nine regenerated
+historical-inventory regressions. Nine new editing tests include immutable
+replacement/reinspection, no writes/inference, invalid byte/schema fields, old
+authority refusal, Stop/dispose/context/deadline/reentrant-listener exclusion,
+320px2x valid/invalid/optionalJS editing, Cancel/reopen and retained draft after
+inspection failure. Corrected error-row widget identity and test scroll direction.
+All changed runtime/test inputs match the isolated selected-source validation.
+Awaiting exact-final independent review, actual required CI and protected
+reviewer merge. No model inference, stable-app replacement or adapter completion
+claim. Existing IDE edits and PR482 final merge bookkeeping preserved.
+
+Published tested source in PR #483: local e7cd2dceeb807ca2530ac6a83e5fd15c58e0a378
+and plugin c3d295c33163cf4c6e3d9fc46538ec0f1eecd609 share exacttree
+f752daccb978755f786bed925e64522349ee92f6; all eight remote changed blobs match.
+This followup records Awaiting merge/PR identity only; runtime/test/tool inputs
+remain the validated revision. Independent reviewer `/root/review_483` owns
+exact-final approval, actual required CI and protected merge. Full F11/#402 and
+Deferred #400 remain open; final merge evidence will be recorded after verification.
+
+Independent blocking review5771355984 on docs-final0dcb6fa reproduced a dirty
+editor losing source after focus loss and scrolling beyond ListView cache.
+Stable keys alone preserve reorder identity, not offscreen State. Keep the
+view-owned editor alive while mounted and add the exact long-source eviction
+probe as a regression. Fresh final validation/publication/review/CI required;
+prior approval/checks cannot approve this correction. Full F11 remains open.
+
+Review correction validated: AutomaticKeepAliveClientMixin retains unfocused
+view-owned draft buffers through offscreen ListView eviction; exact reviewer
+long-source probe now passes and remains in production regression coverage.
+Independent43focused cases including the identical fail-before/pass-after probe
+pass. Fresh parent1,534Flutter/nine explicit skips,formatter433/analyzer,webWasm,
+macOSdebug and nine regenerated inventory checks pass. Inventory regenerated
+after formatting corrected the initial hash mismatch; no historical observation
+was promoted to current acceptance. Runtime/test inputs match isolated validation.
+Corrected final publication, fresh final review/actual CI and protected reviewer
+merge remain mandatory; full F11/#402 and Deferred400 remain open.
+
+Independent blocking review5771558020 on6510093f reproduced source-review route
+controller replacement on actual MaterialApp theme changes. Allocate the review
+controller once before the route builder so model/listener/proposal/editor
+ownership survives route rebuilds. Exact actual-workspace theme/resize/Back
+disposal regression added. Fresh final tests/builds/publication/review/CI required;
+prior head checks are not final correction evidence. Full F11 remains open.
+
+Second review correction validated: source-review controller is allocated once
+before route construction. Actual workspace theme/resize retain the same owner
+and Back disposes it. Independent identical route probe fails before this change
+and passes after it. Fresh1,535Flutter/nine explicit skips,formatter433/analyzer,
+webWasm/macOSdebug and nine post-format inventory checks pass. Both independent
+blockers5771355984/5771558020 are fixed in the selected source; fresh exact-final
+review, actual new CI and protected reviewer merge remain gates. FullF11/#402 and
+Deferred400 stayOPEN; no inference/promotion/fulladapter acceptance claim.
