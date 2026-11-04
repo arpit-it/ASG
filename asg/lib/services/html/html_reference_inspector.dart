@@ -4,6 +4,7 @@
 import 'package:csslib/parser.dart' as css;
 import 'package:csslib/visitor.dart' as css;
 import 'package:flutter/foundation.dart';
+import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as html;
 
 import '../../models/html/html_reference_report.dart';
@@ -117,6 +118,23 @@ HtmlReferenceReport _inspect(HtmlSourceProposal proposal) {
         '${element.localName}[$attribute] ${_label(value)}',
         inline: true,
       );
+    }
+    // Foreign SVG attributes have typed namespace keys, unlike HTML/string
+    // attributes. Inventory both href declarations, without inferring which
+    // one wins or whether the element can render or navigate.
+    if (element.namespaceUri == 'http://www.w3.org/2000/svg') {
+      for (final attribute in element.attributes.entries) {
+        final name = attribute.key;
+        if (name is dom.AttributeName &&
+            name.namespace == 'http://www.w3.org/1999/xlink' &&
+            name.name == 'href') {
+          inspectReference(
+            attribute.value,
+            '${element.localName}[xlink:href] ${_label(attribute.value)}',
+            inline: true,
+          );
+        }
+      }
     }
     final responsiveAttribute = switch (element.localName) {
       'img' || 'source' => 'srcset',
