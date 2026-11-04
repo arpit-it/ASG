@@ -11354,3 +11354,10 @@ Initial test helper name, canonical temporary path and scroll selection errors,
 and one test lint corrected before final success. No live inference or app launch
 acceptance claimed. Status: Awaiting publication, independent final-revision
 review, required CI and protected reviewer merge. Full F11/#402 remain open.
+
+PR: https://github.com/arpit-it/ASG/pull/471. Published e013176e2cfb599a37487f3d9fa146d7643f6b8b
+and tested localf35f4ad893ecb0071a3253be299f8676ee85d0ac share tree
+ebc7033d5e2ce3823891bf393d85065bdb299ef7; all seven remote blobs match.
+This publication bookkeeping changes docs only; tested runtime inputs unchanged.
+Status: Awaiting merge; independent final-revision approval and both required CI
+checks must precede protected reviewer merge. Full #402/F11 remain open.

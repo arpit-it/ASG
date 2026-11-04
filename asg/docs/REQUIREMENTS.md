@@ -271,7 +271,7 @@ The saved development automation was updated through its management tool; active
   - Acceptance: UI shows available and unavailable operations with actionable reasons; unsupported confinement refuses candidate execution before any source is run. Each enabled host passes real new-project resolve/analyze/test/web-build/serve, Stop/deadline/output-limit and descendant-cleanup checks, restart/uncertain-checkpoint refusal, stale-approval refusal and last-working-output preservation. Enabling starter generation must not implicitly enable candidate execution. Model-written candidate/repair support needs independently reviewed platform isolation and real deny-write/network/process-escape probes at the established boundary.
   - Validation/delivery: one narrowly scoped issue/PR per host/capability milestone, actual Linux/Windows builds and launches on their respective hosts, plus macOS regression coverage. Include paths with spaces, missing toolchains, occupied ports, failed previews and interrupted writes. Record tested versus unavailable capabilities separately; keep F16 unchecked until promised host increments satisfy acceptance and normal independent review/CI/verified merge. Broader generated targets remain F11.
 - [ ] F11 Multi-language project generation, runners and explicit stack selection — In progress (#402); depends on F04 and F05
-  - Approved HTML source-check dispatch — In progress, #402, `402-approved-html-source-check`, scope6626567528. Explicit first-operation execution under exact durable consent; preview/full Plan completion remain Pending. See delivery ledger.
+  - Approved HTML source-check dispatch — Awaiting merge ([PR #471](https://github.com/arpit-it/ASG/pull/471)), #402, `402-approved-html-source-check`, scope6626567528. Explicit first-operation execution under exact durable consent; preview/full Plan completion remain Pending. See delivery ledger.
   - Durable HTML Plan consent — Done (bounded prerequisite), [PR #470](https://github.com/arpit-it/ASG/pull/470), verified reviewer merge5144a757 at2026-11-04T08:32:54Z, final32738c31 approved5765417065/finalgate6626357516, requiredCI41799040481 passed. Consent starts no action; full F11 remains open.
   - HTML operation-plan review — Done (bounded foundation) via [PR #469](https://github.com/arpit-it/ASG/pull/469), verified reviewer merge7872995f at2026-11-04T08:02:25Z, approval5765064843/finalgate6625789862 and requiredCI41795280990 passed; #402, `402-html-plan-preview`, scope6625491601. Read-only current-context check/preview graph and board prerequisite review only; approval/dispatch/synthesis remain Pending. Full F11 remains open.
   - HTML workspace requirements/task board — Done via [PR #467](https://github.com/arpit-it/ASG/pull/467), verified reviewer merge `dda031887f83c6b56f1db1d06f54dde9a0d46a2c` at2026-11-04T06:58:22Z; #402, `402-html-requirements-board`, scope6624498548. Reuse per-project structured authoring and durable task records before future approval-bound HTML execution; no source execution or verification authority. Full F11 remains open.
@@ -12285,3 +12285,10 @@ Initial test helper name, canonical temporary path and scroll selection errors,
 and one test lint corrected before final success. No live inference or app launch
 acceptance claimed. Status: Awaiting publication, independent final-revision
 review, required CI and protected reviewer merge. Full F11/#402 remain open.
+
+PR: https://github.com/arpit-it/ASG/pull/471. Published e013176e2cfb599a37487f3d9fa146d7643f6b8b
+and tested localf35f4ad893ecb0071a3253be299f8676ee85d0ac share tree
+ebc7033d5e2ce3823891bf393d85065bdb299ef7; all seven remote blobs match.
+This publication bookkeeping changes docs only; tested runtime inputs unchanged.
+Status: Awaiting merge; independent final-revision approval and both required CI
+checks must precede protected reviewer merge. Full #402/F11 remain open.
