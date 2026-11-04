@@ -12732,3 +12732,11 @@ formatter420/analyzer/web build including Wasm dry run passed. Eleven focused
 regressions and nine regenerated historical inventory tests passed. Native debug
 build pending. Source remains untrusted and identity is point-in-time only.
 Status: Awaiting publication/review/required CI/protected merge, not Done.
+
+[PR #478](https://github.com/arpit-it/ASG/pull/478) targets main; Awaiting merge.
+Initial publication718eb608/local76ba272 share exacttree9168f282; all10remote
+blobs hash-match local committed contents. Clean native macOS debug build also
+passed; 1,491 full Flutter tests/nine skips,11focused,format420/analyzer/webWasm
+and nine historical inventory tests pass. This docs-only followup records PR
+and native-build evidence; no runtime changes. Independent final-revision
+review, actual required CI and protected reviewer merge remain mandatory.
