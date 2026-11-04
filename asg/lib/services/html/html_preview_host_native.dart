@@ -2,13 +2,16 @@
 // Copyright 2026 Arpit Sinha
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
 import '../../models/html/html_site_input.dart';
+import '../../models/html/html_source_proposal.dart';
+import 'html_reviewed_source_check_native.dart';
 import 'html_starter_snapshot_native.dart';
 
-/// Read-only preview of an exact, unmodified fixed starter export on macOS.
+/// Read-only preview of a fixed starter or explicitly confirmed passive proposal.
 /// Serves an immutable snapshot, never arbitrary edited source or filesystem
 /// requests. No process, model, dependency installation or browser is launched.
 /// Callers own Stop/disposal. This is not a hostile-filesystem sandbox.
@@ -26,8 +29,46 @@ class HtmlPreviewHostNative {
     required HtmlSiteInput input,
     void Function()? authorizeRead,
   }) async {
+    return _start(
+      authorizeRead: authorizeRead,
+      read: (check) => readHtmlStarterSnapshot(
+        directory: directory,
+        input: input,
+        check: check,
+      ),
+    );
+  }
+
+  /// Explicitly confirmed passive preview. Export identity is checked before
+  /// binding; served bytes come only from the immutable reviewed proposal.
+  Future<Uri> startReviewed({
+    required String directory,
+    required HtmlSourceProposal proposal,
+    required void Function() authorizeRead,
+  }) => _start(
+    passive: true,
+    authorizeRead: authorizeRead,
+    read: (check) async {
+      await NativeHtmlReviewedSourceChecker().check(
+        directory: directory,
+        proposal: proposal,
+        authorizeRead: check,
+      );
+      check();
+      return {
+        for (final file in proposal.files.entries)
+          if (file.key != 'app.js') file.key: utf8.encode(file.value),
+      };
+    },
+  );
+
+  Future<Uri> _start({
+    required Future<Map<String, List<int>>> Function(void Function()) read,
+    void Function()? authorizeRead,
+    bool passive = false,
+  }) async {
     if (!Platform.isMacOS) {
-      throw UnsupportedError('Fixed HTML preview requires macOS.');
+      throw UnsupportedError('HTML preview requires macOS.');
     }
     if (_starting || _server != null) {
       throw StateError(
@@ -45,11 +86,7 @@ class HtmlPreviewHostNative {
 
     HttpServer? bound;
     try {
-      final snapshot = await readHtmlStarterSnapshot(
-        directory: directory,
-        input: input,
-        check: check,
-      );
+      final snapshot = await read(check);
       snapshot.remove('README.md');
       check();
       bound = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
@@ -79,17 +116,32 @@ class HtmlPreviewHostNative {
           response.headers.set('Referrer-Policy', 'no-referrer');
           response.headers.set(
             'Content-Security-Policy',
-            "default-src 'none'; script-src 'self'; style-src 'self'; "
-                "img-src 'self'; base-uri 'none'; frame-ancestors 'none'; "
-                "form-action 'none'; connect-src 'none'",
+            passive
+                ? "sandbox; default-src 'none'; script-src 'none'; "
+                      "style-src 'self' 'unsafe-inline'; img-src 'self' data:; "
+                      "base-uri 'none'; frame-ancestors 'none'; form-action 'none'; "
+                      "connect-src 'none'; object-src 'none'"
+                : "default-src 'none'; script-src 'self'; style-src 'self'; "
+                      "img-src 'self'; base-uri 'none'; frame-ancestors 'none'; "
+                      "form-action 'none'; connect-src 'none'",
           );
           final site = request.headers.value('sec-fetch-site');
           final requestOrigin = request.headers.value('origin');
+          // CSP sandbox gives the passive document an opaque origin. Its own
+          // stylesheet is therefore a cross-site no-cors subresource. The exact
+          // secret-token route allowlist still applies; no scripts are served.
+          final passiveStyle =
+              passive &&
+              request.headers.value('sec-fetch-dest') == 'style' &&
+              request.headers.value('sec-fetch-mode') == 'no-cors';
           if (generation != _generation ||
               !['GET', 'HEAD'].contains(request.method) ||
               request.headers.value('host') != '127.0.0.1:${server.port}' ||
-              (requestOrigin != null && requestOrigin != origin) ||
+              (requestOrigin != null &&
+                  requestOrigin != origin &&
+                  !(passiveStyle && requestOrigin == 'null')) ||
               (site == 'cross-site' &&
+                  !passiveStyle &&
                   !(request.headers.value('sec-fetch-mode') == 'navigate' &&
                       request.headers.value('sec-fetch-dest') == 'document')) ||
               request.contentLength > 0 ||

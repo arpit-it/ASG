@@ -9,7 +9,9 @@ import 'html_preview.dart';
 import 'html_preview_host_native.dart';
 
 class HtmlPreviewNative implements HtmlPreview {
-  final _host = HtmlPreviewHostNative();
+  HtmlPreviewNative({HtmlPreviewHostNative? host})
+    : _host = host ?? HtmlPreviewHostNative();
+  final HtmlPreviewHostNative _host;
   @override
   bool get supported => Platform.isMacOS;
   @override

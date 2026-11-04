@@ -271,6 +271,7 @@ The saved development automation was updated through its management tool; active
   - Acceptance: UI shows available and unavailable operations with actionable reasons; unsupported confinement refuses candidate execution before any source is run. Each enabled host passes real new-project resolve/analyze/test/web-build/serve, Stop/deadline/output-limit and descendant-cleanup checks, restart/uncertain-checkpoint refusal, stale-approval refusal and last-working-output preservation. Enabling starter generation must not implicitly enable candidate execution. Model-written candidate/repair support needs independently reviewed platform isolation and real deny-write/network/process-escape probes at the established boundary.
   - Validation/delivery: one narrowly scoped issue/PR per host/capability milestone, actual Linux/Windows builds and launches on their respective hosts, plus macOS regression coverage. Include paths with spaces, missing toolchains, occupied ports, failed previews and interrupted writes. Record tested versus unavailable capabilities separately; keep F16 unchecked until promised host increments satisfy acceptance and normal independent review/CI/verified merge. Broader generated targets remain F11.
 - [ ] F11 Multi-language project generation, runners and explicit stack selection — In progress (#402); depends on F04 and F05
+  - Responsive-image reference diagnostics — Done through [PR #481](https://github.com/arpit-it/ASG/pull/481), verified reviewer merge0f44f142 on2026-11-04; finalreview5769946115/requiredCI41846705680 passed. Advisory img/source srcset and link imagesrcset candidate URLs only; descriptor omissions explicit. Full adapter/browser/visual acceptance remains Pending; delivery ledger below.
   - Parsed CSS reference diagnostics — Done (bounded increment), [PR #480](https://github.com/arpit-it/ASG/pull/480), reviewer merge4553db0b at2026-11-04T14:04:21Z, finala647d61d approved5769526289/finalgate6632671143, requiredCI41842533590 both passed; #402, `402-css-reference-diagnostics`, scope6632224646. Advisory stylesheet/inline URL/import targets with explicit parser limitations; full adapter remains open.
   - Confirmed reviewed HTML export service — Done (bounded increment; [PR #476](https://github.com/arpit-it/ASG/pull/476), verified reviewer merge5e895d69 at2026-11-04T12:00:52Z, #402), `402-reviewed-html-export`, scope6629733756. Exact proposal/destination confirmation, exclusive new folder, current-write authority and partial/owned-process recovery; no execution. App export UI/browser validation/promotion/full adapter remain open.
   - App-owned HTML source review — Done (bounded increment; [PR #475](https://github.com/arpit-it/ASG/pull/475), verified reviewer mergef7b4fcdd at2026-11-04T11:36:37Z, #402), `402-html-source-review`, scope6629190612. Explicit review-only instruction/request/file display, request provenance, deadline and Stop with overlap/stale-result exclusion. No source writes or preview; full adapter remains open.
@@ -12999,3 +13000,68 @@ observations to current acceptance. Original IDE hashes unchanged. Local runtime
 to distinguish HTML recovery from descriptor omissions, then tests reran clean.
 Awaiting plugin publication, independent exact-final review, actual required CI
 and protected reviewer merge. Full F11/#402 and Deferred #400 remain open.
+
+
+### Responsive image reference diagnostics verified merged — PR #481
+Bounded F11/#402 increment Done on `402-responsive-image-diagnostics`, scope
+6632913969. Published final6f04b8aba1b028366057f5ba6f40a631c43c204e and tested
+local11322c92dc2ee5a40a22c21edf7dd87af74f0f9e share exacttree
+40dc5078a79e86aadc5f1beb82bfc99e3f16d1d8. Parent1513Flutter/nine explicit
+skips,36focused,18actualChrome,format424/analyzer/webWasm/macOSdebug and
+nineinventory passed;580non-docinputs match. Independent47focused/18Chrome/
+9inventory/7extra probes and fail-before/pass-after passed; all929remote blobs
+and modes match. Finalapproval5769946115/finalgate6633270245 has no blockers.
+RequiredCI41846705680 BOTH SUCCESS: Flutter126631983232/Python126631983504.
+Reviewer inspected actual1470Linux/49skips,17Chrome,transport/staticHTML/webWasm/
+independentgeneratedFlutter resolve-analyze-test-build-serve and8Python suites.
+Protected expected-head reviewer squash merge0f44f142a7fa6ba75cfff460e3007866f8d226e3
+at2026-11-04T14:30:00Z freshly parent-verified on PR/currentmain. Fresh plugin
+signedcommit hash/exacttree/soleparent4553db0b checked before guarded local-only
+sync. Localmain/originmain0/0,indexempty; both originalIDEedits byte-identical.
+
+Read-only responsive img/source srcset and link imagesrcset candidate observations
+are now visible in current-proposal diagnostics. Commas in data/ordinary URLs
+are retained; malformed/unsupported descriptors are reported and skipped. No
+responsive selection, sizes/media/type evaluation, image decoding, resource fetch,
+source execution, browser/visual/safety verdict or preview/promotion authority.
+FullF11/#402 remainsOPEN/unchecked; reviewed-source browser validation/promotion
+and live synthesis acceptance remain pending. Deferred400 remainsOPEN. Local
+8765health unavailable; no inference/stableapp/deployment/cadence/notification
+change. Final merge bookkeeping retained for next normal reviewed branch.
+Receipts:/private/tmp/asg481-publication.json,/private/tmp/asg481-review-evidence.json,
+/private/tmp/asg481-verified-pr.json,/private/tmp/asg481-sync-record.json,
+/private/tmp/asg481-safe-sync.py.
+Run completed 2026-11-04T14:31:45.027170+00:00.
+
+
+### Script-disabled reviewed HTML preview — F11 / #402
+In progress on `402-reviewed-passive-preview` from verified PR #481 merge
+0f44f142a7fa6ba75cfff460e3007866f8d226e3. Scope comment6633616965; no new issue.
+Reviewed exports previously had byte checks without an app-owned preview.
+Explicit exact-source confirmation now gates an immutable loopback HTML/CSS
+preview after an exported-byte identity recheck. Opaque sandbox CSP blocks scripts,
+forms and connections; app.js is not served. Navigation may leave the preview
+and its policy. No automatic browser launch; Open and Stop are explicit.
+Stop/deadline/disposal/source-authority revocation exclude late startup and
+overlap; session-only state and exported files are preserved. This is passive
+visual preview, not interactive/JavaScript acceptance, promotion or registration.
+FullF11/#402 stays unchecked; Deferred400 stays open. Delivered snapshot/export
+prerequisites suffice on Mac without unavailable-platform acceptance.
+ActualChrome caught opaque-origin stylesheet refusal; permit only passive
+no-cors style requests through the existing exact secret-token route allowlist.
+Chrome now confirms CSS320/1280, inline/external script refusal, opaque-origin
+storage refusal, form refusal and Stop. Initial widget-scroll/HTTP-override and
+client URL-normalization test expectations corrected;15focused pass. Final
+expanded tests, full validation, plugin publication, independent final-head
+review/actual requiredCI/protected reviewer merge remain pending.
+
+Final selected-source validation:1,524Flutter tests/nine explicit skips, formatter432,
+analyzer, web/Wasm dry run, macOSdebug, nine regenerated historical-inventory
+regressions and actualChrome passive-preview checks passed. Actual browser
+observed externalCSS320/1280, inline/external script denial, opaque-origin
+storage denial, form denial and Stop. Failure cleanup revokes authority before
+cleanup; real-read Stop and captured-destination navigation have regressions.
+All changed runtime/test/tool inputs match the isolated selected-source copy.
+Unrelated IDE edits retained; localhost8765health unavailable, no inference claim.
+Awaiting linked PR, exact-final independent review, actual requiredCI and protected
+reviewer merge. FullF11/#402 stays open/unchecked; Deferred400 retained.
