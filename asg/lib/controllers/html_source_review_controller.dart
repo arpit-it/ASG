@@ -115,6 +115,11 @@ class HtmlSourceReviewController extends BaseController {
       update();
       return;
     }
+    // Retain source until replacement succeeds, without reviving old authority.
+    final previous = proposal;
+    final previousReferences = references;
+    final previousProvenance = provenance;
+    final previousEdited = _locallyEdited;
     _busy = true;
     _inspecting = true;
     _revoked = false;
@@ -144,7 +149,23 @@ class HtmlSourceReviewController extends BaseController {
     } catch (_) {
       if (!isDisposed && !_revoked) {
         _error = 'Draft diagnostics failed or project context changed. Saved bytes are retained; retry restoration.';
-        _status = 'No restored proposal available.';
+        try {
+          _requireCurrent();
+          if (previous != null) {
+            _proposal = HtmlSourceProposal.decode(
+              jsonEncode({
+                'summary': previous.summary,
+                'files': previous.files,
+              }),
+            );
+            _references = previousReferences;
+            _provenance = previousProvenance;
+            _locallyEdited = previousEdited;
+          }
+        } catch (_) {
+          // Retained source from a changed context cannot regain authority.
+        }
+        _status = _proposal == null ? 'No restored proposal available.' : 'Restoration failed. Current reviewed source is retained; saved draft unchanged.';
       }
     } finally {
       timer.cancel();

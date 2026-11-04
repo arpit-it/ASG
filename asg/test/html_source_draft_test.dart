@@ -62,13 +62,18 @@ HtmlSourceReviewController controller(
   inspectReferences: inspect,
   requestDeadline: deadline,
 );
-Future<HtmlSourceReviewController> ready(RecordStorage r) async {
+Future<HtmlSourceReviewController> ready(
+  RecordStorage r, {
+  Future<HtmlReferenceReport> Function(HtmlSourceProposal)? inspect,
+  Duration deadline = const Duration(seconds: 90),
+}) async {
   final p = Provider();
   final c = HtmlSourceReviewController(
     project: html.project,
     records: r,
     proposer: HtmlSourceProposer(createProvider: (_) => p),
-    inspectReferences: (_) async => report(),
+    inspectReferences: inspect ?? (_) async => report(),
+    requestDeadline: deadline,
   );
   final request = c.request('Greeting');
   p.stream.add(response());
@@ -122,6 +127,94 @@ void main() {
     expect(identical(restored.proposal, old), false);
     expect(() => c.authorizeProposal(old), throwsStateError);
   });
+  test('failed restoration retains unsaved review with fresh authority and retries', () async {
+    final r = await records();
+    final provider = Provider();
+    var fail = false;
+    final pending = Completer<HtmlReferenceReport>();
+    final c = HtmlSourceReviewController(
+      project: html.project,
+      records: r,
+      proposer: HtmlSourceProposer(createProvider: (_) => provider),
+      inspectReferences: (_) => fail ? pending.future : Future.value(report()),
+    );
+    addTearDown(c.dispose);
+    final request = c.request('Greeting');
+    provider.stream.add(response());
+    await provider.stream.close();
+    await request;
+    await c.saveDraft();
+    final saved = Map.of(r.values);
+    final files = {
+      ...c.proposal!.files,
+      'styles.css': 'main { color: orange; }',
+    };
+    await c.revise(c.proposal!, files);
+    final old = c.proposal!;
+    final provenance = c.provenance;
+    final diagnostics = c.references;
+    fail = true;
+    final restoring = c.restoreDraft();
+    expect(c.proposal, isNull);
+    expect(() => c.authorizeProposal(old), throwsStateError);
+    pending.completeError(StateError('PRIVATE diagnostics'));
+    await restoring;
+    expect(c.proposal!.files, files);
+    expect(c.proposal, isNot(same(old)));
+    expect(c.locallyEdited, true);
+    expect(c.provenance, same(provenance));
+    expect(c.references, same(diagnostics));
+    expect(c.error, isNot(contains('PRIVATE')));
+    expect(c.status, contains('Current reviewed source is retained'));
+    expect(r.values, saved);
+    expect(() => c.authorizeProposal(old), throwsStateError);
+    c.authorizeProposal(c.proposal!);
+    fail = false;
+    await c.restoreDraft();
+    expect(c.error, isNull);
+    expect(c.proposal!.files, HtmlSourceProposal.decode(response()).files);
+    expect(c.locallyEdited, false);
+    expect(r.values, saved);
+  });
+  for (final action in ['stop', 'dispose', 'context', 'deadline']) {
+    test(
+      'failed restore with current source cannot recover after $action',
+      () async {
+        final r = await records();
+        final pending = Completer<HtmlReferenceReport>();
+        var restoring = false;
+        final c = await ready(
+          r,
+          inspect: (_) => restoring ? pending.future : Future.value(report()),
+          deadline: action == 'deadline'
+              ? const Duration(milliseconds: 50)
+              : const Duration(seconds: 90),
+        );
+        await c.saveDraft();
+        final old = c.proposal!;
+        final saved = Map.of(r.values);
+        restoring = true;
+        final operation = c.restoreDraft();
+        if (action == 'stop') c.stop();
+        if (action == 'dispose') c.dispose();
+        if (action == 'context') {
+          r.values['studio.chat.v1.${html.project.id}'] = 'changed';
+        }
+        if (action == 'deadline') {
+          await Future<void>.delayed(const Duration(milliseconds: 100));
+        }
+        pending.completeError(StateError('PRIVATE'));
+        await operation;
+        expect(c.proposal, isNull);
+        expect(() => c.authorizeProposal(old), throwsStateError);
+        expect(c.busy, false);
+        expect(c.error, isNot(contains('PRIVATE')));
+        final key = HtmlSourceDraftStore(r, html.project.id).key;
+        expect(r.values[key], saved[key]);
+        if (action != 'dispose') c.dispose();
+      },
+    );
+  }
   test(
     'real database reopen and damaged draft isolation retain original bytes',
     () async {
