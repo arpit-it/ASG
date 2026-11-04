@@ -249,6 +249,12 @@ class HtmlSourceReviewController extends BaseController {
       update();
       return;
     }
+    // A failed replacement must not discard unsaved reviewed source. Capture
+    // only currently authorized source; recovery creates a new review identity.
+    final previous = proposal;
+    final previousReferences = references;
+    final previousProvenance = provenance;
+    final previousEdited = _locallyEdited;
     _busy = true;
     _revoked = false;
     _cleanup = null;
@@ -297,7 +303,23 @@ class HtmlSourceReviewController extends BaseController {
     } catch (_) {
       if (!isDisposed && !_revoked) {
         _error = 'Review request failed or saved project context changed. Check local model settings and project records, then retry. No files changed.';
-        _status = 'No current proposal available.';
+        try {
+          _requireCurrent();
+          if (previous != null) {
+            _proposal = HtmlSourceProposal.decode(
+              jsonEncode({
+                'summary': previous.summary,
+                'files': previous.files,
+              }),
+            );
+            _references = previousReferences;
+            _provenance = previousProvenance;
+            _locallyEdited = previousEdited;
+          }
+        } catch (_) {
+          // Stale context cannot regain source authority after failure.
+        }
+        _status = _proposal == null ? 'No current proposal available.' : 'Replacement failed. Previous reviewed source is retained; no files changed.';
       }
     } finally {
       deadline?.cancel();
