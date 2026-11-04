@@ -216,9 +216,9 @@ void main() {
   });
 
   for (final action in ['stop', 'dispose', 'context', 'deadline']) {
-    test(
+    testWidgets(
       '$action during diagnostics suppresses late result and overlap',
-      () async {
+      (tester) async {
         final records = await html.seed();
         final provider = Provider();
         final entered = Completer<void>();
@@ -242,7 +242,7 @@ void main() {
         await provider.stream.close();
         await entered.future;
         if (action == 'deadline') {
-          await Future<void>.delayed(const Duration(milliseconds: 40));
+          await tester.pump(const Duration(milliseconds: 40));
         }
         if (action == 'stop') c.stop();
         if (action == 'dispose') c.dispose();

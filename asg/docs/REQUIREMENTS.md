@@ -12843,3 +12843,12 @@ Reviewer35focused/nineinventory and actualChrome five HTML parser tests passed;
 separate Stop/deadline probes establish fail-before/pass-after. Final corrected
 revision publication and fresh independent approval/actual required CI remain
 gates; previous-head review/CI do not approve this runtime correction.
+
+Final test-stability followup: the deferred-analysis deadline regression used a
+real20ms timer before awaiting inspector entry, which could expire under CI load
+before analysis dispatch and leave the test waiting forever. Convert this injected
+analysis group to the widget fake clock; advance time only after inspector entry.
+23 focused tests pass with deterministic pending/settled assertions; runtime and
+package inputs are unchanged from the fully rebuilt correction. Full checks rerun
+for this final test revision. Review5769124008 is superseded; obtain fresh final
+review and required CI. Do not merge the earlier test revision.
