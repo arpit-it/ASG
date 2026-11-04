@@ -7,3 +7,6 @@ import 'html_source_export_stub.dart'
     as host;
 
 HtmlSourceExport createHtmlSourceExport() => host.createHtmlSourceExport();
+
+HtmlReviewedSourceExport createHtmlReviewedSourceExport() =>
+    host.createHtmlReviewedSourceExport();

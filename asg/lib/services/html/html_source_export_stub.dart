@@ -16,3 +16,18 @@ class HtmlSourceExportStub implements HtmlSourceExport {
 }
 
 HtmlSourceExport createHtmlSourceExport() => HtmlSourceExportStub();
+
+class UnsupportedHtmlReviewedSourceExport implements HtmlReviewedSourceExport {
+  @override
+  bool get supported => false;
+  @override
+  Future<String> exportReviewed({
+    required HtmlReviewedExportRequest request,
+    required HtmlReviewedExportRequest? confirmedRequest,
+    required void Function() authorizeWrite,
+  }) async =>
+      throw UnsupportedError('Reviewed HTML source export requires macOS.');
+}
+
+HtmlReviewedSourceExport createHtmlReviewedSourceExport() =>
+    UnsupportedHtmlReviewedSourceExport();

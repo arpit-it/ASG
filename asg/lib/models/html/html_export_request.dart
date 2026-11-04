@@ -2,6 +2,7 @@
 // Copyright 2026 Arpit Sinha
 
 import 'html_site_input.dart';
+import 'html_source_proposal.dart';
 
 /// Exact content and destination displayed for confirmation by the caller.
 /// A confirmation is session authority, not persisted execution permission.
@@ -34,4 +35,26 @@ class HtmlExportFailure implements Exception {
       'HTML export did not complete. Partial files may remain in $directory. '
       'Nothing was removed. '
       '${pendingDirectoryProcessId == null ? 'Inspect the files and choose a new folder to retry.' : 'Folder process $pendingDirectoryProcessId exit is unconfirmed; wait for reconciliation before retrying.'}';
+}
+
+/// Explicit confirmation of untrusted reviewed bytes and a new destination.
+/// Export is not verification, registration, promotion or execution authority.
+class HtmlReviewedExportRequest {
+  const HtmlReviewedExportRequest({
+    required this.proposal,
+    required this.parent,
+    required this.folderName,
+  });
+
+  final HtmlSourceProposal proposal;
+  final String parent, folderName;
+
+  bool matches(HtmlReviewedExportRequest other) =>
+      parent == other.parent &&
+      folderName == other.folderName &&
+      proposal.summary == other.proposal.summary &&
+      proposal.files.length == other.proposal.files.length &&
+      proposal.files.entries.every(
+        (entry) => other.proposal.files[entry.key] == entry.value,
+      );
 }
