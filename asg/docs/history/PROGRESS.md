@@ -12005,3 +12005,80 @@ analysis group to the widget fake clock; advance time only after inspector entry
 package inputs are unchanged from the fully rebuilt correction. Full checks rerun
 for this final test revision. Review5769124008 is superseded; obtain fresh final
 review and required CI. Do not merge the earlier test revision.
+
+
+### Parsed HTML reference diagnostics verified merged — PR #479
+Bounded F11/#402 increment Done on `402-html-reference-diagnostics`, scope6631588628.
+Final4c6eb0ed38efa23acdff98c80b53fdc922e36eaf/localb856f8678ed5811abbd549fbae9bb15097f216c7
+share exacttreefc9827b3bdc08740a4df0b66e0d04e8af8bbe594. All928remote blobs/modes
+and579non-docappinputs independently match; parent449validationinputs match.
+Parent1500Flutter/nine skips,23focused,formatter423/analyzer/webWasm/macOSdebug
+and nine regenerated historical inventory tests passed. Analysis-stage Stop/
+deadline statuses corrected; real20ms regression-clock race removed with fake
+clock advanced only after analysis entry. Independent35focused/nineinventory and
+5actualChrome parser tests passed, including separate status fail-before/pass-after
+probes. Fresh final review5769202408/finalgate6632161911 approved, no blockers.
+RequiredCI41839094978 BOTH SUCCESS: Flutter126606262977/Python126606262374;
+reviewer inspected actual1457Linux/49skips,17Chrome,transport/staticHTML/webWasm/
+independentgeneratedFlutter resolve-analyze-test-build-serve and8Python suites.
+Protected expected-head reviewer squash merge71d2c204ed75f3edcd9159c3f623ff68d94fc02d
+at2026-11-04T13:41:21Z freshly parent-verified on PR/currentmain; #402/#400 OPEN.
+Signed exacttree/soleparentfd1f043 hash-verified before guarded local-only sync.
+Localmain/originmain0/0,indexempty,both originalIDEedits byte-identical.
+Exact-current proposal review now shows immutable bounded parsed href/src/action/
+poster/data/ID diagnostics and external/query/base/parse limitations; native parsing
+runs off the UI isolate. No CSS/JS/srcset/template/dynamic/browser/visual/safety
+verification or source execution/preview/promotion permission. FullF11/#402 stays
+OPEN/unchecked; reviewed-source browser validation/promotion and live synthesis
+acceptance remain pending. Deferred400 retained. Local8765health unavailable;
+no inference/stableapp replacement/deployment/cadence/notification change.
+Final merge bookkeeping retained for next normal reviewed development PR.
+Receipts:/private/tmp/asg479-publication.json,/private/tmp/asg479-review-evidence.json,
+/private/tmp/asg479-verified-pr.json,/private/tmp/asg479-sync-record.json,
+/private/tmp/asg479-safe-sync.py. Run completed 2026-11-04T13:43:03.401910+00:00.
+
+
+### CSS reference diagnostics — F11 / #402, 4 November 2026
+In progress on `402-css-reference-diagnostics`, scope6632224646, from verified
+PR #479 merge71d2c204ed75f3edcd9159c3f623ff68d94fc02d. No open PR or competing
+active run at selection. Extend current immutable proposal diagnostics with parsed
+styles.css and inline CSS url()/@import target observations. Reuse cached csslib
+1.0.2 (BSD-3-Clause; already present via html), now a direct locked dependency.
+No fetching, source execution, mutation, preview or promotion. CSS syntax/browser
+compatibility, escapes, filter declarations, dynamic references and actual visual
+acceptance remain unchecked; parser omissions and recovery are explicit.
+Acceptance covers quoted/unquoted imports/URLs, nested rules, comment/string
+false positives, HTML attribute entities/fragment IDs, base-relative distinction,
+external/data/query references, malformed CSS and 100-message bounds. Existing
+Stop/deadline/stale-context and 320px2x review regressions remain mandatory.
+Initial parser quirks found by new regressions: quoted import URL retains quotes;
+normalize its delimiters. Legacy filter parser omits URL terms; explicitly report
+that omission.29 focused tests and analyzer pass after corrections. Full clean
+tracked-copy tests/format/web/macOS builds pending. FullF11/#402 stays open;
+Deferred400 retained. Delivered parser/proposal foundations suffice on this Mac;
+unavailable platform acceptance is not a dependency. PriorPR479 final review
+5769202408/requiredCI41839094978 both passed and reviewer merge verified above.
+
+Final clean validation:1506Flutter/nine explicit skips,29focused,11actualChrome,
+formatter423/analyzer/webWasm/macOSdebug passed. All579non-doc inputs match the
+clean tracked copy; unrelated IDE edits preserved. Local8765health unavailable;
+no inference is claimed. CSS parser visits only parsed references: recovered or
+unsupported syntax may omit targets, filter omissions are reported explicitly,
+imports are not fetched recursively, and no browser/visual/safety verdict is
+made. Awaiting plugin publication, independent exact-final-revision review,
+actual required CI and protected reviewer merge. FullF11/#402 stays unchecked.
+
+[PR #480](https://github.com/arpit-it/ASG/pull/480) targets main; Awaiting merge.
+Initial plugin headd47ccb957bfbd3e1e95f173f5d7fb90711959bec/local7aab613c share
+exacttestedtreef20cdd1ed029a3c97d2fea29c4916bca706d47fc. Final1506Flutter/nine
+skips,29focused,11actualChrome,format423/analyzer/webWasm/macOSdebug pass.
+Independent reviewer /root/review_480 owns exact-final approval/actual requiredCI
+and protectedmerge gates. This publication-evidence followup changes docs only;
+runtime/package/test inputs remain identical. FullF11/#402 and Deferred400 stayOPEN.
+
+Independent review found actualPythonCI41842155290/job126616258740 failed
+checked-in inventory regeneration: runtime digest stale. Regenerate historical
+acceptance_inventory.json against clean tracked final source; nine inventory
+regressions pass. No fixture observation is promoted to current acceptance.
+Previoushead approval/CI cannot approve this correction; publish corrected final
+revision and obtain fresh independent review plus both requiredCI jobs.

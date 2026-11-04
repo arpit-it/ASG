@@ -8,21 +8,134 @@ import 'package:asg/models/html/html_source_proposal.dart';
 import 'package:asg/services/html/html_reference_inspector.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-HtmlSourceProposal proposal(String source, {bool script = false}) =>
-    HtmlSourceProposal.decode(
-      jsonEncode({
-        'summary': 'References',
-        'files': {
-          'index.html': source,
-          'styles.css': 'body{}',
-          if (script) 'app.js': 'throw Error("must never run");',
-        },
-      }),
-    );
+HtmlSourceProposal proposal(
+  String source, {
+  bool script = false,
+  String css = 'body{}',
+}) => HtmlSourceProposal.decode(
+  jsonEncode({
+    'summary': 'References',
+    'files': {
+      'index.html': source,
+      'styles.css': css,
+      if (script) 'app.js': 'throw Error("must never run");',
+    },
+  }),
+);
 String page(String body) =>
     '<!doctype html><html><head><title>References</title></head><body>$body</body></html>';
 
 void main() {
+  test(
+    'CSS URL terms and both import syntaxes traverse nested rules',
+    () async {
+      final report = await inspectHtmlReferences(
+        proposal(
+          page('<p>Site</p>'),
+          css: r'''
+      @import "styles.css";
+      @import url('./styles.css') screen;
+      @media screen { body { background: url(missing.png); } }
+      p { background: url("./index.html"); content: "url(fake.png)"; }
+      /* url(comment.png) */
+    ''',
+        ),
+      );
+      expect(report.references, 4);
+      expect(report.findings, 1);
+      expect(
+        report.messages.single,
+        contains('Missing local target: styles.css missing.png'),
+      );
+    },
+  );
+  test('CSS filter parser omissions are explicitly reported', () async {
+    final report = await inspectHtmlReferences(
+      proposal(page('<p>Site</p>'), css: 'p{filter:url(#mask)}'),
+    );
+    expect(report.messages.join('\n'), contains('filter declaration'));
+  });
+  test('inline CSS uses decoded attributes and HTML fragment IDs', () async {
+    final report = await inspectHtmlReferences(
+      proposal(
+        page('''
+      <style>p { background: url(#present); background: url(absent.png); }</style>
+      <p id="present" style="background:url(&quot;#present&quot;)">Site</p>
+    '''),
+      ),
+    );
+    expect(report.references, 3);
+    expect(report.findings, 1);
+    expect(report.messages.single, contains('style element absent.png'));
+  });
+  test(
+    'base affects inline CSS but not separate stylesheet resolution',
+    () async {
+      final report = await inspectHtmlReferences(
+        proposal(
+          page('''
+      <base href="https://example.invalid/">
+      <style>p{background:url(inline.png)}</style>
+      <p style="background:url(attribute.png)">Site</p>
+    '''),
+          css: 'p{background:url(sheet.png)}',
+        ),
+      );
+      expect(report.messages.join('\n'), contains('styles.css sheet.png'));
+      expect(
+        report.messages.join('\n'),
+        isNot(contains('Missing local target: style element')),
+      );
+      expect(
+        report.messages.join('\n'),
+        isNot(contains('Missing local target: p[style]')),
+      );
+    },
+  );
+  test(
+    'CSS external, data, query and stylesheet fragments stay advisory',
+    () async {
+      final report = await inspectHtmlReferences(
+        proposal(
+          page('<p>Site</p>'),
+          css: '''
+      @import "https://example.invalid/theme.css";
+      p{background:url(data:image/png;base64,AAAA);mask:url(#mask)}
+      a{background:url(styles.css?v=1)}
+    ''',
+        ),
+      );
+      expect(report.references, 4);
+      expect(
+        report.messages.where((m) => m.contains('separate review')),
+        hasLength(2),
+      );
+      expect(
+        report.messages.join('\n'),
+        contains('Non-HTML fragment not checked'),
+      );
+      expect(report.messages.join('\n'), contains('Query behavior'));
+      expect(
+        report.messages.join('\n'),
+        isNot(contains('Missing local target')),
+      );
+    },
+  );
+  test('malformed CSS recovery and CSS message bounds are explicit', () async {
+    final recovered = await inspectHtmlReferences(
+      proposal(page('<p>Site</p>'), css: 'p{color:} }'),
+    );
+    expect(recovered.messages.join('\n'), contains('CSS parser reported'));
+    final report = await inspectHtmlReferences(
+      proposal(
+        page('<p>Site</p>'),
+        css: List.filled(200, 'p{background:url(absent.png)}').join(),
+      ),
+    );
+    expect(report.findings, 200);
+    expect(report.messages, hasLength(100));
+    expect(report.truncated, true);
+  });
   test(
     'decoded entities, encoded fragments and relative local files',
     () async {
