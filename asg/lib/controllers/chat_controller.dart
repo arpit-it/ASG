@@ -8,6 +8,7 @@ import '../models/model_connection_preset.dart';
 import '../models/model_request_provenance.dart';
 import '../models/requirements_board.dart';
 import '../models/build_plan.dart';
+import '../models/html/html_operation_plan.dart';
 import '../services/plan_task_import.dart';
 import '../services/requirements_store.dart';
 import '../models/chat_message.dart';
@@ -261,9 +262,6 @@ class ChatController extends BaseController {
   }
 
   String get executionPlanPreview {
-    if (isHtml) {
-      return 'HTML Plans are advisory. Executable HTML task mapping and approval are not implemented; no Flutter workflow will run.';
-    }
     if (!ready || isDisposed) return 'Saved Plan is unavailable.';
     if (busy || hasUnsavedResponse) {
       return 'Wait until the current response or save finishes to review executable tasks.';
@@ -283,6 +281,21 @@ class ChatController extends BaseController {
               PlanApprovalStore.context(project) ||
           plan.planContext != approvals.contextFor(current)) {
         return 'Saved Plan is outdated or replaced. Reopen and draft a current Plan before Build.';
+      }
+      if (isHtml) {
+        if (!plan.content.contains('```asg-html-plan')) {
+          return 'Advisory HTML Plan only: no fixed HTML operation contract. Execution approval remains unavailable.';
+        }
+        final parsed = HtmlOperationPlan.parse(
+          plan.content,
+          board: RequirementsStore(_store!.records).load(project.id),
+        );
+        return 'Validated fixed HTML operation proposal (not execution results):\n'
+            '${parsed.preview}\n'
+            'Checks compare the original starter only; no lint, test or visual acceptance verdict. '
+            'This preview grants no execution approval and starts nothing. '
+            'Use the starter controls for separate checks and preview consent. '
+            'Board links do not mark tasks complete. HTML execution approval remains unavailable.';
       }
       if (!plan.content.contains('```asg-build')) {
         return 'Advisory Plan only: no executable task contract. Approval does not make this work executable.';
@@ -481,7 +494,10 @@ class ChatController extends BaseController {
           : '${fullRequirements.substring(0, RequirementsBoard.planContextLimit)}\n[Requirements context truncated; consult the full board before approval.]';
       final instructions = isHtml
           ? 'Discuss or draft an advisory implementation plan for this HTML/CSS/JavaScript project. '
-                'Use the supplied requirements and task IDs. No executable HTML task contract is delivered. '
+                'Use the supplied requirements and task IDs. For a fixed original-starter source check followed by preview only, '
+                'you may propose this review-only contract in Plan mode: ${HtmlOperationPlan.contract} '
+                'Optional boardTaskId on both operations must reference existing board tasks and cover every prerequisite. '
+                'The contract grants no execution approval. Omit it for custom source implementation plans. '
                 'Never propose an asg-build contract, a Flutter prototype or Flutter commands. '
                 'Do not claim source inspection, checks or preview evidence. '
                 'In Plan mode only, you may propose additive planning tasks in one standalone asg-tasks JSON fence: '

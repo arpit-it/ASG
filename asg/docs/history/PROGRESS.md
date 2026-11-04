@@ -11229,7 +11229,7 @@ notification change. Receipts:/private/tmp/asg467-publication.json,
 
 
 ### HTML discussion and advisory task planning — F11 / #402
-In progress on `402-html-planning`, from verified PR #467 merge
+Done (bounded increment) on `402-html-planning`, from verified PR #467 merge
 `dda031887f83c6b56f1db1d06f54dde9a0d46a2c`; scope comment6624996674.
 No competing active ASG run or open PR at selection. The registered HTML
 workspace lacked instruction/Plan authoring despite its durable board. Reuse
@@ -11264,3 +11264,67 @@ exact tree261a51ac8b34a17e151db0ee2e3d133fa5b98f49; all nine plugin blobs
 verified. Status: Awaiting merge. This PR bookkeeping changes documentation only;
 runtime/test inputs remain unchanged. Independent review of the final revision
 and both required CI checks are mandatory before protected reviewer merge.
+
+
+### HTML discussion/advisory planning verified merged — PR #468
+Bounded F11/#402 increment Done on `402-html-planning`, scope6624996674.
+Finalde3774465ce419c03ceb47a7a12ce8f2158c5595/testedlocalef551d55130e7a741e9ad1a6de737d5a4ba4f8e4
+share exacttree7815d61a042852ea88cd45857143000c35a1e6f2. Allnine plugin blobs
+and427 tracked runtime/test/tool/config inputs independently matched. Fresh
+independent approval5764738446/finalgate6625318196 found no blockers;56focused
+and nineinventory passed. Parent42focused/1364full Flutter/nine explicit skips,
+formatter399/analyzer/webWasm/macOSdebug/nineinventory passed. Actual required
+CI41792006869 BOTH SUCCESS Python126447516742/Flutter126447517238; reviewer
+inspected1336Linux/34skips,17Chrome, browser transport/staticHTML/web build/real
+generatedFlutter verification and all eight Python suites. Protected expected-
+head reviewer squash mergea159d61ee1343d2bef41432f3f795d024a626ad2
+at2026-11-04T07:33:52Z freshly independently verified as mergedPR/currentmain.
+Signed exacttree/soleparentdda03188 hash-verified before guarded local-only ref
+sync; localmain/originmain0/0,indexempty,both originalIDEedits byte-identical.
+HTML projects now offer saved streaming discussion, advisory Plans and explicit
+validated additive task import without Flutter prototype context or execution
+approval. Full HTML executable-task integration/synthesis and F11/#402 remain
+OPEN; Deferred#400OPEN. Existing8765health unavailable; no live inference,
+app-launch acceptance or stable-app replacement claim. Final merge bookkeeping
+retained locally for the next normal reviewed development PR. No newissue,
+direct-main publication, deployment or cadence/notification change. Receipts:
+/private/tmp/asg468-publication.json,/private/tmp/asg468-inputs.json,
+/private/tmp/asg468-review-evidence.json,/private/tmp/asg468-reviewed-merge.json,
+/private/tmp/asg468-safe-sync.py.
+
+
+### HTML operation-plan review — F11 / #402
+In progress on `402-html-plan-preview` from verified PR #468 merge
+`a159d61ee1343d2bef41432f3f795d024a626ad2`; scope comment6625491601.
+No competing active ASG run or open PR at selection. A constant HTML advisory
+message prevented review of runner operations and board dependencies. Add a
+separate strict version1 `asg-html-plan` contract for original-starter identity
+check followed by preview, optional complete board mapping and current durable
+context validation. Explicit review data only: approval and dispatch remain
+centrally refused; no Flutter fallback, source changes, runner action or task
+completion. HTML-specific prompting omits this contract for custom source plans.
+Delivered HTML planning/board/runner prerequisites suffice on this Mac; deferred
+hardware acceptance does not block this foundation. Full approved execution,
+custom synthesis and F11/#402 remain OPEN; Deferred #400 retained.
+Acceptance: strict schema/duplicate-key/ambiguous-fence/unknown-operation rejection,
+ordered dependencies and complete board prerequisites, stale/corrupt saved
+project/board/starter/conversation refusal, read-only recovery without writes,
+320px/2x readable UI and no approval. Initial test enum/type/teardown mistakes
+were corrected before successful focused checks. 25 focused Flutter tests pass;
+formatter401, clean analyzer and final full tests/builds/review/CI/merge pending.
+No live inference, app launch, installed-app replacement or new issue claimed.
+
+Validation: all 1,371 Flutter tests passed with nine explicit skips in a clean
+tracked-source copy;25 focused passed, formatter401/analyzer clean, web/Wasm
+and macOS debug builds passed without replacing the installed app. Nine refreshed
+acceptance-inventory tests passed. No inference or app-launch acceptance claimed.
+Status: Awaiting publication, independent exact-revision review, required CI
+and protected reviewer merge. Full F11/#402 and Deferred #400 remain open.
+
+PR: https://github.com/arpit-it/ASG/pull/469. Initial published
+`e194edf03d451b053e1e1da3762339cf50653974` and tested local
+`60658041516111675213ca8d69546506d635f9c3` share exact tree
+`79530df8b35eb849fbd61e0dbaeda010183d8ca9`; all seven plugin blobs verified.
+Status: Awaiting merge. Publication bookkeeping changes documentation only;
+runtime/test inputs remain unchanged. Independent final-revision review and
+both required CI checks are mandatory before protected reviewer merge.
