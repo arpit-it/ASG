@@ -31,6 +31,7 @@ import 'inspected_folder_store.dart';
 import 'runtime_setup_store.dart';
 import 'studio_store.dart';
 import 'html/html_starter_store.dart';
+import 'html/html_source_draft_store.dart';
 
 /// One database/session per application isolate. Original preferences are retained.
 class StudioDatabase implements ConditionalRecordStorage {
@@ -96,6 +97,7 @@ class StudioDatabase implements ConditionalRecordStorage {
       } catch (_) {
         if (record.key != AskStore.key &&
             record.key != HtmlStarterStore.key &&
+            !record.key.startsWith(HtmlSourceDraftStore.prefix) &&
             record.key != ModelSettingsStore.presetsKey &&
             !record.key.startsWith(ConversationStore.selectionPrefix) &&
             !record.key.startsWith('studio.historicalRevisions.v1.') &&
@@ -143,7 +145,12 @@ class StudioDatabase implements ConditionalRecordStorage {
     if (key == 'studio.lastProject.v1') return;
     final decoded = jsonDecode(value);
     final source = _SingleRecord(key, value);
-    if (key == AskStore.key) {
+    if (key.startsWith(HtmlSourceDraftStore.prefix)) {
+      HtmlSourceDraftStore(
+        source,
+        key.substring(HtmlSourceDraftStore.prefix.length),
+      ).load();
+    } else if (key == AskStore.key) {
       AskStore.decode(value);
     } else if (key.startsWith('studio.historicalRevisions.v1.')) {
       PortableRevisionStore.decode(value);

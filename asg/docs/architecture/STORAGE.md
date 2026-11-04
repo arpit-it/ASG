@@ -309,3 +309,23 @@ concurrently changed records are preserved. Screen disposal revokes pending
 publication. Withdrawal can revoke a retained decision after its Plan is stale.
 Source identity checks, preview consent and future execution authorization remain
 separate; this record alone starts nothing and proves no checks or inference.
+
+
+### Local reviewed HTML source drafts (F11 / #402)
+
+`studio.htmlSourceDraft.v1.<projectId>` stores one explicitly saved review artifact
+per registered HTML project. Its bounded strict version-1 record contains project
+identity, a SHA256 of original context records, exact HTML/CSS/optional JavaScript,
+original request model/token provenance and local-edit attribution. No endpoint,
+SDK path, approval or check result is retained. Existing keys/formats are unchanged;
+this is additive transactional storage, with no preferences migration. Corrupt or
+identity-mismatched drafts stay preserved and isolated on reopen. Saving requires
+conditional context/prior-value comparison, including durable transaction checks.
+
+Reopening the review screen does not restore authority. Explicit Restore requires
+unchanged original project/starter/requirements/chat/consent inputs and reruns
+reference diagnostics; a changed context refuses restoration without erasing the
+draft. These local artifacts are excluded from portable archives. They are not
+source revisions, promotion, Plan consent, verification or original starter bytes.
+Closing discards unsaved edits. A Stop can revoke publication before commit, but
+cannot erase a write that already committed; inspect the retained draft afterward.
