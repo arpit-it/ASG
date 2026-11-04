@@ -271,7 +271,8 @@ The saved development automation was updated through its management tool; active
   - Acceptance: UI shows available and unavailable operations with actionable reasons; unsupported confinement refuses candidate execution before any source is run. Each enabled host passes real new-project resolve/analyze/test/web-build/serve, Stop/deadline/output-limit and descendant-cleanup checks, restart/uncertain-checkpoint refusal, stale-approval refusal and last-working-output preservation. Enabling starter generation must not implicitly enable candidate execution. Model-written candidate/repair support needs independently reviewed platform isolation and real deny-write/network/process-escape probes at the established boundary.
   - Validation/delivery: one narrowly scoped issue/PR per host/capability milestone, actual Linux/Windows builds and launches on their respective hosts, plus macOS regression coverage. Include paths with spaces, missing toolchains, occupied ports, failed previews and interrupted writes. Record tested versus unavailable capabilities separately; keep F16 unchecked until promised host increments satisfy acceptance and normal independent review/CI/verified merge. Broader generated targets remain F11.
 - [ ] F11 Multi-language project generation, runners and explicit stack selection — In progress (#402); depends on F04 and F05
-  - HTML preview read authority — Awaiting merge ([PR #472](https://github.com/arpit-it/ASG/pull/472), #402), `402-html-preview-authority`, scope6627144961. Caller authority across snapshot/bind/HTTP serving boundaries is a prerequisite for approved preview dispatch; full adapter remains open.
+  - Approved HTML Plan preview dispatch — In progress (#402), `402-approved-html-preview`, scope6627700305. Explicit fresh check→preview under exact durable consent; full adapter remains open.
+  - HTML preview read authority — Done (bounded prerequisite; [PR #472](https://github.com/arpit-it/ASG/pull/472), verified reviewer merge0ac45ab1 at2026-11-04T09:29:42Z, #402), `402-html-preview-authority`, scope6627144961. Caller authority across snapshot/bind/HTTP serving boundaries is a prerequisite for approved preview dispatch; full adapter remains open.
   - Approved HTML source-check dispatch — Done (bounded increment), [PR #471](https://github.com/arpit-it/ASG/pull/471), reviewer merge22c94c5e at2026-11-04T09:01:32Z, finalfa744566 approved5765784106/finalgate6626881076, requiredCI41802864733 passed; #402, `402-approved-html-source-check`, scope6626567528. Explicit first-operation execution under exact durable consent; preview/full Plan completion remain Pending. See delivery ledger.
   - Durable HTML Plan consent — Done (bounded prerequisite), [PR #470](https://github.com/arpit-it/ASG/pull/470), verified reviewer merge5144a757 at2026-11-04T08:32:54Z, final32738c31 approved5765417065/finalgate6626357516, requiredCI41799040481 passed. Consent starts no action; full F11 remains open.
   - HTML operation-plan review — Done (bounded foundation) via [PR #469](https://github.com/arpit-it/ASG/pull/469), verified reviewer merge7872995f at2026-11-04T08:02:25Z, approval5765064843/finalgate6625789862 and requiredCI41795280990 passed; #402, `402-html-plan-preview`, scope6625491601. Read-only current-context check/preview graph and board prerequisite review only; approval/dispatch/synthesis remain Pending. Full F11 remains open.
@@ -12357,3 +12358,56 @@ All573 tracked non-documentation inputs match the tested snapshot. This PR
 bookkeeping changes documentation only; runtime/test inputs unchanged.
 Status: Awaiting merge. Independent final-revision review and both required CI
 checks must pass before protected reviewer merge; full F11/#402 remain open.
+
+
+### HTML preview read authority verified merged — PR #472
+Bounded F11/#402 prerequisite Done on `402-html-preview-authority`, scope6627144961.
+Finala1a954fd9562f84758d5bd866efbca5c5d60144c/testedlocal69fe15f55e180a7d444df10e039695cea955f078
+share exacttree815acb6a16860f98877de532bbcdc1366fb6bab5. All13remote blobs and573
+tracked non-documentation validation inputs independently match. Final independent
+approval5766128500/finalgate6627441323 found no blockers;60focused/nineinventory
+passed. Parent30focused/1406fullFlutter/nine explicit skips,formatter404/analyzer,
+nineinventory/webWasm/macOSdebug passed. Actual requiredCI41806730659 BOTH SUCCESS:
+Flutter126495701799/Python126495701618; reviewer inspected1374Linux/38skips,17Chrome,
+browsertransport/staticHTML/webWasm/realgeneratedFlutter resolve/analyze/test/build/serve
+and eightPython suites. Protected expected-head reviewer plugin squash merge
+0ac45ab1719ec0b43f320c20afdb8870d671cb38 at2026-11-04T09:29:42Z freshly parent-verified
+mergedPR/currentmain; #402 remainsOPEN. Signed exact reviewedtree/soleparent22c94c5e
+hash-verified before guarded local-only synchronization; localmain/originmain0/0,
+indexempty, both originalIDEedits byte-identical. Preview caller authority now
+revalidates snapshot/bind/publication/HTTP-serving boundaries; already-dispatched
+responses cannot be recalled. Existing export previews retain their lifecycle.
+Actual app Plan preview dispatch, custom synthesis and fullF11/#402 remainOPEN;
+Deferred#400 retained. Existing8765health unavailable; no inference, app-launch
+acceptance or stableapp replacement claimed. Finalmerge docs retained locally
+for next normal reviewed development PR; no newissue/directmain publication,
+deployment/cadence/notification change. Receipts:/private/tmp/asg472-publication.json,
+/private/tmp/asg472-inputs.json,/private/tmp/asg472-review-evidence.json,
+/private/tmp/asg472-reviewed-merge.json,/private/tmp/asg472-verified-pr.json,
+/private/tmp/asg472-safe-sync.py.
+
+
+### Approved HTML Plan preview dispatch — F11 / #402
+In progress on `402-approved-html-preview` from verified PR #472 merge
+0ac45ab1719ec0b43f320c20afdb8870d671cb38; scope comment6627700305.
+No competing active run or open PR at selection. Explicit workspace action
+checks original fixed HTML sources then starts an owned preview under exact
+durable Plan consent. Context/consent is revalidated at each source read, runner
+publication, HTTP request and browser-open dispatch. Stop/deadline/disposal revoke
+pending authority; cleanup failures require explicit Stop retry before restart.
+Already-dispatched responses/browser launches may finish. No source writes,
+manual board mutation, custom synthesis or full F11 completion. Delivered consent,
+registered runner and preview-authority prerequisites suffice on this Mac;
+Deferred #400 is unnecessary. Original IDE edits and previous merge docs retained.
+Validation: all1,420 Flutter tests passed with nine explicit skips in a clean
+tracked-source copy. New14 regressions include actual native HTTP200 then empty
+GET/HEAD403 after withdrawal, restored-consent retry, edited-source refusal,
+320px/2x UI refusal, changed context, Stop/disposal/deadline and late cleanup
+failure. Initial actual HTTP test used the widget binding mock; corrected to
+explicit real HttpOverrides before passing. The ordinary checkout full suite
+passed1,419 but its notice scan additionally traversed ignored MLX dependencies;
+clean-source1,420 passed. Analyzer clean, formatter406, web/Wasm dry run and
+macOS debug builds passed; nine inventory tests passed. No inference, app-launch
+acceptance, installed-app replacement or deployment claimed.
+Status: Awaiting plugin publication, exact-final independent review, required
+CI and protected reviewer merge. Full #402/F11 remain OPEN.
