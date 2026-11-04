@@ -92,9 +92,11 @@ HtmlReferenceReport _inspect(HtmlSourceProposal proposal) {
           report('Non-HTML fragment not checked: $label');
         } else if (!ids.contains(Uri.decodeComponent(resolved.fragment)) &&
             !(navigation &&
-                navigationNames.contains(
-                  Uri.decodeComponent(resolved.fragment),
-                ))) {
+                (navigationNames.contains(
+                      Uri.decodeComponent(resolved.fragment),
+                    ) ||
+                    Uri.decodeComponent(resolved.fragment).toLowerCase() ==
+                        'top'))) {
           report('Missing HTML fragment: $label');
         }
       }

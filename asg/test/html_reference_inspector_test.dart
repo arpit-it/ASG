@@ -28,6 +28,42 @@ String page(String body) =>
     '<!doctype html><html><head><title>References</title></head><body>$body</body></html>';
 
 void main() {
+  test('HTML navigation recognizes top-of-document fallback', () async {
+    final report = await inspectHtmlReferences(
+      proposal(
+        page(
+          '<a href="#top">Top</a><a href="#ToP">Top</a>'
+          '<area href="index.html#%74op"><a href="#%54%4f%50">Top</a>',
+        ),
+      ),
+    );
+    expect(report.references, 4);
+    expect(report.findings, 0);
+  });
+
+  test('top fallback preserves resource and near-match diagnostics', () async {
+    final report = await inspectHtmlReferences(
+      proposal(
+        page(
+          '<a href="#topper">Missing</a><a href="#top%20">Missing</a>'
+          '<img src="#top"><svg><use href="#TOP"></use></svg>'
+          '<a href="styles.css#top">CSS</a>',
+        ),
+        css: 'body{background:url(#top)}',
+      ),
+    );
+    expect(report.references, 6);
+    expect(report.findings, 6);
+    expect(
+      report.messages.where((m) => m.contains('Missing HTML fragment')),
+      hasLength(4),
+    );
+    expect(
+      report.messages.where((m) => m.contains('Non-HTML fragment')),
+      hasLength(2),
+    );
+  });
+
   test('base without href retains local URL diagnostics', () async {
     for (final base in ['<base target="_blank">', '<base>']) {
       final report = await inspectHtmlReferences(
