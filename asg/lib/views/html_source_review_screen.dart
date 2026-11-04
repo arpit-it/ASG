@@ -72,6 +72,16 @@ class _HtmlSourceReviewScreenState extends State<HtmlSourceReviewScreen> {
                 : () => c.request(instruction.text),
             child: const Text('Request source for review'),
           ),
+          if (proposal != null)
+            OutlinedButton(
+              onPressed: c.busy || editingProposal != null
+                  ? null
+                  : () => c.request(instruction.text, refinement: proposal),
+              child: const Text('Refine reviewed source'),
+            ),
+          const Text(
+            'Request source replaces the review from instructions alone. Refine sends the exact current reviewed files, including saved local edits, to your configured model (24000-byte JSON context limit). Neither action reads project files. Save or cancel pending editor changes first.',
+          ),
           if (c.busy) ...[
             const LinearProgressIndicator(),
             OutlinedButton(onPressed: c.stop, child: const Text('Stop review')),

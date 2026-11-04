@@ -90,6 +90,120 @@ void main() {
       },
     );
   }
+  test('refinement sends edited source, retains failure, then replaces with fresh review', () async {
+    final records = await html.seed();
+    var provider = Provider();
+    final c = HtmlSourceReviewController(
+      project: html.project,
+      records: records,
+      proposer: HtmlSourceProposer(createProvider: (_) => provider),
+      inspectReferences: (_) async => report(),
+    );
+    addTearDown(c.dispose);
+    var pending = c.request('Initial');
+    provider.stream.add(response());
+    await provider.stream.close();
+    await pending;
+    await c.revise(c.proposal!, {
+      ...c.proposal!.files,
+      'styles.css': 'main { color: orange; }',
+    });
+    final edited = c.proposal!;
+    final before = Map.of(records.values);
+    provider = Provider();
+    pending = c.request('Keep content, change color', refinement: edited);
+    expect(provider.prompt, contains('main { color: orange; }'));
+    expect(() => c.authorizeProposal(edited), throwsStateError);
+    provider.stream.addError(StateError('failure'));
+    await provider.stream.close();
+    await pending;
+    expect(c.proposal!.files, edited.files);
+    expect(c.proposal, isNot(same(edited)));
+    expect(c.locallyEdited, true);
+    final recovered = c.proposal!;
+    provider = Provider();
+    pending = c.request('Retry refinement', refinement: recovered);
+    provider.stream.add(response());
+    await provider.stream.close();
+    await pending;
+    expect(c.proposal, isNot(same(recovered)));
+    expect(c.locallyEdited, false);
+    expect(c.error, isNull);
+    expect(records.values, before);
+  });
+  test(
+    'stale refinement identity and oversized source preserve current review',
+    () async {
+      final records = await html.seed();
+      var allocations = 0;
+      final provider = Provider();
+      final c = HtmlSourceReviewController(
+        project: html.project,
+        records: records,
+        proposer: HtmlSourceProposer(
+          createProvider: (_) {
+            allocations++;
+            return provider;
+          },
+        ),
+        inspectReferences: (_) async => report(),
+      );
+      addTearDown(c.dispose);
+      final pending = c.request('Initial');
+      provider.stream.add(response());
+      await provider.stream.close();
+      await pending;
+      final old = c.proposal!;
+      await c.revise(old, {...old.files, 'styles.css': 'é' * 12000});
+      final current = c.proposal!;
+      for (final base in [old, current]) {
+        await c.request('Refine', refinement: base);
+        expect(c.proposal, same(current));
+        expect(c.error, contains('Cannot refine'));
+        expect(allocations, 1);
+      }
+      records.values['studio.chat.v1.html-plan'] = 'changed';
+      await c.request('Refine', refinement: current);
+      expect(c.proposal, isNull);
+      expect(allocations, 1);
+    },
+  );
+  for (final action in ['stop', 'dispose', 'context', 'deadline']) {
+    test('refinement ignores late source after $action', () async {
+      final records = await html.seed();
+      var provider = Provider();
+      final c = HtmlSourceReviewController(
+        project: html.project,
+        records: records,
+        requestDeadline: const Duration(milliseconds: 100),
+        proposer: HtmlSourceProposer(createProvider: (_) => provider),
+        inspectReferences: (_) async => report(),
+      );
+      final initial = c.request('Initial');
+      provider.stream.add(response());
+      await provider.stream.close();
+      await initial;
+      final base = c.proposal!;
+      provider = Provider();
+      final pending = c.request('Refine', refinement: base);
+      await c.request('Overlap', refinement: base);
+      if (action == 'stop') c.stop();
+      if (action == 'dispose') c.dispose();
+      if (action == 'context') {
+        records.values['studio.chat.v1.html-plan'] = 'changed';
+      }
+      if (action == 'deadline') {
+        await Future<void>.delayed(const Duration(milliseconds: 150));
+      }
+      provider.stream.add(response());
+      await provider.stream.close();
+      await pending;
+      expect(c.proposal, isNull);
+      expect(c.busy, false);
+      expect(() => c.authorizeProposal(base), throwsStateError);
+      if (action != 'dispose') c.dispose();
+    });
+  }
   for (final action in ['stop', 'dispose', 'context', 'deadline', 'stale']) {
     testWidgets('failed replacement cannot recover after $action', (
       tester,
@@ -175,9 +289,10 @@ void main() {
     await reveal(find.byType(TextField));
     await tester.enterText(find.byType(TextField), 'Replacement');
     provider = Provider();
-    await reveal(find.text('Request source for review'));
-    await tester.tap(find.text('Request source for review'));
+    await reveal(find.text('Refine reviewed source'));
+    await tester.tap(find.text('Refine reviewed source'));
     await tester.pump();
+    expect(provider.prompt, contains('main { color: navy; }'));
     provider.stream.addError(StateError('PRIVATE transport'));
     unawaited(provider.stream.close());
     await tester.pumpAndSettle();
