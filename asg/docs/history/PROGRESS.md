@@ -11359,7 +11359,7 @@ publication, deployment or cadence/notification change. Receipts:
 
 
 ### Durable HTML Plan consent — F11 / #402
-In progress on `402-html-plan-consent`, from verified PR #469 merge
+Done (bounded increment) on `402-html-plan-consent`, from verified PR #469 merge
 `7872995f9f0c08d574728b7825bcfd291d252d01`; scope comment6626012879.
 No active competing run or open PR at selection. Explicit approval/withdrawal now
 retains only strict fixed HTML checkSources→run Plan consent against exact saved
@@ -11391,3 +11391,55 @@ PR: https://github.com/arpit-it/ASG/pull/470. Initial plugin publication
 This publication bookkeeping changes documentation only; tested runtime/test
 inputs remain unchanged. Status: Awaiting merge; reviewer/root/review_470 must
 approve final revision and verify both required CI checks before protected merge.
+
+
+### Durable HTML Plan consent verified merged — PR #470
+Bounded F11/#402 prerequisite Done on `402-html-plan-consent`, scope6626012879.
+Final32738c31134afd5611761c19617b3446d2e7b9a9/testedlocal96c9353572ec9197835950945e4c7365f564c28f
+share exacttree610e5bb82ae0527b7fd2d0759c348e741eb536c9. All11 remote blobs and571
+validation inputs independently matched. Final independent approval5765417065/
+finalgate6626357516 found no blockers;54focused/one existing platformskip and
+nineinventory passed. Parent1386Flutter/nine explicit skips,formatter402/analyzer,
+web build/Wasm dry run/macOSdebug/nineinventory passed. Actual required
+CI41799040481 BOTH SUCCESS Flutter126470623989/Python126470624120: reviewer
+inspected1358Linux/34skips,17Chrome,browsertransport/staticHTML/webWasm/real
+independent generatedFlutter resolve/analyze/test/build/serve and all8Python
+suites. Reviewer protected expected-head squash merge
+`5144a7579a04410d178de0c1db2a4d9b11059d62` at2026-11-04T08:32:54Z freshly verified.
+Signed exact reviewedtree/soleparent7872995f hash-verified before guarded local-only
+main synchronization; localmain/originmain0/0,indexempty,bothIDEedits byte-identical.
+HTML fixed-operation Plan consent now persists with withdrawal/retry and exact
+context/CAS/disposal guards; it starts nothing. HTML execution stays centrally
+refused until dispatch integration. Full HTML dispatch/synthesis/F11/#402 remain
+OPEN; Deferred#400OPEN. Existing8765health unavailable; no inference/app-launch
+acceptance/stableapp replacement claimed. Final merge evidence retained locally
+for next normal reviewed development PR; no newissue/directmain publication,
+deployment/cadence/notification change. Receipts:/private/tmp/asg-consent-publication.json,
+/private/tmp/asg-consent-inputs.json,/private/tmp/asg470-review-evidence.json,
+/private/tmp/asg470-reviewed-merge.json,/private/tmp/asg470-safe-sync.py.
+
+
+### Approved HTML source-check dispatch — F11 / #402
+In progress on `402-approved-html-source-check`, scope6626567528, from verified
+PR #470 merge5144a7579a04410d178de0c1db2a4d9b11059d62. No competing active ASG
+run or open PR at selection. Explicit registered-workspace action now dispatches
+only the first checkSources operation through HtmlStarterRunner. Revalidate
+strict saved Plan, project, requirements, starter and exact retained consent at
+each read boundary and before publishing evidence. Stop/disposal/deadline revoke
+reads and late success; retry waits for pending IO. Point-in-time identity only;
+no preview, full-plan completion, board mutation, source writes or Flutter fallback.
+Acceptance: missing/stale/corrupt/withdrawn/replaced consent, mid-check context
+changes, overlap, failed-check retry, deadline/Stop/disposal, native exact-source
+and edited-file rejection, 320px/2x explicit action/refusal. Delivered consent/
+checker prerequisites suffice on this Mac; Deferred #400 is unnecessary. Full
+F11/#402 and preview dispatch/synthesis remain open. No inference, installed-app
+replacement, deployment or schedule change. Final checks/review/CI/merge pending.
+
+Validation: fifteen focused regressions and all1,401 Flutter tests passed with
+nine explicit skips in an isolated tracked-source copy. Formatter404 unchanged,
+analyzer clean, web/Wasm dry run and macOS debug builds passed; nine refreshed
+inventory tests passed. All560 captured runtime/test/tool/config inputs match.
+Initial test helper name, canonical temporary path and scroll selection errors,
+and one test lint corrected before final success. No live inference or app launch
+acceptance claimed. Status: Awaiting publication, independent final-revision
+review, required CI and protected reviewer merge. Full F11/#402 remain open.
