@@ -12067,3 +12067,18 @@ unsupported syntax may omit targets, filter omissions are reported explicitly,
 imports are not fetched recursively, and no browser/visual/safety verdict is
 made. Awaiting plugin publication, independent exact-final-revision review,
 actual required CI and protected reviewer merge. FullF11/#402 stays unchecked.
+
+[PR #480](https://github.com/arpit-it/ASG/pull/480) targets main; Awaiting merge.
+Initial plugin headd47ccb957bfbd3e1e95f173f5d7fb90711959bec/local7aab613c share
+exacttestedtreef20cdd1ed029a3c97d2fea29c4916bca706d47fc. Final1506Flutter/nine
+skips,29focused,11actualChrome,format423/analyzer/webWasm/macOSdebug pass.
+Independent reviewer /root/review_480 owns exact-final approval/actual requiredCI
+and protectedmerge gates. This publication-evidence followup changes docs only;
+runtime/package/test inputs remain identical. FullF11/#402 and Deferred400 stayOPEN.
+
+Independent review found actualPythonCI41842155290/job126616258740 failed
+checked-in inventory regeneration: runtime digest stale. Regenerate historical
+acceptance_inventory.json against clean tracked final source; nine inventory
+regressions pass. No fixture observation is promoted to current acceptance.
+Previoushead approval/CI cannot approve this correction; publish corrected final
+revision and obtain fresh independent review plus both requiredCI jobs.
