@@ -12999,3 +12999,74 @@ Existing runtime8765 health unavailable URLError0.005s; no inference claim.
 Existing local MLX environment and stable app unchanged. Final publication,
 independent review, required CI and protected reviewer merge remain pending.
 Recorded 2026-11-04T21:32:37.994265+00:00.
+
+Published PR #493 https://github.com/arpit-it/ASG/pull/493, Awaiting merge.
+Tested local6672ee986dc3038b22c3e57b87ab3ec478569ca9 and plugin final
+93ded8cba55004b3d852f0ee0bb992296807a361 share exact tree
+aa9eb0e3dfc6c575d30a7096447fada760f8db91; allsevenpublishedblobs match.
+Independent /root/review_493 owns exact-final review, actual requiredCI and
+protected expected-head reviewer merge. Parent1592Flutter/nine skips,31reference/
+three new/two baselineFAIL,439format/analyzer/webWasm/macOSdebug/nineinventory
+PASS; all464runtime/test/tool inputs match isolatedcopy. FullF11/#402 and
+Deferred400 remainOPEN; no inference/fulladapterclaim. Recorded 2026-11-04T21:34:29.516674+00:00.
+
+
+### HTML named-anchor navigation diagnostics verified merged — PR #493
+Bounded F11/#402 correction Done through https://github.com/arpit-it/ASG/pull/493,
+branch `402-html-named-anchors`, scope6642581099. HTML a/area href navigation
+recognizes case-sensitive HTML a[name] targets with entity/percent decoding.
+CSS/SVG/resource fragments remain ID-only; foreign/template names excluded.
+Advisory existence only, no effective behavior/safety/full-adapter claim.
+Tested local6672ee986dc3038b22c3e57b87ab3ec478569ca9 and plugin final
+93ded8cba55004b3d852f0ee0bb992296807a361 share exact tree
+aa9eb0e3dfc6c575d30a7096447fada760f8db91; allsevenpublishedblobs matched.
+Independent reviewer verified all945remote blobs/modes and464validationinputs
+and CItestmerge91f54d34; own90focused/twoextra URL-name-resource-base-boundary
+probes/nineinventory PASS; exactlytwo baselineFAIL independently reproduced.
+Additional actualChrome navigation resolves entity/encoded/Unicode/case-sensitive
+names; case mismatch/template/foreign names do not navigate.
+Independent codeCOMMENT5776184154/finalapprovalCOMMENT5776249313. GitHub
+APPROVE rejects sharedauthor identity; explicit independent final verdict follows
+documentedzero-required-approvers workflow, no protections changed/bypassed.
+Parent1592Flutter/nineexplicit skips,31reference/three new,439zero-changeformat/
+finalanalyzer/webWasm/macOSdebug/nineinventory PASS; isolated464inputs match,
+existing local MLX environment untouched. Source inventory regenerated after
+expected stale-digest failure; allninefinal inventory regressions pass.
+RequiredCI41917279934 BOTHdirectfinalheadchecks completedSUCCESS:
+Flutter126880168814/Python126880169258. Reviewer inspected actual1544Linux/
+54skips,allthree new,17Chrome,transport/staticHTML/webWasm/realindependent
+generatedFlutter resolve-analyze-test-build-serve and all8Python suites logs.
+Protectedexpectedhead reviewer squashmerge
+6ab1b965632d5e5068f43e6eab28d7ecb22a8376 at2026-11-04T21:42:01Z
+independently parentverified onPR/currentmain/directchecks. Signedexacttree/
+soleparente221ff5e verified/hash-reconstructed before guardedlocal-onlysync.
+Localmain/originmain0/0,indexempty; originaltwoIDE edits and threelocalhandoff
+docs byte-identical through synchronization. FullF11/#402 and Deferred400
+verifiedOPEN/unchecked. Existing8765health unavailable URLError0.005s; no
+freshinference/stableapp/deployment/cadence/notification change. No active
+implementation or owneraction remains for this increment. Canonical finalmerge
+bookkeeping retained locally for next normal reviewed developmentPR.
+Receipts:/private/tmp/asg493-publication.json,/private/tmp/asg493-review-evidence.json,
+/private/tmp/asg493-verified-pr.json,/private/tmp/asg493-sync-record.json.
+Recorded 2026-11-04T21:43:44.998003+00:00.
+
+
+### Reviewed passive-preview cleanup recovery — F11 / #402
+In progress on `402-reviewed-preview-cleanup` from verified PR #493 merge
+`6ab1b965632d5e5068f43e6eab28d7ecb22a8376`; scope6643190038.
+Fresh connected-plugin inspection found no open PR or competing active run.
+Failed Stop or failed startup cleanup previously left startup unlocked and hid
+the recovery control. Baseline regression reproduced false unlocked state.
+Retain cleanup-failed ownership; block startup/open until explicit successful
+Stop retry and expose recovery at320px/2x. Three regressions cover Stop failure,
+startup cleanup failure and visible retry; repeated failure stays locked.
+Delivered passive preview prerequisites suffice; Deferred400 is unrelated.
+44 focused/native HTTP/architecture checks PASS; final analyzer, web/Wasm and
+macOSdebug builds PASS; nine inventory tests PASS. Full suite under validation
+in tracked-source-only copy; original checkout license test includes unrelated
+local MLX third-party environment, which is retained untouched.
+Publication, independent exact-final review, required CI and reviewer merge
+remain gates. FullF11/#402 remains open/unchecked; no inference, JavaScript
+execution or full-adapter claim. Recorded 2026-11-04T22:02:48.685021+00:00.
+
+Final validation:1,595 Flutter tests PASS/nine explicit skips in isolated tracked-source copy; all 464 tracked runtime/test/tool inputs byte-identical.44 focused/nativeHTTP/architecture checks,439-file zero-change format, final analyzer, web/Wasm dry-run, macOSdebug and nine inventory regressions PASS. One baseline Stop-lock failure independently reproducible before fix. Existing local MLX environment/stable app unchanged. Recorded 2026-11-04T22:03:09.833814+00:00.

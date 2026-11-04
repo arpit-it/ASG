@@ -271,7 +271,8 @@ The saved development automation was updated through its management tool; active
   - Acceptance: UI shows available and unavailable operations with actionable reasons; unsupported confinement refuses candidate execution before any source is run. Each enabled host passes real new-project resolve/analyze/test/web-build/serve, Stop/deadline/output-limit and descendant-cleanup checks, restart/uncertain-checkpoint refusal, stale-approval refusal and last-working-output preservation. Enabling starter generation must not implicitly enable candidate execution. Model-written candidate/repair support needs independently reviewed platform isolation and real deny-write/network/process-escape probes at the established boundary.
   - Validation/delivery: one narrowly scoped issue/PR per host/capability milestone, actual Linux/Windows builds and launches on their respective hosts, plus macOS regression coverage. Include paths with spaces, missing toolchains, occupied ports, failed previews and interrupted writes. Record tested versus unavailable capabilities separately; keep F16 unchecked until promised host increments satisfy acceptance and normal independent review/CI/verified merge. Broader generated targets remain F11.
 - [ ] F11 Multi-language project generation, runners and explicit stack selection — In progress (#402); depends on F04 and F05
-  - HTML named-anchor navigation diagnostics — In progress: #402, `402-html-named-anchors`, scope6642581099. Correct false missing-target findings for HTML a/area navigation to legacy anchor names; resource fragments stay ID-only. Final validation/review/merge pending.
+  - Reviewed passive-preview cleanup recovery — In progress: #402, `402-reviewed-preview-cleanup`, scope6643190038. Retain failed-cleanup ownership and visible Stop retry before startup/browser redispatch; exact-final review/CI/merge pending.
+  - HTML named-anchor navigation diagnostics — Done through [PR #493](https://github.com/arpit-it/ASG/pull/493), verified reviewer merge6ab1b965 at2026-11-04T21:42:01Z; finalreview5776249313/requiredCI41917279934 passed: #402, `402-html-named-anchors`, scope6642581099. Correct false missing navigation targets for HTML anchor names; CSS/SVG/resource fragments stay ID-only. Full F11 remains open.
   - Inline SVG namespaced link diagnostics — Done through [PR #492](https://github.com/arpit-it/ASG/pull/492), verified reviewer mergee221ff5e at2026-11-04T21:14:09Z; finalreview5775895965/requiredCI41912674619 passed: #402, `402-svg-link-diagnostics`, scope6641978585. Inspect parsed inline SVG XLink href declarations with existing advisory resolver; standalone SVG/XML/rendering remain unverified.
   - Reviewed HTML local SVG asset — Done through [PR #491](https://github.com/arpit-it/ASG/pull/491), verified reviewer merge3f104a9a at2026-11-04T20:46:26Z; finalreview5775521211/requiredCI41908348765 passed: #402, `402-reviewed-html-svg`, scope6641348315. Optional image.svg through review/edit/draft/export/passive preview; SVG internals, visual/interactive acceptance and full adapter remain unverified. Six baseline regressions; exact-final review/CI/merge verified.
   - Declared HTML form override diagnostics — Done through [PR #490](https://github.com/arpit-it/ASG/pull/490), verified reviewer merged8471591 at2026-11-04T20:12:27Z; finalreview5775081254/requiredCI41903060539 passed; #402, `402-html-formaction-diagnostics`, scope6640710391. Inspect button/input formaction declarations; actual form submission remains unverified.
@@ -13949,3 +13950,74 @@ Existing runtime8765 health unavailable URLError0.005s; no inference claim.
 Existing local MLX environment and stable app unchanged. Final publication,
 independent review, required CI and protected reviewer merge remain pending.
 Recorded 2026-11-04T21:32:37.994265+00:00.
+
+Published PR #493 https://github.com/arpit-it/ASG/pull/493, Awaiting merge.
+Tested local6672ee986dc3038b22c3e57b87ab3ec478569ca9 and plugin final
+93ded8cba55004b3d852f0ee0bb992296807a361 share exact tree
+aa9eb0e3dfc6c575d30a7096447fada760f8db91; allsevenpublishedblobs match.
+Independent /root/review_493 owns exact-final review, actual requiredCI and
+protected expected-head reviewer merge. Parent1592Flutter/nine skips,31reference/
+three new/two baselineFAIL,439format/analyzer/webWasm/macOSdebug/nineinventory
+PASS; all464runtime/test/tool inputs match isolatedcopy. FullF11/#402 and
+Deferred400 remainOPEN; no inference/fulladapterclaim. Recorded 2026-11-04T21:34:29.516674+00:00.
+
+
+### HTML named-anchor navigation diagnostics verified merged — PR #493
+Bounded F11/#402 correction Done through https://github.com/arpit-it/ASG/pull/493,
+branch `402-html-named-anchors`, scope6642581099. HTML a/area href navigation
+recognizes case-sensitive HTML a[name] targets with entity/percent decoding.
+CSS/SVG/resource fragments remain ID-only; foreign/template names excluded.
+Advisory existence only, no effective behavior/safety/full-adapter claim.
+Tested local6672ee986dc3038b22c3e57b87ab3ec478569ca9 and plugin final
+93ded8cba55004b3d852f0ee0bb992296807a361 share exact tree
+aa9eb0e3dfc6c575d30a7096447fada760f8db91; allsevenpublishedblobs matched.
+Independent reviewer verified all945remote blobs/modes and464validationinputs
+and CItestmerge91f54d34; own90focused/twoextra URL-name-resource-base-boundary
+probes/nineinventory PASS; exactlytwo baselineFAIL independently reproduced.
+Additional actualChrome navigation resolves entity/encoded/Unicode/case-sensitive
+names; case mismatch/template/foreign names do not navigate.
+Independent codeCOMMENT5776184154/finalapprovalCOMMENT5776249313. GitHub
+APPROVE rejects sharedauthor identity; explicit independent final verdict follows
+documentedzero-required-approvers workflow, no protections changed/bypassed.
+Parent1592Flutter/nineexplicit skips,31reference/three new,439zero-changeformat/
+finalanalyzer/webWasm/macOSdebug/nineinventory PASS; isolated464inputs match,
+existing local MLX environment untouched. Source inventory regenerated after
+expected stale-digest failure; allninefinal inventory regressions pass.
+RequiredCI41917279934 BOTHdirectfinalheadchecks completedSUCCESS:
+Flutter126880168814/Python126880169258. Reviewer inspected actual1544Linux/
+54skips,allthree new,17Chrome,transport/staticHTML/webWasm/realindependent
+generatedFlutter resolve-analyze-test-build-serve and all8Python suites logs.
+Protectedexpectedhead reviewer squashmerge
+6ab1b965632d5e5068f43e6eab28d7ecb22a8376 at2026-11-04T21:42:01Z
+independently parentverified onPR/currentmain/directchecks. Signedexacttree/
+soleparente221ff5e verified/hash-reconstructed before guardedlocal-onlysync.
+Localmain/originmain0/0,indexempty; originaltwoIDE edits and threelocalhandoff
+docs byte-identical through synchronization. FullF11/#402 and Deferred400
+verifiedOPEN/unchecked. Existing8765health unavailable URLError0.005s; no
+freshinference/stableapp/deployment/cadence/notification change. No active
+implementation or owneraction remains for this increment. Canonical finalmerge
+bookkeeping retained locally for next normal reviewed developmentPR.
+Receipts:/private/tmp/asg493-publication.json,/private/tmp/asg493-review-evidence.json,
+/private/tmp/asg493-verified-pr.json,/private/tmp/asg493-sync-record.json.
+Recorded 2026-11-04T21:43:44.998003+00:00.
+
+
+### Reviewed passive-preview cleanup recovery — F11 / #402
+In progress on `402-reviewed-preview-cleanup` from verified PR #493 merge
+`6ab1b965632d5e5068f43e6eab28d7ecb22a8376`; scope6643190038.
+Fresh connected-plugin inspection found no open PR or competing active run.
+Failed Stop or failed startup cleanup previously left startup unlocked and hid
+the recovery control. Baseline regression reproduced false unlocked state.
+Retain cleanup-failed ownership; block startup/open until explicit successful
+Stop retry and expose recovery at320px/2x. Three regressions cover Stop failure,
+startup cleanup failure and visible retry; repeated failure stays locked.
+Delivered passive preview prerequisites suffice; Deferred400 is unrelated.
+44 focused/native HTTP/architecture checks PASS; final analyzer, web/Wasm and
+macOSdebug builds PASS; nine inventory tests PASS. Full suite under validation
+in tracked-source-only copy; original checkout license test includes unrelated
+local MLX third-party environment, which is retained untouched.
+Publication, independent exact-final review, required CI and reviewer merge
+remain gates. FullF11/#402 remains open/unchecked; no inference, JavaScript
+execution or full-adapter claim. Recorded 2026-11-04T22:02:48.685021+00:00.
+
+Final validation:1,595 Flutter tests PASS/nine explicit skips in isolated tracked-source copy; all 464 tracked runtime/test/tool inputs byte-identical.44 focused/nativeHTTP/architecture checks,439-file zero-change format, final analyzer, web/Wasm dry-run, macOSdebug and nine inventory regressions PASS. One baseline Stop-lock failure independently reproducible before fix. Existing local MLX environment/stable app unchanged. Recorded 2026-11-04T22:03:09.833814+00:00.

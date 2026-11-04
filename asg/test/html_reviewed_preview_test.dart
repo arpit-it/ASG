@@ -30,6 +30,7 @@ class Preview implements HtmlReviewedPreview {
   @override
   bool get supported => true;
   int starts = 0, stops = 0, opens = 0;
+  bool failStop = false;
   void Function()? authority;
   Completer<Uri> pending = Completer();
   @override
@@ -52,6 +53,7 @@ class Preview implements HtmlReviewedPreview {
   @override
   Future<void> stop() async {
     stops++;
+    if (failStop) throw StateError('cleanup failed');
   }
 }
 
@@ -111,6 +113,88 @@ void main() {
       c.dispose();
     },
   );
+  test('failed Stop blocks redispatch until cleanup retry succeeds', () async {
+    final p = Preview();
+    final c = controller(p);
+    addTearDown(c.dispose);
+    p.pending.complete(Uri.parse('http://127.0.0.1:123/token/'));
+    await c.confirm();
+    p.failStop = true;
+    await c.stop();
+    expect(c.url, isNull);
+    expect(c.locked, true);
+    expect(() => p.authority!(), throwsStateError);
+    await c.confirm();
+    await c.open();
+    expect(p.starts, 1);
+    expect(p.opens, 0);
+    await c.stop();
+    expect(c.locked, true);
+    p.failStop = false;
+    await c.stop();
+    expect(c.locked, false);
+    p.pending = Completer();
+    final retry = c.confirm();
+    expect(p.starts, 2);
+    p.pending.complete(Uri.parse('http://127.0.0.1:123/retry/'));
+    await retry;
+    expect(c.url, isNotNull);
+  });
+
+  test(
+    'startup failure retains failed cleanup until explicit Stop retry',
+    () async {
+      final p = Preview()..failStop = true;
+      final c = controller(p);
+      addTearDown(c.dispose);
+      final work = c.confirm();
+      p.pending.completeError(StateError('startup failed'));
+      await work;
+      expect(c.busy, false);
+      expect(c.locked, true);
+      await c.confirm();
+      expect(p.starts, 1);
+      p.failStop = false;
+      await c.stop();
+      expect(c.locked, false);
+    },
+  );
+
+  testWidgets('cleanup failure keeps a visible actionable Stop retry', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(320, 600);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final p = Preview()..failStop = true;
+    final c = controller(p);
+    final work = c.confirm();
+    p.pending.completeError(StateError('startup failed'));
+    await work;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: MediaQuery(
+          data: const MediaQueryData(textScaler: TextScaler.linear(2)),
+          child: HtmlReviewedPreviewScreen(controller: c),
+        ),
+      ),
+    );
+    final retry = find.text('Retry passive preview cleanup');
+    await tester.scrollUntilVisible(
+      retry,
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.ensureVisible(retry);
+    await tester.pumpAndSettle();
+    p.failStop = false;
+    await tester.tap(retry);
+    await tester.pumpAndSettle();
+    expect(c.locked, false);
+    expect(find.text('Retry passive preview cleanup'), findsNothing);
+    await tester.pumpWidget(const SizedBox());
+  });
   testWidgets('deadline ignores late startup and reports settled state', (
     tester,
   ) async {
