@@ -11638,3 +11638,53 @@ protected reviewer merge. No live inference, app launch or support claim.
 PR #474: https://github.com/arpit-it/ASG/pull/474. Published94b82056 and testedlocal7ca079ed share exacttree8903dced2c0f992baa79dee1b0a4df0b0d67103a.
 Final web build (including Wasm dry run), nine inventory tests, formatter409/analyzer and clean1449full/nine skips all passed. Independent reviewer /root/review_474 inspecting exact final revision and required CI.
 Status: Awaiting merge. Full F11/#402, UI/promotion/live synthesis remain open. No model invocation or support expansion claimed. This final bookkeeping changes docs only.
+
+
+### PR #474 final review / merge transaction pending — 4 November 2026
+Exact final `0cbe711da014bdfba2563014fa86976d23359270` independently approved
+review5766888593/finalgate6628550326, testedlocal7386bfca, exacttree07dc807a.
+All seven changed remote blobs and578tracked non-documentation inputs match.
+Independent48focused/threeUnicode-limit-factoryprobes/nineinventory passed.
+RequiredCI41814180786 BOTH SUCCESS: Python126521015957 and Flutter126521017445;
+actual1415Linux/40skips,17Chrome,transport/staticHTML/webWasm/independentgeneratedFlutter
+and eightPython suites inspected. Parent1449full/nine skips,29focused,formatter409,
+analyzer/webWasm/nineinventory passed. No live model inference;8765health unavailable.
+Protected reviewer merge timed out; one reconciled retry returned405 Merge already
+in progress. Final fresh raw readback at2026-11-04T10:40:26Z: PR OPEN/unmerged,
+main stillde2c09c43fd84e1a2d250655f624ed7bee8907f1. Awaiting merge, no sync/Done claim.
+Reviewer stopped polling/mutations; next scheduled run must reconcile this PR first.
+No user input needed. FullF11/#402 and Deferred#400 remain OPEN. Current source branch
+and both unrelated IDE edits preserved. This local evidence is retained for the next
+normal reviewed publication; do not change the approved head solely for merge notes.
+Receipts:/private/tmp/asg474-publication.json,/private/tmp/asg474-inputs.json,
+/private/tmp/asg474-review-evidence.json. Cadence/notification policy unchanged.
+
+
+### PR #474 verified merged — 2026-11-04T11:00:06.347668+00:00
+Bounded HTML review-proposal increment Done: exact final0cbe711da014bdfba2563014fa86976d23359270 independently approved5766888593/finalgate6628550326; requiredCI41814180786 both SUCCESS. Independent reviewer /root/reconcile_474 reconfirmed gates and completed one protected expected-head merge retry. Parent fresh plugin read verified PR474 merged at2026-11-04T10:59:05Z as4e080a69a14b07fa5f68fdd148adf1f4347f61e0. Signed merge object hash/tree07dc807a/soleparentde2c09c4 verified before safe local-only synchronization. Local main/originmain0/0, index empty; three retained documentation edits and both unrelated IDE edits preserved byte-for-byte. No new source changes or inference claims; previous actual checks remain applicable. Full F11/#402 remains OPEN; next eligible increment is HTML review/promotion integration under existing tracking. No new issue or platform probe. Final evidence retained for next normal reviewed publication.
+
+
+### App-owned HTML source review — F11 / #402
+In progress on `402-html-source-review` from verified main4e080a69, scope6629190612.
+No competing active ASG run/open PR at selection. PR #474 freshly verified merged
+with exact approved head0cbe711d, requiredCI41814180786 passed; its final merge
+bookkeeping retained above. Existing proposer had no app caller or source review.
+Add an explicit registered-project review screen with bounded instruction, complete
+HTML/CSS/optional JavaScript display and requested-model/output-token provenance.
+The artifact is temporary, untrusted and read-only; closing discards it. No source
+reads/writes, preview, promotion, board changes, fixed-Plan source consent or support
+expansion. User explicitly requests review; existing fixed-starter approval cannot
+authorize model-written source. Bind to exact project/starter/requirements/chat/
+approval records; hide stale results and suppress late Stop/deadline/disposal output.
+90-second default deadline and retained stream/cleanup ownership exclude overlap.
+Cleanup errors are private; stopping transport does not confirm inference stopped.
+Delivered proposal and registration prerequisites suffice on this Mac; deferred400
+is not a dependency. Full F11/#402 and live-model/browser acceptance remain open.
+43 focused tests passed (14 new controller/widget tests including320px2x); initial
+test-clock hang and scroll-target ambiguity corrected; analyzer brace correction
+applied. Final clean full suite/analyzer/web build, exact-final independent review,
+required CI and protected reviewer merge pending. No live inference claimed.
+
+Full-suite first run caught two workspace-position regressions after adding the review entry near the top. Moved entry below existing actions; all39 review/planning/registration integration tests now pass. Final clean full checks rerunning. Existing8765health unavailable; no live inference or app-launch claim.
+
+Final validation: clean1463Flutter tests passed/nine explicit skips; formatter412 unchanged after source formatting, analyzer clean, web build including Wasm dry run passed. Nine acceptance-inventory tests passed; refreshed separate historical observations only. All581tracked non-documentation/non-IDE inputs byte-match clean testedcopy /private/tmp/asg475-validation. Focused43 and integration39 passed. Awaiting publication, exact-final independent review, required CI and protected reviewer merge. FullF11/#402 remains open; no live inference claim.

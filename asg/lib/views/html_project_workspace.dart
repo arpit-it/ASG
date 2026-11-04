@@ -4,6 +4,8 @@
 import 'package:flutter/material.dart';
 
 import '../controllers/html_project_controller.dart';
+import '../controllers/html_source_review_controller.dart';
+import 'html_source_review_screen.dart';
 import '../controllers/html_preview_controller.dart';
 import '../models/html/html_export_request.dart';
 import '../services/html/html_plan_preview.dart';
@@ -113,6 +115,20 @@ class _HtmlProjectWorkspaceState extends State<HtmlProjectWorkspace> {
         ),
       ),
     );
+  }
+
+  Future<void> reviewSource() async {
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute(
+        builder: (_) => HtmlSourceReviewScreen(
+          controller: HtmlSourceReviewController(
+            project: widget.project,
+            records: widget.records,
+          ),
+        ),
+      ),
+    );
+    if (mounted) controller.reload();
   }
 
   Future<void> open() async {
@@ -229,6 +245,10 @@ class _HtmlProjectWorkspaceState extends State<HtmlProjectWorkspace> {
         OutlinedButton(
           onPressed: controller.starter == null ? null : chat,
           child: const Text('Discuss and plan HTML'),
+        ),
+        OutlinedButton(
+          onPressed: controller.starter == null ? null : reviewSource,
+          child: const Text('Review new HTML source'),
         ),
       ],
     );
