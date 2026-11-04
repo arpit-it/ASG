@@ -13303,3 +13303,75 @@ URLError0.006s; no fresh inference or installed stable-app change.
 Plugin publication, independent final-revision review, required CI and protected
 reviewer merge remain pending. FullF11/#402 remains open/unchecked.
 Recorded 2026-11-04T23:16:57.176249+00:00.
+
+Published PR #496 https://github.com/arpit-it/ASG/pull/496, Awaiting merge.
+Tested local1fd2d9941a3190a9d17462bf19e1037d71ff997f and plugin final
+fcc3895ba4ad2873a237db8fe5004a87463e207a share exacttree
+3c9ef67e85a490cf627a36d0d40f8de681aca468; allsixpublishedblobs match.
+Independent /root/review_496 owns exact-final review/actualrequiredCI/protected
+expected-head reviewer merge; parent owns verification/safe sync.1601Flutter/
+nine skips,37focused/two new/one baselineFAIL,439format/analyzer/webWasm/
+macOSdebug/nineinventory PASS; all467validationinputs match. FullF11/#402 and
+Deferred400 remainOPEN; no inference/fulladapterclaim. Recorded 2026-11-04T23:18:37.198514+00:00.
+
+
+### Base URL diagnostics require href verified merged — PR #496
+Bounded F11/#402 correction Done through https://github.com/arpit-it/ASG/pull/496,
+branch `402-html-base-href`, scope6644672423. Target-only/attribute-free HTML
+base no longer suppresses local missing-target/fragment diagnostics; live HTML
+base[href], including explicit empty href, retains conservative resolution warning.
+Template/foreign exclusions and advisory inventory remain; full adapter unclaimed.
+Tested local1fd2d9941a3190a9d17462bf19e1037d71ff997f and final plugin
+fcc3895ba4ad2873a237db8fe5004a87463e207a share exacttree
+3c9ef67e85a490cf627a36d0d40f8de681aca468; allsixpublishedblobs match.
+Independent codeCOMMENT5777353718/finalapprovalCOMMENT5777402867; reviewer
+verified945remote blobs/modes,467validationinputs and CImerge568c570e tree.
+Own38reference/architecture+fourCSS/laterhref/inert/foreignprobes/nineinventory
+PASS; newbaselineFAIL independently reproduced; sixactualChromeDOM checks PASS.
+Parent1601Flutter/nineexplicit skips,37focused/two new/onebaselineFAIL,439format/
+cleananalyzer/webWasm/macOSdebug/nineinventory PASS;467inputs match isolatedcopy.
+RequiredCI41932611281 BOTHdirectfinalheadchecks SUCCESS:
+Flutter126933036059/Python126933036447. Reviewer inspected actual1553Linux/
+54skips,17Chrome/transport/staticHTML/webWasm/realindependentgeneratedFlutter
+resolve-analyze-test-build-serve and all8Python suite logs. Explicit independent
+verdict follows documentedzero-required-approvers workflow; no protections changed.
+Protectedexpectedhead reviewer squashmerge
+1c49fe2ace562e30420f1219c445811a20cb84c7 at2026-11-04T23:24:31Z
+independently parentverified onPR/currentmain/directchecks. Signedexacttree/
+soleparent7060d8e hash-reconstructed before guardedlocal-onlysync.
+Localmain/originmain0/0,indexempty; originaltwoIDE and threelocalhandoffdocs
+byte-identical through synchronization. FullF11/#402 verifiedOPEN/unchecked;
+Deferred400 retained. Existing8765health unavailable URLError0.006s; no fresh
+inference,stableapp replacement,deployment,cadence or notification change.
+No active implementation or owneraction remains for this increment. Canonical
+finalmerge evidence retained locally for next normal reviewed developmentPR.
+Receipts:/private/tmp/asg-base-publication.json,/private/tmp/asg496-review-evidence.json,
+/private/tmp/asg496-verified-pr.json,/private/tmp/asg496-sync-record.json,
+/private/tmp/asg496-check-runs.json. Recorded 2026-11-04T23:25:32.435193+00:00.
+
+
+### HTML top-of-document navigation diagnostics — F11 / #402
+Selected from verified main1c49fe2a, branch `402-html-top-navigation`, scope
+https://github.com/arpit-it/ASG/issues/402#issuecomment-6645077157.
+Baseline reproduced four false Missing HTML fragment findings for #top, #ToP,
+#%74op and #%54%4f%50 without explicit targets. Recognize the HTML navigation
+fallback only for a/area href to index.html; resource/CSS/SVG fragments and
+near-matches retain their diagnostics. Existing IDs/names remain valid.
+Source: https://html.spec.whatwg.org/multipage/browsing-the-web.html#the-indicated-part-of-the-document
+Acceptance: baseline-failing navigation regression; exclusions for resources,
+non-HTML targets and near matches; existing ID/name coverage; relevant full
+checks/builds, independent exact-final review, required CI and reviewer merge.
+Delivered HTML diagnostic contracts suffice on Mac; Deferred #400 is unrelated.
+Full F11/#402 remains In progress/unchecked. No execution/inference/support claim.
+Validation so far: 40 focused reference/architecture tests PASS; baseline new
+navigation test FAIL (four false findings); isolated full1603Flutter/nine explicit
+skips, formatter439 and analyzer PASS. Actual disposable headless Chrome verified
+four fragment navigations scroll from bottom to top; favicon404 is unrelated.
+Existing8765health unavailable URLError0.006s; no fresh inference/model launch,
+stable-app replacement, external deployment or schedule/notification change.
+Status Awaiting validation/publication/review/CI/merge; not Done.
+
+Final local validation: web/Wasm dry-run, macOS debug build and nine acceptance
+inventory tests PASS; all466runtime/test/tool/pubspec inputs byte-identical to
+isolated validation copy. All required local checks complete. Awaiting merge;
+independent exact-final review and actual required CI remain gates.

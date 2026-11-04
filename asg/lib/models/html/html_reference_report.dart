@@ -18,7 +18,8 @@ class HtmlReferenceReport {
       '$findings findings.';
   static const limitations =
       'Advisory parsed HTML href/src/action/poster/data and ID checks only. '
-      'HTML a/area href navigation also recognizes case-sensitive HTML anchor names; '
+      'HTML a/area href navigation also recognizes case-sensitive HTML anchor names '
+      'and the case-insensitive top-of-document fallback; '
       'resource and CSS fragments remain ID-only. '
       'Inert HTML template descendants do not supply document IDs, anchor names '
       'or an active base; declared references are still inventoried. '
