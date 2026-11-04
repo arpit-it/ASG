@@ -11194,3 +11194,8 @@ encountered the existing repository license audit scanning installed third-party
 nine explicit skips.
 No model inference or app-launch acceptance claimed. Final full-suite results,
 exact-revision independent review, required CI and verified merge remain pending.
+PR: https://github.com/arpit-it/ASG/pull/467. Initial published ded1ee8091b3a3085b4d0744fe72bf22a40916c3
+and testedlocal776bb322 share tree16b12da93ab07c7ed44b7bf4dc75513c9bd80277.
+This publication bookkeeping changes docs only; runtime/test inputs unchanged.
+Status: Awaiting merge; reviewer/root/review_467 must approve the final follow-up
+revision and both required CI checks must pass before protected reviewer merge.
