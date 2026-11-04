@@ -74,18 +74,20 @@ class _HtmlSourceReviewScreenState extends State<HtmlSourceReviewScreen> {
             OutlinedButton(
               onPressed: c.busy
                   ? null
-                  : () => Navigator.of(context).push<void>(
-                      MaterialPageRoute(
-                        builder: (_) => HtmlReviewedExportScreen(
-                          controller: HtmlReviewedExportController(
-                            proposal: proposal,
-                            authorizeSource: () =>
-                                c.authorizeProposal(proposal),
-                            exporter: createHtmlReviewedSourceExport(),
+                  : () {
+                      final exportController = HtmlReviewedExportController(
+                        proposal: proposal,
+                        authorizeSource: () => c.authorizeProposal(proposal),
+                        exporter: createHtmlReviewedSourceExport(),
+                      );
+                      Navigator.of(context).push<void>(
+                        MaterialPageRoute(
+                          builder: (_) => HtmlReviewedExportScreen(
+                            controller: exportController,
                           ),
                         ),
-                      ),
-                    ),
+                      );
+                    },
               child: const Text('Export reviewed source…'),
             ),
             SelectableText(proposal.summary),

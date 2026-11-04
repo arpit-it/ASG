@@ -12661,3 +12661,17 @@ test/tool/package inputs match isolated validation. This final docs-only followu
 records the PR link; runtime checks remain applicable. Independent final-revision
 review, actual required CI and protected reviewer merge remain pending. Do not
 mark this increment or full F11 Done before verified merge. No new support claim.
+
+Review followup: export controller allocation moved outside the route builder so
+route rebuilds retain one session/controller. The new route.changedExternalState
+and viewport-resize identity/state/disposal regression fails against the prior
+implementation (/private/tmp/asg477-before-fix.log) and passes the fix. 31focused
+tests passed again. Full clean checks are being rerun before fresh final review;
+previous head83609e19 is superseded and must not merge. No scope expansion.
+
+Fresh post-fix validation: isolated1,480Flutter tests/nine explicit skips,
+formatter416/analyzer/web build including Wasm dry run and nine regenerated
+inventory tests passed. All31focused tests passed including the proven route
+rebuild regression. Fresh independent final-revision review and actual required
+CI remain gates; no merge or inference claim. The superseded-head checks do not
+approve the fixed final revision.

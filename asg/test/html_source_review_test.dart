@@ -269,9 +269,33 @@ void main() {
     await tester.tap(find.text('Export reviewed source…'));
     await tester.pumpAndSettle();
     expect(find.byType(HtmlReviewedExportScreen), findsOneWidget);
+    final route =
+        ModalRoute.of(tester.element(find.byType(HtmlReviewedExportScreen)))!
+            as MaterialPageRoute<void>;
+    final exportController = tester
+        .widget<HtmlReviewedExportScreen>(find.byType(HtmlReviewedExportScreen))
+        .controller;
+    exportController.editFolder('retained');
+    // Explicitly invalidate the cached page, as route dependency changes can.
+    route.changedExternalState();
+    tester.view.physicalSize = const Size(400, 800);
+    await tester.pumpAndSettle();
+    expect(
+      identical(
+        tester
+            .widget<HtmlReviewedExportScreen>(
+              find.byType(HtmlReviewedExportScreen),
+            )
+            .controller,
+        exportController,
+      ),
+      true,
+    );
+    expect(exportController.folder, 'retained');
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox());
     expect(c.isDisposed, true);
+    expect(exportController.isDisposed, true);
   });
 
   testWidgets('workspace exposes explicit review navigation', (tester) async {
