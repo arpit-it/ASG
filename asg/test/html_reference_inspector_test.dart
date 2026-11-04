@@ -26,6 +26,156 @@ String page(String body) =>
     '<!doctype html><html><head><title>References</title></head><body>$body</body></html>';
 
 void main() {
+  test('responsive candidates on img, source and link are observed', () async {
+    final report = await inspectHtmlReferences(
+      proposal(
+        page('''
+      <link rel="preload" as="image" imagesrcset="index.html 1x, missing.png 2x">
+      <picture><source srcset="styles.css 320w, wide.png 640w">
+      <img srcset="index.html, absent.png 1.5x"></picture>
+    '''),
+      ),
+    );
+    expect(report.references, 6);
+    expect(report.findings, 3);
+    expect(
+      report.messages.join('\n'),
+      contains('link[imagesrcset] missing.png'),
+    );
+    expect(report.messages.join('\n'), contains('source[srcset] wide.png'));
+    expect(report.messages.join('\n'), contains('img[srcset] absent.png'));
+  });
+  test(
+    'responsive commas belong to URLs until whitespace or trailing separator',
+    () async {
+      final report = await inspectHtmlReferences(
+        proposal(
+          page('''
+      <img srcset="data:image/svg+xml,%3Csvg%3E,%3C/svg%3E 1x, index.html 2x">
+      <img srcset="one,two.png 1x, index.html, styles.css">
+    '''),
+        ),
+      );
+      expect(report.references, 5);
+      expect(report.findings, 2);
+      expect(
+        report.messages.first,
+        contains('data:image/svg+xml,%3Csvg%3E,%3C/svg%3E'),
+      );
+      expect(report.messages.last, contains('one,two.png'));
+      expect(
+        report.messages.join('\n'),
+        isNot(contains('target: img[srcset] two.png')),
+      );
+    },
+  );
+  test(
+    'responsive decoding, queries, schemes and base limits match HTML refs',
+    () async {
+      final report = await inspectHtmlReferences(
+        proposal(
+          page('''
+      <p id="a&amp;b">Site</p>
+      <img srcset="index.html#a%26b 1x, index.html?x=1&amp;y=2 2x, #missing 3x">
+      <source srcset="//example.invalid/img 1x, https://example.invalid/img 2x">
+    '''),
+        ),
+      );
+      expect(report.references, 5);
+      expect(report.findings, 4);
+      expect(report.messages.join('\n'), contains('Query behavior'));
+      expect(report.messages.join('\n'), contains('Missing HTML fragment'));
+      expect(
+        report.messages.where((m) => m.contains('separate review')),
+        hasLength(2),
+      );
+      final base = await inspectHtmlReferences(
+        proposal(
+          page('''
+      <base href="https://example.invalid/"><img srcset="missing.png 1x">
+    '''),
+        ),
+      );
+      expect(base.messages.join('\n'), isNot(contains('Missing local target')));
+    },
+  );
+  test(
+    'malformed responsive descriptors recover without claiming URL checks',
+    () async {
+      final report = await inspectHtmlReferences(
+        proposal(
+          page('''
+      <img srcset="bad.png 0w, bad.png -1x, bad.png 1x 2x, bad.png 1w 1x,
+        bad.png calc(1, 2)x, bad.png 10h, bad.png 10w 10h, index.html 2x">
+    '''),
+        ),
+      );
+      expect(report.references, 1);
+      expect(report.findings, 7);
+      expect(
+        report.messages.every((m) => m.contains('candidate URL not checked')),
+        true,
+      );
+    },
+  );
+  test('responsive descriptor numeric grammar and ASCII whitespace', () async {
+    final report = await inspectHtmlReferences(
+      proposal(
+        page('''
+      <img srcset="index.html 0001w, index.html .5x, index.html 1e+2x,
+        index.html 0x, index.html -0x, index.html 1.x, index.html +1x,
+        index.html 1e999x, index.html 1X, index.html 1\u000bx">
+    '''),
+      ),
+    );
+    expect(report.references, 5);
+    expect(
+      report.messages.where((m) => m.contains('candidate URL not checked')),
+      hasLength(5),
+    );
+    expect(report.messages.join('\n'), contains('HTML parser recovered'));
+  });
+  test(
+    'responsive separator recovery and diagnostic display stay bounded',
+    () async {
+      final recovered = await inspectHtmlReferences(
+        proposal(
+          page('''
+      <img srcset=",, index.html,, styles.css 2x, , index.html 3x">
+    '''),
+        ),
+      );
+      expect(recovered.references, 3);
+      expect(recovered.findings, 3);
+      final report = await inspectHtmlReferences(
+        proposal(
+          page(
+            '<img srcset="${List.filled(200, 'absent.png 1x').join(', ')}">',
+          ),
+        ),
+      );
+      expect(report.references, 200);
+      expect(report.messages, hasLength(100));
+      expect(report.truncated, true);
+    },
+  );
+  test(
+    'comments, text and attributes on other elements are not srcset',
+    () async {
+      final report = await inspectHtmlReferences(
+        proposal(
+          page('''
+      <!-- <img srcset="comment.png 1x"> -->
+      <script>const s = '<img srcset="script.png 1x">';</script>
+      <div srcset="div.png 1x" imagesrcset="other.png 1x">Site</div>
+      <img imagesrcset="wrong.png 1x"><link srcset="wrong.png 1x">
+    '''),
+        ),
+      );
+      expect(report.references, 0);
+      expect(report.findings, 0);
+    },
+  );
   test(
     'CSS URL terms and both import syntaxes traverse nested rules',
     () async {
