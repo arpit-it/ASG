@@ -13173,3 +13173,19 @@ after formatting corrected the initial hash mismatch; no historical observation
 was promoted to current acceptance. Runtime/test inputs match isolated validation.
 Corrected final publication, fresh final review/actual CI and protected reviewer
 merge remain mandatory; full F11/#402 and Deferred400 remain open.
+
+Independent blocking review5771558020 on6510093f reproduced source-review route
+controller replacement on actual MaterialApp theme changes. Allocate the review
+controller once before the route builder so model/listener/proposal/editor
+ownership survives route rebuilds. Exact actual-workspace theme/resize/Back
+disposal regression added. Fresh final tests/builds/publication/review/CI required;
+prior head checks are not final correction evidence. Full F11 remains open.
+
+Second review correction validated: source-review controller is allocated once
+before route construction. Actual workspace theme/resize retain the same owner
+and Back disposes it. Independent identical route probe fails before this change
+and passes after it. Fresh1,535Flutter/nine explicit skips,formatter433/analyzer,
+webWasm/macOSdebug and nine post-format inventory checks pass. Both independent
+blockers5771355984/5771558020 are fixed in the selected source; fresh exact-final
+review, actual new CI and protected reviewer merge remain gates. FullF11/#402 and
+Deferred400 stayOPEN; no inference/promotion/fulladapter acceptance claim.

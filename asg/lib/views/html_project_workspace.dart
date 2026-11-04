@@ -118,14 +118,13 @@ class _HtmlProjectWorkspaceState extends State<HtmlProjectWorkspace> {
   }
 
   Future<void> reviewSource() async {
+    final reviewController = HtmlSourceReviewController(
+      project: widget.project,
+      records: widget.records,
+    );
     await Navigator.of(context).push<void>(
       MaterialPageRoute(
-        builder: (_) => HtmlSourceReviewScreen(
-          controller: HtmlSourceReviewController(
-            project: widget.project,
-            records: widget.records,
-          ),
-        ),
+        builder: (_) => HtmlSourceReviewScreen(controller: reviewController),
       ),
     );
     if (mounted) controller.reload();

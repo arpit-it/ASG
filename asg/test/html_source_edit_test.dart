@@ -8,6 +8,7 @@ import 'package:asg/controllers/html_source_review_controller.dart';
 import 'package:asg/models/html/html_reference_report.dart';
 import 'package:asg/services/html/html_source_proposer.dart';
 import 'package:asg/views/html_source_editor.dart';
+import 'package:asg/views/html_project_workspace.dart';
 import 'package:asg/views/html_source_review_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -369,4 +370,65 @@ void main() {
     );
     await tester.pumpWidget(const SizedBox());
   });
+  testWidgets(
+    'reviewer real workspace review route retains controller through theme change',
+    (tester) async {
+      final records = await seed.seed();
+      late StateSetter theme;
+      var dark = false;
+      await tester.pumpWidget(
+        StatefulBuilder(
+          builder: (_, setState) {
+            theme = setState;
+            return MaterialApp(
+              theme: ThemeData(
+                brightness: dark ? Brightness.dark : Brightness.light,
+              ),
+              home: HtmlProjectWorkspace(
+                project: seed.project,
+                records: records,
+              ),
+            );
+          },
+        ),
+      );
+      final link = find.text('Review new HTML source');
+      await tester.scrollUntilVisible(
+        link,
+        150,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.ensureVisible(link);
+      await tester.pumpAndSettle();
+      await tester.tap(link);
+      await tester.pumpAndSettle();
+      final original = tester
+          .widget<HtmlSourceReviewScreen>(find.byType(HtmlSourceReviewScreen))
+          .controller;
+      theme(() => dark = true);
+      await tester.pumpAndSettle();
+      final next = tester
+          .widget<HtmlSourceReviewScreen>(find.byType(HtmlSourceReviewScreen))
+          .controller;
+      expect(
+        identical(original, next),
+        true,
+        reason: 'Route rebuild must retain review identity/listener/model ownership and editor authority',
+      );
+      tester.view.physicalSize = const Size(900, 700);
+      addTearDown(tester.view.resetPhysicalSize);
+      await tester.pumpAndSettle();
+      expect(
+        tester
+            .widget<HtmlSourceReviewScreen>(find.byType(HtmlSourceReviewScreen))
+            .controller,
+        same(original),
+      );
+      expect(original.isDisposed, false);
+      await tester.pageBack();
+      await tester.pumpAndSettle();
+      expect(original.isDisposed, true);
+      await tester.pumpWidget(const SizedBox());
+    },
+  );
 }
