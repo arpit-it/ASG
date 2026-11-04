@@ -35,16 +35,24 @@ HtmlReferenceReport _inspect(HtmlSourceProposal proposal) {
       'HTML parser recovered ${parser.errors.length} parse errors; inspect the source.',
     );
   }
-  final hasBase = elements.any((element) => element.localName == 'base');
+  final hasBase = elements.any(
+    (element) =>
+        element.namespaceUri == 'http://www.w3.org/1999/xhtml' &&
+        element.localName == 'base' &&
+        !_insideTemplate(element),
+  );
   if (hasBase) {
     report(
       'A base element changes URL resolution; local targets were not resolved.',
     );
   }
   for (final element in elements) {
+    // The parser exposes template contents in this traversal, but those nodes
+    // belong to an inert fragment, outside the document's target/ID inventory.
+    // The template element itself can still be a live target.
+    if (_insideTemplate(element)) continue;
     if (element.namespaceUri == 'http://www.w3.org/1999/xhtml' &&
-        element.localName == 'a' &&
-        !_insideTemplate(element)) {
+        element.localName == 'a') {
       final name = element.attributes['name'];
       if (name != null && name.isNotEmpty) navigationNames.add(name);
     }

@@ -28,6 +28,71 @@ String page(String body) =>
     '<!doctype html><html><head><title>References</title></head><body>$body</body></html>';
 
 void main() {
+  test('inert template IDs cannot satisfy live fragments', () async {
+    final report = await inspectHtmlReferences(
+      proposal(
+        page(
+          '<template><p id="inert"></p><svg><g id="shape"></g></svg></template>'
+          '<a href="#inert">Go</a><svg><use href="#shape"></use></svg>',
+        ),
+      ),
+    );
+    expect(report.references, 2);
+    expect(report.findings, 2);
+    expect(
+      report.messages.every((m) => m.contains('Missing HTML fragment')),
+      true,
+    );
+  });
+
+  test('template IDs do not produce live duplicate ID findings', () async {
+    final report = await inspectHtmlReferences(
+      proposal(
+        page(
+          '<p id="same"></p><template><p id="same"></p>'
+          '<template><p id="same"></p></template></template>'
+          '<a href="#same">Go</a>',
+        ),
+      ),
+    );
+    expect(report.references, 1);
+    expect(report.findings, 0);
+  });
+
+  test('inert base does not suppress missing live references', () async {
+    final report = await inspectHtmlReferences(
+      proposal(
+        page(
+          '<template><base href="https://example.invalid/"></template>'
+          '<a href="missing.html">Go</a>',
+        ),
+      ),
+    );
+    expect(
+      report.messages.join('\n'),
+      contains('Missing local target: a[href] missing.html'),
+    );
+    expect(
+      report.messages.join('\n'),
+      isNot(contains('local targets were not resolved')),
+    );
+  });
+
+  test('live SVG and template element IDs remain targets', () async {
+    final report = await inspectHtmlReferences(
+      proposal(
+        page(
+          '<template id="container"><p id="hidden"></p></template>'
+          '<svg><g id="a&amp;b"></g><use href="#a%26b"></use></svg>'
+          '<a href="#container">Go</a><p id="duplicate"></p><p id="duplicate"></p>',
+        ),
+      ),
+    );
+    expect(report.references, 2);
+    expect(report.findings, 1);
+    expect(report.messages.single, contains('Duplicate HTML ID: duplicate'));
+  });
+
   test('HTML navigation resolves decoded legacy anchor names', () async {
     final report = await inspectHtmlReferences(
       proposal(
