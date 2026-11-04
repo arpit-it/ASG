@@ -12536,3 +12536,87 @@ match the isolated full-test copy, excluding the pre-existing local MLX-venv
 license-scan contamination without modifying that environment. Existing health8765
 unavailable; no live inference claimed or needed for persistence. Publication,
 independent exact-final review, actual required CI and reviewer merge remain gates.
+
+Published [PR #485](https://github.com/arpit-it/ASG/pull/485), Awaiting merge.
+Tested local1fc5c1cd32fd3a8e7f016f8a9aebb85d2a74ef47 and plugin remote
+0138f4f05df7eb41a39aa72c09d60fb33066f6a9 share exacttree
+c7179609c753caa1da11173a79fbe6b4ac81a639; all11published blobs match local.
+Independent reviewer /root/review_485 owns exact-final assessment, actual required
+CI and protected expected-head reviewer merge. FullF11/#402 and Deferred400 stay
+open; no full adapter/inference claim. Final1551Flutter/nine skips,43focused,
+437format/analyzer/webWasm/macOSdebug/nineinventory pass; all462inputs match.
+
+Fresh independent exact-final approval5773003010 at0138f4f0/treec7179609.
+Reviewer verified all943remote blobs/modes and passed52focused/native transactional
+tests, seven additional probes (five context bindings, actual stale-session DB
+conditional conflict and diagnostics retry without inference), plus nineinventory.
+No blocking findings/source changes. RequiredCI41879462450 remains queued with
+Flutter126747903913/Python126747903489; protected reviewer merge still gated.
+
+Actual final CI41879462450 aggregate/logs pass: independent reviewer inspected
+1504Linux/53explicit skips including all14draft tests,17Chrome,browser transport/
+staticHTML,webWasm and real independentgeneratedFlutter resolve/analyze/test/build/
+serve, plus eightPython suites. Direct required statuses lag: Flutter126747903913
+in_progress/null,Python126747903489 queued/null. No merge based on aggregate
+success; protected reviewer gate remains held until both direct checks succeed.
+
+
+### Durable reviewed HTML source drafts verified merged — 2026-11-04T17:56:54.077795+00:00
+Bounded F11/#402 increment Done through [PR #485](https://github.com/arpit-it/ASG/pull/485),
+branch `402-html-source-drafts`, scope6637428076. Tested local
+1fc5c1cd32fd3a8e7f016f8a9aebb85d2a74ef47 and final remote
+0138f4f05df7eb41a39aa72c09d60fb33066f6a9 share exacttree
+c7179609c753caa1da11173a79fbe6b4ac81a639. Independent final approval5773154862
+and all943remote blobs/modes verified;52focused/native transactional tests,
+seven additional probes and nineinventory pass. Parent1551Flutter/nine explicit
+skips,437formatzerochange/analyzer/webWasm/macOSdebug/nineinventory pass;
+all462runtime/test/tool inputs match isolated full validation. Existing local
+MLX-venv license contamination excluded without modifying that environment.
+RequiredCI41879462450 BOTH direct checks completed/success:
+Flutter126747903913/Python126747903489. Reviewer inspected actual1504Linux/
+53explicit skips including all14draft tests,17Chrome,browsertransport/staticHTML,
+webWasm/real independentgeneratedFlutter resolve/analyze/test/build/serve and
+all8Python suites. Initial aggregate/log success was NOT treated as direct-check
+completion; reviewer waited until required statuses completed.
+Protected expected-head reviewer squashmerge6a38ba549f648cc6c5eaa24f3392ff9b1e7f3c8c
+at2026-11-04T17:55:23Z freshly parent-verified onPR/currentmain. Signed commit
+hash, exacttree and soleparent77940352 verified before guarded local-only sync.
+Localmain/originmain0/0,indexempty; original2IDE edits and all3localhandoffdocs
+preserved byte-for-byte during synchronization. Explicit source-draft Save/
+Replace/Restore now retains reviewed files/provenance/edit attribution across
+sessions, reruns diagnostics and refuses changed context/corrupt/conflicting
+writes. No saved approval, source mutation, model request, inference, JavaScript
+execution, promotion or fulladapter acceptance. FullF11/#402 and Deferred400
+remainOPEN/unchecked. Final canonical merge bookkeeping retained locally for
+next normal reviewed developmentPR; no new issue, owner action, stableapp,
+cadence or notification preference change. Receipts:/private/tmp/asg485-publication.json,
+/private/tmp/asg485-review-evidence.json,/private/tmp/asg485-verified-pr.json,
+/private/tmp/asg485-sync-record.json.
+
+
+### Failed HTML draft restoration preserves current review — F11 / #402
+In progress on `402-html-restore-recovery`, scope6638049014, from verified main
+6a38ba549f648cc6c5eaa24f3392ff9b1e7f3c8c. No competing active ASG owner/open PR
+at selection. Existing #402 covers this reproducible data-loss correction; no new
+issue/task. Failed saved-draft diagnostics previously erased current unsaved source.
+Retain exact prior files, diagnostics, provenance and edit attribution only when
+context remains current and no Stop/deadline/disposal occurred. Give retained
+review a fresh proposal identity so old preview/export references remain revoked.
+Saved bytes remain unchanged; successful retry explicitly replaces current review.
+Acceptance: regression fails on merged baseline; failure/retry retains prior review,
+while Stop/deadline/disposal/context changes never recover authority. Five new
+regressions supplement existing native database, restoration and UI tests.
+Available Mac needs no deferred platform resources. Full F11/#402 and Deferred
+#400 stay open/unchecked. Full checks/builds, independent exact-final review,
+required CI and protected reviewer merge remain delivery gates. No inference,
+JavaScript execution, source promotion or complete-adapter claim.
+
+Validation: baseline regression fails on merged PR485 controller (lost proposal);
+corrected final source passes 48 focused HTML draft/review/edit tests, analysis,
+437-file zero-change formatter, web/Wasm dry-run and macOS debug builds, and nine
+inventory tests. Clean tracked-source full suite passes 1,556 with nine explicit
+skips; final lint-only test adjustment is also covered by focused rerun. Existing
+local model health unavailable; no inference claim. The isolated full-test copy
+excludes pre-existing local MLX-venv license-scan contamination without modifying
+that environment. Publication, exact-final independent review, required CI and
+protected reviewer merge remain mandatory; fullF11/#402 and Deferred400 stay open.
