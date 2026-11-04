@@ -128,20 +128,23 @@ class HtmlPreviewHostNative {
           final site = request.headers.value('sec-fetch-site');
           final requestOrigin = request.headers.value('origin');
           // CSP sandbox gives the passive document an opaque origin. Its own
-          // stylesheet is therefore a cross-site no-cors subresource. The exact
+          // stylesheet/images are therefore cross-site no-cors subresources. The exact
           // secret-token route allowlist still applies; no scripts are served.
-          final passiveStyle =
+          final passiveResource =
               passive &&
-              request.headers.value('sec-fetch-dest') == 'style' &&
+              [
+                'style',
+                'image',
+              ].contains(request.headers.value('sec-fetch-dest')) &&
               request.headers.value('sec-fetch-mode') == 'no-cors';
           if (generation != _generation ||
               !['GET', 'HEAD'].contains(request.method) ||
               request.headers.value('host') != '127.0.0.1:${server.port}' ||
               (requestOrigin != null &&
                   requestOrigin != origin &&
-                  !(passiveStyle && requestOrigin == 'null')) ||
+                  !(passiveResource && requestOrigin == 'null')) ||
               (site == 'cross-site' &&
-                  !passiveStyle &&
+                  !passiveResource &&
                   !(request.headers.value('sec-fetch-mode') == 'navigate' &&
                       request.headers.value('sec-fetch-dest') == 'document')) ||
               request.contentLength > 0 ||

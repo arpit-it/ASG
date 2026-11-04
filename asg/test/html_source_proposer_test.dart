@@ -97,6 +97,8 @@ void main() {
     expect((await pending).files, files);
     expect(p.cancellations, 1);
     expect(p.prompt, contains('Café landing page'));
+    expect(p.prompt, contains('optional image.svg'));
+    expect(p.prompt, contains('128000 bytes'));
   });
   test('invalid instructions do not allocate providers', () async {
     var n = 0;

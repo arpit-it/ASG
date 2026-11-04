@@ -271,7 +271,8 @@ The saved development automation was updated through its management tool; active
   - Acceptance: UI shows available and unavailable operations with actionable reasons; unsupported confinement refuses candidate execution before any source is run. Each enabled host passes real new-project resolve/analyze/test/web-build/serve, Stop/deadline/output-limit and descendant-cleanup checks, restart/uncertain-checkpoint refusal, stale-approval refusal and last-working-output preservation. Enabling starter generation must not implicitly enable candidate execution. Model-written candidate/repair support needs independently reviewed platform isolation and real deny-write/network/process-escape probes at the established boundary.
   - Validation/delivery: one narrowly scoped issue/PR per host/capability milestone, actual Linux/Windows builds and launches on their respective hosts, plus macOS regression coverage. Include paths with spaces, missing toolchains, occupied ports, failed previews and interrupted writes. Record tested versus unavailable capabilities separately; keep F16 unchecked until promised host increments satisfy acceptance and normal independent review/CI/verified merge. Broader generated targets remain F11.
 - [ ] F11 Multi-language project generation, runners and explicit stack selection — In progress (#402); depends on F04 and F05
-  - Declared HTML form override diagnostics — In progress: #402, `402-html-formaction-diagnostics`, scope6640710391. Inspect button/input formaction declarations; actual form submission remains unverified.
+  - Reviewed HTML local SVG asset — In progress: #402, `402-reviewed-html-svg`, scope6641348315. Optional image.svg through review/edit/draft/export/passive preview; SVG internals and full adapter remain unverified. Five baseline regressions; final checks/review/CI/merge pending.
+  - Declared HTML form override diagnostics — Done through [PR #490](https://github.com/arpit-it/ASG/pull/490), verified reviewer merged8471591 at2026-11-04T20:12:27Z; finalreview5775081254/requiredCI41903060539 passed; #402, `402-html-formaction-diagnostics`, scope6640710391. Inspect button/input formaction declarations; actual form submission remains unverified.
   - Failed replacement request recovery — Done through [PR #489](https://github.com/arpit-it/ASG/pull/489), verified reviewer mergee4141ac3 at2026-11-04T19:43:03Z; finalreview5774681591/requiredCI41898323602 passed: #402, `402-html-request-recovery`, scope6640067749. Preserve prior edited review under fresh identity after ordinary transport/response/diagnostics failure; lifecycle and stale-context authority remains revoked. Final review/CI/merge verified; fullF11 remains open.
   - Unapplied editor action guards — Done through PR #488, verified reviewer mergee2c54a48 at2026-11-04T19:15:30Z; finalreview5774290827/requiredCI41893610586 passed; #402, `402-html-editor-action-guards`, scope6639374663. Explicit Save/Cancel before replacement requests/export; retain failed-diagnostics retry buffers.
   - Failed edited HTML diagnostics retry — Done through PR #487, verified reviewer merge2cecbb2c at2026-11-04T18:45:54Z; finalreview5773855223/requiredCI41889159546 passed; #402, `402-html-edit-retry`, scope6638724578. Same retained editor may retry after diagnostics failure without restoring old export/preview authority. Full adapter remains open.
@@ -13742,3 +13743,63 @@ review, required CI and protected reviewer merge remain gates.
 Recorded 2026-11-04T20:01:29.002198+00:00.
 
 Final local validation: full isolated suite1,578Flutter/nine explicit skips PASS;23reference tests (five new),438-file zero-change format, clean analyzer,web/Wasm dry-run,macOSdebug andnineinventory tests PASS. All463tracked runtime/test/tool inputs byte-identical to isolated copy; pre-existing MLX-venv untouched. Existing8765health unavailable (URLError,0.008s); no inference claim. Independent final review, actual required CI and protected reviewer merge pending.
+
+Published PR #490 https://github.com/arpit-it/ASG/pull/490, Awaiting merge. Tested local1af0ad8eeb08c86b6eee670290df4bf41c65d9bc and plugin remoteb0f4158c8eb58481643d755389952f784e235575 share exacttree81b565bd63a379da3e8c84d134c2dc19acfde840; allsevenpublishedblobs match. Independent /root/review_490 owns exact-final review, actual required CI and protected expected-head reviewer merge. FullF11/#402 and Deferred400 remainOPEN; no inference/fulladapterclaim. Recorded 2026-11-04T20:05:00.150659+00:00.
+
+
+### Declared HTML form override diagnostics verified merged — PR #490
+Bounded F11/#402 correction Done through https://github.com/arpit-it/ASG/pull/490,
+branch `402-html-formaction-diagnostics`, scope6640710391. Declared button/input
+formaction URLs now use the same advisory resolver as form action. No effective
+submission/control-state/form-ownership/method/validation/server claim.
+Tested local1af0ad8eeb08c86b6eee670290df4bf41c65d9bc and plugin final
+b0f4158c8eb58481643d755389952f784e235575 share exacttree
+81b565bd63a379da3e8c84d134c2dc19acfde840. Allsevenpublishedblobs matched;
+independent reviewer verified all944remote blobs/modes and463validationinputs.
+Independent codeapproval5775014945/finalapproval5775081254;61focused+3additional
+edge probes+nineinventory PASS, allfivebaseline regressions FAIL reproduced.
+Parent1578Flutter/nineexplicit skips,23reference/five new,438format/analyzer,
+webWasm/macOSdebug/nineinventory PASS; isolatedsourcecopy matches463inputs
+and excludes existing MLX-venv license-scan contamination without changing it.
+RequiredCI41903060539 BOTHdirectfinalheadchecks completedSUCCESS:
+Flutter126830314666/Python126830313966. Actual1531Linux/53explicit skips,
+allfive new,17Chrome,browsertransport/staticHTML/webWasm/realindependent
+generatedFlutter resolve-analyze-test-build-serve and all8Python suites inspected.
+Protected expected-head reviewer squashmerge
+d8471591698cb9b6d2a117e69c014aea8f400ec8 at2026-11-04T20:12:27Z
+independently parent-verified on PR/currentmain. Signed exacttree/soleparent
+e4141ac3 verified/hash-reconstructed before guarded local-only ref sync.
+Localmain/originmain0/0,indexempty; originaltwoIDE edits and threelocalhandoff
+docs byte-identical through synchronization. FullF11/#402 and Deferred#400
+verifiedOPEN/unchecked. Existing8765health unavailable (URLError,0.008s); no
+fresh inference/fulladapter/stableapp/deployment/cadence/notification claim.
+No active implementation remains after verified merge; no owner action required.
+Receipts:/private/tmp/asg490-publication.json,/private/tmp/asg490-review-evidence.json,
+/private/tmp/asg490-verified-pr.json,/private/tmp/asg490-sync-record.json.
+Recorded 2026-11-04T20:13:56.684195+00:00.
+
+
+### Reviewed HTML local SVG asset — F11 / #402
+In progress on `402-reviewed-html-svg` from verified PR #490 merge
+`d8471591698cb9b6d2a117e69c014aea8f400ec8`; scope6641348315.
+No open PR or competing active ASG run. Reuse #402; no new issue/F ID.
+F11 requires local assets, but reviewed proposals rejected every image file.
+Add optional root-level `image.svg` alongside required HTML/CSS and optional JS.
+Retain strict filenames, 64KB/file and 128KB aggregate UTF-8 limits. Carry exact
+asset bytes through temporary editing, explicit local drafts, confirmed export,
+identity check and passive preview. Empty SVG editor removes the optional file.
+Permit opaque-origin no-cors image requests only under existing token routes,
+current source authority and script-disabled CSP; fixed-starter policy unchanged.
+SVG content/internal references are unvalidated; no general image, interaction,
+visual acceptance, live model, safe-export or full adapter claim.
+Five new regressions fail on merged baseline. Acceptance covers legacy/optional
+JS combinations, strict bounds/paths, edits/draft restoration, exact export/check,
+HTTP MIME/immutable snapshot/foreign refusal/revocation/Stop and actual Chrome
+image decoding plus CSS at320/1280px with script/opaque-origin/form refusal.
+Delivered source/export/passive-preview prerequisites suffice; Deferred#400
+hardware is not required. FullF11/#402 remains open/unchecked. Final tests,
+plugin publication, independent exact-final review, required CI and protected
+reviewer merge remain gates.
+Recorded 2026-11-04T20:33:18.163157+00:00.
+
+Final local validation: 1,584 Flutter tests/nine explicit skips PASS in isolated tracked-source copy; all467runtime/test/tool inputs match. 107affected tests before final native-database addition and35final SVG/proposer tests PASS. 440file zero-change formatter, final analyzer, web/Wasm dry-run, macOSdebug, nineinventory tests and actual installedChrome passive SVG/CSS320/1280px/script/form/opaque-origin/Stop PASS. Six new SVG tests total, five reproduced FAIL before implementation; no live inference (existing8765health unavailable URLError0.007s). Existing local MLX-venv remains untouched. Publication, independent exact-final review, actual required CI and protected reviewer merge pending. Recorded 2026-11-04T20:35:57.605234+00:00.

@@ -27,7 +27,7 @@ class HtmlReferenceReport {
       'Parsed CSS url()/@import references in styles.css and inline styles are '
       'also advisory; CSS syntax/compatibility, filter declarations, escaped URLs, JavaScript, '
       'responsive candidate selection, sizes/media/type conditions, image decoding, '
-      'template content, dynamic references, browser '
+      'SVG content and its internal references, template content, dynamic references, browser '
       'behavior and visual acceptance are not checked. No files or URLs are '
       'opened. No safety verdict, preview or execution approval.';
 }
