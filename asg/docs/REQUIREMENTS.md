@@ -12096,3 +12096,10 @@ selection were exercised. Initial new test harness errors (event constructor,
 lazy/horizontal scrolling and invalid production-storage seed) corrected before
 final checks. Existing8765health unavailable; no live inference claimed.
 Status: Awaiting publication and independent review/CI/merge.
+
+PR: https://github.com/arpit-it/ASG/pull/468; initial published revision
+0f45f6ab38b92808a4debf598bde7f5aabb8e476 and tested local821fb73c share
+exact tree261a51ac8b34a17e151db0ee2e3d133fa5b98f49; all nine plugin blobs
+verified. Status: Awaiting merge. This PR bookkeeping changes documentation only;
+runtime/test inputs remain unchanged. Independent review of the final revision
+and both required CI checks are mandatory before protected reviewer merge.
