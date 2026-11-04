@@ -271,7 +271,8 @@ The saved development automation was updated through its management tool; active
   - Acceptance: UI shows available and unavailable operations with actionable reasons; unsupported confinement refuses candidate execution before any source is run. Each enabled host passes real new-project resolve/analyze/test/web-build/serve, Stop/deadline/output-limit and descendant-cleanup checks, restart/uncertain-checkpoint refusal, stale-approval refusal and last-working-output preservation. Enabling starter generation must not implicitly enable candidate execution. Model-written candidate/repair support needs independently reviewed platform isolation and real deny-write/network/process-escape probes at the established boundary.
   - Validation/delivery: one narrowly scoped issue/PR per host/capability milestone, actual Linux/Windows builds and launches on their respective hosts, plus macOS regression coverage. Include paths with spaces, missing toolchains, occupied ports, failed previews and interrupted writes. Record tested versus unavailable capabilities separately; keep F16 unchecked until promised host increments satisfy acceptance and normal independent review/CI/verified merge. Broader generated targets remain F11.
 - [ ] F11 Multi-language project generation, runners and explicit stack selection — In progress (#402); depends on F04 and F05
-  - Explicit fixed HTML starter registration — Awaiting merge in [PR #466](https://github.com/arpit-it/ASG/pull/466), #402, `402-html-project-registration`, scope6588315396. Transactional Projects/original-starter registration and dedicated safe workspace; full synthesis/approved-task integration remain Pending. See delivery ledger.
+  - HTML workspace requirements/task board — In progress on #402, `402-html-requirements-board`, scope6624498548. Reuse per-project structured authoring and durable task records before future approval-bound HTML execution; no source execution or verification authority. Full F11 remains open.
+  - Explicit fixed HTML starter registration — Done via [PR #466](https://github.com/arpit-it/ASG/pull/466), verified reviewer merge1359416c at2026-11-02T21:19:50Z, approval5743433197/finalgate5743506734 and requiredCI41526232872 passed; #402, `402-html-project-registration`, scope6588315396. Transactional Projects/original-starter registration and dedicated safe workspace; full synthesis/approved-task integration remain Pending. See delivery ledger.
   - Creation-time HTML runner discovery — Done via [PR #465](https://github.com/arpit-it/ASG/pull/465), verified reviewer merge661d59f8 at2026-11-02T20:43:18Z; approval5742966693/finalgate5743052822 and requiredCI41520539566 passed; #402, `402-creation-runner-discovery`, scope6587720764. Registry-derived version/adapter/operation boundaries before handoff, shared with export; full HTML registration remains Planned. See delivery ledger.
   - HTML creation-to-starter handoff — Done via [PR #464](https://github.com/arpit-it/ASG/pull/464), verified reviewer merge32735587 at2026-11-02T20:13:55Z; approval5742630791/finalgate5742708623 and requiredCI41516033301 passed; #402, `402-html-creation-handoff`, scope6587091875. Explicit starter navigation from both creation entry points retains the original plain-text idea and wizard choices without registration or Build approval; full HTML project integration remains Pending. See delivery ledger.
   - HTML export deadline — Done via [PR #463](https://github.com/arpit-it/ASG/pull/463), verified reviewer merge09d68c87 at2026-11-02T19:42:54Z; independent approval5742254710/finalgate5742343110 and requiredCI41511268868 passed. #402, `402-html-export-deadline`, scope6586482988. Ten-second authority revocation retains pending IO ownership and partial/process evidence; late completion cannot publish success. Full F11 remains open; see delivery ledger.
@@ -11983,3 +11984,52 @@ PR: https://github.com/arpit-it/ASG/pull/466; issue #402, scope6588315396.
 Final followup full1,352Flutter/nine explicit skips,36focused,formatter398 and
 analyzer passed; fresh web/Wasm and isolated macOS debug rebuilds passed. Nine
 final inventory tests passed. Fresh final revision review and actual required CI remain mandatory; no merge claim.
+
+
+### Explicit fixed HTML starter registration verified merged — PR #466
+Bounded F11/#402 increment Done on `402-html-project-registration`, scope6588315396.
+Final0aed9055bc61ef3d0940d512378d9d817b88b21d/testedlocal914589ab2180102d1dd30031119cc59ce44fdf46
+share exacttreeb90dd406d5004f6399ac6304516cde2f4789b2fd; all17remote blobs and453
+validation inputs match. Initial independent blocker5743372095 reproduced nested
+registration loss; fixed durable conditional append/refresh, corruption/conflict
+guards and HTML metadata isolation. Initial inventory hash mismatch corrected
+after all runtime edits. Fresh independent approval5743433197/finalgate5743506734
+found no blockers;77focused/originalretentionrepro/nineinventory passed. Parent
+final1352Flutter/nine explicit skips,36focused,formatter398/analyzer,freshwebWasm/
+isolatedmacOSdebug/nineinventory passed. Actual required CI41526232872 BOTH SUCCESS:
+Flutter125554844086/Python125554843537. Reviewer inspected1324Linux/34skips,17Chrome,
+actualtransport/staticHTML/webWasm/realgeneratedFlutter and all eight Python
+suites; no skipped inference is claimed as support. Protected expected-head
+reviewer plugin squash merge1359416c6f3bbed31a0a4a446543920507383d33 at2026-11-02T21:19:50Z.
+Parent freshly verified mergedPR/currentmain/exactsignedtree/soleparent661d59f8,
+#402OPEN/#400OPEN; hash-reconstructed commit before guarded atomic localref sync.
+Localmain/originmain0/0,indexempty,bothoriginalIDEedits byte-identical. Explicit
+registration now retains original fixed exports in Projects and safely reopens
+HTML-specific checks/preview on request. No implicit Build or Flutter execution.
+Full synthesis/approved-task integration/edited-source execution and full F11
+remain Pending; Deferred400 retained. Existing8765health unavailable; no inference,
+model launch, app-launch acceptance or stableapp replacement/support claim.
+Final merge bookkeeping retained locally for the next normal reviewed development
+PR; no direct-main publication, new issue, cadence or notification change.
+Receipts:/private/tmp/asg466-publication.json,/private/tmp/asg402-registration-inputs.json,
+/private/tmp/asg466-review-evidence.json,/private/tmp/asg466-reviewed-merge.json,
+/private/tmp/asg466-safe-sync.py.
+
+
+### HTML workspace requirements/task board — 4 November 2026
+Issue #402 / F11; branch `402-html-requirements-board`; scope comment6624498548.
+Registered HTML workspaces now open the existing project-scoped requirements and
+task editor. Requirements/tasks persist and reopen independently of original
+starter metadata, with explicit manual-progress/no-source-approval guidance.
+No HTML checks, preview, export, Flutter Build or requirement-check execution
+is dispatched by opening this board. Full approved-task HTML integration remains
+Pending; F11 and deferred platform issue #400 remain open.
+Acceptance: per-project durable authoring/reopen, isolation, corrupt-record retry,
+320px/2x text layout, original project/starter preservation and no source effects.
+Focused HTML registration suite16 passed; analyzer and web/Wasm/macOS debug builds
+passed; nine refreshed acceptance-inventory tests passed. Initial full suite
+encountered the existing repository license audit scanning installed third-party
+`tools/.mlx-venv` packages; clean tracked-file full suite passed1,355 tests with
+nine explicit skips.
+No model inference or app-launch acceptance claimed. Final full-suite results,
+exact-revision independent review, required CI and verified merge remain pending.

@@ -4,6 +4,9 @@
 import 'package:flutter/material.dart';
 
 import '../controllers/html_project_controller.dart';
+import '../controllers/requirements_controller.dart';
+import '../services/requirements_store.dart';
+import 'requirements_screen.dart';
 import '../controllers/html_export_controller.dart';
 import '../models/project.dart';
 import '../services/record_storage.dart';
@@ -48,6 +51,20 @@ class _HtmlProjectWorkspaceState extends State<HtmlProjectWorkspace> {
     super.dispose();
   }
 
+  Future<void> requirements() async {
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute(
+        builder: (_) => RequirementsScreen(
+          controller: RequirementsController(
+            widget.project.id,
+            RequirementsStore(widget.records),
+          ),
+          projectName: widget.project.name,
+        ),
+      ),
+    );
+  }
+
   Future<void> open() async {
     controller.reload();
     final starter = controller.starter;
@@ -80,6 +97,14 @@ class _HtmlProjectWorkspaceState extends State<HtmlProjectWorkspace> {
         const SizedBox(height: 12),
         const Text(
           'Registration remembers the original export. Opening this workspace does not read source files, run checks, start a preview or approve Build tasks. Open the starter to request exact-source checks and local preview. Arbitrary edited-source execution and approved-task integration remain planned.',
+        ),
+        const SizedBox(height: 12),
+        const Text(
+          'Record requirements and track tasks for this HTML project. Task status is manual progress, not approval to change source or verified HTML check evidence.',
+        ),
+        OutlinedButton(
+          onPressed: requirements,
+          child: const Text('Requirements and tasks'),
         ),
         if (controller.error != null) ...[
           Text(controller.error!),
