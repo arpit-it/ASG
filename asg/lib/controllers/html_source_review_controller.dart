@@ -4,6 +4,8 @@
 import 'dart:async';
 
 import '../models/html/html_source_proposal.dart';
+import '../models/html/html_reference_report.dart';
+import '../services/html/html_reference_inspector.dart';
 import '../models/model_request_provenance.dart';
 import '../models/project.dart';
 import '../services/html/html_project_store.dart';
@@ -19,15 +21,19 @@ class HtmlSourceReviewController extends BaseController {
     required this.project,
     required this.records,
     HtmlSourceProposer? proposer,
+    Future<HtmlReferenceReport> Function(HtmlSourceProposal)? inspectReferences,
     this.requestDeadline = const Duration(seconds: 90),
   }) : assert(requestDeadline > Duration.zero),
-       _proposer = proposer ?? HtmlSourceProposer();
+       _proposer = proposer ?? HtmlSourceProposer(),
+       _inspectReferences = inspectReferences ?? inspectHtmlReferences;
 
   final StudioProject project;
   final RecordStorage records;
   final HtmlSourceProposer _proposer;
+  final Future<HtmlReferenceReport> Function(HtmlSourceProposal)
+  _inspectReferences;
   final Duration requestDeadline;
-  bool _busy = false, _revoked = false;
+  bool _busy = false, _revoked = false, _inspecting = false;
   bool get busy => _busy;
   String? _error;
   String? get error => _error;
@@ -35,6 +41,8 @@ class HtmlSourceReviewController extends BaseController {
   String get status => _status;
   HtmlSourceProposal? _proposal;
   ModelRequestProvenance? _provenance;
+  HtmlReferenceReport? _references;
+  HtmlReferenceReport? get references => proposal == null ? null : _references;
   Map<String, String?>? _snapshot;
   Future<void>? _cleanup;
 
@@ -94,6 +102,7 @@ class HtmlSourceReviewController extends BaseController {
     _revoked = false;
     _cleanup = null;
     _proposal = null;
+    _references = null;
     _provenance = null;
     _error = null;
     Timer? deadline;
@@ -112,7 +121,9 @@ class HtmlSourceReviewController extends BaseController {
       deadline = Timer(requestDeadline, () {
         if (!_busy || isDisposed || _revoked) return;
         stop();
-        _status = 'Review deadline reached. Wait for transport cleanup before retrying.';
+        _status = _inspecting
+            ? 'HTML diagnostics deadline reached. Waiting for analysis to settle. No files changed.'
+            : 'Review deadline reached. Wait for transport cleanup before retrying.';
         update();
       });
       final value = await _proposer.propose(
@@ -120,6 +131,13 @@ class HtmlSourceReviewController extends BaseController {
         instruction: instruction,
       );
       _requireCurrent();
+      _inspecting = true;
+      _status = 'Inspecting HTML references…';
+      update();
+      _requireCurrent();
+      final references = await _inspectReferences(value);
+      _requireCurrent();
+      _references = references;
       _proposal = value;
       _provenance = provenance;
       _status = 'Untrusted proposal ready for review. No files changed.';
@@ -132,6 +150,13 @@ class HtmlSourceReviewController extends BaseController {
       deadline?.cancel();
       // A separately dispatched Stop cleanup may outlive the request itself.
       await _cleanup;
+      if (_inspecting) {
+        _inspecting = false;
+        _status = _status.replaceFirst(
+          'Waiting for analysis to settle.',
+          'The analysis request has returned; result ignored.',
+        );
+      }
       _busy = false;
       update();
     }
@@ -141,7 +166,9 @@ class HtmlSourceReviewController extends BaseController {
     if (isDisposed || !_busy || _revoked) return;
     _revoked = true;
     _proposal = null;
-    _status = 'Review stopped. Waiting for transport cleanup; server-side inference may continue.';
+    _status = _inspecting
+        ? 'HTML diagnostics stopped. Waiting for analysis to settle. No files changed.'
+        : 'Review stopped. Waiting for transport cleanup; server-side inference may continue.';
     // Assign before notifying: reentrant listeners cannot redispatch cleanup.
     _cleanup = _proposer.cancel().catchError((Object _) {
       if (!isDisposed) {

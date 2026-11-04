@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 
 import '../controllers/html_source_review_controller.dart';
+import '../models/html/html_reference_report.dart';
 import '../controllers/html_reviewed_export_controller.dart';
 import '../services/html/html_source_export_factory.dart';
 import 'html_reviewed_export_screen.dart';
@@ -91,6 +92,14 @@ class _HtmlSourceReviewScreenState extends State<HtmlSourceReviewScreen> {
               child: const Text('Export reviewed source…'),
             ),
             SelectableText(proposal.summary),
+            if (c.references case final report?) ...[
+              const SizedBox(height: 16),
+              Text(report.summary),
+              const Text(HtmlReferenceReport.limitations),
+              for (final message in report.messages) SelectableText(message),
+              if (report.truncated)
+                const Text('Only the first 100 findings are shown.'),
+            ],
             Text(c.provenance!.description),
             for (final file in proposal.files.entries) ...[
               const SizedBox(height: 16),

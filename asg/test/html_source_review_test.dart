@@ -5,6 +5,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:asg/controllers/html_source_review_controller.dart';
+import 'package:asg/models/html/html_reference_report.dart';
 import 'package:asg/services/html/html_source_proposer.dart';
 import 'package:asg/services/html/html_starter_store.dart';
 import 'package:asg/views/html_source_review_screen.dart';
@@ -48,6 +49,7 @@ void main() {
       await request;
       expect(c.busy, false);
       expect(c.proposal!.files.length, 3);
+      expect(c.references, isNotNull);
       expect(c.provenance!.outputTokens, 4096);
       expect(c.error, isNull);
       expect(records.values, before);
@@ -94,6 +96,7 @@ void main() {
       freshRecords.values[key] = 'changed';
       expect(retained.proposal, isNull);
       expect(retained.provenance, isNull);
+      expect(retained.references, isNull);
       expect(retained.stale, true);
     });
   }
@@ -212,6 +215,69 @@ void main() {
     expect(c.proposal, isNotNull);
   });
 
+  for (final action in ['stop', 'dispose', 'context', 'deadline']) {
+    testWidgets(
+      '$action during diagnostics suppresses late result and overlap',
+      (tester) async {
+        final records = await html.seed();
+        final provider = Provider();
+        final entered = Completer<void>();
+        final analysis = Completer<HtmlReferenceReport>();
+        var calls = 0;
+        final c = HtmlSourceReviewController(
+          project: html.project,
+          records: records,
+          requestDeadline: action == 'deadline'
+              ? const Duration(milliseconds: 20)
+              : const Duration(seconds: 90),
+          proposer: HtmlSourceProposer(createProvider: (_) => provider),
+          inspectReferences: (_) {
+            calls++;
+            entered.complete();
+            return analysis.future;
+          },
+        );
+        final request = c.request('References');
+        provider.stream.add(response());
+        await provider.stream.close();
+        await entered.future;
+        if (action == 'deadline') {
+          await tester.pump(const Duration(milliseconds: 40));
+        }
+        if (action == 'stop') c.stop();
+        if (action == 'dispose') c.dispose();
+        if (action == 'context') {
+          records.values['studio.chat.v1.html-plan'] = 'changed';
+        }
+        await c.request('Overlap');
+        expect(calls, 1);
+        expect(c.busy, true);
+        if (action == 'stop' || action == 'deadline') {
+          expect(c.status, contains('Waiting for analysis'));
+          expect(c.status, isNot(contains('transport')));
+          expect(c.status, isNot(contains('inference')));
+        }
+        analysis.complete(
+          HtmlReferenceReport(
+            elements: 1,
+            references: 0,
+            findings: 0,
+            messages: [],
+          ),
+        );
+        await request;
+        expect(c.proposal, isNull);
+        expect(c.references, isNull);
+        expect(c.busy, false);
+        if (action == 'stop' || action == 'deadline') {
+          expect(c.status, contains('analysis request has returned'));
+          expect(c.status, isNot(contains('Waiting')));
+        }
+        if (action != 'dispose') c.dispose();
+      },
+    );
+  }
+
   testWidgets('320px 2x review renders complete files and reachable request', (
     tester,
   ) async {
@@ -225,6 +291,12 @@ void main() {
       project: html.project,
       records: records,
       proposer: HtmlSourceProposer(createProvider: (_) => provider),
+      inspectReferences: (_) async => HtmlReferenceReport(
+        elements: 3,
+        references: 1,
+        findings: 1,
+        messages: ['Missing local target: img[src] missing.png'],
+      ),
     );
     await tester.pumpWidget(
       MaterialApp(
@@ -253,6 +325,13 @@ void main() {
     provider.stream.add(response());
     unawaited(provider.stream.close());
     await tester.pumpAndSettle();
+    expect(c.references, isNotNull);
+    await tester.scrollUntilVisible(
+      find.text(c.references!.summary),
+      180,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(find.text(c.references!.summary), findsOneWidget);
     await tester.scrollUntilVisible(
       find.text('app.js'),
       180,

@@ -11810,3 +11810,109 @@ stale waiting message with an explicit returned-request status; preserve revoked
 result, exported source and retry. Stop/deadline regression assertions added.
 This runtime followup supersedes approval5768613696/head3e640973; fresh affected
 and full checks, final independent review and required CI are mandatory gates.
+
+
+### Reviewed HTML export identity check verified merged — PR #478
+Bounded F11/#402 increment Done on `402-reviewed-html-identity`, scope6630920631.
+Final31e62ab6bb64a4b7cc2bc2679818b76c7767fc3a/local53662545b66c21a14485933a8fcbf332ede4aa53
+share exacttree5c4e2f43c329f8ebb88cca02d79b506ee43348b2. All10remote blobs/576
+non-doc app inputs independently match; parent447tracked validation inputs match.
+Parent1,491Flutter/nine skips,11focused,formatter420/analyzer/webWasm/macOSdebug
+and nine regenerated historical inventory tests passed after review fix.
+Fresh independent final review5768710988/finalgate6631469778 approved, no blockers;
+45focused/nineinventory passed incl actualcontroller-native export/check/failure/
+retry and two separate Stop/deadline probes proven fail-before/pass-after.
+RequiredCI41833974429 BOTH SUCCESS: Flutter126588719752/Python126588719228;
+reviewer inspected actual1448Linux/49skips,17Chrome,transport/staticHTML/webWasm/
+independentgeneratedFlutter resolve-analyze-test-build-serve and8Python suites.
+Protected expected-head reviewer mergefd1f043f2bb130b53bb3ebd893b27107a800f0cf
+at2026-11-04T13:09:19Z freshly parent-verified on PR/currentmain; #402/#400 OPEN.
+Signed exacttree/soleparent554f7952 hash-verified before guarded local-only sync.
+Localmain/originmain0/0,indexempty,both originalIDEedits byte-identical.
+App-owned read-only Check/Stop/deadline compares exact immutable reviewed bytes;
+changed/missing/symbolic/unexpected entries refuse. Late revoked results are not
+published; pending IO excludes overlap, files remain retained and retry explicit.
+Stopped/deadline status now reflects returned reads. Identity is point-in-time
+only, with no syntax/safety/browser/runtime verification, execution, registration
+or promotion. FullF11/#402 remainsOPEN/unchecked; reviewed-source browser
+validation/promotion and live synthesis acceptance remain pending. Deferred400
+retained. Existing8765health unavailable; no live inference/stableapp replacement/
+deployment/cadence/notification change. Final merge bookkeeping retained for next
+normal reviewed development PR. Receipts:/private/tmp/asg478-publication.json,
+/private/tmp/asg478-review-evidence.json,/private/tmp/asg478-verified-pr.json,
+/private/tmp/asg478-sync-record.json,/private/tmp/asg478-safe-sync.py.
+
+
+### Parsed HTML reference diagnostics — F11 / #402, 4 November 2026
+In progress on `402-html-reference-diagnostics`, issue scope6631588628, from
+verified PR #478 merge fd1f043f2bb130b53bb3ebd893b27107a800f0cf.
+No open PR or competing active run at selection. Current review lacks F11's
+link/asset checks for user-specific HTML. Add advisory parsed HTML href/src/
+action/poster/data target and fragment observations, duplicate IDs, parse recovery
+and external/query/base-resolution limitations. UI report belongs only to the
+current immutable proposal; native parsing uses a separate isolate. CSS, JS,
+srcset, template content, dynamic references, browser/visual behavior and safety
+remain unchecked. No source/URL execution, file mutation, preview, registration,
+promotion or added support claim. Full F11/#402 stays open; Deferred #400 retained.
+Use cached html0.15.6 (MIT) and csslib1.0.2 (BSD-3-Clause) parser dependencies;
+Flutter includes their licenses in its offline bundle. Acceptance: entity/fragment
+and relative references, absent optional JS, missing assets/IDs, duplicate IDs,
+external/scheme/query/invalid encoding/base elements, malformed-source recovery,
+100-message bound/immutable report, Stop/disposal/context revocation while parsing,
+overlap exclusion, 320px/2x app view and retained export navigation.
+Initial22focused tests pass; initial analyzer test-style finding fixed. Full clean
+tracked-copy checks/builds underway; untracked Apple fixture remains excluded from
+that validation copy. Nine regenerated historical inventory tests passed. Prior
+PR478 final merge evidence retained in this normal development PR. Awaiting full
+validation, plugin-only publication, independent final review/required CI/merge;
+no completion or inference claim. Original unrelated IDE edits retained.
+
+Final checks: 22 focused tests and nine regenerated historical inventory tests
+passed. Clean full suite 1,499 passed/nine explicit skips; final formatter423,
+analyzer, web/Wasm dry run and macOS debug build passed. The initial test-style
+analyzer finding was fixed and final checks rerun. Actual built native NOTICES.Z
+includes both html and csslib licenses. All runtime/test/package inputs are
+validated in the isolated tracked copy; unrelated IDE files retain their original
+SHA256 values. Awaiting linked PR, exact-revision independent review, required CI
+and protected reviewer merge; this is not full F11 acceptance or live inference.
+
+[PR #479](https://github.com/arpit-it/ASG/pull/479) targets main; Awaiting merge.
+Initial plugin head523bc4d0057872a11f4f6fb74a5ae1de1af85f4d/localbadeaf84
+share tested treeef842cd6c8e2927ddfdd5eedf2936ddddc6d7278. Full final clean
+1499Flutter/nine skips,22focused,formatter423/analyzer/webWasm/macOSdebug and
+nine inventory tests pass. This docs-only followup records publication evidence;
+runtime/test inputs unchanged. Independent final-revision review and actual
+required CI remain merge gates. FullF11/#402 and Deferred400 remain open.
+
+Independent review5769066743 found one blocker: analysis-stage Stop/deadline
+incorrectly reported transport cleanup and stale waiting status after parsing
+returned. Fix tracks the analysis stage, reports analysis waiting honestly and
+settles to returned/result-ignored status. Parent deferred-analysis Stop/deadline
+assertions pass (23 focused total); reviewer separate probes reproduced the defect
+before the fix. Full formatter/analyzer/tests/builds rerunning after runtime fix;
+previous-head CI/review do not approve the final correction. Awaiting fresh exact
+revision review, required CI and protected reviewer merge; fullF11 stays open.
+
+Review correction validation: 23 parent focused and 35 independent focused tests
+pass; reviewer separate Stop/deadline probes fail on old runtime and pass the fix.
+Analysis status now identifies its own work and reports returned/result-ignored
+when revoked analysis settles. The original sole blocker is fixed; fresh final
+review/CI remain required. Fresh localhost8765health was unavailable; no inference
+is claimed. Both original IDE edits remain byte-identical.
+
+Post-fix final validation: 1,500 Flutter tests/nine skips,23focused,
+formatter423/analyzer/webWasm/macOSdebug and nine inventory tests passed. All449
+tracked runtime/test/tool/package validation inputs match the clean copy.
+Reviewer35focused/nineinventory and actualChrome five HTML parser tests passed;
+separate Stop/deadline probes establish fail-before/pass-after. Final corrected
+revision publication and fresh independent approval/actual required CI remain
+gates; previous-head review/CI do not approve this runtime correction.
+
+Final test-stability followup: the deferred-analysis deadline regression used a
+real20ms timer before awaiting inspector entry, which could expire under CI load
+before analysis dispatch and leave the test waiting forever. Convert this injected
+analysis group to the widget fake clock; advance time only after inspector entry.
+23 focused tests pass with deterministic pending/settled assertions; runtime and
+package inputs are unchanged from the fully rebuilt correction. Full checks rerun
+for this final test revision. Review5769124008 is superseded; obtain fresh final
+review and required CI. Do not merge the earlier test revision.
