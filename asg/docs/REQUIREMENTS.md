@@ -271,7 +271,7 @@ The saved development automation was updated through its management tool; active
   - Acceptance: UI shows available and unavailable operations with actionable reasons; unsupported confinement refuses candidate execution before any source is run. Each enabled host passes real new-project resolve/analyze/test/web-build/serve, Stop/deadline/output-limit and descendant-cleanup checks, restart/uncertain-checkpoint refusal, stale-approval refusal and last-working-output preservation. Enabling starter generation must not implicitly enable candidate execution. Model-written candidate/repair support needs independently reviewed platform isolation and real deny-write/network/process-escape probes at the established boundary.
   - Validation/delivery: one narrowly scoped issue/PR per host/capability milestone, actual Linux/Windows builds and launches on their respective hosts, plus macOS regression coverage. Include paths with spaces, missing toolchains, occupied ports, failed previews and interrupted writes. Record tested versus unavailable capabilities separately; keep F16 unchecked until promised host increments satisfy acceptance and normal independent review/CI/verified merge. Broader generated targets remain F11.
 - [ ] F11 Multi-language project generation, runners and explicit stack selection — In progress (#402); depends on F04 and F05
-  - HTML workspace requirements/task board — Awaiting merge in [PR #467](https://github.com/arpit-it/ASG/pull/467), #402, `402-html-requirements-board`, scope6624498548. Reuse per-project structured authoring and durable task records before future approval-bound HTML execution; no source execution or verification authority. Full F11 remains open.
+  - HTML workspace requirements/task board — Done via [PR #467](https://github.com/arpit-it/ASG/pull/467), verified reviewer merge `dda031887f83c6b56f1db1d06f54dde9a0d46a2c` at2026-11-04T06:58:22Z; #402, `402-html-requirements-board`, scope6624498548. Reuse per-project structured authoring and durable task records before future approval-bound HTML execution; no source execution or verification authority. Full F11 remains open.
   - Explicit fixed HTML starter registration — Done via [PR #466](https://github.com/arpit-it/ASG/pull/466), verified reviewer merge1359416c at2026-11-02T21:19:50Z, approval5743433197/finalgate5743506734 and requiredCI41526232872 passed; #402, `402-html-project-registration`, scope6588315396. Transactional Projects/original-starter registration and dedicated safe workspace; full synthesis/approved-task integration remain Pending. See delivery ledger.
   - Creation-time HTML runner discovery — Done via [PR #465](https://github.com/arpit-it/ASG/pull/465), verified reviewer merge661d59f8 at2026-11-02T20:43:18Z; approval5742966693/finalgate5743052822 and requiredCI41520539566 passed; #402, `402-creation-runner-discovery`, scope6587720764. Registry-derived version/adapter/operation boundaries before handoff, shared with export; full HTML registration remains Planned. See delivery ledger.
   - HTML creation-to-starter handoff — Done via [PR #464](https://github.com/arpit-it/ASG/pull/464), verified reviewer merge32735587 at2026-11-02T20:13:55Z; approval5742630791/finalgate5742708623 and requiredCI41516033301 passed; #402, `402-html-creation-handoff`, scope6587091875. Explicit starter navigation from both creation entry points retains the original plain-text idea and wizard choices without registration or Build approval; full HTML project integration remains Pending. See delivery ledger.
@@ -12038,3 +12038,61 @@ and testedlocal776bb322 share tree16b12da93ab07c7ed44b7bf4dc75513c9bd80277.
 This publication bookkeeping changes docs only; runtime/test inputs unchanged.
 Status: Awaiting merge; reviewer/root/review_467 must approve the final follow-up
 revision and both required CI checks must pass before protected reviewer merge.
+
+
+### HTML workspace requirements/task board verified merged — PR #467
+Bounded F11/#402 prerequisite Done on `402-html-requirements-board`, scope6624498548.
+Final55b222708100466f7a6fb6d86fb780af6da71142/testedlocald76163c4a0344ed76f2e1b3a15a2a284e69ce04c
+share exacttreec00d7987f93772d56986fcf89759ea7493d9a98d. Six remote plugin blobs
+and425 runtime/test/config inputs independently verified. Final independent
+approval5764405325/finalgate6624718827 found no blockers;28 focused and nine
+inventory tests passed. Parent16 focused/1,355 full Flutter tests with nine skips,
+formatter398/analyzer/webWasm/macOSdebug/nineinventory passed; clean tracked-file
+copy excluded installed third-party MLX packages from repository license scan.
+Actual required CI41788259622 BOTH SUCCESS Flutter126435683463/Python126435683247:
+reviewer inspected1,327Linux/34skips,17Chrome, browser transport, static HTML,
+webWasm, real generated Flutter verification and all eight Python suites.
+Protected expected-head reviewer squash merge `dda031887f83c6b56f1db1d06f54dde9a0d46a2c`
+at2026-11-04T06:58:22Z independently reverified as mergedPR/currentmain. Raw signed
+merge tree/soleparent1359416c hash-verified before guarded local-only sync;
+localmain/originmain0/0, indexempty, both originalIDEedits byte-identical.
+Registered HTML projects now retain their own structured requirements and manual
+task records; opening the board grants no checks/preview/export/Build authority.
+Full HTML approved-task execution and F11/#402 remain OPEN; Deferred#400OPEN.
+Existing8765health unavailable; no inference/model launch/app-launch acceptance
+or stable-app replacement claim. Final merge bookkeeping retained locally for
+the next normal reviewed PR; no direct-main publication, new issue or cadence/
+notification change. Receipts:/private/tmp/asg467-publication.json,
+/private/tmp/asg467-review-evidence.json,/private/tmp/asg467-reviewed-merge.json,
+/private/tmp/asg467-safe-sync.py.
+
+
+### HTML discussion and advisory task planning — F11 / #402
+In progress on `402-html-planning`, from verified PR #467 merge
+`dda031887f83c6b56f1db1d06f54dde9a0d46a2c`; scope comment6624996674.
+No competing active ASG run or open PR at selection. The registered HTML
+workspace lacked instruction/Plan authoring despite its durable board. Reuse
+streaming project chat, local history, explicit connection selection and validated
+additive task import with HTML-specific prompts. Bind saved Plan identity to exact
+registered project, requirements revision and original HTML starter metadata;
+never load a Flutter prototype for HTML planning. HTML executable task mapping
+and approval remain unavailable, centrally refused without a Flutter fallback.
+Review mode remains unavailable because its evidence is Flutter-specific.
+Acceptance: project-scoped saved/reopened chat and imported tasks, actual native
+database reopen, stale/corrupt project/board/starter refusal, failed-import retry,
+320px/2x text navigation and honest advisory UI, no source/runner side effects.
+Delivered chat/HTML registration/board prerequisites suffice on this Mac; deferred
+platform issue #400 is unnecessary. Full HTML execution/synthesis and F11/#402
+remain open. Final checks, independent final-revision review, required CI and
+protected reviewer merge remain pending. No model invocation/download, stable-app
+replacement, new issue, deployment or automation preference change.
+
+Validation: 42 focused Flutter tests and all1,364 full Flutter tests passed
+(nine explicit opt-in/platform skips), formatter399 unchanged, analyzer clean,
+web/Wasm and clean-source macOS debug builds passed; nine refreshed inventory
+tests passed. Full suite used a tracked-source copy excluding installed third-
+party environments. Native database reopen and320px/2x HTML chat entry/mode
+selection were exercised. Initial new test harness errors (event constructor,
+lazy/horizontal scrolling and invalid production-storage seed) corrected before
+final checks. Existing8765health unavailable; no live inference claimed.
+Status: Awaiting publication and independent review/CI/merge.
