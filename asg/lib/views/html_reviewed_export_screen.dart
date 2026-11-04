@@ -4,6 +4,8 @@
 import 'package:flutter/material.dart';
 
 import '../controllers/html_reviewed_export_controller.dart';
+import '../controllers/html_reviewed_preview_controller.dart';
+import 'html_reviewed_preview_screen.dart';
 
 class HtmlReviewedExportScreen extends StatefulWidget {
   const HtmlReviewedExportScreen({super.key, required this.controller});
@@ -37,6 +39,7 @@ class _HtmlReviewedExportScreenState extends State<HtmlReviewedExportScreen> {
   Widget build(BuildContext context) {
     final c = widget.controller;
     final review = c.review;
+    final destination = c.destination;
     return Scaffold(
       appBar: AppBar(title: const Text('Export reviewed HTML')),
       body: ListView(
@@ -72,9 +75,30 @@ class _HtmlReviewedExportScreenState extends State<HtmlReviewedExportScreen> {
           if (c.busy)
             OutlinedButton(onPressed: c.stop, child: const Text('Stop export')),
           if (c.error != null) SelectableText(c.error!),
-          if (c.destination != null)
-            SelectableText('Unverified source exported to: ${c.destination}'),
-          if (c.destination != null) ...[
+          if (destination != null)
+            SelectableText('Unverified source exported to: $destination'),
+          if (destination != null) ...[
+            OutlinedButton(
+              onPressed: c.busy || c.checking
+                  ? null
+                  : () {
+                      // Route page builders can rerun on theme changes. Retain
+                      // one owner of the active host for the whole route.
+                      final previewController = HtmlReviewedPreviewController(
+                        proposal: c.proposal,
+                        directory: destination,
+                        authorizeSource: c.authorizeSource,
+                      );
+                      Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) => HtmlReviewedPreviewScreen(
+                            controller: previewController,
+                          ),
+                        ),
+                      );
+                    },
+              child: const Text('Review script-disabled preview'),
+            ),
             OutlinedButton(
               onPressed: c.checking || !c.checkSupported ? null : c.checkExport,
               child: const Text('Check reviewed file identity'),
