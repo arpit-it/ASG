@@ -11383,3 +11383,11 @@ unsupported-storage/button assertions corrected before successful final full
 suite. Existing8765health unavailable; no live inference or app-launch acceptance
 claimed. Status: Awaiting publication, exact-final independent review, required
 CI and protected reviewer merge. FullF11/#402 and Deferred#400 remain open.
+
+PR: https://github.com/arpit-it/ASG/pull/470. Initial plugin publication
+`18bd2c54bf82847a6f9a85b05c83f0d64b47de43` and tested local
+`d1eae7ca89a0ab63898a0cdaece95b9c8fd1cf1a` share exact tree
+`dac2bc14dcf1ffd5a3d6d5c5d129cfd16756f59e`; all11 remote blobs match.
+This publication bookkeeping changes documentation only; tested runtime/test
+inputs remain unchanged. Status: Awaiting merge; reviewer/root/review_470 must
+approve final revision and verify both required CI checks before protected merge.
