@@ -11582,3 +11582,59 @@ publish cleanup failure and clear the stopped notice while alive; retain the
 Stop retry gate. Regression asserts both visible error and absent success notice.
 Affected22 focused tests/analyzer and refreshed nine inventory tests passed.
 Final full suite/build rerun and fresh exact-head review remain merge gates.
+
+
+### Approved HTML Plan preview dispatch verified merged — PR #473
+Bounded F11/#402 increment Done on `402-approved-html-preview`, scope6627700305.
+Final829670b91118de7b67fd4e75d05aeb4ca9008352/testedlocal72d0acd3e1f04080e3306e85cf93462b50b2e6df
+share exacttree90b2c4f83b6e2463f32554129cc71efa94fd4f53. All eight remote blobs and
+567 tracked non-documentation inputs independently matched tested copies.
+Initial review5766503239 found hidden late cleanup failure after Stop; corrected
+and freshly approved5766528945/finalgate6627984852. Independent68focused and
+nineinventory passed; parent1420full/nine skips,22focused,formatter406/analyzer,
+freshwebWasm/macOSdebug/nineinventory passed. RequiredCI41810546257 BOTH SUCCESS:
+Flutter126508565927/Python126508591726; actual1386Linux/40skips,17Chrome,transport,
+staticHTML/webWasm/independentgeneratedFlutter resolve/analyze/test/build/serve and
+all eight Python suites inspected by reviewer. Protected expected-head reviewer
+plugin squash merge de2c09c43fd84e1a2d250655f624ed7bee8907f1 at2026-11-04T10:02:00Z
+freshly parent-verified mergedPR; issue402 remainsOPEN. Signed exact reviewedtree/
+soleparent0ac45ab1 hash-verified before guarded local-only synchronization.
+Localmain/originmain0/0,indexempty,both originalIDEedits byte-identical.
+Explicit check→preview under durable HTML Plan consent delivered; no source writes
+or board completion. Already-dispatched responses/launches cannot be recalled.
+Custom synthesis/fullF11/#402 and Deferred#400 remainOPEN. Existing8765health
+unavailable; no inference/app-launch acceptance/stableapp replacement claimed.
+Finalmerge docs retained locally for next normal reviewed development PR; no
+newissue/directmain publication/deployment/cadence/notification change.
+Receipts:/private/tmp/asg473-publication.json,/private/tmp/asg473-review-evidence.json,
+/private/tmp/asg473-reviewed-merge.json,/private/tmp/asg473-verified-pr.json,
+/private/tmp/asg473-safe-sync.py.
+
+
+### Review-only HTML source proposals — F11 / #402
+In progress on `402-html-source-proposals` from verified PR #473 merge
+`de2c09c43fd84e1a2d250655f624ed7bee8907f1`; scope comment6628199999.
+No other active ASG run or open PR at selection. The existing Dart-only proposal
+contract cannot represent HTML synthesis; add a bounded, immutable HTML/CSS and
+optional JavaScript review artifact plus an injectable streamed local-model
+proposer. Strict exact fields/filenames, escaped duplicate JSON member rejection,
+UTF-8 response/file ceilings, malformed responses and cancellation/cleanup are
+covered. Request overlap is refused until pending stream and cleanup settle;
+cancel during final cleanup cannot publish late success. The caller owns deadline
+and disposal cancellation. Prompt guidance is not content security validation:
+source remains untrusted, including scripts, network references and unsafe HTML.
+This prerequisite has no UI, writes, source promotion, preview or execution
+permission. Original fixed-starter identity checks and supported choices remain
+unchanged. UI review/promotion, actual live synthesis and full HTML/F11 acceptance
+remain open; #402 remains open and deferred #400 is not a dependency.
+Validation: 29 focused tests passed; isolated tracked-source full suite 1,449
+passed/nine explicit skips, analyzer clean, formatter409 unchanged. Ordinary
+checkout notice scan traversed ignored MLX dependencies; clean-copy run passed
+without changing them. Web build and final inventory results follow in PR.
+Status: Awaiting publication, exact-final independent review, required CI and
+protected reviewer merge. No live inference, app launch or support claim.
+
+
+PR #474: https://github.com/arpit-it/ASG/pull/474. Published94b82056 and testedlocal7ca079ed share exacttree8903dced2c0f992baa79dee1b0a4df0b0d67103a.
+Final web build (including Wasm dry run), nine inventory tests, formatter409/analyzer and clean1449full/nine skips all passed. Independent reviewer /root/review_474 inspecting exact final revision and required CI.
+Status: Awaiting merge. Full F11/#402, UI/promotion/live synthesis remain open. No model invocation or support expansion claimed. This final bookkeeping changes docs only.
