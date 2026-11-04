@@ -11,6 +11,7 @@ class HtmlPreviewStub implements HtmlPreview {
   Future<Uri> start({
     required String directory,
     required HtmlSiteInput input,
+    void Function()? authorizeRead,
   }) async => throw UnsupportedError('Fixed HTML preview requires macOS.');
   @override
   Future<void> open() async =>

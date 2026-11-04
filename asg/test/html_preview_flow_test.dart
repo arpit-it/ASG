@@ -27,7 +27,11 @@ class _Preview implements HtmlPreview {
   @override
   bool get supported => true;
   @override
-  Future<Uri> start({required String directory, required HtmlSiteInput input}) {
+  Future<Uri> start({
+    required String directory,
+    required HtmlSiteInput input,
+    void Function()? authorizeRead,
+  }) {
     starts++;
     entered.complete();
     return result.future;

@@ -11450,3 +11450,67 @@ ebc7033d5e2ce3823891bf393d85065bdb299ef7; all seven remote blobs match.
 This publication bookkeeping changes docs only; tested runtime inputs unchanged.
 Status: Awaiting merge; independent final-revision approval and both required CI
 checks must precede protected reviewer merge. Full #402/F11 remain open.
+
+
+### Approved HTML source-check dispatch verified merged — PR #471
+Bounded F11/#402 increment Done on `402-approved-html-source-check`, scope6626567528.
+Finalfa7445665c93b71cc654cf1786ab115a8483c828/testedlocal29452a71dd1dbdb7985f20fb9863998f86df4e10
+share exacttree0826cf7cf89ec7cfff0486234b2de1d863809750. All seven remote blobs and
+560 validation inputs independently match. Final independent approval5765784106/
+finalgate6626881076 found no blockers;62focused/nineinventory passed. Parent
+15focused/all1401Flutter/nine skips,formatter404/analyzer/webWasm/macOSdebug/
+nineinventory passed. Actual required CI41802864733 BOTH SUCCESS:
+Flutter126482850562/Python126482850140; reviewer inspected1371Linux/36skips,
+17Chrome, actual browsertransport/staticHTML/web/real independent generatedFlutter
+resolve/analyze/test/build/serve and all eight Python suites. Protected expected-
+head reviewer plugin squash merge22c94c5e6114591c9b2c06d56aed9ef9210b4b6b at
+2026-11-04T09:01:32Z freshly parent-verified mergedPR. Raw signed exact reviewed
+tree/soleparent5144a757 hash-verified before guarded local-only ref synchronization;
+localmain/originmain0/0,indexempty,both originalIDEedits byte-identical. Explicit
+workspace checks now require current durable HTML Plan consent at every read
+boundary; Stop/deadline/disposal revoke late evidence. Source identity only; no
+preview/fullPlan completion/board mutation/source writes/Flutter fallback. Full
+HTML preview dispatch/synthesis and F11/#402 remain OPEN. Deferred#400 retained.
+Existing8765health unavailable; no inference, app-launch acceptance or stableapp
+replacement claimed. Finalmerge docs retained for next normal reviewed PR; no
+newissue/directmain publication/deployment/cadence or notification change.
+Receipts:/private/tmp/asg471-publication.json,/private/tmp/asg471-inputs.json,
+/private/tmp/asg471-review-evidence.json,/private/tmp/asg471-reviewed-merge.json,
+/private/tmp/asg471-verified-pr.json,/private/tmp/asg471-safe-sync.py.
+
+
+### HTML preview read authority — F11 / #402
+In progress on `402-html-preview-authority`, scope comment6627144961, from
+verified PR #471 merge22c94c5e6114591c9b2c06d56aed9ef9210b4b6b. No competing
+active ASG run or open PR at selection. The preview interface lacked caller
+authority, preventing future Plan consent revalidation during snapshot reads.
+Carry optional caller authority through HtmlPreview/registered runner/native
+host; validate before each source read, before/after socket bind, before runner
+result publication and for every HTTP GET/HEAD. Revoked requests receive empty
+403 responses; already-dispatched responses cannot be recalled. Late runner
+revocation retains cleanup ownership and propagates cleanup failures for explicit
+Stop retry. Existing export-preview behavior and original files are retained.
+Acceptance: initial/mid-read/pre-bind/post-bind/late-publication revocation, actual
+macOS HTTP denial after withdrawal, socket cleanup/retry, prior preview lifecycle
+and narrow UI regressions. Delivered fixed runner/snapshot prerequisites suffice;
+Deferred #400 is unnecessary. Plan preview dispatch, board completion, synthesis
+and full F11/#402 remain open. No inference or installed-app replacement claimed.
+Validation:30 focused Flutter tests passed including real macOS HTTP and existing
+320px/2x preview/discovery interactions. Full checks/builds/review/CI/merge pending.
+
+Validation complete: all1,406 Flutter tests passed with nine explicit skips in an
+isolated tracked-source copy. Formatter404/analyzer, nine inventory tests, web
+build/Wasm dry run and macOS debug build passed. All captured non-documentation
+tracked inputs match the tested copy. Existing8765health unavailable; no model
+invocation, inference, app-launch acceptance or stable-app replacement claimed.
+Status: Awaiting publication, independent final-revision review, required CI and
+protected reviewer merge. Full F11/#402 and Deferred #400 remain open.
+
+PR: https://github.com/arpit-it/ASG/pull/472. Initial plugin revision
+7b963d0a20659dadff7b04ac5bfe3d4576e6e544 and tested local
+2c1e522bde63d33cdd6bb31ccd952d1f9ed8acde share exact tree
+ebdadda187415697eda16d77dc590af47e5f3862; all13 remote blobs match.
+All573 tracked non-documentation inputs match the tested snapshot. This PR
+bookkeeping changes documentation only; runtime/test inputs unchanged.
+Status: Awaiting merge. Independent final-revision review and both required CI
+checks must pass before protected reviewer merge; full F11/#402 remain open.

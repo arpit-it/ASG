@@ -103,7 +103,20 @@ class HtmlStarterRunner implements HtmlPreview {
         if (directory == null || input == null) {
           throw ArgumentError('Preview requires a target.');
         }
-        url = await _preview.start(directory: directory, input: input);
+        authorizeRead?.call();
+        url = await _preview.start(
+          directory: directory,
+          input: input,
+          authorizeRead: authorizeRead,
+        );
+        try {
+          authorizeRead?.call();
+        } catch (_) {
+          // Own cleanup even when a preview publishes after authority is lost.
+          // A cleanup failure must propagate; callers must retry Stop.
+          await _preview.stop();
+          rethrow;
+        }
       case RunnerOperation.open:
         await _preview.open();
       case RunnerOperation.stop:
@@ -146,11 +159,13 @@ class HtmlStarterRunner implements HtmlPreview {
   Future<Uri> start({
     required String directory,
     required HtmlSiteInput input,
+    void Function()? authorizeRead,
   }) async {
     final result = await execute(
       RunnerOperation.run,
       directory: directory,
       input: input,
+      authorizeRead: authorizeRead,
     );
     if (result.status == RunnerResultStatus.unsupported) {
       throw UnsupportedError(result.detail);

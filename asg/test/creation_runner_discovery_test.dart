@@ -45,6 +45,7 @@ class _Preview implements HtmlPreview {
   Future<Uri> start({
     required String directory,
     required HtmlSiteInput input,
+    void Function()? authorizeRead,
   }) async {
     starts++;
     return Uri.parse('http://127.0.0.1:1234/token/');
