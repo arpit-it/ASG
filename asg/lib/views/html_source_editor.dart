@@ -52,7 +52,7 @@ class _HtmlSourceEditorState extends State<HtmlSourceEditor>
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         const Text(
-          'Edit temporary source only. Saving replaces the review identity and reruns reference diagnostics. Existing export/preview confirmations become stale. Empty JavaScript removes app.js. No files are written or executed.',
+          'Edit temporary source only. Saving replaces the review identity and reruns reference diagnostics. Existing export/preview confirmations become stale. Empty JavaScript removes app.js. Save or Cancel edits before requesting replacement source or exporting.',
         ),
         for (final entry in {
           'index.html': html,

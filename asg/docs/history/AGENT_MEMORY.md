@@ -12582,7 +12582,7 @@ Receipts: /private/tmp/asg486-publication.json, /private/tmp/asg486-review-evide
 
 
 ### Failed edited HTML diagnostics retry — F11 / #402
-In progress on `402-html-edit-retry` from verified main9669b56a;
+Done through PR #487, verified reviewer merge2cecbb2c at2026-11-04T18:45:54Z; finalreview5773855223/requiredCI41889159546 passed. Branch `402-html-edit-retry` from verified main9669b56a;
 scope6638724578. PR486 merge/finalreview5773448207/requiredCI41883612296
 verified via GitHub plugin; no open PR or competing active owner at selection.
 Evidence: retained HtmlSourceEditor buffers could never Save again after diagnostic
@@ -12609,3 +12609,76 @@ unavailable; no inference needed or claimed. Plugin publication, exact-final
 independent review, actual required CI and protected reviewer merge remain gates.
 Full F11/#402 and Deferred#400 stay open. Prior PR486 verified merge bookkeeping
 included; original two IDE edits excluded from publication.
+
+Published PR #487 https://github.com/arpit-it/ASG/pull/487 Awaiting merge.
+Tested local468f1c9a330168057d2f2110f5f07b9729da65f2 and plugin remote
+ebcd4b87086d914678dad2ee3de665aea8e92def share exacttree
+7d843c214549a5887f4298af904da8f68deba0d6; allsixpublished blobs match.
+Independent /root/review_487 owns exact-final review, actual required CI and
+protected expected-head reviewer merge. Final1563Flutter/nine skips,55focused,
+437format/analyzer/webWasm/macOSdebug/nineinventory passed;462inputs match.
+FullF11/#402 and Deferred400 remain open; no inference/fulladapter claim.
+
+
+### Failed edited HTML diagnostics retry verified merged — 2026-11-04T18:47:05.279226+00:00
+Bounded F11/#402 correction Done through [PR #487](https://github.com/arpit-it/ASG/pull/487),
+branch `402-html-edit-retry`, scope6638724578. Tested local468f1c9a330168057d2f2110f5f07b9729da65f2
+and final remoteebcd4b87086d914678dad2ee3de665aea8e92def share exacttree
+7d843c214549a5887f4298af904da8f68deba0d6. Allsixpublished blobs and all462
+validation inputs match; parent and independent reviewer verified all943remote
+blobs/modes, reviewer also verified CItestmerge. Independent final approval
+5773855223 supersedes code approval5773794601; own67affected/export/architecture,
+sevenextra all-context/forged-invalid/reentrantStop probes and nineinventory PASS.
+Baseline retry regression independently FAIL; finalactual editor corrected Save
+PASS. Parent1563Flutter/nineexplicit skips,55focused,437formatzerochange/analyzer,
+webWasm/macOSdebug/nineinventory PASS. Isolated full-suite copy excludes existing
+local MLX-venv license-scan contamination without modifying that environment.
+RequiredCI41889159546 BOTHdirectchecks completedSUCCESS:
+Flutter126781592587/Python126781592412. Actual1516Linux/53explicit skips,
+allsevennewregressions/actualeditorretry,17Chrome,browsertransport/staticHTML,
+webWasm/realindependentgeneratedFlutter resolve-analyze-test-build-serve and all
+8Python suites inspected. No CIretry/source changes after independent approval.
+Protected expected-head reviewer squashmerge2cecbb2c3aefe71561818e2caf542f90386463dd
+at2026-11-04T18:45:54Z independently parent-verified on PR/currentmain. Signed
+commit hash, exacttree and soleparent9669b56a verified before guarded local-only
+sync. Localmain/originmain0/0,indexempty; both originalIDE edits and all3local
+handoffdocs byte-identical during synchronization. Failed edit diagnostics now
+permit explicit same-editor corrected retry without reviving old export/preview
+authority. Fresh diagnostics required; Stop/deadline/disposal/context change and
+new request/restoration revoke retry. No source writes or inference; fullF11/#402
+and Deferred400 remainOPEN/unchecked. No stableapp/deployment/cadence/notification
+change. Final canonical merge bookkeeping retained locally for next normal
+reviewed developmentPR. No new issue or owner action.
+Receipts:/private/tmp/asg487-publication.json,/private/tmp/asg487-review-evidence.json,
+/private/tmp/asg487-verified-pr.json,/private/tmp/asg487-sync-record.json.
+
+
+### Unapplied HTML editor action guards — F11 / #402
+In progress on `402-html-editor-action-guards` from verified PR #487 merge
+2cecbb2c3aefe71561818e2caf542f90386463dd; scope6639374663. No competing
+active ASG owner/open PR at selection. Reuse #402; no new issue/task.
+Merged review screen allowed replacement requests to discard unapplied editor
+buffers and export to offer old reviewed source while edits remained unapplied.
+Require explicit Save edits for review or Cancel edits before requesting replacement
+or exporting; failed-diagnostics retry retains exact buffers and keeps replacement
+disabled. Successful diagnostics/cancel re-enable the appropriate actions.
+Acceptance: actual 320px/2x control taps do not dispatch replacement/export or lose
+source; cancellation retains original proposal; failed diagnostics/corrected retry
+retains buffers and restores controls only after successful review. Baseline regression
+fails on merged PR487; corrected 56 focused review/edit/draft tests pass.
+Available Mac needs only delivered editor/review components; deferred hardware
+acceptance is unrelated. Full F11/#402 and Deferred #400 remain unchecked/open.
+Standard checks/builds, plugin publication, independent final-revision review, actual
+required CI and protected reviewer merge remain gates. No model inference, new
+execution permission or complete-adapter claim. Recorded 2026-11-04T19:01:39.504501+00:00.
+
+Final selected-source validation: 1,564 Flutter tests pass with nine explicit skips;
+56 focused review/edit/draft tests, 437-file zero-change formatter, clean analysis,
+web/Wasm dry-run and macOS debug builds and nine inventory regressions pass.
+All 464 runtime/test/tool inputs match isolated full-suite copy; original local
+MLX-venv license-scan contamination excluded without modifying that environment.
+Baseline regression fails; actual disabled request/export taps preserve buffers at
+320px/2x, explicit Cancel restores actions, failed-diagnostics retry stays intact.
+Existing model health unavailable; no inference needed or claimed. Publication,
+exact-final independent review, actual required CI and protected reviewer merge
+remain gates. Full F11/#402 and Deferred#400 remain open/unchecked.

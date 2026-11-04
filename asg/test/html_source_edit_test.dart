@@ -355,6 +355,98 @@ void main() {
       await tester.pumpWidget(const SizedBox());
     },
   );
+  testWidgets('unapplied editor gates replacement and export', (tester) async {
+    tester.view.physicalSize = const Size(320, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final provider = Provider();
+    var calls = 0;
+    final c = HtmlSourceReviewController(
+      project: seed.project,
+      records: await seed.seed(),
+      proposer: HtmlSourceProposer(
+        createProvider: (_) {
+          calls++;
+          return provider;
+        },
+      ),
+      inspectReferences: (_) async => report(),
+    );
+    final request = c.request('Greeting');
+    provider.stream.add(response());
+    await provider.stream.close();
+    await request;
+    final old = c.proposal!;
+    await tester.pumpWidget(
+      MaterialApp(
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(context)
+              .copyWith(textScaler: const TextScaler.linear(2)),
+          child: child!,
+        ),
+        home: HtmlSourceReviewScreen(controller: c),
+      ),
+    );
+    Future<void> reveal(String text, double delta) async {
+      FocusManager.instance.primaryFocus?.unfocus();
+      await tester.pumpAndSettle();
+      await tester.scrollUntilVisible(
+        find.text(text),
+        delta,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await Scrollable.ensureVisible(
+        tester.element(find.text(text)),
+        alignment: 0.5,
+      );
+      await tester.pumpAndSettle();
+    }
+
+    await reveal('Edit reviewed source…', 200);
+    await tester.tap(find.text('Edit reviewed source…'));
+    await tester.pumpAndSettle();
+    Finder field() => find
+        .descendant(
+          of: find.byType(HtmlSourceEditor),
+          matching: find.byType(TextField),
+        )
+        .first;
+    const dirty = '<main>Keep unapplied source exactly</main>';
+    await tester.enterText(field(), dirty);
+    await reveal('Export reviewed source…', 200);
+    final export = find.widgetWithText(
+      OutlinedButton,
+      'Export reviewed source…',
+    );
+    expect(tester.widget<OutlinedButton>(export).onPressed, isNull);
+    await tester.tap(find.text('Export reviewed source…'));
+    await tester.pumpAndSettle();
+    await reveal('Request source for review', -200);
+    final replace = find.widgetWithText(
+      FilledButton,
+      'Request source for review',
+    );
+    expect(tester.widget<FilledButton>(replace).onPressed, isNull);
+    await tester.tap(find.text('Request source for review'));
+    await tester.pumpAndSettle();
+    expect(calls, 1);
+    expect(c.proposal, same(old));
+    await reveal('Save edits for review', 200);
+    expect(tester.widget<TextField>(field()).controller!.text, dirty);
+    await reveal('Cancel edits', 200);
+    await tester.tap(find.text('Cancel edits'));
+    await tester.pumpAndSettle();
+    expect(c.proposal, same(old));
+    await reveal('Request source for review', -200);
+    expect(tester.widget<FilledButton>(replace).onPressed, isNotNull);
+    await reveal('Export reviewed source…', 200);
+    expect(tester.widget<OutlinedButton>(export).onPressed, isNotNull);
+    expect(find.byType(HtmlSourceEditor), findsNothing);
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox());
+  });
+
   testWidgets(
     'failed inspection keeps editable draft; Cancel does not change source',
     (tester) async {
@@ -421,6 +513,15 @@ void main() {
       await tester.pumpAndSettle();
       expect(c.error, contains('inspection failed'));
       expect(c.proposal, isNull);
+      await tap('Request source for review', -200);
+      expect(
+        tester
+            .widget<FilledButton>(
+              find.widgetWithText(FilledButton, 'Request source for review'),
+            )
+            .onPressed,
+        isNull,
+      );
       expect(
         tester.widget<TextField>(field()).controller!.text,
         contains('Retain this draft'),

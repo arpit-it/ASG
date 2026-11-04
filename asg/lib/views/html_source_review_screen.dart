@@ -67,7 +67,9 @@ class _HtmlSourceReviewScreenState extends State<HtmlSourceReviewScreen> {
             decoration: const InputDecoration(labelText: 'HTML instructions'),
           ),
           FilledButton(
-            onPressed: c.busy ? null : () => c.request(instruction.text),
+            onPressed: c.busy || editingProposal != null
+                ? null
+                : () => c.request(instruction.text),
             child: const Text('Request source for review'),
           ),
           if (c.busy) ...[
@@ -118,7 +120,7 @@ class _HtmlSourceReviewScreenState extends State<HtmlSourceReviewScreen> {
                 'Locally edited source. Model provenance below describes the original request, not these edited bytes.',
               ),
             OutlinedButton(
-              onPressed: c.busy
+              onPressed: c.busy || editingProposal != null
                   ? null
                   : () {
                       final exportController = HtmlReviewedExportController(
