@@ -55,7 +55,7 @@ class _HtmlSourceReviewScreenState extends State<HtmlSourceReviewScreen> {
         padding: const EdgeInsets.all(24),
         children: [
           const Text(
-            'Request complete HTML/CSS and optional JavaScript from your configured local model. This creates a temporary review artifact only. Source is untrusted and may contain scripts or network references. No project source is read, applied or previewed. Export requires a separate exact source and destination confirmation. Closing this screen discards the proposal. Fixed-starter Plan approval does not approve this source.',
+            'Request complete HTML/CSS and optional JavaScript from your configured local model. This creates a temporary review artifact only. Source is untrusted and may contain scripts or network references. No project source is read, applied or previewed. Export requires a separate exact source and destination confirmation. Closing discards unsaved changes. Restoring replaces the current review; save changes first. Save a local source draft explicitly to retain it; restoration requires unchanged project context and fresh diagnostics. Fixed-starter Plan approval does not approve this source.',
           ),
           const SizedBox(height: 16),
           TextField(
@@ -74,6 +74,14 @@ class _HtmlSourceReviewScreenState extends State<HtmlSourceReviewScreen> {
             const LinearProgressIndicator(),
             OutlinedButton(onPressed: c.stop, child: const Text('Stop review')),
           ],
+          OutlinedButton(
+            onPressed:
+                c.busy || editingProposal != null || !c.savedDraftAvailable
+                ? null
+                : c.restoreDraft,
+            child: const Text('Restore saved source draft'),
+          ),
+          if (c.savedDraftError != null) Text(c.savedDraftError!),
           Text(c.status),
           if (c.error != null) Text(c.error!),
           if (c.stale)
@@ -89,6 +97,17 @@ class _HtmlSourceReviewScreenState extends State<HtmlSourceReviewScreen> {
               onCancel: () => setState(() => editingProposal = null),
             ),
           if (proposal != null) ...[
+            OutlinedButton(
+              onPressed:
+                  c.busy || editingProposal != null || c.savedDraftError != null
+                  ? null
+                  : c.saveDraft,
+              child: Text(
+                c.savedDraftAvailable
+                    ? 'Replace saved source draft'
+                    : 'Save source draft locally',
+              ),
+            ),
             if (editingProposal == null)
               OutlinedButton(
                 onPressed: () => setState(() => editingProposal = proposal),

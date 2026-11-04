@@ -5,6 +5,8 @@ import 'dart:async';
 import 'dart:convert';
 
 import '../models/html/html_source_proposal.dart';
+import '../models/html/html_source_draft.dart';
+import '../services/html/html_source_draft_store.dart';
 import '../models/html/html_reference_report.dart';
 import '../services/html/html_reference_inspector.dart';
 import '../models/model_request_provenance.dart';
@@ -26,7 +28,9 @@ class HtmlSourceReviewController extends BaseController {
     this.requestDeadline = const Duration(seconds: 90),
   }) : assert(requestDeadline > Duration.zero),
        _proposer = proposer ?? HtmlSourceProposer(),
-       _inspectReferences = inspectReferences ?? inspectHtmlReferences;
+       _inspectReferences = inspectReferences ?? inspectHtmlReferences {
+    _readDraftState();
+  }
 
   final StudioProject project;
   final RecordStorage records;
@@ -36,6 +40,125 @@ class HtmlSourceReviewController extends BaseController {
   final Duration requestDeadline;
   bool _busy = false, _revoked = false, _inspecting = false;
   bool _locallyEdited = false;
+  bool _saving = false;
+  bool _savedDraftAvailable = false;
+  bool get savedDraftAvailable => _savedDraftAvailable;
+  String? _savedDraftError;
+  String? get savedDraftError => _savedDraftError;
+  HtmlSourceDraftStore get _drafts => HtmlSourceDraftStore(records, project.id);
+
+  void _readDraftState() {
+    try {
+      _savedDraftAvailable = _drafts.load() != null;
+      _savedDraftError = null;
+    } catch (_) {
+      _savedDraftAvailable = false;
+      _savedDraftError = 'Saved HTML draft is unreadable. It has been preserved; saving cannot replace it.';
+    }
+  }
+
+  Future<void> saveDraft() async {
+    if (isDisposed || _busy) return;
+    final displayed = proposal;
+    if (displayed == null) return;
+    _busy = true;
+    _saving = true;
+    _error = null;
+    _status = 'Saving reviewed source draft…';
+    void authorize() {
+      _requireCurrent();
+      if (!identical(displayed, _proposal)) throw StateError('Review changed.');
+    }
+
+    try {
+      update();
+      authorize();
+      await _drafts.save(
+        HtmlSourceDraft(
+          projectId: project.id,
+          contextDigest: HtmlSourceDraftStore.digest(_snapshot!),
+          proposal: displayed,
+          provenance: _provenance!,
+          locallyEdited: _locallyEdited,
+        ),
+        context: _snapshot!,
+        authorize: authorize,
+      );
+      authorize();
+      _status = 'Source draft saved locally. Restoring requires matching project context and fresh diagnostics.';
+    } catch (_) {
+      if (!isDisposed && !_revoked) {
+        _error = 'Draft save failed or context changed. Current source is retained; inspect the saved draft before retrying.';
+        _status = 'Draft save did not publish success.';
+      }
+    } finally {
+      _saving = false;
+      _busy = false;
+      if (!isDisposed) _readDraftState();
+      update();
+    }
+  }
+
+  Future<void> restoreDraft() async {
+    if (isDisposed || _busy) return;
+    HtmlSourceDraft draft;
+    Map<String, String?> context;
+    try {
+      draft = _drafts.load()!;
+      context = _capture();
+      if (draft.contextDigest != HtmlSourceDraftStore.digest(context)) {
+        throw StateError('Saved draft context changed.');
+      }
+    } catch (_) {
+      _readDraftState();
+      _error = 'Cannot restore this draft: it is missing, unreadable or its saved project context changed. Current source and saved bytes are preserved.';
+      update();
+      return;
+    }
+    _busy = true;
+    _inspecting = true;
+    _revoked = false;
+    _snapshot = context;
+    _proposal = null;
+    _references = null;
+    _provenance = null;
+    _error = null;
+    _cleanup = null;
+    _status = 'Inspecting saved HTML source draft…';
+    final timer = Timer(requestDeadline, () {
+      if (isDisposed || !_busy || _revoked) return;
+      stop();
+      _status = 'HTML diagnostics deadline reached. Waiting for analysis to settle. No files changed.';
+      update();
+    });
+    try {
+      update();
+      _requireCurrent();
+      final report = await _inspectReferences(draft.proposal);
+      _requireCurrent();
+      _proposal = draft.proposal;
+      _references = report;
+      _provenance = draft.provenance;
+      _locallyEdited = draft.locallyEdited;
+      _status = 'Saved source draft restored for review. No approval, files or preview changed.';
+    } catch (_) {
+      if (!isDisposed && !_revoked) {
+        _error = 'Draft diagnostics failed or project context changed. Saved bytes are retained; retry restoration.';
+        _status = 'No restored proposal available.';
+      }
+    } finally {
+      timer.cancel();
+      await _cleanup;
+      _inspecting = false;
+      _busy = false;
+      _status = _status.replaceFirst(
+        'Waiting for analysis to settle.',
+        'The analysis request has returned; result ignored.',
+      );
+      update();
+    }
+  }
+
   bool get locallyEdited => _locallyEdited;
   bool get busy => _busy;
   String? _error;
@@ -228,6 +351,11 @@ class HtmlSourceReviewController extends BaseController {
     if (isDisposed || !_busy || _revoked) return;
     _revoked = true;
     _proposal = null;
+    if (_saving) {
+      _status = 'Draft save stopped. An already-committed write may remain; inspect the saved draft after the write returns.';
+      update();
+      return;
+    }
     _status = _inspecting
         ? 'HTML diagnostics stopped. Waiting for analysis to settle. No files changed.'
         : 'Review stopped. Waiting for transport cleanup; server-side inference may continue.';

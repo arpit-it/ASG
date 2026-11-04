@@ -12453,3 +12453,86 @@ are unchanged from the passed web/Wasm/macOS debug builds. Independent productio
 unsupported-host stub simulation passes both route cases, preserving disabled
 inputs and full owner/theme/resize/Back coverage. Fresh publication/review/new CI
 remain gates; prior failed CI is retained as failure evidence.
+
+Corrected final PR484 publication16836ccb601223e7abff75c482f0868bf524d22e and
+local0518bcb548e6faf8c69a202fb997197e05894a7f share exacttree
+091bca0cece753a94cd09cab3bf21fd39c75bd0b. Fresh full1537Flutter/nine skips,
+434formatzerochange/analyzer/nineinventory pass. Independent native45focused/live
+and production unsupported2route probes pass. Fresh exact-final approval/NEWCI
+and protected reviewer merge remain gates. FullF11/#402 and Deferred400 open.
+
+Fresh exact-final approval5772599880 supersedes CI blocker5772552150 at
+16836ccb601223e7abff75c482f0868bf524d22e/tree091bca0c. Reviewer independently
+verified all940 remote blobs/modes,45focused/live and two production-stub cases;
+actual native HTTP200/theme/resize/Back socket-refusal probe fails baseline and
+passes final. NEWCI41875463830 Linux full tests pass after portable-test fix;
+Python126733540826 succeeds. Browser/build/generated-project checks and direct
+required Flutter126733540325 completion remain mandatory before reviewer merge.
+No final delivery or full adapter completion claim until those gates pass.
+
+
+### HTML workspace route ownership verified merged — 2026-11-04T17:21:56.004439+00:00
+Bounded F11/#402 correction Done through [PR #484](https://github.com/arpit-it/ASG/pull/484),
+branch `402-html-route-ownership`, scope6636734628. Final remote
+16836ccb601223e7abff75c482f0868bf524d22e/local0518bcb548e6faf8c69a202fb997197e05894a7f
+share exacttree091bca0cece753a94cd09cab3bf21fd39c75bd0b. Reviewer verified all940
+remote blobs/modes; final approval5772689832 supersedes prior CI blocker5772552150.
+RequiredCI41875463830 BOTH SUCCESS Flutter126733540325/Python126733540826;
+reviewer inspected actual1490Linux/53explicit skips,17Chrome,transport/staticHTML,
+webWasm/independentgeneratedFlutter resolve-analyze-test-build-serve and8Python suites.
+Independent45focused/live,2production-unsupported-stub and9inventory checks pass.
+Actual native preview retains same owner/URL/HTTP200 across theme/resize and Back
+closes socket; identical baseline probe fails. Parent1537Flutter/nine skips,
+434formatzerochange/analyzer/nineinventory pass; unchanged runtime web/macOSdebug
+builds pass. Linux-only disabled-field test assumption caught by prior failed CI
+was corrected without enabling unsupported export; fresh final CI passes.
+Protected expected-head reviewer merge779403527c93e4ad294780369743c16058fa3090
+at2026-11-04T17:20:51Z independently parent-verified on PR/currentmain. Signed
+commit hash, exacttree and soleparent469d0265 verified before guarded local-only
+sync. Localmain/originmain0/0,indexempty; both original IDE edits and all local
+handoff docs preserved byte-for-byte. Requirements/export routes now retain one
+owner, loaded board and draft state across dependency rebuilds; original owners
+are disposed on Back. FullF11/#402 remainsOPEN/unchecked, Deferred400OPEN.
+No live inference, stableapp replacement, deployment or cadence/notification change.
+Final canonical merge bookkeeping retained locally for next normal reviewed PR.
+Receipts:/private/tmp/asg484-publication.json,/private/tmp/asg484-review-evidence.json,
+/private/tmp/asg484-verified-pr.json,/private/tmp/asg484-sync-record.json.
+
+
+### Durable reviewed HTML source drafts — F11 / #402
+In progress on `402-html-source-drafts` from verified current main/PR #484 merge
+779403527c93e4ad294780369743c16058fa3090; scope6637428076. No open PR/competing
+active ASG owner at selection. Reuse canonical F11/#402, no new task/issue.
+Evidence: closing HtmlSourceReviewScreen previously discarded every proposal and
+local edit. Implement one explicit saved source draft per registered HTML project.
+Strict bounded versioned schema retains exact files, request provenance and local
+edit attribution. Context SHA256 binds original project/starter/requirements/chat/
+consent records without duplicating those records or saving model endpoints.
+Conditional transactions compare context and prior draft; corrupt records are
+preserved and quarantined on DB reopen. Explicit Restore reruns reference
+inspection and grants no approval, check, filesystem-write or preview authority.
+Changed context refuses restoration. Stop/disposal/deadline and async context
+changes suppress late review authority; already-committed writes may remain and
+are never represented as cancelled disk writes. Save failures retain current
+review source. Unsaved editor buffers must be applied before saving; restoration
+explicitly replaces the current review. Local drafts are excluded from portable
+archives and do not alter original fixed-starter identity or generated files.
+Available Mac prerequisites: delivered review/editor, reference inspector and
+transactional database. No deferred platform hardware is required for this
+bounded persistence increment. Full F11/#402 and Deferred #400 stay unchecked/open.
+Acceptance/validation: exact edited files/provenance round trip, native database
+close/reopen/corruption isolation, conditional conflict/failure/retry, changed
+context, pending transaction Stop/disposal, restore Stop/disposal/deadline/analysis
+failure, overlap exclusion and actual 320px/2x Save/Restore controls. Full selected
+source Flutter checks/builds, regenerated inventory, independent exact-final review,
+required CI and protected reviewer merge remain gates. Stable app/model unchanged;
+no inference, JavaScript execution, adapter completion or support-matrix claim.
+
+Final selected-source validation: 1,551 Flutter tests passed with nine explicit
+skips; 437-file formatter zero changes, analysis clean, fresh web/Wasm dry-run
+and macOS debug builds passed. 43 focused HTML review/edit/draft regressions and
+nine regenerated historical-inventory tests pass. All462runtime/test/tool inputs
+match the isolated full-test copy, excluding the pre-existing local MLX-venv
+license-scan contamination without modifying that environment. Existing health8765
+unavailable; no live inference claimed or needed for persistence. Publication,
+independent exact-final review, actual required CI and reviewer merge remain gates.
