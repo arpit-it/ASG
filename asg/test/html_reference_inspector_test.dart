@@ -28,6 +28,37 @@ String page(String body) =>
     '<!doctype html><html><head><title>References</title></head><body>$body</body></html>';
 
 void main() {
+  test('base without href retains local URL diagnostics', () async {
+    for (final base in ['<base target="_blank">', '<base>']) {
+      final report = await inspectHtmlReferences(
+        proposal(page('$base<img src="missing.png"><a href="#absent">Go</a>')),
+      );
+      expect(report.messages.join('\n'), contains('Missing local target'));
+      expect(report.messages.join('\n'), contains('Missing HTML fragment'));
+      expect(
+        report.messages.join('\n'),
+        isNot(contains('local targets were not resolved')),
+      );
+    }
+  });
+
+  test(
+    'explicit empty base href keeps conservative resolution warning',
+    () async {
+      final report = await inspectHtmlReferences(
+        proposal(page('<base href=""><img src="missing.png">')),
+      );
+      expect(
+        report.messages.join('\n'),
+        contains('local targets were not resolved'),
+      );
+      expect(
+        report.messages.join('\n'),
+        isNot(contains('Missing local target')),
+      );
+    },
+  );
+
   test('inert template IDs cannot satisfy live fragments', () async {
     final report = await inspectHtmlReferences(
       proposal(

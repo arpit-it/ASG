@@ -13230,3 +13230,76 @@ nine inventory tests PASS. Actual isolated Chrome DOM confirms inert/nested IDs
 excluded, live SVG/template IDs retained, one live duplicate ID and ignored inert
 base. Authored fixture only; no model inference/full-adapter/support claim.
 Recorded 2026-11-04T22:32:39.753498+00:00.
+
+Published PR #495 https://github.com/arpit-it/ASG/pull/495, Awaiting merge.
+Tested local2f8913bf23f412111ab8a943a62e54e8ef96755d and plugin final
+ed845e377b7824ee7ef78ad8acd5fcd2ca48241a share exacttree
+95a46d050b258135e14409bfb73395ab3cb33171; allsevenpublishedblobs match.
+Independent /root/review_495 owns exact-finalreview/actualrequiredCI/protected
+expected-head reviewermerge; parent owns verification/safe-sync.1599Flutter/
+nine skips,35focused/threebaselineFAIL,440format/analyzer/webWasm/macOSdebug/
+nineinventory/actualChromeDOM PASS;466inputs match. FullF11/#402 and Deferred400
+remainOPEN. No inference/fulladapterclaim. Recorded 2026-11-04T22:34:16.315552+00:00.
+
+
+### Inert HTML template target diagnostics verified merged — PR #495
+Bounded F11/#402 correction Done through https://github.com/arpit-it/ASG/pull/495,
+branch `402-html-inert-targets`, scope6643774205. Inert HTML template descendants
+no longer supply document IDs/anchor names/base; live SVG/template-element IDs
+and advisory declared-reference inventory remain. Three baseline regressions
+independently reproduced; four new tests pass. No full-adapter/safety verdict.
+Tested local2f8913bf23f412111ab8a943a62e54e8ef96755d and final plugin
+ed845e377b7824ee7ef78ad8acd5fcd2ca48241a share exacttree
+95a46d050b258135e14409bfb73395ab3cb33171; allsevenpublishedblobs match.
+Independent codeCOMMENT5776875976/finalapprovalCOMMENT5777160433;
+945remote blobs/modes,466inputs and CImergef70b8201 verified; own73focused/
+fouradditional boundary probes/nineinventory/actualChromeDOM PASS.
+Parent1599Flutter/nine skips,35focused/fournew/threebaselineFAIL,440zero-change
+format/cleananalyzer/webWasm/macOSdebug/nineinventory/actualChromeDOM and exact
+17browser-suite tests PASS; all466tracked validationinputs byte-identical.
+RequiredCI41926371597 attempt2 BOTHdirectfinalheadchecks SUCCESS:
+Flutter126921877094/Python126921877551. Reviewer inspected actual1551Linux/
+54skips,allfournew,17Chrome,transport/staticHTML/webWasm/realindependent
+ generatedFlutter resolve-analyze-test-build-serve and all8Python suite logs.
+Initial unchangedPython5soptimizedCLI refusal timeout and Chrome bootstrap stall
+until20minjobtimeout recovered via one bounded rerun; no codechange/skippedcheck
+substitution. Explicit independent verdict follows documentedzero-required-
+approvers workflow; no branch protection changed/bypassed.
+Protectedexpectedhead reviewer squashmerge
+7060d8e09573893c9dde7d5f578489a1af5085c4 at2026-11-04T23:03:20Z
+independently parentverified onPR/currentmain/directchecks; signedexacttree/
+soleparent4c96ec72 hash-reconstructed before guardedlocal-onlysync.
+Localmain/originmain0/0,indexempty; originaltwoIDE andthreelocalhandoffdocs
+byte-identical acrosssync. FullF11/#402 verifiedOPEN/unchecked; Deferred400
+retained. Existing8765health unavailable URLError0.005s; no freshinference,
+installed-stableapp replacement,deployment,cadence or notification change.
+No active implementation or required owneraction for this increment. Canonical
+finalmerge evidence retained locally for next normal reviewed developmentPR.
+Receipts:/private/tmp/asg-inert-publication.json,/private/tmp/asg495-review-evidence.json,
+/private/tmp/asg495-verified-pr.json,/private/tmp/asg495-sync-record.json,
+/private/tmp/asg495-check-runs.json. Recorded 2026-11-04T23:04:47.672487+00:00.
+
+
+### Base URL diagnostics require href — F11 / #402
+In progress on `402-html-base-href` from plugin-verified PR #495 merge
+`7060d8e09573893c9dde7d5f578489a1af5085c4`; scope6644672423.
+Fresh plugin search found no open PR/competing active run. A baseline regression
+reproduced target-only/attribute-free base suppressing local target diagnostics.
+Only live HTML base[href] now suppresses local URL resolution; explicit empty
+href retains conservative warning and existing foreign/template exclusions.
+Two tests cover target-only/empty-element diagnostics and explicit empty href.
+Delivered reference inspector is the prerequisite; Deferred400 is unrelated.
+Full F11/#402 remains open/unchecked. No inference/full-adapter/safety claim.
+Prior #495 final merge evidence retained. Final validation, plugin publication,
+independent exact-final review, required CI and reviewer merge remain pending.
+Recorded 2026-11-04T23:15:55.061959+00:00.
+
+Final local validation: 1,601 Flutter tests PASS/nine explicit skips in isolated
+tracked-source copy; all 467 tracked runtime/test/tool/dependency inputs match.
+37 focused reference tests/two new PASS; one new baseline failure reproduced.
+439-file zero-change format, clean analyzer, web/Wasm dry-run, macOS debug
+build and nine inventory regressions PASS. Existing8765 health unavailable
+URLError0.006s; no fresh inference or installed stable-app change.
+Plugin publication, independent final-revision review, required CI and protected
+reviewer merge remain pending. FullF11/#402 remains open/unchecked.
+Recorded 2026-11-04T23:16:57.176249+00:00.
