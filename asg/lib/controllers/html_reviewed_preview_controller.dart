@@ -22,12 +22,15 @@ class HtmlReviewedPreviewController extends BaseController {
   final HtmlReviewedPreview preview;
   final Duration deadline;
   bool busy = false, stopping = false, opening = false;
+  bool _cleanupFailed = false;
+  bool get cleanupFailed => _cleanupFailed;
   Uri? url;
   String? error;
   int _generation = 0;
 
   bool get supported => preview.supported;
-  bool get locked => busy || stopping || opening || url != null;
+  bool get locked =>
+      busy || stopping || opening || cleanupFailed || url != null;
 
   Future<void> confirm() async {
     if (isDisposed || locked || !supported) return;
@@ -64,7 +67,10 @@ class HtmlReviewedPreviewController extends BaseController {
       try {
         await preview.stop();
       } catch (_) {
-        if (!isDisposed) error = 'Preview cleanup failed. Source authority is revoked; leave this screen closed.';
+        if (!isDisposed) {
+          _cleanupFailed = true;
+          error = 'Preview cleanup failed. Source authority is revoked. Retry cleanup before starting another preview.';
+        }
       }
     } finally {
       timer.cancel();
@@ -78,7 +84,14 @@ class HtmlReviewedPreviewController extends BaseController {
   }
 
   Future<void> open() async {
-    if (isDisposed || busy || stopping || opening || url == null) return;
+    if (isDisposed ||
+        busy ||
+        stopping ||
+        opening ||
+        cleanupFailed ||
+        url == null) {
+      return;
+    }
     opening = true;
     error = null;
     update();
@@ -103,8 +116,15 @@ class HtmlReviewedPreviewController extends BaseController {
     update();
     try {
       await preview.stop();
+      if (!isDisposed && _cleanupFailed) {
+        _cleanupFailed = false;
+        error = 'Preview cleanup completed. Exported files were retained. An already-dispatched browser launch may finish.';
+      }
     } catch (_) {
-      if (!isDisposed) error = 'Preview cleanup failed. Leave this screen closed; the revoked source authority refuses further responses.';
+      if (!isDisposed) {
+        _cleanupFailed = true;
+        error = 'Preview cleanup failed. Source authority is revoked. Retry cleanup before starting another preview.';
+      }
     } finally {
       stopping = false;
       update();

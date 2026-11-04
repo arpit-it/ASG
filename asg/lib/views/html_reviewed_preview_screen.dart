@@ -62,10 +62,14 @@ class _HtmlReviewedPreviewScreenState extends State<HtmlReviewedPreviewScreen> {
               child: const Text('Open passive preview in browser'),
             ),
           ],
-          if (c.busy || c.url != null || c.stopping)
+          if (c.busy || c.url != null || c.stopping || c.cleanupFailed)
             OutlinedButton(
               onPressed: c.stopping ? null : c.stop,
-              child: const Text('Stop passive preview'),
+              child: Text(
+                c.cleanupFailed
+                    ? 'Retry passive preview cleanup'
+                    : 'Stop passive preview',
+              ),
             ),
           if (c.error != null) SelectableText(c.error!),
         ],
