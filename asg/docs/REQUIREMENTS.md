@@ -271,7 +271,7 @@ The saved development automation was updated through its management tool; active
   - Acceptance: UI shows available and unavailable operations with actionable reasons; unsupported confinement refuses candidate execution before any source is run. Each enabled host passes real new-project resolve/analyze/test/web-build/serve, Stop/deadline/output-limit and descendant-cleanup checks, restart/uncertain-checkpoint refusal, stale-approval refusal and last-working-output preservation. Enabling starter generation must not implicitly enable candidate execution. Model-written candidate/repair support needs independently reviewed platform isolation and real deny-write/network/process-escape probes at the established boundary.
   - Validation/delivery: one narrowly scoped issue/PR per host/capability milestone, actual Linux/Windows builds and launches on their respective hosts, plus macOS regression coverage. Include paths with spaces, missing toolchains, occupied ports, failed previews and interrupted writes. Record tested versus unavailable capabilities separately; keep F16 unchecked until promised host increments satisfy acceptance and normal independent review/CI/verified merge. Broader generated targets remain F11.
 - [ ] F11 Multi-language project generation, runners and explicit stack selection — In progress (#402); depends on F04 and F05
-  - App-owned HTML source review — Awaiting merge ([PR #475](https://github.com/arpit-it/ASG/pull/475), #402), `402-html-source-review`, scope6629190612. Explicit review-only instruction/request/file display, request provenance, deadline and Stop with overlap/stale-result exclusion. No source writes or preview; full adapter remains open.
+  - App-owned HTML source review — Done (bounded increment; [PR #475](https://github.com/arpit-it/ASG/pull/475), verified reviewer mergef7b4fcdd at2026-11-04T11:36:37Z, #402), `402-html-source-review`, scope6629190612. Explicit review-only instruction/request/file display, request provenance, deadline and Stop with overlap/stale-result exclusion. No source writes or preview; full adapter remains open.
   - Review-only HTML source proposals — Done (bounded increment; verified reviewer merge4e080a69 at2026-11-04T10:59:05Z; [PR #474](https://github.com/arpit-it/ASG/pull/474), #402), `402-html-source-proposals`, scope6628199999. Bounded immutable sources and streamed local-model proposals; no writes or execution authority. Review UI is the current increment; promotion/live synthesis remain Pending.
   - Approved HTML Plan preview dispatch — Done (bounded increment; [PR #473](https://github.com/arpit-it/ASG/pull/473), verified reviewer mergede2c09c4 at2026-11-04T10:02:00Z, #402), `402-approved-html-preview`, scope6627700305. Explicit fresh check→preview under exact durable consent; full adapter remains open.
   - HTML preview read authority — Done (bounded prerequisite; [PR #472](https://github.com/arpit-it/ASG/pull/472), verified reviewer merge0ac45ab1 at2026-11-04T09:29:42Z, #402), `402-html-preview-authority`, scope6627144961. Caller authority across snapshot/bind/HTTP serving boundaries is a prerequisite for approved preview dispatch; full adapter remains open.
@@ -12536,3 +12536,61 @@ Full-suite first run caught two workspace-position regressions after adding the 
 Final validation: clean1463Flutter tests passed/nine explicit skips; formatter412 unchanged after source formatting, analyzer clean, web build including Wasm dry run passed. Nine acceptance-inventory tests passed; refreshed separate historical observations only. All581tracked non-documentation/non-IDE inputs byte-match clean testedcopy /private/tmp/asg475-validation. Focused43 and integration39 passed. Awaiting publication, exact-final independent review, required CI and protected reviewer merge. FullF11/#402 remains open; no live inference claim.
 
 PR #475: https://github.com/arpit-it/ASG/pull/475. Initial publishede0b61d5c and testedlocal4f0ef573 share exacttree430ec6cd; all eight remote blobs match. Independent reviewer /root/review_475 inspects final revision and actual required CI before protected merge. Status: Awaiting merge; fullF11/#402 remains open. Publication bookkeeping changes docs only; all581 tested runtime/tool/test inputs unchanged.
+
+
+### App-owned HTML source review verified merged — PR #475
+Bounded F11/#402 increment Done on `402-html-source-review`, scope6629190612.
+Finaldc7b75e76225cab12b7127df5fed17c52703ee7c/testedlocal9a5953aea64d2de356dc44f25c3ecff3db6e51fa
+share exacttree6e59dfa184876219771fb0e7bd942e640a00af2d. All8remote blobs/581
+non-documentation/non-IDE inputs matched. Independent final approval5767484206/
+finalgate6629571371: no blocking findings;71focused including3adversarial lifecycle
+probes and9inventory passed. Parent1463full/nine skips,43focused/39integration,
+formatter412/analyzer/webWasm/nineinventory passed after navigation regressions fixed.
+Both requiredCI41820971210 jobs SUCCESS: Python126544275132 and Flutter126544275377.
+Reviewer inspected actual1429Linux/40skips,17Chrome,transport/staticHTML/webWasm/
+independentgeneratedFlutter resolve/analyze/test/build/serve and all8Python suites.
+Protected expected-head reviewer plugin squash mergef7b4fcdd18b81f0c573f8fc4334a5d2cb30903c5
+at2026-11-04T11:36:37Z freshly parent-verified mergedPR/main. Signed exacttree/
+soleparent4e080a69 hash-verified before guarded local-only synchronization.
+Localmain/originmain0/0,indexempty,both originalIDEedits byte-identical.
+Explicit temporary untrusted HTML review delivered with Stop/deadline/stale-result
+exclusion; no source reads/writes, preview, promotion or task completion.
+FullF11/#402 staysOPEN; next increment is reviewed candidate validation/promotion
+integration under existing tracking. Actual live synthesis/browser acceptance and
+Deferred#400 remainOPEN. Existing8765health unavailable; no inference/app-launch
+acceptance/stableapp replacement/deployment/cadence/notification changes claimed.
+Final merge bookkeeping retained locally for next normal reviewed development PR.
+Receipts:/private/tmp/asg475-publication.json,/private/tmp/asg475-inputs.json,
+/private/tmp/asg475-review-evidence.json,/private/tmp/asg475-verified-pr.json,
+/private/tmp/asg475-sync-record.json,/private/tmp/asg475-safe-sync.py.
+
+
+### Confirmed reviewed HTML source export — F11 / #402
+In progress on `402-reviewed-html-export` from verified PR #475 merge
+`f7b4fcdd18b81f0c573f8fc4334a5d2cb30903c5`; scope6629733756.
+No competing active ASG run/open PR at selection. The review-only proposer/UI
+cannot export user-specific source; existing export is fixed-template-only.
+Add immutable exact proposal/destination confirmation and a separate reviewed
+export service API, reusing exclusive folder creation, current-authority checks
+at every write boundary, retained partial paths and owned-process reconciliation.
+Actual UTF-8 HTML/CSS/optional JavaScript bytes only; no rendering, execution,
+registration, original-starter edits, promotion or verification claim. Browser
+validation and app export-confirmation UI remain pending under existing #402.
+This Mac-verifiable service prerequisite uses delivered review/export foundations;
+Deferred #400 is not a dependency. Full F11 remains In progress/unchecked.
+19 focused actual-IO/contract tests passed, including fixed-export regressions,
+UTF-8/optional script, exact confirmation, existing/symbolic paths, traversal,
+revocation before/after mkdir and file creation, partial preservation and real
+helper timeout/reap. Clean full formatter/analyzer/tests/web build running.
+Status: Awaiting final checks, publication, exact-final independent review,
+required CI and protected reviewer merge. No live inference or support expansion.
+
+Final validation: clean1,471Flutter tests passed/nine explicit skips; formatter413
+unchanged, analyzer clean, web build including Wasm dry run passed. Nine inventory
+tests passed after regenerating separate historical observations. All569 tracked
+non-documentation app inputs byte-match /private/tmp/asg476-validation.
+Initial analyzer test-style finding corrected and complete checks rerun.
+[PR #476](https://github.com/arpit-it/ASG/pull/476) targets main; status Awaiting merge.
+Final publication includes PR475 verified merge bookkeeping and no unrelated IDE
+changes. Independent final-revision review, actual required CI and protected
+reviewer merge remain gates; no Done/merge/live inference claim.

@@ -10,12 +10,14 @@ import '../generation_process_capture.dart';
 import 'html_site_template.dart';
 import 'html_source_export.dart';
 
-/// Fixed-source export only; no model input, shell, verification or preview.
+/// Fixed or explicitly confirmed reviewed-source export; no shell,
+/// verification, registration, promotion or preview. Source is never executed.
 /// The caller owns confirmation and must revalidate current session authority
 /// in [authorizeWrite]. This is not a sandbox against concurrent local actors.
 /// An already-dispatched mutation may finish. Uncertain directory dispatches
 /// report their destination, and unconfirmed child exits block further export.
-class HtmlSourceExportNative implements HtmlSourceExport {
+class HtmlSourceExportNative
+    implements HtmlSourceExport, HtmlReviewedSourceExport {
   HtmlSourceExportNative({
     Future<Process> Function(String directory)? startDirectoryProcess,
   }) : _startDirectoryProcess = startDirectoryProcess ?? _startDirectory;
@@ -36,6 +38,33 @@ class HtmlSourceExportNative implements HtmlSourceExport {
     required HtmlExportRequest request,
     required HtmlExportRequest? confirmedRequest,
     required void Function() authorizeWrite,
+  }) => _exportSources(
+    parentPath: request.parent,
+    folderName: request.folderName,
+    confirmed: confirmedRequest != null && request.matches(confirmedRequest),
+    sources: HtmlSiteTemplate().generate(request.input),
+    authorizeWrite: authorizeWrite,
+  );
+
+  @override
+  Future<String> exportReviewed({
+    required HtmlReviewedExportRequest request,
+    required HtmlReviewedExportRequest? confirmedRequest,
+    required void Function() authorizeWrite,
+  }) => _exportSources(
+    parentPath: request.parent,
+    folderName: request.folderName,
+    confirmed: confirmedRequest != null && request.matches(confirmedRequest),
+    sources: request.proposal.files,
+    authorizeWrite: authorizeWrite,
+  );
+
+  Future<String> _exportSources({
+    required String parentPath,
+    required String folderName,
+    required bool confirmed,
+    required Map<String, String> sources,
+    required void Function() authorizeWrite,
   }) async {
     void check() {
       if (!supported) {
@@ -43,7 +72,7 @@ class HtmlSourceExportNative implements HtmlSourceExport {
           'HTML source export is available on macOS only.',
         );
       }
-      if (confirmedRequest == null || !request.matches(confirmedRequest)) {
+      if (!confirmed) {
         throw StateError(
           'Confirm the exact HTML content and destination first.',
         );
@@ -57,22 +86,21 @@ class HtmlSourceExportNative implements HtmlSourceExport {
     }
 
     check();
-    if (!path.isAbsolute(request.parent) ||
-        !RegExp(r'^[a-z][a-z0-9_]{2,50}$').hasMatch(request.folderName)) {
+    if (!path.isAbsolute(parentPath) ||
+        !RegExp(r'^[a-z][a-z0-9_]{2,50}$').hasMatch(folderName)) {
       throw const FormatException(
         'Choose an absolute parent and a new 3–51 character lowercase folder name.',
       );
     }
-    final parent = await Directory(request.parent).resolveSymbolicLinks();
-    if (parent != path.normalize(request.parent)) {
+    final parent = await Directory(parentPath).resolveSymbolicLinks();
+    if (parent != path.normalize(parentPath)) {
       throw const FormatException('Choose a real parent, not a symbolic link.');
     }
-    final destination = path.join(parent, request.folderName);
+    final destination = path.join(parent, folderName);
     if (await FileSystemEntity.type(destination, followLinks: false) !=
         FileSystemEntityType.notFound) {
       throw StateError('Destination already exists; nothing was overwritten.');
     }
-    final sources = HtmlSiteTemplate().generate(request.input);
     check();
     // Unlike Directory.create, mkdir refuses an existing directory atomically.
     Process? directoryProcess;
@@ -125,8 +153,11 @@ class HtmlSourceExportNative implements HtmlSourceExport {
 
       await checkDirectory(destination);
       check();
-      // Only the fixed template's one known subdirectory can be created.
-      await Directory(path.join(destination, 'assets')).create();
+      // Only the fixed template needs its one known subdirectory. Reviewed
+      // proposals are restricted by their decoder to root-level source files.
+      if (sources.containsKey('assets/mark.svg')) {
+        await Directory(path.join(destination, 'assets')).create();
+      }
       for (final entry in sources.entries) {
         await checkDirectory(destination);
         final file = File(path.join(destination, entry.key));
@@ -153,5 +184,7 @@ class HtmlSourceExportNative implements HtmlSourceExport {
 }
 
 // Keep uncertain process ownership across screen closure and reopening.
-final HtmlSourceExport _appExporter = HtmlSourceExportNative();
+final _appExporter = HtmlSourceExportNative();
 HtmlSourceExport createHtmlSourceExport() => _appExporter;
+
+HtmlReviewedSourceExport createHtmlReviewedSourceExport() => _appExporter;
