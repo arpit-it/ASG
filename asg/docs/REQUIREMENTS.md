@@ -271,7 +271,7 @@ The saved development automation was updated through its management tool; active
   - Acceptance: UI shows available and unavailable operations with actionable reasons; unsupported confinement refuses candidate execution before any source is run. Each enabled host passes real new-project resolve/analyze/test/web-build/serve, Stop/deadline/output-limit and descendant-cleanup checks, restart/uncertain-checkpoint refusal, stale-approval refusal and last-working-output preservation. Enabling starter generation must not implicitly enable candidate execution. Model-written candidate/repair support needs independently reviewed platform isolation and real deny-write/network/process-escape probes at the established boundary.
   - Validation/delivery: one narrowly scoped issue/PR per host/capability milestone, actual Linux/Windows builds and launches on their respective hosts, plus macOS regression coverage. Include paths with spaces, missing toolchains, occupied ports, failed previews and interrupted writes. Record tested versus unavailable capabilities separately; keep F16 unchecked until promised host increments satisfy acceptance and normal independent review/CI/verified merge. Broader generated targets remain F11.
 - [ ] F11 Multi-language project generation, runners and explicit stack selection — In progress (#402); depends on F04 and F05
-  - Approved HTML Plan preview dispatch — In progress (#402), `402-approved-html-preview`, scope6627700305. Explicit fresh check→preview under exact durable consent; full adapter remains open.
+  - Approved HTML Plan preview dispatch — Awaiting merge ([PR #473](https://github.com/arpit-it/ASG/pull/473), #402), `402-approved-html-preview`, scope6627700305. Explicit fresh check→preview under exact durable consent; full adapter remains open.
   - HTML preview read authority — Done (bounded prerequisite; [PR #472](https://github.com/arpit-it/ASG/pull/472), verified reviewer merge0ac45ab1 at2026-11-04T09:29:42Z, #402), `402-html-preview-authority`, scope6627144961. Caller authority across snapshot/bind/HTTP serving boundaries is a prerequisite for approved preview dispatch; full adapter remains open.
   - Approved HTML source-check dispatch — Done (bounded increment), [PR #471](https://github.com/arpit-it/ASG/pull/471), reviewer merge22c94c5e at2026-11-04T09:01:32Z, finalfa744566 approved5765784106/finalgate6626881076, requiredCI41802864733 passed; #402, `402-approved-html-source-check`, scope6626567528. Explicit first-operation execution under exact durable consent; preview/full Plan completion remain Pending. See delivery ledger.
   - Durable HTML Plan consent — Done (bounded prerequisite), [PR #470](https://github.com/arpit-it/ASG/pull/470), verified reviewer merge5144a757 at2026-11-04T08:32:54Z, final32738c31 approved5765417065/finalgate6626357516, requiredCI41799040481 passed. Consent starts no action; full F11 remains open.
@@ -12411,3 +12411,18 @@ macOS debug builds passed; nine inventory tests passed. No inference, app-launch
 acceptance, installed-app replacement or deployment claimed.
 Status: Awaiting plugin publication, exact-final independent review, required
 CI and protected reviewer merge. Full #402/F11 remain OPEN.
+
+
+PR: https://github.com/arpit-it/ASG/pull/473. Initial published535c94838cb40ea7b5b0cc81d260f9d2177cb8c2
+and tested localf3db11e60a10f2af91931967fef25f97cec3888d share exacttree
+04c289795a9c3dbdb4f9e49c6fcb88e1f69d13b1; all eight remote blobs match.
+Status: Awaiting merge; independent final-revision review and both required CI
+checks must pass before protected reviewer merge. Full F11/#402 stay open.
+This publication bookkeeping changes docs only; runtime/test inputs unchanged.
+
+Independent review found late failed startup cleanup could retain a misleading
+Stopped notice after Stop/deadline revoked the generation. Corrected: always
+publish cleanup failure and clear the stopped notice while alive; retain the
+Stop retry gate. Regression asserts both visible error and absent success notice.
+Affected22 focused tests/analyzer and refreshed nine inventory tests passed.
+Final full suite/build rerun and fresh exact-head review remain merge gates.

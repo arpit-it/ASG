@@ -11567,3 +11567,18 @@ macOS debug builds passed; nine inventory tests passed. No inference, app-launch
 acceptance, installed-app replacement or deployment claimed.
 Status: Awaiting plugin publication, exact-final independent review, required
 CI and protected reviewer merge. Full #402/F11 remain OPEN.
+
+
+PR: https://github.com/arpit-it/ASG/pull/473. Initial published535c94838cb40ea7b5b0cc81d260f9d2177cb8c2
+and tested localf3db11e60a10f2af91931967fef25f97cec3888d share exacttree
+04c289795a9c3dbdb4f9e49c6fcb88e1f69d13b1; all eight remote blobs match.
+Status: Awaiting merge; independent final-revision review and both required CI
+checks must pass before protected reviewer merge. Full F11/#402 stay open.
+This publication bookkeeping changes docs only; runtime/test inputs unchanged.
+
+Independent review found late failed startup cleanup could retain a misleading
+Stopped notice after Stop/deadline revoked the generation. Corrected: always
+publish cleanup failure and clear the stopped notice while alive; retain the
+Stop retry gate. Regression asserts both visible error and absent success notice.
+Affected22 focused tests/analyzer and refreshed nine inventory tests passed.
+Final full suite/build rerun and fresh exact-head review remain merge gates.

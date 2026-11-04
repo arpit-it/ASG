@@ -70,7 +70,11 @@ class HtmlPreviewController extends BaseController {
       try {
         await service.stop();
       } catch (_) {
-        if (!isDisposed) _cleanupFailed = true;
+        if (!isDisposed) {
+          _cleanupFailed = true;
+          _notice = null;
+          _error = 'Preview cleanup failed. Retry Stop before opening another preview.';
+        }
       }
       if (!isDisposed && generation == _generation) {
         _error = _cleanupFailed

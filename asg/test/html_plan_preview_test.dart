@@ -348,6 +348,8 @@ void main() {
       await pending;
       expect(c.url, isNull);
       expect(c.cleanupFailed, true);
+      expect(c.error, contains("cleanup failed"));
+      expect(c.notice, isNull);
       await c.start(starter.directory, request);
       expect(preview.starts, 1);
       preview.failStop = false;
