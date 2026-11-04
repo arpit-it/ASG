@@ -11320,3 +11320,11 @@ and macOS debug builds passed without replacing the installed app. Nine refreshe
 acceptance-inventory tests passed. No inference or app-launch acceptance claimed.
 Status: Awaiting publication, independent exact-revision review, required CI
 and protected reviewer merge. Full F11/#402 and Deferred #400 remain open.
+
+PR: https://github.com/arpit-it/ASG/pull/469. Initial published
+`e194edf03d451b053e1e1da3762339cf50653974` and tested local
+`60658041516111675213ca8d69546506d635f9c3` share exact tree
+`79530df8b35eb849fbd61e0dbaeda010183d8ca9`; all seven plugin blobs verified.
+Status: Awaiting merge. Publication bookkeeping changes documentation only;
+runtime/test inputs remain unchanged. Independent final-revision review and
+both required CI checks are mandatory before protected reviewer merge.
