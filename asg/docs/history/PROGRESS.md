@@ -12082,3 +12082,72 @@ acceptance_inventory.json against clean tracked final source; nine inventory
 regressions pass. No fixture observation is promoted to current acceptance.
 Previoushead approval/CI cannot approve this correction; publish corrected final
 revision and obtain fresh independent review plus both requiredCI jobs.
+
+
+### CSS reference diagnostics verified merged — PR #480
+Bounded F11/#402 increment Done on `402-css-reference-diagnostics`, scope6632224646.
+Final a647d61df0080d68090e066a00e9e65fda11b0bc/local45aa0c42bf2f2345de24a387e140c534865cc804
+share exacttree1d8b110d41b2de52a82bff48cc49425052ff91fd. Parent1506Flutter/nine
+skips,29focused,11actualChrome,formatter423/analyzer/webWasm/macOSdebug pass;
+579non-docinputs match. Independent41focused/11Chrome/3additionalCSS/9inventory
+pass; all928remote blobs/modes match. Stale inventory blocker5769500464 fixed;
+fresh finalapproval5769526289/finalgate6632671143 approves corrected head.
+RequiredCI41842533590 BOTH SUCCESS: Flutter126617763959/Python126617764577;
+actual1463Linux/49skips,17Chrome,transport/staticHTML/webWasm/generatedFlutter
+resolve-analyze-test-build-serve and8Python suites inspected by reviewer.
+Protected expected-head reviewer squash merge4553db0b307827d1557e7a9250957e32fc028142
+at2026-11-04T14:04:21Z freshly parent-verified on PR/currentmain. Signed commit
+hash/exacttree/soleparent71d2c204 verified before guarded local-only safe sync.
+Localmain/originmain0/0,indexempty; both originalIDE edits byte-identical.
+Parsed stylesheet/inline URL/import observations are advisory, bounded and
+immutable; quoted-import normalization and explicit filter-parser omission
+reporting are delivered. No fetch/execution/browser/visual/safety/promotion or
+live inference claim. FullF11/#402 remainsOPEN/unchecked; reviewed-source browser
+validation/promotion and live synthesis acceptance remain pending. Deferred400
+remainsOPEN. Local8765health unavailable. No stableapp/deployment/cadence or
+notification change. Final bookkeeping retained for next normal reviewed branch.
+Receipts:/private/tmp/asg480-publication.json,/private/tmp/asg480-review-evidence.json,
+/private/tmp/asg480-verified-pr.json,/private/tmp/asg480-sync-record.json,
+/private/tmp/asg480-safe-sync.py.
+Run completed 2026-11-04T14:05:54.786006+00:00.
+
+
+### Responsive image reference diagnostics — F11 / #402
+In progress on `402-responsive-image-diagnostics`, from verified current main
+4553db0b307827d1557e7a9250957e32fc028142 (PR #480). Scope comment
+6632913969 reuses #402; no new issue or task ID. No competing active run/open PR
+was found. Preserve prior merge bookkeeping and unrelated IDE edits.
+
+Gap: reviewed HTML explicitly excluded responsive srcset assets despite F11
+link/asset acceptance. Add read-only img/source srcset and link imagesrcset
+candidate URL observations using HTML-standard splitting/descriptor states;
+commas in data/ordinary URLs remain part of URLs. Supported no-descriptor, single
+positive-width or nonnegative finite-density candidates reuse existing target,
+fragment, query, scheme and base diagnostics. Malformed/unsupported descriptors
+are reported and skipped, with candidate recovery and bounded finding display.
+No fetch, image decode, responsive selection, sizes/media/type evaluation,
+browser/visual/safety verdict or preview/promotion permission. Future h descriptors
+and multiple descriptors stay explicitly unsupported. Full F11/#402 unchecked;
+Deferred #400 retained. Delivered proposal/parser prerequisites suffice on Mac;
+unavailable platform validation is not required for this read-only increment.
+
+Acceptance: img/source/link coverage, entities, data/ordinary URL commas, numeric
+width/density grammar, malformed descriptor/parenthesis/separator recovery,
+non-candidate elements/comments/script exclusion, existing base/query/fragment
+limits, 100-message cap and Stop/deadline/stale/narrow-screen lifecycle guards.
+Validate full Flutter/format/analyze, actual Chrome diagnostics, web/macOS builds,
+historical inventory regeneration, independent exact-final review, required CI
+and protected reviewer merge. HTML tokenization also reports a vertical-tab
+parse error; regression distinguishes that finding from five descriptor omissions.
+Reference algorithm: https://html.spec.whatwg.org/multipage/images.html#parse-a-srcset-attribute
+
+Final clean validation: 1513 Flutter tests passed/nine explicit skips; 36 focused
+review/diagnostic tests and 18 actual Chrome diagnostic tests passed. Formatter
+424 files unchanged, analyzer clean, web build (Wasm dry run) and macOS debug
+build passed. All 580 non-document app inputs match the clean validation copy.
+Historical inventory regenerated; nine inventory tests passed without promoting
+observations to current acceptance. Original IDE hashes unchanged. Local runtime
+8765 unavailable; no inference claim. Initial vertical-tab assertion was corrected
+to distinguish HTML recovery from descriptor omissions, then tests reran clean.
+Awaiting plugin publication, independent exact-final review, actual required CI
+and protected reviewer merge. Full F11/#402 and Deferred #400 remain open.

@@ -8,6 +8,7 @@ import 'package:html/parser.dart' as html;
 
 import '../../models/html/html_reference_report.dart';
 import '../../models/html/html_source_proposal.dart';
+import 'html_srcset_references.dart';
 
 /// Bounded immutable proposal analysis. Native parsing runs off the UI isolate;
 /// web compute runs synchronously on the already size-bounded proposal.
@@ -108,6 +109,23 @@ HtmlReferenceReport _inspect(HtmlSourceProposal proposal) {
         value,
         '${element.localName}[$attribute] ${_label(value)}',
         inline: true,
+      );
+    }
+    final responsiveAttribute = switch (element.localName) {
+      'img' || 'source' => 'srcset',
+      'link' => 'imagesrcset',
+      _ => null,
+    };
+    final responsive = responsiveAttribute == null
+        ? null
+        : element.attributes[responsiveAttribute];
+    if (responsive != null) {
+      final location = '${element.localName}[$responsiveAttribute]';
+      inspectSrcsetReferences(
+        responsive,
+        onReference: (value) =>
+            inspectReference(value, '$location ${_label(value)}', inline: true),
+        onDiagnostic: (message) => report('$location $message'),
       );
     }
     if (element.localName == 'style') {
