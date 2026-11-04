@@ -11804,3 +11804,9 @@ passed; 1,491 full Flutter tests/nine skips,11focused,format420/analyzer/webWasm
 and nine historical inventory tests pass. This docs-only followup records PR
 and native-build evidence; no runtime changes. Independent final-revision
 review, actual required CI and protected reviewer merge remain mandatory.
+
+Independent review followup: after stopped/deadline reads return, replace the
+stale waiting message with an explicit returned-request status; preserve revoked
+result, exported source and retry. Stop/deadline regression assertions added.
+This runtime followup supersedes approval5768613696/head3e640973; fresh affected
+and full checks, final independent review and required CI are mandatory gates.

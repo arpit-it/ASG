@@ -141,6 +141,10 @@ void main() {
       await pending;
       expect(c.sourceCheck, isNull);
       expect(c.destination, '/exports/site');
+      if (action == 'Stop') {
+        expect(c.checkError, contains('request has returned'));
+        expect(c.checkError, isNot(contains('Waiting')));
+      }
       if (action == 'dispose') {
         expect(updates, before);
       } else {
@@ -179,6 +183,9 @@ void main() {
     await pending;
     expect(c.sourceCheck, isNull);
     expect(c.checking, false);
+    expect(c.checkError, contains('deadline'));
+    expect(c.checkError, contains('request has returned'));
+    expect(c.checkError, isNot(contains('Waiting')));
     c.dispose();
   });
   testWidgets('320px doubled text check and Stop reachable', (tester) async {

@@ -211,6 +211,10 @@ class HtmlReviewedExportController extends BaseController {
       if (!isDisposed) _checkError ??= 'Source identity check failed, stopped or review changed. Source remains untrusted. Nothing was changed.';
     } finally {
       timer.cancel();
+      _checkError = _checkError?.replaceFirst(
+        'Waiting for dispatched reads to settle.',
+        'The source identity request has returned.',
+      );
       _checking = false;
       update();
     }
