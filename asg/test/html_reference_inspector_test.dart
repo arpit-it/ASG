@@ -12,6 +12,7 @@ HtmlSourceProposal proposal(
   String source, {
   bool script = false,
   String css = 'body{}',
+  String? svg,
 }) => HtmlSourceProposal.decode(
   jsonEncode({
     'summary': 'References',
@@ -19,6 +20,7 @@ HtmlSourceProposal proposal(
       'index.html': source,
       'styles.css': css,
       if (script) 'app.js': 'throw Error("must never run");',
+      'image.svg': ?svg,
     },
   }),
 );
@@ -26,6 +28,125 @@ String page(String body) =>
     '<!doctype html><html><head><title>References</title></head><body>$body</body></html>';
 
 void main() {
+  test('inline SVG XLink declarations expose missing and external targets', () async {
+    final report = await inspectHtmlReferences(
+      proposal(
+        page(
+          '<svg><use xlink:href="missing.svg#shape"></use>'
+          '<image xlink:href="https://example.invalid/image.svg"></image></svg>',
+        ),
+      ),
+    );
+    expect(report.references, 2);
+    expect(report.findings, 2);
+    expect(
+      report.messages.join('\n'),
+      contains('Missing local target: use[xlink:href]'),
+    );
+    expect(
+      report.messages.join('\n'),
+      contains(
+        'External or scheme reference needs separate review: image[xlink:href]',
+      ),
+    );
+  });
+
+  test(
+    'SVG href and XLink declarations are inventoried independently',
+    () async {
+      final report = await inspectHtmlReferences(
+        proposal(
+          page(
+            '<svg><g id="a&amp;b"></g><use href="#a%26b" xlink:href="#absent"></use>'
+            '<image xlink:href="image.svg"></image>'
+            '<a xlink:href="index.html?x=1&amp;y=2">Link</a></svg>',
+          ),
+          svg: '<svg xmlns="http://www.w3.org/2000/svg"/>',
+        ),
+      );
+      expect(report.references, 4);
+      expect(report.findings, 2);
+      expect(
+        report.messages.join('\n'),
+        contains('Missing HTML fragment: use[xlink:href] #absent'),
+      );
+      expect(
+        report.messages.join('\n'),
+        contains(
+          'Query behavior needs browser verification: a[xlink:href] index.html?x=1&y=2',
+        ),
+      );
+    },
+  );
+
+  test('XLink uses existing invalid encoding and base limitations', () async {
+    final invalid = await inspectHtmlReferences(
+      proposal(
+        page(
+          '<svg><use xlink:href="%FF"></use><use xlink:href="bad\\\\path"></use></svg>',
+        ),
+      ),
+    );
+    expect(invalid.references, 2);
+    expect(invalid.findings, 2);
+    expect(
+      invalid.messages.join('\n'),
+      contains('Invalid encoded reference: use[xlink:href]'),
+    );
+    expect(
+      invalid.messages.join('\n'),
+      contains('Invalid or unsupported reference: use[xlink:href]'),
+    );
+    final based = await inspectHtmlReferences(
+      proposal(
+        page(
+          '<base href="index.html"><svg><use xlink:href="missing.svg"></use>'
+          '<a xlink:href="//example.invalid/">Link</a></svg>',
+        ),
+      ),
+    );
+    expect(based.references, 3);
+    expect(
+      based.messages.join('\n'),
+      contains('local targets were not resolved'),
+    );
+    expect(based.messages.join('\n'), contains('External or scheme reference'));
+    expect(based.messages.join('\n'), isNot(contains('Missing local target')));
+  });
+
+  test('XLink inspection is limited to SVG namespace declarations in HTML', () async {
+    final report = await inspectHtmlReferences(
+      proposal(
+        page(
+          '<div xlink:href="missing.html"></div>'
+          '<math><mi xlink:href="missing.html">x</mi></math>'
+          '<svg><use other:href="missing.svg" xlink:title="missing.svg"></use>'
+          '<foreignObject><div xlink:href="missing.html"></div></foreignObject></svg>'
+          '<!-- <svg><use xlink:href="comment.svg"></use></svg> -->'
+          '<script>const s = \'<svg><use xlink:href="script.svg"></use></svg>\';</script>',
+        ),
+        svg: '<svg xmlns="http://www.w3.org/2000/svg"><use href="missing.svg"/></svg>',
+      ),
+    );
+    expect(report.references, 0);
+    expect(report.findings, 0);
+  });
+
+  test('SVG XLink diagnostics use the shared message bound', () async {
+    final report = await inspectHtmlReferences(
+      proposal(
+        page(
+          '<svg>${List.filled(150, '<use xlink:href="missing.svg"></use>').join()}</svg>'
+          '<a href="missing.html">HTML</a>',
+        ),
+      ),
+    );
+    expect(report.references, 151);
+    expect(report.findings, 151);
+    expect(report.messages, hasLength(100));
+    expect(report.truncated, true);
+  });
+
   test('form action and declared overrides are independently inspected', () async {
     final report = await inspectHtmlReferences(
       proposal(

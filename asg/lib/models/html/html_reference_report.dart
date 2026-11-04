@@ -18,6 +18,8 @@ class HtmlReferenceReport {
       '$findings findings.';
   static const limitations =
       'Advisory parsed HTML href/src/action/poster/data and ID checks only. '
+      'Inline SVG XLink href declarations are inventoried independently of '
+      'unprefixed href; effective link precedence and SVG rendering are not checked. '
       'Declared button/input formaction URLs are inspected independently of '
       'form action; effective submission, control type/disabled state, form '
       'ownership, methods, validation and server behavior are not checked. '
@@ -27,7 +29,7 @@ class HtmlReferenceReport {
       'Parsed CSS url()/@import references in styles.css and inline styles are '
       'also advisory; CSS syntax/compatibility, filter declarations, escaped URLs, JavaScript, '
       'responsive candidate selection, sizes/media/type conditions, image decoding, '
-      'SVG content and its internal references, template content, dynamic references, browser '
+      'standalone SVG content and its internal references, template content, dynamic references, browser '
       'behavior and visual acceptance are not checked. No files or URLs are '
       'opened. No safety verdict, preview or execution approval.';
 }

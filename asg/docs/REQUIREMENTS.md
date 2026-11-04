@@ -271,7 +271,8 @@ The saved development automation was updated through its management tool; active
   - Acceptance: UI shows available and unavailable operations with actionable reasons; unsupported confinement refuses candidate execution before any source is run. Each enabled host passes real new-project resolve/analyze/test/web-build/serve, Stop/deadline/output-limit and descendant-cleanup checks, restart/uncertain-checkpoint refusal, stale-approval refusal and last-working-output preservation. Enabling starter generation must not implicitly enable candidate execution. Model-written candidate/repair support needs independently reviewed platform isolation and real deny-write/network/process-escape probes at the established boundary.
   - Validation/delivery: one narrowly scoped issue/PR per host/capability milestone, actual Linux/Windows builds and launches on their respective hosts, plus macOS regression coverage. Include paths with spaces, missing toolchains, occupied ports, failed previews and interrupted writes. Record tested versus unavailable capabilities separately; keep F16 unchecked until promised host increments satisfy acceptance and normal independent review/CI/verified merge. Broader generated targets remain F11.
 - [ ] F11 Multi-language project generation, runners and explicit stack selection — In progress (#402); depends on F04 and F05
-  - Reviewed HTML local SVG asset — In progress: #402, `402-reviewed-html-svg`, scope6641348315. Optional image.svg through review/edit/draft/export/passive preview; SVG internals and full adapter remain unverified. Five baseline regressions; final checks/review/CI/merge pending.
+  - Inline SVG namespaced link diagnostics — In progress: #402, `402-svg-link-diagnostics`, scope6641978585. Inspect parsed inline SVG XLink href declarations with existing advisory resolver; standalone SVG/XML/rendering remain unverified.
+  - Reviewed HTML local SVG asset — Done through [PR #491](https://github.com/arpit-it/ASG/pull/491), verified reviewer merge3f104a9a at2026-11-04T20:46:26Z; finalreview5775521211/requiredCI41908348765 passed: #402, `402-reviewed-html-svg`, scope6641348315. Optional image.svg through review/edit/draft/export/passive preview; SVG internals, visual/interactive acceptance and full adapter remain unverified. Six baseline regressions; exact-final review/CI/merge verified.
   - Declared HTML form override diagnostics — Done through [PR #490](https://github.com/arpit-it/ASG/pull/490), verified reviewer merged8471591 at2026-11-04T20:12:27Z; finalreview5775081254/requiredCI41903060539 passed; #402, `402-html-formaction-diagnostics`, scope6640710391. Inspect button/input formaction declarations; actual form submission remains unverified.
   - Failed replacement request recovery — Done through [PR #489](https://github.com/arpit-it/ASG/pull/489), verified reviewer mergee4141ac3 at2026-11-04T19:43:03Z; finalreview5774681591/requiredCI41898323602 passed: #402, `402-html-request-recovery`, scope6640067749. Preserve prior edited review under fresh identity after ordinary transport/response/diagnostics failure; lifecycle and stale-context authority remains revoked. Final review/CI/merge verified; fullF11 remains open.
   - Unapplied editor action guards — Done through PR #488, verified reviewer mergee2c54a48 at2026-11-04T19:15:30Z; finalreview5774290827/requiredCI41893610586 passed; #402, `402-html-editor-action-guards`, scope6639374663. Explicit Save/Cancel before replacement requests/export; retain failed-diagnostics retry buffers.
@@ -13803,3 +13804,74 @@ reviewer merge remain gates.
 Recorded 2026-11-04T20:33:18.163157+00:00.
 
 Final local validation: 1,584 Flutter tests/nine explicit skips PASS in isolated tracked-source copy; all467runtime/test/tool inputs match. 107affected tests before final native-database addition and35final SVG/proposer tests PASS. 440file zero-change formatter, final analyzer, web/Wasm dry-run, macOSdebug, nineinventory tests and actual installedChrome passive SVG/CSS320/1280px/script/form/opaque-origin/Stop PASS. Six new SVG tests total, five reproduced FAIL before implementation; no live inference (existing8765health unavailable URLError0.007s). Existing local MLX-venv remains untouched. Publication, independent exact-final review, actual required CI and protected reviewer merge pending. Recorded 2026-11-04T20:35:57.605234+00:00.
+
+Published PR #491 https://github.com/arpit-it/ASG/pull/491, Awaiting merge. Tested local40c2a3cbccde806438a3f5515e850776513399d4 and plugin remotebb6fb82fdb19207fb6881e49ecf667fd619f5497 share exacttree9f7df7f1c1437fa2d83fdccc0ec8056853ef7ff7; all14publishedblobs match. Independent /root/review_491 owns exact-final review, actual required CI and protected expected-head reviewer merge. Parent1584Flutter/nine skips,440format/analyzer/webWasm/macOSdebug/nineinventory/actualChrome SVG passive preview PASS; all467validationinputs match. FullF11/#402 and Deferred400 remainOPEN; no inference/fulladapterclaim. Recorded 2026-11-04T20:37:42.533935+00:00.
+
+Independent codeapproval5775437750 exactbb6fb82f/tree9f7df7f1: all945remote blobs/modes and CItestmergecfc2eceb verified; own103affected/two additional streamed-SVG/HTTP boundary probes/nineinventory/actualChrome SVG PASS. All six final new tests fail merged baseline. RequiredCI41908348765 Python126848935530 SUCCESS/all8suites inspected, Flutter126848935858 active. Reviewer retains final directcheck/log/protectedmerge gate; no final merge claim. Recorded 2026-11-04T20:40:39.437131+00:00.
+
+
+### Reviewed HTML local SVG asset verified merged — PR #491
+Bounded F11/#402 increment Done through https://github.com/arpit-it/ASG/pull/491,
+branch `402-reviewed-html-svg`, scope6641348315. Optional root-level image.svg
+is retained through proposal/editor/explicit draft/export/identity/passive preview;
+existing file/UTF-8 bounds, source authority and script-disabled CSP retained.
+Empty SVG editing removes the optional asset. SVG internals and references remain
+unvalidated; no general assets, visual/interactive/fulladapter or safety claim.
+Final tested local40c2a3cbccde806438a3f5515e850776513399d4 and plugin head
+bb6fb82fdb19207fb6881e49ecf667fd619f5497 share exacttree
+9f7df7f1c1437fa2d83fdccc0ec8056853ef7ff7; all14publishedblobs matched,
+independent reviewer all945remote blobs/modes and467validationinputs verified.
+Independent codeapproval5775437750/final5775521211;103affected/twoadditional
+streamedSVG/HTTPboundary probes/nineinventory/actualChrome SVG-CSS320/1280px
+and directSVGdocument script/storage refusal PASS. All six final new tests FAIL
+mergedbaseline. Parent1584Flutter/nineexplicit skips,107affected before final
+database addition/35final SVG-proposer,440zero-changeformat/finalanalyzer,
+webWasm/macOSdebug/nineinventory/actualChrome PASS; isolatedcopy467inputs
+match and existing local MLX-venv untouched. Real database close/reopen and
+exact native export/sourcecheck/HTTPimmutable image/currentauthority/Stop passed.
+RequiredCI41908348765 BOTH directfinalheadchecks completedSUCCESS:
+Flutter126848935858/Python126848935530. Actual1536Linux/54explicit skips,
+17Chrome/browsertransport/staticHTML/webWasm/realindependentgeneratedFlutter
+resolve-analyze-test-build-serve and all8Python suites inspected by reviewer.
+Protectedexpectedhead reviewer squashmerge
+3f104a9aa0d75001d15f067d4d721bcb1c98d7d4 at2026-11-04T20:46:26Z
+independently parentverified onPR/currentmain/directchecks. Signed exacttree/
+soleparentd8471591 verified/hash-reconstructed before guarded local-only sync.
+Localmain/originmain0/0,indexempty; originaltwoIDE edits and threelocalhandoff
+docs byte-identical through synchronization. FullF11/#402 and Deferred#400
+verifiedOPEN/unchecked. Existing8765health unavailable URLError0.007s; no fresh
+inference/stableapp/deployment/cadence/notification change. No active work or
+owneraction remains for this increment. Canonical finalmerge bookkeeping is
+retained locally for the next normal reviewed developmentPR.
+Receipts:/private/tmp/asg-svg-publication.json,/private/tmp/asg491-review-evidence.json,
+/private/tmp/asg491-verified-pr.json,/private/tmp/asg491-sync-record.json.
+Recorded 2026-11-04T20:48:04.144300+00:00.
+
+
+### Inline SVG namespaced link diagnostics — F11 / #402
+In progress on `402-svg-link-diagnostics` from verified PR #491 merge
+`3f104a9aa0d75001d15f067d4d721bcb1c98d7d4`; scope6641978585.
+Fresh plugin inspection found no open PR or competing active ASG run. Reuse
+#402; no new issue/F ID. Parsed SVG xlink:href uses typed namespace keys and
+was omitted by string-only attribute lookup, hiding missing/external targets.
+Inventory SVG-namespace XLink href declarations in index.html independently of
+unprefixed href through the existing resolver and shared100-message bound.
+No effective precedence/rendering/XML or standalone image.svg validation claim.
+Acceptance: missing/external/local assets, fragments/entities/encoding/query,
+base limitations, both href declarations, foreign namespace/content exclusions
+and shared truncation. Four new regressions FAIL merged baseline; all28reference
+tests/five new tests PASS corrected code. Delivered parser/resolver prerequisites
+suffice on Mac; Deferred#400 is unrelated. FullF11/#402 stays open/unchecked.
+Full checks/builds, plugin publication, independent final review, requiredCI
+and protected reviewer merge remain gates.
+Recorded 2026-11-04T21:01:43.258000+00:00.
+
+Final local validation: isolated full suite1,589Flutter/nine explicit skips PASS;
+28reference tests/five new PASS, four baseline regressions FAIL reproduced.
+439-file zero-change final format, clean analyzer, web/Wasm dry-run, macOSdebug
+and nineinventory regressions PASS. All464tracked runtime/test/tool inputs
+match isolated validation copy; existing MLX-venv untouched. Existing8765health
+unavailable URLError0.007s; no inference or installed-stable-app change.
+Plugin publication, independent final-revision review, actual requiredCI
+and protected reviewer merge remain gates.
+Recorded 2026-11-04T21:03:55.085868+00:00.
