@@ -39,6 +39,7 @@ HtmlReferenceReport _inspect(HtmlSourceProposal proposal) {
     (element) =>
         element.namespaceUri == 'http://www.w3.org/1999/xhtml' &&
         element.localName == 'base' &&
+        element.attributes.containsKey('href') &&
         !_insideTemplate(element),
   );
   if (hasBase) {
