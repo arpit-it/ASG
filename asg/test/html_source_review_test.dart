@@ -215,7 +215,7 @@ void main() {
     expect(c.proposal, isNotNull);
   });
 
-  for (final action in ['stop', 'dispose', 'context']) {
+  for (final action in ['stop', 'dispose', 'context', 'deadline']) {
     test(
       '$action during diagnostics suppresses late result and overlap',
       () async {
@@ -227,6 +227,9 @@ void main() {
         final c = HtmlSourceReviewController(
           project: html.project,
           records: records,
+          requestDeadline: action == 'deadline'
+              ? const Duration(milliseconds: 20)
+              : const Duration(seconds: 90),
           proposer: HtmlSourceProposer(createProvider: (_) => provider),
           inspectReferences: (_) {
             calls++;
@@ -238,6 +241,9 @@ void main() {
         provider.stream.add(response());
         await provider.stream.close();
         await entered.future;
+        if (action == 'deadline') {
+          await Future<void>.delayed(const Duration(milliseconds: 40));
+        }
         if (action == 'stop') c.stop();
         if (action == 'dispose') c.dispose();
         if (action == 'context') {
@@ -246,6 +252,11 @@ void main() {
         await c.request('Overlap');
         expect(calls, 1);
         expect(c.busy, true);
+        if (action == 'stop' || action == 'deadline') {
+          expect(c.status, contains('Waiting for analysis'));
+          expect(c.status, isNot(contains('transport')));
+          expect(c.status, isNot(contains('inference')));
+        }
         analysis.complete(
           HtmlReferenceReport(
             elements: 1,
@@ -258,6 +269,10 @@ void main() {
         expect(c.proposal, isNull);
         expect(c.references, isNull);
         expect(c.busy, false);
+        if (action == 'stop' || action == 'deadline') {
+          expect(c.status, contains('analysis request has returned'));
+          expect(c.status, isNot(contains('Waiting')));
+        }
         if (action != 'dispose') c.dispose();
       },
     );

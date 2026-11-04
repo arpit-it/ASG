@@ -12819,3 +12819,27 @@ share tested treeef842cd6c8e2927ddfdd5eedf2936ddddc6d7278. Full final clean
 nine inventory tests pass. This docs-only followup records publication evidence;
 runtime/test inputs unchanged. Independent final-revision review and actual
 required CI remain merge gates. FullF11/#402 and Deferred400 remain open.
+
+Independent review5769066743 found one blocker: analysis-stage Stop/deadline
+incorrectly reported transport cleanup and stale waiting status after parsing
+returned. Fix tracks the analysis stage, reports analysis waiting honestly and
+settles to returned/result-ignored status. Parent deferred-analysis Stop/deadline
+assertions pass (23 focused total); reviewer separate probes reproduced the defect
+before the fix. Full formatter/analyzer/tests/builds rerunning after runtime fix;
+previous-head CI/review do not approve the final correction. Awaiting fresh exact
+revision review, required CI and protected reviewer merge; fullF11 stays open.
+
+Review correction validation: 23 parent focused and 35 independent focused tests
+pass; reviewer separate Stop/deadline probes fail on old runtime and pass the fix.
+Analysis status now identifies its own work and reports returned/result-ignored
+when revoked analysis settles. The original sole blocker is fixed; fresh final
+review/CI remain required. Fresh localhost8765health was unavailable; no inference
+is claimed. Both original IDE edits remain byte-identical.
+
+Post-fix final validation: 1,500 Flutter tests/nine skips,23focused,
+formatter423/analyzer/webWasm/macOSdebug and nine inventory tests passed. All449
+tracked runtime/test/tool/package validation inputs match the clean copy.
+Reviewer35focused/nineinventory and actualChrome five HTML parser tests passed;
+separate Stop/deadline probes establish fail-before/pass-after. Final corrected
+revision publication and fresh independent approval/actual required CI remain
+gates; previous-head review/CI do not approve this runtime correction.

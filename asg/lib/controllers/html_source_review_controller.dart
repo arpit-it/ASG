@@ -33,7 +33,7 @@ class HtmlSourceReviewController extends BaseController {
   final Future<HtmlReferenceReport> Function(HtmlSourceProposal)
   _inspectReferences;
   final Duration requestDeadline;
-  bool _busy = false, _revoked = false;
+  bool _busy = false, _revoked = false, _inspecting = false;
   bool get busy => _busy;
   String? _error;
   String? get error => _error;
@@ -121,7 +121,9 @@ class HtmlSourceReviewController extends BaseController {
       deadline = Timer(requestDeadline, () {
         if (!_busy || isDisposed || _revoked) return;
         stop();
-        _status = 'Review deadline reached. Wait for transport cleanup before retrying.';
+        _status = _inspecting
+            ? 'HTML diagnostics deadline reached. Waiting for analysis to settle. No files changed.'
+            : 'Review deadline reached. Wait for transport cleanup before retrying.';
         update();
       });
       final value = await _proposer.propose(
@@ -129,6 +131,7 @@ class HtmlSourceReviewController extends BaseController {
         instruction: instruction,
       );
       _requireCurrent();
+      _inspecting = true;
       _status = 'Inspecting HTML references…';
       update();
       _requireCurrent();
@@ -147,6 +150,13 @@ class HtmlSourceReviewController extends BaseController {
       deadline?.cancel();
       // A separately dispatched Stop cleanup may outlive the request itself.
       await _cleanup;
+      if (_inspecting) {
+        _inspecting = false;
+        _status = _status.replaceFirst(
+          'Waiting for analysis to settle.',
+          'The analysis request has returned; result ignored.',
+        );
+      }
       _busy = false;
       update();
     }
@@ -156,7 +166,9 @@ class HtmlSourceReviewController extends BaseController {
     if (isDisposed || !_busy || _revoked) return;
     _revoked = true;
     _proposal = null;
-    _status = 'Review stopped. Waiting for transport cleanup; server-side inference may continue.';
+    _status = _inspecting
+        ? 'HTML diagnostics stopped. Waiting for analysis to settle. No files changed.'
+        : 'Review stopped. Waiting for transport cleanup; server-side inference may continue.';
     // Assign before notifying: reentrant listeners cannot redispatch cleanup.
     _cleanup = _proposer.cancel().catchError((Object _) {
       if (!isDisposed) {
