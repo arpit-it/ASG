@@ -71,6 +71,14 @@ class HtmlSourceReviewController extends BaseController {
     }
   }
 
+  /// Export authority belongs only to this exact current, temporary proposal.
+  void authorizeProposal(HtmlSourceProposal displayed) {
+    _requireCurrent();
+    if (_busy || !identical(displayed, _proposal)) {
+      throw StateError('Source proposal changed.');
+    }
+  }
+
   bool get stale => _proposal != null && proposal == null;
   ModelRequestProvenance? get provenance =>
       proposal == null ? null : _provenance;
