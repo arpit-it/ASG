@@ -11659,3 +11659,83 @@ Initial analyzer test-style finding corrected and complete checks rerun.
 Final publication includes PR475 verified merge bookkeeping and no unrelated IDE
 changes. Independent final-revision review, actual required CI and protected
 reviewer merge remain gates; no Done/merge/live inference claim.
+
+
+### Confirmed reviewed HTML export verified merged — PR #476
+Bounded F11/#402 service increment Done on `402-reviewed-html-export`, scope6629733756.
+Final63182a381e318537b2fb06ae952dd914c3869bba/testedlocalb7190576f0410b510cf21148661650d7e28e8898
+share exacttree5a6a7305fd652d7d7d2961cf0934504712f62167. All10remote blobs/569app
+inputs matched. Independent final approval5767759043/finalgate6630038331: no
+blocking findings;37focused including3extra confirmation/shared-owner/pending-child
+probes and9inventory passed. Parent19focused/1471full/nine skips,formatter413/
+analyzer/webWasm/macOSdebug/nineinventory passed.
+RequiredCI41824362182 BOTH SUCCESS: Flutter126555656607/Python126555656875;
+reviewer inspected actual1431Linux/46skips,17Chrome,transport/staticHTML/webWasm/
+independentgeneratedFlutter resolve/analyze/test/build/serve and8Python suites.
+Protected expected-head reviewer squash merge5e895d690246931c005d10405338dbc50b6867c1
+at2026-11-04T12:00:52Z freshly parent-verified mergedPR/currentmain. Signed exacttree/
+soleparentf7b4fcdd hash-verified before guarded local-only synchronization.
+Localmain/originmain0/0,indexempty,both originalIDEedits byte-identical.
+Exact-confirmed untrusted HTML/CSS/optionalJS source export service delivered;
+no rendering, execution, registration, promotion, original-starter mutation or
+verification claim. App export confirmation UI and custom-source browser validation/
+promotion remain pending under fullF11/#402, which staysOPEN/unchecked. Deferred400
+remainsOPEN. Existing8765health unavailable; no live inference/app-launch acceptance,
+stableapp replacement/deployment/cadence/notification change.
+Final merge bookkeeping retained locally for next normal reviewed development PR.
+Receipts:/private/tmp/asg476-publication.json,/private/tmp/asg476-inputs.json,
+/private/tmp/asg476-review-evidence.json,/private/tmp/asg476-verified-pr.json,
+/private/tmp/asg476-sync-record.json,/private/tmp/asg476-safe-sync.py.
+Run completed 2026-11-04T12:02:21.475521+00:00.
+
+
+### App-owned reviewed HTML export confirmation — F11 / #402
+In progress on `402-html-review-export-ui` from verified PR #476 merge
+`5e895d690246931c005d10405338dbc50b6867c1`; scope6630315967.
+No competing active ASG run/open PR at selection. The delivered export service
+has no app-owned confirmation flow for reviewed user-specific source. Add a
+separate export screen/controller: new destination selection, complete immutable
+source review and explicit exact confirmation, current proposal/project authority
+at every write boundary, Stop/deadline/disposal and pending-IO exclusion,
+retained partial-path/process recovery. Export never executes, previews, verifies,
+registers, promotes or modifies the original project. Full F11/#402 remains open
+and unchecked; custom-source browser validation/promotion and live synthesis
+acceptance remain pending. Delivered review/service foundations satisfy this
+Mac-verifiable increment's dependencies; Deferred #400 is not a gate.
+Acceptance: stale/edited confirmation refusal, duplicate exclusion, Stop/deadline/
+disposal/changed-context late-result suppression, actual native export regressions,
+320px/2x complete-source confirmation and review-to-export navigation, full
+formatter/analyzer/tests/web build. Status: In progress pending final checks,
+plugin publication, independent final review, required CI and protected merge.
+
+Final validation: isolated full1,480Flutter tests passed/nine explicit skips;
+formatter416 unchanged, analyzer clean and web build including Wasm dry run passed.
+31 focused source-review/export/controller/widget/actual-IO tests passed; nine
+acceptance-inventory tests passed after regeneration of separate historical
+observations. Initial focus-interaction test and analyzer finding corrected and
+checks rerun. Existing localhost8765 health unavailable; no live inference or
+stable-app launch/replacement claimed. Status: Awaiting merge after plugin
+publication; independent exact-final review, actual required CI and protected
+reviewer merge remain mandatory gates. No Done/whole-adapter support claim.
+
+[PR #477](https://github.com/arpit-it/ASG/pull/477) targets main; Awaiting merge.
+Initial tested publication1fa83c94b555e22ac06792e8606914fca2bee2ab/localf268e851
+share exacttree60d1d0085aa1e8890c6531c038dbedf0da935c63; all442tracked runtime/
+test/tool/package inputs match isolated validation. This final docs-only followup
+records the PR link; runtime checks remain applicable. Independent final-revision
+review, actual required CI and protected reviewer merge remain pending. Do not
+mark this increment or full F11 Done before verified merge. No new support claim.
+
+Review followup: export controller allocation moved outside the route builder so
+route rebuilds retain one session/controller. The new route.changedExternalState
+and viewport-resize identity/state/disposal regression fails against the prior
+implementation (/private/tmp/asg477-before-fix.log) and passes the fix. 31focused
+tests passed again. Full clean checks are being rerun before fresh final review;
+previous head83609e19 is superseded and must not merge. No scope expansion.
+
+Fresh post-fix validation: isolated1,480Flutter tests/nine explicit skips,
+formatter416/analyzer/web build including Wasm dry run and nine regenerated
+inventory tests passed. All31focused tests passed including the proven route
+rebuild regression. Fresh independent final-revision review and actual required
+CI remain gates; no merge or inference claim. The superseded-head checks do not
+approve the fixed final revision.

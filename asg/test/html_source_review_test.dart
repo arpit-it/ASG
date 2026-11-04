@@ -8,6 +8,7 @@ import 'package:asg/controllers/html_source_review_controller.dart';
 import 'package:asg/services/html/html_source_proposer.dart';
 import 'package:asg/services/html/html_starter_store.dart';
 import 'package:asg/views/html_source_review_screen.dart';
+import 'package:asg/views/html_reviewed_export_screen.dart';
 import 'package:asg/views/html_project_workspace.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -258,9 +259,43 @@ void main() {
       scrollable: find.byType(Scrollable).first,
     );
     expect(find.text('app.js'), findsOneWidget);
+    await tester.scrollUntilVisible(
+      find.text('Export reviewed source…'),
+      -180,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.ensureVisible(find.text('Export reviewed source…'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Export reviewed source…'));
+    await tester.pumpAndSettle();
+    expect(find.byType(HtmlReviewedExportScreen), findsOneWidget);
+    final route =
+        ModalRoute.of(tester.element(find.byType(HtmlReviewedExportScreen)))!
+            as MaterialPageRoute<void>;
+    final exportController = tester
+        .widget<HtmlReviewedExportScreen>(find.byType(HtmlReviewedExportScreen))
+        .controller;
+    exportController.editFolder('retained');
+    // Explicitly invalidate the cached page, as route dependency changes can.
+    route.changedExternalState();
+    tester.view.physicalSize = const Size(400, 800);
+    await tester.pumpAndSettle();
+    expect(
+      identical(
+        tester
+            .widget<HtmlReviewedExportScreen>(
+              find.byType(HtmlReviewedExportScreen),
+            )
+            .controller,
+        exportController,
+      ),
+      true,
+    );
+    expect(exportController.folder, 'retained');
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox());
     expect(c.isDisposed, true);
+    expect(exportController.isDisposed, true);
   });
 
   testWidgets('workspace exposes explicit review navigation', (tester) async {

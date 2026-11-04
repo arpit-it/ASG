@@ -4,6 +4,9 @@
 import 'package:flutter/material.dart';
 
 import '../controllers/html_source_review_controller.dart';
+import '../controllers/html_reviewed_export_controller.dart';
+import '../services/html/html_source_export_factory.dart';
+import 'html_reviewed_export_screen.dart';
 
 class HtmlSourceReviewScreen extends StatefulWidget {
   const HtmlSourceReviewScreen({super.key, required this.controller});
@@ -42,7 +45,7 @@ class _HtmlSourceReviewScreenState extends State<HtmlSourceReviewScreen> {
         padding: const EdgeInsets.all(24),
         children: [
           const Text(
-            'Request complete HTML/CSS and optional JavaScript from your configured local model. This creates a temporary review artifact only. Source is untrusted and may contain scripts or network references. No source is read, saved, applied or previewed. Closing this screen discards the proposal. Fixed-starter Plan approval does not approve this source.',
+            'Request complete HTML/CSS and optional JavaScript from your configured local model. This creates a temporary review artifact only. Source is untrusted and may contain scripts or network references. No project source is read, applied or previewed. Export requires a separate exact source and destination confirmation. Closing this screen discards the proposal. Fixed-starter Plan approval does not approve this source.',
           ),
           const SizedBox(height: 16),
           TextField(
@@ -68,6 +71,25 @@ class _HtmlSourceReviewScreenState extends State<HtmlSourceReviewScreen> {
               'Saved project context changed. Request a new proposal.',
             ),
           if (proposal != null) ...[
+            OutlinedButton(
+              onPressed: c.busy
+                  ? null
+                  : () {
+                      final exportController = HtmlReviewedExportController(
+                        proposal: proposal,
+                        authorizeSource: () => c.authorizeProposal(proposal),
+                        exporter: createHtmlReviewedSourceExport(),
+                      );
+                      Navigator.of(context).push<void>(
+                        MaterialPageRoute(
+                          builder: (_) => HtmlReviewedExportScreen(
+                            controller: exportController,
+                          ),
+                        ),
+                      );
+                    },
+              child: const Text('Export reviewed source…'),
+            ),
             SelectableText(proposal.summary),
             Text(c.provenance!.description),
             for (final file in proposal.files.entries) ...[
