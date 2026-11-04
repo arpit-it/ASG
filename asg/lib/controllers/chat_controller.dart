@@ -10,6 +10,7 @@ import '../models/requirements_board.dart';
 import '../models/build_plan.dart';
 import '../models/html/html_operation_plan.dart';
 import '../services/plan_task_import.dart';
+import '../services/record_storage.dart';
 import '../services/requirements_store.dart';
 import '../models/chat_message.dart';
 import '../models/plan_approval.dart';
@@ -211,16 +212,42 @@ class ChatController extends BaseController {
     }
   }
 
+  bool get _validHtmlPlan {
+    try {
+      if (isDisposed ||
+          _store == null ||
+          _store!.records is! ConditionalRecordStorage) {
+        return false;
+      }
+      PlanApprovalStore(_store!.records).validateHtmlPlan(project, _messages);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
   bool get planApproved =>
-      !isHtml &&
+      (!isHtml || _currentHtmlConsent) &&
       _approval?.approved == true &&
       _approval!.messageIndex == latestPlanIndex &&
       _approval!.content == latestPlan?.content &&
       _approval!.context == latestPlan?.planContext &&
       latestPlan?.planContext == _currentPlanContext;
   bool get outdatedApproval => _approval?.approved == true && !planApproved;
+  bool get _currentHtmlConsent {
+    try {
+      return !isDisposed &&
+          _store != null &&
+          PlanApprovalStore(_store!.records)
+              .hasCurrentHtmlConsent(project, _messages);
+    } catch (_) {
+      return false;
+    }
+  }
+
   bool get canApprovePlan =>
-      !isHtml &&
+      !isDisposed &&
+      (!isHtml || _validHtmlPlan) &&
       ready &&
       !busy &&
       !hasUnsavedResponse &&
@@ -244,7 +271,14 @@ class ChatController extends BaseController {
     update();
     try {
       final store = PlanApprovalStore(_store!.records);
-      await store.save(project, _messages, approved);
+      await store.save(
+        project,
+        _messages,
+        approved,
+        authorize: () {
+          if (isDisposed) throw StateError('Plan screen closed.');
+        },
+      );
       if (!isDisposed) _approval = store.load(project.id);
     } catch (_) {
       if (!isDisposed) {
@@ -295,7 +329,7 @@ class ChatController extends BaseController {
             'Checks compare the original starter only; no lint, test or visual acceptance verdict. '
             'This preview grants no execution approval and starts nothing. '
             'Use the starter controls for separate checks and preview consent. '
-            'Board links do not mark tasks complete. HTML execution approval remains unavailable.';
+            'Board links do not mark tasks complete. Saved approval records consent only; HTML plan execution remains unavailable.';
       }
       if (!plan.content.contains('```asg-build')) {
         return 'Advisory Plan only: no executable task contract. Approval does not make this work executable.';

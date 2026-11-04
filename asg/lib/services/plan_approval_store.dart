@@ -6,6 +6,8 @@ import 'dart:convert';
 import '../models/chat_message.dart';
 import '../models/plan_approval.dart';
 import '../models/project.dart';
+import '../models/html/html_operation_plan.dart';
+import 'html/html_starter_store.dart';
 import 'conversation_store.dart';
 import 'application_store.dart';
 import 'html/html_project_store.dart';
@@ -90,15 +92,101 @@ class PlanApprovalStore {
     return approval;
   }
 
-  Future<void> save(
+  /// Validates consent evidence only. HTML execution remains unavailable.
+  void validateHtmlPlan(StudioProject project, List<ChatMessage> messages) {
+    if (project.type != 'HTML') throw StateError('Not an HTML project.');
+    final current = currentProject(project.id);
+    final saved = ConversationStore(records).load(project.id);
+    final index = latestPlan(messages);
+    if (index < 0 ||
+        index != latestPlan(saved) ||
+        saved[index].content != messages[index].content ||
+        saved[index].planContext != messages[index].planContext ||
+        context(current) != context(project) ||
+        saved[index].planContext != contextFor(current)) {
+      throw StateError('HTML Plan changed. Reopen and review a current Plan.');
+    }
+    HtmlOperationPlan.parse(
+      saved[index].content,
+      board: RequirementsStore(records).load(project.id),
+    );
+  }
+
+  bool hasCurrentHtmlConsent(
+    StudioProject project,
+    List<ChatMessage> messages,
+  ) {
+    validateHtmlPlan(project, messages);
+    final approval = load(project.id);
+    final index = latestPlan(messages);
+    return approval != null &&
+        approval.approved &&
+        approval.messageIndex == index &&
+        approval.content == messages[index].content &&
+        approval.context == messages[index].planContext;
+  }
+
+  Future<void> _saveHtml(
     StudioProject project,
     List<ChatMessage> messages,
     bool approved,
+    void Function() authorize,
   ) async {
-    if (approved && project.type == 'HTML') {
-      throw StateError(
-        'HTML Plans are advisory; execution approval is unavailable.',
+    final storage = records;
+    if (storage is! ConditionalRecordStorage) {
+      throw UnsupportedError('HTML consent requires transactional storage.');
+    }
+    final key = 'studio.planApproval.v1.${project.id}';
+    final expected = {
+      for (final k in [
+        key,
+        'studio.projects.v1',
+        'studio.chat.v1.${project.id}',
+        'studio.requirements.v1.${project.id}',
+        HtmlStarterStore.key,
+      ])
+        k: records.getString(k),
+    };
+    final previous = load(project.id);
+    PlanApproval decision;
+    if (approved) {
+      validateHtmlPlan(project, messages);
+      final index = latestPlan(messages);
+      decision = PlanApproval(
+        messageIndex: index,
+        content: messages[index].content,
+        context: messages[index].planContext!,
+        approved: true,
+        recordedAt: DateTime.now().toUtc(),
       );
+    } else {
+      // Withdrawal revokes the retained decision even after its Plan is stale.
+      if (previous == null || !previous.approved) return;
+      decision = PlanApproval(
+        messageIndex: previous.messageIndex,
+        content: previous.content,
+        context: previous.context,
+        approved: false,
+        recordedAt: DateTime.now().toUtc(),
+      );
+    }
+    authorize();
+    await storage.commitRecords(
+      expected: expected,
+      updates: {key: jsonEncode(decision.toJson())},
+      authorize: authorize,
+    );
+  }
+
+  Future<void> save(
+    StudioProject project,
+    List<ChatMessage> messages,
+    bool approved, {
+    void Function()? authorize,
+  }) async {
+    if (project.type == 'HTML') {
+      await _saveHtml(project, messages, approved, authorize ?? () {});
+      return;
     }
     // Refuse to replace unreadable approval evidence.
     load(project.id);

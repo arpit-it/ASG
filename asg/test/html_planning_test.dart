@@ -118,7 +118,7 @@ void main() {
     );
     await expectLater(
       PlanApprovalStore(records).save(project, controller.messages, true),
-      throwsStateError,
+      throwsUnsupportedError,
     );
     expect(controller.canAddPlanTasks, true);
     await controller.addPlanTasks();
@@ -284,7 +284,7 @@ void main() {
       await tester.pumpAndSettle();
       await tester.scrollUntilVisible(
         find.text(
-          'HTML Plans are advisory; execution approval is unavailable.',
+          'No current plan approval. Only newly saved Plan drafts can be approved.',
         ),
         160,
         scrollable: find
@@ -295,7 +295,7 @@ void main() {
       );
       expect(
         find.text(
-          'HTML Plans are advisory; execution approval is unavailable.',
+          'No current plan approval. Only newly saved Plan drafts can be approved.',
         ),
         findsOneWidget,
       );
