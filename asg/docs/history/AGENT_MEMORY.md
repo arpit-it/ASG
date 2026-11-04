@@ -11425,3 +11425,71 @@ All573 tracked non-documentation inputs match the tested snapshot. This PR
 bookkeeping changes documentation only; runtime/test inputs unchanged.
 Status: Awaiting merge. Independent final-revision review and both required CI
 checks must pass before protected reviewer merge; full F11/#402 remain open.
+
+
+### HTML preview read authority verified merged — PR #472
+Bounded F11/#402 prerequisite Done on `402-html-preview-authority`, scope6627144961.
+Finala1a954fd9562f84758d5bd866efbca5c5d60144c/testedlocal69fe15f55e180a7d444df10e039695cea955f078
+share exacttree815acb6a16860f98877de532bbcdc1366fb6bab5. All13remote blobs and573
+tracked non-documentation validation inputs independently match. Final independent
+approval5766128500/finalgate6627441323 found no blockers;60focused/nineinventory
+passed. Parent30focused/1406fullFlutter/nine explicit skips,formatter404/analyzer,
+nineinventory/webWasm/macOSdebug passed. Actual requiredCI41806730659 BOTH SUCCESS:
+Flutter126495701799/Python126495701618; reviewer inspected1374Linux/38skips,17Chrome,
+browsertransport/staticHTML/webWasm/realgeneratedFlutter resolve/analyze/test/build/serve
+and eightPython suites. Protected expected-head reviewer plugin squash merge
+0ac45ab1719ec0b43f320c20afdb8870d671cb38 at2026-11-04T09:29:42Z freshly parent-verified
+mergedPR/currentmain; #402 remainsOPEN. Signed exact reviewedtree/soleparent22c94c5e
+hash-verified before guarded local-only synchronization; localmain/originmain0/0,
+indexempty, both originalIDEedits byte-identical. Preview caller authority now
+revalidates snapshot/bind/publication/HTTP-serving boundaries; already-dispatched
+responses cannot be recalled. Existing export previews retain their lifecycle.
+Actual app Plan preview dispatch, custom synthesis and fullF11/#402 remainOPEN;
+Deferred#400 retained. Existing8765health unavailable; no inference, app-launch
+acceptance or stableapp replacement claimed. Finalmerge docs retained locally
+for next normal reviewed development PR; no newissue/directmain publication,
+deployment/cadence/notification change. Receipts:/private/tmp/asg472-publication.json,
+/private/tmp/asg472-inputs.json,/private/tmp/asg472-review-evidence.json,
+/private/tmp/asg472-reviewed-merge.json,/private/tmp/asg472-verified-pr.json,
+/private/tmp/asg472-safe-sync.py.
+
+
+### Approved HTML Plan preview dispatch — F11 / #402
+In progress on `402-approved-html-preview` from verified PR #472 merge
+0ac45ab1719ec0b43f320c20afdb8870d671cb38; scope comment6627700305.
+No competing active run or open PR at selection. Explicit workspace action
+checks original fixed HTML sources then starts an owned preview under exact
+durable Plan consent. Context/consent is revalidated at each source read, runner
+publication, HTTP request and browser-open dispatch. Stop/deadline/disposal revoke
+pending authority; cleanup failures require explicit Stop retry before restart.
+Already-dispatched responses/browser launches may finish. No source writes,
+manual board mutation, custom synthesis or full F11 completion. Delivered consent,
+registered runner and preview-authority prerequisites suffice on this Mac;
+Deferred #400 is unnecessary. Original IDE edits and previous merge docs retained.
+Validation: all1,420 Flutter tests passed with nine explicit skips in a clean
+tracked-source copy. New14 regressions include actual native HTTP200 then empty
+GET/HEAD403 after withdrawal, restored-consent retry, edited-source refusal,
+320px/2x UI refusal, changed context, Stop/disposal/deadline and late cleanup
+failure. Initial actual HTTP test used the widget binding mock; corrected to
+explicit real HttpOverrides before passing. The ordinary checkout full suite
+passed1,419 but its notice scan additionally traversed ignored MLX dependencies;
+clean-source1,420 passed. Analyzer clean, formatter406, web/Wasm dry run and
+macOS debug builds passed; nine inventory tests passed. No inference, app-launch
+acceptance, installed-app replacement or deployment claimed.
+Status: Awaiting plugin publication, exact-final independent review, required
+CI and protected reviewer merge. Full #402/F11 remain OPEN.
+
+
+PR: https://github.com/arpit-it/ASG/pull/473. Initial published535c94838cb40ea7b5b0cc81d260f9d2177cb8c2
+and tested localf3db11e60a10f2af91931967fef25f97cec3888d share exacttree
+04c289795a9c3dbdb4f9e49c6fcb88e1f69d13b1; all eight remote blobs match.
+Status: Awaiting merge; independent final-revision review and both required CI
+checks must pass before protected reviewer merge. Full F11/#402 stay open.
+This publication bookkeeping changes docs only; runtime/test inputs unchanged.
+
+Independent review found late failed startup cleanup could retain a misleading
+Stopped notice after Stop/deadline revoked the generation. Corrected: always
+publish cleanup failure and clear the stopped notice while alive; retain the
+Stop retry gate. Regression asserts both visible error and absent success notice.
+Affected22 focused tests/analyzer and refreshed nine inventory tests passed.
+Final full suite/build rerun and fresh exact-head review remain merge gates.

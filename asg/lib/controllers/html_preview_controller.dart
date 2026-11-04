@@ -65,8 +65,21 @@ class HtmlPreviewController extends BaseController {
         _url = url;
       }
     } catch (_) {
+      // A failed startup may retain a bound preview or failed late cleanup.
+      // Revoke authority and retain Stop retry before permitting redispatch.
+      try {
+        await service.stop();
+      } catch (_) {
+        if (!isDisposed) {
+          _cleanupFailed = true;
+          _notice = null;
+          _error = 'Preview cleanup failed. Retry Stop before opening another preview.';
+        }
+      }
       if (!isDisposed && generation == _generation) {
-        _error = 'Preview could not start. Only unchanged fixed starter files are allowed. Check the exported files, then retry.';
+        _error = _cleanupFailed
+            ? 'Preview cleanup failed. Retry Stop before opening another preview.'
+            : 'Preview could not start. Only unchanged fixed starter files with any required current Plan consent are allowed. Check the files and consent, then retry.';
       }
     } finally {
       deadline.cancel();
