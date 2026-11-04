@@ -51,10 +51,16 @@ void main() {
                   .controller;
         final original = owner();
         if (export) {
-          await tester.enterText(
-            find.widgetWithText(TextField, 'Site title'),
-            'Retained draft',
-          );
+          final titleField = find.widgetWithText(TextField, 'Site title');
+          final exportOwner = original as HtmlExportController;
+          if (exportOwner.supported) {
+            await tester.enterText(titleField, 'Retained draft');
+          } else {
+            // Unsupported hosts keep inputs disabled. Exercise route-owned
+            // draft state without claiming export or enabled UI support.
+            expect(tester.widget<TextField>(titleField).enabled, false);
+            exportOwner.edit(title: 'Retained draft');
+          }
         } else {
           expect(
             (owner() as RequirementsController)

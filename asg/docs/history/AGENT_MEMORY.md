@@ -12339,3 +12339,28 @@ existing third-party tools/.mlx-venv license-scan contamination; clean selected
 source passes without changing that environment. No live inference; health8765
 connection refused. Original IDE edits retained. Final macOS debug build passed. Plugin publication, exact-final independent
 review, required CI and protected reviewer merge remain gates.
+
+Published [PR #484](https://github.com/arpit-it/ASG/pull/484), Awaiting merge.
+Tested local37141f094f942018cc05a8f3b42bbcb7817c4cc1 and plugin remote
+fb354c563886565ba5b9c79bf843dbdeadd1ec4c share exacttree
+81e7e5fc08ad1d2187a38aa5f0b6f6bc923035a3. Independent reviewer owns exact-final
+review, actual required CI and protected expected-head merge. Full F11/#402 and
+Deferred400 stay open. This local publication bookkeeping awaits the next normal
+reviewed revision; validated runtime/test/tool inputs remain unchanged.
+
+CI correction: independent blocking review5772552150 supersedes approval
+5772530601. Required Linux CI41874118282 caught a test assumption: the unsupported
+HTML export host disables its title field, so typing did not update its controller.
+Keep the entire route regression on all hosts; use actual field editing on a
+supported host, assert disabled inputs and seed controller-only draft state on
+unsupported hosts. Runtime capabilities are unchanged. Mac focused regressions
+and nine inventory checks pass. Corrected full suite/analyzer/format, plugin
+publication, fresh exact-final review and actual new CI are required; prior-head
+checks cannot approve this correction. Full F11/#402 and Deferred400 remain open.
+
+Corrected final validation: 1,537 Flutter tests/nine explicit skips,434-file
+zero-change formatter, analyzer and nine inventory checks pass. Runtime inputs
+are unchanged from the passed web/Wasm/macOS debug builds. Independent production
+unsupported-host stub simulation passes both route cases, preserving disabled
+inputs and full owner/theme/resize/Back coverage. Fresh publication/review/new CI
+remain gates; prior failed CI is retained as failure evidence.
