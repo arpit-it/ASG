@@ -11806,3 +11806,11 @@ checks rerun. Existing localhost8765 health unavailable; no live inference or
 stable-app launch/replacement claimed. Status: Awaiting merge after plugin
 publication; independent exact-final review, actual required CI and protected
 reviewer merge remain mandatory gates. No Done/whole-adapter support claim.
+
+[PR #477](https://github.com/arpit-it/ASG/pull/477) targets main; Awaiting merge.
+Initial tested publication1fa83c94b555e22ac06792e8606914fca2bee2ab/localf268e851
+share exacttree60d1d0085aa1e8890c6531c038dbedf0da935c63; all442tracked runtime/
+test/tool/package inputs match isolated validation. This final docs-only followup
+records the PR link; runtime checks remain applicable. Independent final-revision
+review, actual required CI and protected reviewer merge remain pending. Do not
+mark this increment or full F11 Done before verified merge. No new support claim.
