@@ -183,38 +183,74 @@ void main() {
       c.dispose();
     },
   );
-  testWidgets('reviewed export navigates to separate passive confirmation', (
-    tester,
-  ) async {
-    final c = HtmlReviewedExportController(
-      proposal: source(),
-      authorizeSource: () {},
-      exporter: fixtures.Export(),
-      picker: fixtures.Picker(),
-    );
-    await c.pickParent();
-    c.editFolder('site');
-    c.prepareReview();
-    await c.confirm(c.review!);
-    await tester.pumpWidget(
-      MaterialApp(home: HtmlReviewedExportScreen(controller: c)),
-    );
-    final link = find.text('Review script-disabled preview');
-    await tester.scrollUntilVisible(
-      link,
-      100,
-      scrollable: find.byType(Scrollable).first,
-    );
-    await tester.ensureVisible(link);
-    await tester.pumpAndSettle();
-    await tester.tap(link);
-    await tester.pumpAndSettle();
-    expect(find.text('Passive reviewed HTML preview'), findsOneWidget);
-    expect(find.text('Confirm script-disabled preview'), findsOneWidget);
-    expect(c.destination, '/exports/site');
-    expect(tester.takeException(), isNull);
-    await tester.pumpWidget(const SizedBox());
-  });
+  testWidgets(
+    'export preview retains its owner through theme changes and resize',
+    (tester) async {
+      final c = HtmlReviewedExportController(
+        proposal: source(),
+        authorizeSource: () {},
+        exporter: fixtures.Export(),
+        picker: fixtures.Picker(),
+      );
+      await c.pickParent();
+      c.editFolder('site');
+      c.prepareReview();
+      await c.confirm(c.review!);
+      late StateSetter changeTheme;
+      var dark = false;
+      await tester.pumpWidget(
+        StatefulBuilder(
+          builder: (_, state) {
+            changeTheme = state;
+            return MaterialApp(
+              theme: ThemeData(
+                brightness: dark ? Brightness.dark : Brightness.light,
+              ),
+              home: HtmlReviewedExportScreen(controller: c),
+            );
+          },
+        ),
+      );
+      final link = find.text('Review script-disabled preview');
+      await tester.scrollUntilVisible(
+        link,
+        100,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.ensureVisible(link);
+      await tester.pumpAndSettle();
+      await tester.tap(link);
+      await tester.pumpAndSettle();
+      expect(find.text('Passive reviewed HTML preview'), findsOneWidget);
+      expect(find.text('Confirm script-disabled preview'), findsOneWidget);
+      final owner = tester
+          .widget<HtmlReviewedPreviewScreen>(
+            find.byType(HtmlReviewedPreviewScreen),
+          )
+          .controller;
+      changeTheme(() => dark = true);
+      await tester.pumpAndSettle();
+      tester.view.physicalSize = const Size(900, 700);
+      addTearDown(tester.view.resetPhysicalSize);
+      await tester.pumpAndSettle();
+      expect(
+        identical(
+          owner,
+          tester
+              .widget<HtmlReviewedPreviewScreen>(
+                find.byType(HtmlReviewedPreviewScreen),
+              )
+              .controller,
+        ),
+        true,
+      );
+      expect(owner.isDisposed, false);
+      expect(c.destination, '/exports/site');
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox());
+      expect(owner.isDisposed, true);
+    },
+  );
   testWidgets('320px enlarged view confirms only on explicit input', (
     tester,
   ) async {

@@ -12127,3 +12127,20 @@ All changed runtime/test/tool inputs match the isolated selected-source copy.
 Unrelated IDE edits retained; localhost8765health unavailable, no inference claim.
 Awaiting linked PR, exact-final independent review, actual requiredCI and protected
 reviewer merge. FullF11/#402 stays open/unchecked; Deferred400 retained.
+
+Independent blocking review5770638593 supersedes approval5770576703: an actual
+MaterialApp theme change rebuilds the route page, replaced its preview controller
+and orphaned the prior live server without a visible Stop. Fix creates the
+controller once before route construction; page rebuilds retain that same owner.
+Add deterministic theme/resize/disposal regression and rerun the separate live-host
+reviewer probe. Fresh full checks/builds/inventory, publication, independent final
+approval and requiredCI remain gates; prior-head CI does not approve this fix.
+
+Review correction validated: controller is created once before route construction.
+Theme changes/resize retain the same owner and active URL; disposal closes that
+owner. Parent deterministic route regression and independent actual-live-host
+probe pass; independent probe fails on original head and passes this fix.
+Final1,524Flutter/nine skips, formatter432/analyzer/webWasm/macOSdebug, nine
+inventory regressions and actualChrome passive-preview checks all pass again.
+Corrected final publication and fresh independent approval/actual requiredCI
+remain mandatory; approval5770576703 and CI41853205944 are superseded.

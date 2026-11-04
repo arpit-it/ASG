@@ -81,17 +81,22 @@ class _HtmlReviewedExportScreenState extends State<HtmlReviewedExportScreen> {
             OutlinedButton(
               onPressed: c.busy || c.checking
                   ? null
-                  : () => Navigator.of(context).push(
-                      MaterialPageRoute<void>(
-                        builder: (_) => HtmlReviewedPreviewScreen(
-                          controller: HtmlReviewedPreviewController(
-                            proposal: c.proposal,
-                            directory: destination,
-                            authorizeSource: c.authorizeSource,
+                  : () {
+                      // Route page builders can rerun on theme changes. Retain
+                      // one owner of the active host for the whole route.
+                      final previewController = HtmlReviewedPreviewController(
+                        proposal: c.proposal,
+                        directory: destination,
+                        authorizeSource: c.authorizeSource,
+                      );
+                      Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) => HtmlReviewedPreviewScreen(
+                            controller: previewController,
                           ),
                         ),
-                      ),
-                    ),
+                      );
+                    },
               child: const Text('Review script-disabled preview'),
             ),
             OutlinedButton(
