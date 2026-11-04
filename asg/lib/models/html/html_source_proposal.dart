@@ -36,7 +36,7 @@ class HtmlSourceProposal {
         summary.length > 1000 ||
         entries is! Map ||
         entries.length < 2 ||
-        entries.length > 3 ||
+        entries.length > 4 ||
         !entries.containsKey('index.html') ||
         !entries.containsKey('styles.css')) {
       throw const FormatException('Invalid HTML proposal fields.');
@@ -45,7 +45,12 @@ class HtmlSourceProposal {
     for (final entry in entries.entries) {
       final name = entry.key;
       final text = entry.value;
-      if (!const ['index.html', 'styles.css', 'app.js'].contains(name) ||
+      if (!const [
+            'index.html',
+            'styles.css',
+            'app.js',
+            'image.svg',
+          ].contains(name) ||
           text is! String ||
           text.trim().isEmpty ||
           text.length > maxFile ||

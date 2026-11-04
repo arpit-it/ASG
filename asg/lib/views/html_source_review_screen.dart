@@ -55,7 +55,7 @@ class _HtmlSourceReviewScreenState extends State<HtmlSourceReviewScreen> {
         padding: const EdgeInsets.all(24),
         children: [
           const Text(
-            'Request complete HTML/CSS and optional JavaScript from your configured local model. This creates a temporary review artifact only. Source is untrusted and may contain scripts or network references. No project source is read, applied or previewed. Export requires a separate exact source and destination confirmation. Closing discards unsaved changes. Restoring replaces the current review; save changes first. Save a local source draft explicitly to retain it; restoration requires unchanged project context and fresh diagnostics. Fixed-starter Plan approval does not approve this source.',
+            'Request complete HTML/CSS, optional JavaScript and one local image.svg from your configured local model. This creates a temporary review artifact only. Source is untrusted and may contain scripts or network references. No project source is read, applied or previewed. Export requires a separate exact source and destination confirmation. Closing discards unsaved changes. Restoring replaces the current review; save changes first. Save a local source draft explicitly to retain it; restoration requires unchanged project context and fresh diagnostics. Fixed-starter Plan approval does not approve this source.',
           ),
           const SizedBox(height: 16),
           TextField(

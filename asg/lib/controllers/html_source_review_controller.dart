@@ -354,7 +354,7 @@ class HtmlSourceReviewController extends BaseController {
         jsonEncode({'summary': displayed.summary, 'files': files}),
       );
     } catch (_) {
-      _error = 'Edits are invalid or this review is stale. Keep nonempty HTML/CSS, optional nonempty JavaScript and the existing file/size limits.';
+      _error = 'Edits are invalid or this review is stale. Keep nonempty HTML/CSS, optional nonempty JavaScript/SVG and the existing file/size limits.';
       update();
       return;
     }

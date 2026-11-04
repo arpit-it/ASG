@@ -26,9 +26,10 @@ Future<void> main() async {
     jsonEncode({
       'summary': 'Passive fixture',
       'files': {
-        'index.html': '<!doctype html><title>Passive</title><meta name="viewport" content="width=device-width"><link rel="stylesheet" href="styles.css"><h1>Passive</h1><script>document.body.dataset.ran="inline"</script><script src="app.js"></script><form action="/sent"><input name="message"><button>Send</button></form>',
+        'index.html': '<!doctype html><title>Passive</title><meta name="viewport" content="width=device-width"><link rel="stylesheet" href="styles.css"><h1>Passive</h1><img src="image.svg" alt="Local rectangle"><script>document.body.dataset.ran="inline"</script><script src="app.js"></script><form action="/sent"><input name="message"><button>Send</button></form>',
         'styles.css':
             'h1 { color: rgb(0, 128, 0); } body { overflow-wrap: anywhere; }',
+        'image.svg': '<svg xmlns="http://www.w3.org/2000/svg" width="80" height="40"><rect width="80" height="40" fill="green"/><script>parent.document.body.dataset.ran="svg"</script></svg>',
         'app.js': 'document.body.dataset.ran="external";',
       },
     }),
@@ -93,6 +94,13 @@ Future<void> main() async {
       'External CSS must actually render',
     );
     require(
+      await protocol.evaluate(
+            "document.querySelector('img').complete && document.querySelector('img').naturalWidth === 80 && document.querySelector('img').naturalHeight === 40",
+          ) ==
+          true,
+      'Local SVG image must actually decode and render',
+    );
+    require(
       await protocol.evaluate("document.body.dataset.ran === undefined") ==
           true,
       'Inline/external scripts must not run',
@@ -132,7 +140,7 @@ Future<void> main() async {
     await host.stop();
     require(host.url == null, 'Stop must clear URL');
     stdout.writeln(
-      'PASS: production passive preview CSS at 320/1280px, inline/external script refusal, opaque sandbox origin, form refusal and Stop. No model/interactive-adapter acceptance claim.',
+      'PASS: production passive preview local SVG image and CSS at 320/1280px, inline/external script refusal, opaque sandbox origin, form refusal and Stop. No model/interactive-adapter acceptance claim.',
     );
   } finally {
     await protocol?.close();

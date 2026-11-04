@@ -37,11 +37,16 @@ class _HtmlSourceEditorState extends State<HtmlSourceEditor>
   );
   late final js = TextEditingController(text: widget.proposal.files['app.js']);
 
+  late final svg = TextEditingController(
+    text: widget.proposal.files['image.svg'],
+  );
+
   @override
   void dispose() {
     html.dispose();
     css.dispose();
     js.dispose();
+    svg.dispose();
     super.dispose();
   }
 
@@ -52,12 +57,13 @@ class _HtmlSourceEditorState extends State<HtmlSourceEditor>
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         const Text(
-          'Edit temporary source only. Saving replaces the review identity and reruns reference diagnostics. Existing export/preview confirmations become stale. Empty JavaScript removes app.js. Save or Cancel edits before requesting replacement source or exporting.',
+          'Edit temporary source only. Saving replaces the review identity and reruns reference diagnostics. Existing export/preview confirmations become stale. Empty JavaScript removes app.js; empty SVG removes image.svg. SVG content is untrusted and is not validated. Save or Cancel edits before requesting replacement source or exporting.',
         ),
         for (final entry in {
           'index.html': html,
           'styles.css': css,
           'app.js (optional)': js,
+          'image.svg (optional)': svg,
         }.entries)
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8),
@@ -79,6 +85,7 @@ class _HtmlSourceEditorState extends State<HtmlSourceEditor>
                   'index.html': html.text,
                   'styles.css': css.text,
                   if (js.text.trim().isNotEmpty) 'app.js': js.text,
+                  if (svg.text.trim().isNotEmpty) 'image.svg': svg.text,
                 })
               : null,
           child: const Text('Save edits for review'),

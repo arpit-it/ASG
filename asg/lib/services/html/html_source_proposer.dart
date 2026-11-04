@@ -42,10 +42,10 @@ class HtmlSourceProposer {
       final prompt =
           'Create independent HTML/CSS sources for review. '
           'Return JSON only with exactly summary (short string) and files '
-          '(an object with index.html, styles.css and optional app.js). '
+          '(an object with required index.html and styles.css, optional app.js and optional image.svg). '
           'Each file value must be complete UTF-8 source, at most 64000 bytes; '
           'the entire JSON must be at most 128000 bytes. No Markdown fences, '
-          'commands, dependencies, remote resources or additional files. '
+          'commands, dependencies, remote resources or additional files. Use image.svg for one local SVG image when needed; reference it from HTML/CSS. '
           'Use semantic HTML, responsive maintainable CSS, keyboard focus '
           'states and local interactions appropriate to the instruction. '
           'Source will require separate review and validation before use. '
