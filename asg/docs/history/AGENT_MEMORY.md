@@ -12736,3 +12736,62 @@ No inference, source execution, stable app replacement or deployment.
 Recorded 2026-11-04T19:33:32.909880+00:00.
 
 Final selected-source validation: full isolated suite1,573Flutter/nine explicit skips PASS; 66affected/nine new,438format/finalanalyzer/webWasm/macOSdebug/nineinventory PASS. Isolated tracked-source copy excludes existing local MLX-venv license-scan contamination without modifying that environment. No inference claim. Publication, independent exact-final review, actual required CI and protected reviewer merge remain gates.
+
+Published PR #489 https://github.com/arpit-it/ASG/pull/489, Awaiting merge. Tested local9d88de27 and plugin remote d72daff938604640bd8ffe4dfff65fa0a2d3a1e1 share exacttree63788d3dfb6269768ef3d6f9d9fe1a9814137a5b; allsixpublishedblobs match. Independent /root/review_489 owns exact-final review, actual required CI and protected expected-head reviewer merge. Parent1573Flutter/nine skips,66focused/nine new,438format/finalanalyzer/webWasm/macOSdebug/nineinventory PASS; all463runtime/test/tool inputs match isolated copy. FullF11/#402 and Deferred400 remainOPEN; no inference/fulladapterclaim.
+
+
+### Failed HTML replacement recovery verified merged — PR #489
+Bounded F11/#402 correction Done through https://github.com/arpit-it/ASG/pull/489,
+branch `402-html-request-recovery`, scope6640067749. Ordinary transport, malformed
+response or diagnostics failure now retains exact prior reviewed files, reference
+report, provenance and local-edit attribution with a fresh review identity. Old
+export/preview confirmations remain revoked. Successful retry replaces source;
+Stop/deadline/disposal/stale or changed context cannot regain authority.
+Tested local9d88de271d6f44f603308b12d10f5943a11e22f8 and plugin final
+d72daff938604640bd8ffe4dfff65fa0a2d3a1e1 share tree
+63788d3dfb6269768ef3d6f9d9fe1a9814137a5b. Allsixpublishedblobs matched;
+independent reviewer verified all944remote blobs/modes and CItestmerge35151b02.
+Independent codeapproval5774621808/finalapproval5774681591,81focused/7extra
+context-config-reentrant probes/nineinventory PASS; fourbaseline regressions FAIL.
+Parent1573Flutter/nineexplicit skips,66focused/nine new,438format/finalanalyzer,
+webWasm/macOSdebug/nineinventory PASS; all463runtime/test/tool inputs match
+isolated tracked-source suite copy, excluding pre-existing local MLX-venv license
+scan contamination without changing that environment.
+RequiredCI41898323602 BOTHdirectfinalheadchecks completedSUCCESS:
+Flutter126813706535/Python126813706117. Actual1526Linux/53explicit skips,
+allnine new,17Chrome,browsertransport/staticHTML/webWasm/realindependent
+generatedFlutter resolve-analyze-test-build-serve and all8Python suites inspected.
+Protected expected-head reviewer squashmerge
+e4141ac3fa93f1b33e047179aeba0735fc831c80 at2026-11-04T19:43:03Z
+independently parent-verified on PR/currentmain. Signed exacttree/soleparent
+e2c54a48 verified/hash-reconstructed before guarded local-only ref sync.
+Localmain/originmain0/0,indexempty; bothoriginalIDE edits and threelocalhandoff
+docs byte-identical through synchronization. FullF11/#402 and Deferred#400
+verifiedOPEN/unchecked. Existing8765health unavailable (URLError,0.006s); no
+fresh inference/fulladapter/stableapp/deployment/cadence/notification claim.
+No active implementation remains after verified merge; no owner action required.
+Receipts:/private/tmp/asg489-publication.json,/private/tmp/asg489-review-evidence.json,
+/private/tmp/asg489-verified-pr.json,/private/tmp/asg489-sync-record.json.
+Recorded 2026-11-04T19:44:27.863266+00:00.
+
+
+### Declared HTML form override diagnostics — F11 / #402
+In progress on `402-html-formaction-diagnostics` from verified PR #489 merge
+`e4141ac3fa93f1b33e047179aeba0735fc831c80`; scope comment6640710391.
+Fresh plugin inspection: no open PR or competing active ASG run; reused #402,
+no new issue/F ID. Gap: button/input formaction was omitted from diagnostics,
+allowing missing/external override targets to produce zero findings. Inspect
+declared URLs through the existing resolver while retaining form action reports.
+Inventory declarations even on inactive control types; do not infer effective
+submission, form ownership, methods, validation or server behavior.
+Acceptance: missing/external targets, valid/encoded fragments, decoded entities,
+empty URLs, queries, malformed encoding, base limitations, unrelated elements/
+comments/script exclusion and shared100-message bound. All five new regressions
+failed on merged baseline; corrected23reference tests and analyzer PASS.
+Delivered source-review diagnostics are the actual prerequisite; Deferred#400
+hardware does not gate this Mac-verifiable correction. Full F11/#402 remains
+open/unchecked. Final full checks/builds, plugin publication, independent final
+review, required CI and protected reviewer merge remain gates.
+Recorded 2026-11-04T20:01:29.002198+00:00.
+
+Final local validation: full isolated suite1,578Flutter/nine explicit skips PASS;23reference tests (five new),438-file zero-change format, clean analyzer,web/Wasm dry-run,macOSdebug andnineinventory tests PASS. All463tracked runtime/test/tool inputs byte-identical to isolated copy; pre-existing MLX-venv untouched. Existing8765health unavailable (URLError,0.008s); no inference claim. Independent final review, actual required CI and protected reviewer merge pending.

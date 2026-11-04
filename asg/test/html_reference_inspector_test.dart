@@ -26,6 +26,105 @@ String page(String body) =>
     '<!doctype html><html><head><title>References</title></head><body>$body</body></html>';
 
 void main() {
+  test('form action and declared overrides are independently inspected', () async {
+    final report = await inspectHtmlReferences(
+      proposal(
+        page(
+          '<form action="index.html"><button formaction="missing.html">Send</button>'
+          '<input type="image" formaction="https://example.invalid/send"></form>',
+        ),
+      ),
+    );
+    expect(report.references, 3);
+    expect(report.findings, 2);
+    expect(
+      report.messages.join('\n'),
+      contains('Missing local target: button[formaction] missing.html'),
+    );
+    expect(
+      report.messages.join('\n'),
+      contains(
+        'External or scheme reference needs separate review: input[formaction]',
+      ),
+    );
+  });
+
+  test('form overrides reuse entity, fragment and query resolution', () async {
+    final report = await inspectHtmlReferences(
+      proposal(
+        page(
+          '<p id="a&amp;b"></p><button formaction="index.html#a%26b">Send</button>'
+          '<input type="submit" formaction="./index.html?x=1&amp;y=2">'
+          '<button formaction="">Current</button><input formaction="%FF">',
+        ),
+      ),
+    );
+    expect(report.references, 4);
+    expect(report.findings, 2);
+    expect(report.messages.join('\n'), contains('Query behavior'));
+    expect(report.messages.join('\n'), contains('x=1&y=2'));
+    expect(
+      report.messages.join('\n'),
+      contains('Invalid encoded reference: input[formaction]'),
+    );
+    expect(
+      report.messages.join('\n'),
+      isNot(contains('Missing HTML fragment')),
+    );
+  });
+
+  test('base suppresses local override resolution only', () async {
+    final report = await inspectHtmlReferences(
+      proposal(
+        page(
+          '<base href="https://example.invalid/"><button formaction="missing.html">Send</button>'
+          '<input type="submit" formaction="//example.invalid/send">',
+        ),
+      ),
+    );
+    expect(report.references, 3);
+    expect(
+      report.messages.join('\n'),
+      contains('local targets were not resolved'),
+    );
+    expect(report.messages.join('\n'), contains('input[formaction]'));
+    expect(report.messages.join('\n'), isNot(contains('Missing local target')));
+  });
+
+  test('formaction inventories button and input declarations only', () async {
+    final report = await inspectHtmlReferences(
+      proposal(
+        page(
+          '<div formaction="missing.html"></div><form formaction="absent.html"></form>'
+          '<!-- <button formaction="comment.html">Send</button> -->'
+          '<script>const s = \'<input formaction="script.html">\';</script>'
+          '<button type="button" formaction="index.html">Inert declaration</button>'
+          '<input type="text" formaction="index.html">',
+        ),
+      ),
+    );
+    expect(report.references, 2);
+    expect(report.findings, 0);
+    expect(HtmlReferenceReport.limitations, contains('effective submission'));
+  });
+
+  test('form override diagnostics preserve the shared display bound', () async {
+    final report = await inspectHtmlReferences(
+      proposal(
+        page(
+          List.filled(
+            200,
+            '<button formaction="missing.html">Send</button>',
+          ).join(),
+        ),
+      ),
+    );
+    expect(report.references, 200);
+    expect(report.findings, 200);
+    expect(report.messages, hasLength(100));
+    expect(report.truncated, true);
+  });
+
   test('responsive candidates on img, source and link are observed', () async {
     final report = await inspectHtmlReferences(
       proposal(

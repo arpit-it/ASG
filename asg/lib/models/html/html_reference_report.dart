@@ -18,6 +18,9 @@ class HtmlReferenceReport {
       '$findings findings.';
   static const limitations =
       'Advisory parsed HTML href/src/action/poster/data and ID checks only. '
+      'Declared button/input formaction URLs are inspected independently of '
+      'form action; effective submission, control type/disabled state, form '
+      'ownership, methods, validation and server behavior are not checked. '
       'Responsive img/source srcset and link imagesrcset candidate URLs with '
       'no descriptor, one positive width or one nonnegative finite density are '
       'inspected; malformed/unsupported descriptors are reported and skipped. '

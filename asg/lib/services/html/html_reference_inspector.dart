@@ -102,7 +102,14 @@ HtmlReferenceReport _inspect(HtmlSourceProposal proposal) {
   }
 
   for (final element in elements) {
-    for (final attribute in ['href', 'src', 'action', 'poster', 'data']) {
+    final attributes = [
+      'href', 'src', 'action', 'poster', 'data',
+      // Inventory declarations even on currently inactive control types. This
+      // does not establish form ownership or effective submission behavior.
+      if (element.localName == 'button' || element.localName == 'input')
+        'formaction',
+    ];
+    for (final attribute in attributes) {
       final value = element.attributes[attribute];
       if (value == null) continue;
       inspectReference(
