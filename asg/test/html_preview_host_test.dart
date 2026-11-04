@@ -171,6 +171,82 @@ void main() {
       );
     });
     test(
+      'caller authority refuses initial IO, startup publication and serving',
+      () async {
+        var allowed = false;
+        var checks = 0;
+        void authorize() {
+          checks++;
+          if (!allowed) throw StateError('revoked');
+        }
+
+        await expectLater(
+          host.start(
+            directory: directory.path,
+            input: input,
+            authorizeRead: authorize,
+          ),
+          throwsStateError,
+        );
+        expect(checks, 1);
+        expect(host.url, isNull);
+        allowed = true;
+        final starting = host.start(
+          directory: directory.path,
+          input: input,
+          authorizeRead: authorize,
+        );
+        allowed = false;
+        await expectLater(starting, throwsStateError);
+        expect(host.url, isNull);
+        expect(host.starting, false);
+        allowed = true;
+        final url = await host.start(
+          directory: directory.path,
+          input: input,
+          authorizeRead: authorize,
+        );
+        final client = HttpClient();
+        addTearDown(() => client.close(force: true));
+        final ok = await (await client.getUrl(url)).close();
+        expect(ok.statusCode, 200);
+        await ok.drain<void>();
+        allowed = false;
+        for (final method in ['GET', 'HEAD']) {
+          final denied = await (await client.openUrl(method, url)).close();
+          expect(denied.statusCode, 403);
+          expect(await denied.fold<int>(0, (n, bytes) => n + bytes.length), 0);
+        }
+        await host.stop();
+        expect(host.url, isNull);
+        expect(
+          await File('${directory.path}/index.html').readAsString(),
+          HtmlSiteTemplate().generate(input)['index.html'],
+        );
+      },
+    );
+    test('authority is checked immediately before bind and after it', () async {
+      // Five files each require three snapshot checks, plus initial/final,
+      // pre-bind and post-bind checks. Refuse independently at both boundaries.
+      for (final deniedAt in [18, 19]) {
+        var checks = 0;
+        await expectLater(
+          host.start(
+            directory: directory.path,
+            input: input,
+            authorizeRead: () {
+              if (++checks == deniedAt) throw StateError('revoked');
+            },
+          ),
+          throwsStateError,
+        );
+        expect(checks, deniedAt);
+        expect(host.url, isNull);
+        expect(host.starting, false);
+      }
+      await host.start(directory: directory.path, input: input);
+    });
+    test(
       'Stop during startup revokes publication and permits later restart',
       () async {
         final operation = host.start(directory: directory.path, input: input);

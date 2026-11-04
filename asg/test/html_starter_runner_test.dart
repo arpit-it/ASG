@@ -39,15 +39,22 @@ class _Checker implements HtmlSourceChecker {
 class _Preview implements HtmlPreview {
   bool available = true;
   int starts = 0, opens = 0, stops = 0;
+  Completer<Uri>? pending;
+  void Function()? authority;
+  bool failStop = false;
   @override
   bool get supported => available;
   @override
   Future<Uri> start({
     required String directory,
     required HtmlSiteInput input,
+    void Function()? authorizeRead,
   }) async {
     starts++;
-    return Uri.parse('http://127.0.0.1:1234/token/');
+    authority = authorizeRead;
+    return pending == null
+        ? Uri.parse('http://127.0.0.1:1234/token/')
+        : await pending!.future;
   }
 
   @override
@@ -58,6 +65,7 @@ class _Preview implements HtmlPreview {
   @override
   Future<void> stop() async {
     stops++;
+    if (failStop) throw StateError('cleanup failed');
   }
 }
 
@@ -198,6 +206,68 @@ void main() {
       expect([preview.starts, preview.opens, preview.stops], [1, 1, 1]);
     },
   );
+  test(
+    'preview authority refuses dispatch and is forwarded unchanged',
+    () async {
+      final preview = _Preview();
+      final runner = HtmlStarterRunner(preview: preview);
+      await expectLater(
+        runner.start(
+          directory: '/tmp/site',
+          input: input,
+          authorizeRead: () => throw StateError('revoked'),
+        ),
+        throwsStateError,
+      );
+      expect(preview.starts, 0);
+      var allowed = true;
+      void authorize() {
+        if (!allowed) throw StateError('revoked');
+      }
+
+      await runner.start(
+        directory: '/tmp/site',
+        input: input,
+        authorizeRead: authorize,
+      );
+      expect(preview.authority, same(authorize));
+      allowed = false;
+      expect(preview.authority!, throwsStateError);
+      await runner.stop();
+    },
+  );
+  for (final failCleanup in [false, true]) {
+    test(
+      'late preview revocation retains cleanup result $failCleanup',
+      () async {
+        final preview = _Preview()
+          ..pending = Completer()
+          ..failStop = failCleanup;
+        final runner = HtmlStarterRunner(preview: preview);
+        var allowed = true;
+        final pending = runner.start(
+          directory: '/tmp/site',
+          input: input,
+          authorizeRead: () {
+            if (!allowed) throw StateError('revoked');
+          },
+        );
+        allowed = false;
+        preview.pending!.complete(Uri.parse('http://127.0.0.1:1234/token/'));
+        await expectLater(
+          pending,
+          throwsA(
+            isA<StateError>().having(
+              (e) => e.message,
+              'reason',
+              failCleanup ? 'cleanup failed' : 'revoked',
+            ),
+          ),
+        );
+        expect(preview.stops, 1);
+      },
+    );
+  }
   test('production runner exports, checks, serves assets, stops, retries and refuses edits', () async {
     final temp = await Directory.systemTemp.createTemp('asg-runner-');
     final parent = await temp.resolveSymbolicLinks();

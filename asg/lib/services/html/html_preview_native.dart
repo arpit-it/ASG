@@ -16,7 +16,12 @@ class HtmlPreviewNative implements HtmlPreview {
   Future<Uri> start({
     required String directory,
     required HtmlSiteInput input,
-  }) => _host.start(directory: directory, input: input);
+    void Function()? authorizeRead,
+  }) => _host.start(
+    directory: directory,
+    input: input,
+    authorizeRead: authorizeRead,
+  );
 
   @override
   Future<void> open() async {

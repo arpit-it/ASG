@@ -24,6 +24,7 @@ class HtmlPreviewHostNative {
   Future<Uri> start({
     required String directory,
     required HtmlSiteInput input,
+    void Function()? authorizeRead,
   }) async {
     if (!Platform.isMacOS) {
       throw UnsupportedError('Fixed HTML preview requires macOS.');
@@ -39,6 +40,7 @@ class HtmlPreviewHostNative {
       if (generation != _generation) {
         throw StateError('HTML preview startup was stopped.');
       }
+      authorizeRead?.call();
     }
 
     HttpServer? bound;
@@ -63,6 +65,14 @@ class HtmlPreviewHostNative {
       server.listen((request) async {
         final response = request.response;
         try {
+          // Retained consent is rechecked for every request, including HEAD.
+          // Already-dispatched responses cannot be recalled.
+          try {
+            check();
+          } catch (_) {
+            response.statusCode = HttpStatus.forbidden;
+            return;
+          }
           response.persistentConnection = false;
           response.headers.set('Cache-Control', 'no-store');
           response.headers.set('X-Content-Type-Options', 'nosniff');
