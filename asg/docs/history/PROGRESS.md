@@ -13015,3 +13015,76 @@ unavailable URLError0.007s; no inference or installed-stable-app change.
 Plugin publication, independent final-revision review, actual requiredCI
 and protected reviewer merge remain gates.
 Recorded 2026-11-04T21:03:55.085868+00:00.
+
+Published PR #492 https://github.com/arpit-it/ASG/pull/492, Awaiting merge.
+Tested locala1a58a0d772521727e0b723e12f8d8ee06aa6f29 and plugin final
+0f33bc9cfd16bb946b2f69421b2527604b62560a share exacttree
+a9f3d8b5d3f20ec62db8edaa9b109fe8bb97c31b; allsevenpublishedblobs match.
+Independent /root/review_492 owns exact-final review, actual requiredCI and
+protected expected-head reviewer merge. Parent1589Flutter/nine skips,
+28reference/five new/four baselineFAIL,439format/analyzer/webWasm/macOSdebug/
+nineinventory PASS; all464tracked runtime/test/tool inputs match isolated copy.
+FullF11/#402 and Deferred400 remainOPEN; no inference/fulladapterclaim.
+Recorded 2026-11-04T21:05:38.399516+00:00.
+
+
+### Inline SVG namespaced link diagnostics verified merged — PR #492
+Bounded F11/#402 correction Done through https://github.com/arpit-it/ASG/pull/492,
+branch `402-svg-link-diagnostics`, scope6641978585. Inline SVG-namespace XLink
+href declarations now use existing advisory local/fragment/query resolver
+independently of unprefixed href, retaining shared100-message bound.
+No effective precedence/rendering/standalone SVG/XML validation claim.
+Tested locala1a58a0d772521727e0b723e12f8d8ee06aa6f29 and plugin final
+0f33bc9cfd16bb946b2f69421b2527604b62560a share exacttree
+a9f3d8b5d3f20ec62db8edaa9b109fe8bb97c31b; allsevenpublishedblobs matched.
+Independent reviewer verified all945remote blobs/modes and464validationinputs
+and CItestmerged5d47128; own100affected/nineinventory/twoextra namespace/URL
+probes PASS, fourbaselineFAIL independently reproduced (24otherbaselinePASS).
+Independent codeCOMMENT5775830056/finalapprovalCOMMENT5775895965. GitHub
+APPROVE rejects sharedauthor identity; independent verdict follows documented
+zero-required-approvers workflow, no branch protections changed/bypassed.
+Parent1589Flutter/nineexplicit skips,28reference/five new,439zero-changeformat/
+analyzer/webWasm/macOSdebug/nineinventory PASS; isolated464inputs match and
+existing MLX-venv untouched. RequiredCI41912674619 BOTHdirectfinalheadchecks
+completedSUCCESS Flutter126864058218/Python126864058654. Reviewer inspected
+actual1541Linux/54skips,17Chrome,transport/staticHTML/webWasm/realindependent
+generatedFlutter resolve-analyze-test-build-serve and all8Python suites logs.
+Protectedexpectedhead reviewer squashmerge
+e221ff5e90a9f45becf4c042aeb14bc3638c0f55 at2026-11-04T21:14:09Z
+independently parentverified onPR/currentmain/directchecks. Signedexacttree/
+soleparent3f104a9a verified/hash-reconstructed before guardedlocal-onlysync.
+Localmain/originmain0/0,indexempty; originaltwoIDE edits and threelocalhandoff
+docs byte-identical through synchronization. FullF11/#402 and Deferred400
+verifiedOPEN/unchecked. Existing8765health unavailable URLError0.007s; no
+freshinference/stableapp/deployment/cadence/notification change. No active
+implementation or owneraction remains for this increment. Canonical finalmerge
+bookkeeping retained locally for next normal reviewed developmentPR.
+Receipts:/private/tmp/asg-xlink-publication.json,/private/tmp/asg492-review-evidence.json,
+/private/tmp/asg492-verified-pr.json,/private/tmp/asg492-sync-record.json.
+Recorded 2026-11-04T21:15:40.979639+00:00.
+
+
+### HTML named-anchor navigation diagnostics — F11 / #402
+In progress on `402-html-named-anchors` from verified PR #492 merge
+`e221ff5e90a9f45becf4c042aeb14bc3638c0f55`; scope6642581099.
+Fresh connected-plugin inspection: no open PR; prior owning run completed.
+Reuse #402, no new issue/F ID. Actual inspector rejected valid legacy HTML
+anchor-name navigation as missing. Recognize case-sensitive HTML anchor names
+only for HTML a/area href navigation; retain ID-only CSS/SVG/resource checks,
+foreign/template exclusion, entity/percent decoding and existing base limits.
+Two baseline regressions FAIL; third exclusion test passes baseline. Full F11
+remains open/unchecked. Delivered reference inspection is the actual dependency;
+Deferred #400 hardware is unrelated. No inference/execution/support claim.
+Final tests, publication, independent final review, CI and reviewer merge pending.
+Recorded 2026-11-04T21:30:22.013617+00:00.
+
+Final local validation: 1,592 Flutter tests/nine explicit skips PASS in isolated
+tracked-source copy; all 464 runtime/test/tool inputs match final sources.
+31 reference tests/three new PASS, two new baseline failures reproduced.
+439-file zero-change format, final clean analyzer, web/Wasm dry-run and macOS
+debug build PASS. Nine inventory tests PASS after regenerating current-source
+inventory (initial stale-digest comparison failed as expected after source edit).
+Existing runtime8765 health unavailable URLError0.005s; no inference claim.
+Existing local MLX environment and stable app unchanged. Final publication,
+independent review, required CI and protected reviewer merge remain pending.
+Recorded 2026-11-04T21:32:37.994265+00:00.

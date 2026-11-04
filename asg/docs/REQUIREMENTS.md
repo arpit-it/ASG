@@ -271,7 +271,8 @@ The saved development automation was updated through its management tool; active
   - Acceptance: UI shows available and unavailable operations with actionable reasons; unsupported confinement refuses candidate execution before any source is run. Each enabled host passes real new-project resolve/analyze/test/web-build/serve, Stop/deadline/output-limit and descendant-cleanup checks, restart/uncertain-checkpoint refusal, stale-approval refusal and last-working-output preservation. Enabling starter generation must not implicitly enable candidate execution. Model-written candidate/repair support needs independently reviewed platform isolation and real deny-write/network/process-escape probes at the established boundary.
   - Validation/delivery: one narrowly scoped issue/PR per host/capability milestone, actual Linux/Windows builds and launches on their respective hosts, plus macOS regression coverage. Include paths with spaces, missing toolchains, occupied ports, failed previews and interrupted writes. Record tested versus unavailable capabilities separately; keep F16 unchecked until promised host increments satisfy acceptance and normal independent review/CI/verified merge. Broader generated targets remain F11.
 - [ ] F11 Multi-language project generation, runners and explicit stack selection — In progress (#402); depends on F04 and F05
-  - Inline SVG namespaced link diagnostics — In progress: #402, `402-svg-link-diagnostics`, scope6641978585. Inspect parsed inline SVG XLink href declarations with existing advisory resolver; standalone SVG/XML/rendering remain unverified.
+  - HTML named-anchor navigation diagnostics — In progress: #402, `402-html-named-anchors`, scope6642581099. Correct false missing-target findings for HTML a/area navigation to legacy anchor names; resource fragments stay ID-only. Final validation/review/merge pending.
+  - Inline SVG namespaced link diagnostics — Done through [PR #492](https://github.com/arpit-it/ASG/pull/492), verified reviewer mergee221ff5e at2026-11-04T21:14:09Z; finalreview5775895965/requiredCI41912674619 passed: #402, `402-svg-link-diagnostics`, scope6641978585. Inspect parsed inline SVG XLink href declarations with existing advisory resolver; standalone SVG/XML/rendering remain unverified.
   - Reviewed HTML local SVG asset — Done through [PR #491](https://github.com/arpit-it/ASG/pull/491), verified reviewer merge3f104a9a at2026-11-04T20:46:26Z; finalreview5775521211/requiredCI41908348765 passed: #402, `402-reviewed-html-svg`, scope6641348315. Optional image.svg through review/edit/draft/export/passive preview; SVG internals, visual/interactive acceptance and full adapter remain unverified. Six baseline regressions; exact-final review/CI/merge verified.
   - Declared HTML form override diagnostics — Done through [PR #490](https://github.com/arpit-it/ASG/pull/490), verified reviewer merged8471591 at2026-11-04T20:12:27Z; finalreview5775081254/requiredCI41903060539 passed; #402, `402-html-formaction-diagnostics`, scope6640710391. Inspect button/input formaction declarations; actual form submission remains unverified.
   - Failed replacement request recovery — Done through [PR #489](https://github.com/arpit-it/ASG/pull/489), verified reviewer mergee4141ac3 at2026-11-04T19:43:03Z; finalreview5774681591/requiredCI41898323602 passed: #402, `402-html-request-recovery`, scope6640067749. Preserve prior edited review under fresh identity after ordinary transport/response/diagnostics failure; lifecycle and stale-context authority remains revoked. Final review/CI/merge verified; fullF11 remains open.
@@ -13875,3 +13876,76 @@ unavailable URLError0.007s; no inference or installed-stable-app change.
 Plugin publication, independent final-revision review, actual requiredCI
 and protected reviewer merge remain gates.
 Recorded 2026-11-04T21:03:55.085868+00:00.
+
+Published PR #492 https://github.com/arpit-it/ASG/pull/492, Awaiting merge.
+Tested locala1a58a0d772521727e0b723e12f8d8ee06aa6f29 and plugin final
+0f33bc9cfd16bb946b2f69421b2527604b62560a share exacttree
+a9f3d8b5d3f20ec62db8edaa9b109fe8bb97c31b; allsevenpublishedblobs match.
+Independent /root/review_492 owns exact-final review, actual requiredCI and
+protected expected-head reviewer merge. Parent1589Flutter/nine skips,
+28reference/five new/four baselineFAIL,439format/analyzer/webWasm/macOSdebug/
+nineinventory PASS; all464tracked runtime/test/tool inputs match isolated copy.
+FullF11/#402 and Deferred400 remainOPEN; no inference/fulladapterclaim.
+Recorded 2026-11-04T21:05:38.399516+00:00.
+
+
+### Inline SVG namespaced link diagnostics verified merged — PR #492
+Bounded F11/#402 correction Done through https://github.com/arpit-it/ASG/pull/492,
+branch `402-svg-link-diagnostics`, scope6641978585. Inline SVG-namespace XLink
+href declarations now use existing advisory local/fragment/query resolver
+independently of unprefixed href, retaining shared100-message bound.
+No effective precedence/rendering/standalone SVG/XML validation claim.
+Tested locala1a58a0d772521727e0b723e12f8d8ee06aa6f29 and plugin final
+0f33bc9cfd16bb946b2f69421b2527604b62560a share exacttree
+a9f3d8b5d3f20ec62db8edaa9b109fe8bb97c31b; allsevenpublishedblobs matched.
+Independent reviewer verified all945remote blobs/modes and464validationinputs
+and CItestmerged5d47128; own100affected/nineinventory/twoextra namespace/URL
+probes PASS, fourbaselineFAIL independently reproduced (24otherbaselinePASS).
+Independent codeCOMMENT5775830056/finalapprovalCOMMENT5775895965. GitHub
+APPROVE rejects sharedauthor identity; independent verdict follows documented
+zero-required-approvers workflow, no branch protections changed/bypassed.
+Parent1589Flutter/nineexplicit skips,28reference/five new,439zero-changeformat/
+analyzer/webWasm/macOSdebug/nineinventory PASS; isolated464inputs match and
+existing MLX-venv untouched. RequiredCI41912674619 BOTHdirectfinalheadchecks
+completedSUCCESS Flutter126864058218/Python126864058654. Reviewer inspected
+actual1541Linux/54skips,17Chrome,transport/staticHTML/webWasm/realindependent
+generatedFlutter resolve-analyze-test-build-serve and all8Python suites logs.
+Protectedexpectedhead reviewer squashmerge
+e221ff5e90a9f45becf4c042aeb14bc3638c0f55 at2026-11-04T21:14:09Z
+independently parentverified onPR/currentmain/directchecks. Signedexacttree/
+soleparent3f104a9a verified/hash-reconstructed before guardedlocal-onlysync.
+Localmain/originmain0/0,indexempty; originaltwoIDE edits and threelocalhandoff
+docs byte-identical through synchronization. FullF11/#402 and Deferred400
+verifiedOPEN/unchecked. Existing8765health unavailable URLError0.007s; no
+freshinference/stableapp/deployment/cadence/notification change. No active
+implementation or owneraction remains for this increment. Canonical finalmerge
+bookkeeping retained locally for next normal reviewed developmentPR.
+Receipts:/private/tmp/asg-xlink-publication.json,/private/tmp/asg492-review-evidence.json,
+/private/tmp/asg492-verified-pr.json,/private/tmp/asg492-sync-record.json.
+Recorded 2026-11-04T21:15:40.979639+00:00.
+
+
+### HTML named-anchor navigation diagnostics — F11 / #402
+In progress on `402-html-named-anchors` from verified PR #492 merge
+`e221ff5e90a9f45becf4c042aeb14bc3638c0f55`; scope6642581099.
+Fresh connected-plugin inspection: no open PR; prior owning run completed.
+Reuse #402, no new issue/F ID. Actual inspector rejected valid legacy HTML
+anchor-name navigation as missing. Recognize case-sensitive HTML anchor names
+only for HTML a/area href navigation; retain ID-only CSS/SVG/resource checks,
+foreign/template exclusion, entity/percent decoding and existing base limits.
+Two baseline regressions FAIL; third exclusion test passes baseline. Full F11
+remains open/unchecked. Delivered reference inspection is the actual dependency;
+Deferred #400 hardware is unrelated. No inference/execution/support claim.
+Final tests, publication, independent final review, CI and reviewer merge pending.
+Recorded 2026-11-04T21:30:22.013617+00:00.
+
+Final local validation: 1,592 Flutter tests/nine explicit skips PASS in isolated
+tracked-source copy; all 464 runtime/test/tool inputs match final sources.
+31 reference tests/three new PASS, two new baseline failures reproduced.
+439-file zero-change format, final clean analyzer, web/Wasm dry-run and macOS
+debug build PASS. Nine inventory tests PASS after regenerating current-source
+inventory (initial stale-digest comparison failed as expected after source edit).
+Existing runtime8765 health unavailable URLError0.005s; no inference claim.
+Existing local MLX environment and stable app unchanged. Final publication,
+independent review, required CI and protected reviewer merge remain pending.
+Recorded 2026-11-04T21:32:37.994265+00:00.

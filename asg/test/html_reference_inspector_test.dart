@@ -28,6 +28,52 @@ String page(String body) =>
     '<!doctype html><html><head><title>References</title></head><body>$body</body></html>';
 
 void main() {
+  test('HTML navigation resolves decoded legacy anchor names', () async {
+    final report = await inspectHtmlReferences(
+      proposal(
+        page(
+          '<a name="a&amp;b"></a><a name="Section"></a>'
+          '<a href="#a%26b">Go</a><area href="./index.html#Section">'
+          '<a href="#section">Wrong case</a>',
+        ),
+      ),
+    );
+    expect(report.references, 3);
+    expect(report.findings, 1);
+    expect(report.messages.single, contains('#section'));
+  });
+  test('navigation names cannot satisfy resource fragments', () async {
+    final report = await inspectHtmlReferences(
+      proposal(
+        page(
+          '<a name="legacy"></a><a href="#legacy">Go</a>'
+          '<svg><use href="#legacy"></use></svg><img src="#legacy">'
+          '<p style="background:url(#legacy)">Text</p>',
+        ),
+      ),
+    );
+    expect(report.references, 4);
+    expect(report.findings, 3);
+    expect(report.messages.join('\n'), isNot(contains('a[href]')));
+  });
+  test(
+    'foreign, unrelated and inert names are not navigation targets',
+    () async {
+      final report = await inspectHtmlReferences(
+        proposal(
+          page(
+            '<div name="div"></div><svg><a name="svg"></a></svg>'
+            '<template><a name="inert"></a></template>'
+            '<!-- <a name="comment"></a> -->'
+            '<a href="#div">D</a><a href="#svg">S</a>'
+            '<a href="#inert">T</a><a href="#comment">C</a>',
+          ),
+        ),
+      );
+      expect(report.references, 4);
+      expect(report.findings, 4);
+    },
+  );
   test('inline SVG XLink declarations expose missing and external targets', () async {
     final report = await inspectHtmlReferences(
       proposal(

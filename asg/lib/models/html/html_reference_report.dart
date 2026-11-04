@@ -18,6 +18,8 @@ class HtmlReferenceReport {
       '$findings findings.';
   static const limitations =
       'Advisory parsed HTML href/src/action/poster/data and ID checks only. '
+      'HTML a/area href navigation also recognizes case-sensitive HTML anchor names; '
+      'resource and CSS fragments remain ID-only. '
       'Inline SVG XLink href declarations are inventoried independently of '
       'unprefixed href; effective link precedence and SVG rendering are not checked. '
       'Declared button/input formaction URLs are inspected independently of '

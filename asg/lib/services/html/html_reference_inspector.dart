@@ -22,6 +22,7 @@ HtmlReferenceReport _inspect(HtmlSourceProposal proposal) {
   final document = parser.parse();
   final elements = document.querySelectorAll('*');
   final ids = <String>{};
+  final navigationNames = <String>{};
   final messages = <String>[];
   var findings = 0, references = 0;
   void report(String message) {
@@ -41,13 +42,24 @@ HtmlReferenceReport _inspect(HtmlSourceProposal proposal) {
     );
   }
   for (final element in elements) {
+    if (element.namespaceUri == 'http://www.w3.org/1999/xhtml' &&
+        element.localName == 'a' &&
+        !_insideTemplate(element)) {
+      final name = element.attributes['name'];
+      if (name != null && name.isNotEmpty) navigationNames.add(name);
+    }
     final id = element.attributes['id'];
     if (id != null && id.isNotEmpty && !ids.add(id)) {
       report('Duplicate HTML ID: ${_label(id)}');
     }
   }
   final base = Uri.parse('https://proposal.invalid/');
-  void inspectReference(String value, String label, {required bool inline}) {
+  void inspectReference(
+    String value,
+    String label, {
+    required bool inline,
+    bool navigation = false,
+  }) {
     references++;
     final uri = Uri.tryParse(value.trim());
     if (uri == null || value.contains('\\')) {
@@ -69,7 +81,11 @@ HtmlReferenceReport _inspect(HtmlSourceProposal proposal) {
       } else if (resolved.hasFragment && resolved.fragment.isNotEmpty) {
         if (target != 'index.html') {
           report('Non-HTML fragment not checked: $label');
-        } else if (!ids.contains(Uri.decodeComponent(resolved.fragment))) {
+        } else if (!ids.contains(Uri.decodeComponent(resolved.fragment)) &&
+            !(navigation &&
+                navigationNames.contains(
+                  Uri.decodeComponent(resolved.fragment),
+                ))) {
           report('Missing HTML fragment: $label');
         }
       }
@@ -117,6 +133,10 @@ HtmlReferenceReport _inspect(HtmlSourceProposal proposal) {
         value,
         '${element.localName}[$attribute] ${_label(value)}',
         inline: true,
+        navigation:
+            attribute == 'href' &&
+            element.namespaceUri == 'http://www.w3.org/1999/xhtml' &&
+            (element.localName == 'a' || element.localName == 'area'),
       );
     }
     // Foreign SVG attributes have typed namespace keys, unlike HTML/string
@@ -169,6 +189,16 @@ HtmlReferenceReport _inspect(HtmlSourceProposal proposal) {
     findings: findings,
     messages: messages,
   );
+}
+
+bool _insideTemplate(dom.Element element) {
+  for (var parent = element.parent; parent != null; parent = parent.parent) {
+    if (parent.namespaceUri == 'http://www.w3.org/1999/xhtml' &&
+        parent.localName == 'template') {
+      return true;
+    }
+  }
+  return false;
 }
 
 String _label(String value) {
