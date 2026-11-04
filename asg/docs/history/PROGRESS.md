@@ -11828,3 +11828,60 @@ inventory tests passed. All31focused tests passed including the proven route
 rebuild regression. Fresh independent final-revision review and actual required
 CI remain gates; no merge or inference claim. The superseded-head checks do not
 approve the fixed final revision.
+
+
+### App-owned reviewed HTML export confirmation verified merged — PR #477
+Bounded F11/#402 increment Done on `402-html-review-export-ui`, scope6630315967.
+Final16281dcf10a66bb1b0ea15b96df141ffcf3a753a/local1d33d802607367475418a9de6b6118ebbf3e6cf6
+share exacttree06291472314f54f30e468ff34b907a14a052273e. All10remote blobs/442
+runtime-test-tool-package inputs independently matched; parent572non-doc app inputs
+match isolated post-fix validation. Route ownership defect fixed; forced rebuild
+regression proven fail-before/pass-after. Parent1,480Flutter/nine skips,31focused,
+formatter416/analyzer/webWasm/macOSdebug/nineinventory passed after fix.
+Independent fresh final review5768221484/finalgate6630730155 approved, no blockers;
+35focused including3extra picker/actualcontroller-native probes and9inventory passed.
+RequiredCI41829244742 BOTH SUCCESS: Flutter126572533034/Python126572533541;
+reviewer inspected actual1440Linux/46skips,17Chrome,transport/staticHTML/webWasm/
+independentgeneratedFlutter resolve-analyze-test-build-serve and8Python suites.
+Protected expected-head reviewer merge554f7952e94dbf1347fb56fa4a292811a980e11d
+at2026-11-04T12:35:04Z freshly parent-verified on PR/currentmain. Signed exacttree/
+soleparent5e895d69 hash-verified before guarded local-only synchronization.
+Localmain/originmain0/0,indexempty,both originalIDEedits byte-identical.
+Exact source/destination confirmation now app-owned; Stop/deadline/disposal/stale
+context revoke later writes and success while pending IO excludes overlap.
+Export never executes, previews, verifies, registers, promotes or edits the original
+starter. FullF11/#402 staysOPEN/unchecked; reviewed-source browser validation and
+promotion/live synthesis acceptance remain pending. Deferred#400 staysOPEN.
+Existing8765health unavailable; no live inference/stableapp replacement/deployment/
+cadence/notification change. Final merge bookkeeping retained for next reviewed PR.
+Receipts:/private/tmp/asg477-publication.json,/private/tmp/asg477-review-evidence.json,
+/private/tmp/asg477-verified-pr.json,/private/tmp/asg477-sync-record.json,
+/private/tmp/asg477-safe-sync.py. Run completed 2026-11-04T12:36:14.845788+00:00.
+
+
+### Reviewed HTML export identity check — F11/#402, 4 November 2026
+Selected bounded increment on `402-reviewed-html-identity`; issue scope
+6630920631. Fresh plugin confirms PR #477 merged554f7952, no open PR or competing
+active run. Existing reviewed export lacks exact on-disk identity checking;
+fixed-starter checking cannot validate its arbitrary immutable proposal.
+Implement a bounded read-only macOS identity reader plus explicit app-owned
+Check/Stop/deadline flow. Reject changed/missing/symbolic files, symbolic root and
+unexpected entries; bind every read/result to the current proposal/session.
+Acceptance: actual UTF-8 native IO with/without optional JS, refusal/preservation,
+Stop/deadline/disposal/stale-authority and duplicate guards, retry, 320px/2x UI,
+formatter/analyzer/full Flutter/web build and independent final review/required CI.
+Delivered review/export foundations satisfy dependencies; Deferred #400 remains
+open and is not a gate. This check never executes or certifies syntax, safety,
+browser behavior, registration or promotion. Full F11/#402 stays open/unchecked;
+custom-source browser validation/promotion and live synthesis remain pending.
+Status: In progress; eleven focused tests passed. Initial analyzer findings fixed;
+clean isolated full validation underway because an existing untracked Apple
+fixture in the shared checkout interferes with its broad license scan. Original
+IDE edits and preceding merge evidence preserved. No live inference, stable-app
+replacement, new issue, deployment or cadence/notification change.
+
+Final local checks: clean isolated 1,491 Flutter tests passed/nine explicit skips;
+formatter420/analyzer/web build including Wasm dry run passed. Eleven focused
+regressions and nine regenerated historical inventory tests passed. Native debug
+build pending. Source remains untrusted and identity is point-in-time only.
+Status: Awaiting publication/review/required CI/protected merge, not Done.

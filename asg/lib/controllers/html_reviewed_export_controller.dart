@@ -7,6 +7,7 @@ import '../models/html/html_export_request.dart';
 import '../models/html/html_source_proposal.dart';
 import '../services/folder_picker.dart';
 import '../services/html/html_source_export.dart';
+import '../services/html/html_reviewed_source_check.dart';
 import 'base_controller.dart';
 
 /// Session-only confirmation of untrusted source export. No execution authority.
@@ -16,15 +17,27 @@ class HtmlReviewedExportController extends BaseController {
     required this.authorizeSource,
     required this.exporter,
     FolderPicker? picker,
+    HtmlReviewedSourceChecker? sourceChecker,
     this.deadline = const Duration(seconds: 10),
   }) : assert(deadline > Duration.zero),
-       _picker = picker ?? FolderPicker();
+       _picker = picker ?? FolderPicker(),
+       sourceChecker = sourceChecker ?? createHtmlReviewedSourceChecker();
 
   final HtmlSourceProposal proposal;
   final void Function() authorizeSource;
   final HtmlReviewedSourceExport exporter;
   final FolderPicker _picker;
   final Duration deadline;
+  final HtmlReviewedSourceChecker sourceChecker;
+  bool _checking = false, _checkStopped = false;
+  HtmlReviewedSourceCheck? _sourceCheck;
+  String? _checkError;
+  bool get checking => _checking;
+  bool get checkStopped => _checkStopped;
+  bool get checkSupported => sourceChecker.supported;
+  HtmlReviewedSourceCheck? get sourceCheck => _sourceCheck;
+  String? get checkError => _checkError;
+
   bool _busy = false, _picking = false, _stopped = false;
   int _generation = 0;
   String _parent = '', _folder = '';
@@ -41,6 +54,8 @@ class HtmlReviewedExportController extends BaseController {
 
   void _invalidate() {
     _generation++;
+    _sourceCheck = null;
+    _checkError = null;
     _review = null;
     _destination = null;
     _error = null;
@@ -48,14 +63,14 @@ class HtmlReviewedExportController extends BaseController {
   }
 
   void editFolder(String value) {
-    if (isDisposed || _busy || _picking) return;
+    if (isDisposed || _busy || _picking || _checking) return;
     _invalidate();
     _folder = value;
     update();
   }
 
   Future<void> pickParent() async {
-    if (isDisposed || _busy || _picking || !supported) return;
+    if (isDisposed || _busy || _picking || _checking || !supported) return;
     _invalidate();
     _picking = true;
     update();
@@ -75,7 +90,7 @@ class HtmlReviewedExportController extends BaseController {
   }
 
   void prepareReview() {
-    if (isDisposed || _busy || _picking) return;
+    if (isDisposed || _busy || _picking || _checking) return;
     _invalidate();
     try {
       authorizeSource();
@@ -100,6 +115,7 @@ class HtmlReviewedExportController extends BaseController {
     if (isDisposed ||
         _busy ||
         _picking ||
+        _checking ||
         !supported ||
         !identical(displayed, _review)) {
       return;
@@ -150,6 +166,64 @@ class HtmlReviewedExportController extends BaseController {
     }
   }
 
+  Future<void> checkExport() async {
+    final directory = _destination;
+    if (isDisposed ||
+        _busy ||
+        _picking ||
+        _checking ||
+        directory == null ||
+        !checkSupported) {
+      return;
+    }
+    final generation = _generation;
+    _checking = true;
+    _checkStopped = false;
+    _sourceCheck = null;
+    _checkError = null;
+    update();
+    void authorize() {
+      if (isDisposed ||
+          _checkStopped ||
+          generation != _generation ||
+          directory != _destination) {
+        throw StateError('Read revoked.');
+      }
+      authorizeSource();
+    }
+
+    final timer = Timer(deadline, () {
+      if (isDisposed || !_checking || generation != _generation) return;
+      stopCheck();
+      _checkError = 'Source identity deadline reached. Waiting for dispatched reads to settle. Nothing was changed.';
+      update();
+    });
+    try {
+      authorize();
+      final result = await sourceChecker.check(
+        directory: directory,
+        proposal: proposal,
+        authorizeRead: authorize,
+      );
+      authorize();
+      _sourceCheck = result;
+    } catch (_) {
+      if (!isDisposed) _checkError ??= 'Source identity check failed, stopped or review changed. Source remains untrusted. Nothing was changed.';
+    } finally {
+      timer.cancel();
+      _checking = false;
+      update();
+    }
+  }
+
+  void stopCheck() {
+    if (isDisposed || !_checking || _checkStopped) return;
+    _checkStopped = true;
+    _sourceCheck = null;
+    _checkError = 'Source identity check stopped. Waiting for dispatched reads to settle. Nothing was changed.';
+    update();
+  }
+
   void stop() {
     if (isDisposed || !_busy || _stopped) return;
     _stopped = true;
@@ -161,6 +235,8 @@ class HtmlReviewedExportController extends BaseController {
   @override
   void dispose() {
     _generation++;
+    _sourceCheck = null;
+    _checkError = null;
     _review = null;
     super.dispose();
   }

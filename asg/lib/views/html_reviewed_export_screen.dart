@@ -47,7 +47,7 @@ class _HtmlReviewedExportScreenState extends State<HtmlReviewedExportScreen> {
           ),
           if (!c.supported) const Text('Reviewed HTML export requires macOS.'),
           OutlinedButton(
-            onPressed: c.busy || c.picking || !c.supported
+            onPressed: c.busy || c.picking || c.checking || !c.supported
                 ? null
                 : c.pickParent,
             child: const Text('Choose export parent'),
@@ -55,12 +55,12 @@ class _HtmlReviewedExportScreenState extends State<HtmlReviewedExportScreen> {
           SelectableText(c.parent.isEmpty ? 'No parent selected' : c.parent),
           TextField(
             controller: folder,
-            enabled: !c.busy && !c.picking,
+            enabled: !c.busy && !c.picking && !c.checking,
             onChanged: c.editFolder,
             decoration: const InputDecoration(labelText: 'New export folder'),
           ),
           FilledButton(
-            onPressed: c.busy || c.picking || !c.supported
+            onPressed: c.busy || c.picking || c.checking || !c.supported
                 ? null
                 : () {
                     FocusScope.of(context).unfocus();
@@ -74,6 +74,28 @@ class _HtmlReviewedExportScreenState extends State<HtmlReviewedExportScreen> {
           if (c.error != null) SelectableText(c.error!),
           if (c.destination != null)
             SelectableText('Unverified source exported to: ${c.destination}'),
+          if (c.destination != null) ...[
+            OutlinedButton(
+              onPressed: c.checking || !c.checkSupported ? null : c.checkExport,
+              child: const Text('Check reviewed file identity'),
+            ),
+            if (!c.checkSupported)
+              const Text('Reviewed source identity requires macOS.'),
+          ],
+          if (c.checking) ...[
+            const LinearProgressIndicator(),
+            Text(
+              c.checkStopped
+                  ? 'Waiting for source reads to settle…'
+                  : 'Reading reviewed source bytes…',
+            ),
+            OutlinedButton(
+              onPressed: c.checkStopped ? null : c.stopCheck,
+              child: const Text('Stop identity check'),
+            ),
+          ],
+          if (c.checkError != null) SelectableText(c.checkError!),
+          if (c.sourceCheck != null) SelectableText(c.sourceCheck!.summary),
           if (review != null) ...[
             SelectableText(
               'New destination: ${review.parent}/${review.folderName}',
