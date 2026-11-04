@@ -93,13 +93,14 @@ class _HtmlProjectWorkspaceState extends State<HtmlProjectWorkspace> {
   }
 
   Future<void> requirements() async {
+    final requirementsController = RequirementsController(
+      widget.project.id,
+      RequirementsStore(widget.records),
+    );
     await Navigator.of(context).push<void>(
       MaterialPageRoute(
         builder: (_) => RequirementsScreen(
-          controller: RequirementsController(
-            widget.project.id,
-            RequirementsStore(widget.records),
-          ),
+          controller: requirementsController,
           projectName: widget.project.name,
         ),
       ),
@@ -134,15 +135,14 @@ class _HtmlProjectWorkspaceState extends State<HtmlProjectWorkspace> {
     controller.reload();
     final starter = controller.starter;
     if (starter == null) return;
+    final exportController = HtmlExportController(
+      exporter: createHtmlSourceExport(),
+      starterStore: HtmlStarterStore(widget.records),
+      savedStarter: starter,
+    );
     await Navigator.of(context).push<void>(
       MaterialPageRoute(
-        builder: (_) => HtmlExportScreen(
-          controller: HtmlExportController(
-            exporter: createHtmlSourceExport(),
-            starterStore: HtmlStarterStore(widget.records),
-            savedStarter: starter,
-          ),
-        ),
+        builder: (_) => HtmlExportScreen(controller: exportController),
       ),
     );
     if (mounted) controller.reload();
