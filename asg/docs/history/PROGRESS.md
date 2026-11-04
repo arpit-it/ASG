@@ -12270,7 +12270,7 @@ Receipts:/private/tmp/asg482-publication.json,/private/tmp/asg482-review-evidenc
 
 
 ### Edit temporary reviewed HTML source — F11 / #402
-In progress on `402-edit-reviewed-html` from verified PR #482 merge
+Awaiting merge through [PR #483](https://github.com/arpit-it/ASG/pull/483) on `402-edit-reviewed-html` from verified PR #482 merge
 9f738bc9b98f8f0b3ce42ad1757d634eb382d426; scope comment6634699765.
 The review screen previously exposed source as read-only text. Add app-owned
 HTML/CSS/optional JavaScript draft buffers, strict existing proposal schema/byte
@@ -12296,3 +12296,11 @@ All changed runtime/test inputs match the isolated selected-source validation.
 Awaiting exact-final independent review, actual required CI and protected
 reviewer merge. No model inference, stable-app replacement or adapter completion
 claim. Existing IDE edits and PR482 final merge bookkeeping preserved.
+
+Published tested source in PR #483: local e7cd2dceeb807ca2530ac6a83e5fd15c58e0a378
+and plugin c3d295c33163cf4c6e3d9fc46538ec0f1eecd609 share exacttree
+f752daccb978755f786bed925e64522349ee92f6; all eight remote changed blobs match.
+This followup records Awaiting merge/PR identity only; runtime/test/tool inputs
+remain the validated revision. Independent reviewer `/root/review_483` owns
+exact-final approval, actual required CI and protected merge. Full F11/#402 and
+Deferred #400 remain open; final merge evidence will be recorded after verification.

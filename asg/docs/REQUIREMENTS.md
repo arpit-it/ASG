@@ -271,7 +271,7 @@ The saved development automation was updated through its management tool; active
   - Acceptance: UI shows available and unavailable operations with actionable reasons; unsupported confinement refuses candidate execution before any source is run. Each enabled host passes real new-project resolve/analyze/test/web-build/serve, Stop/deadline/output-limit and descendant-cleanup checks, restart/uncertain-checkpoint refusal, stale-approval refusal and last-working-output preservation. Enabling starter generation must not implicitly enable candidate execution. Model-written candidate/repair support needs independently reviewed platform isolation and real deny-write/network/process-escape probes at the established boundary.
   - Validation/delivery: one narrowly scoped issue/PR per host/capability milestone, actual Linux/Windows builds and launches on their respective hosts, plus macOS regression coverage. Include paths with spaces, missing toolchains, occupied ports, failed previews and interrupted writes. Record tested versus unavailable capabilities separately; keep F16 unchecked until promised host increments satisfy acceptance and normal independent review/CI/verified merge. Broader generated targets remain F11.
 - [ ] F11 Multi-language project generation, runners and explicit stack selection — In progress (#402); depends on F04 and F05
-  - Temporary reviewed-source editing — In progress, #402, `402-edit-reviewed-html`, scope6634699765. Explicit view-owned drafts, new review identity and reference reinspection; no files/model/execution. Delivery ledger below; full adapter remains open.
+  - Temporary reviewed-source editing — Awaiting merge through [PR #483](https://github.com/arpit-it/ASG/pull/483), #402, `402-edit-reviewed-html`, scope6634699765. Explicit view-owned drafts, new review identity and reference reinspection; no files/model/execution. Delivery ledger below; full adapter remains open.
   - Script-disabled reviewed HTML preview — Done through [PR #482](https://github.com/arpit-it/ASG/pull/482), verified reviewer merge9f738bc9 on2026-11-04; finalreview5770734518/finalgate6634489987 and requiredCI41855325969 passed. Passive exact-source HTML/CSS only; JavaScript/interactive acceptance and full F11 remain Pending.
   - Responsive-image reference diagnostics — Done through [PR #481](https://github.com/arpit-it/ASG/pull/481), verified reviewer merge0f44f142 on2026-11-04; finalreview5769946115/requiredCI41846705680 passed. Advisory img/source srcset and link imagesrcset candidate URLs only; descriptor omissions explicit. Full adapter/browser/visual acceptance remains Pending; delivery ledger below.
   - Parsed CSS reference diagnostics — Done (bounded increment), [PR #480](https://github.com/arpit-it/ASG/pull/480), reviewer merge4553db0b at2026-11-04T14:04:21Z, finala647d61d approved5769526289/finalgate6632671143, requiredCI41842533590 both passed; #402, `402-css-reference-diagnostics`, scope6632224646. Advisory stylesheet/inline URL/import targets with explicit parser limitations; full adapter remains open.
@@ -13121,7 +13121,7 @@ Receipts:/private/tmp/asg482-publication.json,/private/tmp/asg482-review-evidenc
 
 
 ### Edit temporary reviewed HTML source — F11 / #402
-In progress on `402-edit-reviewed-html` from verified PR #482 merge
+Awaiting merge through [PR #483](https://github.com/arpit-it/ASG/pull/483) on `402-edit-reviewed-html` from verified PR #482 merge
 9f738bc9b98f8f0b3ce42ad1757d634eb382d426; scope comment6634699765.
 The review screen previously exposed source as read-only text. Add app-owned
 HTML/CSS/optional JavaScript draft buffers, strict existing proposal schema/byte
@@ -13147,3 +13147,11 @@ All changed runtime/test inputs match the isolated selected-source validation.
 Awaiting exact-final independent review, actual required CI and protected
 reviewer merge. No model inference, stable-app replacement or adapter completion
 claim. Existing IDE edits and PR482 final merge bookkeeping preserved.
+
+Published tested source in PR #483: local e7cd2dceeb807ca2530ac6a83e5fd15c58e0a378
+and plugin c3d295c33163cf4c6e3d9fc46538ec0f1eecd609 share exacttree
+f752daccb978755f786bed925e64522349ee92f6; all eight remote changed blobs match.
+This followup records Awaiting merge/PR identity only; runtime/test/tool inputs
+remain the validated revision. Independent reviewer `/root/review_483` owns
+exact-final approval, actual required CI and protected merge. Full F11/#402 and
+Deferred #400 remain open; final merge evidence will be recorded after verification.
