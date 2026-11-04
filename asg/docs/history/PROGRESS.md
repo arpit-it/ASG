@@ -13159,3 +13159,74 @@ remain gates. FullF11/#402 remains open/unchecked; no inference, JavaScript
 execution or full-adapter claim. Recorded 2026-11-04T22:02:48.685021+00:00.
 
 Final validation:1,595 Flutter tests PASS/nine explicit skips in isolated tracked-source copy; all 464 tracked runtime/test/tool inputs byte-identical.44 focused/nativeHTTP/architecture checks,439-file zero-change format, final analyzer, web/Wasm dry-run, macOSdebug and nine inventory regressions PASS. One baseline Stop-lock failure independently reproducible before fix. Existing local MLX environment/stable app unchanged. Recorded 2026-11-04T22:03:09.833814+00:00.
+
+Published PR #494 https://github.com/arpit-it/ASG/pull/494, Awaiting merge.
+Tested local37d2532ae2cd13e4dfe9222bd9f00df93ca4430d and plugin final
+c13a53b9937c41b87f16a70adf45b2853ef71e44 share exacttree
+71553c48c41cef93789ce5bd7fa8e1e072e2a7f1; allsevenpublishedblobs match.
+Independent /root/review_494 owns exact-finalreview/actualrequiredCI/protected
+expected-head reviewer merge. Parent1595Flutter/nine skips,44focusednativeHTTP/
+architecture,439format/analyzer/webWasm/macOSdebug/nineinventory PASS;
+all464runtime/test/tool inputs match isolatedcopy. FullF11/#402 and Deferred400
+remainOPEN; no inference/fulladapterclaim. Recorded 2026-11-04T22:05:32.220279+00:00.
+
+
+### Reviewed passive-preview cleanup recovery verified merged — PR #494
+Bounded F11/#402 correction Done through https://github.com/arpit-it/ASG/pull/494,
+branch `402-reviewed-preview-cleanup`, scope6643190038. Failed Stop or startup
+cleanup retains explicit failed-cleanup ownership and visible retry; startup and
+browser launch stay refused until explicit successful cleanup retry.
+Tested local37d2532ae2cd13e4dfe9222bd9f00df93ca4430d and plugin final
+c13a53b9937c41b87f16a70adf45b2853ef71e44 share exacttree
+71553c48c41cef93789ce5bd7fa8e1e072e2a7f1; allsevenpublishedblobs matched.
+Independent reviewer verified945remote blobs/modes and464validationinputs and
+CItestmergeb6a60eb6; own44focused/two extra pending-cleanup-disposal probes/
+nineinventory PASS; baseline Stop-lock failure independently reproduced.
+Independent codeCOMMENT5776556811/finalapprovalCOMMENT5776617460.
+Explicit independent verdict follows documentedzero-required-approvers workflow;
+no branch protections changed/bypassed. Parent1595Flutter/nineexplicit skips,
+44focused/nativeHTTP/architecture,439zero-changeformat/finalanalyzer/webWasm/
+macOSdebug/nineinventory PASS; isolated464inputs match. Original checkout's
+license scan encountered unrelated localMLX third-party files; environment and
+stable app retained unchanged. RequiredCI41921974675 BOTHdirectfinalheadchecks
+SUCCESS Flutter126896496358/Python126896495929. Reviewer inspected actual
+1547Linux/54skips,three new,17Chrome/transport/staticHTML/webWasm/realindependent
+generatedFlutter resolve-analyze-test-build-serve and all8Python suites logs.
+Protectedexpectedhead reviewer squashmerge
+4c96ec72a99accbd5a46c42c4cb8eb7bb62707f9 at2026-11-04T22:12:38Z
+independently parentverified onPR/currentmain/directchecks; signedexacttree/
+soleparent6ab1b965 verified/hash-reconstructed before guardedlocal-onlysync.
+Localmain/originmain0/0,indexempty; originaltwoIDE edits and threelocalhandoff
+docs byte-identical through synchronization. FullF11/#402 remainsOPEN/unchecked;
+Deferred400 retained. Existing8765health unavailable URLError0.005s; no fresh
+inference,JavaScript execution,fulladapter,stableapp,deployment,cadence or
+notification change. No active implementation or owneraction for this increment.
+Canonical finalmerge bookkeeping retained for next reviewed developmentPR.
+Receipts:/private/tmp/asg494-publication.json,/private/tmp/asg494-review-evidence.json,
+/private/tmp/asg494-verified-pr.json,/private/tmp/asg494-sync-record.json,
+/private/tmp/asg494-check-runs.json. Recorded 2026-11-04T22:14:16.440034+00:00.
+
+
+### Inert HTML template target diagnostics — F11 / #402
+In progress on `402-html-inert-targets` from plugin-verified main/PR #494 merge
+`4c96ec72a99accbd5a46c42c4cb8eb7bb62707f9`; scope6643774205.
+No open PR or other active run at selection. Three baseline regressions reproduce
+inert IDs satisfying live fragments, false duplicate IDs and inert base suppressing
+live missing-link diagnostics. Exclude template descendants from document ID/base
+inventories; preserve live SVG/template-element IDs, decoded fragments, bounded
+messages and advisory declared-reference inventory. Four regression tests; final
+focused tests pass (35 total). Full checks/builds, browser corroboration, plugin
+publication, independent exact-final review, required CI and reviewer merge pending.
+F11/#402 remains open/unchecked; no full adapter, inference or execution claim.
+Delivered parser/review foundations suffice; Deferred #400 hardware is unrelated.
+Prior #494 final merge evidence and unrelated IDE edits retained.
+Recorded 2026-11-04T22:30:56.469550+00:00.
+
+Final local validation: 1,599 Flutter tests PASS/nine explicit skips in isolated
+tracked-source-only copy; all 466 tracked runtime/test/tool/dependency inputs
+byte-identical. 35 focused tests/four new, three baseline FAIL reproduced;
+440-file zero-change format, clean analyzer, web/Wasm dry-run, macOSdebug and
+nine inventory tests PASS. Actual isolated Chrome DOM confirms inert/nested IDs
+excluded, live SVG/template IDs retained, one live duplicate ID and ignored inert
+base. Authored fixture only; no model inference/full-adapter/support claim.
+Recorded 2026-11-04T22:32:39.753498+00:00.

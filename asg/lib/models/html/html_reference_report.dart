@@ -20,6 +20,8 @@ class HtmlReferenceReport {
       'Advisory parsed HTML href/src/action/poster/data and ID checks only. '
       'HTML a/area href navigation also recognizes case-sensitive HTML anchor names; '
       'resource and CSS fragments remain ID-only. '
+      'Inert HTML template descendants do not supply document IDs, anchor names '
+      'or an active base; declared references are still inventoried. '
       'Inline SVG XLink href declarations are inventoried independently of '
       'unprefixed href; effective link precedence and SVG rendering are not checked. '
       'Declared button/input formaction URLs are inspected independently of '
