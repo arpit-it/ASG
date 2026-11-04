@@ -2,6 +2,7 @@
 // Copyright 2026 Arpit Sinha
 
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:asg/controllers/html_source_review_controller.dart';
 import 'package:asg/models/html/html_reference_report.dart';
@@ -298,4 +299,74 @@ void main() {
       await tester.pumpWidget(const SizedBox());
     },
   );
+  testWidgets('reviewer offscreen editor retains dirty source after focus loss', (
+    tester,
+  ) async {
+    final provider = Provider();
+    final c = HtmlSourceReviewController(
+      project: seed.project,
+      records: await seed.seed(),
+      proposer: HtmlSourceProposer(createProvider: (_) => provider),
+      inspectReferences: (_) async => HtmlReferenceReport(
+        elements: 1,
+        references: 0,
+        findings: 0,
+        messages: [],
+      ),
+    );
+    final r = c.request('Greeting');
+    provider.stream.add(
+      jsonEncode({
+        'summary': 'Long fixture',
+        'files': {
+          'index.html':
+              '<main>${List.filled(1000, '<p>Greeting line</p>').join('\n')}</main>',
+          'styles.css': 'main{color:navy}',
+        },
+      }),
+    );
+    await provider.stream.close();
+    await r;
+    await tester.pumpWidget(
+      MaterialApp(home: HtmlSourceReviewScreen(controller: c)),
+    );
+    await tester.scrollUntilVisible(
+      find.text('Edit reviewed source…'),
+      150,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.ensureVisible(find.text('Edit reviewed source…'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Edit reviewed source…'));
+    await tester.pumpAndSettle();
+    Finder field() => find
+        .descendant(
+          of: find.byType(HtmlSourceEditor),
+          matching: find.byType(TextField),
+        )
+        .first;
+    await tester.enterText(field(), '<main>Dirty retained editor</main>');
+    FocusManager.instance.primaryFocus?.unfocus();
+    await tester.pumpAndSettle();
+    final scrollable = tester.state<ScrollableState>(
+      find.byType(Scrollable).first,
+    );
+    scrollable.position.jumpTo(scrollable.position.maxScrollExtent);
+    await tester.pumpAndSettle();
+    // Force traversal far beyond the editor's cache extent.
+    scrollable.position.jumpTo(scrollable.position.maxScrollExtent);
+    await tester.pumpAndSettle();
+    scrollable.position.jumpTo(0);
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.byType(HtmlSourceEditor),
+      150,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(
+      tester.widget<TextField>(field()).controller!.text,
+      '<main>Dirty retained editor</main>',
+    );
+    await tester.pumpWidget(const SizedBox());
+  });
 }

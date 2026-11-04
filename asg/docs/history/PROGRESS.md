@@ -12304,3 +12304,21 @@ This followup records Awaiting merge/PR identity only; runtime/test/tool inputs
 remain the validated revision. Independent reviewer `/root/review_483` owns
 exact-final approval, actual required CI and protected merge. Full F11/#402 and
 Deferred #400 remain open; final merge evidence will be recorded after verification.
+
+Independent blocking review5771355984 on docs-final0dcb6fa reproduced a dirty
+editor losing source after focus loss and scrolling beyond ListView cache.
+Stable keys alone preserve reorder identity, not offscreen State. Keep the
+view-owned editor alive while mounted and add the exact long-source eviction
+probe as a regression. Fresh final validation/publication/review/CI required;
+prior approval/checks cannot approve this correction. Full F11 remains open.
+
+Review correction validated: AutomaticKeepAliveClientMixin retains unfocused
+view-owned draft buffers through offscreen ListView eviction; exact reviewer
+long-source probe now passes and remains in production regression coverage.
+Independent43focused cases including the identical fail-before/pass-after probe
+pass. Fresh parent1,534Flutter/nine explicit skips,formatter433/analyzer,webWasm,
+macOSdebug and nine regenerated inventory checks pass. Inventory regenerated
+after formatting corrected the initial hash mismatch; no historical observation
+was promoted to current acceptance. Runtime/test inputs match isolated validation.
+Corrected final publication, fresh final review/actual CI and protected reviewer
+merge remain mandatory; full F11/#402 and Deferred400 remain open.
