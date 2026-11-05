@@ -203,14 +203,20 @@ class HtmlReviewedExportController extends BaseController {
     _sourceCheck = null;
     _checkError = null;
     update();
-    void authorize() {
+    void requireCurrent() {
       if (isDisposed ||
           _checkStopped ||
           generation != _generation ||
           directory != _destination) {
         throw StateError('Read revoked.');
       }
+    }
+
+    void authorize() {
+      requireCurrent();
       authorizeSource();
+      // Source authority can synchronously Stop or dispose this read owner.
+      requireCurrent();
     }
 
     final timer = Timer(deadline, () {
