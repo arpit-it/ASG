@@ -14,7 +14,7 @@ The long-term goal is to generate, build, test, run and maintain many types of s
 - **Edit project details** revises a saved project's name and requirements. The running app and chat stay intact; future exports use the revised requirements and earlier exports show as outdated. Change the app itself through chat.
 - Project cards show saved generation/verification outcomes and whether their inputs match the current app and requirements. Unreadable history is explicit; a saved pass does not assert that a preview is running or artifacts are unchanged.
 - On macOS, **Generate Flutter source** exports a fixed MVC starter into a new folder, runs bounded offline analysis/tests/web build, and serves the actual compiled app through an explicit browser preview. See [source generation](asg/docs/architecture/GENERATION.md) for setup, approval, reviewed scoped source edits, bounded consented repair, recovery and limits.
-- Qwen3.5-9B has been verified locally with a 4-bit MLX conversion on Apple Silicon. Model weights and Python environments are kept outside Git.
+- The local ASG development setup uses Qwen3.8-27B-4bit with MLX on Apple Silicon. Model weights and Python environments are kept outside Git.
 
 ## Planned capabilities
 
@@ -45,7 +45,7 @@ In Android Studio, open **asg/** (the folder containing pubspec.yaml), enable Fl
 
 Open the runtime control in the landing screen's upper-right corner. On macOS, choose complete downloaded model files or explicitly download a supported public repository, select a compatible Python environment, and prepare/start the runtime. If a runtime is already running, connect to it using its endpoint and model ID. A model download never starts merely by opening setup.
 
-The verified setup uses Qwen3.5-9B, a project-local MLX environment and a locally converted checkpoint. Follow [current Qwen setup](asg/docs/setup/QWEN_STREAMING.md) for installation, conversion and restart commands; model files are not included in this repository. Read [runtime setup](asg/docs/setup/RUNTIME_SETUP.md) for supported checkpoint formats, download restrictions and process ownership.
+For the existing local Qwen3.8-27B-4bit checkpoint, follow the [ASG model selection and inference test steps](asg/docs/setup/QWEN_STREAMING.md). Model files are kept outside Git.
 
 Managed local model setup currently targets macOS. Other platforms expose connection controls. The bridge binds to the host's loopback interface; macOS/local browser use `http://127.0.0.1:8765/v1`, while the Android Emulator uses `http://10.0.2.2:8765/v1`. Physical-phone connectivity is not configured. Running ASG on a phone does not run the Mac's model there. Initial dependency/model setup needs downloads; local inference can run offline afterward.
 
