@@ -121,14 +121,20 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('test-time declarations stay separate at 320px 2x', (
-    tester,
-  ) async {
+  testWidgets('declaration differences refresh at 320px 2x', (tester) async {
     tester.view.physicalSize = const Size(320, 900);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
-    await tester.pumpWidget(
+    const testNotes = ModelProfileNotes(
+      revision: 'test-revision',
+      license: 'test-license',
+      architecture: 'test-architecture',
+      quantization: '4-bit',
+      backend: 'test-backend',
+      contextTokens: 8192,
+    );
+    Future<void> show(ModelProfileNotes? currentNotes) => tester.pumpWidget(
       MaterialApp(
         home: MediaQuery(
           data: const MediaQueryData(textScaler: TextScaler.linear(2)),
@@ -139,20 +145,13 @@ void main() {
                   ModelConnectionPreset(
                     name: 'Snapshot',
                     config: const LocalModelConfig(),
-                    profileNotes: const ModelProfileNotes(revision: 'current'),
+                    profileNotes: currentNotes,
                     testObservation: ModelTestObservation(
                       jsonFormat: true,
                       observedAt: DateTime.utc(2026),
                       firstTextMilliseconds: 1,
                       completedMilliseconds: 2,
-                      profileNotes: const ModelProfileNotes(
-                        revision: 'test-revision',
-                        license: 'test-license',
-                        architecture: 'test-architecture',
-                        quantization: '4-bit',
-                        backend: 'test-backend',
-                        contextTokens: 8192,
-                      ),
+                      profileNotes: testNotes,
                     ),
                   ),
                   preset('Legacy'),
@@ -161,6 +160,16 @@ void main() {
             ),
           ),
         ),
+      ),
+    );
+    await show(
+      const ModelProfileNotes(
+        revision: 'current',
+        license: 'test-license',
+        architecture: 'test-architecture',
+        quantization: '4-bit',
+        backend: 'test-backend',
+        contextTokens: 4096,
       ),
     );
     await tester.tap(find.text('Compare saved preset observations'));
@@ -178,11 +187,42 @@ void main() {
     }
     expect(find.text(ModelTestObservation.profileGuidance), findsNWidgets(2));
     expect(
+      find.text(
+        'Declared fields changed since the test: revision, context tokens.',
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.text('Declaration comparison unavailable without test-time notes.'),
+      findsOneWidget,
+    );
+    expect(
       find.text('Test-time profile declarations: unavailable (not recorded).'),
       findsOneWidget,
     );
     await tester.ensureVisible(find.text('Legacy'));
     await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    await show(testNotes);
+    await tester.pumpAndSettle();
+    expect(
+      find.text('Current declarations match the saved test-time notes.'),
+      findsOneWidget,
+    );
+    expect(find.textContaining('Declared fields changed since'), findsNothing);
+    await show(null);
+    await tester.pumpAndSettle();
+    expect(
+      find.text(
+        'Declared fields changed since the test: revision, license, '
+        'architecture, quantization, backend, context tokens.',
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.text('Test-time declared revision: test-revision'),
+      findsOneWidget,
+    );
     expect(tester.takeException(), isNull);
   });
 
@@ -246,6 +286,24 @@ void main() {
         find.descendant(
           of: jsonCard,
           matching: find.textContaining('generation speed: 12.34 tokens/s'),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(
+          of: jsonCard,
+          matching: find.text(
+            'Server-reported test tokens: 30 prompt, 10 completion.',
+          ),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(
+          of: textCard,
+          matching: find.text(
+            'Server-reported test token counts: unavailable (not recorded).',
+          ),
         ),
         findsOneWidget,
       );
