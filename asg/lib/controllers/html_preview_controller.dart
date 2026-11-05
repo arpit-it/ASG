@@ -52,6 +52,7 @@ class HtmlPreviewController extends BaseController {
       }
     });
     try {
+      if (isDisposed || generation != _generation) return;
       final url = await service.start(
         directory: directory,
         input: request.input,
