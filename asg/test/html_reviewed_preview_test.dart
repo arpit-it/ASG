@@ -29,7 +29,7 @@ HtmlSourceProposal source() => HtmlSourceProposal.decode(
 class Preview implements HtmlReviewedPreview {
   @override
   bool get supported => true;
-  int starts = 0, stops = 0, opens = 0;
+  int starts = 0, stops = 0, opens = 0, authorizedReads = 0;
   bool failStop = false;
   void Function()? authority;
   Completer<Uri> pending = Completer();
@@ -42,6 +42,7 @@ class Preview implements HtmlReviewedPreview {
     starts++;
     authority = authorizeRead;
     authorizeRead();
+    authorizedReads++;
     return pending.future;
   }
 
@@ -69,6 +70,56 @@ void main() {
     authorizeSource: authorize ?? () {},
     deadline: deadline,
   );
+  for (final revokeAt in [1, 2, 3]) {
+    for (final dispose in [false, true]) {
+      test(
+        'startup authority callback $revokeAt ${dispose ? 'disposal' : 'Stop'} revokes startup and publication',
+        () async {
+          final p = Preview();
+          var calls = 0;
+          var revoke = true;
+          late HtmlReviewedPreviewController c;
+          c = controller(
+            p,
+            authorize: () {
+              calls++;
+              if (revoke && calls == revokeAt) {
+                revoke = false;
+                if (dispose) {
+                  c.dispose();
+                } else {
+                  unawaited(c.stop());
+                }
+              }
+            },
+          );
+          p.pending.complete(Uri.parse('http://127.0.0.1:123/revoked/'));
+          await c.confirm();
+          expect(c.url, isNull);
+          expect(p.starts, revokeAt == 1 ? 0 : 1);
+          if (revokeAt == 2) {
+            expect(
+              calls,
+              2,
+              reason:
+                  'read authorization must throw before returning to service',
+            );
+          }
+          expect(p.authorizedReads, revokeAt < 3 ? 0 : 1);
+          expect(c.busy, false);
+          if (!dispose) {
+            p.pending = Completer()
+              ..complete(Uri.parse('http://127.0.0.1:123/fresh/'));
+            await c.confirm();
+            expect(c.url, Uri.parse('http://127.0.0.1:123/fresh/'));
+            await c.open();
+            expect(p.opens, 1);
+            c.dispose();
+          }
+        },
+      );
+    }
+  }
   for (final disposeDuringOpen in [false, true]) {
     test(
       'opening notification ${disposeDuringOpen ? 'disposal' : 'Stop'} prevents browser dispatch',
