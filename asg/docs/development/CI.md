@@ -9,3 +9,7 @@ The live Qwen integration test is deliberately skipped in default CI. It require
 Issue forms capture reproducible bugs or focused requirements, acceptance criteria and validation. The PR template records linked issues, actual test results and limitations. Follow root AGENTS.md for independent review and conditional merging.
 
 The app under test is Flutter for Android, iOS, web, macOS, Windows and Linux. Linux CI hosts testing the generator do not establish Linux product support for macOS-only generation UI. Record results for each exact PR head; a new documentation commit also receives required checks and fresh review. Test totals can differ by host exclusions; report actual passed/skipped results rather than assuming a fixed count.
+
+## Coordinated development checks
+
+The existing required Python job also runs `python -B tools/test_development_coordinator.py`: disposable Git worktrees and actual subprocess contention exercise admission, isolation, recovery, serialized integration and revision-bound observations. This adds checks without changing required check names, pinned actions, permissions or branch protection. Run focused local checks during editing, relevant broader checks before handoff and all required CI on the final integrated revision. No path-based skip or evidence-reuse exemption is introduced. See [parallel development](PARALLEL_DEVELOPMENT.md).

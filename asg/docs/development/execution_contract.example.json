@@ -1,0 +1,23 @@
+{
+  "task": "510-workflow-example",
+  "requirement": "F56",
+  "outcome": "Contributors can follow one coordinated development workflow with isolated writers and independently reviewed delivery.",
+  "dependencies": [],
+  "scope": [
+    "asg/docs/development/PARALLEL_DEVELOPMENT.md"
+  ],
+  "acceptance": [
+    "A contributor can claim a clean registered worktree before editing and follow the documented integration procedure.",
+    "Existing required checks and final-revision independent review remain mandatory."
+  ],
+  "failure_cases": [
+    "A conflicting or third writer waits without modifying another writer's checkout.",
+    "An expired claim requires explicit reconciliation instead of automatic takeover.",
+    "Changed head or base requires new matching validation and review evidence."
+  ],
+  "validation": [
+    "Parse this JSON with the coordinator's contract validator before claiming.",
+    "Verify documented commands against coordinator --help and run its subprocess concurrency tests.",
+    "Review the exact final revision and require all protected branch checks."
+  ]
+}

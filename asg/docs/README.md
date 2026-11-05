@@ -24,6 +24,7 @@ The [post-current-queue marketplace plan](REQUIREMENTS.md#post-current-queue-mar
 
 - [Coding Standards](development/CODING_STANDARDS.md)
 - [Git Workflow](development/GIT_WORKFLOW.md)
+- [Coordinated parallel development](development/PARALLEL_DEVELOPMENT.md)
 - [CI](development/CI.md)
 - [SDLC](development/SDLC.md)
 - [Test Strategy](development/TEST_STRATEGY.md)

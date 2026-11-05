@@ -1,0 +1,39 @@
+name: Development execution contract
+description: Define one coherent, dependency-ready user outcome for coordinated execution.
+title: "feat: "
+body:
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Requirement, user outcome and current gap
+      description: Link the canonical requirement ID, existing issue and observable before/after behavior. Reuse a matching issue instead of duplicating it.
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependency and ownership contract
+      description: List prerequisite merge evidence, the issue/track, writer/integration owners and exclusive repository-relative paths. Explain independence for a second writer; otherwise use one writer.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance examples and failure cases
+      description: Define testable user outcomes, representative malformed/unauthorized/stale/cancelled/restarted cases, recovery and limits. Keep related behavior in one coherent increment.
+    validations:
+      required: true
+  - type: textarea
+    id: validation
+    attributes:
+      label: Layered validation and final review
+      description: Specify focused checks, relevant regressions, required final-revision CI and independent reviewer. Separate fixtures from live-model/host acceptance and define evidence needed for Done.
+    validations:
+      required: true
+  - type: textarea
+    id: measurement
+    attributes:
+      label: Delivery evidence and measurement
+      description: Record verified outcomes, task-to-merge time, observed CI wait, review rework and escaped defects where known. Keep unknowns explicit and tokens, credentials and private prompts out of evidence.
+    validations:
+      required: false
