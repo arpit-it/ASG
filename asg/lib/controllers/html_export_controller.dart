@@ -306,6 +306,8 @@ class HtmlExportController extends BaseController {
     _picking = true;
     update();
     try {
+      // Startup notification may close the controller before picker dispatch.
+      if (isDisposed) return;
       final selected = await _picker.pick();
       if (!isDisposed && selected != null) _parent = selected;
     } catch (_) {
@@ -374,7 +376,11 @@ class HtmlExportController extends BaseController {
         update();
       }
     });
+    var dispatched = false;
     try {
+      // Stop can revoke the review while startup listeners are notified.
+      authorize();
+      dispatched = true;
       final destination = await exporter.export(
         request: displayedReview,
         confirmedRequest: displayedReview,
@@ -391,9 +397,13 @@ class HtmlExportController extends BaseController {
       }
     } catch (_) {
       if (!isDisposed && _error == null) {
-        _error = _stopped
-            ? 'Export stopped. An already-dispatched write may have completed. Inspect the selected destination before a fresh review; nothing was removed.'
-            : 'Export failed. Inspect the selected destination and choose a new folder before a fresh review. Nothing was removed.';
+        if (_stopped) {
+          _error = dispatched
+              ? 'Export stopped. An already-dispatched write may have completed. Inspect the selected destination before a fresh review; nothing was removed.'
+              : 'Export stopped before starting. Review the export again to retry.';
+        } else {
+          _error = 'Export failed. Inspect the selected destination and choose a new folder before a fresh review. Nothing was removed.';
+        }
       }
     } finally {
       _exportDeadline?.cancel();

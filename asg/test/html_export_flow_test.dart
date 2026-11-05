@@ -20,8 +20,24 @@ import 'package:flutter_test/flutter_test.dart';
 class _Picker extends FolderPicker {
   _Picker(this.directory);
   final String directory;
+  int calls = 0;
   @override
-  Future<String?> pick() async => directory;
+  Future<String?> pick() async {
+    calls++;
+    return directory;
+  }
+}
+
+class _UpdateHookController extends HtmlExportController {
+  _UpdateHookController({required super.exporter, required super.folderPicker});
+
+  VoidCallback? afterUpdate;
+
+  @override
+  void update() {
+    super.update();
+    afterUpdate?.call();
+  }
 }
 
 class _Exporter implements HtmlSourceExport {
@@ -71,6 +87,60 @@ class _Records implements RecordStorage {
 }
 
 void main() {
+  test(
+    'closed during folder selection startup never opens the picker',
+    () async {
+      final picker = _Picker('/tmp');
+      final c = _UpdateHookController(
+        exporter: _Exporter(),
+        folderPicker: picker,
+      );
+      c.afterUpdate = () {
+        if (c.picking) {
+          c.afterUpdate = null;
+          c.dispose();
+        }
+      };
+
+      await c.pickParent();
+
+      expect(picker.calls, 0);
+      expect(c.parent, isEmpty);
+      expect(c.picking, false);
+    },
+  );
+
+  test(
+    'Stop during confirmation prevents export dispatch until fresh review',
+    () async {
+      final exporter = _Exporter();
+      final c = await _ready(exporter);
+      addTearDown(c.dispose);
+      void stopBeforeDispatch() {
+        if (c.busy && !c.stopped) c.stop();
+      }
+
+      c.addListener(stopBeforeDispatch);
+
+      await c.confirm(c.review!);
+
+      expect(exporter.calls, 0);
+      expect(c.exportedDirectory, isNull);
+      expect(c.review, isNull);
+      expect(c.busy, false);
+      expect(c.error, contains('stopped before starting'));
+
+      c.removeListener(stopBeforeDispatch);
+      c.prepareReview();
+      final retry = c.confirm(c.review!);
+      await exporter.entered.future;
+      exporter.proceed.complete();
+      await retry;
+      expect(exporter.calls, 1);
+      expect(c.exportedDirectory, '/tmp/my_site');
+    },
+  );
+
   test('native factory retains process ownership across screen reopening', () {
     expect(identical(createHtmlSourceExport(), createHtmlSourceExport()), true);
   });
