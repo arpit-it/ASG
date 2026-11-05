@@ -302,6 +302,13 @@ class HtmlSourceReviewController extends BaseController {
         config: config,
         instruction: instruction,
         refinement: refinement,
+        onProgress: (receivedChunks) {
+          _requireCurrent();
+          _status =
+              'Response chunks received: $receivedChunks. Waiting for complete source validation…';
+          update();
+          _requireCurrent();
+        },
       );
       _requireCurrent();
       _inspecting = true;
