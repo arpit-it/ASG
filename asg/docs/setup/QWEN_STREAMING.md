@@ -1,40 +1,16 @@
-# Qwen timeout fix and streamed chat
+# Qwen local development and streamed chat
 
-## Selected local model — 31 October 2026
+## Select the development model
 
-The owner's saved local setup now selects `Qwen3.5-27B-4bit` from `mlx-community/Qwen3.5-27B-4bit`, pinned revision `45797d2985a12c55e6473686e9ea91b95e959553`. The existing compatible-model catalog supplied the pinned download form; all three shards downloaded and validated, then managed startup saved the new project-chat connection. Real health reported MLX/Metal ready and a bounded synthetic streaming smoke completed in 2.49 seconds with five chunks and a normal stop. This single smoke does not verify all chat-to-preview, repair, context, cancellation or peak-memory behavior. Existing 9B files remain available; code defaults and earlier 9B measurements below describe the prior verified profile. No installed stable app was replaced.
+1. In ASG, open **Set up runtime** and choose **Local files**.
+2. On the owner's Mac, use the existing checkpoint at `~/ASG-model-downloads/Qwen3.8-27B-4bit`. Choose **Find local models** and select **Qwen3.8-27B-4bit**.
+3. Use the existing MLX environment's Python executable. Choose **Save runtime setup**, then **Start selected model**.
+4. Wait for **Runtime reports ready** and **MLX / Metal**. Under **Connect project chat**, verify that the URL is `http://127.0.0.1:8765/v1` and the exact model ID is `Qwen3.8-27B-4bit`. If the app has yet to save the connection, choose **Connect & save**.
+5. Choose **Test inference**. Confirm that the test completes and shows the exact requested model ID before using it for development.
 
-## Current runtime
+This flow uses existing local files. See [runtime setup](RUNTIME_SETUP.md) for supported backends and setup limits. Earlier measurements and configuration details remain in the [historical BF16 record](LOCAL_QWEN.md) and [delivery history](../history/PROGRESS.md).
 
-ASG is a Flutter application targeting Android, iOS, web, macOS, Windows and Linux. Included platform runners do not establish tested device support. Managed MLX setup and the current independent Flutter web generator host are macOS-specific; other platforms retain supported app features and runtime connection controls.
-
-The local endpoint refused connection during the issue #50 documentation audit. Prior successful benchmarks/tests below remain historical evidence; start/connect the existing runtime explicitly before claiming a new live check.
-
-The app's existing endpoint (`http://127.0.0.1:8765/v1`) and model ID (`Qwen3.5-9B`) now use a project-local MLX runtime and a 4-bit conversion of the already downloaded Qwen weights. Original files at `/Users/arpitsinha/ARG-model-downloads/qwen3.5-9b` were preserved. No replacement model was downloaded.
-
-The former PyTorch/MPS BF16 path loaded roughly 19 GB of weights and timed out on structured edits. A direct test of the optimized model loaded in 2.59 seconds, finished a short structured-edit response in 5.89 seconds total, reported 67.8 generation tokens/second and 5.29 GB peak memory. These are measurements on this Mac, not guaranteed performance on other hardware.
-
-The previously failing opt-in Flutter integration test now passes through the real local streaming provider with built-in edits disabled. It validates a custom title/theme change, a saved new application revision, thinking/writing/applying phases, and multiple growing summary chunks before completion.
-
-## Restart on this Mac
-
-```sh
-cd /Users/arpitsinha/AndroidStudioProjects/ASG/asg
-HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 tools/.mlx-venv/bin/python -B tools/qwen_server.py \
-  --model .runtime-models/qwen3.5-9b-4bit --model-id Qwen3.5-9B
-```
-
-The model cache and virtual environment are ignored by Git. Pinned Python dependencies are in `tools/requirements-mlx.txt`. The installed MLX Metal wheel targets macOS 26+; this environment was verified on the user's macOS 27 Apple Silicon machine.
-
-On a new suitable Mac, create a project-local environment with `python3 -m venv tools/.mlx-venv`, install `tools/requirements-mlx.txt` there, then convert an existing compatible checkpoint into a **new** output folder:
-
-```sh
-HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 tools/.mlx-venv/bin/python -m mlx_lm convert \
-  --hf-path /path/to/existing/qwen3.5-9b \
-  --mlx-path /path/to/new/qwen3.5-9b-4bit -q --q-bits 4 --q-group-size 64
-```
-
-Do not overwrite original weights. Provisioning another environment/conversion is explicit setup, not an automatic model download. The setup page's Prepare action now recognizes an existing MLX environment; Torch/Transformers remains a legacy fallback. For managed startup choose the MLX environment's absolute Python executable and the converted checkpoint folder. If the CLI runtime above is already running, the app connects to it and will not kill it as an app-owned process.
+On 5 November 2026, the installed ASG app loaded this checkpoint on MLX / Metal. The loopback model inventory advertised the exact ID above. The in-app connection test completed in 5,520 ms, with first text at 4,923 ms. This was one bounded connection test. Full chat-to-preview acceptance, memory fit and usable context still need separate evidence.
 
 ## Streaming and visible state
 

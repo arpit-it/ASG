@@ -2,7 +2,7 @@
 
 This directory contains the cross-platform Flutter app. The [repository README](../README.md) is the primary overview of the product requirements, implemented capabilities, planned work, runtime limitations and contribution workflow.
 
-ASG guides users from an idea through proposed options to an interactive prototype. The current project reopens with chat and live preview; validated chat instructions save a new revision before refreshing it. Qwen3.5-9B chat streams text with visible progress. An approved macOS-hosted Flutter web MVC generation flow can create, verify and serve an independent snapshot; reviewed scoped Dart replacements and bounded consented automatic repair are delivered, while unrestricted source synthesis remains planned. See [generation setup and limits](docs/architecture/GENERATION.md).
+ASG guides users from an idea through proposed options to an interactive prototype. The current project reopens with chat and live preview; validated chat instructions save a new revision before refreshing it. Chat streams text with visible progress. The local development setup selects Qwen3.8-27B-4bit. An approved macOS-hosted Flutter web MVC generation flow can create, verify and serve an independent snapshot; reviewed scoped Dart replacements and bounded consented automatic repair are delivered, while unrestricted source synthesis remains planned. See [generation setup and limits](docs/architecture/GENERATION.md).
 
 ## Run from this directory
 
