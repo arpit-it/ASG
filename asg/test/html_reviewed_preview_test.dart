@@ -31,6 +31,7 @@ class Preview implements HtmlReviewedPreview {
   bool get supported => true;
   int starts = 0, stops = 0, opens = 0, authorizedReads = 0;
   bool failStop = false;
+  Completer<void>? pendingOpen;
   void Function()? authority;
   Completer<Uri> pending = Completer();
   @override
@@ -49,6 +50,7 @@ class Preview implements HtmlReviewedPreview {
   @override
   Future<void> open() async {
     opens++;
+    await pendingOpen?.future;
   }
 
   @override
@@ -176,6 +178,69 @@ void main() {
       await c.open();
       expect(p.opens, 1);
       expect(c.opening, false);
+    },
+  );
+  testWidgets('browser deadline retains launch ownership until settlement', (
+    tester,
+  ) async {
+    final p = Preview()..pendingOpen = Completer<void>();
+    final c = controller(p, deadline: const Duration(seconds: 1));
+    p.pending.complete(Uri.parse('http://127.0.0.1:123/token/'));
+    await c.confirm();
+    await tester.pumpWidget(
+      MaterialApp(home: HtmlReviewedPreviewScreen(controller: c)),
+    );
+    final launch = c.open();
+    await tester.pump(const Duration(seconds: 2));
+    expect(c.error, contains('Browser launch deadline reached'));
+    expect(c.url, isNull);
+    expect(c.opening, true);
+    expect(c.locked, true);
+    expect(() => p.authority!(), throwsStateError);
+    await c.confirm();
+    await c.open();
+    expect(p.starts, 1);
+    expect(p.opens, 1);
+    expect(find.text('Stop passive preview'), findsOneWidget);
+    p.pendingOpen!.complete();
+    await launch;
+    await tester.pump();
+    expect(c.error, contains('launch request has returned'));
+    expect(c.url, isNull);
+    expect(c.locked, false);
+    p.pending = Completer()..complete(Uri.parse('http://127.0.0.1:123/retry/'));
+    p.pendingOpen = null;
+    await c.confirm();
+    await c.open();
+    expect(p.opens, 2);
+    await tester.pump(const Duration(seconds: 2));
+    expect(c.url, isNotNull);
+    expect(c.error, isNull);
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox());
+  });
+  testWidgets(
+    'failed browser launch disarms deadline and preserves cleanup retry',
+    (tester) async {
+      final p = Preview()
+        ..pendingOpen = Completer<void>()
+        ..failStop = true;
+      final c = controller(p, deadline: const Duration(seconds: 1));
+      p.pending.complete(Uri.parse('http://127.0.0.1:123/token/'));
+      await c.confirm();
+      final launch = c.open();
+      p.pendingOpen!.completeError(StateError('private launch failure'));
+      await launch;
+      expect(c.cleanupFailed, true);
+      expect(c.locked, true);
+      await tester.pump(const Duration(seconds: 2));
+      expect(c.error, contains('cleanup failed'));
+      expect(c.error, isNot(contains('private launch failure')));
+      expect(c.error, isNot(contains('deadline')));
+      p.failStop = false;
+      await c.stop();
+      expect(c.locked, false);
+      c.dispose();
     },
   );
   test('confirmation owns startup, overlap exclusion, open and Stop', () async {
