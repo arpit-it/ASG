@@ -57,6 +57,8 @@ class Check implements HtmlReviewedSourceChecker {
   @override
   bool get supported => true;
   int calls = 0;
+  int reads = 0;
+  void Function()? authority;
   Completer<HtmlReviewedSourceCheck> completion = Completer();
   @override
   Future<HtmlReviewedSourceCheck> check({
@@ -65,7 +67,9 @@ class Check implements HtmlReviewedSourceChecker {
     required void Function() authorizeRead,
   }) {
     calls++;
+    authority = authorizeRead;
     authorizeRead();
+    reads++;
     expect(directory, '/exports/site');
     return completion.future;
   }
@@ -158,6 +162,52 @@ void main() {
         c.dispose();
       }
     });
+  }
+  for (final action in ['stop', 'dispose']) {
+    for (final boundary in [1, 2, 3]) {
+      test(
+        '$action inside identity authority boundary $boundary revokes reads',
+        () async {
+          final check = Check();
+          var armed = false;
+          var calls = 0;
+          late HtmlReviewedExportController c;
+          c = await ready(
+            check,
+            authority: () {
+              if (armed && ++calls == boundary) {
+                if (action == 'stop') c.stopCheck();
+                if (action == 'dispose') c.dispose();
+              }
+            },
+          );
+          addTearDown(() {
+            if (!c.isDisposed) c.dispose();
+          });
+          armed = true;
+          final pending = c.checkExport();
+          check.completion.complete(result);
+          await pending;
+          expect(check.calls, boundary == 1 ? 0 : 1);
+          expect(check.reads, boundary <= 2 ? 0 : 1);
+          expect(c.sourceCheck, isNull);
+          expect(c.destination, '/exports/site');
+          expect(c.checking, false);
+          if (check.authority != null) {
+            expect(check.authority!, throwsStateError);
+          }
+          if (action == 'stop') {
+            armed = false;
+            check.completion = Completer();
+            final retry = c.checkExport();
+            check.completion.complete(result);
+            await retry;
+            expect(c.sourceCheck, same(result));
+            expect(c.checkError, isNull);
+          }
+        },
+      );
+    }
   }
   test('completed identity result loses current authority without losing destination', () async {
     final check = Check();
