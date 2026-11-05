@@ -13578,3 +13578,70 @@ inputs byte-identical to isolated /private/tmp/asg-identity-validation.
 Existing8765health unavailable URLError; no fresh inference/stableapp replacement.
 Awaiting merge: plugin publication, independent exact-final review and required CI
 remain gates. Full F11/#402 remains open. Recorded 2026-11-05T00:47:50.394688+00:00.
+
+
+### Reviewed HTML identity evidence authority verified merged — PR #500
+Bounded F11/#402 correction Done through https://github.com/arpit-it/ASG/pull/500,
+branch `402-reviewed-identity-authority`, scope6646384288. Completed identity
+results now consult current source-review authority; refreshed UI removes stale
+success, explains recovery and disables fresh check/preview actions. Exported
+paths remain available. Point-in-time identity is not browser/safety approval.
+Tested local501bb702221f86c9509494af2a8bb27f1667dcae and plugin final
+602a68877f0cf2af462c8a08225a3f2aefe7e88a share exacttree
+3dbfe1bc0021235792a12b13b1a7e5903eef4ec9; allsevenpublishedblobs match.
+Independent946remote blobs/modes and467validationinputs match; CItestmerge
+3bb06fed same tree. Parent1623Flutter/nine explicit skips,43focused,
+441-file zero-changeformat/clean analyzer/webWasm/macOSdebug/nineinventory PASS.
+Independent55focused/widget/architecture plus nineinventory PASS, including
+separate actual320px2x revoked-evidence/recovery and disposed-authority probes;
+completed-check baseline failure independently reproduced. No blockers/fixes.
+CodeCOMMENT5778197780/finalCOMMENT5778236256 approve unchanged final head.
+RequiredCI41944140695 BOTHdirectfinalheadchecks SUCCESS:
+Flutter126972025359/Python126972024952. Reviewer inspected actual1575Linux/
+54skips/all4new,17Chrome/transport/HTML/webWasm/realindependentgeneratedFlutter
+resolve-analyze-test-build-serve andall8Python suites. No retries or policy changes.
+Protectedexpectedhead reviewer squashmerge
+9e1f2ac53c4b239511c679996f8fe1f509ac0d23 at2026-11-05T00:57:27Z;
+parent independently verified PR/currentmain/directchecks/finalreview and signed
+exacttree/soleparent1d6c45a7 before guardedlocal-onlysync. Localmain/originmain0/0,
+indexempty; bothoriginalIDEedits byte-identical. FullF11/#402 verifiedOPEN/
+unchecked; Deferred400 retained. Existing8765health unavailable URLError;
+no fresh inference,stableapp replacement,deployment,cadence/notification change.
+No active implementation or required owner action remains for this increment.
+Final canonical merge bookkeeping retained locally for next normal reviewed PR.
+Receipts:/private/tmp/asg-identity-publication.json,/private/tmp/asg500-review-evidence.json,
+/private/tmp/asg500-verified-pr.json,/private/tmp/asg500-sync-record.json,
+/private/tmp/asg500-check-runs.json. Recorded 2026-11-05T00:58:32.146755+00:00.
+
+
+### Reviewed HTML browser dispatch authority — F11 / #402
+Branch `402-reviewed-preview-open-authority` from verified PR #500 merge
+`9e1f2ac53c4b239511c679996f8fe1f509ac0d23`. Scope and acceptance:
+https://github.com/arpit-it/ASG/issues/402#issuecomment-6646868054.
+Baseline: both Stop and disposal during the opening notification still dispatch
+`HtmlReviewedPreview.open()` (two regression failures). Capture current generation
+and URL and recheck lifecycle before and after the source-authority callback.
+Acceptance: notification Stop/disposal and callback Stop prevent dispatch; fresh
+confirmation/open works afterward; existing cleanup, deadline, source-revocation,
+responsive UI and overlap coverage remains passing. This guards service dispatch;
+an already-dispatched OS browser request cannot be recalled. No script execution
+or new host support is enabled. Delivered reviewed-preview foundation suffices
+on this Mac; Deferred #400 is not a dependency. Full F11/#402 stays unchecked.
+29 affected preview/identity/widget/architecture tests pass, including three new
+regressions. Original checkout full-suite attribution test scans ignored third-party
+`tools/.mlx-venv`; validation continues in an exact tracked-input copy, preserving
+the installed environment. No unrelated source changes for this existing harness
+limitation. Required full validation, plugin publication, independent exact-final
+review, CI and reviewer merge remain pending. Previous PR #500 final evidence
+is retained in this normal reviewed development PR.
+Recorded 2026-11-05T01:16:44.123417+00:00.
+
+Final local validation: 1626 Flutter tests pass, nine explicit opt-in skips in
+`/private/tmp/asg-open-validation`; all 468 runtime/test/tool/dependency inputs
+match the working source byte for byte. 29 focused tests pass. 440-file resolved
+zero-change format, clean analyzer, web build (Wasm dry run), macOS debug build
+and nine acceptance-inventory tests pass. Existing local runtime unavailable
+(health URLError in 0.007 seconds); no fresh inference claim, installed-app
+replacement, model download or deployment. Awaiting merge: plugin publication,
+independent exact-final review, actual required CI and reviewer merge remain
+gates. Full F11/#402 and Deferred #400 remain open. Recorded 2026-11-05T01:18:11.870642+00:00.

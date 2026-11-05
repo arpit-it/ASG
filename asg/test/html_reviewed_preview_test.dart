@@ -69,6 +69,64 @@ void main() {
     authorizeSource: authorize ?? () {},
     deadline: deadline,
   );
+  for (final disposeDuringOpen in [false, true]) {
+    test(
+      'opening notification ${disposeDuringOpen ? 'disposal' : 'Stop'} prevents browser dispatch',
+      () async {
+        final p = Preview();
+        final c = controller(p);
+        p.pending.complete(Uri.parse('http://127.0.0.1:123/token/'));
+        await c.confirm();
+        var revoked = false;
+        c.addListener(() {
+          if (!c.opening || revoked) return;
+          revoked = true;
+          if (disposeDuringOpen) {
+            c.dispose();
+          } else {
+            unawaited(c.stop());
+          }
+        });
+        await c.open();
+        expect(revoked, true);
+        expect(p.opens, 0);
+        expect(c.url, isNull);
+        expect(c.opening, false);
+        if (!disposeDuringOpen) c.dispose();
+      },
+    );
+  }
+  test(
+    'authority callback Stop prevents browser dispatch and permits fresh retry',
+    () async {
+      final p = Preview();
+      var stopOnAuthority = false;
+      late HtmlReviewedPreviewController c;
+      c = controller(
+        p,
+        authorize: () {
+          if (stopOnAuthority) {
+            stopOnAuthority = false;
+            unawaited(c.stop());
+          }
+        },
+      );
+      addTearDown(c.dispose);
+      p.pending.complete(Uri.parse('http://127.0.0.1:123/token/'));
+      await c.confirm();
+      stopOnAuthority = true;
+      await c.open();
+      expect(p.opens, 0);
+      expect(c.url, isNull);
+      expect(c.locked, false);
+      p.pending = Completer()
+        ..complete(Uri.parse('http://127.0.0.1:123/retry/'));
+      await c.confirm();
+      await c.open();
+      expect(p.opens, 1);
+      expect(c.opening, false);
+    },
+  );
   test('confirmation owns startup, overlap exclusion, open and Stop', () async {
     final p = Preview();
     final c = controller(p);

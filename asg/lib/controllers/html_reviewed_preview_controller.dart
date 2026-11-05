@@ -92,11 +92,27 @@ class HtmlReviewedPreviewController extends BaseController {
         url == null) {
       return;
     }
+    final generation = _generation;
+    final previewUrl = url;
     opening = true;
     error = null;
     update();
+    void requireOpening() {
+      if (isDisposed ||
+          generation != _generation ||
+          url != previewUrl ||
+          stopping ||
+          cleanupFailed) {
+        throw StateError('Browser opening revoked.');
+      }
+    }
+
     try {
+      // Notification and authority callbacks can synchronously Stop or dispose.
+      // Recheck both boundaries before granting the service a browser dispatch.
+      requireOpening();
       authorizeSource();
+      requireOpening();
       await preview.open();
     } catch (_) {
       if (!isDisposed) error = 'Browser launch failed or source review changed. Stop the preview and retry. An already-launched browser cannot be recalled.';
