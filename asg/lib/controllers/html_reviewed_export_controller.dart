@@ -92,9 +92,11 @@ class HtmlReviewedExportController extends BaseController {
     try {
       if (isDisposed) throw StateError('Export closed.');
       authorizeSource();
+      if (isDisposed) throw StateError('Export closed.');
       final selected = await _picker.pick();
       if (isDisposed) return;
       authorizeSource();
+      if (isDisposed) return;
       if (selected != null) _parent = selected;
     } catch (_) {
       if (!isDisposed) _error = 'Folder selection failed or source review changed. Return to source review and retry.';
@@ -109,6 +111,7 @@ class HtmlReviewedExportController extends BaseController {
     _invalidate();
     try {
       authorizeSource();
+      if (isDisposed) return;
       if (!supported) throw StateError('Unsupported host.');
       if (_parent.isEmpty ||
           !RegExp(r'^[a-z][a-z0-9_]{2,50}$').hasMatch(_folder)) {

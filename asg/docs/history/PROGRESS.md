@@ -13835,3 +13835,57 @@ Existing8765health unavailable (URLError0.006s); no fresh inference claim.
 Awaiting merge: plugin publication, independent exact-final review, actual
 required CI and reviewer merge remain gates; full F11/#402 and Deferred #400
 remain open. Recorded 2026-11-05T02:33:02.835257+00:00.
+
+
+### Reviewed identity-check callback authority verified merged — PR #504
+Bounded F11/#402 correction Done through https://github.com/arpit-it/ASG/pull/504,
+branch `402-reviewed-check-callback-authority`, scope6648036623. Identity checking
+now rechecks lifecycle after source callbacks before dispatch, granting reads and
+publishing results. Stop/disposal revoke authority, fresh explicit Stop retry
+works and the destination is retained. Already-dispatched reads may finish.
+Localba5bc16354bb488415a1c0842920c4ffecc6fbcb and published final
+ a5b083160d25346753bf7c9ebf093ab6f7ae5c19 share exact tested tree
+8866da4c789d748ee620676edfd4f44c5ed7d465. All six published blobs match;
+independent reviewer matched all946 remote blobs/modes and468validation inputs.
+CItestmergee5efca7a identicaltree. Parent1644Flutter/nine explicit skips,
+37focused,441-file zero-change format,clean analyzer,web/Wasm dry run,macOSdebug
+and nineinventory PASS in the tracked-source validation copy, preserving the
+unrelated ignored installed Python environment. Independent56focused,
+21restored-final,two additional retained-read Stop/disposal probes and
+nineinventory PASS. Five of six boundary tests independently FAIL baselinedf443da6;
+final-disposal evidence was already hidden by the public getter.
+CodeCOMMENT5779073066/finalCOMMENT5779145185 approve unchanged final head.
+RequiredCI41956065324 both direct final-head checks SUCCESS:
+Flutter127011127795/Python127011127549. Reviewer inspected actual1596Linux/
+54explicit skips/all6new,17Chrome,transport/staticHTML/webWasm/real independent
+generatedFlutter resolve-analyze-test-build-serve and all8Python suites.
+No blockers,retries,revisions or protection changes. Protected expected-head
+reviewer squashmerge e621ce1cf46a334df486f1150c8224b2bcf0ba5e
+at2026-11-05T02:43:14Z. Parent independently verified PR/currentmain/directchecks/
+finalreview and signed exacttree/soleparentdf443da6, then safely synchronized
+localmain/originmain0/0. Index empty; both original IDE edits byte-identical.
+FullF11/#402 stays OPEN/unchecked; Deferred400 retained. Existing8765health
+unavailable URLError0.006s; no fresh inference,model download,stable-app
+replacement,deployment,cadence or notification change. Final merge bookkeeping
+retained locally for the next normal reviewed development PR.
+Receipts:/private/tmp/asg-check-publication.json,/private/tmp/asg504-review-evidence.json,
+/private/tmp/asg504-verified-pr.json,/private/tmp/asg504-sync-record.json,
+/private/tmp/asg504-check-runs.json. Recorded 2026-11-05T02:44:55.743476+00:00.
+
+
+### Reviewed export destination lifecycle — F11 / #402
+In progress on `402-reviewed-destination-lifecycle` from verified PR #504 merge
+`e621ce1cf46a334df486f1150c8224b2bcf0ba5e`; scope
+https://github.com/arpit-it/ASG/issues/402#issuecomment-6648471034.
+Three baseline regressions fail: callback disposal can dispatch a folder picker,
+accept a returned destination or publish a review after disposal. Recheck disposal
+after source authority at these three boundaries. All three regressions and
+27 focused export/native IO/architecture checks pass after the correction.
+Existing parent/review/export behavior and already-dispatched dialog limits are
+retained. No new execution or adapter support. Full F11/#402 stays open/unchecked,
+Deferred #400 retained; delivered contracts suffice for this Mac-verifiable fix.
+Full checks, plugin publication, independent exact-final review, required CI and
+reviewer merge remain gates. Previous PR #504 final merge evidence is retained
+in this normal reviewed development PR. Recorded 2026-11-05T03:01:32.265446+00:00.
+
+Final local validation: 1647 Flutter tests PASS, nine explicit opt-in skips; 27 focused checks PASS, zero-change 440-file format, clean analyzer, web build/Wasm dry run and isolated macOS debug build PASS. Full suite uses the tracked-source copy /private/tmp/asg-destination-validation, preserving ignored installed Python dependencies. Awaiting merge: plugin publication, independent exact-final review, actual required CI and reviewer merge remain gates. No fresh inference or stable-app replacement. Recorded 2026-11-05T03:01:46.847878+00:00.
