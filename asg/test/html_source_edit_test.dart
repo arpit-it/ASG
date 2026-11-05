@@ -522,6 +522,11 @@ void main() {
             .onPressed,
         isNull,
       );
+      await tester.scrollUntilVisible(
+        find.byType(HtmlSourceEditor),
+        150,
+        scrollable: find.byType(Scrollable).first,
+      );
       expect(
         tester.widget<TextField>(field()).controller!.text,
         contains('Retain this draft'),
@@ -591,6 +596,25 @@ void main() {
         )
         .first;
     await tester.enterText(field(), '<main>Dirty retained editor</main>');
+    await tester.scrollUntilVisible(
+      find.text('Refine reviewed source'),
+      -150,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(
+      tester
+          .widget<OutlinedButton>(
+            find.widgetWithText(OutlinedButton, 'Refine reviewed source'),
+          )
+          .onPressed,
+      isNull,
+    );
+    await tester.scrollUntilVisible(
+      find.byType(HtmlSourceEditor),
+      150,
+      scrollable: find.byType(Scrollable).first,
+    );
+
     FocusManager.instance.primaryFocus?.unfocus();
     await tester.pumpAndSettle();
     final scrollable = tester.state<ScrollableState>(

@@ -242,12 +242,25 @@ class HtmlSourceReviewController extends BaseController {
   ModelRequestProvenance? get provenance =>
       proposal == null ? null : _provenance;
 
-  Future<void> request(String instruction) async {
+  Future<void> request(
+    String instruction, {
+    HtmlSourceProposal? refinement,
+  }) async {
     if (isDisposed || _busy) return;
     if (instruction.trim().isEmpty || instruction.length > 8000) {
       _error = 'Enter 1–8000 instruction characters.';
       update();
       return;
+    }
+    if (refinement != null) {
+      try {
+        authorizeProposal(refinement);
+        HtmlSourceProposer.refinementContext(refinement);
+      } catch (_) {
+        _error = 'Cannot refine this review: source is stale or exceeds the 24000-byte JSON context limit. Current source is retained; shorten it with local edits or request replacement source.';
+        update();
+        return;
+      }
     }
     // A failed replacement must not discard unsaved reviewed source. Capture
     // only currently authorized source; recovery creates a new review identity.
@@ -288,6 +301,7 @@ class HtmlSourceReviewController extends BaseController {
       final value = await _proposer.propose(
         config: config,
         instruction: instruction,
+        refinement: refinement,
       );
       _requireCurrent();
       _inspecting = true;

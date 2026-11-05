@@ -13375,3 +13375,68 @@ Final local validation: web/Wasm dry-run, macOS debug build and nine acceptance
 inventory tests PASS; all466runtime/test/tool/pubspec inputs byte-identical to
 isolated validation copy. All required local checks complete. Awaiting merge;
 independent exact-final review and actual required CI remain gates.
+
+
+### HTML top-of-document navigation diagnostics verified merged — PR #497
+Bounded F11/#402 correction Done through https://github.com/arpit-it/ASG/pull/497,
+branch `402-html-top-navigation`, scope6645077157. HTML a/area back-to-top links
+recognize case-insensitive percent-decoded top fallback; CSS/SVG/resource and
+near-match diagnostics remain. Advisory only, no full-adapter acceptance claim.
+Tested locald4dfc01192cab8f983df537ccfc54adcd8702cc8 and final plugin
+4621de9cf1fe569e2d88ccb9020cc816ad1d8cba share exacttree
+6a04404edc1b6ada5ba450f29d4f846dfc38a233; allsevenpublishedblobs match.
+Independent codeCOMMENT5777527897/finalapprovalCOMMENT5777580638;
+945remote blobs/modes and466validationinputs matched, CImerge645dcab tree equal.
+Independent40focused+fourboundaryprobes+nineinventory+fouractualChrome scrolls
+PASS; baseline independently reproduced. Parent1603Flutter/nineexplicit skips,
+40focused, formatter439lib/test+onebrowsertool=440total, analyzer/webWasm/
+macOSdebug/nineinventory PASS. No source modifications after exact-final review.
+RequiredCI41934734347 BOTHdirectfinalheadchecks SUCCESS:
+Flutter126940231740/Python126940232344. Reviewer inspected actual1555Linux/
+54skips,17Chrome/transport/staticHTML/webWasm/realindependentgeneratedFlutter
+resolve-analyze-test-build-serve and all8Python suite logs. Explicit independent
+verdict follows documentedzero-required-approvers workflow; protections unchanged.
+Protectedexpectedhead reviewer squashmerge
+9cd90ed271045644e779273933dfcc37bab6ec87 at2026-11-04T23:41:20Z;
+parent independently verified PR/currentmain/directchecks, signedexacttree and
+soleparent1c49fe2a before guardedlocal-only synchronization.
+Localmain/originmain0/0,indexempty; both originalIDEedits byte-identical.
+FullF11/#402 remainsOPEN/unchecked; Deferred400 retained. Existing8765health
+unavailable URLError0.006s; no inference/model/stableapp/deployment/cadence change.
+No active implementation or required owner action remains for this increment.
+Final canonical merge evidence retained locally for next normal reviewed PR.
+Receipts:/private/tmp/asg-top-publication.json,/private/tmp/asg497-review-evidence.json,
+/private/tmp/asg497-verified-pr.json,/private/tmp/asg497-sync-record.json,
+/private/tmp/asg497-check-runs.json. Recorded 2026-11-04T23:42:29.504829+00:00.
+
+
+### Explicit reviewed HTML source refinement — F11 / #402
+In progress on `402-html-source-refinement` from verified PR #497 merge
+9cd90ed271045644e779273933dfcc37bab6ec87; scope
+https://github.com/arpit-it/ASG/issues/402#issuecomment-6645359571.
+Fresh plugin open-PR search empty; no competing active ASG run. Existing proposer
+only receives instructions, so cannot iterate with current edited files. Add an
+explicit Refine reviewed source action carrying exact immutable reviewed files
+as quoted untrusted JSON, capped at 24000 UTF-8 bytes before provider allocation.
+Replacement requests remain instruction-only. Stale identities and pending edits
+refuse refinement; existing Stop/deadline/context/failure recovery and fresh
+diagnostics govern resulting review. No source writes or execution permission.
+Acceptance: exact edited HTML/CSS/optional JS/SVG context, replacement exclusion,
+multibyte size refusal preserving source, stale/editor/busy guards, failed/late
+response handling and narrow UI; full checks/builds and final review/CI/merge.
+65 focused tests PASS, including eight new transport/controller lifecycle cases
+and extended narrow UI/editor guards. Test-only scheduling/scroll failures fixed
+and focused suite rerun. Full validation and publication pending.
+Full F11/#402 remains open/unchecked; Deferred #400 does not block this increment.
+Prior #497 final review/required CI/verified merge bookkeeping retained.
+Recorded 2026-11-04T23:47:07.507956+00:00.
+
+Final local validation: 1611 Flutter tests PASS/nine explicit skips in isolated
+tracked-source copy; all 466 tracked runtime/test/tool/dependency inputs
+byte-identical. 65 focused tests, 440-file zero-change format, clean analyzer,
+web build/Wasm dry-run, macOS debug build and nine inventory tests PASS.
+Independent initial code review: no blockers; own66focused/architecture plus
+exact24000/24001-byte boundary/escaping probes PASS. Exact-final remote review,
+required CI and protected reviewer merge remain pending. Existing8765health
+unavailable URLError0.008s; no inference/model/stable-app/deployment change.
+Recorded 2026-11-04T23:49:27.138381+00:00.
