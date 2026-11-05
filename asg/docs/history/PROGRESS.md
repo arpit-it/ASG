@@ -1,5 +1,11 @@
 # Progress and delivery history
 
+## Verified HTML boundary and local-model evidence — 5 November 2026
+
+The [interactive HTML boundary experiment](../development/HTML_INTERACTIVE_BOUNDARY.md) reproduced outbound egress through child self-navigation in Chrome 156.0.8078.81 on macOS arm64. This rejects the browser-only candidate. F11 / [#402](https://github.com/arpit-it/ASG/issues/402) stays open. Interactive acceptance still needs host-enforced egress denial and noncooperative Stop. The fixture used fixed synthetic source. [PR #516](https://github.com/arpit-it/ASG/pull/516) merged on 2026-11-05 at 08:02:04 UTC as `5a09899d63652d3fb1e674b254b81a4b1e040293`. Tested head `7f6e454576e938b11672f95549e8b6f7fdd2dd11` passed [required CI](https://github.com/arpit-it/ASG/actions/runs/41990235480) and [independent review](https://github.com/arpit-it/ASG/pull/516#pullrequestreview-5781484060).
+
+The development setup guidance identifies the owner-selected local MLX model as `Qwen3.8-27B-4bit`. An exact-ID short JSON completion finished in 1863 ms and the endpoint returned to idle. This observation leaves context fit, host memory and end-to-end acceptance pending under F22 / [#396](https://github.com/arpit-it/ASG/issues/396). [PR #517](https://github.com/arpit-it/ASG/pull/517) merged on 2026-11-05 at 16:00:57 UTC as `45d2e32773e8bdf60b780887771de8ec5be2cf5e`. Tested head `5c9bd11c76ea7aa001308b26733de70496b3606d` passed [required CI](https://github.com/arpit-it/ASG/actions/runs/42059358778) and [independent review](https://github.com/arpit-it/ASG/pull/517#pullrequestreview-5787968803).
+
 ## Fixed HTML preview Stop before startup — F11 / #402
 
 F11 / #402 fixed HTML preview Stop during startup. A Stop from a startup notification now prevents preview-host dispatch. Existing in-flight ownership and cleanup retry remain in effect. Both new cases (successful and failed cleanup) failed on main 2d41023 and passed after the fix. Flutter 3.47.6 / Dart 3.13.5 on macOS passed 60 focused tests and 1,657 full-suite tests with nine skips. Analyzer and 444-file formatter check passed. No live model acceptance claimed. Full F11 remains open.
