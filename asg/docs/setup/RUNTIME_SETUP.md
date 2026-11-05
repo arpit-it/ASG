@@ -2,7 +2,7 @@
 
 ASG is a Flutter application targeting Android, iOS, web, macOS, Windows and Linux. Included platform runners do not establish tested device support. Managed MLX setup and the current independent Flutter web generator host are macOS-specific; other platforms retain supported app features and runtime connection controls.
 
-Use the previously verified 4-bit MLX environment/checkpoint on Apple Silicon. The endpoint was unavailable during this audit; use [streaming setup](QWEN_STREAMING.md) for explicit startup and live checks. Torch/BF16 details below describe the legacy fallback.
+For local ASG development on Apple Silicon, use the existing Qwen3.8-27B-4bit checkpoint and MLX environment. Follow [the selection and test steps](QWEN_STREAMING.md).
 
 Open the **Set up runtime** chip/FAB in the landing screen's upper-right corner. Runtime setup follows MVC: RuntimeSetup/ModelCandidate → RuntimeSetupController → RuntimeHost, RuntimeConnection and stores → RuntimeSetupScreen.
 
@@ -10,11 +10,11 @@ Open the **Set up runtime** chip/FAB in the landing screen's upper-right corner.
 
 In the macOS app, select **Local files**, choose a model folder or a collection of model folders, then **Find local models**. A checkpoint needs config.json, tokenizer files and complete Safetensors weights; selecting a lone weight file is insufficient. Scanning includes the selected directory and up to three child levels, bounded to 200 folders.
 
-For this Mac, the existing checkpoint is `/Users/arpitsinha/ARG-model-downloads/qwen3.5-9b`. Initial managed inference supports architecture `Qwen3_5ForConditionalGeneration` through the bundled Transformers bridge on Apple Metal. The bundled bridge also supports the existing locally converted Qwen MLX checkpoint with a compatible MLX environment. Other architectures, GGUF, incomplete checkpoints and Git LFS pointer files remain unsupported; no arbitrary model compatibility is implied. Linked weights outside the checkpoint directory are rejected; select a self-contained downloaded copy.
+For this Mac, the existing checkpoint is `~/ASG-model-downloads/Qwen3.8-27B-4bit`. Initial managed inference supports architecture `Qwen3_5ForConditionalGeneration` through the bundled Transformers bridge on Apple Metal. The bundled bridge also supports the existing locally converted Qwen MLX checkpoint with a compatible MLX environment. Other architectures, GGUF, incomplete checkpoints and Git LFS pointer files remain unsupported; no arbitrary model compatibility is implied. Linked weights outside the checkpoint directory are rejected; select a self-contained downloaded copy.
 
 ## Download from a repository
 
-Choose **Repository**, enter a public Hugging Face ID such as `Qwen/Qwen3.5-9B`, its HTTPS repository URL, or another public HTTPS Git repository URL. Select a revision/branch and an existing parent folder. Press **Download model & validate** explicitly to begin the transfer.
+Choose **Repository**, enter the public Hugging Face ID of a supported checkpoint, its HTTPS repository URL, or another public HTTPS Git repository URL. Select a revision/branch and an existing parent folder. Press **Download model & validate** explicitly to begin the transfer.
 
 A new repository-named directory is created. Existing directories are never overwritten. Hugging Face uses the selected Python environment's huggingface_hub package to download configuration/tokenizer/Safetensors artifacts without Python repository code. Other HTTPS Git hosts use Git with interactive prompts and global/system Git configuration disabled; actual committed weight files are required. Generic Git LFS pointer repos are rejected after cloning; use their Hugging Face equivalent or an already complete local checkout.
 
