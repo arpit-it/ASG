@@ -397,6 +397,47 @@ void main() {
   }
 
   test(
+    'save deadline revokes pending commit and holds lock until settlement',
+    () async {
+      final r = await records();
+      final c = await ready(r, deadline: const Duration(milliseconds: 20));
+      addTearDown(c.dispose);
+      await c.saveDraft();
+      final key = HtmlSourceDraftStore(r, html.project.id).key;
+      final saved = r.values[key];
+      await c.revise(c.proposal!, {
+        ...c.proposal!.files,
+        'styles.css': 'main { color: purple; }',
+      });
+      r.wait = Completer();
+      final saving = c.saveDraft();
+      await Future<void>.delayed(const Duration(milliseconds: 60));
+      expect(c.busy, true);
+      expect(c.status, contains('Draft save deadline reached'));
+      expect(c.proposal, isNull);
+      await c.restoreDraft();
+      await c.saveDraft();
+      await c.request('Overlapping request');
+      expect(c.busy, true);
+      r.wait!.complete();
+      await saving;
+      expect(c.busy, false);
+      expect(r.values[key], saved);
+      expect(c.status, contains('write request has returned'));
+      expect(c.status, isNot(contains('Source draft saved locally.')));
+      r.wait = null;
+      await c.restoreDraft();
+      expect(c.proposal, isNotNull);
+      await c.saveDraft();
+      expect(c.error, isNull);
+      expect(c.status, contains('Source draft saved locally.'));
+      await Future<void>.delayed(const Duration(milliseconds: 60));
+      expect(c.status, contains('Source draft saved locally.'));
+      expect(c.proposal, isNotNull);
+    },
+  );
+
+  test(
     'strict schema, identity and duplicates preserve malformed drafts',
     () async {
       final r = await records();
@@ -426,6 +467,51 @@ void main() {
       );
     },
   );
+  testWidgets(
+    'save deadline is visible and retry stays locked until write returns',
+    (tester) async {
+      final r = await records();
+      final c = await tester.runAsync(
+        () => ready(r, deadline: const Duration(seconds: 1)),
+      );
+      final owner = c!;
+      r.wait = Completer();
+      await tester.pumpWidget(
+        MaterialApp(home: HtmlSourceReviewScreen(controller: owner)),
+      );
+      await tester.scrollUntilVisible(
+        find.text('Save source draft locally'),
+        180,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.tap(find.text('Save source draft locally'));
+      await tester.pump();
+      await tester.pump(const Duration(seconds: 2));
+      expect(owner.busy, true);
+      expect(owner.status, contains('Draft save deadline reached'));
+      await tester.scrollUntilVisible(
+        find.textContaining('Draft save deadline reached'),
+        -150,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(
+        find.textContaining('Draft save deadline reached'),
+        findsOneWidget,
+      );
+      final request = tester.widget<FilledButton>(
+        find.widgetWithText(FilledButton, 'Request source for review'),
+      );
+      expect(request.onPressed, isNull);
+      r.wait!.complete();
+      await tester.pumpAndSettle();
+      expect(owner.busy, false);
+      expect(owner.status, contains('write request has returned'));
+      expect(HtmlSourceDraftStore(r, html.project.id).load(), isNull);
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox());
+    },
+  );
+
   testWidgets('320px 2x explicit save close reopen restore', (tester) async {
     tester.view.physicalSize = const Size(320, 800);
     tester.view.devicePixelRatio = 1;
