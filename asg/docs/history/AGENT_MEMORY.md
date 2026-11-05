@@ -1,5 +1,9 @@
 # Durable project memory
 
+## Approved offline source snapshot checks — 6 November 2026
+
+The macOS snapshot screen requires explicit approval for offline dependency resolution and analysis. An isolated run passed both operations and Stop while waiting for the SDK lock. Independent review also verified cancellation of an active analyzer and refusal of unsafe file links. [PR #522](https://github.com/arpit-it/ASG/pull/522) merged on 6 November 2026 at 03:32:55 IST as `64611410598d18bfeecbc9184250ad91136cbf1f`. Head `e9804c4af3831a517f22dab66da1a677434c315a` passed [required CI](https://github.com/arpit-it/ASG/actions/runs/42116677769) and [independent review](https://github.com/arpit-it/ASG/pull/522#pullrequestreview-5792766274).
+
 ## Incomplete source snapshot recovery — 6 November 2026
 
 On macOS, the snapshot screen can find possible incomplete staging folders in a selected destination without writing to them. An isolated app launch displayed the incomplete fixture and excluded ready and linked folders. [PR #521](https://github.com/arpit-it/ASG/pull/521) merged on 6 November 2026 at 02:31:23 IST as `91ac142937513c3fcee997dcc6e70612f0ced9d5`. Head `95fb8ada7338613cf896deecdca9a7ebad32a52f` passed [required CI](https://github.com/arpit-it/ASG/actions/runs/42111997745) and [independent review](https://github.com/arpit-it/ASG/pull/521#pullrequestreview-5792423429).

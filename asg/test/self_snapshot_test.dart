@@ -3,6 +3,7 @@
 
 import 'dart:async';
 
+import 'package:asg/models/self_snapshot_operation.dart';
 import 'package:asg/controllers/self_snapshot_controller.dart';
 import 'package:asg/models/generation_command_result.dart';
 import 'package:asg/services/folder_picker.dart';
@@ -127,12 +128,12 @@ void main() {
             required snapshot,
             required sdk,
             required python,
-            required analyze,
+            required operation,
             required stop,
             required stopped,
           }) {
             expect((snapshot, sdk, python), ('/snapshot', '/sdk', '/python'));
-            calls.add(analyze);
+            calls.add(operation == SelfSnapshotOperation.analyze);
             return result.future;
           },
     );
@@ -164,13 +165,13 @@ void main() {
               required snapshot,
               required sdk,
               required python,
-              required analyze,
+              required operation,
               required stop,
               required stopped,
             }) async {
-              calls.add(analyze);
+              calls.add(operation == SelfSnapshotOperation.analyze);
               return GenerationCommandResult(
-                exitCode: analyze ? 1 : 0,
+                exitCode: operation == SelfSnapshotOperation.analyze ? 1 : 0,
                 output: '',
               );
             },
@@ -192,19 +193,19 @@ void main() {
   testWidgets(
     'review names the selected snapshot and Cancel starts no checks',
     (tester) async {
-      final calls = <bool>[];
+      final calls = <SelfSnapshotOperation>[];
       final controller = SelfSnapshotController(
         check:
             ({
               required snapshot,
               required sdk,
               required python,
-              required analyze,
+              required operation,
               required stop,
               required stopped,
             }) async {
               expect((snapshot, sdk, python), ('/source', '/sdk', '/python'));
-              calls.add(analyze);
+              calls.add(operation);
               return const GenerationCommandResult(exitCode: 0, output: '');
             },
       );
@@ -237,8 +238,32 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('Approve and run'));
       await tester.pumpAndSettle();
-      expect(calls, [false, true]);
+      expect(calls, [
+        SelfSnapshotOperation.resolve,
+        SelfSnapshotOperation.analyze,
+      ]);
       expect(controller.status, contains('Analysis passed'));
+      calls.clear();
+      final build = find.widgetWithText(
+        OutlinedButton,
+        'Review offline web build',
+      );
+      await tester.ensureVisible(build);
+      await tester.pumpAndSettle();
+      await tester.tap(build);
+      await tester.pumpAndSettle();
+      expect(find.text('Approve offline web build?'), findsOneWidget);
+      expect(calls, isEmpty);
+      await tester.tap(find.text('Approve and run'));
+      await tester.pumpAndSettle();
+      expect(calls, [
+        SelfSnapshotOperation.resolve,
+        SelfSnapshotOperation.build,
+      ]);
+      expect(
+        controller.status,
+        contains('Web artifacts at /source/asg/build/web'),
+      );
     },
   );
 }

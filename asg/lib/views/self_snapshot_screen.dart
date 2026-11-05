@@ -58,7 +58,7 @@ class _SelfSnapshotScreenState extends State<SelfSnapshotScreen> {
     }
   }
 
-  Future<void> approveChecks() async {
+  Future<void> approveChecks({bool buildWeb = false}) async {
     final selected = snapshot;
     final flutterSdk = sdk.text.trim();
     final trustedPython = python.text.trim();
@@ -70,15 +70,22 @@ class _SelfSnapshotScreenState extends State<SelfSnapshotScreen> {
       );
       return;
     }
+    final description = buildWeb
+        ? 'Resolve dependencies offline and build web artifacts in this snapshot? '
+              'Existing web output is refused. The build does not run the app.'
+        : 'Run offline dependency resolution and analysis on this snapshot? '
+              'Flutter can write working files inside the snapshot.';
     final approved = await showDialog<bool>(
       context: context,
       builder: (dialog) => AlertDialog(
-        title: const Text('Approve offline snapshot checks?'),
+        title: Text(
+          buildWeb
+              ? 'Approve offline web build?'
+              : 'Approve offline snapshot checks?',
+        ),
         content: SingleChildScrollView(
           child: Text(
-            'Run offline dependency resolution and analysis on this snapshot? '
-            'Flutter can write working files inside the snapshot.\n\n'
-            '$selected\nFlutter SDK: $flutterSdk\nPython: $trustedPython',
+            '$description\n\n$selected\nFlutter SDK: $flutterSdk\nPython: $trustedPython',
           ),
         ),
         actions: [
@@ -96,6 +103,7 @@ class _SelfSnapshotScreenState extends State<SelfSnapshotScreen> {
     if (!mounted || approved != true) return;
     await widget.controller.check(
       approved: true,
+      buildWeb: buildWeb,
       snapshot: selected,
       sdk: flutterSdk,
       python: trustedPython,
@@ -197,6 +205,12 @@ class _SelfSnapshotScreenState extends State<SelfSnapshotScreen> {
                     ? approveChecks
                     : null,
                 child: const Text('Review offline checks'),
+              ),
+              OutlinedButton(
+                onPressed: enabled && snapshot.isNotEmpty
+                    ? () => approveChecks(buildWeb: true)
+                    : null,
+                child: const Text('Review offline web build'),
               ),
             ],
           );

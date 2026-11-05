@@ -8,6 +8,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:asg/models/self_snapshot_operation.dart';
 import 'package:asg/services/self_snapshot.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -165,7 +166,9 @@ void main() {
         snapshot: snapshot,
         sdk: sdk,
         python: '/usr/bin/python3',
-        analyze: analyze,
+        operation: analyze
+            ? SelfSnapshotOperation.analyze
+            : SelfSnapshotOperation.resolve,
         stop: stop.future,
         stopped: () => stop.isCompleted,
       );
@@ -190,6 +193,24 @@ void main() {
     await expectLater(check(false, Completer<void>()), throwsStateError);
     expect(await sentinel.readAsString(), 'outside stays unchanged');
     await packageConfig.delete();
+
+    final output = await Directory('${project.path}/build/web')
+        .create(recursive: true);
+    final existing = File('${output.path}/index.html');
+    await existing.writeAsString('previous output');
+    final buildStop = Completer<void>();
+    await expectLater(
+      checkSelfSnapshot(
+        snapshot: snapshot,
+        sdk: sdk,
+        python: '/usr/bin/python3',
+        operation: SelfSnapshotOperation.build,
+        stop: buildStop.future,
+        stopped: () => buildStop.isCompleted,
+      ),
+      throwsStateError,
+    );
+    expect(await existing.readAsString(), 'previous output');
 
     final locker = await Process.start('/usr/bin/python3', [
       '-u',
@@ -219,6 +240,10 @@ void main() {
           await Future<void>.delayed(const Duration(milliseconds: 25));
         }
         expect(await overlay.exists(), isTrue);
+        await expectLater(
+          check(true, Completer<void>()).timeout(const Duration(seconds: 5)),
+          throwsStateError,
+        );
       } finally {
         stop.complete();
         await stopped.timeout(const Duration(seconds: 12));
@@ -241,5 +266,6 @@ void main() {
       await locker.stdin.close();
       await locker.exitCode.timeout(const Duration(seconds: 5));
     }
+    expect(await check(false, Completer<void>()), 0);
   }, skip: !Platform.isMacOS || sdk.isEmpty);
 }
