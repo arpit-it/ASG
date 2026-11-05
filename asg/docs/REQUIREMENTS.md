@@ -364,6 +364,889 @@ The saved development automation was updated through its management tool; active
   - Acceptance: one requirements file; unique original product scope and foundation history retained; maintained local documentation links resolve; the active 15 minute automation reads this file, deduplicates new tasks and checks Done only after verified merge.
   - Delivered 25 October 2026 via [issue #32](https://github.com/arpit-it/ASG/issues/32), branch `codex/32-documentation-queue`, [PR #33](https://github.com/arpit-it/ASG/pull/33). Independent review approved head `ec9b561f12d1edd9439d100dadae52afe3a90ab9`; required Flutter checks/web build (real Chrome storage and generated-project verification) and Python fixtures passed in CI run `40172035200`. Remote merge `3b4333286e0c3ef8c6543501c2bba6721e714035` at 2026-10-25 07:18:39 UTC and issue closure verified; local main synchronized before F01.
 
+## Post-current-queue marketplace and universal work — 5 November 2026
+
+Owner-requested planning addition, [issue #507](https://github.com/arpit-it/ASG/issues/507). All F25–F55 are **Queued, not implemented**. This one-time addition of 31 tasks is explicitly authorized; future scheduled runs retain the one-new-issue/task limit. The supplied brief ends at TASK 31; no later delivery/payment functionality is silently assumed delivered.
+
+**Selection gate:** finish current F01–F24 work and its acceptance, including deferred validation tracked by #400, before selecting any F25–F55 implementation. The 2 November Mac-first exception continues to govern the existing queue; it does not move marketplace work ahead of it. F23 remains the final phase of the original queue, followed by this newly authorized expansion. Historical references to F23 as “final” mean final within F01–F24. Do not interrupt active work or reinterpret this addition as completion of any current task.
+
+**Execution order:** after that gate, follow the parent phases below, selecting the first dependency-ready task within the earliest unfinished phase; priority P0/P1/P2 applies within that phase, never across the gate. IDs preserve source TASK order, not topological execution order. Complete/review/merge each bounded slice before the next. If credentials, developer approval or a host is missing, record Blocked and the exact next action; do not bypass the capability or silently advance. An umbrella stays unchecked until all its slices and acceptance pass. Each slice gets its own focused implementation issue/PR when selected, with status and merge evidence recorded here. This planning issue is not 31 implementation issues.
+
+| Parent step | Child features in delivery order | Completion boundary |
+| --- | --- | --- |
+| 1. Trusted foundations | F25 → F29 → F32 → F31 → F33 → F30 → F34 → F52 | Capability/adapter/account/policy/tool contracts with secure credentials and diagnostics |
+| 2. Verified marketplace access | F26 → F27 → F28 | Independently verified platform operations and dated compatibility matrix |
+| 3. Discovery and qualification | F35 → F36 → F37 → F45 → F38 → F39 | Durable discovery, reviewed requirements, executor contract, evidence-based fit and economics |
+| 4. Approved client lifecycle | F40 → F41 → F42 → F43 → F44 | Approved bids/messages and confirmed contracts before execution |
+| 5. Tools and executable work | F53 → F54 → F46 → F47 → F48 → F49 → F50 → F51 | Reproducible supported software/data/document/research/multimodal outputs |
+| 6. Delivery connection and end-to-end acceptance | F55, then cross-feature acceptance below | Authorized delivery through at least one verified connector; honest contract/payment state |
+
+**Shared implementation and validation contract (applies to every child):** use existing Flutter MVC, injected services, transactional nonsecret storage, configured ModelProvider, F03/F05 bounded execution/recovery, F10 criterion-specific evidence, F11/F16 verified adapters/hosts, F17 support matrix and F22 request provenance. Extend F20/F23 account-security foundations rather than duplicating GitHub/cloud identity. Models hold validated domain records; controllers coordinate workflows; services own platform/tool/credential access; responsive views expose approvals, limitations and errors. No new SaaS subscription, agency administration or multi-tenant billing. Local-first, user-owned accounts and supported software/noncoding work only. Owner-reported “Qwen3.8 27B” is a configurable preference, not verified installed-model identity or a hardcoded capability claim; retain historical tested models/evidence.
+
+Every task below inherits the current-queue gate, these shared dependencies and validation: meaningful model/service/controller/storage/UI tests for the changed slice, malformed/untrusted inputs, missing permissions/tools, cancellation/deadline/disposal, restart/failure recovery, redacted diagnostics, responsive desktop/mobile behavior and actual enabled-host/adapter evidence. Run relevant format/analyze/tests/builds for code changes and required CI, independent exact-final review and verified protected merge. Fixtures/builds never establish real account authorization, live API operation or task feasibility. External actions require explicit user authorization bound to exact account/content/price/destination; no automatic acceptance or unapproved contractual commitment. Treat client listings, attachments, messages and connector instructions as untrusted data. Uncertain external side effects require reconciliation before retry, not blind replay.
+
+**Cross-feature completion:** demonstrate a supported job through discovery/import → structured requirements → capability/profit review → edited approved proposal → authorized confirmed submission → confirmed contract → approved execution → actual verification → reviewed authorized delivery → platform-confirmed acceptance/payment where available. Preserve provenance, artifacts, audit events and restart recovery; show unknown/unsupported earnings/payment states rather than inferred revenue. The Marketplace Earnings section initially displays verified available payment information and explicit unknowns; it is not accounting, payout automation or a promise of earnings. No live bid/message/contract/upload/payment action is authorized by this planning update.
+
+### Child feature ledger
+
+- [ ] F25 Freelance Platform Capability Registry — Queued; priority P0; depends on shared current-queue foundations only
+  - Source/description/scope: supplied TASK 01; retained contract below.
+  - Bounded delivery slices (separate issues/PRs under this feature):
+    1. Define typed per-operation status and evidence schema.
+    2. Persist and render capability/limitations matrix.
+    3. Test unknown/restricted/changed permissions without enabling actions.
+  - Validation: shared validation contract above plus the slice-specific tests and real-operation evidence described in its scope/acceptance below.
+
+  Create a platform capability registry describing supported freelance marketplaces.
+
+  Each platform must declare independently whether it supports:
+
+  - Job discovery
+  - Job details retrieval
+  - Account authorization
+  - Proposal submission
+  - Proposal status tracking
+  - Client messaging
+  - Contract acceptance
+  - Attachment uploads
+  - Milestone management
+  - Deliverable submission
+  - Payment status retrieval
+  - Webhooks or event notifications
+
+  Each capability must have a status:
+
+  - Verified supported
+  - Supported with restrictions
+  - Requires platform approval
+  - Not verified
+  - Unsupported
+
+  Store evidence URLs, verification dates, API documentation references, permission requirements and applicable limitations.
+
+  Never interpret API availability as blanket permission to automate every action.
+
+  **Acceptance:** The UI can accurately distinguish available, restricted and unsupported operations for each platform.
+
+- [ ] F26 Freelancer.com Official API Adapter — Queued; priority P0; depends on F29, F31, F32, F33
+  - Source/description/scope: supplied TASK 02; retained contract below.
+  - Bounded delivery slices (separate issues/PRs under this feature):
+    1. Verify official API, SDK, sandbox and account entitlements.
+    2. Implement authorized read-only project search/details first.
+    3. Add each verified bid/message/contract/milestone/file/payment operation as its own reviewed increment.
+  - Validation: shared validation contract above plus the slice-specific tests and real-operation evidence described in its scope/acceptance below.
+
+  Investigate and implement integration using the official Freelancer.com API and supported SDK.
+
+  Official resources:
+
+  - https://developers.freelancer.com/
+  - https://github.com/freelancer/freelancer-sdk-python
+
+  Investigate:
+
+  - OAuth and supported authentication methods
+  - Project discovery and search
+  - Project details
+  - Bid creation
+  - Bid management
+  - Employer messaging
+  - Contract and award status
+  - Milestones
+  - Attachments
+  - Deliverable submission
+  - Payment status
+
+  Implement only operations verified to be supported and authorized.
+
+  Use the official sandbox where available.
+
+  Do not assume every SDK function is available to every account.
+
+  **Acceptance:** A connected authorized account can retrieve real projects and execute each independently verified operation. Unsupported operations remain disabled.
+
+- [ ] F27 Upwork Official API Adapter — Queued; priority P1; depends on F29, F31, F32, F33
+  - Source/description/scope: supplied TASK 03; retained contract below.
+  - Bounded delivery slices (separate issues/PRs under this feature):
+    1. Record developer approval, scopes, restrictions and rate limits.
+    2. Connect approved OAuth account and verify read operations.
+    3. Add individually approved write/status operations or keep explicit disabled states.
+  - Validation: shared validation contract above plus the slice-specific tests and real-operation evidence described in its scope/acceptance below.
+
+  Investigate Upwork's official developer program and OAuth integration.
+
+  Official resource:
+
+  https://www.upwork.com/developer
+
+  Determine whether the user's approved application can access:
+
+  - Job search
+  - Job details
+  - Proposal submission
+  - Proposal status
+  - Client messages
+  - Contracts
+  - Milestones
+  - Deliverables
+  - Payment information
+
+  Document required approvals, scopes, rate limits and automation restrictions.
+
+  Do not use unauthorized browser bots, CAPTCHA bypassing or prohibited scraping.
+
+  **Acceptance:** Approved operations work using official authorization. Operations without verified permissions remain disabled.
+
+- [ ] F28 Additional Freelance Platform Research — Queued; priority P1; depends on F25
+  - Source/description/scope: supplied TASK 04; retained contract below.
+  - Bounded delivery slices (separate issues/PRs under this feature):
+    1. Research named marketplaces against official evidence.
+    2. Persist dated access/permission findings in registry.
+    3. Expose compatibility matrix including unknown and unsupported operations.
+  - Validation: shared validation contract above plus the slice-specific tests and real-operation evidence described in its scope/acceptance below.
+
+  Investigate:
+
+  - Fiverr
+  - Contra
+  - PeoplePerHour
+  - Guru.com
+  - Truelancer
+  - Workana
+  - Toptal
+  - Other legitimate freelance marketplaces with documented developer access
+
+  For every platform, record:
+
+  - Official API availability
+  - Developer registration requirements
+  - OAuth or API-key support
+  - Job discovery permissions
+  - Automated bidding permissions
+  - Messaging permissions
+  - Submission permissions
+  - Applicable restrictions
+  - Evidence and verification date
+
+  Do not confuse unrelated products that share the same name.
+
+  Do not implement unofficial automation merely because it is technically possible.
+
+  **Acceptance:** A documented platform compatibility matrix is available inside ASG.
+
+- [ ] F29 Universal Job Platform Adapter — Queued; priority P0; depends on F25
+  - Source/description/scope: supplied TASK 05; retained contract below.
+  - Bounded delivery slices (separate issues/PRs under this feature):
+    1. Define typed adapter results, capabilities and explicit unsupported errors.
+    2. Inject adapters behind common controller-facing service contract.
+    3. Prove two adapters/test doubles integrate without changing marketplace logic.
+  - Validation: shared validation contract above plus the slice-specific tests and real-operation evidence described in its scope/acceptance below.
+
+  Define a common adapter contract:
+
+  ```dart
+  abstract interface class JobPlatformAdapter {
+    Future<PlatformCapabilities> getCapabilities();
+
+    Future<AuthResult> connect();
+
+    Future<List<FreelanceJob>> searchJobs(
+      JobSearchFilter filter,
+    );
+
+    Future<FreelanceJob> getJobDetails(String jobId);
+
+    Future<BidResult> submitBid(
+      ApprovedBid bid,
+    );
+
+    Future<List<ClientMessage>> getMessages(
+      String conversationId,
+    );
+
+    Future<MessageResult> sendMessage(
+      ApprovedMessage message,
+    );
+
+    Future<ContractStatus> getContractStatus(
+      String contractId,
+    );
+
+    Future<DeliveryResult> submitDeliverables(
+      ApprovedDelivery delivery,
+    );
+  }
+  ```
+
+  This is an illustrative contract. Adapt signatures to the existing architecture.
+
+  Unsupported operations must return explicit capability errors.
+
+  Do not emulate unsupported API operations with unauthorized browser automation.
+
+  **Acceptance:** Multiple adapters can be integrated without modifying the central marketplace business logic.
+
+  # 4. USER ACCOUNTS AND PLATFORM AUTHENTICATION
+
+- [ ] F30 Connected Accounts Management Page — Queued; priority P0; depends on F31, F32
+  - Source/description/scope: supplied TASK 06; retained contract below.
+  - Bounded delivery slices (separate issues/PRs under this feature):
+    1. Persist nonsecret account metadata and per-account state.
+    2. Build connect/reconnect/disconnect and available-operation views.
+    3. Verify multiple accounts, restart, expiry and independent disconnect.
+  - Validation: shared validation contract above plus the slice-specific tests and real-operation evidence described in its scope/acceptance below.
+
+  Create a Connected Accounts page.
+
+  Display:
+
+  - Platform name
+  - Account identifier
+  - Connection status
+  - Granted permissions
+  - Token expiration
+  - Last synchronization
+  - Available operations
+  - Reconnect action
+  - Disconnect action
+
+  A single ASG user may connect multiple freelance accounts.
+
+  **Acceptance:** Users can inspect and manage connections independently.
+
+- [ ] F31 OAuth 2.0 and API Authentication — Queued; priority P0; depends on F32
+  - Source/description/scope: supplied TASK 07; retained contract below.
+  - Bounded delivery slices (separate issues/PRs under this feature):
+    1. Design public/confidential client and redirect threat boundaries.
+    2. Implement supported OAuth/PKCE or API authentication and refresh.
+    3. Verify redirect rejection, refresh failure/revocation and secret redaction.
+  - Validation: shared validation contract above plus the slice-specific tests and real-operation evidence described in its scope/acceptance below.
+
+  Implement secure authentication through official platform-supported mechanisms.
+
+  Support OAuth authorization code with PKCE where appropriate, secure redirect handling and token refresh.
+
+  Never request or store platform passwords when OAuth is available.
+
+  Do not embed client secrets in distributed Flutter application code.
+
+  Where confidential OAuth clients require secrets, implement a suitable local confidential component or approved backend design.
+
+  **Acceptance:** Authorization succeeds without exposing secrets or tokens in logs, URLs, source control or general project storage.
+
+- [ ] F32 Secure Credential Storage — Queued; priority P0; depends on shared current-queue foundations only
+  - Source/description/scope: supplied TASK 08; retained contract below.
+  - Bounded delivery slices (separate issues/PRs under this feature):
+    1. Select secure credential facilities per enabled host.
+    2. Implement token lifecycle, rotation and secure disconnection.
+    3. Prove project export/ordinary backup contains no sensitive credentials; disable unsupported hosts.
+  - Validation: shared validation contract above plus the slice-specific tests and real-operation evidence described in its scope/acceptance below.
+
+  Use operating-system secure credential facilities.
+
+  Keep tokens outside the existing general-purpose Sembast project database.
+
+  Implement token rotation, expiration handling, revocation and secure disconnection.
+
+  **Acceptance:** Sensitive credentials cannot be recovered from exported ASG projects or ordinary application backups.
+
+- [ ] F33 Permission-Aware Platform Actions — Queued; priority P0; depends on F25, F29, F31, F32
+  - Source/description/scope: supplied TASK 09; retained contract below.
+  - Bounded delivery slices (separate issues/PRs under this feature):
+    1. Define deterministic authorization decision and approval binding.
+    2. Enforce all account/scope/capability/policy/rate/contract checks before dispatch.
+    3. Test denied actions issue zero external requests and stale approvals fail closed.
+  - Validation: shared validation contract above plus the slice-specific tests and real-operation evidence described in its scope/acceptance below.
+
+  Before performing any external action, verify:
+
+  - Connected account
+  - Valid credentials
+  - Required API scope
+  - Verified platform capability
+  - User authorization
+  - Rate limits
+  - Platform policy
+  - Current contract state
+
+  **Acceptance:** Unauthorized actions fail safely before any external request.
+
+- [ ] F34 Account Connection Diagnostics — Queued; priority P1; depends on F30, F33
+  - Source/description/scope: supplied TASK 10; retained contract below.
+  - Bounded delivery slices (separate issues/PRs under this feature):
+    1. Normalize redacted connectivity/auth/permission/rate/outage diagnostics.
+    2. Render actionable per-account recovery guidance.
+    3. Test reconnect and transient failure recovery without leaking credentials.
+  - Validation: shared validation contract above plus the slice-specific tests and real-operation evidence described in its scope/acceptance below.
+
+  Create diagnostics for:
+
+  - API connectivity
+  - Authentication failures
+  - Missing permissions
+  - Expired tokens
+  - Rate limiting
+  - Platform outages
+  - Restricted account operations
+
+  **Acceptance:** Users receive actionable errors without exposure of credentials.
+
+  # 5. JOB DISCOVERY AND PROFITABILITY
+
+- [ ] F35 Job Marketplace Page — Queued; priority P0; depends on F30, F29
+  - Source/description/scope: supplied TASK 11; retained contract below.
+  - Bounded delivery slices (separate issues/PRs under this feature):
+    1. Define durable marketplace navigation and workspace state.
+    2. Deliver responsive sections and state restoration.
+    3. Exercise desktop/mobile layouts, restart and persistence failure.
+  - Validation: shared validation contract above plus the slice-specific tests and real-operation evidence described in its scope/acceptance below.
+
+  Add a top-level Job Marketplace page with:
+
+  - Discover Jobs
+  - Recommended Jobs
+  - Saved Jobs
+  - My Bids
+  - Client Conversations
+  - Active Projects
+  - Completed Projects
+  - Earnings
+  - Connected Platforms
+  - Settings
+
+  Use the existing Flutter MVC architecture and responsive desktop/mobile patterns.
+
+  **Acceptance:** Marketplace state persists across application restarts.
+
+- [ ] F36 Multi-Platform Job Discovery Engine — Queued; priority P0; depends on F35, F29
+  - Source/description/scope: supplied TASK 12; retained contract below.
+  - Bounded delivery slices (separate issues/PRs under this feature):
+    1. Normalize source IDs, URLs, filters and manual imports.
+    2. Add paginated cancellable adapter search and deduplication.
+    3. Test incremental sync, duplicate pages, partial outages and restart.
+  - Validation: shared validation contract above plus the slice-specific tests and real-operation evidence described in its scope/acceptance below.
+
+  Search connected platforms using supported APIs.
+
+  Normalize results into a shared `FreelanceJob` model.
+
+  Store source IDs and original listing URLs.
+
+  Implement deduplication, pagination, incremental synchronization and cancellation.
+
+  Support manual job URLs and imported job descriptions where direct integration is unavailable.
+
+  **Acceptance:** Jobs from different platforms can be displayed and filtered consistently.
+
+- [ ] F37 AI Requirements Extraction — Queued; priority P0; depends on F36
+  - Source/description/scope: supplied TASK 13; retained contract below.
+  - Bounded delivery slices (separate issues/PRs under this feature):
+    1. Define validated job-requirements schema with explicit unknowns.
+    2. Route configured local model to bounded structured extraction.
+    3. Review extracted fields with source trace and reject fabricated/malformed data.
+  - Validation: shared validation contract above plus the slice-specific tests and real-operation evidence described in its scope/acceptance below.
+
+  Use the configured local model to analyze each job.
+
+  Extract:
+
+  - Required deliverables
+  - Required capabilities
+  - Budget and currency
+  - Deadline
+  - Required software
+  - Input files
+  - Output formats
+  - Dependencies
+  - Ambiguities
+  - Client expectations
+  - Verification requirements
+
+  Use structured output with schema validation.
+
+  Never invent missing job requirements.
+
+  **Acceptance:** Every analyzed job produces a structured, reviewable requirements record.
+
+- [ ] F38 Capability and Feasibility Scoring — Queued; priority P0; depends on F37, F45, F52
+  - Source/description/scope: supplied TASK 14; retained contract below.
+  - Bounded delivery slices (separate issues/PRs under this feature):
+    1. Define documented capability-fit and feasibility rules.
+    2. Compare requirements with verified executors/tools/model/host.
+    3. Test all five categories, missing tools and insufficient information.
+  - Validation: shared validation contract above plus the slice-specific tests and real-operation evidence described in its scope/acceptance below.
+
+  Compare job requirements against ASG's verified capabilities.
+
+  Classify opportunities as:
+
+  - Ready to execute
+  - Executable after installing tools
+  - Requires human assistance
+  - Unsupported
+  - Insufficient information
+
+  Calculate a capability-fit score using documented criteria.
+
+  Do not use arbitrary model-generated confidence percentages as verified facts.
+
+  **Acceptance:** Unsupported jobs cannot be represented as automatically executable.
+
+- [ ] F39 Profitability and Opportunity Ranking — Queued; priority P0; depends on F38
+  - Source/description/scope: supplied TASK 15; retained contract below.
+  - Bounded delivery slices (separate issues/PRs under this feature):
+    1. Define currency-aware revenue/cost/effort assumptions and unknowns.
+    2. Implement deterministic formulas, scenarios and historical evidence handling.
+    3. Expose editable assumptions, rankings and reproducible calculation tests.
+  - Validation: shared validation contract above plus the slice-specific tests and real-operation evidence described in its scope/acceptance below.
+
+  Estimate:
+
+  - Project revenue
+  - Platform fees
+  - Proposal costs
+  - Compute costs
+  - Tool costs
+  - Human review time
+  - Expected execution time
+  - Expected revisions
+  - Payment risk
+  - Probability of winning, where evidence exists
+
+  Calculate:
+
+  ```text
+  Estimated Net Profit =
+    Project Revenue
+    - Platform Fees
+    - Compute Costs
+    - Tool Costs
+    - Expected Revision Costs
+    - Other Direct Costs
+
+  Expected Opportunity Value =
+    Estimated Win Probability
+    × Estimated Net Profit
+    - Expected Bidding Costs
+
+  Expected Profit Per Hour =
+    Expected Opportunity Value
+    / Total Expected Effort Hours
+  ```
+
+  Do not invent win probabilities. Use historical evidence when sufficient; otherwise display unknown or a clearly labeled scenario.
+
+  Provide sorting by profitability, execution time, risk and capability fit.
+
+  **Acceptance:** Users can inspect and adjust assumptions behind each recommendation.
+
+  # 6. BIDDING AND CLIENT COMMUNICATION
+
+- [ ] F40 AI Proposal Generator — Queued; priority P0; depends on F37, F38, F39
+  - Source/description/scope: supplied TASK 16; retained contract below.
+  - Bounded delivery slices (separate issues/PRs under this feature):
+    1. Build structured proposal from reviewed requirements and verified experience.
+    2. Add editable deliverables/milestones/price/timeline/questions.
+    3. Test absent evidence cannot invent credentials or client results.
+  - Validation: shared validation contract above plus the slice-specific tests and real-operation evidence described in its scope/acceptance below.
+
+  Generate proposals containing:
+
+  - Understanding of the project
+  - Proposed approach
+  - Deliverables
+  - Milestones
+  - Estimated price
+  - Delivery timeline
+  - Clarifying questions
+  - Relevant verified experience
+
+  Do not invent qualifications, portfolio projects or previous client results.
+
+  **Acceptance:** Every proposal can be reviewed and edited before submission.
+
+- [ ] F41 User-Approved Bidding — Queued; priority P0; depends on F40, F33
+  - Source/description/scope: supplied TASK 17; retained contract below.
+  - Bounded delivery slices (separate issues/PRs under this feature):
+    1. Persist exact approved proposal/price/account/job revision.
+    2. Dispatch only after fresh permission validation and explicit approval.
+    3. Reconcile confirmation/uncertain submissions; test changed-price and duplicate retry refusal.
+  - Validation: shared validation contract above plus the slice-specific tests and real-operation evidence described in its scope/acceptance below.
+
+  Implement the workflow:
+
+  ```text
+  Job Selected
+      ↓
+  Requirements Analysis
+      ↓
+  Feasibility and Profitability Review
+      ↓
+  Proposal Generation
+      ↓
+  User Approval
+      ↓
+  Platform Permission Validation
+      ↓
+  Bid Submission
+      ↓
+  Submission Confirmation
+  ```
+
+  Persist the exact approved proposal and price.
+
+  Changes after approval require renewed authorization.
+
+  **Acceptance:** No external bid is submitted without valid approval and platform permission.
+
+- [ ] F42 Bid Tracking — Queued; priority P1; depends on F41
+  - Source/description/scope: supplied TASK 18; retained contract below.
+  - Bounded delivery slices (separate issues/PRs under this feature):
+    1. Persist draft/approval/submission and lifecycle state.
+    2. Synchronize supported platform-confirmed events.
+    3. Test unsupported viewed state, restart, cancellation and stale events.
+  - Validation: shared validation contract above plus the slice-specific tests and real-operation evidence described in its scope/acceptance below.
+
+  Track:
+
+  - Draft
+  - Awaiting approval
+  - Submitted
+  - Viewed, if supported
+  - Employer responded
+  - Negotiation
+  - Awarded
+  - Rejected
+  - Expired
+  - Cancelled
+
+  Use platform-confirmed events rather than assumptions.
+
+  **Acceptance:** Status survives restarts and synchronizes with available platform information.
+
+- [ ] F43 AI Client Communication Agent — Queued; priority P1; depends on F41, F33
+  - Source/description/scope: supplied TASK 19; retained contract below.
+  - Bounded delivery slices (separate issues/PRs under this feature):
+    1. Retrieve authorized conversation context and classify changes.
+    2. Generate editable replies and require exact-message approval.
+    3. Test scope/price/deadline changes and prohibit unapproved commitments.
+  - Validation: shared validation contract above plus the slice-specific tests and real-operation evidence described in its scope/acceptance below.
+
+  Retrieve and analyze client messages through authorized integrations.
+
+  Generate context-aware replies.
+
+  Identify:
+
+  - Clarification requests
+  - Scope changes
+  - Deadline changes
+  - Pricing negotiations
+  - New deliverables
+  - Contract confirmations
+
+  Require user approval for external messages in the initial implementation.
+
+  Support future narrowly scoped auto-replies only where permitted and explicitly configured.
+
+  **Acceptance:** Conversation history is preserved and no unapproved contractual commitment is made.
+
+- [ ] F44 Contract and Lead Management — Queued; priority P1; depends on F42, F43
+  - Source/description/scope: supplied TASK 20; retained contract below.
+  - Bounded delivery slices (separate issues/PRs under this feature):
+    1. Define durable lead/contract transition model and alternatives.
+    2. Bind confirmed award and execution approval to requirements.
+    3. Test positive messages never start execution; cover dispute/revision/failure/restart.
+  - Validation: shared validation contract above plus the slice-specific tests and real-operation evidence described in its scope/acceptance below.
+
+  Implement a lead pipeline:
+
+  ```text
+  Discovered
+  → Evaluated
+  → Bid Submitted
+  → Negotiation
+  → Contract Awarded
+  → Requirements Confirmed
+  → Execution Approved
+  → In Progress
+  → Delivery Review
+  → Submitted
+  → Accepted
+  → Paid
+  ```
+
+  Allow alternative states for cancellation, dispute, revision and failure.
+
+  Never start paid-contract execution merely because a message sounds positive.
+
+  **Acceptance:** Execution begins only after contract confirmation and required user authorization.
+
+  # 7. UNIVERSAL AI WORK EXECUTION
+
+- [ ] F45 Universal Task Execution Architecture — Queued; priority P0; depends on F52
+  - Source/description/scope: supplied TASK 21; retained contract below.
+  - Bounded delivery slices (separate issues/PRs under this feature):
+    1. Define executor descriptors, inputs/outputs/verification and recovery contract.
+    2. Reuse planning, approval, checkpoints and execution policy.
+    3. Register independent software/nonsoftware executors without marketplace-controller changes.
+  - Validation: shared validation contract above plus the slice-specific tests and real-operation evidence described in its scope/acceptance below.
+
+  Create a common execution abstraction for software and nonsoftware tasks.
+
+  Each executor must declare:
+
+  - Supported job categories
+  - Required inputs
+  - Required tools
+  - Model requirements
+  - Permissions
+  - Expected outputs
+  - Verification methods
+  - Resource requirements
+  - Cancellation and recovery support
+
+  Reuse ASG's existing planning and execution infrastructure.
+
+  **Acceptance:** New executors can be registered without changing marketplace controllers.
+
+- [ ] F46 Software Development Executor — Queued; priority P0; depends on F45, F44
+  - Source/description/scope: supplied TASK 22; retained contract below.
+  - Bounded delivery slices (separate issues/PRs under this feature):
+    1. Map confirmed software requirements to tracked ASG project/adapter.
+    2. Reuse approved source/build/test/review and bounded repairs.
+    3. Verify deliverable evidence on supported adapter and reject unsupported targets.
+  - Validation: shared validation contract above plus the slice-specific tests and real-operation evidence described in its scope/acceptance below.
+
+  Integrate accepted programming jobs with existing ASG project creation, planning, source generation, build, testing and review workflows.
+
+  Preserve existing approval and sandbox boundaries.
+
+  Support only frameworks and targets with verified execution adapters.
+
+  **Acceptance:** A supported software job can create a tracked ASG project and produce verifiable deliverables.
+
+- [ ] F47 Data Entry and Structured Data Processing Executor — Queued; priority P0; depends on F45, F53
+  - Source/description/scope: supplied TASK 23; retained contract below.
+  - Bounded delivery slices (separate issues/PRs under this feature):
+    1. Implement deterministic import/schema/field mapping and transformations.
+    2. Add validation, reconciliation, duplicates and reproducible reports.
+    3. Exercise representative CSV/XLSX/JSON fixtures and row-level error recovery.
+  - Validation: shared validation contract above plus the slice-specific tests and real-operation evidence described in its scope/acceptance below.
+
+  Implement tools for:
+
+  - CSV processing
+  - Excel import/export
+  - Data normalization
+  - Duplicate detection
+  - Data validation
+  - Field mapping
+  - Table extraction
+  - Batch transformation
+  - Structured JSON generation
+  - Data reconciliation
+
+  Use deterministic code for bulk operations.
+
+  Use the language model for understanding instructions, schema mapping and exception handling.
+
+  **Acceptance:** Data transformations are reproducible, validated and accompanied by error reports.
+
+- [ ] F48 Document Processing Executor — Queued; priority P0; depends on F45, F53
+  - Source/description/scope: supplied TASK 24; retained contract below.
+  - Bounded delivery slices (separate issues/PRs under this feature):
+    1. Implement bounded PDF/DOCX/text/table/image extraction.
+    2. Generate/format/compare/convert documents with content preservation.
+    3. Validate representative files and visually inspect layouts/embedded images where needed.
+  - Validation: shared validation contract above plus the slice-specific tests and real-operation evidence described in its scope/acceptance below.
+
+  Support:
+
+  - PDF extraction
+  - PDF creation
+  - DOCX reading and generation
+  - Text extraction
+  - Document formatting
+  - Table extraction
+  - Document comparison
+  - Structured information extraction
+  - Batch document conversion
+
+  Use established document-processing libraries and inspect embedded images where needed.
+
+  **Acceptance:** Generated documents preserve required content and pass format-specific validation.
+
+- [ ] F49 Research and Writing Executor — Queued; priority P1; depends on F45, F54
+  - Source/description/scope: supplied TASK 25; retained contract below.
+  - Bounded delivery slices (separate issues/PRs under this feature):
+    1. Connect permitted retrieval and provenance to a reviewed research plan.
+    2. Generate structured writing/editing/translation outputs.
+    3. Check source traceability, structure and disclosure requirements.
+  - Validation: shared validation contract above plus the slice-specific tests and real-operation evidence described in its scope/acceptance below.
+
+  Support:
+
+  - Research summaries
+  - Reports
+  - Articles
+  - Product descriptions
+  - Technical documentation
+  - Editing and rewriting
+  - Source-backed research
+  - Translation
+
+  Integrate permitted retrieval and citation tools.
+
+  Do not fabricate sources or claim human-authored work where disclosure is required.
+
+  **Acceptance:** Research outputs can be traced to sources, and generated documents satisfy the requested structure.
+
+- [ ] F50 Spreadsheet and Data Analysis Executor — Queued; priority P1; depends on F45, F53
+  - Source/description/scope: supplied TASK 26; retained contract below.
+  - Bounded delivery slices (separate issues/PRs under this feature):
+    1. Implement deterministic spreadsheet cleaning/formulas/aggregation.
+    2. Add charts/statistics/reports and reconciliation.
+    3. Independently reproduce calculations and validate XLSX/CSV outputs.
+  - Validation: shared validation contract above plus the slice-specific tests and real-operation evidence described in its scope/acceptance below.
+
+  Support:
+
+  - XLSX and CSV processing
+  - Formulas
+  - Data cleaning
+  - Pivot-style aggregation
+  - Charts
+  - Statistical summaries
+  - Report generation
+  - Dataset validation
+  - Reconciliation
+
+  Prefer deterministic computation over language-model arithmetic.
+
+  **Acceptance:** Calculations are testable and outputs can be independently reproduced.
+
+- [ ] F51 Audio, Image and Multimodal Task Executor — Queued; priority P2; depends on F45, F52
+  - Source/description/scope: supplied TASK 27; retained contract below.
+  - Bounded delivery slices (separate issues/PRs under this feature):
+    1. Evaluate installed speech/OCR/image/subtitle models and tools.
+    2. Register only tested multimodal input/output capabilities.
+    3. Test missing models, supported samples and isolation of unrelated jobs.
+  - Validation: shared validation contract above plus the slice-specific tests and real-operation evidence described in its scope/acceptance below.
+
+  Evaluate optional capabilities for:
+
+  - Speech transcription
+  - Audio-to-text
+  - OCR
+  - Image classification
+  - Image-to-text extraction
+  - Subtitle generation
+  - Image transformation
+  - Other supported multimodal processing
+
+  Register these capabilities only when suitable models and tools are installed and tested.
+
+  **Acceptance:** Missing multimodal capabilities are reported explicitly and do not block unrelated jobs.
+
+  # 8. CONNECTOR AND TOOL ECOSYSTEM
+
+- [ ] F52 Universal Tool Connector Registry — Queued; priority P0; depends on shared current-queue foundations only
+  - Source/description/scope: supplied TASK 28; retained contract below.
+  - Bounded delivery slices (separate issues/PRs under this feature):
+    1. Define versioned connector metadata and required permissions.
+    2. Probe installation/health/resources with representative verification.
+    3. Register local/library/API/MCP integrations with untrusted instructions confined.
+  - Validation: shared validation contract above plus the slice-specific tests and real-operation evidence described in its scope/acceptance below.
+
+  Create a tool registry with:
+
+  - Connector ID
+  - Version
+  - Capabilities
+  - Required permissions
+  - Supported input/output formats
+  - Installation state
+  - Health status
+  - Resource requirements
+  - Verification tests
+
+  Support local executables, libraries, authorized APIs and MCP-compatible integrations where appropriate.
+
+  Do not allow arbitrary third-party connector instructions to override execution policy.
+
+  **Acceptance:** ASG can enumerate available tools and determine whether they satisfy job requirements.
+
+- [ ] F53 File and Data Format Connectors — Queued; priority P0; depends on F52
+  - Source/description/scope: supplied TASK 29; retained contract below.
+  - Bounded delivery slices (separate issues/PRs under this feature):
+    1. Evaluate listed libraries for license, host and runtime fit.
+    2. Integrate one format connector per bounded issue.
+    3. Run representative/corrupt-file tests before advertising each installed capability.
+  - Validation: shared validation contract above plus the slice-specific tests and real-operation evidence described in its scope/acceptance below.
+
+  Investigate and integrate suitable libraries for:
+
+  - PDF: PyMuPDF, pypdf
+  - Word: python-docx
+  - Excel: openpyxl, pandas
+  - CSV/JSON: Python standard library, pandas
+  - OCR: Tesseract or another verified OCR runtime
+  - Images: Pillow
+  - HTML: Beautiful Soup
+  - Databases: SQLite and approved database connectors
+
+  Validate licensing, platform compatibility and runtime availability before selecting dependencies.
+
+  **Acceptance:** Each installed connector passes representative file-processing tests.
+
+- [ ] F54 Browser and Web Research Connector — Queued; priority P1; depends on F52
+  - Source/description/scope: supplied TASK 30; retained contract below.
+  - Bounded delivery slices (separate issues/PRs under this feature):
+    1. Define permitted retrieval/site-policy/rate/provenance rules.
+    2. Implement bounded retrieval/extraction and explicitly approved browser operations.
+    3. Test source metadata, unsupported sites and marketplace circumvention refusal.
+  - Validation: shared validation contract above plus the slice-specific tests and real-operation evidence described in its scope/acceptance below.
+
+  Implement permitted web retrieval and research capabilities.
+
+  Support:
+
+  - Public page retrieval
+  - HTML extraction
+  - Structured data extraction
+  - Approved browser automation
+  - Source metadata
+  - Rate limiting
+  - Robots and site-policy checks where applicable
+
+  Browser automation must not be used to circumvent freelance platform restrictions.
+
+  **Acceptance:** Retrieved information includes provenance, and unsupported sites are handled safely.
+
+- [ ] F55 Cloud Storage and Delivery Connectors — Queued; priority P1; depends on F52, F33
+  - Source/description/scope: supplied TASK 31; retained contract below.
+  - Bounded delivery slices (separate issues/PRs under this feature):
+    1. Evaluate official storage APIs/scopes and local delivery first.
+    2. Implement one verified upload/download/sharing connector.
+    3. Test exact authorized packaging/destination, failures and confirmation before delivery.
+  - Validation: shared validation contract above plus the slice-specific tests and real-operation evidence described in its scope/acceptance below.
+
+  Investigate:
+
+  - Google Drive
+  - Dropbox
+  - OneDrive
+  - GitHub
+  - S3-compatible storage
+  - Local filesystem delivery
+
+  Use official APIs and user-granted scopes.
+
+  Implement upload, download and sharing only where authorized.
+
+  **Acceptance:** ASG can package and deliver files through at least one verified connector
+
 ## Adding new tasks
 
 On every scheduled run compare the current implementation, user requests, open issues and review findings with this queue. Add a task only for a user-requested capability, an unmet product specification or a reproducible defect. First search all queued, active and completed entries plus GitHub issues/PRs; extend or reopen an existing task when it covers the same work. Do not add speculative features or duplicate issues.

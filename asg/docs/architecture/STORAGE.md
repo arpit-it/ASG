@@ -329,3 +329,8 @@ draft. These local artifacts are excluded from portable archives. They are not
 source revisions, promotion, Plan consent, verification or original starter bytes.
 Closing discards unsaved edits. A Stop can revoke publication before commit, but
 cannot erase a write that already committed; inspect the retained draft afterward.
+
+
+## Planned marketplace persistence
+
+The [F25–F55 requirements](../REQUIREMENTS.md#post-current-queue-marketplace-and-universal-work--5-november-2026) plan versioned nonsecret accounts, jobs, analyses, exact approvals, bids, conversations, contract transitions, executor checkpoints, deliverable provenance and verified payment observations. Reuse transactional RecordStorage and corruption-preserving migration, with restart and failed-write tests before success publication. Platform credentials must use separate OS secure credential facilities and remain absent from project exports and ordinary backups; a metadata reference is not a token. Existing storage is not a secrets vault. No marketplace schema or credential implementation is delivered by this plan.

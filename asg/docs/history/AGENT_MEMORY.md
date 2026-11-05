@@ -1,5 +1,10 @@
 # Durable project memory
 
+## Marketplace planning addition — 5 November 2026
+
+Owner-requested planning only, issue #507: the canonical [requirements](../REQUIREMENTS.md#post-current-queue-marketplace-and-universal-work--5-november-2026) now retain all 31 supplied tasks as F25–F55, grouped into six parent delivery steps and three bounded slices per child. Status is Queued, not implemented. Existing F01–F24 and deferred #400 acceptance take precedence; F23 is final within the original queue. No current task status, completion evidence or active implementation is changed. Future runs read the canonical ledger, finish existing work, then select one dependency-ready bounded marketplace increment at a time; no duplicate backlog or bulk implementation issue creation. Account access, marketplace operations, universal executors, delivery and earnings are planned, with official capability evidence, secure credentials, exact user approvals and verified tools required. No new schedule or schedule timing change is needed because the existing development automation already reads REQUIREMENTS.md.
+
+Documentation validation covers source TASK 01–31 retention, unique F25–F55 IDs, dependency DAG/parent order, unchanged pre-existing ledger content and local links. Publication status: planning PR pending independent final review, required CI and verified merge; this entry is not a feature-completion claim.
 ## User naming preference — 25 October 2026
 
 Use direct issue-based branch names such as `<issue-number>-<short-description>` without `codex/`, `chatgpt/`, or any assistant/provider identification. Do not add Codex, ChatGPT, OpenAI, or similar identification to branch names or PR titles/bodies. If a working identity is needed, use exactly "ASG is working". Do not announce routine branch creation. This user preference applies to all future and scheduled runs; historical branch names remain unchanged.

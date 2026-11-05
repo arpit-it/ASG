@@ -10,6 +10,8 @@ The [expanded workflow contract](REQUIREMENTS.md#expanded-product-workflows-and-
 
 The [user-owned Hugging Face cloud direction](REQUIREMENTS.md#user-owned-hugging-face-cloud-and-pricing-direction--28-october-2026) keeps local ASG free and scopes optional user-billed Spaces/API/endpoints to final F23. Cloud support remains planned. ASG-owned code/docs use [Mozilla Public License 2.0](../../LICENSE) with [owner attribution](../../NOTICE); [responsible-use guidance](../../RESPONSIBLE_USE.md) is separate from that grant.
 
+The [post-current-queue marketplace plan](REQUIREMENTS.md#post-current-queue-marketplace-and-universal-work--5-november-2026) adds queued F25–F55 in six delivery steps after F01–F24 and deferred acceptance. Freelance accounts, bidding, messaging, universal work execution and delivery are planned capabilities. F23 remains final within the original queue.
+
 ## Architecture and behavior
 
 - [Architecture](architecture/ARCHITECTURE.md)
@@ -46,3 +48,4 @@ The [user-owned Hugging Face cloud direction](REQUIREMENTS.md#user-owned-hugging
 - [Initial foundation notes](history/INITIAL_FOUNDATION.md)
 
 Repository contribution instructions and vulnerability reporting remain at the repository root. Platform asset READMEs remain beside their assets.
+
