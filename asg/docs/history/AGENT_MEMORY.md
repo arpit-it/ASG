@@ -1,5 +1,11 @@
 # Durable project memory
 
+## Isolated ASG snapshots — 5 November 2026
+
+F12 source snapshot CLI copies a reviewed commit from a trusted local checkout and distinguishes interrupted staging from complete output. [PR #519](https://github.com/arpit-it/ASG/pull/519) merged on 5 November 2026 at 18:14:58 UTC as `8880a8e145c4f131493e253d157ac20ccb3aff2f`. Head `ed690a6ecbca1011129e89fcc3c01f129d472429` passed [required CI](https://github.com/arpit-it/ASG/actions/runs/42080394812) and [independent review](https://github.com/arpit-it/ASG/pull/519#pullrequestreview-5789732996).
+
+F12 macOS Projects can prepare that source snapshot. An isolated native launch copied the exact fixture and preserved dirty source. The revised Stop path reaped a blocked Git child in a native test. [PR #520](https://github.com/arpit-it/ASG/pull/520) merged on 5 November 2026 at 21:12:07 UTC as `2d66340e88fe6e217373df6ca6579e9d2d7a5989`. Head `caf50ba2ec31ba6285d0114ce1c402fc92e84b4c` passed [required CI](https://github.com/arpit-it/ASG/actions/runs/42108415741) after a fixture retry and [independent review](https://github.com/arpit-it/ASG/pull/520#pullrequestreview-5792189587). [Issue #406](https://github.com/arpit-it/ASG/issues/406) remains open for candidate execution and protected delivery.
+
 ## Verified HTML boundary and local-model evidence — 5 November 2026
 
 The [interactive HTML boundary experiment](../development/HTML_INTERACTIVE_BOUNDARY.md) reproduced outbound egress through child self-navigation in Chrome 156.0.8078.81 on macOS arm64. This rejects the browser-only candidate. F11 / [#402](https://github.com/arpit-it/ASG/issues/402) stays open. Interactive acceptance still needs host-enforced egress denial and noncooperative Stop. The fixture used fixed synthetic source. [PR #516](https://github.com/arpit-it/ASG/pull/516) merged on 2026-11-05 at 08:02:04 UTC as `5a09899d63652d3fb1e674b254b81a4b1e040293`. Tested head `7f6e454576e938b11672f95549e8b6f7fdd2dd11` passed [required CI](https://github.com/arpit-it/ASG/actions/runs/41990235480) and [independent review](https://github.com/arpit-it/ASG/pull/516#pullrequestreview-5781484060).

@@ -32,6 +32,7 @@ class _SelfSnapshotScreenState extends State<SelfSnapshotScreen> {
     try {
       final selected = await widget.picker.pick();
       if (selected == null || !mounted) return;
+      if (!sourceFolder) widget.controller.clearStatus();
       setState(() {
         if (sourceFolder) {
           source = selected;
@@ -110,12 +111,22 @@ class _SelfSnapshotScreenState extends State<SelfSnapshotScreen> {
                     : null,
                 child: const Text('Prepare source snapshot'),
               ),
-              if (controller.busy)
+              if (controller.busy && !controller.inspecting)
                 OutlinedButton(
                   onPressed: controller.stopping ? null : controller.stop,
                   child: Text(controller.stopping ? 'Stopping…' : 'Stop'),
                 ),
               if (controller.status case final status?) SelectableText(status),
+              OutlinedButton(
+                onPressed: enabled && destination.isNotEmpty
+                    ? () => controller.inspect(destination)
+                    : null,
+                child: Text(
+                  controller.inspecting
+                      ? 'Inspecting destination…'
+                      : 'Find incomplete snapshots',
+                ),
+              ),
             ],
           );
         },
