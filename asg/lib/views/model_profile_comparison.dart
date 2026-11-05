@@ -68,6 +68,7 @@ class _PresetObservation extends StatelessWidget {
               const Text('Historical test: unavailable (not saved).'),
             if (observation != null) ...[
               _DeclaredProfile(observation.profileNotes, historical: true),
+              Text(_declarationComparison(notes, observation.profileNotes)),
               Text('Observed UTC: ${observation.observedAt.toIso8601String()}'),
               Text(
                 'Test: ${observation.jsonFormat ? 'JSON sentinel object' : 'nonblank text'}; '
@@ -80,6 +81,12 @@ class _PresetObservation extends StatelessWidget {
               Text(
                 'Historical response model ID: '
                 '${observation.responseModel ?? 'unavailable (not recorded)'}.',
+              ),
+              Text(
+                metrics == null
+                    ? 'Server-reported test token counts: unavailable (not recorded).'
+                    : 'Server-reported test tokens: ${metrics.promptTokens} prompt, '
+                          '${metrics.completionTokens} completion.',
               ),
               Text(
                 'Server-reported generation speed: '
@@ -95,6 +102,33 @@ class _PresetObservation extends StatelessWidget {
       ),
     );
   }
+}
+
+Map<String, Object?> _declarations(ModelProfileNotes? notes) => {
+  'revision': notes?.revision ?? '',
+  'license': notes?.license ?? '',
+  'architecture': notes?.architecture ?? '',
+  'quantization': notes?.quantization ?? '',
+  'backend': notes?.backend ?? '',
+  'context tokens': notes?.contextTokens,
+};
+
+String _declarationComparison(
+  ModelProfileNotes? current,
+  ModelProfileNotes? historical,
+) {
+  if (historical == null || historical.isEmpty) {
+    return 'Declaration comparison unavailable without test-time notes.';
+  }
+  final currentFields = _declarations(current);
+  final changedFields = _declarations(historical).entries
+      .where((field) => field.value != currentFields[field.key])
+      .map((field) => field.key)
+      .join(', ');
+  if (changedFields.isEmpty) {
+    return 'Current declarations match the saved test-time notes.';
+  }
+  return 'Declared fields changed since the test: $changedFields.';
 }
 
 /// Current declarations are deliberately separate from historical observations.
@@ -123,21 +157,11 @@ class _DeclaredProfile extends StatelessWidget {
                 : 'Profile declarations: unavailable (not saved).',
           )
         else ...[
-          for (final entry in {
-            'Revision': profile.revision,
-            'License': profile.license,
-            'Architecture': profile.architecture,
-            'Quantization': profile.quantization,
-            'Backend': profile.backend,
-          }.entries)
+          for (final entry in _declarations(profile).entries)
             Text(
-              '${historical ? 'Test-time declared' : 'Declared'} ${entry.key.toLowerCase()}: '
-              '${entry.value.isEmpty ? 'unavailable (not saved)' : entry.value}',
+              '${historical ? 'Test-time declared' : 'Declared'} ${entry.key}: '
+              '${entry.value == null || entry.value == '' ? 'unavailable (not saved)' : entry.value}',
             ),
-          Text(
-            '${historical ? 'Test-time declared' : 'Declared'} context tokens: '
-            '${profile.contextTokens ?? 'unavailable (not saved)'}',
-          ),
         ],
         const Divider(),
       ],
