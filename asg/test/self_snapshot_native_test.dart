@@ -176,6 +176,21 @@ void main() {
     expect(await check(true, Completer<void>()), 0);
     expect(await manifest.readAsString(), original);
 
+    final sentinel = File('$parent/external-sentinel');
+    await sentinel.writeAsString('outside stays unchanged');
+    final packageConfig = File(
+      '${project.path}/.dart_tool/package_config.json',
+    );
+    await packageConfig.delete();
+    final link = await Process.run('/bin/ln', [
+      sentinel.path,
+      packageConfig.path,
+    ]);
+    expect(link.exitCode, 0, reason: link.stderr.toString());
+    await expectLater(check(false, Completer<void>()), throwsStateError);
+    expect(await sentinel.readAsString(), 'outside stays unchanged');
+    await packageConfig.delete();
+
     final locker = await Process.start('/usr/bin/python3', [
       '-u',
       '-c',

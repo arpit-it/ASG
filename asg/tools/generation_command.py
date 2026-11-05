@@ -7,6 +7,7 @@ import json
 import os
 from pathlib import Path
 import signal
+import stat
 import subprocess
 import sys
 import threading
@@ -200,6 +201,48 @@ def named_test_result(result, test_file, test_name):
     }
 
 
+
+def validate_offline_snapshot(directory, pub_cache):
+    """Refuse aliases to outside inodes before creating or updating work files."""
+    overlay = directory / '.dart_tool' / 'asg_pub_cache'
+    allowed_links = {overlay / name: pub_cache / name
+                     for name in ('hosted', 'hosted-hashes', 'git')}
+    plugin_directories = {directory / platform / 'flutter' / 'ephemeral' / '.plugin_symlinks'
+                          for platform in ('linux', 'windows')}
+    count = 0
+
+    def allowed_link(candidate):
+        target = candidate.resolve(strict=True)
+        if candidate in allowed_links:
+            return target == allowed_links[candidate].resolve(strict=True)
+        # Flutter's offline resolve regenerates these links for desktop plugins.
+        # Only existing package directories in the trusted, read-only cache qualify.
+        return (candidate.parent in plugin_directories and target.is_dir()
+                and any(target.is_relative_to(pub_cache / name)
+                        and target != pub_cache / name for name in ('hosted', 'git')))
+
+    def visit(folder, depth):
+        nonlocal count
+        if depth > 24:
+            raise ValueError('Snapshot exceeds directory depth limit')
+        with os.scandir(folder) as entries:
+            for entry in entries:
+                count += 1
+                if count > 8192:
+                    raise ValueError('Snapshot exceeds entry limit')
+                info = entry.stat(follow_symlinks=False)
+                candidate = Path(entry.path)
+                if stat.S_ISDIR(info.st_mode):
+                    visit(candidate, depth + 1)
+                elif stat.S_ISREG(info.st_mode) and info.st_nlink == 1:
+                    continue
+                elif stat.S_ISLNK(info.st_mode) and allowed_link(candidate):
+                    continue
+                else:
+                    raise ValueError('Linked or unsupported snapshot entry')
+
+    visit(directory, 0)
+
 def confined_operation(directory, sdk, operation, timeout, parent_pid, test_file=None, test_name=None, *, offline=False):
     arguments = OPERATIONS[operation]
     if test_file is not None or test_name is not None:
@@ -220,6 +263,7 @@ def confined_operation(directory, sdk, operation, timeout, parent_pid, test_file
         if any(directory == root or directory in root.parents or root in directory.parents
                for root in (sdk, pub_cache)):
             raise ValueError('Snapshot overlaps tool or cache roots')
+        validate_offline_snapshot(directory, pub_cache)
     dart = sdk / 'bin/cache/dart-sdk/bin/dart'
     snapshot = sdk / 'bin/cache/flutter_tools.snapshot'
     packages = sdk / 'packages/flutter_tools/.dart_tool/package_config.json'
