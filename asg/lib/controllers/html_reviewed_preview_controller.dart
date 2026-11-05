@@ -38,11 +38,17 @@ class HtmlReviewedPreviewController extends BaseController {
     busy = true;
     error = null;
     update();
-    void authorize() {
+    void requireCurrent() {
       if (isDisposed || generation != _generation) {
         throw StateError('Passive preview revoked.');
       }
+    }
+
+    void authorize() {
+      requireCurrent();
       authorizeSource();
+      // Authority callbacks can synchronously Stop or dispose this owner.
+      requireCurrent();
     }
 
     final timer = Timer(deadline, () {

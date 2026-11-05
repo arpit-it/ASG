@@ -13645,3 +13645,66 @@ and nine acceptance-inventory tests pass. Existing local runtime unavailable
 replacement, model download or deployment. Awaiting merge: plugin publication,
 independent exact-final review, actual required CI and reviewer merge remain
 gates. Full F11/#402 and Deferred #400 remain open. Recorded 2026-11-05T01:18:11.870642+00:00.
+
+
+### Reviewed HTML browser dispatch authority verified merged — PR #501
+Bounded F11/#402 correction Done through https://github.com/arpit-it/ASG/pull/501,
+branch `402-reviewed-preview-open-authority`, scope6646868054. Browser dispatch
+now rechecks preview generation/URL/lifecycle after opening notification and
+source-authority callbacks. Stop/disposal before dispatch cannot open a browser;
+already-dispatched browser requests retain their existing cancellation limits.
+Local20fe9fcbd5471744a9cab85378a8f99261685623 and published final
+726521f44efb6613beedc44e694b982c79f1bf8f share exact tree
+6e8d9cc5d7b7da3876df99783ea29778f2a2e601. All six published blob hashes match.
+Independent reviewer matched all946remote blobs/modes and468validation inputs;
+CItestmergec04da6c6 has the same tree. Parent1626Flutter/nine explicit skips,
+29focused,440-file zero-change format, clean analyzer, web/Wasm dry run, macOS
+debug build and nine inventory tests pass. Original-checkout attribution scan
+includes ignored third-party Python files; full-suite pass is from the exact
+tracked-input copy, preserving the installed environment. Independent33focused,
+three extra lifecycle probes,17restored-final retest and nineinventory pass. All
+three new regressions independently fail baseline9e1f2ac5.
+CodeCOMMENT5778456751/finalCOMMENT5778501807 approve unchanged final head.
+Actual requiredCI41947720661 direct final-head checks both SUCCESS:
+Flutter126983961310/Python126983960740. Reviewer inspected actual1578Linux/
+54skips/all3new,17Chrome,transport/staticHTML/webWasm/realindependentgenerated
+Flutter resolve-analyze-test-build-serve and all8Python suites. No findings,
+retries, source revisions or protection changes. Protected expected-head reviewer
+squash merge6c12ec677132b6e9dbc8b3c28353a6152266e13b at2026-11-05T01:28:28Z.
+Parent independently verified PR/currentmain/directchecks/finalreview and signed
+exact-tree/soleparent9e1f2ac5, then safely synchronized local main/origin/main0/0.
+Index empty; both original IDE edits byte-identical. Full F11/#402 remains OPEN/
+unchecked, Deferred #400 retained. No fresh inference, model download, installed
+stable-app replacement, deployment, cadence or notification change. Final merge
+bookkeeping retained locally for the next normal reviewed development PR.
+Receipts:/private/tmp/asg-open-publication.json,/private/tmp/asg501-review-evidence.json,
+/private/tmp/asg501-verified-pr.json,/private/tmp/asg501-sync-record.json,
+/private/tmp/asg501-check-runs.json. Recorded 2026-11-05T01:29:59.525346+00:00.
+
+
+### Reviewed HTML startup authority — issue #402
+In progress on `402-reviewed-preview-start-authority` from verified main
+`6c12ec677132b6e9dbc8b3c28353a6152266e13b`; scope
+https://github.com/arpit-it/ASG/issues/402#issuecomment-6647321261.
+Baseline permits Stop/disposal inside source authority to dispatch startup or
+publish a revoked URL. Recheck generation/disposal after the callback at each
+existing startup/read/final-publication boundary. Six regressions cover both
+revocations at all three boundaries, authorized-read refusal and fresh explicit
+retry; focused 24 controller/host/architecture tests pass. Initial four baseline
+regressions failed before adding authorized-read assertions. Full validation,
+plugin publication, independent final-revision review, required CI and reviewer
+merge remain pending. Full F11/#402 stays unchecked, Deferred #400 retained.
+Delivered passive-preview contracts are sufficient on this Mac; no live inference,
+new adapter support, installed-app replacement or deployment claim. Previous
+PR #501 final merge evidence is retained in this normal development PR.
+Recorded 2026-11-05T01:46:24.126360+00:00.
+
+Final local validation: 1632 Flutter tests pass with nine explicit opt-in skips
+in the tracked-source copy `/private/tmp/asg-start-validation`; all 467 runtime,
+test, tool and dependency inputs match the working source byte for byte.
+24 focused tests, 440-file zero-change format, clean analyzer, web build/Wasm dry
+run, macOS debug build and nine inventory tests pass. Existing runtime health
+unavailable (URLError, 0.005 seconds); no fresh inference claim. Awaiting merge:
+plugin publication, independent exact-final review, actual required CI and
+reviewer merge remain gates; full F11/#402 and Deferred #400 remain open.
+Recorded 2026-11-05T01:47:24.000214+00:00.
