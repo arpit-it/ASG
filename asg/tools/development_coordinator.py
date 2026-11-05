@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # SPDX-License-Identifier: MPL-2.0
 # Copyright 2026 Arpit Sinha
 """Cooperative, single-host development ownership; never executes or approves work.

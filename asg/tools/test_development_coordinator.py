@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # SPDX-License-Identifier: MPL-2.0
 # Copyright 2026 Arpit Sinha
 """Disposable Git worktrees and real subprocess contention for local ownership."""
