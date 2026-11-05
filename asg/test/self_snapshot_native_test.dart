@@ -124,4 +124,27 @@ void main() {
       expect(remaining, isEmpty);
     }
   }, skip: !Platform.isMacOS);
+  test('inspection finds only direct incomplete staging directories', () async {
+    final root = await Directory.systemTemp.createTemp('asg-snapshot-inspect-');
+    addTearDown(() => root.delete(recursive: true));
+    final incomplete = await Directory(
+      '${root.path}/asg-self-candidate-a1b2c3d4/incomplete',
+    ).create(recursive: true);
+    final ready = await Directory(
+      '${root.path}/asg-self-candidate-b1c2d3e4/source-${'a' * 40}',
+    ).create(recursive: true);
+    final other = await Directory('${root.path}/unrelated/incomplete')
+        .create(recursive: true);
+    await Link('${root.path}/asg-self-candidate-c1d2e3f4')
+        .create(incomplete.parent.path);
+    final linked = await Directory('${root.path}/asg-self-candidate-d1e2f3g4')
+        .create();
+    await Link('${linked.path}/incomplete').create(other.path);
+    final rootPath = await root.resolveSymbolicLinks();
+    expect(await inspectIncompleteSnapshots(root.path), [
+      '$rootPath/asg-self-candidate-a1b2c3d4/incomplete',
+    ]);
+    expect(await ready.exists(), isTrue);
+    expect(await other.exists(), isTrue);
+  }, skip: !Platform.isMacOS);
 }

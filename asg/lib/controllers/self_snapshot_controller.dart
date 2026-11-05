@@ -16,12 +16,18 @@ typedef SnapshotPreparation = Future<String> Function({
 });
 
 class SelfSnapshotController extends BaseController {
-  SelfSnapshotController({SnapshotPreparation? prepare})
-    : _prepare = prepare ?? prepareSelfSnapshot;
+  SelfSnapshotController({
+    SnapshotPreparation? prepare,
+    Future<List<String>> Function(String)? inspect,
+  }) : _prepare = prepare ?? prepareSelfSnapshot,
+       _inspect = inspect ?? inspectIncompleteSnapshots;
 
   final SnapshotPreparation _prepare;
+  final Future<List<String>> Function(String) _inspect;
+  bool _inspecting = false;
+  bool get inspecting => _inspecting;
   Completer<void>? _stop;
-  bool get busy => _stop != null;
+  bool get busy => _stop != null || _inspecting;
   bool get stopping => _stop?.isCompleted ?? false;
   String? _status;
   String? get status => _status;
@@ -68,6 +74,33 @@ class SelfSnapshotController extends BaseController {
     } finally {
       if (stop.isCompleted) _status = 'Preparation stopped. $recovery';
       _stop = null;
+      update();
+    }
+  }
+
+  void clearStatus() {
+    if (busy || _status == null) return;
+    _status = null;
+    update();
+  }
+
+  Future<void> inspect(String destination) async {
+    if (busy || isDisposed || destination.isEmpty) return;
+    _inspecting = true;
+    _status = null;
+    update();
+    try {
+      final found = await _inspect(destination);
+      if (isDisposed) return;
+      _status = found.isEmpty
+          ? 'No incomplete snapshot folders found.'
+          : 'Possible incomplete snapshot folders:\n${found.join('\n')}';
+    } catch (_) {
+      if (!isDisposed) {
+        _status = 'Could not inspect the selected destination. Check access and folder size.';
+      }
+    } finally {
+      _inspecting = false;
       update();
     }
   }

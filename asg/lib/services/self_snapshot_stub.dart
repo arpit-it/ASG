@@ -11,3 +11,6 @@ Future<String> prepareSelfSnapshot({
   required Future<void> stop,
   required bool Function() stopped,
 }) async => throw UnsupportedError('Source snapshots require macOS.');
+
+Future<List<String>> inspectIncompleteSnapshots(String destination) async =>
+    throw UnsupportedError('Source snapshots require macOS.');

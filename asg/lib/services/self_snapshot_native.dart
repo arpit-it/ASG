@@ -81,3 +81,44 @@ Future<String> prepareSelfSnapshot({
     await temp.delete(recursive: true);
   }
 }
+
+/// Looks only for the incomplete staging folders created by snapshot runs.
+Future<List<String>> inspectIncompleteSnapshots(String destination) async {
+  if (!supportsSelfSnapshot || !path.isAbsolute(destination)) {
+    throw const FormatException('Invalid snapshot destination.');
+  }
+  const limit = Duration(seconds: 5);
+  final root = await Directory(destination)
+      .resolveSymbolicLinks()
+      .timeout(limit);
+  final elapsed = Stopwatch()..start();
+  final found = <String>[];
+  final runName = RegExp(r'^asg-self-candidate-[a-z0-9_]{8}$');
+  var scanned = 0;
+  await for (final entry in Directory(
+    root,
+  ).list(followLinks: false).timeout(limit)) {
+    if (++scanned > 512 || elapsed.elapsed >= limit) {
+      throw StateError('Snapshot inspection exceeded its limits.');
+    }
+    if (entry is! Directory || !runName.hasMatch(path.basename(entry.path))) {
+      continue;
+    }
+    final staging = path.join(entry.path, 'incomplete');
+    if (await FileSystemEntity.type(
+          staging,
+          followLinks: false,
+        ).timeout(limit) !=
+        FileSystemEntityType.directory) {
+      continue;
+    }
+    if (await Directory(staging).resolveSymbolicLinks().timeout(limit) ==
+        staging) {
+      if (found.length == 20) {
+        throw StateError('Snapshot inspection exceeded its limits.');
+      }
+      found.add(staging);
+    }
+  }
+  return found..sort();
+}

@@ -81,4 +81,40 @@ void main() {
     expect(controller.busy, isFalse);
     expect(controller.status, contains('full commit ID'));
   });
+  testWidgets('inspection uses the selected destination without preparation', (
+    tester,
+  ) async {
+    final pending = Completer<List<String>>();
+    final picker = FixturePicker()..folders.moveNext();
+    final controller = SelfSnapshotController(
+      inspect: (destination) {
+        expect(destination, '/destination');
+        return pending.future;
+      },
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        home: SelfSnapshotScreen(controller: controller, picker: picker),
+      ),
+    );
+    await tester.tap(find.text('Choose snapshot destination'));
+    await tester.pump();
+    await tester.ensureVisible(find.text('Find incomplete snapshots'));
+    await tester.tap(find.text('Find incomplete snapshots'));
+    await tester.pump();
+    expect(find.text('Inspecting destination…'), findsOneWidget);
+    expect(find.text('Stop'), findsNothing);
+    pending.complete(['/destination/asg-self-candidate-a1b2c3d4/incomplete']);
+    await tester.pump();
+    expect(
+      find.textContaining('Possible incomplete snapshot folders'),
+      findsOneWidget,
+    );
+    await tester.tap(find.text('Choose snapshot destination'));
+    await tester.pump();
+    expect(
+      find.textContaining('Possible incomplete snapshot folders'),
+      findsOneWidget,
+    );
+  });
 }
