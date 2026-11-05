@@ -13944,3 +13944,54 @@ and reviewer merge remain gates. Preserved PR #505 final merge bookkeeping.
 Recorded 2026-11-05T03:32:39.655784+00:00.
 
 Final local checks: 1649 Flutter tests PASS/nine explicit skips;40focused PASS;440-file zero-change formatting,clean analyzer,web/Wasm dry run and isolatedmacOSdebug build PASS; nineinventory PASS. All467 runtime/test/tool/dependency files exactly match tracked-source validation copy /private/tmp/asg-save-validation (ignored installed Python environment preserved). Existing8765health unavailable URLError0.005s; no fresh inference. Awaiting merge: exact-final independent review,actual requiredCI and reviewer merge remain gates. Recorded 2026-11-05T03:33:55.037629+00:00.
+
+
+### HTML draft-save deadline verified merged — PR #506
+Bounded F11/#402 increment Done through https://github.com/arpit-it/ASG/pull/506,
+branch `402-html-draft-save-deadline`, scope6648903384. Configured deadline
+revokes overdue conditional commit/success authority while retaining pending-write
+ownership until settlement; prior draft is preserved and explicit retry works.
+Already-committed writes may remain; no storage cancellation or inference claim.
+Localbeee65d7bbdf8c6ccd299325a36726d88a35b82b and published final
+594998c16509be1244a7f9e92cec2e903f92e961 share tested
+tree95beba2990edd0a5fb1addfbae1342860fa10ddd. All six published blobs and
+all946remote blobs/modes match;467 validation inputs match. Parent1649Flutter/
+nine explicit skips,40focused,440-file zero-change format,clean analyzer,
+web/Wasm build,isolatedmacOSdebug,nineinventory PASS. Independent59focused/
+9inventory/23restored-final PASS, including committed-before-ack timeout retention
+and failed-save timer cancellation. Both new regressions FAIL baseline9491fa0c.
+Independent codeCOMMENT5779544954/finalCOMMENT5779582642 approve unchanged head.
+RequiredCI41962550643 Flutter127032045605/Python127032045852 bothSUCCESS; reviewer
+inspected1601Linux/54skips/bothnewtests/17Chrome/transport/staticHTML/webWasm/
+realindependentgeneratedFlutter/all8Python PASS. CImerge009b8659 has exacttree.
+Reviewer protected expected-head squashmerge b847ae22bde654f454b9bcaa61dad62d383886f3
+at2026-11-05T03:43:38Z. Parent independently verified mergedPR/currentmain/
+directchecks and signed exacttree/soleparent9491fa0c; safely synchronized local
+main/originmain0/0. Index empty; both unrelated IDE edits byte-identical.
+FullF11/#402 staysOPEN/unchecked;Deferred400 retained. Existing8765health
+unavailable URLError0.005s;no fresh inference,download,stableapp replacement,
+deployment,cadence or notification change. Final bookkeeping retained for the next
+normal reviewed development PR. Receipts:/private/tmp/asg-save-publication.json,
+/private/tmp/asg506-review-evidence.json,/private/tmp/asg506-verified-pr.json,
+/private/tmp/asg506-sync-record.json,/private/tmp/asg506-check-runs.json.
+Recorded 2026-11-05T03:45:20.946881+00:00.
+
+
+### Reviewed browser-launch deadline — F11 / #402
+In progress on `402-reviewed-browser-deadline` from verified PR #506 merge
+b847ae22bde654f454b9bcaa61dad62d383886f3; scope
+https://github.com/arpit-it/ASG/issues/402#issuecomment-6649309296.
+Apply the configured preview deadline to browser opening as well as startup.
+Expiry revokes preview authority and requests cleanup, while launch ownership and
+redispatch exclusion remain until the external request returns. An already-launched
+browser cannot be recalled. Keep Stop visible during pending launch, preserve failed
+cleanup retry, and disarm completed launch timers. No new execution/support claim.
+The pending-launch regression fails baseline and passes after correction; 43 focused
+preview/identity/architecture checks pass, including timeout/late settlement/fresh
+retry and launch-failure cleanup/timer behavior. Delivered preview contracts suffice
+for this Mac-verifiable fix. Full F11/#402 remains open; Deferred #400 retained.
+Full validation, plugin publication, independent final review, required CI and
+reviewer merge remain gates. Prior PR #506 final merge bookkeeping is preserved.
+Recorded 2026-11-05T04:01:56.962907+00:00.
+
+Final local validation: 1651 Flutter tests PASS/nine explicit opt-in skips;43focused,441-file zero-change formatter,clean analyzer,web/Wasm dry run,isolatedmacOSdebug and nineinventory checks PASS. All468 validation inputs byte-identical to /private/tmp/asg507-validation. Existing8765health unavailable URLError0.005s;no fresh inference. Awaiting merge: plugin publication,independent exact-final review,actual requiredCI and reviewer merge remain gates. Recorded 2026-11-05T04:03:54.637644+00:00.

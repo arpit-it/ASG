@@ -113,6 +113,14 @@ class HtmlReviewedPreviewController extends BaseController {
       }
     }
 
+    final timer = Timer(deadline, () {
+      if (isDisposed || generation != _generation || !opening) return;
+      // Revoke preview authority, but retain launch ownership until it settles.
+      // A browser already dispatched by the service cannot be recalled.
+      unawaited(stop());
+      error = 'Browser launch deadline reached. Waiting for the launch request to return. An already-launched browser cannot be recalled.';
+      update();
+    });
     try {
       // Notification and authority callbacks can synchronously Stop or dispose.
       // Recheck both boundaries before granting the service a browser dispatch.
@@ -124,6 +132,11 @@ class HtmlReviewedPreviewController extends BaseController {
       if (!isDisposed) error = 'Browser launch failed or source review changed. Stop the preview and retry. An already-launched browser cannot be recalled.';
       await stop();
     } finally {
+      timer.cancel();
+      error = error?.replaceFirst(
+        'Waiting for the launch request to return.',
+        'The launch request has returned.',
+      );
       opening = false;
       update();
     }
