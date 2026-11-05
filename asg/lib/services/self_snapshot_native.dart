@@ -7,6 +7,7 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as path;
 
+import '../models/generation_command_result.dart';
 import 'generation_process_capture.dart';
 
 bool get supportsSelfSnapshot => Platform.isMacOS;
@@ -121,4 +122,85 @@ Future<List<String>> inspectIncompleteSnapshots(String destination) async {
     }
   }
   return found..sort();
+}
+
+Future<GenerationCommandResult> checkSelfSnapshot({
+  required String snapshot,
+  required String sdk,
+  required String python,
+  required bool analyze,
+  required Future<void> stop,
+  required bool Function() stopped,
+}) async {
+  final run = path.dirname(snapshot);
+  if (!supportsSelfSnapshot ||
+      ![snapshot, sdk, python].every(path.isAbsolute) ||
+      !RegExp(r'^source-[a-f0-9]{40}$').hasMatch(path.basename(snapshot)) ||
+      !RegExp(r'^asg-self-candidate-[a-z0-9_]{8}$')
+          .hasMatch(path.basename(run)) ||
+      await Directory(snapshot).resolveSymbolicLinks() != snapshot) {
+    throw const FormatException('Select a prepared ASG source snapshot.');
+  }
+  final project = path.join(snapshot, 'asg');
+  final manifest = path.join(project, 'pubspec.yaml');
+  if (await Directory(project).resolveSymbolicLinks() != project ||
+      await FileSystemEntity.type(manifest, followLinks: false) !=
+          FileSystemEntityType.file) {
+    throw const FormatException('Snapshot does not contain an ASG project.');
+  }
+  final temp = await Directory.systemTemp.createTemp('asg-snapshot-check-');
+  Process? process;
+  var settled = false;
+  var signalled = false;
+  void terminate(Process owned) {
+    if (settled || signalled) return;
+    signalled = true;
+    owned.kill(ProcessSignal.sigterm);
+  }
+
+  try {
+    final helper = File(path.join(temp.path, 'generation_command.py'));
+    await helper.writeAsString(
+      await rootBundle.loadString('tools/generation_command.py'),
+      flush: true,
+    );
+    if (stopped()) throw StateError('Snapshot check stopped.');
+    final owned = await Process.start(python, [
+      '-I',
+      '-B',
+      helper.path,
+      '--confined',
+      '--offline-snapshot-check',
+      '--operation',
+      analyze ? 'analyze' : 'resolve',
+      '--sdk',
+      sdk,
+      '--directory',
+      project,
+    ], runInShell: false);
+    process = owned;
+    unawaited(stop.then((_) => terminate(owned)));
+    final result = await captureGenerationProcess(
+      owned,
+      timeout: const Duration(seconds: 190),
+      cancellation: stop,
+    );
+    settled = true;
+    if (stopped() || result.exitCode != 0) {
+      throw StateError('Snapshot check did not complete.');
+    }
+    return GenerationCommandResult.decode(result.stdout);
+  } finally {
+    if (process != null && !settled) {
+      terminate(process);
+      try {
+        await process.exitCode.timeout(const Duration(seconds: 5));
+      } on TimeoutException {
+        process.kill(ProcessSignal.sigkill);
+        await process.exitCode.timeout(const Duration(seconds: 3));
+      }
+    }
+    settled = true;
+    await temp.delete(recursive: true);
+  }
 }
