@@ -23,6 +23,15 @@ class Picker extends FolderPicker {
   Future<String?> pick() async => '/tmp/parent';
 }
 
+class CountingPicker extends FolderPicker {
+  int calls = 0;
+  @override
+  Future<String?> pick() async {
+    calls++;
+    return '/tmp/selected';
+  }
+}
+
 class Exporter implements HtmlReviewedSourceExport {
   @override
   bool supported = true;
@@ -73,6 +82,53 @@ void main() {
     c.prepareReview();
   }
 
+  for (final boundary in [1, 2]) {
+    test(
+      'disposal inside selection authority at boundary $boundary revokes picker work',
+      () async {
+        c.dispose();
+        final picker = CountingPicker();
+        var calls = 0;
+        c = HtmlReviewedExportController(
+          proposal: HtmlSourceProposal.decode(response()),
+          authorizeSource: () {
+            if (++calls == boundary) c.dispose();
+          },
+          exporter: exporter,
+          picker: picker,
+        );
+        await c.pickParent();
+        expect(picker.calls, boundary == 1 ? 0 : 1);
+        expect(c.parent, isEmpty);
+        expect(c.picking, false);
+        expect(c.review, isNull);
+      },
+    );
+  }
+  test(
+    'disposal inside review authority cannot publish confirmation',
+    () async {
+      await prepare();
+      final parent = c.parent;
+      c.dispose();
+      var revoke = false;
+      c = HtmlReviewedExportController(
+        proposal: HtmlSourceProposal.decode(response()),
+        authorizeSource: () {
+          if (revoke) c.dispose();
+        },
+        exporter: exporter,
+        picker: Picker(),
+      );
+      await prepare();
+      expect(c.parent, parent);
+      revoke = true;
+      c.prepareReview();
+      expect(c.review, isNull);
+      expect(c.parent, parent);
+      expect(exporter.calls, 0);
+    },
+  );
   test(
     'only explicit exact review writes bytes; edits revoke old confirmation',
     () async {
