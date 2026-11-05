@@ -271,7 +271,7 @@ The saved development automation was updated through its management tool; active
   - Acceptance: UI shows available and unavailable operations with actionable reasons; unsupported confinement refuses candidate execution before any source is run. Each enabled host passes real new-project resolve/analyze/test/web-build/serve, Stop/deadline/output-limit and descendant-cleanup checks, restart/uncertain-checkpoint refusal, stale-approval refusal and last-working-output preservation. Enabling starter generation must not implicitly enable candidate execution. Model-written candidate/repair support needs independently reviewed platform isolation and real deny-write/network/process-escape probes at the established boundary.
   - Validation/delivery: one narrowly scoped issue/PR per host/capability milestone, actual Linux/Windows builds and launches on their respective hosts, plus macOS regression coverage. Include paths with spaces, missing toolchains, occupied ports, failed previews and interrupted writes. Record tested versus unavailable capabilities separately; keep F16 unchecked until promised host increments satisfy acceptance and normal independent review/CI/verified merge. Broader generated targets remain F11.
 - [ ] F11 Multi-language project generation, runners and explicit stack selection — In progress (#402); depends on F04 and F05
-  - Reviewed startup callback authority — Awaiting merge, #402, `402-reviewed-preview-start-authority`, scope6647321261. Refuse startup/read/URL publication after callback Stop/disposal; final review/CI/merge pending.
+  - Reviewed startup callback authority — Done via [PR #502](https://github.com/arpit-it/ASG/pull/502), verified reviewer merge1f55e41e at2026-11-05T01:56:23Z; final5778724222/requiredCI41951006884 passed. #402, `402-reviewed-preview-start-authority`, scope6647321261. Refuse startup/read/URL publication after callback Stop/disposal; full F11 remains open.
   - Reviewed browser dispatch authority — Done via [PR #501](https://github.com/arpit-it/ASG/pull/501), verified reviewer merge6c12ec67 at2026-11-05T01:28:28Z; final5778501807/requiredCI41947720661 passed. #402, `402-reviewed-preview-open-authority`, scope6646868054. Refuse browser dispatch after synchronous Stop/disposal during opening callbacks; full adapter remains open.
   - Reviewed HTML identity evidence authority — Done via [PR #500](https://github.com/arpit-it/ASG/pull/500), verified reviewer merge9e1f2ac5 at2026-11-05T00:57:27Z; final5778236256/requiredCI41944140695 passed. #402, `402-reviewed-identity-authority`, scope6646384288. Hide completed identity evidence after source-review revocation, retain destination recovery and guide fresh review; full adapter remains open.
   - Count-only HTML generation stream progress — Done via [PR #499](https://github.com/arpit-it/ASG/pull/499), verified reviewer merge1d6c45a7 at2026-11-05T00:27:54Z; final5777993749/requiredCI41940515541 passed. #402, `402-html-stream-progress`, scope6645885366. Display nonempty response-chunk progress while withholding partial source; retain cancellation/context/failure guards. Full adapter remains open.
@@ -14578,3 +14578,65 @@ unavailable (URLError, 0.005 seconds); no fresh inference claim. Awaiting merge:
 plugin publication, independent exact-final review, actual required CI and
 reviewer merge remain gates; full F11/#402 and Deferred #400 remain open.
 Recorded 2026-11-05T01:47:24.000214+00:00.
+
+
+### Reviewed HTML startup authority verified merged — PR #502
+Bounded F11/#402 correction Done through https://github.com/arpit-it/ASG/pull/502,
+branch `402-reviewed-preview-start-authority`, scope6647321261. Startup authority
+now checks lifecycle both before and after the source callback, refusing revoked
+startup dispatch, authorized reads and final URL publication after Stop/disposal.
+Fresh explicit retries work; passive preview and existing cleanup limits retained.
+Local43e4b1e48edd02c9806a486b319e05e1cf1f4368 and final published
+a3ee16e7227cdf69adcb380ce2842fbdb7e7cd73 share exact tested tree
+fcb594e20c453f943d7b76e9bea7035ba069eacc. All six blob hashes match; reviewer
+independently matched all946remote blobs/modes and467validation inputs. CI test
+merge86d51753 has identical tree. Parent1632Flutter/nine explicit skips,24focused,
+440-file zero-change format, clean analyzer, web/Wasm dry run, macOS debug build
+and nine inventory tests pass. Full tests used the tracked-source copy to exclude
+the unrelated ignored third-party Python environment from attribution scanning.
+Independent39focused,restored-final24,two extra retained-read authority probes
+and nine inventory tests pass. All six new regressions independently fail at
+baseline6c12ec67. CodeCOMMENT5778680844/finalCOMMENT5778724222 approve unchanged
+final head. Actual requiredCI41951006884 both direct final-head checks SUCCESS:
+Flutter126994661527/Python126994661134. Reviewer inspected actual1584Linux/
+54explicit skips/all6new,17Chrome,actual transport/staticHTML/webWasm/independent
+generatedFlutter resolve-analyze-test-build-serve and all8Python suites. No
+findings,retries,source revisions or protection changes. Protected expected-head
+reviewer squashmerge1f55e41ecb3e48a77592746be52d9fab95297e5d at2026-11-05T01:56:23Z.
+Parent independently verified PR/currentmain/directchecks/finalreview and signed
+exacttree/soleparent6c12ec67, then safely synchronized local main/origin/main0/0.
+Index empty; both original IDE edits byte-identical. FullF11/#402 remains OPEN/
+unchecked, Deferred#400 retained. Existing runtime health unavailable URLError
+(0.005seconds); no fresh inference,model download,stable-app replacement,
+deployment,cadence or notification change. Final bookkeeping retained locally
+for the next normal reviewed development PR.
+Receipts:/private/tmp/asg-start-publication.json,/private/tmp/asg502-review-evidence.json,
+/private/tmp/asg502-verified-pr.json,/private/tmp/asg502-sync-record.json,
+/private/tmp/asg502-check-runs.json. Recorded 2026-11-05T01:57:43.165761+00:00.
+
+
+### Reviewed export callback authority — F11 / #402
+Branch `402-reviewed-export-callback-authority` from verified PR #502 merge
+`1f55e41ecb3e48a77592746be52d9fab95297e5d`; scope
+https://github.com/arpit-it/ASG/issues/402#issuecomment-6647532174.
+All six baseline regressions fail: Stop/disposal inside source callbacks can
+still dispatch export, grant a write or publish a destination. Recheck existing
+export lifecycle after the callback at all three boundaries. Six regressions
+cover both revocations and fresh explicit review/retry after Stop. Already
+dispatched IO may finish; retained partial destination/error recovery is unchanged.
+Focused controller/native-export/architecture checks pass. Full validation,
+plugin publication, independent exact-final review, required CI and reviewer
+merge remain pending. Full F11/#402 remains open/unchecked; Deferred #400 is
+not a dependency of this Mac-verifiable correction. Previous #502 final merge
+bookkeeping is retained in this normal reviewed development PR.
+Recorded 2026-11-05T02:00:32.587151+00:00.
+
+Final local validation: 1638 Flutter tests PASS/nine explicit opt-in skips,
+24 focused controller/native-export/architecture tests PASS; zero-change format,
+clean analyzer, web build/Wasm dry run, macOS debug build and nine inventory
+tests PASS. All467 runtime/test/tool/dependency inputs match the tracked-source
+validation copy /private/tmp/asg-export-callback-validation byte for byte.
+Existing8765 runtime unavailable (URLError0.021s); no fresh inference claim.
+Awaiting merge: plugin publication, independent final-revision review, required
+CI and reviewer merge remain gates. Full F11/#402 and Deferred #400 remain open.
+Recorded 2026-11-05T02:02:18.272600+00:00.

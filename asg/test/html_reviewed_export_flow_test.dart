@@ -169,6 +169,42 @@ void main() {
     await c.confirm(c.review!);
     expect(exporter.calls, 0);
   });
+  for (final action in ['stop', 'dispose']) {
+    for (final boundary in [1, 2, 3]) {
+      test(
+        '$action inside export authority at boundary $boundary revokes work',
+        () async {
+          c.dispose();
+          var armed = false;
+          var calls = 0;
+          c = HtmlReviewedExportController(
+            proposal: HtmlSourceProposal.decode(response()),
+            authorizeSource: () {
+              if (armed && ++calls == boundary) {
+                if (action == 'stop') c.stop();
+                if (action == 'dispose') c.dispose();
+              }
+            },
+            exporter: exporter,
+            picker: Picker(),
+          );
+          await prepare();
+          armed = true;
+          await c.confirm(c.review!);
+          expect(exporter.calls, boundary == 1 ? 0 : 1);
+          if (boundary <= 2) expect(exporter.written, isNull);
+          expect(c.destination, isNull);
+          expect(c.busy, false);
+          if (action == 'stop') {
+            armed = false;
+            c.prepareReview();
+            await c.confirm(c.review!);
+            expect(c.destination, '/tmp/parent/site');
+          }
+        },
+      );
+    }
+  }
   test(
     'source controller binds authority to current artifact and saved context',
     () async {

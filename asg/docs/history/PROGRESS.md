@@ -13708,3 +13708,65 @@ unavailable (URLError, 0.005 seconds); no fresh inference claim. Awaiting merge:
 plugin publication, independent exact-final review, actual required CI and
 reviewer merge remain gates; full F11/#402 and Deferred #400 remain open.
 Recorded 2026-11-05T01:47:24.000214+00:00.
+
+
+### Reviewed HTML startup authority verified merged — PR #502
+Bounded F11/#402 correction Done through https://github.com/arpit-it/ASG/pull/502,
+branch `402-reviewed-preview-start-authority`, scope6647321261. Startup authority
+now checks lifecycle both before and after the source callback, refusing revoked
+startup dispatch, authorized reads and final URL publication after Stop/disposal.
+Fresh explicit retries work; passive preview and existing cleanup limits retained.
+Local43e4b1e48edd02c9806a486b319e05e1cf1f4368 and final published
+a3ee16e7227cdf69adcb380ce2842fbdb7e7cd73 share exact tested tree
+fcb594e20c453f943d7b76e9bea7035ba069eacc. All six blob hashes match; reviewer
+independently matched all946remote blobs/modes and467validation inputs. CI test
+merge86d51753 has identical tree. Parent1632Flutter/nine explicit skips,24focused,
+440-file zero-change format, clean analyzer, web/Wasm dry run, macOS debug build
+and nine inventory tests pass. Full tests used the tracked-source copy to exclude
+the unrelated ignored third-party Python environment from attribution scanning.
+Independent39focused,restored-final24,two extra retained-read authority probes
+and nine inventory tests pass. All six new regressions independently fail at
+baseline6c12ec67. CodeCOMMENT5778680844/finalCOMMENT5778724222 approve unchanged
+final head. Actual requiredCI41951006884 both direct final-head checks SUCCESS:
+Flutter126994661527/Python126994661134. Reviewer inspected actual1584Linux/
+54explicit skips/all6new,17Chrome,actual transport/staticHTML/webWasm/independent
+generatedFlutter resolve-analyze-test-build-serve and all8Python suites. No
+findings,retries,source revisions or protection changes. Protected expected-head
+reviewer squashmerge1f55e41ecb3e48a77592746be52d9fab95297e5d at2026-11-05T01:56:23Z.
+Parent independently verified PR/currentmain/directchecks/finalreview and signed
+exacttree/soleparent6c12ec67, then safely synchronized local main/origin/main0/0.
+Index empty; both original IDE edits byte-identical. FullF11/#402 remains OPEN/
+unchecked, Deferred#400 retained. Existing runtime health unavailable URLError
+(0.005seconds); no fresh inference,model download,stable-app replacement,
+deployment,cadence or notification change. Final bookkeeping retained locally
+for the next normal reviewed development PR.
+Receipts:/private/tmp/asg-start-publication.json,/private/tmp/asg502-review-evidence.json,
+/private/tmp/asg502-verified-pr.json,/private/tmp/asg502-sync-record.json,
+/private/tmp/asg502-check-runs.json. Recorded 2026-11-05T01:57:43.165761+00:00.
+
+
+### Reviewed export callback authority — F11 / #402
+Branch `402-reviewed-export-callback-authority` from verified PR #502 merge
+`1f55e41ecb3e48a77592746be52d9fab95297e5d`; scope
+https://github.com/arpit-it/ASG/issues/402#issuecomment-6647532174.
+All six baseline regressions fail: Stop/disposal inside source callbacks can
+still dispatch export, grant a write or publish a destination. Recheck existing
+export lifecycle after the callback at all three boundaries. Six regressions
+cover both revocations and fresh explicit review/retry after Stop. Already
+dispatched IO may finish; retained partial destination/error recovery is unchanged.
+Focused controller/native-export/architecture checks pass. Full validation,
+plugin publication, independent exact-final review, required CI and reviewer
+merge remain pending. Full F11/#402 remains open/unchecked; Deferred #400 is
+not a dependency of this Mac-verifiable correction. Previous #502 final merge
+bookkeeping is retained in this normal reviewed development PR.
+Recorded 2026-11-05T02:00:32.587151+00:00.
+
+Final local validation: 1638 Flutter tests PASS/nine explicit opt-in skips,
+24 focused controller/native-export/architecture tests PASS; zero-change format,
+clean analyzer, web build/Wasm dry run, macOS debug build and nine inventory
+tests PASS. All467 runtime/test/tool/dependency inputs match the tracked-source
+validation copy /private/tmp/asg-export-callback-validation byte for byte.
+Existing8765 runtime unavailable (URLError0.021s); no fresh inference claim.
+Awaiting merge: plugin publication, independent final-revision review, required
+CI and reviewer merge remain gates. Full F11/#402 and Deferred #400 remain open.
+Recorded 2026-11-05T02:02:18.272600+00:00.
