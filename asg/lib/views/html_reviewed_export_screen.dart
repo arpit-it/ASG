@@ -40,6 +40,7 @@ class _HtmlReviewedExportScreenState extends State<HtmlReviewedExportScreen> {
     final c = widget.controller;
     final review = c.review;
     final destination = c.destination;
+    final sourceCurrent = c.sourceCurrent;
     return Scaffold(
       appBar: AppBar(title: const Text('Export reviewed HTML')),
       body: ListView(
@@ -48,6 +49,10 @@ class _HtmlReviewedExportScreenState extends State<HtmlReviewedExportScreen> {
           const Text(
             'Export untrusted source into a new folder only. Scripts and network references may be unsafe. Export does not run, preview, verify, register or apply this source to your project. Inspect it before opening it in a browser. Existing files are never replaced.',
           ),
+          if (!sourceCurrent)
+            const Text(
+              'Source review changed. Return to source review before checking or previewing this export. The exported destination is retained for recovery.',
+            ),
           if (!c.supported) const Text('Reviewed HTML export requires macOS.'),
           OutlinedButton(
             onPressed: c.busy || c.picking || c.checking || !c.supported
@@ -79,7 +84,7 @@ class _HtmlReviewedExportScreenState extends State<HtmlReviewedExportScreen> {
             SelectableText('Unverified source exported to: $destination'),
           if (destination != null) ...[
             OutlinedButton(
-              onPressed: c.busy || c.checking
+              onPressed: c.busy || c.checking || !sourceCurrent
                   ? null
                   : () {
                       // Route page builders can rerun on theme changes. Retain
@@ -100,7 +105,9 @@ class _HtmlReviewedExportScreenState extends State<HtmlReviewedExportScreen> {
               child: const Text('Review script-disabled preview'),
             ),
             OutlinedButton(
-              onPressed: c.checking || !c.checkSupported ? null : c.checkExport,
+              onPressed: c.checking || !c.checkSupported || !sourceCurrent
+                  ? null
+                  : c.checkExport,
               child: const Text('Check reviewed file identity'),
             ),
             if (!c.checkSupported)

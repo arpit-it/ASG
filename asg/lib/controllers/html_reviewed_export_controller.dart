@@ -35,7 +35,22 @@ class HtmlReviewedExportController extends BaseController {
   bool get checking => _checking;
   bool get checkStopped => _checkStopped;
   bool get checkSupported => sourceChecker.supported;
-  HtmlReviewedSourceCheck? get sourceCheck => _sourceCheck;
+
+  /// Completed identity evidence is meaningful only for the current review.
+  /// Keep the destination separately so revoked reviews retain recovery paths.
+  HtmlReviewedSourceCheck? get sourceCheck =>
+      sourceCurrent ? _sourceCheck : null;
+
+  bool get sourceCurrent {
+    if (isDisposed) return false;
+    try {
+      authorizeSource();
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
   String? get checkError => _checkError;
 
   bool _busy = false, _picking = false, _stopped = false;

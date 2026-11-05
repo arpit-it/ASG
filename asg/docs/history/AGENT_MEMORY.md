@@ -13425,3 +13425,67 @@ inputs match isolated validation copy. Both originalIDEedits byte-identical.
 Existing8765health unavailable URLError0.005s; no fresh inference claimed.
 Status Awaiting merge; independent exact-final review/actual required CI and
 protected reviewer merge remain gates. Recorded 2026-11-05T00:18:23.662726+00:00.
+
+
+### HTML generation stream progress verified merged — PR #499
+Bounded F11/#402 increment Done through https://github.com/arpit-it/ASG/pull/499,
+branch `402-html-stream-progress`, scope6645885366. Count-only nonempty response
+chunk progress replaces static request status while keeping partial source
+unavailable. Context/lifecycle checks before and after notifications preserve
+Stop/deadline/disposal/reentrancy, transport cleanup ownership and failure recovery.
+Tested localff7a8ccc09cb9b91925a20ecee15b45da3671dcb and final plugin
+f229ed9ecabf0b629d8ef909d92eae8562dc5b0c share exacttree
+71ca14701ecf4ba9927f67a1df1f13cb1ac00589. Allsevenpublishedblobs match;
+reviewer independently matched946remote blobs/modes and467validationinputs,
+CItestmerge68665f2f tree identical. Parent1619Flutter/nineexplicit skips,54focused
+(eightnew),441file zero-changeformat/cleananalyzer/webWasm/macOSdebug/nineinventory
+PASS. Independent73focused/widget/architecture+3reentrant/cleanup probes+9inventory
+PASS; threebehavioral probes independently FAIL atbaseline941df25a andPASSfinal.
+CodeCOMMENT5777942313 and finalCOMMENT5777993749 approved unchangedhead.
+RequiredCI41940515541 BOTHdirectfinalheadchecks SUCCESS:
+Flutter126959825087/Python126959825211. Reviewer inspected actual1571Linux/
+54skips/all8new,17Chrome/transport/staticHTML/webWasm/realindependentgenerated
+Flutter resolve-analyze-test-build-serve andall8Python suite logs. NoCIretry,
+sourcechanges orprotectionchanges. Independent verdict follows documented
+zero-required-GitHub-approvers workflow; no self-merge or bypass.
+Protectedexpectedhead reviewer squashmerge
+1d6c45a72607beabe0f74c6538ec8e5362d72986 at2026-11-05T00:27:54Z; parent
+independently verified PR/currentmain/directfinalheadchecks/finalreview, signed
+exacttree/soleparent941df25a before guardedlocal-onlysync. Localmain/originmain
+0/0,indexempty; bothoriginalIDEedits byte-identical. FullF11/#402 verifiedOPEN/
+unchecked; Deferred400 retained. Existing8765health unavailable URLError0.005s;
+no inference/model/stableapp/deployment/cadence/notification change. No active
+implementation orrequiredowneraction remains for thisincrement. Finalcanonical
+mergebookkeeping retained locally for next normal reviewed developmentPR.
+Receipts:/private/tmp/asg-stream-publication.json,/private/tmp/asg499-review-evidence.json,
+/private/tmp/asg499-verified-pr.json,/private/tmp/asg499-sync-record.json,
+/private/tmp/asg499-check-runs.json. Recorded 2026-11-05T00:29:02.613655+00:00.
+
+
+### Reviewed HTML identity evidence authority — F11 / #402
+Branch `402-reviewed-identity-authority` from verified PR #499 merge
+1d6c45a72607beabe0f74c6538ec8e5362d72986; scope
+https://github.com/arpit-it/ASG/issues/402#issuecomment-6646384288.
+Baseline regression FAIL: completing an exported-source identity check then
+revoking source review still exposed a success result. Query current source
+review authority before exposing completed identity evidence; retain exported
+destination for recovery. On view refresh, explain changed source review and
+disable fresh identity/preview actions. Existing dispatch/IO authority remains.
+Acceptance: completed-check revocation regression, actual source-controller edit
+and saved-context changes, refreshed widget result removal/guidance/actions,
+existing narrow/Stop/deadline/retry coverage and required full validation.
+43 focused HTML review/export/identity/architecture tests PASS (four new tests);
+new completed-check regression FAIL at baseline. No model invocation required.
+Delivered F11 review/export contracts suffice on Mac; Deferred #400 is unrelated.
+Full F11/#402 remains In progress/unchecked. Prior #499 final review/CI/verified
+merge bookkeeping retained above for this normal reviewed development PR.
+Status Awaiting full validation/publication/independent final review/CI/merge.
+Recorded 2026-11-05T00:46:44.851969+00:00.
+
+Final local validation: 1623 Flutter tests PASS/nine explicit skips; 43 focused,
+441-file zero-change format, clean analyzer, web/Wasm dry-run, macOS debug build
+and nine acceptance-inventory tests PASS. All467 runtime/test/tool/dependency
+inputs byte-identical to isolated /private/tmp/asg-identity-validation.
+Existing8765health unavailable URLError; no fresh inference/stableapp replacement.
+Awaiting merge: plugin publication, independent exact-final review and required CI
+remain gates. Full F11/#402 remains open. Recorded 2026-11-05T00:47:50.394688+00:00.
