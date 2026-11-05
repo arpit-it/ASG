@@ -63,4 +63,65 @@ void main() {
     },
     skip: !Platform.isMacOS,
   );
+  test('Stop reaps Git blocked on a loose object', () async {
+    final root = await Directory.systemTemp.createTemp('asg-snapshot-stop-');
+    addTearDown(() => root.delete(recursive: true));
+    final source = await Directory('${root.path}/source').create();
+    final init = await Process.run('/usr/bin/git', [
+      '-C',
+      source.path,
+      'init',
+      '-q',
+    ]);
+    expect(init.exitCode, 0);
+    final commit = 'a' * 40;
+    final loose = await Directory('${source.path}/.git/objects/aa').create();
+    final fifo = await Process.run('/usr/bin/mkfifo', [
+      '${loose.path}/${commit.substring(2)}',
+    ]);
+    expect(fifo.exitCode, 0);
+    final resolved = await source.resolveSymbolicLinks();
+    Future<List<int>> children() async {
+      final result = await Process.run('/bin/ps', ['-axo', 'pid=,command=']);
+      expect(result.exitCode, 0);
+      return (result.stdout as String)
+          .split('\n')
+          .where(
+            (line) => line.contains(
+              '/usr/bin/git --no-replace-objects -C $resolved cat-file -t $commit',
+            ),
+          )
+          .map((line) => int.parse(line.trimLeft().split(RegExp(r'\s+')).first))
+          .toList();
+    }
+
+    final stop = Completer<void>();
+    final operation = prepareSelfSnapshot(
+      source: source.path,
+      destination: root.path,
+      commit: commit,
+      python: '/usr/bin/python3',
+      stop: stop.future,
+      stopped: () => stop.isCompleted,
+    );
+    final failure = expectLater(operation, throwsStateError);
+    final watch = Stopwatch()..start();
+    List<int> owned = [];
+    try {
+      while (watch.elapsed < const Duration(seconds: 5)) {
+        owned = await children();
+        if (owned.isNotEmpty) break;
+        await Future<void>.delayed(const Duration(milliseconds: 20));
+      }
+      expect(owned, hasLength(1));
+    } finally {
+      stop.complete();
+      await failure;
+      final remaining = await children();
+      for (final pid in remaining.where(owned.contains)) {
+        Process.killPid(pid, ProcessSignal.sigkill);
+      }
+      expect(remaining, isEmpty);
+    }
+  }, skip: !Platform.isMacOS);
 }

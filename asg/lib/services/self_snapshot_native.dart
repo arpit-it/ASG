@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // Copyright 2026 Arpit Sinha
 
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/services.dart';
@@ -42,7 +43,7 @@ Future<String> prepareSelfSnapshot({
     );
     final owned = process;
     stop.then((_) {
-      if (!settled) owned.kill(ProcessSignal.sigkill);
+      if (!settled) owned.kill(ProcessSignal.sigterm);
     });
     final result = await captureGenerationProcess(
       owned,
@@ -68,8 +69,13 @@ Future<String> prepareSelfSnapshot({
     return ready;
   } finally {
     if (process != null && !settled) {
-      process.kill(ProcessSignal.sigkill);
-      await process.exitCode.timeout(const Duration(seconds: 3));
+      process.kill(ProcessSignal.sigterm);
+      try {
+        await process.exitCode.timeout(const Duration(seconds: 3));
+      } on TimeoutException {
+        process.kill(ProcessSignal.sigkill);
+        await process.exitCode.timeout(const Duration(seconds: 3));
+      }
     }
     settled = true;
     await temp.delete(recursive: true);
