@@ -73,6 +73,12 @@ class HtmlSourceReviewController extends BaseController {
       if (!identical(displayed, _proposal)) throw StateError('Review changed.');
     }
 
+    final timer = Timer(requestDeadline, () {
+      if (isDisposed || !_saving || _revoked) return;
+      stop();
+      _status = 'Draft save deadline reached. Waiting for the write request to return. An already-committed write may remain; inspect the saved draft before retrying.';
+      update();
+    });
     try {
       update();
       authorize();
@@ -95,6 +101,11 @@ class HtmlSourceReviewController extends BaseController {
         _status = 'Draft save did not publish success.';
       }
     } finally {
+      timer.cancel();
+      _status = _status.replaceFirst(
+        'Waiting for the write request to return.',
+        'The write request has returned.',
+      );
       _saving = false;
       _busy = false;
       if (!isDisposed) _readDraftState();

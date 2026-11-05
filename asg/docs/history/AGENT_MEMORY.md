@@ -13800,3 +13800,58 @@ reviewer merge remain gates. Previous PR #504 final merge evidence is retained
 in this normal reviewed development PR. Recorded 2026-11-05T03:01:32.265446+00:00.
 
 Final local validation: 1647 Flutter tests PASS, nine explicit opt-in skips; 27 focused checks PASS, zero-change 440-file format, clean analyzer, web build/Wasm dry run and isolated macOS debug build PASS. Full suite uses the tracked-source copy /private/tmp/asg-destination-validation, preserving ignored installed Python dependencies. Awaiting merge: plugin publication, independent exact-final review, actual required CI and reviewer merge remain gates. No fresh inference or stable-app replacement. Recorded 2026-11-05T03:01:46.847878+00:00.
+
+
+### Reviewed destination lifecycle verified merged — PR #505
+Bounded F11/#402 correction Done through https://github.com/arpit-it/ASG/pull/505,
+branch `402-reviewed-destination-lifecycle`, scope6648471034. Recheck disposal
+after source callbacks before folder-picker dispatch, returned-parent acceptance
+and export review publication. Already-dispatched dialogs may finish; retained
+parent behavior unchanged. All three regressions fail independently at baseline.
+Local26520eecdac81b4a99e27e6a585aec6be29c385e and published final
+b7d03653cee3807fb2b8a7d4bc5f4335209b4916 share exact tested tree
+83f79883406b9bd00cc6440cd648a559ec4bb8b6. All six published blobs match;
+reviewer matched all946remote blobs/modes and468validation inputs. CI test merge
+3224f6d8 has identical tree. Parent1647Flutter/nine explicit skips,27focused,
+440-file zero-change format,clean analyzer,web/Wasm dry run,isolated macOSdebug
+and nine inventory checks PASS. Full tests used tracked-source copy to preserve
+the ignored installed Python environment. Inventory source hashes regenerated
+after stale-hash check failed; nine checks pass. Independent48focused/9inventory/
+20restored-final and two extra prior-parent retention probes PASS.
+CodeCOMMENT5779340720/finalCOMMENT5779386786 approve unchanged final head.
+RequiredCI41959169853 both direct final-head checks SUCCESS:
+Flutter127021149594/Python127021149221. Reviewer inspected actual1599Linux/
+54explicit skips/all3new,17Chrome,transport/staticHTML/webWasm/real independent
+generatedFlutter resolve-analyze-test-build-serve and all8Python suites.
+No blockers,retries,diff revisions or protection changes. Protected expected-head
+reviewer squashmerge9491fa0c48c9a8cb0dcc9a944e2e8a9d0d91d2c8
+at2026-11-05T03:12:37Z. Parent independently verified PR/currentmain/directchecks/
+finalreview and signed exacttree/soleparente621ce1c, then safely synchronized
+localmain/originmain0/0. Index empty; both original IDE edits byte-identical.
+FullF11/#402 staysOPEN/unchecked; Deferred400 retained. Existing8765health
+unavailable URLError0.005s; no fresh inference,download,stable-app replacement,
+deployment,cadence or notification change. Final bookkeeping retained locally
+for the next normal reviewed development PR.
+Receipts:/private/tmp/asg-destination-publication.json,
+/private/tmp/asg505-review-evidence.json,/private/tmp/asg505-verified-pr.json,
+/private/tmp/asg505-sync-record.json,/private/tmp/asg505-check-runs.json.
+Recorded 2026-11-05T03:13:52.590424+00:00.
+
+
+### HTML draft-save deadline — F11 / #402
+In progress on `402-html-draft-save-deadline`, baseline9491fa0c; scope https://github.com/arpit-it/ASG/issues/402#issuecomment-6648903384.
+The saved-draft transaction previously had no deadline. Apply requestDeadline
+to save-only authority: timeout uses the existing save Stop path, refuses late
+conditional commit/publication and retains busy ownership until storage returns.
+Already-committed writes may remain; inspect saved bytes before retry. Previous
+saved draft survives a revoked pending commit; restore/fresh explicit save works
+after settlement. Successful completion cancels the timer. No storage cancellation
+or inference claim; full F11/#402 and Deferred #400 remain open.
+New controller regression independently fails baseline (status remains Saving).
+New widget regression verifies visible deadline and overlap lock through settlement.
+40 focused draft/review/architecture checks and nine inventory checks PASS.
+Full checks/builds, plugin publication, exact-final independent review, required CI
+and reviewer merge remain gates. Preserved PR #505 final merge bookkeeping.
+Recorded 2026-11-05T03:32:39.655784+00:00.
+
+Final local checks: 1649 Flutter tests PASS/nine explicit skips;40focused PASS;440-file zero-change formatting,clean analyzer,web/Wasm dry run and isolatedmacOSdebug build PASS; nineinventory PASS. All467 runtime/test/tool/dependency files exactly match tracked-source validation copy /private/tmp/asg-save-validation (ignored installed Python environment preserved). Existing8765health unavailable URLError0.005s; no fresh inference. Awaiting merge: exact-final independent review,actual requiredCI and reviewer merge remain gates. Recorded 2026-11-05T03:33:55.037629+00:00.
