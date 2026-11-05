@@ -5,6 +5,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:asg/controllers/html_reviewed_export_controller.dart';
+import 'package:asg/controllers/html_source_review_controller.dart';
+import 'package:asg/services/html/html_source_proposer.dart';
 import 'package:asg/models/html/html_export_request.dart';
 import 'package:asg/models/html/html_source_proposal.dart';
 import 'package:asg/services/folder_picker.dart';
@@ -15,6 +17,11 @@ import 'package:asg/services/html/html_source_export.dart';
 import 'package:asg/views/html_reviewed_export_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import 'html_planning_test.dart' as html;
+import 'html_source_proposer_test.dart' show Provider;
+import 'html_source_review_test.dart' show response;
+import 'html_source_draft_test.dart' show report;
 
 HtmlSourceProposal source({bool script = true}) => HtmlSourceProposal.decode(
   jsonEncode({
@@ -150,6 +157,127 @@ void main() {
       } else {
         c.dispose();
       }
+    });
+  }
+  test('completed identity result loses current authority without losing destination', () async {
+    final check = Check();
+    var current = true;
+    final c = await ready(
+      check,
+      authority: () {
+        if (!current) throw StateError('private context');
+      },
+    );
+    addTearDown(c.dispose);
+    final pending = c.checkExport();
+    check.completion.complete(result);
+    await pending;
+    expect(c.sourceCheck, same(result));
+    current = false;
+    expect(c.sourceCheck, isNull);
+    expect(c.destination, '/exports/site');
+  });
+  testWidgets(
+    'revoked completed evidence is hidden on refresh with recovery guidance',
+    (tester) async {
+      tester.view.physicalSize = const Size(1000, 1800);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final check = Check();
+      var current = true;
+      final c = await ready(
+        check,
+        authority: () {
+          if (!current) throw StateError('private context');
+        },
+      );
+      final pending = c.checkExport();
+      check.completion.complete(result);
+      await pending;
+      await tester.pumpWidget(
+        MaterialApp(home: HtmlReviewedExportScreen(controller: c)),
+      );
+      expect(find.text(result.summary), findsOneWidget);
+      current = false;
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData.dark(),
+          home: HtmlReviewedExportScreen(controller: c),
+        ),
+      );
+      await tester.pump();
+      expect(find.text(result.summary), findsNothing);
+      expect(find.textContaining('Source review changed.'), findsOneWidget);
+      expect(
+        find.text('Unverified source exported to: /exports/site'),
+        findsOneWidget,
+      );
+      for (final label in [
+        'Check reviewed file identity',
+        'Review script-disabled preview',
+      ]) {
+        expect(
+          tester
+              .widget<OutlinedButton>(
+                find.widgetWithText(OutlinedButton, label),
+              )
+              .onPressed,
+          isNull,
+        );
+      }
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox());
+    },
+  );
+  for (final change in ['edit', 'context']) {
+    test('completed check follows actual source $change authority', () async {
+      final records = await html.seed();
+      final provider = Provider();
+      final review = HtmlSourceReviewController(
+        project: html.project,
+        records: records,
+        proposer: HtmlSourceProposer(createProvider: (_) => provider),
+        inspectReferences: (_) async => report(),
+      );
+      addTearDown(review.dispose);
+      final request = review.request('Greeting');
+      provider.stream.add(response());
+      await provider.stream.close();
+      await request;
+      final original = review.proposal!;
+      final check = Check();
+      final c = HtmlReviewedExportController(
+        proposal: original,
+        authorizeSource: () => review.authorizeProposal(original),
+        exporter: Export(),
+        picker: Picker(),
+        sourceChecker: check,
+      );
+      addTearDown(c.dispose);
+      await c.pickParent();
+      c.editFolder('site');
+      c.prepareReview();
+      await c.confirm(c.review!);
+      final pending = c.checkExport();
+      check.completion.complete(result);
+      await pending;
+      expect(c.sourceCheck, same(result));
+      if (change == 'edit') {
+        await review.revise(original, {
+          ...original.files,
+          'styles.css': 'body { color: blue; }',
+        });
+        expect(review.proposal, isNotNull);
+      } else {
+        records.values['studio.chat.v1.${html.project.id}'] = 'changed';
+      }
+      expect(c.sourceCurrent, false);
+      expect(c.sourceCheck, isNull);
+      expect(c.destination, '/exports/site');
+      await c.checkExport();
+      expect(check.calls, 1);
+      expect(c.checkError, isNot(contains('private')));
     });
   }
   test('failed check retains export, hides error and supports retry', () async {
