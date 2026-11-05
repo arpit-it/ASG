@@ -9,6 +9,7 @@ import 'package:asg/controllers/html_export_controller.dart';
 import 'package:asg/controllers/html_preview_controller.dart';
 import 'package:asg/models/html/html_export_request.dart';
 import 'package:asg/models/html/html_site_input.dart';
+import 'package:asg/models/html/saved_html_starter.dart';
 import 'package:asg/services/folder_picker.dart';
 import 'package:asg/services/html/html_preview.dart';
 import 'package:asg/services/html/html_source_export_native.dart';
@@ -24,6 +25,7 @@ class _Preview implements HtmlPreview {
   Completer<void>? opening;
   int starts = 0, stops = 0, opens = 0;
   bool failStop = false;
+  Completer<void>? stopping;
   @override
   bool get supported => true;
   @override
@@ -33,7 +35,7 @@ class _Preview implements HtmlPreview {
     void Function()? authorizeRead,
   }) {
     starts++;
-    entered.complete();
+    if (!entered.isCompleted) entered.complete();
     return result.future;
   }
 
@@ -47,6 +49,7 @@ class _Preview implements HtmlPreview {
   Future<void> stop() async {
     stops++;
     if (failStop) throw StateError('cleanup');
+    await stopping?.future;
   }
 }
 
@@ -65,6 +68,118 @@ final _request = HtmlExportRequest(
 final _url = Uri.parse('http://127.0.0.1:12345/token/');
 
 void main() {
+  testWidgets('pending launch keeps visible Stop and cleanup ownership', (
+    tester,
+  ) async {
+    final service = _Preview();
+    final c = HtmlExportController(
+      exporter: HtmlSourceExportNative(),
+      previewService: service,
+      savedStarter: SavedHtmlStarter(
+        directory: '/tmp/preview_site',
+        input: _request.input,
+      ),
+    );
+    final start = c.startPreview();
+    service.result.complete(_url);
+    await start;
+    await tester.pumpWidget(MaterialApp(home: HtmlExportScreen(controller: c)));
+    service.opening = Completer<void>();
+    final launch = c.preview.open();
+    await tester.pump(const Duration(seconds: 11));
+    expect(c.preview.url, isNull);
+    await tester.scrollUntilVisible(
+      find.text('Stop preview'),
+      180,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pump();
+    final stop = tester.widget<OutlinedButton>(
+      find.widgetWithText(OutlinedButton, 'Stop preview'),
+    );
+    expect(stop.onPressed, isNotNull);
+    service.stopping = Completer<void>();
+    final cleanup = c.preview.stop();
+    service.opening!.complete();
+    await launch;
+    expect(c.preview.opening, isFalse);
+    expect(c.preview.stopping, isTrue);
+    expect(c.preview.busy, isTrue);
+    await c.startPreview();
+    expect(service.starts, 1);
+    service.stopping!.complete();
+    await cleanup;
+    await tester.pumpWidget(const SizedBox());
+  });
+  testWidgets('browser deadline owns pending launch until settlement', (
+    tester,
+  ) async {
+    final service = _Preview();
+    final c = HtmlPreviewController(service);
+    final start = c.start('/tmp/site', _request);
+    service.result.complete(_url);
+    await start;
+    service.opening = Completer<void>();
+    final launch = c.open();
+    await tester.pump(const Duration(seconds: 11));
+    expect(c.error, contains('Browser launch deadline'));
+    expect(c.url, isNull);
+    expect(c.opening, isTrue);
+    expect(c.busy, isTrue);
+    expect(service.stops, 1);
+    await c.open();
+    await c.start('/tmp/site', _request);
+    expect(service.opens, 1);
+    expect(service.starts, 1);
+    service.opening!.complete();
+    await launch;
+    expect(c.busy, isFalse);
+    expect(c.error, contains('launch request has returned'));
+    expect(c.notice, isNot(contains('Browser launch requested')));
+    await c.start('/tmp/site', _request);
+    expect(service.starts, 2);
+    c.dispose();
+  });
+
+  testWidgets('browser deadline retains failed cleanup for explicit retry', (
+    tester,
+  ) async {
+    final service = _Preview();
+    final c = HtmlPreviewController(service);
+    final start = c.start('/tmp/site', _request);
+    service.result.complete(_url);
+    await start;
+    service.opening = Completer<void>();
+    service.failStop = true;
+    final launch = c.open();
+    await tester.pump(const Duration(seconds: 11));
+    expect(c.cleanupFailed, isTrue);
+    expect(c.error, contains('cleanup failed'));
+    service.opening!.completeError(StateError('late launch failure'));
+    await launch;
+    expect(c.error, contains('cleanup failed'));
+    await c.start('/tmp/site', _request);
+    expect(service.starts, 1);
+    service.failStop = false;
+    await c.stop();
+    expect(c.cleanupFailed, isFalse);
+    c.dispose();
+  });
+
+  testWidgets('completed browser launch cancels deadline', (tester) async {
+    final service = _Preview();
+    final c = HtmlPreviewController(service);
+    final start = c.start('/tmp/site', _request);
+    service.result.complete(_url);
+    await start;
+    await c.open();
+    await tester.pump(const Duration(seconds: 11));
+    expect(c.url, _url);
+    expect(c.notice, contains('Browser launch requested'));
+    expect(c.error, isNull);
+    expect(service.stops, 0);
+    c.dispose();
+  });
   for (final dispose in [false, true]) {
     test(
       '${dispose ? 'dispose' : 'Stop'} rejects late startup and duplicate start',

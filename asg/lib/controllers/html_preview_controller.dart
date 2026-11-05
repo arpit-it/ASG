@@ -8,8 +8,12 @@ import '../services/html/html_preview.dart';
 import 'base_controller.dart';
 
 class HtmlPreviewController extends BaseController {
-  HtmlPreviewController(this.service);
+  HtmlPreviewController(
+    this.service, {
+    this.deadline = const Duration(seconds: 10),
+  }) : assert(deadline > Duration.zero);
   final HtmlPreview service;
+  final Duration deadline;
   Uri? _url;
   String? _error, _notice;
   bool _starting = false,
@@ -35,12 +39,12 @@ class HtmlPreviewController extends BaseController {
     _starting = true;
     _error = _notice = null;
     update();
-    final deadline = Timer(const Duration(seconds: 10), () {
+    final timer = Timer(deadline, () {
       if (!isDisposed && _starting && generation == _generation) {
         unawaited(
           stop().then((_) {
             if (!isDisposed && !_cleanupFailed) {
-              _error = 'Preview startup reached its 10-second deadline. Pending file IO may still settle; retry after cleanup finishes.';
+              _error = 'Preview startup reached its deadline. Pending file IO may still settle; retry after cleanup finishes.';
               update();
             }
           }),
@@ -82,7 +86,7 @@ class HtmlPreviewController extends BaseController {
             : 'Preview could not start. Only unchanged fixed starter files with any required current Plan consent are allowed. Check the files and consent, then retry.';
       }
     } finally {
-      deadline.cancel();
+      timer.cancel();
       _starting = false;
       update();
     }
@@ -94,7 +98,16 @@ class HtmlPreviewController extends BaseController {
     _opening = true;
     _error = _notice = null;
     update();
+    final timer = Timer(deadline, () {
+      if (isDisposed || generation != _generation || !_opening) return;
+      // Revoke preview authority without releasing the pending launch owner.
+      // A browser already dispatched outside ASG cannot be recalled.
+      unawaited(stop());
+      _error = 'Browser launch deadline reached. Waiting for the launch request to return. An already-launched browser cannot be recalled.';
+      update();
+    });
     try {
+      if (isDisposed || generation != _generation || _url == null) return;
       await service.open();
       if (!isDisposed && generation == _generation) {
         _notice =
@@ -105,6 +118,11 @@ class HtmlPreviewController extends BaseController {
         _error = 'Browser launch failed or timed out. Retry Open in browser or use the displayed local URL.';
       }
     } finally {
+      timer.cancel();
+      _error = _error?.replaceFirst(
+        'Waiting for the launch request to return.',
+        'The launch request has returned.',
+      );
       _opening = false;
       update();
     }
