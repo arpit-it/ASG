@@ -134,15 +134,16 @@ class SelfSnapshotController extends BaseController {
         };
         results.add('$label $outcome.');
         if (outcome != 'passed') break;
-        if (operation == SelfSnapshotOperation.build) {
-          results.add('Web artifacts at $snapshot/asg/build/web');
+        final artifact = result.artifactPath;
+        if (operation == SelfSnapshotOperation.build && artifact != null) {
+          results.add('Web artifacts at $snapshot/asg/$artifact');
         }
       }
     } catch (_) {
       if (!stop.isCompleted) {
         results.add(
           buildWeb
-              ? 'Build unavailable. Use a prepared snapshot without existing web output and verify the tool paths.'
+              ? 'Build unavailable. Verify the snapshot and trusted tool paths.'
               : 'Check unavailable. Verify the snapshot and trusted tool paths.',
         );
       }

@@ -190,7 +190,10 @@ Future<GenerationCommandResult> checkSelfSnapshot({
     if (stopped() || result.exitCode != 0) {
       throw StateError('Snapshot check did not complete.');
     }
-    return GenerationCommandResult.decode(result.stdout);
+    return GenerationCommandResult.decode(
+      result.stdout,
+      expectWebArtifact: operation == SelfSnapshotOperation.build,
+    );
   } finally {
     if (process != null && !settled) {
       terminate(process);

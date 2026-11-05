@@ -199,17 +199,16 @@ void main() {
     final existing = File('${output.path}/index.html');
     await existing.writeAsString('previous output');
     final buildStop = Completer<void>();
-    await expectLater(
-      checkSelfSnapshot(
-        snapshot: snapshot,
-        sdk: sdk,
-        python: '/usr/bin/python3',
-        operation: SelfSnapshotOperation.build,
-        stop: buildStop.future,
-        stopped: () => buildStop.isCompleted,
-      ),
-      throwsStateError,
+    final failedBuild = await checkSelfSnapshot(
+      snapshot: snapshot,
+      sdk: sdk,
+      python: '/usr/bin/python3',
+      operation: SelfSnapshotOperation.build,
+      stop: buildStop.future,
+      stopped: () => buildStop.isCompleted,
     );
+    expect(failedBuild.exitCode, isNot(0));
+    expect(failedBuild.artifactPath, isNull);
     expect(await existing.readAsString(), 'previous output');
 
     final locker = await Process.start('/usr/bin/python3', [

@@ -2,6 +2,7 @@
 // Copyright 2026 Arpit Sinha
 
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:asg/models/self_snapshot_operation.dart';
 import 'package:asg/controllers/self_snapshot_controller.dart';
@@ -20,6 +21,29 @@ class FixturePicker extends FolderPicker {
 
 void main() {
   final commitId = 'a' * 40;
+
+  test('build result requires a confined artifact path on success', () {
+    final result = <String, Object>{
+      'exitCode': 0,
+      'output': '',
+      'timedOut': false,
+      'outputLimitExceeded': false,
+      'cancelled': false,
+    };
+    GenerationCommandResult decode() => GenerationCommandResult.decode(
+      jsonEncode(result),
+      expectWebArtifact: true,
+    );
+    expect(decode, throwsFormatException);
+    result['artifactPath'] = 'build/../asg-web-abcdefgh';
+    expect(decode, throwsFormatException);
+    result['artifactPath'] = 'build/asg-web-abcdefgh';
+    expect(decode().artifactPath, 'build/asg-web-abcdefgh');
+    result['exitCode'] = 1;
+    expect(decode, throwsFormatException);
+    result.remove('artifactPath');
+    expect(decode().artifactPath, isNull);
+  });
 
   testWidgets(
     'prepares only on explicit action and ignores a late Stop result',
@@ -206,7 +230,13 @@ void main() {
             }) async {
               expect((snapshot, sdk, python), ('/source', '/sdk', '/python'));
               calls.add(operation);
-              return const GenerationCommandResult(exitCode: 0, output: '');
+              return GenerationCommandResult(
+                exitCode: 0,
+                output: '',
+                artifactPath: operation == SelfSnapshotOperation.build
+                    ? 'build/asg-web-fixture0'
+                    : null,
+              );
             },
       );
       await tester.pumpWidget(
@@ -262,7 +292,7 @@ void main() {
       ]);
       expect(
         controller.status,
-        contains('Web artifacts at /source/asg/build/web'),
+        contains('Web artifacts at /source/asg/build/asg-web-fixture0'),
       );
     },
   );
