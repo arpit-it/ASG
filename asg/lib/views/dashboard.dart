@@ -24,6 +24,9 @@ import '../services/runtime_host_factory.dart';
 import 'project_wizard.dart';
 import 'project_workspace.dart';
 import 'project_build_status_view.dart';
+import '../controllers/self_snapshot_controller.dart';
+import '../services/self_snapshot.dart';
+import 'self_snapshot_screen.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({
@@ -153,6 +156,19 @@ class _DashboardState extends State<Dashboard> {
       appBar: AppBar(
         title: const Text('Automated Software Generator'),
         actions: [
+          if (supportsSelfSnapshot && picker.supported)
+            IconButton(
+              tooltip: 'Prepare ASG source snapshot',
+              icon: const Icon(Icons.folder_copy_outlined),
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => SelfSnapshotScreen(
+                    controller: SelfSnapshotController(),
+                    picker: picker,
+                  ),
+                ),
+              ),
+            ),
           const AppLicensesButton(),
           IconButton(
             tooltip: 'Settings',

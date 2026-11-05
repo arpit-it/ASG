@@ -9,6 +9,7 @@ import os
 from pathlib import Path
 import re
 import selectors
+import signal
 import subprocess
 import sys
 import tempfile
@@ -22,7 +23,21 @@ OBJECT_ID = re.compile(rb'[0-9a-f]{40}')
 COMPONENT = re.compile(rb'[A-Za-z0-9_. @-]{1,100}')
 
 
+_stop_requested = False
+
+
+def request_stop(_signum, _frame):
+    global _stop_requested
+    _stop_requested = True
+
+
+def check_stop():
+    if _stop_requested:
+        raise ValueError('Snapshot preparation stopped.')
+
+
 def read_git(source, args, limit, deadline):
+    check_stop()
     env = {
         'PATH': '/usr/bin:/bin',
         'GIT_CONFIG_NOSYSTEM': '1',
@@ -40,15 +55,25 @@ def read_git(source, args, limit, deadline):
             with selectors.DefaultSelector() as selector:
                 selector.register(process.stdout, selectors.EVENT_READ)
                 while True:
-                    if not selector.select(max(0, deadline - time.monotonic())):
+                    check_stop()
+                    remaining = deadline - time.monotonic()
+                    if remaining <= 0:
                         raise ValueError('Git read timed out.')
+                    if not selector.select(min(0.1, remaining)):
+                        continue
                     chunk = os.read(process.stdout.fileno(), min(65536, limit + 1 - len(result)))
                     if not chunk:
                         break
                     result.extend(chunk)
                     if len(result) > limit or time.monotonic() >= deadline:
                         raise ValueError('Git read exceeded its limits.')
-            if process.wait(timeout=max(0, deadline - time.monotonic())):
+            while process.poll() is None:
+                check_stop()
+                remaining = deadline - time.monotonic()
+                if remaining <= 0:
+                    raise ValueError('Git read timed out.')
+                time.sleep(min(0.01, remaining))
+            if process.returncode:
                 raise ValueError('Git could not read the requested object.')
             return bytes(result)
         finally:
@@ -135,6 +160,7 @@ def prepare(source, commit, parent):
                 write_blob(root_fd, parts, 0o700 if mode == b'100755' else 0o600, data)
         finally:
             os.close(root_fd)
+        check_stop()
         staging.rename(ready)
     except (OSError, ValueError, subprocess.SubprocessError, KeyboardInterrupt) as error:
         raise ValueError(f'Preparation stopped. Inspect the candidate run at {run}.') from error
@@ -157,4 +183,5 @@ def main(argv=None):
 
 
 if __name__ == '__main__':
+    signal.signal(signal.SIGTERM, request_stop)
     raise SystemExit(main())
