@@ -74,6 +74,7 @@ flutter:
     - tools/qwen_backends.py
     - tools/download_model.py
     - tools/generation_command.py
+    - tools/prepare_self_candidate.py
     - lib/models/app_definition.dart
 
   # To add assets to your application, add an assets section, like this:
