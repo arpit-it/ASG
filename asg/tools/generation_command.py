@@ -115,6 +115,8 @@ def candidate_profile(directory, sdk, pub_cache, temporary, *, offline=False):
         '(allow file-read* ' + ' '.join(map(subpath, reads)) + ')',
         '(allow file-write* ' + subpath(directory) + ' ' + subpath(temporary) +
         ' (literal "/dev/null"))',
+        *(['(deny file-write-unlink (literal ' + json.dumps(str(directory)) + '))']
+          if offline else []),
         *([] if offline else [
             '(allow network-inbound (local ip "localhost:*"))',
             '(allow network-outbound (remote ip "localhost:*"))',
@@ -246,16 +248,17 @@ def validate_offline_snapshot(directory, pub_cache):
 
 
 @contextmanager
-def snapshot_web_build_slot(directory):
-    """Serialize web output creation even when callers use different SDKs."""
-    guard = directory / '.asg-web-build-in-progress'
-    guard.mkdir()
+def offline_snapshot_slot(directory):
+    """Lock the snapshot inode across offline operations and SDK selections."""
+    descriptor = os.open(directory, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
     try:
-        if os.path.lexists(directory / 'build' / 'web'):
-            raise ValueError('Use a snapshot without existing web output')
+        try:
+            fcntl.flock(descriptor, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:
+            raise ValueError('An offline operation already owns this snapshot') from None
         yield
     finally:
-        guard.rmdir()
+        os.close(descriptor)
 
 def confined_operation(directory, sdk, operation, timeout, parent_pid, test_file=None, test_name=None, *, offline=False):
     arguments = OPERATIONS[operation]
@@ -277,7 +280,6 @@ def confined_operation(directory, sdk, operation, timeout, parent_pid, test_file
         if any(directory == root or directory in root.parents or root in directory.parents
                for root in (sdk, pub_cache)):
             raise ValueError('Snapshot overlaps tool or cache roots')
-        validate_offline_snapshot(directory, pub_cache)
     offline_build = offline and operation == 'build'
     web_output = directory / 'build' / 'web'
     dart = sdk / 'bin/cache/dart-sdk/bin/dart'
@@ -285,8 +287,12 @@ def confined_operation(directory, sdk, operation, timeout, parent_pid, test_file
     packages = sdk / 'packages/flutter_tools/.dart_tool/package_config.json'
     if not all(p.is_file() for p in (dart, snapshot, packages)):
         raise ValueError('Confined verification requires initialized cached Flutter tools')
-    slot = snapshot_web_build_slot(directory) if offline_build else nullcontext()
+    slot = offline_snapshot_slot(directory) if offline else nullcontext()
     with slot, tempfile.TemporaryDirectory(prefix='asg-confined-') as temp:
+        if offline:
+            validate_offline_snapshot(directory, pub_cache)
+        if offline_build and os.path.lexists(web_output):
+            raise ValueError('Use a snapshot without existing web output')
         temporary = Path(temp).resolve()
         (temporary / 'home').mkdir()
         profile = temporary / 'candidate.sb'

@@ -240,6 +240,10 @@ void main() {
           await Future<void>.delayed(const Duration(milliseconds: 25));
         }
         expect(await overlay.exists(), isTrue);
+        await expectLater(
+          check(true, Completer<void>()).timeout(const Duration(seconds: 5)),
+          throwsStateError,
+        );
       } finally {
         stop.complete();
         await stopped.timeout(const Duration(seconds: 12));
@@ -262,5 +266,6 @@ void main() {
       await locker.stdin.close();
       await locker.exitCode.timeout(const Duration(seconds: 5));
     }
+    expect(await check(false, Completer<void>()), 0);
   }, skip: !Platform.isMacOS || sdk.isEmpty);
 }
