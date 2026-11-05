@@ -103,3 +103,8 @@ The structured requirements/task board is implemented (F01). Discuss, Plan and a
 Copyright © 2026 Arpit Sinha. ASG-owned source and documentation are licensed under [Mozilla Public License 2.0](LICENSE); see [NOTICE](NOTICE). Copyright remains with its holders, while the license permits use, modification and redistribution, including commercially, subject to its terms. Distributed modifications to MPL-covered files must remain available under MPL; independent plugins/adapters in separate files can use other licenses if they do not contain covered code. Executable distributors must tell recipients how to obtain the corresponding covered source, including their modifications. It does not grant general trademark rights or transfer contributors' copyrights.
 
 Third-party components and models retain their own terms. Generated user projects do not automatically inherit ASG's license; reused code/material keeps its applicable terms. The app's **Licenses** action displays bundled application and dependency notices offline. [Responsible-use guidance](RESPONSIBLE_USE.md) is separate from the license and does not guarantee protection against misuse or legal claims.
+
+
+## Planned marketplace expansion
+
+The [canonical post-current-queue plan](asg/docs/REQUIREMENTS.md#post-current-queue-marketplace-and-universal-work--5-november-2026) adds freelance discovery, approved bidding/client communication, capability-based software and noncoding work, and authorized delivery. F25–F55 are queued after existing F01–F24 work and its acceptance; none of these marketplace features is currently delivered. The existing development scheduler follows that ledger.
