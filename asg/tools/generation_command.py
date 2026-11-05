@@ -3,6 +3,7 @@
 
 """Run one fixed Flutter operation with a deadline and owned process-group cleanup."""
 import argparse
+from contextlib import contextmanager, nullcontext
 import json
 import os
 from pathlib import Path
@@ -243,6 +244,19 @@ def validate_offline_snapshot(directory, pub_cache):
 
     visit(directory, 0)
 
+
+@contextmanager
+def snapshot_web_build_slot(directory):
+    """Serialize web output creation even when callers use different SDKs."""
+    guard = directory / '.asg-web-build-in-progress'
+    guard.mkdir()
+    try:
+        if os.path.lexists(directory / 'build' / 'web'):
+            raise ValueError('Use a snapshot without existing web output')
+        yield
+    finally:
+        guard.rmdir()
+
 def confined_operation(directory, sdk, operation, timeout, parent_pid, test_file=None, test_name=None, *, offline=False):
     arguments = OPERATIONS[operation]
     if test_file is not None or test_name is not None:
@@ -258,18 +272,21 @@ def confined_operation(directory, sdk, operation, timeout, parent_pid, test_file
     if pub_cache == home or sdk == home or directory == home or directory in sdk.parents or directory in pub_cache.parents:
         raise ValueError('Unsafe candidate tool/cache roots')
     if offline:
-        if operation not in ('resolve', 'analyze'):
+        if operation not in ('resolve', 'analyze', 'build'):
             raise ValueError('Only offline snapshot checks are allowed')
         if any(directory == root or directory in root.parents or root in directory.parents
                for root in (sdk, pub_cache)):
             raise ValueError('Snapshot overlaps tool or cache roots')
         validate_offline_snapshot(directory, pub_cache)
+    offline_build = offline and operation == 'build'
+    web_output = directory / 'build' / 'web'
     dart = sdk / 'bin/cache/dart-sdk/bin/dart'
     snapshot = sdk / 'bin/cache/flutter_tools.snapshot'
     packages = sdk / 'packages/flutter_tools/.dart_tool/package_config.json'
     if not all(p.is_file() for p in (dart, snapshot, packages)):
         raise ValueError('Confined verification requires initialized cached Flutter tools')
-    with tempfile.TemporaryDirectory(prefix='asg-confined-') as temp:
+    slot = snapshot_web_build_slot(directory) if offline_build else nullcontext()
+    with slot, tempfile.TemporaryDirectory(prefix='asg-confined-') as temp:
         temporary = Path(temp).resolve()
         (temporary / 'home').mkdir()
         profile = temporary / 'candidate.sb'
@@ -316,6 +333,13 @@ def confined_operation(directory, sdk, operation, timeout, parent_pid, test_file
             '-f', str(profile), str(dart), '--packages=' + str(packages),
             str(snapshot), '--no-version-check', *arguments,
         ], str(directory), max(1, deadline - time.monotonic()), parent_pid, environment)
+            if offline_build and result['exitCode'] == 0:
+                validate_offline_snapshot(directory, pub_cache)
+                for name in ('index.html', 'main.dart.js'):
+                    artifact = web_output / name
+                    if (not artifact.is_file() or artifact.resolve() != artifact
+                            or artifact.stat().st_size == 0):
+                        raise ValueError('Expected newly generated web artifacts')
             return named_test_result(result, test_file, test_name) if test_file is not None else result
         finally:
             lock.close()
@@ -341,8 +365,8 @@ def main():
     if not directory.is_absolute() or directory.resolve() != directory or not directory.is_dir():
         raise ValueError('Expected a canonical generated project directory')
     if args.offline_snapshot_check and (
-            not args.confined or args.operation not in ('resolve', 'analyze')):
-        parser.error('Snapshot checks require confined resolve or analysis')
+            not args.confined or args.operation not in ('resolve', 'analyze', 'build')):
+        parser.error('Snapshot operations require confined resolve, analysis or web build')
     executable = Path(args.sdk) / 'bin/flutter'
     selectors = {'test_file': args.test_file, 'test_name': args.test_name} if targeted else {}
     if args.offline_snapshot_check:

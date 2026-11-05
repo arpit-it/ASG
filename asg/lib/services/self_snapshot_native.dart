@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:path/path.dart' as path;
 
 import '../models/generation_command_result.dart';
+import '../models/self_snapshot_operation.dart';
 import 'generation_process_capture.dart';
 
 bool get supportsSelfSnapshot => Platform.isMacOS;
@@ -128,7 +129,7 @@ Future<GenerationCommandResult> checkSelfSnapshot({
   required String snapshot,
   required String sdk,
   required String python,
-  required bool analyze,
+  required SelfSnapshotOperation operation,
   required Future<void> stop,
   required bool Function() stopped,
 }) async {
@@ -172,7 +173,7 @@ Future<GenerationCommandResult> checkSelfSnapshot({
       '--confined',
       '--offline-snapshot-check',
       '--operation',
-      analyze ? 'analyze' : 'resolve',
+      operation.name,
       '--sdk',
       sdk,
       '--directory',

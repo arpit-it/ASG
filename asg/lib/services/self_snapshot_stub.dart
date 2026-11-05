@@ -2,6 +2,7 @@
 // Copyright 2026 Arpit Sinha
 
 import '../models/generation_command_result.dart';
+import '../models/self_snapshot_operation.dart';
 
 bool get supportsSelfSnapshot => false;
 
@@ -21,7 +22,7 @@ Future<GenerationCommandResult> checkSelfSnapshot({
   required String snapshot,
   required String sdk,
   required String python,
-  required bool analyze,
+  required SelfSnapshotOperation operation,
   required Future<void> stop,
   required bool Function() stopped,
 }) async => throw UnsupportedError('Snapshot checks require macOS.');

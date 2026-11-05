@@ -4,6 +4,7 @@
 import 'dart:async';
 
 import '../models/generation_command_result.dart';
+import '../models/self_snapshot_operation.dart';
 import '../services/self_snapshot.dart';
 import 'base_controller.dart';
 
@@ -20,7 +21,7 @@ typedef SnapshotCheck = Future<GenerationCommandResult> Function({
   required String snapshot,
   required String sdk,
   required String python,
-  required bool analyze,
+  required SelfSnapshotOperation operation,
   required Future<void> stop,
   required bool Function() stopped,
 });
@@ -93,6 +94,7 @@ class SelfSnapshotController extends BaseController {
 
   Future<void> check({
     required bool approved,
+    bool buildWeb = false,
     required String snapshot,
     required String sdk,
     required String python,
@@ -102,8 +104,14 @@ class SelfSnapshotController extends BaseController {
     _stop = stop;
     final results = <String>[];
     try {
-      for (final analyze in [false, true]) {
-        final label = analyze ? 'Analysis' : 'Offline dependency resolution';
+      for (final operation in [
+        SelfSnapshotOperation.resolve,
+        if (buildWeb)
+          SelfSnapshotOperation.build
+        else
+          SelfSnapshotOperation.analyze,
+      ]) {
+        final label = operation.label;
         _status = [...results, '$label running…'].join('\n');
         update();
         if (stop.isCompleted) return;
@@ -111,7 +119,7 @@ class SelfSnapshotController extends BaseController {
           snapshot: snapshot,
           sdk: sdk,
           python: python,
-          analyze: analyze,
+          operation: operation,
           stop: stop.future,
           stopped: () => stop.isCompleted,
         );
@@ -126,16 +134,25 @@ class SelfSnapshotController extends BaseController {
         };
         results.add('$label $outcome.');
         if (outcome != 'passed') break;
+        if (operation == SelfSnapshotOperation.build) {
+          results.add('Web artifacts at $snapshot/asg/build/web');
+        }
       }
     } catch (_) {
       if (!stop.isCompleted) {
         results.add(
-          'Check unavailable. Verify the snapshot and trusted tool paths.',
+          buildWeb
+              ? 'Build unavailable. Use a prepared snapshot without existing web output and verify the tool paths.'
+              : 'Check unavailable. Verify the snapshot and trusted tool paths.',
         );
       }
     } finally {
       if (stop.isCompleted) {
-        results.add('Snapshot checks stopped.');
+        results.add(
+          buildWeb
+              ? 'Web build stopped. Any partial output is unverified.'
+              : 'Snapshot checks stopped.',
+        );
       } else {
         stop.complete();
       }
