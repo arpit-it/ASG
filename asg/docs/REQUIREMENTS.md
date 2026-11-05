@@ -277,7 +277,8 @@ F56 below is the owner-selected development-process improvement now, not a new a
   - Acceptance: UI shows available and unavailable operations with actionable reasons; unsupported confinement refuses candidate execution before any source is run. Each enabled host passes real new-project resolve/analyze/test/web-build/serve, Stop/deadline/output-limit and descendant-cleanup checks, restart/uncertain-checkpoint refusal, stale-approval refusal and last-working-output preservation. Enabling starter generation must not implicitly enable candidate execution. Model-written candidate/repair support needs independently reviewed platform isolation and real deny-write/network/process-escape probes at the established boundary.
   - Validation/delivery: one narrowly scoped issue/PR per host/capability milestone, actual Linux/Windows builds and launches on their respective hosts, plus macOS regression coverage. Include paths with spaces, missing toolchains, occupied ports, failed previews and interrupted writes. Record tested versus unavailable capabilities separately; keep F16 unchecked until promised host increments satisfy acceptance and normal independent review/CI/verified merge. Broader generated targets remain F11.
 - [ ] F11 Multi-language project generation, runners and explicit stack selection — In progress (#402); depends on F04 and F05
-  - Fixed-starter browser deadline — Awaiting merge; #402, `402-fixed-browser-deadline`, scope6649718191. Revoke overdue browser launch authority, retain pending ownership and cleanup retry; full F11 remains open.
+  - Fixed HTML preview Stop before host dispatch — Awaiting merge. F11 / #402 fixed HTML preview Stop during startup. A Stop from a startup notification now prevents preview-host dispatch. Existing in-flight ownership and cleanup retry remain in effect. Both new cases (successful and failed cleanup) failed on main 2d41023 and passed after the fix. Flutter 3.47.6 / Dart 3.13.5 on macOS passed 60 focused tests and 1,657 full-suite tests with nine skips. Analyzer and 444-file formatter check passed. No live model acceptance claimed. Full F11 remains open.
+  - Fixed-starter browser deadline — Done via [PR #511](https://github.com/arpit-it/ASG/pull/511), verified reviewer merge725f714e at2026-11-05T04:46:04Z; final5779980950/requiredCI41968903459 passed. #402, `402-fixed-browser-deadline`, scope6649718191. Revoke overdue launch authority, retain pending ownership and cleanup retry; full F11 stays open.
   - Reviewed browser-launch deadline — Done via [PR #508](https://github.com/arpit-it/ASG/pull/508), verified reviewer merge514ed586 at2026-11-05T04:15:04Z; final5779782123/requiredCI41965716740 passed. #402, `402-reviewed-browser-deadline`, scope6649309296. Revoke overdue launch authority while retaining pending ownership; full F11 stays open.
   - HTML draft-save deadline — Done via [PR #506](https://github.com/arpit-it/ASG/pull/506), verified reviewer mergeb847ae22 at2026-11-05T03:43:38Z; final5779582642/requiredCI41962550643 passed. #402, `402-html-draft-save-deadline`, scope6648903384. Revoke overdue save authority while retaining pending-write ownership; full F11 remains open.
   - Reviewed export destination lifecycle — Done via [PR #505](https://github.com/arpit-it/ASG/pull/505), verified reviewer merge9491fa0c at2026-11-05T03:12:37Z; final5779386786/requiredCI41959169853 passed. #402, `402-reviewed-destination-lifecycle`, scope6648471034. Refuse picker dispatch, returned-parent acceptance and confirmation after disposal; full F11 remains open.
@@ -372,12 +373,13 @@ F56 below is the owner-selected development-process improvement now, not a new a
   - Acceptance: one requirements file; unique original product scope and foundation history retained; maintained local documentation links resolve; the active 15 minute automation reads this file, deduplicates new tasks and checks Done only after verified merge.
   - Delivered 25 October 2026 via [issue #32](https://github.com/arpit-it/ASG/issues/32), branch `codex/32-documentation-queue`, [PR #33](https://github.com/arpit-it/ASG/pull/33). Independent review approved head `ec9b561f12d1edd9439d100dadae52afe3a90ab9`; required Flutter checks/web build (real Chrome storage and generated-project verification) and Python fixtures passed in CI run `40172035200`. Remote merge `3b4333286e0c3ef8c6543501c2bba6721e714035` at 2026-10-25 07:18:39 UTC and issue closure verified; local main synchronized before F01.
 
-- [ ] F56 Coordinated parallel development and measured delivery — Awaiting merge; priority P0 (owner-selected process improvement, issue #510); depends on existing issue/PR workflow and protected CI, not marketplace delivery
+- [x] F56 Coordinated parallel development and measured delivery — Done; priority P0 (owner-selected process improvement, issue #510); depends on existing issue/PR workflow and protected CI, not marketplace delivery
   - Scope: atomic local SQLite ownership shared by registered worktrees; maximum two independent writers; literal path conflicts; private tokens; renewable leases and explicit expired-claim reconciliation; serialized integration; exact head/base observations; compact execution contracts; workflow/templates and scheduler adoption. This is cooperative same-host development tooling, not a new app executor or cross-host lock service.
   - Acceptance: actual competing processes cannot claim duplicate tasks, aliased/overlapping paths, one checkout or a third writer slot. Invalid ownership/revision/contracts refuse without losing state. Expiry never auto-clears. Integration checks actual scoped changes and current-main ancestry; final independent reviewer and protected CI remain authoritative. Stale outcomes cannot count as completed verification for a new revision. Unknown durations stay unknown and local records do not impersonate remote CI verification.
   - Delivery: two disjoint writer tracks hand off to one integration owner and independent reviewer. Related behavior and defenses ship as one coherent increment. The first installation has an explicit scoped bootstrap because the tool predates its own claim command; future writers claim before editing. Shared docs are integration-owned.
   - Validation: real subprocess/worktree admission races, writer/path/token/expiry/recovery/corruption refusals, integration revision/scope and stale-evidence/metric regressions; contract/operational-command/link checks; acceptance inventory; new coordinator suite in the existing required Python CI job. Independent final review, required CI and verified remote merge remain pending before Done. No Flutter runtime, model or platform-support change.
   - CI recovery: initial run #41970354512 exposed first-line license-header ordering in the two new Python tools; corrected to the existing SPDX convention. The four existing license tests and 20 coordinator tests pass after correction. Fresh exact-final review and required CI remain pending.
+  - Final delivery: Verified [PR #512](https://github.com/arpit-it/ASG/pull/512) merged as 2d41023bc93b47a91b4c87c4a747ee8472d695b8 on 2026-11-05T05:05:53Z. Final 5097d1eb4bc7cf79d59aea2b70dd880953428e9d, independent review 5780073707 and required CI 41971090645 passed. Issue #510 closed. Coordination is cooperative and confined to worktrees sharing one Git directory. The local report recorded 929.4 seconds from claim to observed merge and 672.3 seconds of observed CI wait for the bootstrap integration; these are local observations. Actual rework included the license-header fix, and escaped defects remain unknown.
 
 ## Post-current-queue marketplace and universal work — 5 November 2026
 
@@ -15809,3 +15811,38 @@ Full validation, plugin publication, independent exact-final review, required CI
 Recorded 2026-11-05T04:32:57.166258+00:00.
 
 Final local validation: 1655 Flutter tests PASS/nine explicit opt-in skips;34focused,440-file zero-change format,clean analyzer,web/Wasm dry run,isolatedmacOSdebug and nineinventory checks PASS. All468runtime/test/tool/dependency inputs byte-identical to /private/tmp/asg510-validation. Existing8765health unavailable URLError0.017s;no fresh inference. Awaiting merge: plugin publication,independent exact-final review,actual requiredCI and reviewer merge remain gates. Recorded 2026-11-05T04:35:17.647221+00:00.
+
+
+### Fixed-starter browser deadline verified merged — PR #511
+Bounded F11/#402 correction Done via https://github.com/arpit-it/ASG/pull/511,
+branch `402-fixed-browser-deadline`, scope6649718191. Configured deadline revokes
+overdue fixed-starter browser-launch URL authority and requests cleanup, retaining
+opening ownership/redispatch exclusion until external settlement. Late success
+cannot publish a launch notice; failed cleanup retains explicit retry. Pending
+launch retains visible Stop. An already-launched browser cannot be recalled.
+Localb3c99e2337b2f12410b8c41fb19e937628976424 and publishedfinal
+810ca0cc8d39c91fd4565ce0eed1a707f778d79e share exact tested tree
+893c3fec934ee52680fd92cddb97f805cd547f38; all7published blobs match.
+Independent946remote blobs/modes and468validationinputs match. Parent1655Flutter/
+nine explicit skips,34focused,440-file zero-change format,clean analyzer,web/Wasm
+dry run,isolatedmacOSdebug and nineinventory PASS. Independent55focused/
+9inventory/12restoredfinal/three valid lifecycle probes PASS; both new timeout
+regressions independently FAILbaselinea82a355. CodeCOMMENT5779938251 and
+finalCOMMENT5779980950 approve unchanged exacthead. Actual requiredCI41968903459
+Flutter127052264019/Python127052263603 SUCCESS; reviewer inspected1607Linux/
+54explicit skips/all4new/17Chrome/transport/staticHTML/webWasm/real independent
+generatedFlutter resolve-analyze-test-build-serve and all8Python suites.
+CImergee1b3df0 identicaltree. Reviewer protected expected-head squashmerge
+725f714eb76e9cd6989bd2e9a83b3c54f7706b09 at2026-11-05T04:46:04Z.
+Parent independently verified mergedPR/currentmain/directfinalheadchecks and
+signed exacttree/soleparenta82a355; safely synchronized localmain/originmain0/0.
+Index empty; both original IDE edits byte-identical. FullF11/#402 staysOPEN,
+Deferred400 retained. PR509 marketplace planning merge was integrated before
+implementation, retaining F25–F55 ordering after the current queue and acceptance.
+Existing8765health unavailableURLError0.017s; no fresh inference,model download,
+stable-app replacement,deployment,cadence or notification change. Final merge
+bookkeeping retained locally for next normal reviewed development PR.
+Receipts:/private/tmp/asg511-publication.json,/private/tmp/asg511-review-evidence.json,
+/private/tmp/asg511-verified-pr.json,/private/tmp/asg511-sync-record.json,
+/private/tmp/asg511-check-runs.json.
+Recorded 2026-11-05T04:47:02.251179+00:00.

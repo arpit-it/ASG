@@ -68,6 +68,42 @@ final _request = HtmlExportRequest(
 final _url = Uri.parse('http://127.0.0.1:12345/token/');
 
 void main() {
+  for (final failStop in [false, true]) {
+    test(
+      'Stop before startup dispatch prevents host IO (cleanup fails: $failStop)',
+      () async {
+        final service = _Preview()..failStop = failStop;
+        final c = HtmlPreviewController(service);
+        addTearDown(c.dispose);
+        Future<void>? stop;
+        var requested = false;
+        c.addListener(() {
+          if (!c.starting || requested) return;
+          requested = true;
+          stop = c.stop();
+        });
+
+        final startup = c.start('/tmp/site', _request);
+        service.result.complete(_url);
+        await startup;
+        await stop;
+        expect(service.starts, 0);
+        expect(c.url, isNull);
+        expect(c.busy, isFalse);
+        expect(c.cleanupFailed, failStop);
+        if (failStop) {
+          await c.start('/tmp/site', _request);
+          expect(service.starts, 0);
+          service.failStop = false;
+          await c.stop();
+        }
+        await c.start('/tmp/site', _request);
+        expect(service.starts, 1);
+        expect(c.url, _url);
+      },
+    );
+  }
+
   testWidgets('pending launch keeps visible Stop and cleanup ownership', (
     tester,
   ) async {
