@@ -64,11 +64,14 @@ class CandidateTests(unittest.TestCase):
         (self.source / 'entry').write_bytes(b'original')
         commit = self.commit()
         with patch.object(candidate, 'write_blob', side_effect=OSError('fixture')):
-            with self.assertRaisesRegex(ValueError, 'Incomplete files retained'):
+            with self.assertRaisesRegex(ValueError, 'Inspect the candidate run'):
                 candidate.prepare(self.source, commit, self.parent)
         partial, = self.parent.glob('asg-self-candidate-*')
+        self.assertEqual([p.name for p in partial.iterdir()], ['incomplete'])
         result = candidate.prepare(self.source, commit, self.parent)
-        self.assertNotEqual(partial, result)
+        self.assertNotEqual(partial, result.parent)
+        self.assertEqual(result.name, f'source-{commit}')
+        self.assertFalse((result.parent / 'incomplete').exists())
         self.assertEqual((result / 'entry').read_bytes(), b'original')
         self.assertEqual((self.source / 'entry').read_bytes(), b'original')
 

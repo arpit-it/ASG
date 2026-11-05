@@ -120,9 +120,12 @@ def prepare(source, commit, parent):
     if read_git(source, ['cat-file', '-t', commit], 16, deadline) != b'commit\n':
         raise ValueError('The selected object must be a commit.')
     entries = parse_tree(read_git(source, ['ls-tree', '-rlz', commit], MAX_TREE_BYTES, deadline))
-    candidate = Path(tempfile.mkdtemp(prefix='asg-self-candidate-', dir=parent))
+    run = Path(tempfile.mkdtemp(prefix='asg-self-candidate-', dir=parent))
+    staging = run / 'incomplete'
+    ready = run / f'source-{commit}'
     try:
-        root_fd = os.open(candidate, os.O_DIRECTORY | os.O_NOFOLLOW)
+        staging.mkdir(mode=0o700)
+        root_fd = os.open(staging, os.O_DIRECTORY | os.O_NOFOLLOW)
         try:
             for parts, mode, oid, size in entries:
                 data = read_git(source, ['cat-file', 'blob', oid.decode()], size, deadline)
@@ -132,9 +135,10 @@ def prepare(source, commit, parent):
                 write_blob(root_fd, parts, 0o700 if mode == b'100755' else 0o600, data)
         finally:
             os.close(root_fd)
+        staging.rename(ready)
     except (OSError, ValueError, subprocess.SubprocessError, KeyboardInterrupt) as error:
-        raise ValueError(f'Preparation stopped. Incomplete files retained at {candidate}.') from error
-    return candidate
+        raise ValueError(f'Preparation stopped. Inspect the candidate run at {run}.') from error
+    return ready
 
 
 def main(argv=None):
