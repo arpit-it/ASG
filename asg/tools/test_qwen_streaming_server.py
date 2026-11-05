@@ -21,13 +21,14 @@ class FakeBackend:
     device = 'fixture-device'
     def __init__(self):
         self.tokens = None
+        self.finish_reason = 'stop'
     def generate(self, messages, tokens, publish, cancelled, deadline):
         self.tokens = tokens
         if messages[0]['content'] == 'error':
             raise ValueError('Invalid fixture prompt')
         publish('token', 'Hello ')
         publish('token', 'world')
-        return {'finish_reason':'stop'}
+        return {'finish_reason': self.finish_reason}
 
 class ServerTests(unittest.TestCase):
     def setUp(self):
@@ -53,6 +54,29 @@ class ServerTests(unittest.TestCase):
         self.assertIn('"phase": "writing"', text)
         self.assertIn('Hello ', text)
         self.assertIn('[DONE]', text)
+
+    def test_sse_terminal_event_reports_exact_model_for_stop_and_length(self):
+        for reason in ('stop', 'length'):
+            self.backend.finish_reason = reason
+            with self.subTest(reason=reason), self.request() as response:
+                data = [line[6:] for line in response.read().decode().splitlines()
+                        if line.startswith('data: ')]
+                self.assertEqual(data[-1], '[DONE]')
+                self.assertEqual(json.loads(data[-2]), {
+                    'model': 'fixture',
+                    'choices': [{'delta': {}, 'finish_reason': reason}],
+                    'metrics': {'finish_reason': reason},
+                })
+                self.assertTrue(all('model' not in json.loads(item) for item in data[:-2]))
+
+    def test_wrong_model_is_rejected_before_generation(self):
+        with self.assertRaises(urllib.error.HTTPError) as error:
+            self.request(model='different-model')
+        with error.exception as response:
+            self.assertEqual(response.code, 400)
+            self.assertIn('error', json.load(response))
+        self.assertIsNone(self.backend.tokens)
+
     def test_nonstream_compatibility_and_health(self):
         with self.request(False) as response:
             data=json.load(response)
@@ -185,6 +209,7 @@ class ServerTests(unittest.TestCase):
         self.assertIn('event: error', text)
         self.assertNotIn('[DONE]', text)
         self.assertIn('Invalid fixture prompt', text)
+        self.assertNotIn('"model":', text)
     def test_remote_origins_are_rejected(self):
         request = urllib.request.Request(self.url+'/v1/chat/completions', data=b'{}', headers={'Content-Type':'application/json','Origin':'https://example.com'})
         with self.assertRaises(urllib.error.HTTPError) as error:
@@ -722,6 +747,8 @@ class CPUHTTPTests(unittest.TestCase):
             received = b''
             while b'cpu fixture' not in received:
                 received += sock.recv(8192)
+            self.assertNotIn(b'"model":', received)
+            self.assertNotIn(b'[DONE]', received)
             sock.setsockopt(socket.SOL_SOCKET, socket.SO_LINGER, struct.pack('ii', 1, 0))
         finally:
             sock.close()

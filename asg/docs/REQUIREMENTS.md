@@ -1351,6 +1351,12 @@ Requirements changes: existing F10 acceptance guidance and F15 backend milestone
 
 ## Active task and delivery ledger
 
+### Verified HTML boundary and local-model evidence — 5 November 2026
+
+The [interactive HTML boundary experiment](development/HTML_INTERACTIVE_BOUNDARY.md) reproduced outbound egress through child self-navigation in Chrome 156.0.8078.81 on macOS arm64. This rejects the browser-only candidate. F11 / [#402](https://github.com/arpit-it/ASG/issues/402) stays open. Interactive acceptance still needs host-enforced egress denial and noncooperative Stop. The fixture used fixed synthetic source. [PR #516](https://github.com/arpit-it/ASG/pull/516) merged on 2026-11-05 at 08:02:04 UTC as `5a09899d63652d3fb1e674b254b81a4b1e040293`. Tested head `7f6e454576e938b11672f95549e8b6f7fdd2dd11` passed [required CI](https://github.com/arpit-it/ASG/actions/runs/41990235480) and [independent review](https://github.com/arpit-it/ASG/pull/516#pullrequestreview-5781484060).
+
+The development setup guidance identifies the owner-selected local MLX model as `Qwen3.8-27B-4bit`. An exact-ID short JSON completion finished in 1863 ms and the endpoint returned to idle. This observation leaves context fit, host memory and end-to-end acceptance pending under F22 / [#396](https://github.com/arpit-it/ASG/issues/396). [PR #517](https://github.com/arpit-it/ASG/pull/517) merged on 2026-11-05 at 16:00:57 UTC as `45d2e32773e8bdf60b780887771de8ec5be2cf5e`. Tested head `5c9bd11c76ea7aa001308b26733de70496b3606d` passed [required CI](https://github.com/arpit-it/ASG/actions/runs/42059358778) and [independent review](https://github.com/arpit-it/ASG/pull/517#pullrequestreview-5787968803).
+
 Current: Issue #396 temporary client-observed test latency Done via PR #441; final39ab3534 approved5734353043/finalgate5734432234, requiredCI41419692986 passed, verified reviewer mergefdc5dbd2 at2026-11-02T09:28:02Z. Remaining verified profiles/context/real-model capability evidence Pending; fullF22/F15 unchecked, platform acceptance Deferred400.
 
 Historical pre-F17 selection: F10 In progress/unchecked. PR #248 verified merged as `c54c9b7b120d88531a0013705801d6babf0c7af9` at 2026-10-28T05:29:19Z after independent final review 5678169248 of `274bb3fd` and required CI 40637890903; tested tree `61f985bc`. Explicit opt-in named-test criterion contracts delivered. Full acceptance reconciliation, including whole-requirement supported verdicts, remains; no later task selected.

@@ -227,7 +227,11 @@ def create_handler(backend, executor, model_id, model_path):
                     elif kind == 'finish':
                         reason = value['finish_reason']
                         if streaming:
-                            self.sse('message', {'choices': [{'delta': {}, 'finish_reason': reason}], 'metrics': value})
+                            self.sse('message', {
+                                'model': model_id,
+                                'choices': [{'delta': {}, 'finish_reason': reason}],
+                                'metrics': value,
+                            })
                             self.sse('message', '[DONE]')
                         else:
                             self.respond(200, {'model': model_id, 'choices': [{'message': {'role': 'assistant', 'content': ''.join(fragments)}, 'finish_reason': reason}], 'metrics': value})
