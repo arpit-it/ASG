@@ -258,6 +258,7 @@ class _HtmlExportScreenState extends State<HtmlExportScreen> {
                           !controller.preview.stopping &&
                               (controller.preview.url != null ||
                                   controller.preview.starting ||
+                                  controller.preview.opening ||
                                   controller.preview.cleanupFailed)
                           ? controller.preview.stop
                           : null,
