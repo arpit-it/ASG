@@ -3,6 +3,7 @@
 
 import 'dart:async';
 
+import '../models/generation_command_result.dart';
 import '../services/self_snapshot.dart';
 import 'base_controller.dart';
 
@@ -15,14 +16,26 @@ typedef SnapshotPreparation = Future<String> Function({
   required bool Function() stopped,
 });
 
+typedef SnapshotCheck = Future<GenerationCommandResult> Function({
+  required String snapshot,
+  required String sdk,
+  required String python,
+  required bool analyze,
+  required Future<void> stop,
+  required bool Function() stopped,
+});
+
 class SelfSnapshotController extends BaseController {
   SelfSnapshotController({
     SnapshotPreparation? prepare,
+    SnapshotCheck? check,
     Future<List<String>> Function(String)? inspect,
   }) : _prepare = prepare ?? prepareSelfSnapshot,
-       _inspect = inspect ?? inspectIncompleteSnapshots;
+       _inspect = inspect ?? inspectIncompleteSnapshots,
+       _check = check ?? checkSelfSnapshot;
 
   final SnapshotPreparation _prepare;
+  final SnapshotCheck _check;
   final Future<List<String>> Function(String) _inspect;
   bool _inspecting = false;
   bool get inspecting => _inspecting;
@@ -73,6 +86,60 @@ class SelfSnapshotController extends BaseController {
           : 'Preparation failed. $recovery';
     } finally {
       if (stop.isCompleted) _status = 'Preparation stopped. $recovery';
+      _stop = null;
+      update();
+    }
+  }
+
+  Future<void> check({
+    required bool approved,
+    required String snapshot,
+    required String sdk,
+    required String python,
+  }) async {
+    if (!approved || busy || isDisposed) return;
+    final stop = Completer<void>();
+    _stop = stop;
+    final results = <String>[];
+    try {
+      for (final analyze in [false, true]) {
+        final label = analyze ? 'Analysis' : 'Offline dependency resolution';
+        _status = [...results, '$label running…'].join('\n');
+        update();
+        if (stop.isCompleted) return;
+        final result = await _check(
+          snapshot: snapshot,
+          sdk: sdk,
+          python: python,
+          analyze: analyze,
+          stop: stop.future,
+          stopped: () => stop.isCompleted,
+        );
+        if (stop.isCompleted) return;
+        final outcome = switch (result) {
+          GenerationCommandResult(cancelled: true) => 'stopped',
+          GenerationCommandResult(timedOut: true) => 'timed out',
+          GenerationCommandResult(outputLimitExceeded: true) =>
+            'exceeded the output limit',
+          GenerationCommandResult(exitCode: 0) => 'passed',
+          _ => 'failed (exit ${result.exitCode})',
+        };
+        results.add('$label $outcome.');
+        if (outcome != 'passed') break;
+      }
+    } catch (_) {
+      if (!stop.isCompleted) {
+        results.add(
+          'Check unavailable. Verify the snapshot and trusted tool paths.',
+        );
+      }
+    } finally {
+      if (stop.isCompleted) {
+        results.add('Snapshot checks stopped.');
+      } else {
+        stop.complete();
+      }
+      _status = results.join('\n');
       _stop = null;
       update();
     }

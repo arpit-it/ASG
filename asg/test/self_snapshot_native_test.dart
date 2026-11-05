@@ -5,6 +5,7 @@
 library;
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:asg/services/self_snapshot.dart';
@@ -147,4 +148,98 @@ void main() {
     expect(await ready.exists(), isTrue);
     expect(await other.exists(), isTrue);
   }, skip: !Platform.isMacOS);
+  const sdk = String.fromEnvironment('ASG_SNAPSHOT_TEST_SDK');
+  test('confined offline checks and Stop during SDK lock wait', () async {
+    final root = await Directory.systemTemp.createTemp('asg-offline-check-');
+    addTearDown(() => root.delete(recursive: true));
+    final parent = await root.resolveSymbolicLinks();
+    final snapshot = '$parent/asg-self-candidate-a1b2c3d4/source-${'a' * 40}';
+    final project = await Directory('$snapshot/asg').create(recursive: true);
+    await Directory('${project.path}/lib').create();
+    final manifest = File('${project.path}/pubspec.yaml');
+    const original = 'name: asg\nenvironment:\n  sdk: ">=3.0.0 <4.0.0"\n';
+    await manifest.writeAsString(original);
+    await File('${project.path}/lib/main.dart').writeAsString('void main() {}');
+    Future<int> check(bool analyze, Completer<void> stop) async {
+      final result = await checkSelfSnapshot(
+        snapshot: snapshot,
+        sdk: sdk,
+        python: '/usr/bin/python3',
+        analyze: analyze,
+        stop: stop.future,
+        stopped: () => stop.isCompleted,
+      );
+      return result.exitCode;
+    }
+
+    expect(await check(false, Completer<void>()), 0);
+    expect(await check(true, Completer<void>()), 0);
+    expect(await manifest.readAsString(), original);
+
+    final sentinel = File('$parent/external-sentinel');
+    await sentinel.writeAsString('outside stays unchanged');
+    final packageConfig = File(
+      '${project.path}/.dart_tool/package_config.json',
+    );
+    await packageConfig.delete();
+    final link = await Process.run('/bin/ln', [
+      sentinel.path,
+      packageConfig.path,
+    ]);
+    expect(link.exitCode, 0, reason: link.stderr.toString());
+    await expectLater(check(false, Completer<void>()), throwsStateError);
+    expect(await sentinel.readAsString(), 'outside stays unchanged');
+    await packageConfig.delete();
+
+    final locker = await Process.start('/usr/bin/python3', [
+      '-u',
+      '-c',
+      'import fcntl, sys; f=open(sys.argv[1], "r+b"); '
+          'fcntl.lockf(f, fcntl.LOCK_EX); print("locked"); sys.stdin.read()',
+      '$sdk/bin/cache/lockfile',
+    ]);
+    try {
+      expect(
+        await locker.stdout
+            .transform(utf8.decoder)
+            .transform(const LineSplitter())
+            .first
+            .timeout(const Duration(seconds: 5)),
+        'locked',
+      );
+      final overlay = Directory('${project.path}/.dart_tool/asg_pub_cache');
+      await overlay.delete(recursive: true);
+      final stop = Completer<void>();
+      final operation = check(false, stop);
+      final stopped = expectLater(operation, throwsStateError);
+      final watch = Stopwatch()..start();
+      try {
+        while (!await overlay.exists() &&
+            watch.elapsed < const Duration(seconds: 5)) {
+          await Future<void>.delayed(const Duration(milliseconds: 25));
+        }
+        expect(await overlay.exists(), isTrue);
+      } finally {
+        stop.complete();
+        await stopped.timeout(const Duration(seconds: 12));
+      }
+      final ps = await Process.run('/bin/ps', ['-axo', 'command=']);
+      expect(
+        (ps.stdout as String)
+            .split('\n')
+            .any(
+              (line) =>
+                  line.contains(
+                    '--offline-snapshot-check --operation resolve',
+                  ) &&
+                  line.endsWith('--directory ${project.path}'),
+            ),
+        isFalse,
+      );
+      expect(await manifest.readAsString(), original);
+    } finally {
+      await locker.stdin.close();
+      await locker.exitCode.timeout(const Duration(seconds: 5));
+    }
+  }, skip: !Platform.isMacOS || sdk.isEmpty);
 }

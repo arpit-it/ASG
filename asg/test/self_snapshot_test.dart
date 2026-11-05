@@ -4,6 +4,7 @@
 import 'dart:async';
 
 import 'package:asg/controllers/self_snapshot_controller.dart';
+import 'package:asg/models/generation_command_result.dart';
 import 'package:asg/services/folder_picker.dart';
 import 'package:asg/views/self_snapshot_screen.dart';
 import 'package:flutter/material.dart';
@@ -117,4 +118,127 @@ void main() {
       findsOneWidget,
     );
   });
+  test('checks require approval and Stop suppresses analysis', () async {
+    final result = Completer<GenerationCommandResult>();
+    final calls = <bool>[];
+    final controller = SelfSnapshotController(
+      check:
+          ({
+            required snapshot,
+            required sdk,
+            required python,
+            required analyze,
+            required stop,
+            required stopped,
+          }) {
+            expect((snapshot, sdk, python), ('/snapshot', '/sdk', '/python'));
+            calls.add(analyze);
+            return result.future;
+          },
+    );
+    addTearDown(controller.dispose);
+    Future<void> run(bool approved) => controller.check(
+      approved: approved,
+      snapshot: '/snapshot',
+      sdk: '/sdk',
+      python: '/python',
+    );
+    await run(false);
+    expect(calls, isEmpty);
+    final operation = run(true);
+    expect(calls, [false]);
+    controller.stop();
+    result.complete(const GenerationCommandResult(exitCode: 0, output: ''));
+    await operation;
+    expect(calls, [false]);
+    expect(controller.status, 'Snapshot checks stopped.');
+  });
+
+  test(
+    'analyze runs only after successful resolve and reports actual exit',
+    () async {
+      final calls = <bool>[];
+      final controller = SelfSnapshotController(
+        check:
+            ({
+              required snapshot,
+              required sdk,
+              required python,
+              required analyze,
+              required stop,
+              required stopped,
+            }) async {
+              calls.add(analyze);
+              return GenerationCommandResult(
+                exitCode: analyze ? 1 : 0,
+                output: '',
+              );
+            },
+      );
+      addTearDown(controller.dispose);
+      await controller.check(
+        approved: true,
+        snapshot: '/snapshot',
+        sdk: '/sdk',
+        python: '/python',
+      );
+      expect(calls, [false, true]);
+      expect(
+        controller.status,
+        'Offline dependency resolution passed.\nAnalysis failed (exit 1).',
+      );
+    },
+  );
+  testWidgets(
+    'review names the selected snapshot and Cancel starts no checks',
+    (tester) async {
+      final calls = <bool>[];
+      final controller = SelfSnapshotController(
+        check:
+            ({
+              required snapshot,
+              required sdk,
+              required python,
+              required analyze,
+              required stop,
+              required stopped,
+            }) async {
+              expect((snapshot, sdk, python), ('/source', '/sdk', '/python'));
+              calls.add(analyze);
+              return const GenerationCommandResult(exitCode: 0, output: '');
+            },
+      );
+      await tester.pumpWidget(
+        MaterialApp(
+          home: SelfSnapshotScreen(
+            controller: controller,
+            picker: FixturePicker(),
+          ),
+        ),
+      );
+      await tester.enterText(find.byType(TextField).at(1), '/python');
+      final pick = find.text('Choose prepared snapshot for checks');
+      await tester.ensureVisible(pick);
+      await tester.tap(pick);
+      await tester.pumpAndSettle();
+      final field = find.widgetWithText(TextField, 'Flutter SDK folder');
+      await tester.ensureVisible(field);
+      await tester.enterText(field, '/sdk');
+      final review = find.text('Review offline checks');
+      await tester.ensureVisible(review);
+      await tester.tap(review);
+      await tester.pumpAndSettle();
+      expect(find.textContaining('Flutter SDK: /sdk'), findsOneWidget);
+      expect(calls, isEmpty);
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+      expect(calls, isEmpty);
+      await tester.tap(review);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Approve and run'));
+      await tester.pumpAndSettle();
+      expect(calls, [false, true]);
+      expect(controller.status, contains('Analysis passed'));
+    },
+  );
 }

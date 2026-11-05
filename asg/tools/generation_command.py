@@ -7,6 +7,7 @@ import json
 import os
 from pathlib import Path
 import signal
+import stat
 import subprocess
 import sys
 import threading
@@ -94,7 +95,7 @@ def run(executable, arguments, cwd, timeout, parent_pid=None, environment=None):
         for sig, handler in previous.items():
             signal.signal(sig, handler)
 
-def candidate_profile(directory, sdk, pub_cache, temporary):
+def candidate_profile(directory, sdk, pub_cache, temporary, *, offline=False):
     # Seatbelt restrictions are inherited by all spawned tool/test processes.
     # No candidate-controlled path is interpolated as profile syntax.
     def subpath(value):
@@ -113,8 +114,10 @@ def candidate_profile(directory, sdk, pub_cache, temporary):
         '(allow file-read* ' + ' '.join(map(subpath, reads)) + ')',
         '(allow file-write* ' + subpath(directory) + ' ' + subpath(temporary) +
         ' (literal "/dev/null"))',
-        '(allow network-inbound (local ip "localhost:*"))',
-        '(allow network-outbound (remote ip "localhost:*"))',
+        *([] if offline else [
+            '(allow network-inbound (local ip "localhost:*"))',
+            '(allow network-outbound (remote ip "localhost:*"))',
+        ]),
     ])
 
 
@@ -198,7 +201,49 @@ def named_test_result(result, test_file, test_name):
     }
 
 
-def confined_operation(directory, sdk, operation, timeout, parent_pid, test_file=None, test_name=None):
+
+def validate_offline_snapshot(directory, pub_cache):
+    """Refuse aliases to outside inodes before creating or updating work files."""
+    overlay = directory / '.dart_tool' / 'asg_pub_cache'
+    allowed_links = {overlay / name: pub_cache / name
+                     for name in ('hosted', 'hosted-hashes', 'git')}
+    plugin_directories = {directory / platform / 'flutter' / 'ephemeral' / '.plugin_symlinks'
+                          for platform in ('linux', 'windows')}
+    count = 0
+
+    def allowed_link(candidate):
+        target = candidate.resolve(strict=True)
+        if candidate in allowed_links:
+            return target == allowed_links[candidate].resolve(strict=True)
+        # Flutter's offline resolve regenerates these links for desktop plugins.
+        # Only existing package directories in the trusted, read-only cache qualify.
+        return (candidate.parent in plugin_directories and target.is_dir()
+                and any(target.is_relative_to(pub_cache / name)
+                        and target != pub_cache / name for name in ('hosted', 'git')))
+
+    def visit(folder, depth):
+        nonlocal count
+        if depth > 24:
+            raise ValueError('Snapshot exceeds directory depth limit')
+        with os.scandir(folder) as entries:
+            for entry in entries:
+                count += 1
+                if count > 8192:
+                    raise ValueError('Snapshot exceeds entry limit')
+                info = entry.stat(follow_symlinks=False)
+                candidate = Path(entry.path)
+                if stat.S_ISDIR(info.st_mode):
+                    visit(candidate, depth + 1)
+                elif stat.S_ISREG(info.st_mode) and info.st_nlink == 1:
+                    continue
+                elif stat.S_ISLNK(info.st_mode) and allowed_link(candidate):
+                    continue
+                else:
+                    raise ValueError('Linked or unsupported snapshot entry')
+
+    visit(directory, 0)
+
+def confined_operation(directory, sdk, operation, timeout, parent_pid, test_file=None, test_name=None, *, offline=False):
     arguments = OPERATIONS[operation]
     if test_file is not None or test_name is not None:
         if operation != 'test':
@@ -212,6 +257,13 @@ def confined_operation(directory, sdk, operation, timeout, parent_pid, test_file
     home = Path.home().resolve()
     if pub_cache == home or sdk == home or directory == home or directory in sdk.parents or directory in pub_cache.parents:
         raise ValueError('Unsafe candidate tool/cache roots')
+    if offline:
+        if operation not in ('resolve', 'analyze'):
+            raise ValueError('Only offline snapshot checks are allowed')
+        if any(directory == root or directory in root.parents or root in directory.parents
+               for root in (sdk, pub_cache)):
+            raise ValueError('Snapshot overlaps tool or cache roots')
+        validate_offline_snapshot(directory, pub_cache)
     dart = sdk / 'bin/cache/dart-sdk/bin/dart'
     snapshot = sdk / 'bin/cache/flutter_tools.snapshot'
     packages = sdk / 'packages/flutter_tools/.dart_tool/package_config.json'
@@ -221,7 +273,7 @@ def confined_operation(directory, sdk, operation, timeout, parent_pid, test_file
         temporary = Path(temp).resolve()
         (temporary / 'home').mkdir()
         profile = temporary / 'candidate.sb'
-        profile.write_text(candidate_profile(directory, sdk, pub_cache, temporary))
+        profile.write_text(candidate_profile(directory, sdk, pub_cache, temporary, offline=offline))
         # Package content stays read-only. Pub's active_roots bookkeeping lives
         # in a candidate-local overlay that remains valid across the four steps.
         cache = directory / '.dart_tool' / 'asg_pub_cache'
@@ -274,6 +326,7 @@ def main():
     parser.add_argument('--operation', choices=OPERATIONS, required=True)
     parser.add_argument('--sdk', required=True)
     parser.add_argument('--confined', action='store_true')
+    parser.add_argument('--offline-snapshot-check', action='store_true')
     parser.add_argument('--directory', required=True)
     parser.add_argument('--test-file')
     parser.add_argument('--test-name')
@@ -287,9 +340,18 @@ def main():
     directory = Path(args.directory)
     if not directory.is_absolute() or directory.resolve() != directory or not directory.is_dir():
         raise ValueError('Expected a canonical generated project directory')
+    if args.offline_snapshot_check and (
+            not args.confined or args.operation not in ('resolve', 'analyze')):
+        parser.error('Snapshot checks require confined resolve or analysis')
     executable = Path(args.sdk) / 'bin/flutter'
     selectors = {'test_file': args.test_file, 'test_name': args.test_name} if targeted else {}
-    result = (confined_operation(directory, args.sdk, args.operation, args.timeout, os.getppid(), **selectors)
+    if args.offline_snapshot_check:
+        def stop_setup(_signal, _frame):
+            raise InterruptedError('Snapshot check stopped')
+        signal.signal(signal.SIGTERM, stop_setup)
+        selectors['offline'] = True
+    result = (confined_operation(directory, args.sdk, args.operation, args.timeout, os.getppid(),
+                                 **selectors)
               if args.confined else run(str(executable), ['--no-version-check', *OPERATIONS[args.operation]], str(directory), args.timeout, os.getppid()))
     print(json.dumps(result))
 

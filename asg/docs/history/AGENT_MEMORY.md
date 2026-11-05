@@ -1,5 +1,9 @@
 # Durable project memory
 
+## Incomplete source snapshot recovery — 6 November 2026
+
+On macOS, the snapshot screen can find possible incomplete staging folders in a selected destination without writing to them. An isolated app launch displayed the incomplete fixture and excluded ready and linked folders. [PR #521](https://github.com/arpit-it/ASG/pull/521) merged on 6 November 2026 at 02:31:23 IST as `91ac142937513c3fcee997dcc6e70612f0ced9d5`. Head `95fb8ada7338613cf896deecdca9a7ebad32a52f` passed [required CI](https://github.com/arpit-it/ASG/actions/runs/42111997745) and [independent review](https://github.com/arpit-it/ASG/pull/521#pullrequestreview-5792423429).
+
 ## Isolated ASG snapshots — 5 November 2026
 
 F12 source snapshot CLI copies a reviewed commit from a trusted local checkout and distinguishes interrupted staging from complete output. [PR #519](https://github.com/arpit-it/ASG/pull/519) merged on 5 November 2026 at 18:14:58 UTC as `8880a8e145c4f131493e253d157ac20ccb3aff2f`. Head `ed690a6ecbca1011129e89fcc3c01f129d472429` passed [required CI](https://github.com/arpit-it/ASG/actions/runs/42080394812) and [independent review](https://github.com/arpit-it/ASG/pull/519#pullrequestreview-5789732996).

@@ -23,11 +23,16 @@ class SelfSnapshotScreen extends StatefulWidget {
 class _SelfSnapshotScreenState extends State<SelfSnapshotScreen> {
   final commit = TextEditingController();
   final python = TextEditingController();
+  final sdk = TextEditingController();
+  String snapshot = '';
   String source = '';
   String destination = '';
   bool picking = false;
 
-  Future<void> pick({required bool sourceFolder}) async {
+  Future<void> pick({
+    bool sourceFolder = false,
+    bool snapshotFolder = false,
+  }) async {
     setState(() => picking = true);
     try {
       final selected = await widget.picker.pick();
@@ -36,6 +41,8 @@ class _SelfSnapshotScreenState extends State<SelfSnapshotScreen> {
       setState(() {
         if (sourceFolder) {
           source = selected;
+        } else if (snapshotFolder) {
+          snapshot = selected;
         } else {
           destination = selected;
         }
@@ -51,10 +58,55 @@ class _SelfSnapshotScreenState extends State<SelfSnapshotScreen> {
     }
   }
 
+  Future<void> approveChecks() async {
+    final selected = snapshot;
+    final flutterSdk = sdk.text.trim();
+    final trustedPython = python.text.trim();
+    if (flutterSdk.isEmpty || trustedPython.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Enter the Flutter SDK and Python paths.'),
+        ),
+      );
+      return;
+    }
+    final approved = await showDialog<bool>(
+      context: context,
+      builder: (dialog) => AlertDialog(
+        title: const Text('Approve offline snapshot checks?'),
+        content: SingleChildScrollView(
+          child: Text(
+            'Run offline dependency resolution and analysis on this snapshot? '
+            'Flutter can write working files inside the snapshot.\n\n'
+            '$selected\nFlutter SDK: $flutterSdk\nPython: $trustedPython',
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialog, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialog, true),
+            child: const Text('Approve and run'),
+          ),
+        ],
+      ),
+    );
+    if (!mounted || approved != true) return;
+    await widget.controller.check(
+      approved: true,
+      snapshot: selected,
+      sdk: flutterSdk,
+      python: trustedPython,
+    );
+  }
+
   @override
   void dispose() {
     commit.dispose();
     python.dispose();
+    sdk.dispose();
     widget.controller.dispose();
     super.dispose();
   }
@@ -126,6 +178,25 @@ class _SelfSnapshotScreenState extends State<SelfSnapshotScreen> {
                       ? 'Inspecting destination…'
                       : 'Find incomplete snapshots',
                 ),
+              ),
+              const SizedBox(height: 16),
+              TextButton(
+                onPressed: enabled ? () => pick(snapshotFolder: true) : null,
+                child: const Text('Choose prepared snapshot for checks'),
+              ),
+              if (snapshot.isNotEmpty) SelectableText(snapshot),
+              TextField(
+                controller: sdk,
+                enabled: enabled,
+                decoration: const InputDecoration(
+                  labelText: 'Flutter SDK folder',
+                ),
+              ),
+              OutlinedButton(
+                onPressed: enabled && snapshot.isNotEmpty
+                    ? approveChecks
+                    : null,
+                child: const Text('Review offline checks'),
               ),
             ],
           );
