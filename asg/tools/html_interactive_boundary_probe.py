@@ -1,4 +1,5 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: MPL-2.0
+# Copyright 2026 Arpit Sinha
 """Measure the limits of a browser-only HTML boundary with fixed local fixtures."""
 
 import argparse
