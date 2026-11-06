@@ -26,17 +26,36 @@ typedef SnapshotCheck = Future<GenerationCommandResult> Function({
   required bool Function() stopped,
 });
 
+class CandidateReview {
+  const CandidateReview(this.snapshot, this.python, this.digest);
+
+  final String snapshot;
+  final String python;
+  final String digest;
+}
+
+typedef CandidateFingerprint = Future<String> Function({
+  required String snapshot,
+  required String python,
+  required Future<void> stop,
+  required bool Function() stopped,
+});
+
 class SelfSnapshotController extends BaseController {
   SelfSnapshotController({
     SnapshotPreparation? prepare,
     SnapshotCheck? check,
+    CandidateFingerprint? fingerprint,
     Future<List<String>> Function(String)? inspect,
   }) : _prepare = prepare ?? prepareSelfSnapshot,
        _inspect = inspect ?? inspectIncompleteSnapshots,
-       _check = check ?? checkSelfSnapshot;
+       _check = check ?? checkSelfSnapshot,
+       _fingerprint = fingerprint ?? fingerprintSelfSnapshot;
 
   final SnapshotPreparation _prepare;
   final SnapshotCheck _check;
+  final CandidateFingerprint _fingerprint;
+  CandidateReview? _pendingReview;
   final Future<List<String>> Function(String) _inspect;
   bool _inspecting = false;
   bool get inspecting => _inspecting;
@@ -163,7 +182,66 @@ class SelfSnapshotController extends BaseController {
     }
   }
 
+  Future<CandidateReview?> reviewCandidate({
+    required String snapshot,
+    required String python,
+  }) async {
+    if (busy || isDisposed) return null;
+    _pendingReview = null;
+    final digest = await _scanCandidate(snapshot, python);
+    if (digest == null || isDisposed) return null;
+    final review = CandidateReview(snapshot, python, digest);
+    _pendingReview = review;
+    return review;
+  }
+
+  Future<void> approveCandidate(CandidateReview review) async {
+    if (busy || isDisposed || !identical(_pendingReview, review)) return;
+    _pendingReview = null;
+    final digest = await _scanCandidate(review.snapshot, review.python);
+    if (digest == null || isDisposed) return;
+    _status = digest == review.digest
+        ? 'Candidate approved for review only. SHA-256: $digest'
+        : 'Candidate changed. Review it again before approving.';
+    update();
+  }
+
+  void discardCandidateReview() {
+    _pendingReview = null;
+  }
+
+  Future<String?> _scanCandidate(String snapshot, String python) async {
+    final stop = Completer<void>();
+    _stop = stop;
+    _status = 'Reading candidate fingerprint…';
+    update();
+    try {
+      if (stop.isCompleted) return null;
+      final digest = await _fingerprint(
+        snapshot: snapshot,
+        python: python,
+        stop: stop.future,
+        stopped: () => stop.isCompleted,
+      );
+      if (stop.isCompleted || isDisposed) return null;
+      _status = null;
+      return digest;
+    } catch (_) {
+      _status = 'Could not fingerprint this prepared candidate.';
+      return null;
+    } finally {
+      if (stop.isCompleted) {
+        _status = 'Candidate review stopped.';
+      } else {
+        stop.complete();
+      }
+      _stop = null;
+      update();
+    }
+  }
+
   void clearStatus() {
+    discardCandidateReview();
     if (busy || _status == null) return;
     _status = null;
     update();

@@ -13,6 +13,68 @@ import 'generation_process_capture.dart';
 
 bool get supportsSelfSnapshot => Platform.isMacOS;
 
+Future<String> fingerprintSelfSnapshot({
+  required String snapshot,
+  required String python,
+  required Future<void> stop,
+  required bool Function() stopped,
+}) async {
+  if (!supportsSelfSnapshot || ![snapshot, python].every(path.isAbsolute)) {
+    throw const FormatException('Invalid candidate inputs.');
+  }
+  final candidatePath = await Directory(snapshot).resolveSymbolicLinks();
+  final interpreter = await File(python).resolveSymbolicLinks();
+  if (path.isWithin(candidatePath.toLowerCase(), interpreter.toLowerCase())) {
+    throw const FormatException(
+      'Choose a trusted Python outside the candidate.',
+    );
+  }
+  final temp = await Directory.systemTemp.createTemp('asg-candidate-review-');
+  Process? process;
+  var settled = false;
+  try {
+    final helper = File(path.join(temp.path, 'prepare_self_candidate.py'));
+    await helper.writeAsString(
+      await rootBundle.loadString('tools/prepare_self_candidate.py'),
+      flush: true,
+    );
+    if (stopped()) throw StateError('Candidate review stopped.');
+    process = await Process.start(interpreter, [
+      '-I',
+      '-S',
+      '-B',
+      helper.path,
+      '--fingerprint',
+      snapshot,
+    ], includeParentEnvironment: false);
+    final owned = process;
+    unawaited(
+      stop.then((_) {
+        if (!settled) owned.kill(ProcessSignal.sigterm);
+      }),
+    );
+    final result = await captureGenerationProcess(
+      owned,
+      timeout: const Duration(seconds: 30),
+      cancellation: stop,
+    );
+    settled = true;
+    if (stopped() ||
+        result.exitCode != 0 ||
+        !RegExp(r'^[a-f0-9]{64}\n$').hasMatch(result.stdout)) {
+      throw StateError('Candidate fingerprint unavailable.');
+    }
+    return result.stdout.trim();
+  } finally {
+    if (!settled && process != null) {
+      process.kill(ProcessSignal.sigkill);
+      await process.exitCode.timeout(const Duration(seconds: 3));
+    }
+    settled = true;
+    await temp.delete(recursive: true);
+  }
+}
+
 Future<String> prepareSelfSnapshot({
   required String source,
   required String destination,

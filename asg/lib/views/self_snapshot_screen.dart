@@ -58,6 +58,43 @@ class _SelfSnapshotScreenState extends State<SelfSnapshotScreen> {
     }
   }
 
+  Future<void> reviewCandidate() async {
+    final review = await widget.controller.reviewCandidate(
+      snapshot: snapshot,
+      python: python.text.trim(),
+    );
+    if (review == null || !mounted) return;
+    final approved = await showDialog<bool>(
+      context: context,
+      builder: (dialog) => AlertDialog(
+        title: const Text('Approve this candidate for review?'),
+        content: SingleChildScrollView(
+          child: SelectableText(
+            'This session records approval for the bytes read for this fingerprint. '
+            'Candidate execution is disabled.\n\n'
+            '${review.snapshot}\nSHA-256: ${review.digest}',
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialog, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialog, true),
+            child: const Text('Approve candidate'),
+          ),
+        ],
+      ),
+    );
+    if (!mounted) return;
+    if (approved == true) {
+      await widget.controller.approveCandidate(review);
+    } else {
+      widget.controller.discardCandidateReview();
+    }
+  }
+
   Future<void> approveChecks({bool buildWeb = false}) async {
     final selected = snapshot;
     final flutterSdk = sdk.text.trim();
@@ -193,6 +230,17 @@ class _SelfSnapshotScreenState extends State<SelfSnapshotScreen> {
                 child: const Text('Choose prepared snapshot for checks'),
               ),
               if (snapshot.isNotEmpty) SelectableText(snapshot),
+              if (snapshot.isNotEmpty)
+                const Text(
+                  'Fingerprint review uses the trusted Python path above '
+                  'to read candidate files. It does not run candidate code.',
+                ),
+              OutlinedButton(
+                onPressed: enabled && snapshot.isNotEmpty
+                    ? reviewCandidate
+                    : null,
+                child: const Text('Review candidate fingerprint'),
+              ),
               TextField(
                 controller: sdk,
                 enabled: enabled,

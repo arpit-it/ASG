@@ -22,6 +22,65 @@ class FixturePicker extends FolderPicker {
 void main() {
   final commitId = 'a' * 40;
 
+  testWidgets('candidate approval rechecks the displayed digest', (
+    tester,
+  ) async {
+    final first = 'a' * 64;
+    var digest = first;
+    var scans = 0;
+    final controller = SelfSnapshotController(
+      fingerprint:
+          ({
+            required snapshot,
+            required python,
+            required stop,
+            required stopped,
+          }) async {
+            expect(snapshot, '/source');
+            expect(python, '/python');
+            scans++;
+            return digest;
+          },
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        home: SelfSnapshotScreen(
+          controller: controller,
+          picker: FixturePicker(),
+        ),
+      ),
+    );
+    await tester.enterText(find.byType(TextField).at(1), '/python');
+    final pick = find.text('Choose prepared snapshot for checks');
+    await tester.ensureVisible(pick);
+    await tester.tap(pick);
+    await tester.pumpAndSettle();
+    final review = find.text('Review candidate fingerprint');
+    await tester.ensureVisible(review);
+    await tester.tap(review);
+    await tester.pumpAndSettle();
+    expect(find.textContaining('SHA-256: $first'), findsOneWidget);
+    await tester.tap(find.text('Cancel'));
+    await tester.pumpAndSettle();
+    expect(scans, 1);
+    await tester.tap(review);
+    await tester.pumpAndSettle();
+    digest = 'b' * 64;
+    await tester.tap(find.text('Approve candidate'));
+    await tester.pumpAndSettle();
+    expect(controller.status, contains('Candidate changed'));
+    await tester.ensureVisible(review);
+    await tester.tap(review);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Approve candidate'));
+    await tester.pumpAndSettle();
+    expect(
+      controller.status,
+      'Candidate approved for review only. SHA-256: $digest',
+    );
+    expect(scans, 5);
+  });
+
   test('build result requires a confined artifact path on success', () {
     final result = <String, Object>{
       'exitCode': 0,
