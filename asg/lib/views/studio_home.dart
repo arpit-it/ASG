@@ -122,6 +122,29 @@ class _StudioHomeState extends State<StudioHome> {
     if (selected != null) await controller.select(selected);
   }
 
+  static const _compactWidth = 800.0;
+
+  bool _usesInlineRuntimeSetup(BuildContext context) =>
+      controller.current == null &&
+      MediaQuery.sizeOf(context).width < _compactWidth;
+
+  Widget _runtimeSetupButton(BuildContext context) =>
+      FloatingActionButton.small(
+        tooltip: 'Set up runtime',
+        onPressed: () => Navigator.of(context).push(
+          MaterialPageRoute<void>(
+            builder: (_) => RuntimeSetupScreen(
+              controller: RuntimeSetupController(
+                store: RuntimeSetupStore(widget.store.records),
+                modelStore: ModelSettingsStore(widget.store.records),
+                host: createRuntimeHost(),
+              ),
+            ),
+          ),
+        ),
+        child: const Icon(Icons.memory),
+      );
+
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
@@ -208,21 +231,9 @@ class _StudioHomeState extends State<StudioHome> {
       ],
     ),
     floatingActionButtonLocation: const RuntimeFabLocation(),
-    floatingActionButton: FloatingActionButton.small(
-      tooltip: 'Set up runtime',
-      onPressed: () => Navigator.of(context).push(
-        MaterialPageRoute<void>(
-          builder: (_) => RuntimeSetupScreen(
-            controller: RuntimeSetupController(
-              store: RuntimeSetupStore(widget.store.records),
-              modelStore: ModelSettingsStore(widget.store.records),
-              host: createRuntimeHost(),
-            ),
-          ),
-        ),
-      ),
-      child: const Icon(Icons.memory),
-    ),
+    floatingActionButton: _usesInlineRuntimeSetup(context)
+        ? null
+        : _runtimeSetupButton(context),
     body: AbsorbPointer(
       absorbing: controller.busy,
       child: ExcludeFocus(
@@ -267,6 +278,13 @@ class _StudioHomeState extends State<StudioHome> {
                           padding: const EdgeInsets.all(24),
                           child: ListView(
                             children: [
+                              if (_usesInlineRuntimeSetup(context)) ...[
+                                Align(
+                                  alignment: AlignmentDirectional.centerEnd,
+                                  child: _runtimeSetupButton(context),
+                                ),
+                                const SizedBox(height: 12),
+                              ],
                               const Text(
                                 'What would you like to create?',
                                 style: TextStyle(
@@ -318,7 +336,7 @@ class _StudioHomeState extends State<StudioHome> {
                             ),
                           ),
                         );
-                        if (size.maxWidth < 800) return welcome;
+                        if (size.maxWidth < _compactWidth) return welcome;
                         return Row(
                           children: [
                             SizedBox(

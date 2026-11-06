@@ -2022,6 +2022,27 @@ void main() {
       if (indexBefore != null) expect(await index.readAsString(), indexBefore);
     });
   }
+  testWidgets('compact home keeps runtime setup above the headline', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(360, 780);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+    final prefs = await SharedPreferences.getInstance();
+    await tester.pumpWidget(
+      StudioApp(store: StudioStore.fromPreferences(prefs)),
+    );
+    final runtimeSetup = find.byTooltip('Set up runtime');
+    final headline = find.text('What would you like to create?');
+    expect(
+      tester.getRect(runtimeSetup).bottom,
+      lessThan(tester.getRect(headline).top),
+    );
+    await tester.tap(runtimeSetup);
+    await tester.pumpAndSettle();
+    expect(find.byType(RuntimeSetupScreen), findsOneWidget);
+  });
   testWidgets('landing page has top-right runtime FAB', (tester) async {
     final prefs = await SharedPreferences.getInstance();
     await tester.pumpWidget(
