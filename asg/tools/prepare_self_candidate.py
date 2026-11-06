@@ -251,7 +251,7 @@ def fingerprint(candidate):
                     raise ValueError('Candidate changed during review.')
             finally:
                 os.close(parent)
-        if identity(candidate.stat(follow_symlinks=False)) != root_identity:
+        if identity(candidate.lstat()) != root_identity:
             raise ValueError('Candidate directory changed during review.')
     finally:
         os.close(root)
