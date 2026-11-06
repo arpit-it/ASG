@@ -96,7 +96,7 @@ def run(executable, arguments, cwd, timeout, parent_pid=None, environment=None):
         for sig, handler in previous.items():
             signal.signal(sig, handler)
 
-def candidate_profile(directory, sdk, pub_cache, temporary, *, offline=False):
+def candidate_profile(directory, sdk, pub_cache, temporary, *, offline=False, preserved_outputs=()):
     # Seatbelt restrictions are inherited by all spawned tool/test processes.
     # No candidate-controlled path is interpolated as profile syntax.
     def subpath(value):
@@ -117,6 +117,9 @@ def candidate_profile(directory, sdk, pub_cache, temporary, *, offline=False):
         ' (literal "/dev/null"))',
         *(['(deny file-write-unlink (literal ' + json.dumps(str(directory)) + '))']
           if offline else []),
+        *(['(deny file-write-unlink (literal ' + json.dumps(str(directory / 'build')) + '))']
+          if preserved_outputs else []),
+        *['(deny file-write* ' + subpath(output) + ')' for output in preserved_outputs],
         *([] if offline else [
             '(allow network-inbound (local ip "localhost:*"))',
             '(allow network-outbound (remote ip "localhost:*"))',
@@ -281,7 +284,7 @@ def confined_operation(directory, sdk, operation, timeout, parent_pid, test_file
                for root in (sdk, pub_cache)):
             raise ValueError('Snapshot overlaps tool or cache roots')
     offline_build = offline and operation == 'build'
-    web_output = directory / 'build' / 'web'
+    build_directory = directory / 'build'
     dart = sdk / 'bin/cache/dart-sdk/bin/dart'
     snapshot = sdk / 'bin/cache/flutter_tools.snapshot'
     packages = sdk / 'packages/flutter_tools/.dart_tool/package_config.json'
@@ -291,12 +294,19 @@ def confined_operation(directory, sdk, operation, timeout, parent_pid, test_file
     with slot, tempfile.TemporaryDirectory(prefix='asg-confined-') as temp:
         if offline:
             validate_offline_snapshot(directory, pub_cache)
-        if offline_build and os.path.lexists(web_output):
-            raise ValueError('Use a snapshot without existing web output')
+        preserved_outputs = ()
+        if offline and build_directory.is_dir():
+            preserved_outputs = tuple(path for path in build_directory.iterdir()
+                                      if path.name == 'web' or path.name.startswith('asg-web-'))
+        if offline_build:
+            build_directory.mkdir(exist_ok=True)
+            web_output = Path(tempfile.mkdtemp(prefix='asg-web-', dir=build_directory))
+            arguments = [*arguments, '--output=' + web_output.relative_to(directory).as_posix()]
         temporary = Path(temp).resolve()
         (temporary / 'home').mkdir()
         profile = temporary / 'candidate.sb'
-        profile.write_text(candidate_profile(directory, sdk, pub_cache, temporary, offline=offline))
+        profile.write_text(candidate_profile(directory, sdk, pub_cache, temporary, offline=offline,
+                                             preserved_outputs=preserved_outputs))
         # Package content stays read-only. Pub's active_roots bookkeeping lives
         # in a candidate-local overlay that remains valid across the four steps.
         cache = directory / '.dart_tool' / 'asg_pub_cache'
@@ -346,6 +356,7 @@ def confined_operation(directory, sdk, operation, timeout, parent_pid, test_file
                     if (not artifact.is_file() or artifact.resolve() != artifact
                             or artifact.stat().st_size == 0):
                         raise ValueError('Expected newly generated web artifacts')
+                result['artifactPath'] = web_output.relative_to(directory).as_posix()
             return named_test_result(result, test_file, test_name) if test_file is not None else result
         finally:
             lock.close()

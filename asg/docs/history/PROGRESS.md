@@ -1,5 +1,9 @@
 # Progress and delivery history
 
+## Approved offline snapshot web build — 6 November 2026
+
+The macOS snapshot screen requires separate approval for an offline web build. An isolated app run verified Stop during the SDK lock wait, then a fresh approval produced HTML and JavaScript artifacts. Independent review verified that the directory lock survived confined removal attempts. [PR #523](https://github.com/arpit-it/ASG/pull/523) merged on 6 November 2026 at 04:06:22 IST as `e462d8215f71b01afc0c35b24ebc12e19b8e8327`. Head `3ecf47cf97cc3ba703883a0d08466cba2a8d9365` passed [required CI](https://github.com/arpit-it/ASG/actions/runs/42120978716) and [independent review](https://github.com/arpit-it/ASG/pull/523#pullrequestreview-5793069090). Candidate tests and execution remain pending under #406.
+
 ## Approved offline source snapshot checks — 6 November 2026
 
 The macOS snapshot screen requires explicit approval for offline dependency resolution and analysis. An isolated run passed both operations and Stop while waiting for the SDK lock. Independent review also verified cancellation of an active analyzer and refusal of unsafe file links. [PR #522](https://github.com/arpit-it/ASG/pull/522) merged on 6 November 2026 at 03:32:55 IST as `64611410598d18bfeecbc9184250ad91136cbf1f`. Head `e9804c4af3831a517f22dab66da1a677434c315a` passed [required CI](https://github.com/arpit-it/ASG/actions/runs/42116677769) and [independent review](https://github.com/arpit-it/ASG/pull/522#pullrequestreview-5792766274).

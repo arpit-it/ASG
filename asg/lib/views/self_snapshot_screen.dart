@@ -72,7 +72,7 @@ class _SelfSnapshotScreenState extends State<SelfSnapshotScreen> {
     }
     final description = buildWeb
         ? 'Resolve dependencies offline and build web artifacts in this snapshot? '
-              'Existing web output is refused. The build does not run the app.'
+              'Each build uses a fresh folder and preserves previous output. The build does not run the app.'
         : 'Run offline dependency resolution and analysis on this snapshot? '
               'Flutter can write working files inside the snapshot.';
     final approved = await showDialog<bool>(
