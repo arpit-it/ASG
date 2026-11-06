@@ -26,3 +26,10 @@ Future<GenerationCommandResult> checkSelfSnapshot({
   required Future<void> stop,
   required bool Function() stopped,
 }) async => throw UnsupportedError('Snapshot checks require macOS.');
+
+Future<String> fingerprintSelfSnapshot({
+  required String snapshot,
+  required String python,
+  required Future<void> stop,
+  required bool Function() stopped,
+}) async => throw UnsupportedError('Candidate review requires macOS.');

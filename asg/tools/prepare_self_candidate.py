@@ -10,6 +10,7 @@ from pathlib import Path
 import re
 import selectors
 import signal
+import stat
 import subprocess
 import sys
 import tempfile
@@ -167,7 +168,108 @@ def prepare(source, commit, parent):
     return ready
 
 
+def fingerprint(candidate):
+    """Hash names, executable bits and bytes without following candidate links."""
+    if (not re.fullmatch(r'source-[0-9a-f]{40}', candidate.name)
+            or not candidate.parent.name.startswith('asg-self-candidate-')
+            or candidate.resolve(strict=True) != candidate):
+        raise ValueError('Choose a prepared candidate directory.')
+    digest = hashlib.sha256(b'ASG candidate tree v1\0')
+    entries = 0
+    files = 0
+    total = 0
+    observed = {}
+
+    def identity(info):
+        return (info.st_dev, info.st_ino, info.st_mode, info.st_nlink,
+                info.st_size, info.st_mtime_ns, info.st_ctime_ns)
+
+    def visit(directory, prefix, depth):
+        nonlocal entries, files, total
+        initial = os.fstat(directory)
+        with os.scandir(directory) as children:
+            names = []
+            for child in children:
+                check_stop()
+                entries += 1
+                if entries > MAX_FILES * 2:
+                    raise ValueError('Candidate has too many entries.')
+                names.append(os.fsencode(child.name))
+        seen = set()
+        for name in sorted(names):
+            check_stop()
+            folded = name.lower()
+            if (depth >= 16 or not COMPONENT.fullmatch(name)
+                    or folded in (b'.', b'..', b'.git') or folded in seen):
+                raise ValueError('Unsupported candidate path.')
+            seen.add(folded)
+            relative = prefix + name
+            flags = os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK
+            with_fd = os.open(name, flags, dir_fd=directory)
+            try:
+                info = os.fstat(with_fd)
+                observed[relative] = identity(info)
+                if stat.S_ISDIR(info.st_mode):
+                    digest.update(b'D' + relative + b'\0')
+                    visit(with_fd, relative + b'/', depth + 1)
+                    continue
+                if not stat.S_ISREG(info.st_mode) or info.st_nlink != 1:
+                    raise ValueError('Expected a regular candidate file.')
+                with os.fdopen(os.dup(with_fd), 'rb') as stream:
+                    data = stream.read(MAX_FILE_BYTES + 1)
+                files += 1
+                total += len(data)
+                if (files > MAX_FILES or len(data) > MAX_FILE_BYTES or total > MAX_TOTAL_BYTES
+                        or len(data) != info.st_size
+                        or os.fstat(with_fd).st_mtime_ns != info.st_mtime_ns
+                        or os.fstat(with_fd).st_ctime_ns != info.st_ctime_ns):
+                    raise ValueError('Candidate changed or exceeds size limits.')
+                executable = b'X' if info.st_mode & stat.S_IXUSR else b'F'
+                digest.update(executable + relative + b'\0' + hashlib.sha256(data).digest())
+            finally:
+                os.close(with_fd)
+
+        current = os.fstat(directory)
+        if (initial.st_mtime_ns, initial.st_ctime_ns) != (current.st_mtime_ns, current.st_ctime_ns):
+            raise ValueError('Candidate directory changed during review.')
+
+    root = os.open(candidate, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+    try:
+        root_identity = identity(os.fstat(root))
+        visit(root, b'', 0)
+        for relative, expected in observed.items():
+            check_stop()
+            parts = relative.split(b'/')
+            parent = os.dup(root)
+            try:
+                for part in parts[:-1]:
+                    child = os.open(part, os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=parent)
+                    os.close(parent)
+                    parent = child
+                current = os.stat(parts[-1], dir_fd=parent, follow_symlinks=False)
+                if identity(current) != expected:
+                    raise ValueError('Candidate changed during review.')
+            finally:
+                os.close(parent)
+        if identity(candidate.stat(follow_symlinks=False)) != root_identity:
+            raise ValueError('Candidate directory changed during review.')
+    finally:
+        os.close(root)
+    if not files:
+        raise ValueError('Candidate directory is empty.')
+    return digest.hexdigest()
+
+
 def main(argv=None):
+    if argv is None:
+        argv = sys.argv[1:]
+    if len(argv) == 2 and argv[0] == '--fingerprint':
+        try:
+            print(fingerprint(Path(argv[1])))
+            return 0
+        except (OSError, ValueError):
+            print('Candidate fingerprint unavailable.', file=sys.stderr)
+            return 1
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('source', type=Path, help='root of the trusted local ASG repository')
     parser.add_argument('commit', help='full reviewed commit ID')
