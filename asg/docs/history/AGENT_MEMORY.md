@@ -1,5 +1,9 @@
 # Durable project memory
 
+## Candidate fingerprint approval — 6 November 2026
+
+On macOS, Projects can approve a prepared candidate fingerprint for the current review session. An isolated native run with Apple Python 3.9.6 approved an unchanged ASG snapshot and refused approval after a file was added while confirmation was open. [PR #527](https://github.com/arpit-it/ASG/pull/527) merged on 6 November 2026 at 19:24:13 UTC as `128cfbbf6ac51e93baca9828553858559dc94b0f`. Head `07a19ee13c029b7632f5d30a865bbe3f0ad5eb54` passed [required CI](https://github.com/arpit-it/ASG/actions/runs/42277191052) and [independent review](https://github.com/arpit-it/ASG/pull/527#pullrequestreview-5805643193). Approval grants no execution authority; candidate execution and protected delivery remain open under [#406](https://github.com/arpit-it/ASG/issues/406).
+
 ## Offline snapshot web build retry — 6 November 2026
 
 An approved offline web build can be retried on the same macOS snapshot. Two separately approved desktop builds produced distinct artifact folders, and the previous output matched its recorded hashes after the retry. [PR #524](https://github.com/arpit-it/ASG/pull/524) merged on 6 November 2026 at 08:44:28 IST as `fce7118e4e029b80b7200de72c1c38e4654f62fc`. Head `0a11e180e5f921ac7c8e0a7c4a65999b685cfa07` passed [required CI](https://github.com/arpit-it/ASG/actions/runs/42129979026) and [independent review](https://github.com/arpit-it/ASG/pull/524#pullrequestreview-5793672935). Candidate tests and execution remain pending under #406.
