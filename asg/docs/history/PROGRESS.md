@@ -1,5 +1,12 @@
 # Progress and delivery history
 
+## Bounded snapshot replacement proposals — 7 November 2026
+
+F12 / [#406](https://github.com/arpit-it/ASG/issues/406): an explicitly reviewed replacement of one existing Dart source file under `asg/lib/` or `asg/test/` creates a new unverified snapshot. Fresh unchanged candidates can make their first proposal. Complete before/after text is limited to 16 KiB UTF-8 bytes and 500 lines; legal headers, original snapshot, dirty trusted checkout, other files and empty directories are preserved. Consent binds the whole input fingerprint, path, exact text hashes, destination and exclusive output run name. Stale/no-op/unsafe/replayed proposals fail closed; Stop or failure retains identifiable incomplete or unverified output. No checks or approval carry to the child: it requires fresh comparison. Candidate code execution and stable application replacement remain disabled. Disposable Mac fixtures cover exact single-file change, private permissions, hash failures, replay and unsafe destinations. Final required CI, independent review and protected delivery remain required; the F12 umbrella stays open.
+
+The preceding before/after inspection increment was delivered through [PR #531](https://github.com/arpit-it/ASG/pull/531), merged as `01f688840c8d84b670de522ae937e71ed42e444e` on 7 November 2026. Its exact reviewed tree was `d651278d7a49c93aee2884bd3a2d35d68f77ca8e`; required CI and independent review were verified before the protected merge.
+
+
 ## Candidate before/after text review — 7 November 2026
 
 F12 / [#406](https://github.com/arpit-it/ASG/issues/406): a current candidate comparison can inspect complete before/after UTF-8 text for one of its displayed changed files. Each side is bounded to 16 KiB of UTF-8 bytes and 500 text lines; absent, unsupported encoding/control characters and exceeded bounds are explicit states rather than truncated content. Baseline blobs are read and hash-checked from the selected commit; candidate content and fingerprint come from the same no-follow scan. Path/commit/digest mismatches, Stop, cancellation, disposal and input changes revoke late review authority. The stacked selectable view renders no candidate markup and enables no writes or execution. Disposable Git and native bundled-helper fixtures on this Mac validate content, boundary and stale-result cases. Final CI, independent review and protected delivery remain required; F12 stays open.

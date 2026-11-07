@@ -2,12 +2,14 @@
 // Copyright 2026 Arpit Sinha
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as path;
 
 import '../models/candidate_comparison.dart';
+import '../models/candidate_source_proposal.dart';
 import '../models/candidate_file_review.dart';
 import '../models/generation_command_result.dart';
 import '../models/self_snapshot_operation.dart';
@@ -371,5 +373,135 @@ Future<GenerationCommandResult> checkSelfSnapshot({
     }
     settled = true;
     await temp.delete(recursive: true);
+  }
+}
+
+Future<String> canonicalProposalDirectory(String value) =>
+    Directory(value).resolveSymbolicLinks().timeout(const Duration(seconds: 5));
+
+Future<CandidateSourceFile> readCandidateProposalSource({
+  required String snapshot,
+  required String file,
+  required String python,
+  required Future<void> stop,
+  required bool Function() stopped,
+}) async {
+  if (!isCandidateSourcePath(file)) {
+    throw const FormatException('Unsupported source path.');
+  }
+  final output = await _proposalHelper(
+    snapshot: snapshot,
+    python: python,
+    stop: stop,
+    stopped: stopped,
+    file: file,
+  );
+  final source = CandidateSourceFile.decode(output);
+  if (source.path != file) {
+    throw const FormatException('Proposal source differs from selection.');
+  }
+  return source;
+}
+
+Future<CandidateProposalResult> applyCandidateProposal({
+  required CandidateSourceProposal proposal,
+  required Future<void> stop,
+  required bool Function() stopped,
+}) async {
+  final output = await _proposalHelper(
+    snapshot: proposal.snapshot,
+    python: proposal.python,
+    stop: stop,
+    stopped: stopped,
+    proposal: proposal,
+  );
+  final result = CandidateProposalResult.decode(output);
+  if (result.sourceDigest != proposal.source.digest ||
+      result.file != proposal.source.path ||
+      result.afterHash != proposal.afterHash ||
+      result.digest == result.sourceDigest ||
+      path.dirname(path.dirname(result.path)) != proposal.destination ||
+      path.basename(result.path) != path.basename(proposal.snapshot) ||
+      path.basename(path.dirname(result.path)) != proposal.runName ||
+      await Directory(result.path).resolveSymbolicLinks() != result.path) {
+    throw const FormatException(
+      'Unverified proposal receipt. Inspect the destination before retrying.',
+    );
+  }
+  return result;
+}
+
+Future<String> _proposalHelper({
+  required String snapshot,
+  required String python,
+  required Future<void> stop,
+  required bool Function() stopped,
+  String? file,
+  CandidateSourceProposal? proposal,
+}) async {
+  if (!supportsSelfSnapshot || ![snapshot, python].every(path.isAbsolute)) {
+    throw const FormatException('Invalid proposal inputs.');
+  }
+  final candidate = await Directory(snapshot).resolveSymbolicLinks();
+  final interpreter = await File(python).resolveSymbolicLinks();
+  if (path.isWithin(candidate.toLowerCase(), interpreter.toLowerCase())) {
+    throw const FormatException('Choose trusted Python outside the candidate.');
+  }
+  final temporary = await Directory.systemTemp.createTemp(
+    'asg-source-proposal-',
+  );
+  Process? process;
+  var settled = false;
+  try {
+    final helper = File(path.join(temporary.path, 'prepare_self_candidate.py'));
+    await helper.writeAsString(
+      await rootBundle.loadString('tools/prepare_self_candidate.py'),
+      flush: true,
+    );
+    final arguments = ['-I', '-S', '-B', helper.path];
+    if (proposal == null) {
+      arguments.addAll(['--proposal-read', snapshot, file!]);
+    } else {
+      final payload = File(path.join(temporary.path, 'proposal.json'));
+      await payload.writeAsString(jsonEncode(proposal.payload), flush: true);
+      // Source text is passed only through this private helper directory, never argv.
+      arguments.addAll(['--proposal-apply', payload.path]);
+    }
+    if (stopped()) throw StateError('Proposal stopped.');
+    final owned = await Process.start(
+      interpreter,
+      arguments,
+      includeParentEnvironment: false,
+    );
+    process = owned;
+    unawaited(
+      stop.then((_) {
+        if (!settled) owned.kill(ProcessSignal.sigterm);
+      }),
+    );
+    final result = await captureGenerationProcess(
+      owned,
+      timeout: const Duration(seconds: 65),
+      cancellation: stop,
+    );
+    settled = true;
+    if (stopped() || result.exitCode != 0) {
+      throw StateError(
+        'Proposal unavailable. Inspect the destination for incomplete or unverified output before retrying.',
+      );
+    }
+    return result.stdout;
+  } finally {
+    if (!settled && process != null) {
+      process.kill(ProcessSignal.sigterm);
+      try {
+        await process.exitCode.timeout(const Duration(seconds: 3));
+      } on TimeoutException {
+        process.kill(ProcessSignal.sigkill);
+        await process.exitCode.timeout(const Duration(seconds: 3));
+      }
+    }
+    settled = true;
+    await temporary.delete(recursive: true);
   }
 }
