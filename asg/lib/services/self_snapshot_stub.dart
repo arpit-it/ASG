@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // Copyright 2026 Arpit Sinha
 
+import '../models/candidate_file_review.dart';
 import '../models/candidate_comparison.dart';
 import '../models/generation_command_result.dart';
 import '../models/self_snapshot_operation.dart';
@@ -43,3 +44,14 @@ Future<CandidateComparison> compareSelfSnapshot({
   required Future<void> stop,
   required bool Function() stopped,
 }) async => throw UnsupportedError('Candidate comparison requires macOS.');
+
+Future<CandidateFileReview> reviewSelfSnapshotFile({
+  required String snapshot,
+  required String source,
+  required String commit,
+  required String digest,
+  required String file,
+  required String python,
+  required Future<void> stop,
+  required bool Function() stopped,
+}) async => throw UnsupportedError('Candidate review requires macOS.');

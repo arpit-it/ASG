@@ -197,6 +197,83 @@ class CandidateTests(unittest.TestCase):
         self.assertLess(len(json.dumps(result)), 32768)
         self.assertEqual(result['changes'][0]['path'], '.dart_tool/output')
 
+    def test_file_review_complete_modified_added_removed_and_empty_sides(self):
+        snapshot, commit = self.prepared()
+        (self.source / 'edit').write_text('dirty stays')
+        (snapshot / 'edit').write_text('after\n')
+        (snapshot / 'remove').unlink()
+        (snapshot / 'empty').write_bytes(b'')
+        digest = candidate.fingerprint(snapshot)
+        result = candidate.review_file(snapshot, self.source, commit, digest, 'edit')
+        self.assertEqual(result['before'], {'state': 'text', 'text': 'baseline'})
+        self.assertEqual(result['after'], {'state': 'text', 'text': 'after\n'})
+        self.assertEqual(result['digest'], digest)
+        removed = candidate.review_file(snapshot, self.source, commit, digest, 'remove')
+        self.assertEqual(removed['after'], {'state': 'absent', 'text': None})
+        added = candidate.review_file(snapshot, self.source, commit, digest, 'empty')
+        self.assertEqual(added['before'], {'state': 'absent', 'text': None})
+        self.assertEqual(added['after'], {'state': 'text', 'text': ''})
+        self.assertEqual((self.source / 'edit').read_text(), 'dirty stays')
+        with self.assertRaises(ValueError):
+            candidate.review_file(snapshot, self.source, commit, digest, 'same')
+        (snapshot / 'edit').write_text('changed again')
+        with self.assertRaises(ValueError):
+            candidate.review_file(snapshot, self.source, commit, digest, 'edit')
+
+    def test_file_review_limits_encoding_and_mode_only(self):
+        snapshot, commit = self.prepared()
+        (snapshot / 'mode').chmod(0o700)
+        digest = candidate.fingerprint(snapshot)
+        mode = candidate.review_file(snapshot, self.source, commit, digest, 'mode')
+        self.assertEqual(mode['before'], mode['after'])
+        for data, state in [(b'\0bad', 'unsupported'), (b'\xff', 'unsupported'),
+                            ('é'.encode() * 8192, 'text'),
+                            ('é'.encode() * 8193, 'byteLimit'),
+                            (b'x\r\n' * 500, 'text'), (b'x\r' * 501, 'lineLimit'),
+                            ('x\u2028'.encode() * 501, 'lineLimit')]:
+            (snapshot / 'edit').write_bytes(data)
+            value = candidate.review_file(snapshot, self.source, commit,
+                                          candidate.fingerprint(snapshot), 'edit')
+            self.assertEqual(value['after']['state'], state)
+            self.assertEqual(value['after']['text'], data.decode() if state == 'text' else None)
+
+    def test_file_review_selected_map_handles_file_directory_replacement(self):
+        snapshot, commit = self.prepared()
+        (snapshot / 'remove').unlink()
+        (snapshot / 'remove').mkdir()
+        (snapshot / 'remove/child').write_text('new')
+        digest = candidate.fingerprint(snapshot)
+        removed = candidate.review_file(snapshot, self.source, commit, digest, 'remove')
+        self.assertEqual(removed['after']['state'], 'absent')
+        added = candidate.review_file(snapshot, self.source, commit, digest, 'remove/child')
+        self.assertEqual(added['before']['state'], 'absent')
+
+    def test_file_review_missing_blob_mutation_and_invalid_paths_refused(self):
+        snapshot, commit = self.prepared()
+        (snapshot / 'edit').write_text('after')
+        digest = candidate.fingerprint(snapshot)
+        with patch.object(candidate, 'read_git') as read:
+            with self.assertRaises(ValueError):
+                candidate.review_file(snapshot, self.source, commit, digest, '../edit')
+            read.assert_not_called()
+        with patch.object(candidate, '_stop_requested', True):
+            with self.assertRaises(ValueError):
+                candidate.review_file(snapshot, self.source, commit, digest, 'edit')
+        original = candidate.read_git
+        def mutate(source, args, limit, deadline):
+            value = original(source, args, limit, deadline)
+            if args[:2] == ['cat-file', 'blob']:
+                (snapshot / 'edit').write_text('later')
+            return value
+        with patch.object(candidate, 'read_git', side_effect=mutate):
+            with self.assertRaises(ValueError):
+                candidate.review_file(snapshot, self.source, commit, digest, 'edit')
+        oid = self.git('rev-parse', commit + ':edit').decode().strip()
+        (self.source / '.git/objects' / oid[:2] / oid[2:]).unlink()
+        with self.assertRaises(ValueError):
+            candidate.review_file(snapshot, self.source, commit, candidate.fingerprint(snapshot), 'edit')
+
+
 
 if __name__ == '__main__':
     unittest.main()

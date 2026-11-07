@@ -4,6 +4,7 @@
 import 'dart:async';
 
 import '../models/candidate_comparison.dart';
+import '../models/candidate_file_review.dart';
 import '../models/generation_command_result.dart';
 import '../models/self_snapshot_operation.dart';
 import '../services/self_snapshot.dart';
@@ -59,23 +60,37 @@ typedef CandidateCompare = Future<CandidateComparison> Function({
   required bool Function() stopped,
 });
 
+typedef CandidateFileRead = Future<CandidateFileReview> Function({
+  required String snapshot,
+  required String source,
+  required String commit,
+  required String digest,
+  required String file,
+  required String python,
+  required Future<void> stop,
+  required bool Function() stopped,
+});
+
 class SelfSnapshotController extends BaseController {
   SelfSnapshotController({
     SnapshotPreparation? prepare,
     SnapshotCheck? check,
     CandidateFingerprint? fingerprint,
     CandidateCompare? compare,
+    CandidateFileRead? readFile,
     Future<List<String>> Function(String)? inspect,
   }) : _prepare = prepare ?? prepareSelfSnapshot,
        _inspect = inspect ?? inspectIncompleteSnapshots,
        _check = check ?? checkSelfSnapshot,
        _fingerprint = fingerprint ?? fingerprintSelfSnapshot,
-       _compare = compare ?? compareSelfSnapshot;
+       _compare = compare ?? compareSelfSnapshot,
+       _readFile = readFile ?? reviewSelfSnapshotFile;
 
   final SnapshotPreparation _prepare;
   final SnapshotCheck _check;
   final CandidateFingerprint _fingerprint;
   final CandidateCompare _compare;
+  final CandidateFileRead _readFile;
   int _reviewEpoch = 0;
   CandidateReview? _pendingReview;
   final Future<List<String>> Function(String) _inspect;
@@ -277,6 +292,56 @@ class SelfSnapshotController extends BaseController {
     return review;
   }
 
+  bool isCurrentReview(CandidateReview review) =>
+      !isDisposed && identical(_pendingReview, review);
+
+  Future<CandidateFileReview?> inspectCandidateFile(
+    CandidateReview review,
+    String file,
+  ) async {
+    if (busy || !isCurrentReview(review)) return null;
+    final comparison = review.comparison;
+    final source = review.source;
+    final selected = comparison?.changes
+        .where((c) => c.path == file)
+        .firstOrNull;
+    if (comparison == null || source == null || selected == null) {
+      discardCandidateReview();
+      _status = 'Select a file from a fresh comparison.';
+      update();
+      return null;
+    }
+    final epoch = _reviewEpoch;
+    final result = await _readReview(
+      (stop, stopped) => _readFile(
+        snapshot: review.snapshot,
+        source: source,
+        commit: comparison.commit,
+        digest: review.digest,
+        file: file,
+        python: review.python,
+        stop: stop,
+        stopped: stopped,
+      ),
+    );
+    if (isDisposed || epoch != _reviewEpoch) return null;
+    final absent = CandidateTextState.absent;
+    if (result == null ||
+        result.commit != comparison.commit ||
+        result.digest != review.digest ||
+        result.path != file ||
+        (result.before.state == absent) !=
+            (selected.kind == CandidateChangeKind.added) ||
+        (result.after.state == absent) !=
+            (selected.kind == CandidateChangeKind.removed)) {
+      discardCandidateReview();
+      _status = 'File review unavailable or candidate changed. Review the comparison again.';
+      update();
+      return null;
+    }
+    return result;
+  }
+
   Future<void> approveCandidate(CandidateReview review) async {
     if (busy || isDisposed || !identical(_pendingReview, review)) return;
     _pendingReview = null;
@@ -334,7 +399,6 @@ class SelfSnapshotController extends BaseController {
   void clearStatus() {
     discardCandidateReview();
     if (busy || isDisposed) return;
-    if (_status == null && _checkOutput == null) return;
     _status = null;
     _checkOutput = null;
     update();
@@ -366,6 +430,7 @@ class SelfSnapshotController extends BaseController {
   void stop() {
     final current = _stop;
     if (current == null || current.isCompleted) return;
+    discardCandidateReview();
     current.complete();
     update();
   }

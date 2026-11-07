@@ -184,7 +184,7 @@ def open_directory_no_links(directory):
         os.close(parent)
 
 
-def scan_candidate(candidate):
+def scan_candidate(candidate, capture=None):
     """Hash names, executable bits and bytes without following candidate links."""
     if (not re.fullmatch(r'source-[0-9a-f]{40}', candidate.name)
             or not candidate.parent.name.startswith('asg-self-candidate-')
@@ -243,7 +243,10 @@ def scan_candidate(candidate):
                     raise ValueError('Candidate changed or exceeds size limits.')
                 mode = b'100755' if info.st_mode & stat.S_IXUSR else b'100644'
                 oid = hashlib.sha1(b'blob ' + str(len(data)).encode() + b'\0' + data).hexdigest()
-                index[relative.decode('ascii')] = (mode.decode(), oid)
+                relative_name = relative.decode('ascii')
+                index[relative_name] = (mode.decode(), oid)
+                if capture is not None and relative_name in capture:
+                    capture[relative_name] = data
                 executable = b'X' if info.st_mode & stat.S_IXUSR else b'F'
                 digest.update(executable + relative + b'\0' + hashlib.sha256(data).digest())
             finally:
@@ -288,8 +291,8 @@ def fingerprint(candidate):
     return scan_candidate(candidate)[0]
 
 
-def compare_candidate(candidate, source, commit):
-    """Compare with the selected baseline; a directory name proves no origin."""
+def selected_baseline(candidate, source, commit):
+    """Read only the explicitly selected repository commit's bounded tree."""
     if not OBJECT_ID.fullmatch(commit.encode('ascii')):
         raise ValueError('Use the full reviewed commit ID.')
     source = source.resolve(strict=True)
@@ -302,8 +305,10 @@ def compare_candidate(candidate, source, commit):
     if read_git(source, ['cat-file', '-t', commit], 16, deadline) != b'commit\n':
         raise ValueError('The baseline must be an available commit.')
     entries = parse_tree(read_git(source, ['ls-tree', '-rlz', commit], MAX_TREE_BYTES, deadline))
-    baseline = {'/'.join(parts): (mode.decode(), oid.decode()) for parts, mode, oid, _ in entries}
-    digest, actual = scan_candidate(candidate)
+    return source, entries, deadline
+
+
+def comparison_result(commit, digest, baseline, actual):
     counts = {'added': 0, 'modified': 0, 'removed': 0, 'executableChanged': 0}
     changes = []
     characters = 0
@@ -323,9 +328,75 @@ def compare_candidate(candidate, source, commit):
             'changes': changes, 'truncated': len(changes) < sum(counts[k] for k in ('added', 'modified', 'removed'))}
 
 
+def compare_candidate(candidate, source, commit):
+    """Compare with the selected baseline; a directory name proves no origin."""
+    _, entries, _ = selected_baseline(candidate, source, commit)
+    baseline = {'/'.join(parts): (mode.decode(), oid.decode()) for parts, mode, oid, _ in entries}
+    digest, actual = scan_candidate(candidate)
+    return comparison_result(commit, digest, baseline, actual)
+
+
+REVIEW_BYTES = 16384
+REVIEW_LINES = 500
+
+
+def review_side(data):
+    if data is None:
+        return {'state': 'absent', 'text': None}
+    if len(data) > REVIEW_BYTES:
+        return {'state': 'byteLimit', 'text': None}
+    try:
+        text = data.decode('utf-8')
+    except UnicodeDecodeError:
+        return {'state': 'unsupported', 'text': None}
+    if any((ord(c) < 32 and c not in '\t\r\n') or 127 <= ord(c) <= 159 for c in text):
+        return {'state': 'unsupported', 'text': None}
+    if len(text.splitlines()) > REVIEW_LINES:
+        return {'state': 'lineLimit', 'text': None}
+    return {'state': 'text', 'text': text}
+
+
+def review_file(candidate, source, commit, expected_digest, name):
+    """Return complete bounded text only for a displayed fingerprint-bound change."""
+    if (not re.fullmatch(r'[a-f0-9]{64}', expected_digest)
+            or len(name.split('/')) > 16
+            or any(not COMPONENT.fullmatch(os.fsencode(part))
+                   or part.lower() in ('.', '..', '.git') for part in name.split('/'))):
+        raise ValueError('Invalid file selection.')
+    source, entries, deadline = selected_baseline(candidate, source, commit)
+    baseline = {'/'.join(parts): (mode.decode(), oid.decode()) for parts, mode, oid, _ in entries}
+    selected = next((entry for entry in entries if '/'.join(entry[0]) == name), None)
+    before = None
+    before_oversized = False
+    if selected is not None:
+        _, _, oid, size = selected
+        if size > REVIEW_BYTES:
+            before_oversized = True
+        else:
+            before = read_git(source, ['cat-file', 'blob', oid.decode()], size, deadline)
+            observed = hashlib.sha1(b'blob ' + str(size).encode() + b'\0' + before).hexdigest()
+            if len(before) != size or observed.encode() != oid:
+                raise ValueError('Baseline blob changed or is corrupt.')
+    capture = {name: None}
+    digest, actual = scan_candidate(candidate, capture)
+    result = comparison_result(commit, digest, baseline, actual)
+    if digest != expected_digest or not any(change['path'] == name for change in result['changes']):
+        raise ValueError('Candidate or displayed selection changed. Review again.')
+    return {'schemaVersion': 1, 'commit': commit, 'digest': digest, 'path': name,
+            'before': {'state': 'byteLimit', 'text': None} if before_oversized else review_side(before),
+            'after': review_side(capture[name])}
+
+
 def main(argv=None):
     if argv is None:
         argv = sys.argv[1:]
+    if len(argv) == 6 and argv[0] == '--review-file':
+        try:
+            print(json.dumps(review_file(Path(argv[1]), Path(argv[2]), argv[3], argv[4], argv[5])))
+            return 0
+        except (OSError, ValueError, UnicodeError):
+            print('Candidate file review unavailable. Review the baseline and candidate again.', file=sys.stderr)
+            return 1
     if len(argv) == 4 and argv[0] == '--compare':
         try:
             print(json.dumps(compare_candidate(Path(argv[1]), Path(argv[2]), argv[3])))

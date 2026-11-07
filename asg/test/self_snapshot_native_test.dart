@@ -94,6 +94,34 @@ void main() {
         changed.digest,
       );
 
+      final content = await reviewSelfSnapshotFile(
+        snapshot: ready,
+        source: source.path,
+        commit: commit,
+        digest: changed.digest,
+        file: 'example.txt',
+        python: '/usr/bin/python3',
+        stop: stop.future,
+        stopped: () => stop.isCompleted,
+      );
+      expect(content.before.text, 'committed');
+      expect(content.after.text, 'modified candidate');
+      expect(content.digest, changed.digest);
+      await File('$ready/example.txt')
+          .writeAsString('changed after comparison');
+      await expectLater(
+        reviewSelfSnapshotFile(
+          snapshot: ready,
+          source: source.path,
+          commit: commit,
+          digest: changed.digest,
+          file: 'example.txt',
+          python: '/usr/bin/python3',
+          stop: stop.future,
+          stopped: () => stop.isCompleted,
+        ),
+        throwsStateError,
+      );
       expect(await file.readAsString(), 'dirty');
     },
     skip: !Platform.isMacOS,
