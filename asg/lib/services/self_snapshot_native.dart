@@ -7,6 +7,7 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as path;
 
+import '../models/candidate_comparison.dart';
 import '../models/generation_command_result.dart';
 import '../models/self_snapshot_operation.dart';
 import 'generation_process_capture.dart';
@@ -19,6 +20,49 @@ Future<String> fingerprintSelfSnapshot({
   required Future<void> stop,
   required bool Function() stopped,
 }) async {
+  final output = await _readCandidate(
+    snapshot: snapshot,
+    python: python,
+    stop: stop,
+    stopped: stopped,
+  );
+  if (!RegExp(r'^[a-f0-9]{64}\n$').hasMatch(output)) {
+    throw const FormatException('Invalid candidate fingerprint.');
+  }
+  return output.trim();
+}
+
+Future<CandidateComparison> compareSelfSnapshot({
+  required String snapshot,
+  required String source,
+  required String commit,
+  required String python,
+  required Future<void> stop,
+  required bool Function() stopped,
+}) async {
+  final output = await _readCandidate(
+    snapshot: snapshot,
+    source: source,
+    commit: commit,
+    python: python,
+    stop: stop,
+    stopped: stopped,
+  );
+  final comparison = CandidateComparison.decode(output);
+  if (comparison.commit != commit) {
+    throw const FormatException('Candidate baseline differs from selection.');
+  }
+  return comparison;
+}
+
+Future<String> _readCandidate({
+  required String snapshot,
+  required String python,
+  required Future<void> stop,
+  required bool Function() stopped,
+  String? source,
+  String? commit,
+}) async {
   if (!supportsSelfSnapshot || ![snapshot, python].every(path.isAbsolute)) {
     throw const FormatException('Invalid candidate inputs.');
   }
@@ -28,6 +72,23 @@ Future<String> fingerprintSelfSnapshot({
     throw const FormatException(
       'Choose a trusted Python outside the candidate.',
     );
+  }
+  String? baseline;
+  if (source != null) {
+    if (!path.isAbsolute(source) ||
+        commit == null ||
+        !RegExp(r'^[a-f0-9]{40}$').hasMatch(commit)) {
+      throw const FormatException(
+        'Select a trusted repository and full commit.',
+      );
+    }
+    baseline = await Directory(source).resolveSymbolicLinks();
+    if (path.equals(candidatePath.toLowerCase(), baseline.toLowerCase()) ||
+        path.isWithin(candidatePath.toLowerCase(), baseline.toLowerCase())) {
+      throw const FormatException(
+        'Choose a trusted repository outside the candidate.',
+      );
+    }
   }
   final temp = await Directory.systemTemp.createTemp('asg-candidate-review-');
   Process? process;
@@ -44,8 +105,10 @@ Future<String> fingerprintSelfSnapshot({
       '-S',
       '-B',
       helper.path,
-      '--fingerprint',
+      if (baseline == null) '--fingerprint' else '--compare',
       snapshot,
+      ?baseline,
+      ?commit,
     ], includeParentEnvironment: false);
     final owned = process;
     unawaited(
@@ -59,12 +122,10 @@ Future<String> fingerprintSelfSnapshot({
       cancellation: stop,
     );
     settled = true;
-    if (stopped() ||
-        result.exitCode != 0 ||
-        !RegExp(r'^[a-f0-9]{64}\n$').hasMatch(result.stdout)) {
+    if (stopped() || result.exitCode != 0) {
       throw StateError('Candidate fingerprint unavailable.');
     }
-    return result.stdout.trim();
+    return result.stdout;
   } finally {
     if (!settled && process != null) {
       process.kill(ProcessSignal.sigkill);

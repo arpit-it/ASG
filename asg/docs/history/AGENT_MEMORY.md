@@ -1,5 +1,11 @@
 # Durable project memory
 
+## Candidate file change comparison — 7 November 2026
+
+F12 / [#406](https://github.com/arpit-it/ASG/issues/406): candidate review now compares file bytes and executable modes with an explicitly selected trusted repository and full commit. The review displays added/modified/removed counts, executable-mode changes and bounded sorted paths with explicit truncation. It identifies the selected baseline without claiming authenticated candidate origin. A single no-follow scan supplies both comparison and fingerprint; confirmation rescans the candidate. Missing baselines, links, special files, mutation and size/path limits fail closed; Stop and input changes revoke late review authority. Candidate execution remains disabled. Disposable Git and native-service fixtures on this Mac cover changes and dirty-source preservation; final independent review, required CI and protected merge remain mandatory. F12 stays open.
+
+The diagnostic recovery increment was independently reviewed and delivered through [PR #529](https://github.com/arpit-it/ASG/pull/529), merged as `be5c78d52590f54cd73ff613ee30d820601896a8` on 7 November 2026 at 04:25:42 UTC. Final head `07a651f9eabf3acd9bdb276f31a5de89be8d47aa` passed [required CI](https://github.com/arpit-it/ASG/actions/runs/42337824092) and [independent review](https://github.com/arpit-it/ASG/pull/529#pullrequestreview-5810036389).
+
 ## Failed snapshot check diagnostics — 7 November 2026
 
 F12 / [#406](https://github.com/arpit-it/ASG/issues/406): approved offline snapshot resolution, analysis and web-build failures now expose selectable operation-labeled tool output in Projects. Output is temporary, capped at 16,384 characters with an explicit truncation marker, and cleared on input changes or new work. Stop and disposal suppress late diagnostics; no automatic repair or execution authority is granted. A disposable fixed Dart project resolved offline and returned an actual `invalid_assignment` analysis failure on this Mac. Controller/widget regressions cover failures, retry, empty/cancelled/limited output, Stop/disposal and a 320-pixel view. Final checks, independent review and protected delivery remain required; the F12 umbrella remains open.

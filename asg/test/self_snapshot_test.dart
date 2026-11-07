@@ -5,6 +5,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:asg/models/self_snapshot_operation.dart';
+import 'package:asg/models/candidate_comparison.dart';
 import 'package:asg/controllers/self_snapshot_controller.dart';
 import 'package:asg/models/generation_command_result.dart';
 import 'package:asg/services/folder_picker.dart';
@@ -21,6 +22,164 @@ class FixturePicker extends FolderPicker {
 
 void main() {
   final commitId = 'a' * 40;
+
+  CandidateComparison comparison(String digest, String commit) =>
+      CandidateComparison.decode(
+        jsonEncode({
+          'schemaVersion': 1,
+          'commit': commit,
+          'digest': digest,
+          'counts': {
+            'added': 1,
+            'modified': 1,
+            'removed': 0,
+            'executableChanged': 1,
+          },
+          'changes': [
+            {'path': 'added.dart', 'kind': 'added', 'executableChanged': false},
+            {
+              'path': 'changed.dart',
+              'kind': 'modified',
+              'executableChanged': true,
+            },
+          ],
+          'truncated': false,
+        }),
+      );
+
+  test('comparison transport refuses malformed and inconsistent evidence', () {
+    final valid = {
+      'schemaVersion': 1,
+      'commit': commitId,
+      'digest': 'a' * 64,
+      'counts': {
+        'added': 0,
+        'modified': 0,
+        'removed': 0,
+        'executableChanged': 0,
+      },
+      'changes': <Object>[],
+      'truncated': false,
+    };
+    expect(CandidateComparison.decode(jsonEncode(valid)).changes, isEmpty);
+    for (final altered in [
+      {...valid, 'schemaVersion': 1.0},
+      {...valid, 'commit': 'HEAD'},
+      {...valid, 'digest': 'wrong'},
+      {...valid, 'unknown': 1},
+      {...valid, 'truncated': true},
+      {
+        ...valid,
+        'counts': {
+          'added': 0,
+          'modified': 0,
+          'removed': 0,
+          'executableChanged': 1,
+        },
+      },
+      {
+        ...valid,
+        'changes': [
+          {'path': '../escape', 'kind': 'added', 'executableChanged': false},
+        ],
+      },
+    ]) {
+      expect(
+        () => CandidateComparison.decode(jsonEncode(altered)),
+        throwsFormatException,
+      );
+    }
+    expect(
+      () => comparison('a' * 64, commitId).changes.clear(),
+      throwsUnsupportedError,
+    );
+  });
+
+  test('comparison requires selected baseline and loses late authority after Stop or input invalidation', () async {
+    for (final action in ['stop', 'inputs', 'dispose']) {
+      final pending = Completer<CandidateComparison>();
+      var compares = 0;
+      final controller = SelfSnapshotController(
+        compare:
+            ({
+              required snapshot,
+              required source,
+              required commit,
+              required python,
+              required stop,
+              required stopped,
+            }) {
+              compares++;
+              return pending.future;
+            },
+      );
+      expect(
+        await controller.reviewCandidate(
+          snapshot: '/snapshot',
+          python: '/python',
+          source: '',
+          commit: commitId,
+        ),
+        isNull,
+      );
+      expect(compares, 0);
+      final review = controller.reviewCandidate(
+        snapshot: '/snapshot',
+        python: '/python',
+        source: '/repo',
+        commit: commitId,
+      );
+      if (action == 'stop') controller.stop();
+      if (action == 'inputs') controller.clearStatus();
+      if (action == 'dispose') controller.dispose();
+      pending.complete(comparison('a' * 64, commitId));
+      expect(await review, isNull);
+      if (action != 'dispose') controller.dispose();
+    }
+  });
+
+  test(
+    'comparison baseline mismatch fails and fresh inputs revoke approval',
+    () async {
+      var selected = 'b' * 40;
+      var scans = 0;
+      final controller = SelfSnapshotController(
+        compare: ({
+          required snapshot,
+          required source,
+          required commit,
+          required python,
+          required stop,
+          required stopped,
+        }) async => comparison('a' * 64, selected),
+        fingerprint:
+            ({
+              required snapshot,
+              required python,
+              required stop,
+              required stopped,
+            }) async {
+              scans++;
+              return 'a' * 64;
+            },
+      );
+      addTearDown(controller.dispose);
+      Future<CandidateReview?> read() => controller.reviewCandidate(
+        snapshot: '/snapshot',
+        python: '/python',
+        source: '/repo',
+        commit: commitId,
+      );
+      expect(await read(), isNull);
+      expect(controller.status, contains('differs'));
+      selected = commitId;
+      final review = await read();
+      expect(review?.comparison?.commit, commitId);
+      controller.clearStatus();
+      await controller.approveCandidate(review!);
+      expect(scans, 0);
+    },
+  );
 
   Future<void> runChecks(
     SelfSnapshotController controller, {
@@ -256,7 +415,11 @@ void main() {
       await tester.tap(pick);
       await tester.pumpAndSettle();
       final sdk = find.widgetWithText(TextField, 'Flutter SDK folder');
-      await tester.ensureVisible(sdk);
+      await tester.scrollUntilVisible(
+        sdk,
+        180,
+        scrollable: find.byType(Scrollable).first,
+      );
       await tester.enterText(sdk, '/sdk');
       final review = find.text('Review offline checks');
       await tester.ensureVisible(review);
@@ -320,6 +483,20 @@ void main() {
     var digest = first;
     var scans = 0;
     final controller = SelfSnapshotController(
+      compare:
+          ({
+            required snapshot,
+            required source,
+            required commit,
+            required python,
+            required stop,
+            required stopped,
+          }) async {
+            expect(source, '/source');
+            expect(commit, commitId);
+            scans++;
+            return comparison(digest, commitId);
+          },
       fingerprint:
           ({
             required snapshot,
@@ -327,7 +504,7 @@ void main() {
             required stop,
             required stopped,
           }) async {
-            expect(snapshot, '/source');
+            expect(snapshot, '/destination');
             expect(python, '/python');
             scans++;
             return digest;
@@ -341,7 +518,10 @@ void main() {
         ),
       ),
     );
+    await tester.enterText(find.byType(TextField).at(0), commitId);
     await tester.enterText(find.byType(TextField).at(1), '/python');
+    await tester.tap(find.text('Choose trusted checkout'));
+    await tester.pumpAndSettle();
     final pick = find.text('Choose prepared snapshot for checks');
     await tester.ensureVisible(pick);
     await tester.tap(pick);
@@ -351,6 +531,14 @@ void main() {
     await tester.tap(review);
     await tester.pumpAndSettle();
     expect(find.textContaining('SHA-256: $first'), findsOneWidget);
+    expect(
+      find.textContaining('Compared with selected repository/commit'),
+      findsOneWidget,
+    );
+    expect(
+      find.textContaining('does not verify candidate origin'),
+      findsOneWidget,
+    );
     await tester.tap(find.text('Cancel'));
     await tester.pumpAndSettle();
     expect(scans, 1);
@@ -371,6 +559,100 @@ void main() {
     );
     expect(scans, 5);
   });
+
+  testWidgets(
+    'comparison dialog remains usable with truncated paths at narrow width',
+    (tester) async {
+      tester.view.physicalSize = const Size(320, 700);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      var calls = 0;
+      final controller = SelfSnapshotController(
+        compare:
+            ({
+              required snapshot,
+              required source,
+              required commit,
+              required python,
+              required stop,
+              required stopped,
+            }) async {
+              calls++;
+              return CandidateComparison.decode(
+                jsonEncode({
+                  'schemaVersion': 1,
+                  'commit': commit,
+                  'digest': 'a' * 64,
+                  'counts': {
+                    'added': 101,
+                    'modified': 0,
+                    'removed': 0,
+                    'executableChanged': 0,
+                  },
+                  'changes': List.generate(
+                    100,
+                    (i) => {
+                      'path': 'file${i.toString().padLeft(3, '0')}.dart',
+                      'kind': 'added',
+                      'executableChanged': false,
+                    },
+                  ),
+                  'truncated': true,
+                }),
+              );
+            },
+      );
+      await tester.pumpWidget(
+        MaterialApp(
+          home: SelfSnapshotScreen(
+            controller: controller,
+            picker: FixturePicker(),
+          ),
+        ),
+      );
+      await tester.enterText(
+        find.widgetWithText(TextField, 'Reviewed commit ID'),
+        commitId,
+      );
+      await tester.enterText(
+        find.widgetWithText(TextField, 'Python executable path'),
+        '/python',
+      );
+      await tester.tap(find.text('Choose trusted checkout'));
+      await tester.pumpAndSettle();
+      final pick = find.text('Choose prepared snapshot for checks');
+      await tester.scrollUntilVisible(
+        pick,
+        180,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.tap(pick);
+      await tester.pumpAndSettle();
+      final review = find.text('Review candidate fingerprint');
+      await tester.scrollUntilVisible(
+        review,
+        180,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.tap(review);
+      await tester.pumpAndSettle();
+      expect(calls, 1);
+      expect(find.textContaining('101 added'), findsOneWidget);
+      expect(find.textContaining('Change list truncated'), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.byType(AlertDialog),
+          matching: find.textContaining('Candidate execution is disabled'),
+        ),
+        findsOneWidget,
+      );
+      expect(tester.takeException(), isNull);
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+      expect(controller.status, isNull);
+    },
+  );
 
   test('build result requires a confined artifact path on success', () {
     final result = <String, Object>{
@@ -486,7 +768,12 @@ void main() {
       find.textContaining('Possible incomplete snapshot folders'),
       findsOneWidget,
     );
-    await tester.ensureVisible(find.text('Choose snapshot destination'));
+    await tester.scrollUntilVisible(
+      find.text('Choose snapshot destination'),
+      -180,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Choose snapshot destination'));
     await tester.pump();
     expect(
