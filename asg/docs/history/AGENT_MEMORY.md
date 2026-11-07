@@ -1,5 +1,11 @@
 # Durable project memory
 
+## Failed snapshot check diagnostics — 7 November 2026
+
+F12 / [#406](https://github.com/arpit-it/ASG/issues/406): approved offline snapshot resolution, analysis and web-build failures now expose selectable operation-labeled tool output in Projects. Output is temporary, capped at 16,384 characters with an explicit truncation marker, and cleared on input changes or new work. Stop and disposal suppress late diagnostics; no automatic repair or execution authority is granted. A disposable fixed Dart project resolved offline and returned an actual `invalid_assignment` analysis failure on this Mac. Controller/widget regressions cover failures, retry, empty/cancelled/limited output, Stop/disposal and a 320-pixel view. Final checks, independent review and protected delivery remain required; the F12 umbrella remains open.
+
+The fingerprint approval evidence was reconciled through [PR #528](https://github.com/arpit-it/ASG/pull/528), independently reviewed and merged as `9fcebe80aa98c1f4ee936239f8bf5fe12f3da1b2` on 7 November 2026 at 04:11:45 UTC. Head `6f4d4819b71875560eacea57c827f3337442af19` passed [required CI](https://github.com/arpit-it/ASG/actions/runs/42336759384) and [independent review](https://github.com/arpit-it/ASG/pull/528#pullrequestreview-5809965995).
+
 ## Candidate fingerprint approval — 6 November 2026
 
 On macOS, Projects can approve a prepared candidate fingerprint for the current review session. An isolated native run with Apple Python 3.9.6 approved an unchanged ASG snapshot and refused approval after a file was added while confirmation was open. [PR #527](https://github.com/arpit-it/ASG/pull/527) merged on 6 November 2026 at 19:24:13 UTC as `128cfbbf6ac51e93baca9828553858559dc94b0f`. Head `07a19ee13c029b7632f5d30a865bbe3f0ad5eb54` passed [required CI](https://github.com/arpit-it/ASG/actions/runs/42277191052) and [independent review](https://github.com/arpit-it/ASG/pull/527#pullrequestreview-5805643193). Approval grants no execution authority; candidate execution and protected delivery remain open under [#406](https://github.com/arpit-it/ASG/issues/406).
