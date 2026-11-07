@@ -37,7 +37,7 @@ class _SelfSnapshotScreenState extends State<SelfSnapshotScreen> {
     try {
       final selected = await widget.picker.pick();
       if (selected == null || !mounted) return;
-      if (!sourceFolder) widget.controller.clearStatus();
+      widget.controller.clearStatus();
       setState(() {
         if (sourceFolder) {
           source = selected;
@@ -184,6 +184,7 @@ class _SelfSnapshotScreenState extends State<SelfSnapshotScreen> {
               if (destination.isNotEmpty) SelectableText(destination),
               TextField(
                 controller: commit,
+                onChanged: (_) => controller.clearStatus(),
                 enabled: enabled,
                 decoration: const InputDecoration(
                   labelText: 'Reviewed commit ID',
@@ -191,6 +192,7 @@ class _SelfSnapshotScreenState extends State<SelfSnapshotScreen> {
               ),
               TextField(
                 controller: python,
+                onChanged: (_) => controller.clearStatus(),
                 enabled: enabled,
                 decoration: const InputDecoration(
                   labelText: 'Python executable path',
@@ -214,6 +216,26 @@ class _SelfSnapshotScreenState extends State<SelfSnapshotScreen> {
                   child: Text(controller.stopping ? 'Stopping…' : 'Stop'),
                 ),
               if (controller.status case final status?) SelectableText(status),
+              if (controller.checkOutput case final output?)
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('Failed check tool output'),
+                        const Text('Captured locally for this session.'),
+                        const SizedBox(height: 8),
+                        ConstrainedBox(
+                          constraints: const BoxConstraints(maxHeight: 320),
+                          child: SingleChildScrollView(
+                            child: SelectableText(output),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               OutlinedButton(
                 onPressed: enabled && destination.isNotEmpty
                     ? () => controller.inspect(destination)
@@ -243,6 +265,7 @@ class _SelfSnapshotScreenState extends State<SelfSnapshotScreen> {
               ),
               TextField(
                 controller: sdk,
+                onChanged: (_) => controller.clearStatus(),
                 enabled: enabled,
                 decoration: const InputDecoration(
                   labelText: 'Flutter SDK folder',

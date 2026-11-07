@@ -22,6 +22,297 @@ class FixturePicker extends FolderPicker {
 void main() {
   final commitId = 'a' * 40;
 
+  Future<void> runChecks(
+    SelfSnapshotController controller, {
+    bool approved = true,
+    bool buildWeb = false,
+  }) => controller.check(
+    approved: approved,
+    buildWeb: buildWeb,
+    snapshot: '/snapshot',
+    sdk: '/sdk',
+    python: '/python',
+  );
+
+  for (final failed in SelfSnapshotOperation.values) {
+    test(
+      '${failed.name} failure exposes diagnostics until a fresh retry',
+      () async {
+        var fail = true;
+        final calls = <SelfSnapshotOperation>[];
+        final controller = SelfSnapshotController(
+          check:
+              ({
+                required snapshot,
+                required sdk,
+                required python,
+                required operation,
+                required stop,
+                required stopped,
+              }) async {
+                calls.add(operation);
+                return GenerationCommandResult(
+                  exitCode: fail && operation == failed ? 1 : 0,
+                  output: fail && operation == failed
+                      ? 'lib/main.dart:3:7: invalid_assignment'
+                      : 'successful tool output',
+                );
+              },
+        );
+        addTearDown(controller.dispose);
+        final buildWeb = failed == SelfSnapshotOperation.build;
+        await runChecks(controller, approved: false, buildWeb: buildWeb);
+        expect(calls, isEmpty);
+        expect(controller.checkOutput, isNull);
+        await runChecks(controller, buildWeb: buildWeb);
+        expect(controller.status, contains('${failed.label} failed (exit 1)'));
+        expect(
+          controller.checkOutput,
+          '${failed.label} tool output:\nlib/main.dart:3:7: invalid_assignment',
+        );
+        if (failed == SelfSnapshotOperation.resolve) {
+          expect(calls, [SelfSnapshotOperation.resolve]);
+        }
+        fail = false;
+        await runChecks(controller, buildWeb: buildWeb);
+        expect(controller.status, contains('passed'));
+        expect(controller.checkOutput, isNull);
+      },
+    );
+  }
+
+  test(
+    'timeout and output-limit diagnostics retain their failure status',
+    () async {
+      for (final timedOut in [true, false]) {
+        final controller = SelfSnapshotController(
+          check:
+              ({
+                required snapshot,
+                required sdk,
+                required python,
+                required operation,
+                required stop,
+                required stopped,
+              }) async => GenerationCommandResult(
+                exitCode: 0,
+                output: '${'x' * 20000}discarded tail',
+                timedOut: timedOut,
+                outputLimitExceeded: !timedOut,
+              ),
+        );
+        await runChecks(controller);
+        expect(
+          controller.status,
+          contains(timedOut ? 'timed out' : 'exceeded the output limit'),
+        );
+        expect(controller.checkOutput, contains('[Output truncated'));
+        expect(controller.checkOutput, isNot(contains('discarded tail')));
+        expect(controller.checkOutput!.length, lessThan(17000));
+        controller.dispose();
+      }
+    },
+  );
+
+  test('a new failed dispatch cannot retain an earlier diagnostic', () async {
+    final pending = Completer<GenerationCommandResult>();
+    var calls = 0;
+    final controller = SelfSnapshotController(
+      check:
+          ({
+            required snapshot,
+            required sdk,
+            required python,
+            required operation,
+            required stop,
+            required stopped,
+          }) {
+            if (++calls == 1) {
+              return Future.value(
+                const GenerationCommandResult(
+                  exitCode: 1,
+                  output: 'old output',
+                ),
+              );
+            }
+            return pending.future;
+          },
+    );
+    addTearDown(controller.dispose);
+    await runChecks(controller);
+    expect(controller.checkOutput, contains('old output'));
+    final retry = runChecks(controller);
+    expect(controller.checkOutput, isNull);
+    pending.completeError(StateError('private transport detail'));
+    await retry;
+    expect(controller.checkOutput, isNull);
+    expect(controller.status, contains('Check unavailable'));
+    expect(controller.status, isNot(contains('private transport detail')));
+  });
+
+  test(
+    'missing diagnostic output is explicit and cancelled output is hidden',
+    () async {
+      var cancelled = false;
+      final controller = SelfSnapshotController(
+        check:
+            ({
+              required snapshot,
+              required sdk,
+              required python,
+              required operation,
+              required stop,
+              required stopped,
+            }) async => GenerationCommandResult(
+              exitCode: 1,
+              output: cancelled ? 'late cancelled diagnostic' : '',
+              cancelled: cancelled,
+            ),
+      );
+      addTearDown(controller.dispose);
+      await runChecks(controller);
+      expect(
+        controller.checkOutput,
+        contains('No diagnostic output was captured.'),
+      );
+      cancelled = true;
+      await runChecks(controller);
+      expect(controller.checkOutput, isNull);
+      expect(controller.status, contains('stopped'));
+    },
+  );
+
+  test('Stop and disposal suppress late failed-check diagnostics', () async {
+    for (final dispose in [false, true]) {
+      final result = Completer<GenerationCommandResult>();
+      var updates = 0;
+      final controller = SelfSnapshotController(
+        check: ({
+          required snapshot,
+          required sdk,
+          required python,
+          required operation,
+          required stop,
+          required stopped,
+        }) => result.future,
+      )..addListener(() => updates++);
+      final pending = runChecks(controller);
+      if (dispose) {
+        controller.dispose();
+      } else {
+        controller.stop();
+      }
+      final beforeCompletion = updates;
+      result.complete(
+        const GenerationCommandResult(exitCode: 1, output: 'late output'),
+      );
+      await pending;
+      expect(controller.checkOutput, isNull);
+      if (dispose) {
+        expect(updates, beforeCompletion);
+      } else {
+        expect(controller.status, 'Snapshot checks stopped.');
+        controller.dispose();
+      }
+    }
+  });
+
+  testWidgets(
+    'approved failure output is selectable and input changes clear it',
+    (tester) async {
+      tester.view.physicalSize = const Size(320, 700);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      var calls = 0;
+      final controller = SelfSnapshotController(
+        check:
+            ({
+              required snapshot,
+              required sdk,
+              required python,
+              required operation,
+              required stop,
+              required stopped,
+            }) async {
+              calls++;
+              return const GenerationCommandResult(
+                exitCode: 1,
+                output: '<b>invalid_assignment</b>',
+              );
+            },
+      );
+      await tester.pumpWidget(
+        MaterialApp(
+          home: SelfSnapshotScreen(
+            controller: controller,
+            picker: FixturePicker(),
+          ),
+        ),
+      );
+      await tester.enterText(find.byType(TextField).at(1), '/python');
+      final pick = find.text('Choose prepared snapshot for checks');
+      await tester.ensureVisible(pick);
+      await tester.tap(pick);
+      await tester.pumpAndSettle();
+      final sdk = find.widgetWithText(TextField, 'Flutter SDK folder');
+      await tester.ensureVisible(sdk);
+      await tester.enterText(sdk, '/sdk');
+      final review = find.text('Review offline checks');
+      await tester.ensureVisible(review);
+      await tester.tap(review);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+      expect(calls, 0);
+      expect(find.text('Failed check tool output'), findsNothing);
+      await tester.tap(review);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Approve and run'));
+      await tester.pumpAndSettle();
+      expect(calls, 1);
+      final output = find.byWidgetPredicate(
+        (widget) =>
+            widget is SelectableText &&
+            (widget.data?.contains('<b>invalid_assignment</b>') ?? false),
+      );
+      await tester.ensureVisible(output);
+      expect(output, findsOneWidget);
+      expect(find.text('Failed check tool output'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+      await tester.scrollUntilVisible(
+        sdk,
+        180,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.enterText(sdk, '/different-sdk');
+      await tester.pumpAndSettle();
+      expect(controller.checkOutput, isNull);
+      expect(find.text('Failed check tool output'), findsNothing);
+      await runChecks(controller);
+      await tester.pumpAndSettle();
+      final python = find.widgetWithText(TextField, 'Python executable path');
+      await tester.scrollUntilVisible(
+        python,
+        -180,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.enterText(python, '/different-python');
+      await tester.pumpAndSettle();
+      expect(controller.checkOutput, isNull);
+      await runChecks(controller);
+      await tester.pumpAndSettle();
+      await tester.scrollUntilVisible(
+        pick,
+        180,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.tap(pick);
+      await tester.pumpAndSettle();
+      expect(controller.checkOutput, isNull);
+    },
+  );
+
   testWidgets('candidate approval rechecks the displayed digest', (
     tester,
   ) async {
@@ -195,6 +486,7 @@ void main() {
       find.textContaining('Possible incomplete snapshot folders'),
       findsOneWidget,
     );
+    await tester.ensureVisible(find.text('Choose snapshot destination'));
     await tester.tap(find.text('Choose snapshot destination'));
     await tester.pump();
     expect(

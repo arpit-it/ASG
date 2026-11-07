@@ -64,6 +64,10 @@ class SelfSnapshotController extends BaseController {
   bool get stopping => _stop?.isCompleted ?? false;
   String? _status;
   String? get status => _status;
+  String? _checkOutput;
+
+  /// Temporary diagnostics from the last failed, approved check.
+  String? get checkOutput => _checkOutput;
 
   Future<void> prepare({
     required String source,
@@ -72,6 +76,7 @@ class SelfSnapshotController extends BaseController {
     required String python,
   }) async {
     if (busy || isDisposed) return;
+    _checkOutput = null;
     if (source.isEmpty ||
         destination.isEmpty ||
         python.isEmpty ||
@@ -119,6 +124,7 @@ class SelfSnapshotController extends BaseController {
     required String python,
   }) async {
     if (!approved || busy || isDisposed) return;
+    _checkOutput = null;
     final stop = Completer<void>();
     _stop = stop;
     final results = <String>[];
@@ -142,7 +148,7 @@ class SelfSnapshotController extends BaseController {
           stop: stop.future,
           stopped: () => stop.isCompleted,
         );
-        if (stop.isCompleted) return;
+        if (stop.isCompleted || isDisposed) return;
         final outcome = switch (result) {
           GenerationCommandResult(cancelled: true) => 'stopped',
           GenerationCommandResult(timedOut: true) => 'timed out',
@@ -152,7 +158,19 @@ class SelfSnapshotController extends BaseController {
           _ => 'failed (exit ${result.exitCode})',
         };
         results.add('$label $outcome.');
-        if (outcome != 'passed') break;
+        if (outcome != 'passed') {
+          if (!result.cancelled) {
+            const limit = 16384;
+            final output = result.output;
+            final displayed = output.isEmpty
+                ? 'No diagnostic output was captured.'
+                : output.length <= limit
+                ? output
+                : '${output.substring(0, limit)}\n[Output truncated to $limit characters.]';
+            _checkOutput = '$label tool output:\n$displayed';
+          }
+          break;
+        }
         final artifact = result.artifactPath;
         if (operation == SelfSnapshotOperation.build && artifact != null) {
           results.add('Web artifacts at $snapshot/asg/$artifact');
@@ -168,6 +186,7 @@ class SelfSnapshotController extends BaseController {
       }
     } finally {
       if (stop.isCompleted) {
+        _checkOutput = null;
         results.add(
           buildWeb
               ? 'Web build stopped. Any partial output is unverified.'
@@ -211,6 +230,7 @@ class SelfSnapshotController extends BaseController {
   }
 
   Future<String?> _scanCandidate(String snapshot, String python) async {
+    _checkOutput = null;
     final stop = Completer<void>();
     _stop = stop;
     _status = 'Reading candidate fingerprint…';
@@ -242,8 +262,10 @@ class SelfSnapshotController extends BaseController {
 
   void clearStatus() {
     discardCandidateReview();
-    if (busy || _status == null) return;
+    if (busy || isDisposed) return;
+    if (_status == null && _checkOutput == null) return;
     _status = null;
+    _checkOutput = null;
     update();
   }
 
@@ -251,6 +273,7 @@ class SelfSnapshotController extends BaseController {
     if (busy || isDisposed || destination.isEmpty) return;
     _inspecting = true;
     _status = null;
+    _checkOutput = null;
     update();
     try {
       final found = await _inspect(destination);
@@ -277,6 +300,7 @@ class SelfSnapshotController extends BaseController {
 
   @override
   void dispose() {
+    _checkOutput = null;
     final current = _stop;
     if (current != null && !current.isCompleted) current.complete();
     super.dispose();
