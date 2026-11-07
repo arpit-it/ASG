@@ -51,3 +51,5 @@ The [post-current-queue marketplace plan](REQUIREMENTS.md#post-current-queue-mar
 
 Repository contribution instructions and vulnerability reporting remain at the repository root. Platform asset READMEs remain beside their assets.
 
+
+- [F12 real-hook and owned WebSocket supervisor design](development/F12_SUPERVISOR_DESIGN.md): bounded authored Mac fixtures; candidate execution remains disabled.

@@ -66,3 +66,5 @@ jobs:
         run: python -B tools/test_prepare_self_candidate.py
       - name: Verify synthetic runner boundary contracts
         run: python -B tools/test_f12_runner_boundary.py
+      - name: Verify supervisor design contracts
+        run: python -B tools/test_f12_supervisor_design.py
