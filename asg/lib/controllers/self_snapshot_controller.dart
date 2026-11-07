@@ -3,6 +3,7 @@
 
 import 'dart:async';
 
+import '../models/candidate_comparison.dart';
 import '../models/generation_command_result.dart';
 import '../models/self_snapshot_operation.dart';
 import '../services/self_snapshot.dart';
@@ -27,15 +28,32 @@ typedef SnapshotCheck = Future<GenerationCommandResult> Function({
 });
 
 class CandidateReview {
-  const CandidateReview(this.snapshot, this.python, this.digest);
+  const CandidateReview(
+    this.snapshot,
+    this.python,
+    this.digest, {
+    this.source,
+    this.comparison,
+  });
 
   final String snapshot;
   final String python;
   final String digest;
+  final String? source;
+  final CandidateComparison? comparison;
 }
 
 typedef CandidateFingerprint = Future<String> Function({
   required String snapshot,
+  required String python,
+  required Future<void> stop,
+  required bool Function() stopped,
+});
+
+typedef CandidateCompare = Future<CandidateComparison> Function({
+  required String snapshot,
+  required String source,
+  required String commit,
   required String python,
   required Future<void> stop,
   required bool Function() stopped,
@@ -46,15 +64,19 @@ class SelfSnapshotController extends BaseController {
     SnapshotPreparation? prepare,
     SnapshotCheck? check,
     CandidateFingerprint? fingerprint,
+    CandidateCompare? compare,
     Future<List<String>> Function(String)? inspect,
   }) : _prepare = prepare ?? prepareSelfSnapshot,
        _inspect = inspect ?? inspectIncompleteSnapshots,
        _check = check ?? checkSelfSnapshot,
-       _fingerprint = fingerprint ?? fingerprintSelfSnapshot;
+       _fingerprint = fingerprint ?? fingerprintSelfSnapshot,
+       _compare = compare ?? compareSelfSnapshot;
 
   final SnapshotPreparation _prepare;
   final SnapshotCheck _check;
   final CandidateFingerprint _fingerprint;
+  final CandidateCompare _compare;
+  int _reviewEpoch = 0;
   CandidateReview? _pendingReview;
   final Future<List<String>> Function(String) _inspect;
   bool _inspecting = false;
@@ -76,6 +98,7 @@ class SelfSnapshotController extends BaseController {
     required String python,
   }) async {
     if (busy || isDisposed) return;
+    discardCandidateReview();
     _checkOutput = null;
     if (source.isEmpty ||
         destination.isEmpty ||
@@ -124,6 +147,7 @@ class SelfSnapshotController extends BaseController {
     required String python,
   }) async {
     if (!approved || busy || isDisposed) return;
+    discardCandidateReview();
     _checkOutput = null;
     final stop = Completer<void>();
     _stop = stop;
@@ -204,12 +228,51 @@ class SelfSnapshotController extends BaseController {
   Future<CandidateReview?> reviewCandidate({
     required String snapshot,
     required String python,
+    String? source,
+    String? commit,
   }) async {
     if (busy || isDisposed) return null;
-    _pendingReview = null;
-    final digest = await _scanCandidate(snapshot, python);
-    if (digest == null || isDisposed) return null;
-    final review = CandidateReview(snapshot, python, digest);
+    discardCandidateReview();
+    final epoch = _reviewEpoch;
+    CandidateComparison? comparison;
+    String? digest;
+    if (source != null || commit != null) {
+      if (source == null ||
+          source.isEmpty ||
+          commit == null ||
+          !RegExp(r'^[a-f0-9]{40}$').hasMatch(commit)) {
+        _status = 'Choose a trusted checkout and enter the full reviewed commit for comparison.';
+        update();
+        return null;
+      }
+      comparison = await _readReview(
+        (stop, stopped) => _compare(
+          snapshot: snapshot,
+          source: source,
+          commit: commit,
+          python: python,
+          stop: stop,
+          stopped: stopped,
+        ),
+      );
+      if (isDisposed || epoch != _reviewEpoch) return null;
+      if (comparison != null && comparison.commit != commit) {
+        _status = 'Comparison baseline differs from the selected commit.';
+        update();
+        return null;
+      }
+      digest = comparison?.digest;
+    } else {
+      digest = await _scanCandidate(snapshot, python);
+    }
+    if (digest == null || isDisposed || epoch != _reviewEpoch) return null;
+    final review = CandidateReview(
+      snapshot,
+      python,
+      digest,
+      source: source,
+      comparison: comparison,
+    );
     _pendingReview = review;
     return review;
   }
@@ -217,8 +280,9 @@ class SelfSnapshotController extends BaseController {
   Future<void> approveCandidate(CandidateReview review) async {
     if (busy || isDisposed || !identical(_pendingReview, review)) return;
     _pendingReview = null;
+    final epoch = _reviewEpoch;
     final digest = await _scanCandidate(review.snapshot, review.python);
-    if (digest == null || isDisposed) return;
+    if (digest == null || isDisposed || epoch != _reviewEpoch) return;
     _status = digest == review.digest
         ? 'Candidate approved for review only. SHA-256: $digest'
         : 'Candidate changed. Review it again before approving.';
@@ -227,27 +291,34 @@ class SelfSnapshotController extends BaseController {
 
   void discardCandidateReview() {
     _pendingReview = null;
+    _reviewEpoch++;
   }
 
-  Future<String?> _scanCandidate(String snapshot, String python) async {
+  Future<String?> _scanCandidate(String snapshot, String python) => _readReview(
+    (stop, stopped) => _fingerprint(
+      snapshot: snapshot,
+      python: python,
+      stop: stop,
+      stopped: stopped,
+    ),
+  );
+
+  Future<T?> _readReview<T>(
+    Future<T> Function(Future<void>, bool Function()) read,
+  ) async {
     _checkOutput = null;
     final stop = Completer<void>();
     _stop = stop;
-    _status = 'Reading candidate fingerprint…';
+    _status = 'Reading candidate review…';
     update();
     try {
       if (stop.isCompleted) return null;
-      final digest = await _fingerprint(
-        snapshot: snapshot,
-        python: python,
-        stop: stop.future,
-        stopped: () => stop.isCompleted,
-      );
+      final result = await read(stop.future, () => stop.isCompleted);
       if (stop.isCompleted || isDisposed) return null;
       _status = null;
-      return digest;
+      return result;
     } catch (_) {
-      _status = 'Could not fingerprint this prepared candidate.';
+      _status = 'Candidate review unavailable. Verify the selected repository, commit, Python and candidate limits.';
       return null;
     } finally {
       if (stop.isCompleted) {
@@ -271,6 +342,7 @@ class SelfSnapshotController extends BaseController {
 
   Future<void> inspect(String destination) async {
     if (busy || isDisposed || destination.isEmpty) return;
+    discardCandidateReview();
     _inspecting = true;
     _status = null;
     _checkOutput = null;
@@ -300,6 +372,7 @@ class SelfSnapshotController extends BaseController {
 
   @override
   void dispose() {
+    discardCandidateReview();
     _checkOutput = null;
     final current = _stop;
     if (current != null && !current.isCompleted) current.complete();

@@ -62,6 +62,39 @@ void main() {
       expect(ready, endsWith('/source-$commit'));
       expect(await File('$ready/example.txt').readAsString(), 'committed');
       expect(await file.readAsString(), 'dirty');
+      final comparison = await compareSelfSnapshot(
+        snapshot: ready,
+        source: source.path,
+        commit: commit,
+        python: '/usr/bin/python3',
+        stop: stop.future,
+        stopped: () => stop.isCompleted,
+      );
+      expect(comparison.commit, commit);
+      expect(comparison.changes, isEmpty);
+      await File('$ready/example.txt').writeAsString('modified candidate');
+      final changed = await compareSelfSnapshot(
+        snapshot: ready,
+        source: source.path,
+        commit: commit,
+        python: '/usr/bin/python3',
+        stop: stop.future,
+        stopped: () => stop.isCompleted,
+      );
+      expect(changed.modified, 1);
+      expect(changed.changes.single.path, 'example.txt');
+      expect(changed.digest, isNot(comparison.digest));
+      expect(
+        await fingerprintSelfSnapshot(
+          snapshot: ready,
+          python: '/usr/bin/python3',
+          stop: stop.future,
+          stopped: () => stop.isCompleted,
+        ),
+        changed.digest,
+      );
+
+      expect(await file.readAsString(), 'dirty');
     },
     skip: !Platform.isMacOS,
   );

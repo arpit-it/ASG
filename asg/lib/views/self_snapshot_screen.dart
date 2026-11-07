@@ -62,6 +62,8 @@ class _SelfSnapshotScreenState extends State<SelfSnapshotScreen> {
     final review = await widget.controller.reviewCandidate(
       snapshot: snapshot,
       python: python.text.trim(),
+      source: source,
+      commit: commit.text.trim(),
     );
     if (review == null || !mounted) return;
     final approved = await showDialog<bool>(
@@ -72,7 +74,8 @@ class _SelfSnapshotScreenState extends State<SelfSnapshotScreen> {
           child: SelectableText(
             'This session records approval for the bytes read for this fingerprint. '
             'Candidate execution is disabled.\n\n'
-            '${review.snapshot}\nSHA-256: ${review.digest}',
+            '${review.snapshot}\nSHA-256: ${review.digest}\n\n'
+            '${review.comparison == null ? '' : _comparisonText(review)}',
           ),
         ),
         actions: [
@@ -93,6 +96,17 @@ class _SelfSnapshotScreenState extends State<SelfSnapshotScreen> {
     } else {
       widget.controller.discardCandidateReview();
     }
+  }
+
+  String _comparisonText(CandidateReview review) {
+    final summary = review.comparison;
+    if (summary == null) return '';
+    return 'Compared with selected repository/commit:\n${review.source}\n'
+        '${summary.commit}\nThis comparison does not verify candidate origin.\n'
+        'File changes: ${summary.added} added, ${summary.modified} modified, '
+        '${summary.removed} removed. Executable-mode changes: ${summary.executableChanged}.\n'
+        '${summary.changes.map((c) => '${c.kind.name}: ${c.path}${c.executableChanged ? ' (executable mode changed)' : ''}').join('\n')}'
+        '${summary.truncated ? '\nChange list truncated; counts include all file changes.' : ''}';
   }
 
   Future<void> approveChecks({bool buildWeb = false}) async {
@@ -255,7 +269,9 @@ class _SelfSnapshotScreenState extends State<SelfSnapshotScreen> {
               if (snapshot.isNotEmpty)
                 const Text(
                   'Fingerprint review uses the trusted Python path above '
-                  'to read candidate files. It does not run candidate code.',
+                  'to read candidate files. Select the trusted checkout and full reviewed '
+                  'commit above for a file change summary. The folder name does not verify origin. '
+                  'Candidate execution is disabled.',
                 ),
               OutlinedButton(
                 onPressed: enabled && snapshot.isNotEmpty

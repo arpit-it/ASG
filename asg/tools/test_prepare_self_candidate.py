@@ -2,6 +2,8 @@
 # Copyright 2026 Arpit Sinha
 
 from pathlib import Path
+import json
+import os
 import subprocess
 import tempfile
 import unittest
@@ -80,6 +82,120 @@ class CandidateTests(unittest.TestCase):
         header = b'100644 blob ' + oid + b' 0\t'
         with self.assertRaisesRegex(ValueError, 'Conflicting source paths'):
             candidate.parse_tree(header + b'A/one\0' + header + b'a/two\0')
+
+    def prepared(self):
+        for name in ['same', 'edit', 'remove', 'mode', 'both']:
+            (self.source / name).write_text('baseline')
+        commit = self.commit()
+        return candidate.prepare(self.source, commit, self.parent), commit
+
+    def test_comparison_explicit_baseline_modes_and_dirty_preservation(self):
+        snapshot, commit = self.prepared()
+        unchanged = candidate.compare_candidate(snapshot, self.source, commit)
+        self.assertEqual(unchanged['changes'], [])
+        self.assertFalse(unchanged['truncated'])
+        (self.source / 'same').write_text('dirty source stays')
+        (self.source / 'untracked').write_text('untouched')
+        (snapshot / 'edit').write_text('changed')
+        (snapshot / 'remove').unlink()
+        (snapshot / 'new').write_text('new')
+        (snapshot / 'mode').chmod(0o700)
+        (snapshot / 'both').write_text('changed too')
+        (snapshot / 'both').chmod(0o700)
+        renamed = snapshot.with_name('source-' + 'b' * 40)
+        snapshot.rename(renamed)
+        result = candidate.compare_candidate(renamed, self.source, commit)
+        self.assertEqual(result['commit'], commit)
+        self.assertEqual(result['digest'], candidate.fingerprint(renamed))
+        self.assertEqual(result['counts'], {'added': 1, 'modified': 3, 'removed': 1, 'executableChanged': 2})
+        self.assertEqual([c['path'] for c in result['changes']], ['both', 'edit', 'mode', 'new', 'remove'])
+        self.assertTrue(result['changes'][0]['executableChanged'])
+        self.assertEqual((self.source / 'same').read_text(), 'dirty source stays')
+        self.assertEqual((self.source / 'untracked').read_text(), 'untouched')
+        with self.assertRaises(ValueError):
+            candidate.compare_candidate(renamed, self.source, 'c' * 40)
+        with self.assertRaises(ValueError):
+            candidate.compare_candidate(renamed, renamed, commit)
+        nested = renamed / 'nested'
+        nested.mkdir()
+        with self.assertRaises(ValueError):
+            candidate.compare_candidate(renamed, nested, commit)
+
+    def test_case_only_rename_is_added_and_removed_not_an_origin_claim(self):
+        snapshot, commit = self.prepared()
+        (snapshot / 'same').rename(snapshot / 'Same')
+        result = candidate.compare_candidate(snapshot, self.source, commit)
+        self.assertEqual(result['counts']['added'], 1)
+        self.assertEqual(result['counts']['removed'], 1)
+        self.assertEqual([c['path'] for c in result['changes']], ['Same', 'same'])
+
+    def test_comparison_ignores_git_replacements_and_filters(self):
+        snapshot, original = self.prepared()
+        (self.source / 'same').write_text('replacement')
+        replacement = self.commit()
+        self.git('replace', original, replacement)
+        marker = self.parent / 'driver-ran'
+        self.git('config', 'diff.external', str(marker))
+        self.git('config', 'filter.fixture.smudge', f'touch "{marker}"')
+        result = candidate.compare_candidate(snapshot, self.source, original)
+        self.assertEqual(result['changes'], [])
+        self.assertFalse(marker.exists())
+
+    def test_candidate_links_special_files_and_limits_refused(self):
+        snapshot, commit = self.prepared()
+        extra = snapshot / 'extra'
+        for kind in ['symlink', 'hardlink', 'fifo']:
+            if kind == 'symlink': extra.symlink_to(self.source / 'same')
+            elif kind == 'hardlink': os.link(self.source / 'same', extra)
+            else: os.mkfifo(extra)
+            with self.assertRaises((OSError, ValueError)):
+                candidate.compare_candidate(snapshot, self.source, commit)
+            extra.unlink()
+        with patch.object(candidate, 'MAX_FILES', 1):
+            with self.assertRaises(ValueError): candidate.compare_candidate(snapshot, self.source, commit)
+        with patch.object(candidate, 'MAX_FILE_BYTES', 1):
+            with self.assertRaises(ValueError): candidate.compare_candidate(snapshot, self.source, commit)
+        with patch.object(candidate, '_stop_requested', True):
+            with self.assertRaises(ValueError): candidate.compare_candidate(snapshot, self.source, commit)
+        for child in snapshot.iterdir(): child.unlink()
+        with self.assertRaisesRegex(ValueError, 'empty'):
+            candidate.compare_candidate(snapshot, self.source, commit)
+
+    def test_candidate_mutation_and_swapped_ancestor_fail(self):
+        snapshot, commit = self.prepared()
+        original = candidate.hashlib.sha1
+        def mutate(data):
+            (snapshot / 'same').write_text('mutated while hashing')
+            return original(data)
+        with patch.object(candidate.hashlib, 'sha1', side_effect=mutate):
+            with self.assertRaisesRegex(ValueError, 'changed'):
+                candidate.compare_candidate(snapshot, self.source, commit)
+        original_open = candidate.open_directory_no_links
+        run = snapshot.parent
+        moved = run.with_name(run.name + '-moved')
+        def swap(directory):
+            run.rename(moved)
+            run.symlink_to(moved, target_is_directory=True)
+            return original_open(directory)
+        with patch.object(candidate, 'open_directory_no_links', side_effect=swap):
+            with self.assertRaises(OSError): candidate.compare_candidate(snapshot, self.source, commit)
+
+    def test_comparison_display_is_bounded_and_includes_generated_files(self):
+        snapshot, commit = self.prepared()
+        for number in range(110):
+            p = snapshot / (('a' * 90) + str(number)) / ('b' * 90) / 'output'
+            p.parent.mkdir(parents=True)
+            p.write_text('new')
+        generated = snapshot / '.dart_tool'
+        generated.mkdir()
+        (generated / 'output').write_text('generated')
+        result = candidate.compare_candidate(snapshot, self.source, commit)
+        self.assertEqual(result['counts']['added'], 111)
+        self.assertTrue(result['truncated'])
+        self.assertLessEqual(len(result['changes']), 100)
+        self.assertLessEqual(sum(len(c['path']) for c in result['changes']), 16384)
+        self.assertLess(len(json.dumps(result)), 32768)
+        self.assertEqual(result['changes'][0]['path'], '.dart_tool/output')
 
 
 if __name__ == '__main__':

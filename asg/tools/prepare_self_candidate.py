@@ -5,6 +5,7 @@
 
 import argparse
 import hashlib
+import json
 import os
 from pathlib import Path
 import re
@@ -168,7 +169,22 @@ def prepare(source, commit, parent):
     return ready
 
 
-def fingerprint(candidate):
+def open_directory_no_links(directory):
+    """Pin every absolute ancestor rather than following a replaced parent."""
+    if not directory.is_absolute():
+        raise ValueError('Expected an absolute candidate path.')
+    parent = os.open('/', os.O_RDONLY | os.O_DIRECTORY)
+    try:
+        for part in directory.parts[1:]:
+            child = os.open(part, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=parent)
+            os.close(parent)
+            parent = child
+        return os.dup(parent)
+    finally:
+        os.close(parent)
+
+
+def scan_candidate(candidate):
     """Hash names, executable bits and bytes without following candidate links."""
     if (not re.fullmatch(r'source-[0-9a-f]{40}', candidate.name)
             or not candidate.parent.name.startswith('asg-self-candidate-')
@@ -179,6 +195,7 @@ def fingerprint(candidate):
     files = 0
     total = 0
     observed = {}
+    index = {}
 
     def identity(info):
         return (info.st_dev, info.st_ino, info.st_mode, info.st_nlink,
@@ -224,6 +241,9 @@ def fingerprint(candidate):
                         or os.fstat(with_fd).st_mtime_ns != info.st_mtime_ns
                         or os.fstat(with_fd).st_ctime_ns != info.st_ctime_ns):
                     raise ValueError('Candidate changed or exceeds size limits.')
+                mode = b'100755' if info.st_mode & stat.S_IXUSR else b'100644'
+                oid = hashlib.sha1(b'blob ' + str(len(data)).encode() + b'\0' + data).hexdigest()
+                index[relative.decode('ascii')] = (mode.decode(), oid)
                 executable = b'X' if info.st_mode & stat.S_IXUSR else b'F'
                 digest.update(executable + relative + b'\0' + hashlib.sha256(data).digest())
             finally:
@@ -233,7 +253,7 @@ def fingerprint(candidate):
         if (initial.st_mtime_ns, initial.st_ctime_ns) != (current.st_mtime_ns, current.st_ctime_ns):
             raise ValueError('Candidate directory changed during review.')
 
-    root = os.open(candidate, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+    root = open_directory_no_links(candidate)
     try:
         root_identity = identity(os.fstat(root))
         visit(root, b'', 0)
@@ -251,18 +271,68 @@ def fingerprint(candidate):
                     raise ValueError('Candidate changed during review.')
             finally:
                 os.close(parent)
-        if identity(candidate.lstat()) != root_identity:
-            raise ValueError('Candidate directory changed during review.')
+        current_root = open_directory_no_links(candidate)
+        try:
+            if identity(os.fstat(current_root)) != root_identity:
+                raise ValueError('Candidate directory changed during review.')
+        finally:
+            os.close(current_root)
     finally:
         os.close(root)
     if not files:
         raise ValueError('Candidate directory is empty.')
-    return digest.hexdigest()
+    return digest.hexdigest(), index
+
+
+def fingerprint(candidate):
+    return scan_candidate(candidate)[0]
+
+
+def compare_candidate(candidate, source, commit):
+    """Compare with the selected baseline; a directory name proves no origin."""
+    if not OBJECT_ID.fullmatch(commit.encode('ascii')):
+        raise ValueError('Use the full reviewed commit ID.')
+    source = source.resolve(strict=True)
+    canonical = candidate.resolve(strict=True)
+    if source == canonical or canonical in source.parents:
+        raise ValueError('Choose a trusted repository outside the candidate.')
+    deadline = time.monotonic() + 15
+    if read_git(source, ['rev-parse', '--show-toplevel'], 4096, deadline).rstrip(b'\n') != os.fsencode(source):
+        raise ValueError('Choose the trusted repository root.')
+    if read_git(source, ['cat-file', '-t', commit], 16, deadline) != b'commit\n':
+        raise ValueError('The baseline must be an available commit.')
+    entries = parse_tree(read_git(source, ['ls-tree', '-rlz', commit], MAX_TREE_BYTES, deadline))
+    baseline = {'/'.join(parts): (mode.decode(), oid.decode()) for parts, mode, oid, _ in entries}
+    digest, actual = scan_candidate(candidate)
+    counts = {'added': 0, 'modified': 0, 'removed': 0, 'executableChanged': 0}
+    changes = []
+    characters = 0
+    for name in sorted(baseline.keys() | actual.keys()):
+        check_stop()
+        before, after = baseline.get(name), actual.get(name)
+        if before == after:
+            continue
+        kind = 'added' if before is None else 'removed' if after is None else 'modified'
+        mode_changed = before is not None and after is not None and before[0] != after[0]
+        counts[kind] += 1
+        counts['executableChanged'] += int(mode_changed)
+        if len(changes) < 100 and characters + len(name) <= 16384:
+            changes.append({'path': name, 'kind': kind, 'executableChanged': mode_changed})
+            characters += len(name)
+    return {'schemaVersion': 1, 'commit': commit, 'digest': digest, 'counts': counts,
+            'changes': changes, 'truncated': len(changes) < sum(counts[k] for k in ('added', 'modified', 'removed'))}
 
 
 def main(argv=None):
     if argv is None:
         argv = sys.argv[1:]
+    if len(argv) == 4 and argv[0] == '--compare':
+        try:
+            print(json.dumps(compare_candidate(Path(argv[1]), Path(argv[2]), argv[3])))
+            return 0
+        except (OSError, ValueError, UnicodeError):
+            print('Candidate comparison unavailable. Verify the baseline and candidate limits.', file=sys.stderr)
+            return 1
     if len(argv) == 2 and argv[0] == '--fingerprint':
         try:
             print(fingerprint(Path(argv[1])))

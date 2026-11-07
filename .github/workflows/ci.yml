@@ -62,3 +62,5 @@ jobs:
       - run: python -B tools/test_qwen_streaming_server.py
       - run: python -B tools/test_generation_command.py
       - run: python -B tools/test_candidate_confinement.py
+      - name: Verify source snapshot preparation and candidate comparisons
+        run: python -B tools/test_prepare_self_candidate.py
