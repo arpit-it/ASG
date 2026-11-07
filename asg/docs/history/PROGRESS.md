@@ -1,5 +1,12 @@
 # Progress and delivery history
 
+## Real hook orchestration and stock Flutter IPC adapters — 8 November 2026
+
+F12 / [#406](https://github.com/arpit-it/ASG/issues/406): developer-only adapters now exercise the installed unchanged NativeAssetsBuildRunner on a fixed two-package graph and the actual stock FlutterTesterTestDevice start/remoteChannel path. A manifest-bound executable shim admits only expected compiler/hook invocations and confines children; retained gated IPv4/IPv6 servers supply stock IPC before upgrade. Actual bounded Mac fixtures verify eight ordered compile/hook dispatches, hook failure/deadline/invalid output/overflow preventing device start, session rejection, oversized/malformed messages, engine deadline and Stop. Ten portable tests defend dispatch and evidence contracts. Candidate execution remains disabled. Arbitrary graphs/candidates, native toolchain/assets, the full package:test event protocol and raw WebSocket allocation/memory bounds remain unverified. See [the adapter contract](../development/F12_RUNNER_ADAPTERS.md).
+
+The supervisor design was independently approved in [review 5815200933](https://github.com/arpit-it/ASG/pull/534#pullrequestreview-5815200933) and delivered through [PR #534](https://github.com/arpit-it/ASG/pull/534). [Required CI 42418587081](https://github.com/arpit-it/ASG/actions/runs/42418587081) passed; protected merge `a52b769fa7d4054b2a6bb1b98628509cccd4f1ab` on 7 November 2026 has exact reviewed tree `e9484d6f807633ff1c06a769c461bc79a1674c1c`. F12 remains open.
+
+
 ## Real-hook and owned WebSocket supervisor design — 8 November 2026
 
 F12 / [#406](https://github.com/arpit-it/ASG/issues/406): a reviewed developer-only supervisor design separates trusted dispatch from confined authored package hooks. Fixed build/link entrypoints use the installed hooks API and independent output validation; direct compilation and engine dispatch follow only after valid results. The supervisor retains IPv4/IPv6 listeners and a separate bounded broker validates WebSocket upgrade, framing and session/source/kernel identity. Seven bounded Mac cases cover success, hook timeout, invalid output, wrong session, extra frame, engine deadline and Stop; nine parser/contract regressions defend the protocol. Candidate execution remains disabled. Full NativeAssets planning and unchanged Flutter test-harness integration, memory/aggregate-disk containment and arbitrary candidates remain unverified. See [the supervisor design](../development/F12_SUPERVISOR_DESIGN.md).

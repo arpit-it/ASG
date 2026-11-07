@@ -1,0 +1,63 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright 2026 Arpit Sinha
+import 'dart:convert';
+import 'dart:io';
+import 'dart:ui';
+
+Future<void> main() async {
+  final env = Platform.environment;
+  if (env['CASE'] == 'engine-timeout' || env['CASE'] == 'stop') {
+    await Future<void>.delayed(const Duration(seconds: 15));
+  }
+  final denied = <bool>[];
+  try {
+    File(env['SENTINEL']!).readAsStringSync();
+    denied.add(false);
+  } catch (_) {
+    denied.add(true);
+  }
+  try {
+    File(env['SENTINEL']!).writeAsStringSync('changed');
+    denied.add(false);
+  } catch (_) {
+    denied.add(true);
+  }
+  try {
+    await Process.run('/usr/bin/true', []);
+    denied.add(false);
+  } catch (_) {
+    denied.add(true);
+  }
+  for (final target in ['127.0.0.1', '::1']) {
+    try {
+      final socket = await Socket.connect(
+        target,
+        int.parse(env['CANARY_PORT']!),
+        timeout: const Duration(milliseconds: 200),
+      );
+      socket.destroy();
+      denied.add(false);
+    } catch (_) {
+      denied.add(true);
+    }
+  }
+  final host = env['FAMILY'] == 'IPv6' ? '[::1]' : '127.0.0.1';
+  final token = env['CASE'] == 'wrong-token' ? 'wrong' : env['SESSION'];
+  final ws = await WebSocket.connect('ws://$host:${env['SERVER_PORT']}/$token');
+  final message = jsonEncode({
+    'schema': 1,
+    'session': env['SESSION'],
+    'source': env['SOURCE_HASH'],
+    'kernel': env['KERNEL_HASH'],
+    'engine': PlatformDispatcher.instance.views.isNotEmpty,
+    'confined': denied.every((v) => v),
+  });
+  ws.add(
+    env['CASE'] == 'oversized-message'
+        ? 'x' * 5000
+        : env['CASE'] == 'malformed-message'
+        ? message.replaceFirst('"schema":1', '"schema":1,"schema":1')
+        : message,
+  );
+  await Future<void>.delayed(const Duration(seconds: 15));
+}
