@@ -4,8 +4,10 @@
 import 'package:flutter/material.dart';
 
 import '../controllers/self_snapshot_controller.dart';
+import '../controllers/candidate_proposal_controller.dart';
 import '../services/folder_picker.dart';
 import 'candidate_file_review_dialog.dart';
+import 'candidate_proposal_screen.dart';
 
 class SelfSnapshotScreen extends StatefulWidget {
   const SelfSnapshotScreen({
@@ -57,6 +59,25 @@ class _SelfSnapshotScreenState extends State<SelfSnapshotScreen> {
     } finally {
       if (mounted) setState(() => picking = false);
     }
+  }
+
+  Future<void> proposeReplacement() async {
+    widget.controller.clearStatus();
+    final selected = await Navigator.of(context).push<String>(
+      MaterialPageRoute(
+        builder: (_) => CandidateProposalScreen(
+          controller: CandidateProposalController(
+            snapshot: snapshot,
+            python: python.text.trim(),
+            trustedSource: source,
+          ),
+          picker: widget.picker,
+        ),
+      ),
+    );
+    if (!mounted) return;
+    widget.controller.clearStatus();
+    if (selected != null) setState(() => snapshot = selected);
   }
 
   Future<void> reviewCandidate() async {
@@ -264,6 +285,15 @@ class _SelfSnapshotScreenState extends State<SelfSnapshotScreen> {
                     ? reviewCandidate
                     : null,
                 child: const Text('Review candidate fingerprint'),
+              ),
+              OutlinedButton(
+                onPressed:
+                    enabled &&
+                        snapshot.isNotEmpty &&
+                        python.text.trim().isNotEmpty
+                    ? proposeReplacement
+                    : null,
+                child: const Text('Propose source replacement'),
               ),
               TextField(
                 controller: sdk,

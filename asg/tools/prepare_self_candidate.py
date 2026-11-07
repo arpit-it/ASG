@@ -4,6 +4,7 @@
 """Prepare a private source snapshot from a trusted local ASG repository."""
 
 import argparse
+import ctypes
 import hashlib
 import json
 import os
@@ -184,9 +185,10 @@ def open_directory_no_links(directory):
         os.close(parent)
 
 
-def scan_candidate(candidate, capture=None):
+def scan_candidate(candidate, capture=None, sink=None, allow_incomplete=False):
     """Hash names, executable bits and bytes without following candidate links."""
-    if (not re.fullmatch(r'source-[0-9a-f]{40}', candidate.name)
+    if ((not re.fullmatch(r'source-[0-9a-f]{40}', candidate.name)
+             and not (allow_incomplete and candidate.name == 'incomplete'))
             or not candidate.parent.name.startswith('asg-self-candidate-')
             or candidate.resolve(strict=True) != candidate):
         raise ValueError('Choose a prepared candidate directory.')
@@ -228,6 +230,8 @@ def scan_candidate(candidate, capture=None):
                 observed[relative] = identity(info)
                 if stat.S_ISDIR(info.st_mode):
                     digest.update(b'D' + relative + b'\0')
+                    if sink is not None:
+                        sink(relative.decode('ascii'), None, None)
                     visit(with_fd, relative + b'/', depth + 1)
                     continue
                 if not stat.S_ISREG(info.st_mode) or info.st_nlink != 1:
@@ -245,6 +249,8 @@ def scan_candidate(candidate, capture=None):
                 oid = hashlib.sha1(b'blob ' + str(len(data)).encode() + b'\0' + data).hexdigest()
                 relative_name = relative.decode('ascii')
                 index[relative_name] = (mode.decode(), oid)
+                if sink is not None:
+                    sink(relative_name, data, 0o700 if mode == b'100755' else 0o600)
                 if capture is not None and relative_name in capture:
                     capture[relative_name] = data
                 executable = b'X' if info.st_mode & stat.S_IXUSR else b'F'
@@ -387,9 +393,222 @@ def review_file(candidate, source, commit, expected_digest, name):
             'after': review_side(capture[name])}
 
 
+
+def proposal_path(name):
+    return (isinstance(name, str)
+            and re.fullmatch(r'asg/(lib|test)/[A-Za-z0-9_]+(?:/[A-Za-z0-9_]+)*\.dart', name)
+            and len(name.split('/')) <= 16)
+
+
+def proposal_read(candidate, name):
+    if not proposal_path(name):
+        raise ValueError('Select an existing bounded Dart source file.')
+    captured = {name: None}
+    digest, _ = scan_candidate(candidate, captured)
+    side = review_side(captured[name])
+    if side['state'] != 'text':
+        raise ValueError('Select complete supported text within the proposal limits.')
+    return {'schemaVersion': 1, 'digest': digest, 'path': name,
+            'before': side['text'], 'beforeHash': hashlib.sha256(captured[name]).hexdigest()}
+
+
+def exclusive_rename(directory, source, target):
+    library = ctypes.CDLL(None, use_errno=True)
+    if sys.platform == 'darwin':
+        function, flag = library.renameatx_np, 4
+    elif sys.platform.startswith('linux') and hasattr(library, 'renameat2'):
+        function, flag = library.renameat2, 1
+    else:
+        raise ValueError('Exclusive publication is unavailable on this host.')
+    function.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.c_int, ctypes.c_char_p, ctypes.c_uint]
+    function.restype = ctypes.c_int
+    if function(directory, os.fsencode(source), directory, os.fsencode(target), flag):
+        raise OSError(ctypes.get_errno(), 'Exclusive publication refused.')
+
+
+
+def open_proposal_destination(destination, candidate, trusted_source):
+    if any(part.lower().endswith('.app') for part in destination.parts):
+        raise ValueError('Choose a destination outside application bundles.')
+    forbidden = []
+    held = []
+    try:
+        for path in (candidate, Path(trusted_source) if trusted_source else None):
+            if path is None:
+                continue
+            descriptor = open_directory_no_links(path)
+            held.append(descriptor)
+            info = os.fstat(descriptor)
+            forbidden.append((info.st_dev, info.st_ino))
+        parent = os.open('/', os.O_RDONLY | os.O_DIRECTORY)
+        try:
+            for part in destination.parts[1:]:
+                child = os.open(part, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=parent)
+                os.close(parent)
+                parent = child
+                info = os.fstat(parent)
+                if (info.st_dev, info.st_ino) in forbidden:
+                    raise ValueError('Destination must be outside the candidate and trusted checkout.')
+            return os.dup(parent)
+        finally:
+            os.close(parent)
+    finally:
+        for descriptor in held:
+            os.close(descriptor)
+
+
+def apply_proposal(payload):
+    expected = {'snapshot', 'path', 'expectedDigest', 'beforeHash', 'afterHash',
+                'replacement', 'destination', 'trustedSource', 'runName'}
+    if (not isinstance(payload, dict) or set(payload) != expected
+            or not all(isinstance(payload[k], str) for k in expected)):
+        raise ValueError('Invalid proposal payload.')
+    candidate = Path(payload['snapshot'])
+    destination = Path(payload['destination'])
+    name = payload['path']
+    if (not proposal_path(name)
+            or not re.fullmatch(r'asg-self-candidate-[a-f0-9]{8}', payload['runName'])
+            or any(not re.fullmatch(r'[a-f0-9]{64}', payload[k])
+                   for k in ('expectedDigest', 'beforeHash', 'afterHash'))):
+        raise ValueError('Invalid proposal identity.')
+    replacement = payload['replacement'].encode('utf-8')
+    if (not replacement.strip() or review_side(replacement)['state'] != 'text'
+            or hashlib.sha256(replacement).hexdigest() != payload['afterHash']):
+        raise ValueError('Invalid replacement text.')
+    if destination.resolve(strict=True) != destination:
+        raise ValueError('Choose a canonical destination without links.')
+    if destination == candidate or candidate in destination.parents:
+        raise ValueError('Choose a destination outside the candidate.')
+    if payload['trustedSource']:
+        trusted = Path(payload['trustedSource']).resolve(strict=True)
+        if destination == trusted or trusted in destination.parents:
+            raise ValueError('Choose a destination outside the trusted checkout.')
+    parent_fd = open_proposal_destination(destination, candidate, payload['trustedSource'])
+    run_fd = stage_fd = None
+    run = None
+    total = substitutions = 0
+    output_hash = hashlib.sha256(b'ASG candidate tree v1\0')
+    try:
+        parent_identity = os.fstat(parent_fd)
+        run = payload['runName']
+        os.mkdir(run, 0o700, dir_fd=parent_fd)
+        run_fd = os.open(run, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=parent_fd)
+        os.mkdir('incomplete', 0o700, dir_fd=run_fd)
+        stage_fd = os.open('incomplete', os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=run_fd)
+
+        def copy(relative, data, mode):
+            nonlocal total, substitutions
+            check_stop()
+            parts = relative.split('/')
+            if data is None:
+                output_hash.update(b'D' + relative.encode('ascii') + b'\0')
+                holder = os.dup(stage_fd)
+                try:
+                    for part in parts:
+                        try:
+                            os.mkdir(part, 0o700, dir_fd=holder)
+                        except FileExistsError:
+                            pass
+                        child = os.open(part, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=holder)
+                        os.close(holder)
+                        holder = child
+                finally:
+                    os.close(holder)
+                return
+            if relative == name:
+                side = review_side(data)
+                if (side['state'] != 'text' or hashlib.sha256(data).hexdigest() != payload['beforeHash']
+                        or data == replacement):
+                    raise ValueError('Original source changed or replacement is a no-op.')
+                header = re.match(rb'^(?://[^\n]*\n)+', data)
+                if b'SPDX-License-Identifier: MPL-2.0' in data or b'copyright' in data.lower():
+                    if (header is None or not (b'SPDX-License-Identifier: MPL-2.0' in header.group(0) or b'copyright' in header.group(0).lower())
+                            or not replacement.startswith(header.group(0))):
+                        raise ValueError('Preserve the existing legal header.')
+                data = replacement
+                substitutions += 1
+            total += len(data)
+            if total > MAX_TOTAL_BYTES:
+                raise ValueError('Result exceeds candidate size limits.')
+            output_hash.update((b'X' if mode & stat.S_IXUSR else b'F') + relative.encode('ascii') + b'\0' + hashlib.sha256(data).digest())
+            write_blob(stage_fd, parts, mode, data)
+
+        digest, _ = scan_candidate(candidate, sink=copy)
+        if digest != payload['expectedDigest'] or substitutions != 1:
+            raise ValueError('Source fingerprint or selected file changed.')
+        check_stop()
+        current = open_directory_no_links(destination)
+        try:
+            info = os.fstat(current)
+            if (info.st_dev, info.st_ino) != (parent_identity.st_dev, parent_identity.st_ino):
+                raise ValueError('Destination changed during proposal.')
+        finally:
+            os.close(current)
+        # The owned run must remain at its selected destination before publication.
+        observed = os.stat(run, dir_fd=parent_fd, follow_symlinks=False)
+        own = os.fstat(run_fd)
+        if (observed.st_dev, observed.st_ino) != (own.st_dev, own.st_ino):
+            raise ValueError('Proposal run changed during writing.')
+        stage_digest, _ = scan_candidate(destination / run / 'incomplete', allow_incomplete=True)
+        if stage_digest != output_hash.hexdigest():
+            raise ValueError('Written snapshot differs from the proposal.')
+        check_stop()
+        exclusive_rename(run_fd, 'incomplete', candidate.name)
+        ready = destination / run / candidate.name
+        output_digest = fingerprint(ready)
+        if output_digest != output_hash.hexdigest():
+            raise ValueError('Published snapshot differs from the proposal.')
+        named = open_directory_no_links(ready)
+        try:
+            output_info = os.fstat(named)
+            stage_info = os.fstat(stage_fd)
+            if (output_info.st_dev, output_info.st_ino) != (stage_info.st_dev, stage_info.st_ino):
+                raise ValueError('Published candidate identity changed.')
+        finally:
+            os.close(named)
+        check_stop()
+        return {'schemaVersion': 1, 'path': str(ready), 'digest': output_digest,
+                'sourceDigest': digest, 'file': name, 'afterHash': payload['afterHash']}
+    except (OSError, ValueError, KeyboardInterrupt) as error:
+        raise ValueError('Proposal unavailable. Inspect the selected destination for incomplete or unverified output.') from error
+    finally:
+        for descriptor in (stage_fd, run_fd, parent_fd):
+            if descriptor is not None:
+                os.close(descriptor)
+
+
+def read_proposal_payload(path):
+    descriptor = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+    try:
+        info = os.fstat(descriptor)
+        if not stat.S_ISREG(info.st_mode) or info.st_nlink != 1:
+            raise ValueError('Expected a regular proposal payload.')
+        with os.fdopen(os.dup(descriptor), 'rb') as stream:
+            data = stream.read(131073)
+        if len(data) > 131072:
+            raise ValueError('Proposal payload exceeds limits.')
+        return json.loads(data)
+    finally:
+        os.close(descriptor)
+
+
 def main(argv=None):
     if argv is None:
         argv = sys.argv[1:]
+    if len(argv) == 3 and argv[0] == '--proposal-read':
+        try:
+            print(json.dumps(proposal_read(Path(argv[1]), argv[2])))
+            return 0
+        except (OSError, ValueError, UnicodeError):
+            print('Proposal source unavailable. Check source path and limits.', file=sys.stderr)
+            return 1
+    if len(argv) == 2 and argv[0] == '--proposal-apply':
+        try:
+            print(json.dumps(apply_proposal(read_proposal_payload(argv[1]))))
+            return 0
+        except (OSError, ValueError, UnicodeError):
+            print('Proposal unavailable. Inspect the destination for incomplete or unverified output.', file=sys.stderr)
+            return 1
     if len(argv) == 6 and argv[0] == '--review-file':
         try:
             print(json.dumps(review_file(Path(argv[1]), Path(argv[2]), argv[3], argv[4], argv[5])))

@@ -9,6 +9,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:asg/models/self_snapshot_operation.dart';
+import 'package:asg/models/candidate_source_proposal.dart';
 import 'package:asg/services/self_snapshot.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -210,6 +211,113 @@ void main() {
     expect(await ready.exists(), isTrue);
     expect(await other.exists(), isTrue);
   }, skip: !Platform.isMacOS);
+  test('actual approved replacement forks a new unverified snapshot', () async {
+    final root = await Directory.systemTemp.createTemp('asg-proposal-native-');
+    addTearDown(() => root.delete(recursive: true));
+    final parent = await root.resolveSymbolicLinks();
+    final source = await Directory('$parent/source/asg/lib')
+        .create(recursive: true);
+    final checkout = Directory('$parent/source');
+    const before =
+        '// SPDX-License-Identifier: MPL-2.0\n// Copyright 2026 Arpit Sinha\n\nvoid main() {}\n';
+    const after =
+        '// SPDX-License-Identifier: MPL-2.0\n// Copyright 2026 Arpit Sinha\n\nvoid main() { print("new candidate"); }\n';
+    final file = File('${source.path}/main.dart');
+    await file.writeAsString(before);
+    Future<String> git(List<String> arguments) async {
+      final result = await Process.run('/usr/bin/git', [
+        '-C',
+        checkout.path,
+        '-c',
+        'core.hooksPath=/dev/null',
+        ...arguments,
+      ]);
+      expect(result.exitCode, 0, reason: result.stderr.toString());
+      return (result.stdout as String).trim();
+    }
+
+    await git(['init', '-q']);
+    await git(['add', '.']);
+    await git([
+      '-c',
+      'user.name=Fixture',
+      '-c',
+      'user.email=fixture@example.invalid',
+      '-c',
+      'commit.gpgsign=false',
+      'commit',
+      '-qm',
+      'fixed source',
+    ]);
+    final commit = await git(['rev-parse', 'HEAD']);
+    await file.writeAsString('dirty source retained');
+    final stop = Completer<void>();
+    final snapshot = await prepareSelfSnapshot(
+      source: checkout.path,
+      destination: parent,
+      commit: commit,
+      python: '/usr/bin/python3',
+      stop: stop.future,
+      stopped: () => stop.isCompleted,
+    );
+    await Directory('$snapshot/empty').create();
+    final captured = await readCandidateProposalSource(
+      snapshot: snapshot,
+      file: 'asg/lib/main.dart',
+      python: '/usr/bin/python3',
+      stop: stop.future,
+      stopped: () => stop.isCompleted,
+    );
+    expect(captured.before, before);
+    final destination = await Directory('$parent/output').create();
+    final proposal = CandidateSourceProposal.create(
+      snapshot: snapshot,
+      python: '/usr/bin/python3',
+      trustedSource: checkout.path,
+      source: captured,
+      replacement: after,
+      destination: destination.path,
+      runName: 'asg-self-candidate-1234abcd',
+    );
+    final result = await applyCandidateProposal(
+      proposal: proposal,
+      stop: stop.future,
+      stopped: () => stop.isCompleted,
+    );
+    expect(
+      await File('${result.path}/asg/lib/main.dart').readAsString(),
+      after,
+    );
+    expect(await File('$snapshot/asg/lib/main.dart').readAsString(), before);
+    expect(await file.readAsString(), 'dirty source retained');
+    expect(await Directory('${result.path}/empty').exists(), isTrue);
+    expect(result.sourceDigest, captured.digest);
+    expect(result.digest, isNot(captured.digest));
+    final changed = await compareSelfSnapshot(
+      snapshot: result.path,
+      source: checkout.path,
+      commit: commit,
+      python: '/usr/bin/python3',
+      stop: stop.future,
+      stopped: () => stop.isCompleted,
+    );
+    expect(changed.modified, 1);
+    await File('$snapshot/asg/lib/main.dart')
+        .writeAsString('$before// stale\n');
+    await expectLater(
+      applyCandidateProposal(
+        proposal: proposal,
+        stop: stop.future,
+        stopped: () => stop.isCompleted,
+      ),
+      throwsStateError,
+    );
+    expect(
+      await File('${result.path}/asg/lib/main.dart').readAsString(),
+      after,
+    );
+  }, skip: !Platform.isMacOS);
+
   const sdk = String.fromEnvironment('ASG_SNAPSHOT_TEST_SDK');
   test('confined offline checks and Stop during SDK lock wait', () async {
     final root = await Directory.systemTemp.createTemp('asg-offline-check-');

@@ -5,6 +5,9 @@ from pathlib import Path
 import json
 import os
 import subprocess
+import hashlib
+import os
+import stat
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -273,6 +276,144 @@ class CandidateTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             candidate.review_file(snapshot, self.source, commit, candidate.fingerprint(snapshot), 'edit')
 
+
+
+class ProposalTests(unittest.TestCase):
+    setUp = CandidateTests.setUp
+    git = CandidateTests.git
+    commit = CandidateTests.commit
+    HEADER = '// SPDX-License-Identifier: MPL-2.0\n// Copyright 2026 Arpit Sinha\n\n'
+
+    def proposal_fixture(self):
+        (self.source / 'asg/lib').mkdir(parents=True)
+        source = self.source / 'asg/lib/main.dart'
+        source.write_text(self.HEADER + 'void main() {}\n')
+        ready = candidate.prepare(self.source, self.commit(), self.parent)
+        (ready / 'empty-directory').mkdir()
+        loaded = candidate.proposal_read(ready, 'asg/lib/main.dart')
+        destination = self.parent / 'outputs'
+        destination.mkdir()
+        after = self.HEADER + 'void main() { print("proposal"); }\n'
+        payload = {'snapshot': str(ready), 'path': loaded['path'], 'expectedDigest': loaded['digest'],
+                   'beforeHash': loaded['beforeHash'], 'afterHash': hashlib.sha256(after.encode()).hexdigest(),
+                   'replacement': after, 'destination': str(destination), 'trustedSource': str(self.source),
+                   'runName': 'asg-self-candidate-1234abcd'}
+        return ready, destination, payload
+
+    def test_new_copy_preserves_original_and_normalizes_executable_modes(self):
+        ready, destination, payload = self.proposal_fixture()
+        original = (ready / payload['path']).read_bytes()
+        (ready / payload['path']).chmod(0o4777)
+        payload['expectedDigest'] = candidate.fingerprint(ready)
+        receipt = candidate.apply_proposal(payload)
+        output = Path(receipt['path'])
+        self.assertEqual((ready / payload['path']).read_bytes(), original)
+        self.assertEqual((self.source / payload['path']).read_bytes(), original)
+        self.assertEqual((output / payload['path']).read_text(), payload['replacement'])
+        self.assertTrue((output / 'empty-directory').is_dir())
+        self.assertEqual(stat.S_IMODE((output / payload['path']).stat().st_mode), 0o700)
+        self.assertEqual(stat.S_IMODE((output / 'empty-directory').stat().st_mode), 0o700)
+        self.assertEqual(receipt['sourceDigest'], payload['expectedDigest'])
+        self.assertEqual(receipt['digest'], candidate.fingerprint(output))
+        self.assertNotEqual(receipt['digest'], receipt['sourceDigest'])
+        self.assertFalse((output.parent / 'incomplete').exists())
+        with self.assertRaises(ValueError):
+            candidate.apply_proposal(payload)
+        self.assertEqual(len(list(destination.iterdir())), 1)
+
+    def test_stale_noop_header_and_text_limits_refuse(self):
+        ready, destination, payload = self.proposal_fixture()
+        before = (ready / payload['path']).read_text()
+        for replacement in (before, 'void main() {}', 'x' * 16385, self.HEADER + 'x\n' * 501, '\x00'):
+            attempt = dict(payload, replacement=replacement,
+                           afterHash=hashlib.sha256(replacement.encode()).hexdigest())
+            with self.subTest(replacement=replacement[:30]), self.assertRaises(ValueError):
+                candidate.apply_proposal(attempt)
+            payload['runName'] = 'asg-self-candidate-' + os.urandom(4).hex()
+        with self.assertRaises(ValueError):
+            candidate.apply_proposal(dict(payload, expectedDigest='a' * 64))
+        self.assertEqual((ready / payload['path']).read_text(), before)
+        self.assertFalse(list(destination.glob('*/source-*')))
+
+    def test_path_destination_and_links_refused(self):
+        ready, destination, payload = self.proposal_fixture()
+        for name in ('../outside', 'asg/tools/run.dart', 'asg/lib/../main.dart', 'asg/lib/missing.dart'):
+            with self.subTest(name=name), self.assertRaises(ValueError):
+                candidate.apply_proposal(dict(payload, path=name))
+        inside = ready / 'inside'
+        inside.mkdir()
+        for target in (inside, self.source):
+            with self.assertRaises(ValueError):
+                candidate.apply_proposal(dict(payload, destination=str(target)))
+        linked = self.parent / 'linked-output'
+        linked.symlink_to(destination, target_is_directory=True)
+        with self.assertRaises(ValueError):
+            candidate.apply_proposal(dict(payload, destination=str(linked)))
+        source = ready / payload['path']
+        data = source.read_bytes()
+        source.unlink()
+        outside = self.parent / 'outside.dart'
+        outside.write_bytes(data)
+        source.symlink_to(outside)
+        with self.assertRaises(ValueError):
+            candidate.apply_proposal(payload)
+        self.assertEqual(outside.read_bytes(), data)
+
+    def test_empty_target_exclusive_publish_and_write_failure_retain_staging(self):
+        ready, destination, payload = self.proposal_fixture()
+        publish = candidate.exclusive_rename
+        def occupied(fd, source, target):
+            os.mkdir(target, 0o700, dir_fd=fd)
+            original = os.stat(target, dir_fd=fd).st_ino
+            try:
+                publish(fd, source, target)
+            finally:
+                self.assertEqual(os.stat(target, dir_fd=fd).st_ino, original)
+        with patch.object(candidate, 'exclusive_rename', side_effect=occupied):
+            with self.assertRaises(ValueError):
+                candidate.apply_proposal(payload)
+        self.assertTrue(list(destination.glob('*/incomplete')))
+        payload['runName'] = 'asg-self-candidate-2234abcd'
+        with patch.object(candidate, 'write_blob', side_effect=OSError('fixed write failure')):
+            with self.assertRaises(ValueError):
+                candidate.apply_proposal(payload)
+        self.assertEqual(len(list(destination.glob('*/incomplete'))), 2)
+
+    def test_corrupt_output_stop_and_collision_refuse_without_replay(self):
+        ready, destination, payload = self.proposal_fixture()
+        write = candidate.write_blob
+        def corrupt(fd, parts, mode, data):
+            return write(fd, parts, mode, data + b'corrupt')
+        with patch.object(candidate, 'write_blob', side_effect=corrupt), self.assertRaises(ValueError):
+            candidate.apply_proposal(payload)
+        payload['runName'] = 'asg-self-candidate-3234abcd'
+        with patch.object(candidate, '_stop_requested', True), self.assertRaises(ValueError):
+            candidate.apply_proposal(payload)
+        occupied = destination / 'asg-self-candidate-aaaaaaaa'
+        occupied.mkdir()
+        (occupied / 'sentinel').write_text('preserved')
+        with self.assertRaises(ValueError):
+            candidate.apply_proposal(dict(payload, runName='asg-self-candidate-aaaaaaaa'))
+        self.assertEqual((occupied / 'sentinel').read_text(), 'preserved')
+        self.assertFalse(list(destination.glob('*/source-*')))
+
+    def test_application_bundle_destination_refused(self):
+        _, _, payload = self.proposal_fixture()
+        destination = self.parent / 'Sentinel.ApP' / 'Contents'
+        destination.mkdir(parents=True)
+        payload['destination'] = str(destination)
+        with self.assertRaises(ValueError):
+            candidate.apply_proposal(payload)
+        self.assertEqual(list(destination.iterdir()), [])
+
+    def test_bom_legal_header_is_explicitly_refused(self):
+        ready, destination, payload = self.proposal_fixture()
+        file = ready / payload['path']
+        file.write_text('\ufeff' + self.HEADER + 'void main() {}\n')
+        loaded = candidate.proposal_read(ready, payload['path'])
+        payload.update(expectedDigest=loaded['digest'], beforeHash=loaded['beforeHash'])
+        with self.assertRaises(ValueError):
+            candidate.apply_proposal(payload)
 
 
 if __name__ == '__main__':

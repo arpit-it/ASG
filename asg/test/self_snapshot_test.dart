@@ -1331,7 +1331,11 @@ void main() {
       await tester.tap(pick);
       await tester.pumpAndSettle();
       final field = find.widgetWithText(TextField, 'Flutter SDK folder');
-      await tester.ensureVisible(field);
+      await tester.scrollUntilVisible(
+        field,
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
       await tester.enterText(field, '/sdk');
       final review = find.text('Review offline checks');
       await tester.ensureVisible(review);
@@ -1356,7 +1360,11 @@ void main() {
         OutlinedButton,
         'Review offline web build',
       );
-      await tester.ensureVisible(build);
+      await tester.scrollUntilVisible(
+        build,
+        150,
+        scrollable: find.byType(Scrollable).first,
+      );
       await tester.pumpAndSettle();
       await tester.tap(build);
       await tester.pumpAndSettle();
