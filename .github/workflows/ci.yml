@@ -68,3 +68,5 @@ jobs:
         run: python -B tools/test_f12_runner_boundary.py
       - name: Verify supervisor design contracts
         run: python -B tools/test_f12_supervisor_design.py
+      - name: Verify runner adapter contracts
+        run: python -B tools/test_f12_runner_adapters.py

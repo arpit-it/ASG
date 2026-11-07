@@ -1,0 +1,279 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright 2026 Arpit Sinha
+import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:file/local.dart';
+import 'package:file/file.dart' as files;
+import 'package:hooks_runner/hooks_runner.dart';
+import 'package:logging/logging.dart' as logging;
+import 'package:package_config/package_config.dart';
+import 'package:process/process.dart';
+import 'package:flutter_tools/src/base/logger.dart';
+import 'package:flutter_tools/src/base/platform.dart' as platform;
+import 'package:flutter_tools/src/build_info.dart';
+import 'package:flutter_tools/src/device.dart';
+import 'package:flutter_tools/src/test/flutter_tester_device.dart';
+import 'package:flutter_tools/src/test/font_config_manager.dart';
+
+class FixedFonts extends FontConfigManager {
+  FixedFonts(this.file);
+  final files.File file;
+  @override
+  files.File get fontConfigFile => file;
+}
+
+class Gate extends Stream<HttpRequest> implements HttpServer {
+  Gate(this.server, this.token);
+  final HttpServer server;
+  final String token;
+  int rejected = 0;
+  @override
+  StreamSubscription<HttpRequest> listen(
+    void Function(HttpRequest)? onData, {
+    Function? onError,
+    void Function()? onDone,
+    bool? cancelOnError,
+  }) => server
+      .where((r) {
+        if (r.uri.path != '/' + token ||
+            r.uri.hasQuery ||
+            r.headers.value('origin') != null) {
+          rejected++;
+          r.response.statusCode = 403;
+          unawaited(r.response.close());
+          return false;
+        }
+        return true;
+      })
+      .listen(
+        onData,
+        onError: onError,
+        onDone: onDone,
+        cancelOnError: cancelOnError,
+      );
+  @override
+  int get port => server.port;
+  @override
+  Future<HttpServer> close({bool force = false}) async => this; // Outer owner retains both sockets through both devices.
+  @override
+  dynamic noSuchMethod(Invocation i) =>
+      throw StateError('Unsupported server operation ${i.memberName}');
+}
+
+class ConfinedProcesses extends LocalProcessManager {
+  ConfinedProcesses(this.config, this.family, this.port);
+  final Map<String, dynamic> config;
+  final String family;
+  final int port;
+  @override
+  Future<Process> start(
+    List<Object> command, {
+    String? workingDirectory,
+    Map<String, String>? environment,
+    bool includeParentEnvironment = true,
+    bool runInShell = false,
+    ProcessStartMode mode = ProcessStartMode.normal,
+  }) async {
+    final expected = <String>[
+      config['engine'],
+      '--disable-vm-service',
+      if (family == 'IPv6') '--ipv6',
+      '--icu-data-file-path=${config['icu']}',
+      '--enable-checked-mode',
+      '--verify-entry-points',
+      '--enable-software-rendering',
+      '--skia-deterministic-rendering',
+      '--enable-dart-profiling',
+      '--non-interactive',
+      '--use-test-fonts',
+      '--disable-asset-fonts',
+      '--packages=${config['packages']}',
+      config['kernel'],
+    ];
+    if (command.map((x) => x.toString()).join('\x00') !=
+            expected.join('\x00') ||
+        workingDirectory != null ||
+        runInShell ||
+        mode != ProcessStartMode.normal ||
+        environment?['SERVER_PORT'] != port.toString())
+      throw StateError('Unadmitted stock command: $command');
+    final process = await Process.start(
+      '/usr/bin/sandbox-exec',
+      ['-f', config['enginePolicy'], ...expected],
+      workingDirectory: config['engineDir'],
+      includeParentEnvironment: false,
+      environment: {
+        'PATH': '/usr/bin:/bin',
+        'HOME': config['engineDir'],
+        'TMPDIR': '${config['engineDir']}/',
+        'SESSION': config['session'],
+        'SENTINEL': config['sentinel'],
+        'CANARY_PORT': config['canaryPort'].toString(),
+        'SOURCE_HASH': config['sourceHash'],
+        'KERNEL_HASH': config['kernelHash'],
+        'FAMILY': family,
+        'CASE': config['case'],
+        'SERVER_PORT': port.toString(),
+        'FLUTTER_TEST': 'true',
+      },
+    );
+    config['engineStarted'] = true;
+    return process;
+  }
+}
+
+class OwnedDevice extends FlutterTesterTestDevice {
+  OwnedDevice(
+    this.gate,
+    Map<String, dynamic> c,
+    String family,
+    files.FileSystem fs,
+  ) : super(
+        id: family == 'IPv4' ? 1 : 2,
+        platform: const platform.LocalPlatform(),
+        fileSystem: fs,
+        processManager: ConfinedProcesses(c, family, gate.port),
+        logger: BufferLogger.test(),
+        flutterTesterBinPath: c['engine'],
+        debuggingOptions: DebuggingOptions.disabled(
+          BuildInfo.debug.copyWith(packageConfigPath: c['packages']),
+        ),
+        enableVmService: false,
+        machine: false,
+        host: family == 'IPv4'
+            ? InternetAddress.loopbackIPv4
+            : InternetAddress.loopbackIPv6,
+        testAssetDirectory: null,
+        flutterProject: null,
+        icudtlPath: c['icu'],
+        compileExpression: null,
+        fontConfigManager: FixedFonts(fs.file(c['fonts'])),
+        nativeAssetsBuilder: null,
+      );
+  final Gate gate;
+  @override
+  Future<HttpServer> bind(InternetAddress? host, int port) async {
+    if (port != 0) throw StateError('Unexpected stock bind');
+    return gate;
+  }
+}
+
+Future<void> main(List<String> args) async {
+  final c =
+      jsonDecode(File(args.single).readAsStringSync()) as Map<String, dynamic>;
+  final result = <String, dynamic>{
+    'stockDeviceCalled': false,
+    'stockRemoteChannel': false,
+    'pass': false,
+    'accepted': <String>[],
+  };
+  HttpServer? v4, v6;
+  OwnedDevice? activeDevice;
+  var stopping = false;
+  final stopSignals = ProcessSignal.sigterm.watch().listen((_) async {
+    stopping = true;
+    if (activeDevice != null && c['engineStarted'] == true)
+      await activeDevice!.kill();
+    await v4?.close(force: true);
+    await v6?.close(force: true);
+  });
+  try {
+    v4 = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+    v6 = await HttpServer.bind(
+      InternetAddress.loopbackIPv6,
+      v4.port,
+      v6Only: true,
+    );
+    File(c['ready']).writeAsStringSync(jsonEncode({'port': v4.port}));
+    while (!File(c['continue']).existsSync()) {
+      await Future<void>.delayed(const Duration(milliseconds: 10));
+    }
+    final fs = const LocalFileSystem();
+    final packageUri = File(c['packages']).uri;
+    final pc = await loadPackageConfigUri(packageUri);
+    final layout = PackageLayout.fromPackageConfig(
+      fs,
+      pc,
+      packageUri,
+      'fixture_a',
+      includeDevDependencies: false,
+    );
+    final runner = NativeAssetsBuildRunner(
+      logger: logging.Logger('fixed'),
+      dartExecutable: File(c['shim']).uri,
+      fileSystem: fs,
+      packageLayout: layout,
+      hookEnvironment: const {},
+    );
+    final buildResult = await runner.build(
+      extensions: [],
+      linkingEnabled: true,
+    );
+    if (buildResult.isFailure) {
+      result['failure'] = 'hook-build';
+      return;
+    }
+    if (stopping) return;
+    final linkResult = await runner.link(
+      extensions: [],
+      buildResult: buildResult.success,
+    );
+    if (linkResult.isFailure) {
+      result['failure'] = 'hook-link';
+      return;
+    }
+    result['realBuildAndLink'] = true;
+    for (final item in [(v4, 'IPv4'), (v6, 'IPv6')]) {
+      if (stopping) return;
+      final gate = Gate(item.$1, c['session']);
+      final device = OwnedDevice(gate, c, item.$2, fs);
+      activeDevice = device;
+      result['stockDeviceCalled'] = true;
+      try {
+        File(c['active']).writeAsStringSync('stock-device-start');
+        final channel = await device
+            .start(c['kernel'])
+            .timeout(const Duration(seconds: 2));
+        result['stockRemoteChannel'] = true;
+        final message = await channel.stream.first.timeout(
+          const Duration(seconds: 2),
+        );
+        if (message.length > 4096) {
+          result['failure'] = 'message-bound';
+          return;
+        }
+        final expectedMessage = jsonEncode({
+          'schema': 1,
+          'session': c['session'],
+          'source': c['sourceHash'],
+          'kernel': c['kernelHash'],
+          'engine': true,
+          'confined': true,
+        });
+        if (message != expectedMessage) {
+          result['failure'] = 'session-identity';
+          return;
+        }
+        (result['accepted'] as List).add(item.$2);
+      } on TimeoutException {
+        result['failure'] = c['case'] == 'wrong-token' && gate.rejected > 0
+            ? 'session-refused'
+            : 'engine-deadline';
+        return;
+      } finally {
+        if (c.remove('engineStarted') == true) await device.kill();
+      }
+    }
+    result['pass'] = true;
+  } catch (e) {
+    result['error'] = e.runtimeType.toString();
+    result['detail'] = e.toString();
+  } finally {
+    await stopSignals.cancel();
+    await v4?.close(force: true);
+    await v6?.close(force: true);
+    File(c['result']).writeAsStringSync(jsonEncode(result));
+  }
+}

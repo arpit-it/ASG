@@ -1,0 +1,72 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright 2026 Arpit Sinha
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:hooks/hooks.dart';
+
+Future<void> main(List<String> args) async {
+  String? outputPath;
+  Future<void> probe(HookInput input) async {
+    outputPath = input.outputFile.toFilePath();
+    final env = Platform.environment;
+    final denied = <String, bool>{};
+    try {
+      File(env['SENTINEL']!).readAsStringSync();
+      denied['read'] = false;
+    } catch (_) {
+      denied['read'] = true;
+    }
+    try {
+      File(env['SENTINEL']!).writeAsStringSync('changed');
+      denied['write'] = false;
+    } catch (_) {
+      denied['write'] = true;
+    }
+    try {
+      await Process.run('/usr/bin/true', []);
+      denied['fork'] = false;
+    } catch (_) {
+      denied['fork'] = true;
+    }
+    for (final host in ['127.0.0.1', '::1']) {
+      try {
+        final s = await Socket.connect(
+          host,
+          int.parse(env['PORT']!),
+          timeout: const Duration(milliseconds: 200),
+        );
+        s.destroy();
+        denied[host] = false;
+      } catch (_) {
+        denied[host] = true;
+      }
+    }
+    File.fromUri(
+      input.outputDirectoryShared.resolve('${env['HOOK_STAGE']}.json'),
+    ).writeAsStringSync(jsonEncode(denied));
+    if (!denied.values.every((v) => v)) exit(2);
+    if (env['CASE'] == 'hook-overflow') {
+      stdout.write('x' * 70000);
+      await stdout.flush();
+      await Future<void>.delayed(const Duration(seconds: 15));
+    }
+    if (env['CASE'] == 'hook-timeout' && input.packageName == 'fixture_b')
+      await Future<void>.delayed(const Duration(seconds: 15));
+    if (env['CASE'] == 'hook-failure' && input.packageName == 'fixture_b')
+      exit(1);
+  }
+
+  if (Platform.environment['HOOK_STAGE'] == 'build') {
+    await build(args, (input, output) async {
+      await probe(input);
+    });
+  } else {
+    await link(args, (input, output) async {
+      await probe(input);
+    });
+  }
+  if (Platform.environment['CASE'] == 'hook-output' && outputPath != null)
+    File(outputPath!)
+        .writeAsStringSync('{"timestamp":"now","command":"forbidden"}');
+}
