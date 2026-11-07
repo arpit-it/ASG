@@ -1,5 +1,11 @@
 # Durable project memory
 
+## Candidate before/after text review — 7 November 2026
+
+F12 / [#406](https://github.com/arpit-it/ASG/issues/406): a current candidate comparison can inspect complete before/after UTF-8 text for one of its displayed changed files. Each side is bounded to 16 KiB of UTF-8 bytes and 500 text lines; absent, unsupported encoding/control characters and exceeded bounds are explicit states rather than truncated content. Baseline blobs are read and hash-checked from the selected commit; candidate content and fingerprint come from the same no-follow scan. Path/commit/digest mismatches, Stop, cancellation, disposal and input changes revoke late review authority. The stacked selectable view renders no candidate markup and enables no writes or execution. Disposable Git and native bundled-helper fixtures on this Mac validate content, boundary and stale-result cases. Final CI, independent review and protected delivery remain required; F12 stays open.
+
+The bounded candidate file-summary increment was independently reviewed and delivered through [PR #530](https://github.com/arpit-it/ASG/pull/530), merged as `32f759a3263fb663199e36ce6db24f271b53ecd8` on 7 November 2026 at 04:59:18 UTC. Final head `40536a93cbe96fb6375570db095879549255c167` passed [required CI](https://github.com/arpit-it/ASG/actions/runs/42340308159) and [independent review](https://github.com/arpit-it/ASG/pull/530#pullrequestreview-5810185557).
+
 ## Candidate file change comparison — 7 November 2026
 
 F12 / [#406](https://github.com/arpit-it/ASG/issues/406): candidate review now compares file bytes and executable modes with an explicitly selected trusted repository and full commit. The review displays added/modified/removed counts, executable-mode changes and bounded sorted paths with explicit truncation. It identifies the selected baseline without claiming authenticated candidate origin. A single no-follow scan supplies both comparison and fingerprint; confirmation rescans the candidate. Missing baselines, links, special files, mutation and size/path limits fail closed; Stop and input changes revoke late review authority. Candidate execution remains disabled. Disposable Git and native-service fixtures on this Mac cover changes and dirty-source preservation; final independent review, required CI and protected merge remain mandatory. F12 stays open.

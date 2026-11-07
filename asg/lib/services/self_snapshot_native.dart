@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:path/path.dart' as path;
 
 import '../models/candidate_comparison.dart';
+import '../models/candidate_file_review.dart';
 import '../models/generation_command_result.dart';
 import '../models/self_snapshot_operation.dart';
 import 'generation_process_capture.dart';
@@ -55,6 +56,38 @@ Future<CandidateComparison> compareSelfSnapshot({
   return comparison;
 }
 
+Future<CandidateFileReview> reviewSelfSnapshotFile({
+  required String snapshot,
+  required String source,
+  required String commit,
+  required String digest,
+  required String file,
+  required String python,
+  required Future<void> stop,
+  required bool Function() stopped,
+}) async {
+  if (!RegExp(r'^[a-f0-9]{64}$').hasMatch(digest)) {
+    throw const FormatException('Invalid comparison fingerprint.');
+  }
+  final output = await _readCandidate(
+    snapshot: snapshot,
+    source: source,
+    commit: commit,
+    python: python,
+    stop: stop,
+    stopped: stopped,
+    digest: digest,
+    file: file,
+  );
+  final review = CandidateFileReview.decode(output);
+  if (review.commit != commit ||
+      review.digest != digest ||
+      review.path != file) {
+    throw const FormatException('File review differs from selection.');
+  }
+  return review;
+}
+
 Future<String> _readCandidate({
   required String snapshot,
   required String python,
@@ -62,6 +95,8 @@ Future<String> _readCandidate({
   required bool Function() stopped,
   String? source,
   String? commit,
+  String? digest,
+  String? file,
 }) async {
   if (!supportsSelfSnapshot || ![snapshot, python].every(path.isAbsolute)) {
     throw const FormatException('Invalid candidate inputs.');
@@ -105,10 +140,17 @@ Future<String> _readCandidate({
       '-S',
       '-B',
       helper.path,
-      if (baseline == null) '--fingerprint' else '--compare',
+      if (file != null)
+        '--review-file'
+      else if (baseline == null)
+        '--fingerprint'
+      else
+        '--compare',
       snapshot,
       ?baseline,
       ?commit,
+      if (file != null) digest!,
+      ?file,
     ], includeParentEnvironment: false);
     final owned = process;
     unawaited(

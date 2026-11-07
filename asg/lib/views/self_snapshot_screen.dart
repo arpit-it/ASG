@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import '../controllers/self_snapshot_controller.dart';
 import '../services/folder_picker.dart';
+import 'candidate_file_review_dialog.dart';
 
 class SelfSnapshotScreen extends StatefulWidget {
   const SelfSnapshotScreen({
@@ -68,26 +69,11 @@ class _SelfSnapshotScreenState extends State<SelfSnapshotScreen> {
     if (review == null || !mounted) return;
     final approved = await showDialog<bool>(
       context: context,
-      builder: (dialog) => AlertDialog(
-        title: const Text('Approve this candidate for review?'),
-        content: SingleChildScrollView(
-          child: SelectableText(
-            'This session records approval for the bytes read for this fingerprint. '
-            'Candidate execution is disabled.\n\n'
-            '${review.snapshot}\nSHA-256: ${review.digest}\n\n'
-            '${review.comparison == null ? '' : _comparisonText(review)}',
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialog, false),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(dialog, true),
-            child: const Text('Approve candidate'),
-          ),
-        ],
+      barrierDismissible: false,
+      builder: (_) => CandidateFileReviewDialog(
+        controller: widget.controller,
+        review: review,
+        summary: _comparisonText(review),
       ),
     );
     if (!mounted) return;

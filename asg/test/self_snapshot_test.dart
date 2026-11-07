@@ -6,6 +6,8 @@ import 'dart:convert';
 
 import 'package:asg/models/self_snapshot_operation.dart';
 import 'package:asg/models/candidate_comparison.dart';
+import 'package:asg/models/candidate_file_review.dart';
+import 'package:asg/views/candidate_file_review_dialog.dart';
 import 'package:asg/controllers/self_snapshot_controller.dart';
 import 'package:asg/models/generation_command_result.dart';
 import 'package:asg/services/folder_picker.dart';
@@ -46,6 +48,444 @@ void main() {
           'truncated': false,
         }),
       );
+
+  Map<String, Object?> filePayload({
+    String path = 'changed.dart',
+    String? before = 'before',
+    String? after = 'after',
+  }) => {
+    'schemaVersion': 1,
+    'commit': commitId,
+    'digest': 'a' * 64,
+    'path': path,
+    'before': {'state': before == null ? 'absent' : 'text', 'text': before},
+    'after': {'state': after == null ? 'absent' : 'text', 'text': after},
+  };
+
+  test(
+    'file content protocol enforces complete UTF8 sides and schema bounds',
+    () {
+      final valid = filePayload();
+      expect(
+        CandidateFileReview.decode(jsonEncode(valid)).before.text,
+        'before',
+      );
+      expect(
+        CandidateFileReview.decode(jsonEncode(filePayload(before: 'é' * 8192)))
+            .before
+            .text!
+            .length,
+        8192,
+      );
+      expect(
+        CandidateFileReview.decode(
+          jsonEncode(filePayload(before: 'x\r\n' * 500)),
+        ).before.state,
+        CandidateTextState.text,
+      );
+      expect(
+        CandidateFileReview.decode(
+          jsonEncode(filePayload(before: '', after: null)),
+        ).before.text,
+        '',
+      );
+      for (final altered in [
+        {...valid, 'schemaVersion': 1.0},
+        {...valid, 'path': '../outside'},
+        {...valid, 'digest': 'wrong'},
+        {...valid, 'unknown': true},
+        filePayload(before: null, after: null),
+        filePayload(before: 'é' * 8193),
+        filePayload(before: 'x\r' * 501),
+        filePayload(before: 'x\u2028' * 501),
+        filePayload(before: '\u0000'),
+        filePayload(before: '\u0080'),
+        filePayload(before: String.fromCharCode(0xd800)),
+        {
+          ...valid,
+          'before': {'state': 'unsupported', 'text': 'hidden'},
+        },
+      ]) {
+        expect(
+          () => CandidateFileReview.decode(jsonEncode(altered)),
+          throwsFormatException,
+        );
+      }
+    },
+  );
+
+  test(
+    'file inspection binds selection and revokes malformed or failed reviews',
+    () async {
+      var reads = 0;
+      var invalid = false;
+      var fail = false;
+      var scans = 0;
+      final controller = SelfSnapshotController(
+        compare: ({
+          required snapshot,
+          required source,
+          required commit,
+          required python,
+          required stop,
+          required stopped,
+        }) async => comparison('a' * 64, commitId),
+        fingerprint:
+            ({
+              required snapshot,
+              required python,
+              required stop,
+              required stopped,
+            }) async {
+              scans++;
+              return 'a' * 64;
+            },
+        readFile:
+            ({
+              required snapshot,
+              required source,
+              required commit,
+              required digest,
+              required file,
+              required python,
+              required stop,
+              required stopped,
+            }) async {
+              reads++;
+              if (fail) throw StateError('fixture');
+              expect(
+                (source, commit, digest, file),
+                ('/repo', commitId, 'a' * 64, 'changed.dart'),
+              );
+              return CandidateFileReview.decode(
+                jsonEncode(filePayload(before: invalid ? null : 'before')),
+              );
+            },
+      );
+      addTearDown(controller.dispose);
+      Future<CandidateReview> fresh() async =>
+          (await controller.reviewCandidate(
+            snapshot: '/snapshot',
+            python: '/python',
+            source: '/repo',
+            commit: commitId,
+          ))!;
+      final first = await fresh();
+      expect(
+        await controller.inspectCandidateFile(first, 'not-listed'),
+        isNull,
+      );
+      expect(reads, 0);
+      expect(controller.isCurrentReview(first), isFalse);
+      final review = await fresh();
+      expect(
+        (await controller.inspectCandidateFile(
+          review,
+          'changed.dart',
+        ))?.after.text,
+        'after',
+      );
+      expect(controller.isCurrentReview(review), isTrue);
+      invalid = true;
+      expect(
+        await controller.inspectCandidateFile(review, 'changed.dart'),
+        isNull,
+      );
+      await controller.approveCandidate(review);
+      expect(scans, 0);
+      invalid = false;
+      fail = true;
+      final retry = await fresh();
+      expect(
+        await controller.inspectCandidateFile(retry, 'changed.dart'),
+        isNull,
+      );
+      expect(controller.isCurrentReview(retry), isFalse);
+    },
+  );
+
+  test('Stop input invalidation and disposal suppress pending file contents and approval', () async {
+    for (final action in ['stop', 'inputs', 'dispose']) {
+      final pending = Completer<CandidateFileReview>();
+      var scans = 0;
+      final controller = SelfSnapshotController(
+        compare: ({
+          required snapshot,
+          required source,
+          required commit,
+          required python,
+          required stop,
+          required stopped,
+        }) async => comparison('a' * 64, commitId),
+        fingerprint:
+            ({
+              required snapshot,
+              required python,
+              required stop,
+              required stopped,
+            }) async {
+              scans++;
+              return 'a' * 64;
+            },
+        readFile: ({
+          required snapshot,
+          required source,
+          required commit,
+          required digest,
+          required file,
+          required python,
+          required stop,
+          required stopped,
+        }) => pending.future,
+      );
+      final review = (await controller.reviewCandidate(
+        snapshot: '/snapshot',
+        python: '/python',
+        source: '/repo',
+        commit: commitId,
+      ))!;
+      final read = controller.inspectCandidateFile(review, 'changed.dart');
+      if (action == 'stop') controller.stop();
+      if (action == 'inputs') controller.clearStatus();
+      if (action == 'dispose') controller.dispose();
+      pending.complete(CandidateFileReview.decode(jsonEncode(filePayload())));
+      expect(await read, isNull);
+      await controller.approveCandidate(review);
+      expect(scans, 0);
+      expect(controller.isCurrentReview(review), isFalse);
+      if (action != 'dispose') controller.dispose();
+    }
+  });
+
+  testWidgets(
+    'narrow file review displays plain before and after with selectable text',
+    (tester) async {
+      tester.view.physicalSize = const Size(320, 700);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final controller = SelfSnapshotController(
+        compare: ({
+          required snapshot,
+          required source,
+          required commit,
+          required python,
+          required stop,
+          required stopped,
+        }) async => comparison('a' * 64, commitId),
+        readFile:
+            ({
+              required snapshot,
+              required source,
+              required commit,
+              required digest,
+              required file,
+              required python,
+              required stop,
+              required stopped,
+            }) async => CandidateFileReview.decode(
+              jsonEncode(
+                filePayload(
+                  before: '<script>old</script>',
+                  after: '<script>new</script>',
+                ),
+              ),
+            ),
+      );
+      addTearDown(controller.dispose);
+      final review = (await controller.reviewCandidate(
+        snapshot: '/snapshot',
+        python: '/python',
+        source: '/repo',
+        commit: commitId,
+      ))!;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Builder(
+            builder: (context) => TextButton(
+              onPressed: () => showDialog<bool>(
+                context: context,
+                builder: (_) => CandidateFileReviewDialog(
+                  controller: controller,
+                  review: review,
+                  summary: 'Selected baseline comparison',
+                ),
+              ),
+              child: const Text('Open review'),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('Open review'));
+      await tester.pumpAndSettle();
+      await tester.scrollUntilVisible(
+        find.byType(DropdownButtonFormField<String>),
+        150,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.tap(find.byType(DropdownButtonFormField<String>));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('changed.dart').last);
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text('Inspect before and after'));
+      await tester.tap(find.text('Inspect before and after'));
+      await tester.pumpAndSettle();
+      expect(
+        find.byWidgetPredicate(
+          (w) => w is SelectableText && w.data == '<script>old</script>',
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.byWidgetPredicate(
+          (w) => w is SelectableText && w.data == '<script>new</script>',
+        ),
+        findsOneWidget,
+      );
+      expect(tester.takeException(), isNull);
+      controller.clearStatus();
+      await tester.pumpAndSettle();
+      expect(
+        find.text('Review invalidated. Close and create a fresh comparison.'),
+        findsOneWidget,
+      );
+      expect(
+        find.byWidgetPredicate(
+          (w) => w is SelectableText && w.data == '<script>new</script>',
+        ),
+        findsNothing,
+      );
+    },
+  );
+
+  test(
+    'file review mismatched commit digest or path revokes the handle',
+    () async {
+      for (final field in ['commit', 'digest', 'path']) {
+        final controller = SelfSnapshotController(
+          compare: ({
+            required snapshot,
+            required source,
+            required commit,
+            required python,
+            required stop,
+            required stopped,
+          }) async => comparison('a' * 64, commitId),
+          readFile:
+              ({
+                required snapshot,
+                required source,
+                required commit,
+                required digest,
+                required file,
+                required python,
+                required stop,
+                required stopped,
+              }) async {
+                final payload = filePayload();
+                payload[field] = field == 'commit'
+                    ? 'b' * 40
+                    : field == 'digest'
+                    ? 'b' * 64
+                    : 'other.dart';
+                return CandidateFileReview.decode(jsonEncode(payload));
+              },
+        );
+        final review = (await controller.reviewCandidate(
+          snapshot: '/snapshot',
+          python: '/python',
+          source: '/repo',
+          commit: commitId,
+        ))!;
+        expect(
+          await controller.inspectCandidateFile(review, 'changed.dart'),
+          isNull,
+        );
+        expect(controller.isCurrentReview(review), isFalse);
+        controller.dispose();
+      }
+    },
+  );
+
+  testWidgets(
+    'closing a pending file dialog stops work and cannot restore approval',
+    (tester) async {
+      final pending = Completer<CandidateFileReview>();
+      final controller = SelfSnapshotController(
+        compare: ({
+          required snapshot,
+          required source,
+          required commit,
+          required python,
+          required stop,
+          required stopped,
+        }) async => comparison('a' * 64, commitId),
+        readFile:
+            ({
+              required snapshot,
+              required source,
+              required commit,
+              required digest,
+              required file,
+              required python,
+              required stop,
+              required stopped,
+            }) {
+              return pending.future;
+            },
+      );
+      addTearDown(controller.dispose);
+      final review = (await controller.reviewCandidate(
+        snapshot: '/snapshot',
+        python: '/python',
+        source: '/repo',
+        commit: commitId,
+      ))!;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Builder(
+            builder: (context) => TextButton(
+              onPressed: () => showDialog<bool>(
+                context: context,
+                builder: (_) => CandidateFileReviewDialog(
+                  controller: controller,
+                  review: review,
+                  summary: 'Selected comparison',
+                ),
+              ),
+              child: const Text('Open'),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('Open'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byType(DropdownButtonFormField<String>));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('changed.dart').last);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Inspect before and after'));
+      await tester.pump();
+      expect(controller.busy, isTrue);
+      expect(
+        tester
+            .widget<FilledButton>(
+              find.widgetWithText(FilledButton, 'Approve candidate'),
+            )
+            .onPressed,
+        isNull,
+      );
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+      expect(controller.isCurrentReview(review), isFalse);
+      expect(controller.stopping, isTrue);
+      pending.complete(CandidateFileReview.decode(jsonEncode(filePayload())));
+      await tester.pumpAndSettle();
+      expect(controller.busy, isFalse);
+      expect(find.byType(AlertDialog), findsNothing);
+      expect(tester.takeException(), isNull);
+    },
+  );
 
   test('comparison transport refuses malformed and inconsistent evidence', () {
     final valid = {
