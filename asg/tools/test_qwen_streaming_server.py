@@ -77,6 +77,48 @@ class ServerTests(unittest.TestCase):
             self.assertIn('error', json.load(response))
         self.assertIsNone(self.backend.tokens)
 
+    def test_unsupported_chat_options_fail_before_generation(self):
+        private = 'private_fixture_detail'
+        cases = (
+            ({'response_format': {'type': 'json_schema', 'json_schema': {'name': private}}}, 'JSON formats'),
+            ({'response_format': {'type': 'json_object'}}, 'JSON formats'),
+            ({'response_format': 'text'}, 'JSON formats'),
+            ({'tools': [{'type': 'function', 'function': {'name': private}}]}, 'Tool calls'),
+            ({'tool_choice': 'auto'}, 'Tool calls'),
+            ({'parallel_tool_calls': True}, 'Tool calls'),
+            ({'functions': [{'name': private}]}, 'Tool calls'),
+            ({'function_call': {'name': private}}, 'Tool calls'),
+            ({'messages': [{'role': 'assistant', 'content': '', 'tool_calls': [{'id': private}]}]}, 'Tool calls'),
+            ({'messages': [{'role': 'assistant', 'content': '', 'function_call': {'name': private}}]}, 'Tool calls'),
+            ({'messages': [{'role': 'tool', 'content': private, 'tool_call_id': private}]}, 'Tool calls'),
+        )
+        for streaming in (True, False):
+            for options, message in cases:
+                with self.subTest(streaming=streaming, options=options):
+                    with self.assertRaises(urllib.error.HTTPError) as failure:
+                        self.request(streaming, **options)
+                    with failure.exception as response:
+                        self.assertEqual(response.code, 400)
+                        self.assertEqual(response.headers.get_content_type(), 'application/json')
+                        body = json.load(response)
+                    self.assertEqual(set(body), {'error'})
+                    self.assertIn(message, body['error'])
+                    self.assertNotIn(private, body['error'])
+                    self.assertIsNone(self.backend.tokens)
+        with self.request(False) as response:
+            self.assertEqual(json.load(response)['model'], 'fixture')
+
+    def test_neutral_chat_options_preserve_text_and_streaming(self):
+        with self.request(False, response_format={'type': 'text'}, tools=[],
+                          functions=[], tool_choice='none', function_call='none',
+                          parallel_tool_calls=False) as response:
+            self.assertEqual(json.load(response)['choices'][0]['message']['content'],
+                             'Hello world')
+        with self.request(True, response_format=None, tools=None) as response:
+            result = response.read().decode()
+        self.assertIn('[DONE]', result)
+        self.assertNotIn('event: error', result)
+
     def test_nonstream_compatibility_and_health(self):
         with self.request(False) as response:
             data=json.load(response)

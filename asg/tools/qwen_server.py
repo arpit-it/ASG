@@ -118,7 +118,30 @@ def create_handler(backend, executor, model_id, model_path):
                 if request.get('model') != model_id:
                     raise ValueError('Use the configured model ID')
                 messages = request.get('messages')
-                if not isinstance(messages, list) or not 1 <= len(messages) <= 32 or any(not isinstance(m, dict) or m.get('role') not in ('user', 'assistant', 'system') or not isinstance(m.get('content'), str) for m in messages):
+                if (not isinstance(messages, list) or not 1 <= len(messages) <= 32
+                        or any(not isinstance(message, dict) for message in messages)):
+                    raise ValueError('Invalid text messages')
+                # These fields change the meaning of a completion. Never return
+                # plain text as if a tool call or output constraint was honored.
+                if (request.get('tools') not in (None, [])
+                        or request.get('functions') not in (None, [])
+                        or request.get('tool_choice') not in (None, 'none')
+                        or request.get('function_call') not in (None, 'none')
+                        or (request.get('parallel_tool_calls') is not None
+                            and request['parallel_tool_calls'] is not False)
+                        or any(message.get('role') in ('tool', 'function')
+                               or message.get('tool_calls') not in (None, [])
+                               or message.get('function_call') is not None
+                               or message.get('tool_call_id') is not None
+                               for message in messages)):
+                    self.respond(400, {'error': 'Tool calls are not supported by this local bridge; send text messages without tools.'})
+                    return
+                if request.get('response_format') not in (None, {'type': 'text'}):
+                    self.respond(400, {'error': 'Constrained JSON formats are not supported by this local bridge; omit response_format or select text.'})
+                    return
+                if any(message.get('role') not in ('user', 'assistant', 'system')
+                       or not isinstance(message.get('content'), str)
+                       for message in messages):
                     raise ValueError('Invalid text messages')
                 # Reviewed full-file source proposals request 4096 tokens. Chat
                 # retains its smaller caller-selected limit and 256 default.
