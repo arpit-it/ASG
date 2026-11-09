@@ -140,6 +140,24 @@ class PreparationRunError(ValueError):
         self.run_name = run.name if confirmed else None
 
 
+def git_storage_directories(source, deadline):
+    """Find the Git metadata that may live outside the selected checkout."""
+    directories = []
+    for option in ('--git-dir', '--git-common-dir'):
+        raw = read_git(source, ['rev-parse', '--path-format=absolute', option], 4096, deadline)
+        # A newline in the path would make Git's line output ambiguous. Refuse
+        # rather than passing a truncated path to the destination guard.
+        if not raw.endswith(b'\n') or b'\n' in raw[:-1]:
+            raise ValueError('Could not determine Git metadata directory.')
+        directory = Path(os.fsdecode(raw[:-1]))
+        if not directory.is_absolute():
+            raise ValueError('Could not determine Git metadata directory.')
+        directory = directory.resolve(strict=True)
+        if directory not in directories:
+            directories.append(directory)
+    return directories
+
+
 def prepare(source, commit, parent):
     """Return a complete candidate path. Only the returned path is ready."""
     if not OBJECT_ID.fullmatch(commit.encode('ascii')):
@@ -149,14 +167,16 @@ def prepare(source, commit, parent):
     if source == parent or source in parent.parents:
         raise ValueError('Choose a candidate parent outside the source repository.')
     deadline = time.monotonic() + 60
+    if read_git(source, ['rev-parse', '--show-toplevel'], 4096, deadline).rstrip(b'\n') != os.fsencode(source):
+        raise ValueError('Choose the root of the trusted local repository.')
+    metadata = git_storage_directories(source, deadline)
     parent_fd = open_snapshot_destination(
-        parent, (source,), 'Choose a candidate parent outside the source repository.',
+        parent, (source, *metadata),
+        'Choose a candidate parent outside the source repository and outside Git metadata.',
     )
     run_fd = stage_fd = None
     run = None
     try:
-        if read_git(source, ['rev-parse', '--show-toplevel'], 4096, deadline).rstrip(b'\n') != os.fsencode(source):
-            raise ValueError('Choose the root of the trusted local repository.')
         if read_git(source, ['cat-file', '-t', commit], 16, deadline) != b'commit\n':
             raise ValueError('The selected object must be a commit.')
         entries = parse_tree(read_git(source, ['ls-tree', '-rlz', commit], MAX_TREE_BYTES, deadline))

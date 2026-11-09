@@ -54,6 +54,34 @@ class CandidateTests(unittest.TestCase):
         self.assertFalse((result / 'untracked').exists())
         self.assertFalse(marker.exists())
 
+    def test_linked_checkout_refuses_output_in_shared_git_storage(self):
+        (self.source / 'entry').write_bytes(b'linked bytes')
+        commit = self.commit()
+        linked = self.parent / 'linked'
+        self.git('worktree', 'add', '--detach', str(linked))
+        common = self.source / '.git'
+        alias = self.parent / 'shared-git-alias'
+        alias.symlink_to(common / 'objects', target_is_directory=True)
+        before = sorted(p.relative_to(common) for p in common.rglob('*'))
+        for destination in (common, common / 'objects', common / 'worktrees' / linked.name, alias):
+            with self.subTest(destination=destination):
+                with self.assertRaisesRegex(ValueError, 'outside Git metadata'):
+                    candidate.prepare(linked, commit, destination)
+        self.assertEqual(sorted(p.relative_to(common) for p in common.rglob('*')), before)
+        ready = candidate.prepare(linked, commit, self.parent)
+        self.assertEqual((ready / 'entry').read_bytes(), b'linked bytes')
+
+    def test_separate_git_directory_refuses_output_and_preserves_external_destination(self):
+        (self.source / 'entry').write_bytes(b'separate bytes')
+        commit = self.commit()
+        metadata = self.parent / 'separate Git data'
+        self.git('init', '-q', '--separate-git-dir', str(metadata))
+        with self.assertRaisesRegex(ValueError, 'outside Git metadata'):
+            candidate.prepare(self.source, commit, metadata)
+        self.assertFalse(list(metadata.glob('asg-self-candidate-*')))
+        ready = candidate.prepare(self.source, commit, self.parent)
+        self.assertEqual((ready / 'entry').read_bytes(), b'separate bytes')
+
     def test_symlink_and_oversized_file_fail_before_writing(self):
         file = self.source / 'entry'
         file.symlink_to(self.parent / 'outside')
