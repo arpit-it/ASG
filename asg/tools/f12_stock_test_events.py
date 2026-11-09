@@ -175,6 +175,38 @@ def result_matches(case, families, execution):
     return False
 
 
+def settle_reaped_group(pgid):
+    """Return a diagnostic unless a signal-zero probe confirms group absence."""
+    deadline = time.monotonic() + .5
+    kill_attempted = False
+    denial = None
+    while True:
+        try:
+            os.killpg(pgid, 0)
+        except ProcessLookupError:
+            return None
+        except PermissionError:
+            denial = 'signal-zero probe denied'
+        except OSError as error:
+            return f'Could not verify driver process group cleanup: {error}'
+        else:
+            if not kill_attempted:
+                kill_attempted = True
+                try:
+                    os.killpg(pgid, signal.SIGKILL)
+                except ProcessLookupError:
+                    # A second signal-zero probe supplies the absence evidence.
+                    continue
+                except PermissionError:
+                    denial = 'post-reap SIGKILL denied'
+                except OSError as error:
+                    return f'Could not settle driver process group: {error}'
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            return f'Driver process group cleanup could not be confirmed: {denial or "group still present"}'
+        time.sleep(min(.02, remaining))
+
+
 def run_driver(argv, root, config, sdk, source, case):
     """Own and settle the fixed driver and all of its confined descendants."""
     ready = Path(config['ready'])
@@ -199,6 +231,8 @@ def run_driver(argv, root, config, sdk, source, case):
 
     previous = {sig: signal.signal(sig, request_stop) for sig in (signal.SIGTERM, signal.SIGINT)}
     process = None
+    cleanup_started = False
+    failed = False
     started = time.monotonic()
     try:
         process = subprocess.Popen(
@@ -247,7 +281,8 @@ def run_driver(argv, root, config, sdk, source, case):
             except subprocess.TimeoutExpired:
                 signal_group(signal.SIGKILL)
                 process.wait(timeout=2)
-            signal_group(signal.SIGKILL)
+            cleanup_started = True
+            cleanup_error = settle_reaped_group(process.pid)
             drain_until = time.monotonic() + .5
             while selector.get_map() and time.monotonic() < drain_until:
                 capture(.02)
@@ -255,19 +290,37 @@ def run_driver(argv, root, config, sdk, source, case):
                 reason = 'unsettledOutput'
             if output_overflow:
                 reason = 'outputLimit'
-        return {
+        execution = {
             'exitCode': process.returncode, 'reason': reason, 'port': port,
             'waitEntered': wait_entered, 'output': output.decode(errors='replace'),
-            'groupReaped': not signal_group(0), 'argv': list(map(str, argv)),
+            'groupReaped': cleanup_error is None, 'argv': list(map(str, argv)),
             'elapsedSeconds': time.monotonic() - started,
         }
+        if cleanup_error is not None:
+            execution['cleanupError'] = cleanup_error
+        return execution
+    except BaseException:
+        failed = True
+        if process is not None and not cleanup_started:
+            try:
+                if process.poll() is None:
+                    signal_group(signal.SIGKILL)
+                process.wait(timeout=2)
+                settle_reaped_group(process.pid)
+            except (OSError, subprocess.SubprocessError):
+                # Preserve the original error when emergency cleanup also fails.
+                pass
+        raise
     finally:
-        if process is not None:
-            signal_group(signal.SIGKILL)
-            process.wait(timeout=2)
-            process.stdout.close()
-        for sig, handler in previous.items():
-            signal.signal(sig, handler)
+        try:
+            if process is not None:
+                process.stdout.close()
+        except OSError:
+            if not failed:
+                raise
+        finally:
+            for sig, handler in previous.items():
+                signal.signal(sig, handler)
 
 
 def stage_environment(directory):

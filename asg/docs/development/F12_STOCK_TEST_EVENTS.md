@@ -73,6 +73,13 @@ driver requests engine termination, no test outcomes, and settled processes.
 Decoded text, event count and hybrid spawn checks still run before suite
 deserialization.
 
+After reaping the driver, the fixture checks whether its process group still
+exists before sending a final SIGKILL. A denied signal leaves cleanup
+unconfirmed. The fixture polls for up to half a second and accepts cleanup
+only after a signal-zero probe reports that the group is absent. If cleanup
+cannot be confirmed, the report keeps the fixture observations and includes a
+cleanup error. The run fails even if the fixture observed the expected result.
+
 These limits apply to bytes after HTTP upgrade on the owned socket. HTTP parsing,
 process memory, aggregate disk use, general WebSocket behavior, full Flutter CLI
 or reporter integration, arbitrary test and candidate execution, native assets,
