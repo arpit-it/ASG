@@ -1,0 +1,23 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright 2026 Arpit Sinha
+import 'dart:io';
+
+import 'package:flutter_tools/src/test/flutter_platform.dart'
+    show generateTestBootstrap;
+
+void main(List<String> args) {
+  final output = Directory(args[0]);
+  final testUrl = Uri.file(args[1]);
+  for (final host in [
+    InternetAddress.loopbackIPv4,
+    InternetAddress.loopbackIPv6,
+  ]) {
+    final source = generateTestBootstrap(
+      testUrl: testUrl,
+      host: host,
+      flutterTestDep: false,
+    );
+    final family = host.type == InternetAddressType.IPv4 ? 'IPv4' : 'IPv6';
+    File('${output.path}/bootstrap_$family.dart').writeAsStringSync(source);
+  }
+}

@@ -27,6 +27,8 @@ class StockTestEventsTest(unittest.TestCase):
             root = Path(directory)
             fixture = root / 'f12_stock_test_fixtures'
             fixture.mkdir()
+            for name in events.FIXTURES:
+                (fixture / name).write_bytes(fixed[name.removesuffix('.txt')])
             original = fixture / 'driver.dart.txt'
             original.write_bytes(fixed['driver.dart'] + b'\n')
             with self.assertRaisesRegex(ValueError, 'identity differs'):
@@ -63,6 +65,27 @@ class StockTestEventsTest(unittest.TestCase):
         self.assertFalse(events.result_matches('positive', rows, dict(settled, reason='cancelled')))
         rows[0]['outcomes']['fixture deliberate failure'] = 'success'
         self.assertFalse(events.result_matches('positive', rows, settled))
+
+    def test_generated_success_requires_a_declined_offer_on_both_families(self):
+        settled = {'exitCode': 0, 'reason': None, 'waitEntered': False}
+        rows = [
+            dict(family=family, outcomes=events.OUTCOMES.copy(), complete=True,
+                 phase='test-run', rejected=0, engineSettled=True, ingressAttached=True,
+                 stockOfferDeclined=True)
+            for family in events.FAMILIES
+        ]
+        self.assertTrue(events.result_matches('generated-positive', rows, settled))
+        rows[1]['stockOfferDeclined'] = False
+        self.assertFalse(events.result_matches('generated-positive', rows, settled))
+
+    def test_generated_missing_token_requires_observed_natural_exit(self):
+        settled = {'exitCode': 0, 'reason': None}
+        row = dict(family='IPv4', outcomes={}, phase='device-start', rejected=1,
+                   engineSettled=True, failure='token-refused', ingressAttached=False,
+                   stockOfferDeclined=False, engineExitCode=1)
+        self.assertTrue(events.result_matches('generated-missing-token', [row], settled))
+        self.assertFalse(events.result_matches('generated-missing-token',
+                                              [dict(row, engineExitCode=0)], settled))
 
     def test_ingress_refusal_requires_the_specific_guard_receipt(self):
         settled = {'exitCode': 0, 'reason': None, 'waitEntered': False, 'wirePeerReceipt': True}

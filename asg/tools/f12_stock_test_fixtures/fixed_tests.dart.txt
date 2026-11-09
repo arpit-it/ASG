@@ -1,0 +1,70 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright 2026 Arpit Sinha
+import 'dart:async';
+import 'dart:io';
+import 'dart:ui';
+
+import 'package:test_api/scaffolding.dart';
+import 'package:test_api/src/backend/test_failure.dart';
+
+Future<void> checkIsolation(Map<String, String> env) async {
+  if (PlatformDispatcher.instance.views.isEmpty) {
+    throw StateError('No real Flutter engine view');
+  }
+  final sentinel = File(env['SENTINEL']!);
+  try {
+    sentinel.readAsStringSync();
+    throw StateError('Outside read succeeded');
+  } on FileSystemException {
+    // Expected denial.
+  }
+  try {
+    sentinel.writeAsStringSync('changed');
+    throw StateError('Outside write succeeded');
+  } on FileSystemException {
+    // Expected denial.
+  }
+  try {
+    await Process.run('/usr/bin/true', []);
+    throw StateError('Subprocess started');
+  } on ProcessException {
+    // Expected denial.
+  }
+  for (final host in ['127.0.0.1', '::1']) {
+    try {
+      final canary = await Socket.connect(
+        host,
+        int.parse(env['CANARY_PORT']!),
+        timeout: const Duration(milliseconds: 300),
+      );
+      canary.destroy();
+      throw StateError('Outside connection succeeded');
+    } on SocketException {
+      // The supervisor also independently checks both canary listeners.
+    }
+  }
+}
+
+void main() {
+  final env = Platform.environment;
+  final testCase = env['CASE'];
+  test('fixture renders in confinement', () => checkIsolation(env));
+  if (testCase != 'wrong-suite') {
+    test('fixture deliberate failure', () {
+      if (testCase != 'wrong-result') {
+        throw TestFailure('fixture deliberate failure marker');
+      }
+    });
+  }
+  if (testCase == 'deadline' ||
+      testCase == 'stop' ||
+      testCase == 'generated-stop') {
+    test('fixture waits', () {
+      final waiting = '${env['HOME']}/waiting';
+      File('$waiting.tmp')
+        ..writeAsStringSync(env['FAMILY']!)
+        ..renameSync(waiting);
+      return Completer<void>().future;
+    });
+  }
+}

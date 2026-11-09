@@ -25,7 +25,7 @@ from urllib.parse import unquote, urlparse
 import f12_runner_boundary as boundary
 import f12_supervisor_design as design
 
-FIXTURES = {'hook.dart.txt': 'eec1291ba1654048db17e10f94cf5e15954900307dac0dba854392504cbc3441', 'engine.dart.txt': '24605d25606cd2dc144b44dfff415f189e6eca3f984c085153c71f3974946c2d', 'driver.dart.txt': '4922efe655e01cc4c3574d274293c588ffdc3fc1018976038624085c76b3d8d4'}
+FIXTURES = {'hook.dart.txt': 'eec1291ba1654048db17e10f94cf5e15954900307dac0dba854392504cbc3441', 'engine.dart.txt': '24605d25606cd2dc144b44dfff415f189e6eca3f984c085153c71f3974946c2d', 'driver.dart.txt': 'dfeaccb3798dd8e315f8131d74464951c838bc43b3e23442dac9c07bf0c3a82c'}
 CASES = ('positive', 'hook-failure', 'hook-timeout', 'hook-output', 'hook-overflow', 'wrong-token', 'oversized-message', 'malformed-message', 'engine-timeout', 'stop')
 
 

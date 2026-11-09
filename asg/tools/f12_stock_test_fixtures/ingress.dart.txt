@@ -6,12 +6,17 @@ import 'dart:typed_data';
 
 import 'stock_device.dart' show Gate;
 
+const _extensionsHeader = 'sec-websocket-extensions';
+const _stockOffer = 'permessage-deflate; client_max_window_bits';
 const _maxPayloadBytes = 16384;
 const _maxWireBytes = 128 * 1024;
 const _maxFrameCount = 128;
 
 class IngressGate extends Gate {
-  IngressGate(super.server, super.token);
+  IngressGate(super.server, super.token, {this.generatedBootstrap = false});
+
+  final bool generatedBootstrap;
+  bool stockOfferDeclined = false;
 
   String? failure;
   Socket? _socket;
@@ -25,13 +30,22 @@ class IngressGate extends Gate {
   @override
   Future<HttpRequest> get first async {
     final request = await super.first;
-    if (request.headers['sec-websocket-extensions'] != null) {
+    final offer = request.headers[_extensionsHeader];
+    final acceptStockOffer =
+        generatedBootstrap &&
+        offer?.length == 1 &&
+        offer!.single == _stockOffer;
+    if (generatedBootstrap ? !acceptStockOffer : offer != null) {
       failure = 'extensions';
       request.response.statusCode = HttpStatus.forbidden;
       await request.response.close();
       throw const FormatException('WebSocket extensions refused');
     }
-    return _UpgradeRequest(request, _guardSocket);
+    return _UpgradeRequest(
+      request,
+      _guardSocket,
+      acceptStockOffer ? () => stockOfferDeclined = true : null,
+    );
   }
 
   Socket _guardSocket(Socket socket) {
@@ -41,24 +55,43 @@ class IngressGate extends Gate {
 }
 
 class _UpgradeRequest extends Stream<Uint8List> implements HttpRequest {
-  _UpgradeRequest(this._request, this._guard);
+  _UpgradeRequest(this._request, this._guard, this._declined);
   final HttpRequest _request;
   final Socket Function(Socket) _guard;
+  final void Function()? _declined;
 
   @override
   String get method => _request.method;
   @override
-  HttpHeaders get headers => _request.headers;
+  HttpHeaders get headers =>
+      _declined == null ? _request.headers : _UpgradeHeaders(_request.headers);
   @override
-  HttpResponse get response => _UpgradeResponse(_request.response, _guard);
+  HttpResponse get response =>
+      _UpgradeResponse(_request.response, _guard, _declined);
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+// The installed upgrade reads request headers through these two methods.
+class _UpgradeHeaders implements HttpHeaders {
+  _UpgradeHeaders(this._headers);
+  final HttpHeaders _headers;
+
+  @override
+  List<String>? operator [](String name) =>
+      name.toLowerCase() == _extensionsHeader ? null : _headers[name];
+  @override
+  String? value(String name) =>
+      name.toLowerCase() == _extensionsHeader ? null : _headers.value(name);
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 class _UpgradeResponse implements HttpResponse {
-  _UpgradeResponse(this._response, this._guard);
+  _UpgradeResponse(this._response, this._guard, this._declined);
   final HttpResponse _response;
   final Socket Function(Socket) _guard;
+  final void Function()? _declined;
 
   @override
   HttpHeaders get headers => _response.headers;
@@ -67,8 +100,20 @@ class _UpgradeResponse implements HttpResponse {
   @override
   Future<void> close() => _response.close();
   @override
-  Future<Socket> detachSocket({bool writeHeaders = true}) async =>
-      _guard(await _response.detachSocket(writeHeaders: writeHeaders));
+  Future<Socket> detachSocket({bool writeHeaders = true}) async {
+    if (_response.headers[_extensionsHeader] != null) {
+      _response.headers.removeAll(_extensionsHeader);
+      _response.statusCode = HttpStatus.forbidden;
+      await _response.close();
+      throw const FormatException('Unexpected WebSocket extension negotiation');
+    }
+    final socket = _guard(
+      await _response.detachSocket(writeHeaders: writeHeaders),
+    );
+    _declined?.call();
+    return socket;
+  }
+
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
