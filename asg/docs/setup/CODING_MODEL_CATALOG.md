@@ -100,11 +100,13 @@ The catalog's **Historical Qwen3.8 27B MLX observation** panel loads the exact
 retained 27B report from bundled offline assets. The earlier PR #432 report
 remains in the repository's acceptance history. It displays date/runtime
 source revision, counted weight bytes, tiny JSON/structured-SSE/retry token
-workloads, reported warm token speed, cumulative process high-water memory and
+workloads, reported warm token speed, cumulative MLX peak memory and
 disconnect-to-idle time. These are historical observations, never a current
 connection match, new-load memory credit, sustained benchmark, authenticated
 checkpoint/revision/license, verified total context or full model profile.
-Metadata/probe hashes remain in the retained report; weights were not hashed.
+The peak covers MLX allocations across the run, rather than total process
+memory or per-request allocation. The retained report hashes checkpoint
+metadata only.
 A hash mismatch or unreadable asset shows a private retryable error. This panel
 does not make network requests, run inference, change settings or select models.
 

@@ -23,9 +23,9 @@ class HistoricalModelRun {
     required this.promptTokens,
     required this.completionTokens,
     required this.tokensPerSecond,
-    required this.processPeakGb,
+    required this.mlxPeakGb,
   });
   final String label;
   final int promptTokens, completionTokens;
-  final double tokensPerSecond, processPeakGb;
+  final double tokensPerSecond, mlxPeakGb;
 }
