@@ -70,3 +70,5 @@ jobs:
         run: python -B tools/test_f12_supervisor_design.py
       - name: Verify runner adapter contracts
         run: python -B tools/test_f12_runner_adapters.py
+      - name: Verify stock test event fixture contracts
+        run: python -B tools/test_f12_stock_test_events.py

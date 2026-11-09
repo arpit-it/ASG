@@ -1,0 +1,103 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright 2026 Arpit Sinha
+import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+import 'dart:ui';
+
+import 'package:test_api/backend.dart';
+import 'package:test_api/scaffolding.dart';
+import 'package:test_api/src/backend/test_failure.dart';
+
+Future<void> checkIsolation(Map<String, String> env) async {
+  if (PlatformDispatcher.instance.views.isEmpty) {
+    throw StateError('No real Flutter engine view');
+  }
+  final sentinel = File(env['SENTINEL']!);
+  try {
+    sentinel.readAsStringSync();
+    throw StateError('Outside read succeeded');
+  } on FileSystemException {
+    // Expected denial.
+  }
+  try {
+    sentinel.writeAsStringSync('changed');
+    throw StateError('Outside write succeeded');
+  } on FileSystemException {
+    // Expected denial.
+  }
+  try {
+    await Process.run('/usr/bin/true', []);
+    throw StateError('Subprocess started');
+  } on ProcessException {
+    // Expected denial.
+  }
+  for (final host in ['127.0.0.1', '::1']) {
+    try {
+      final canary = await Socket.connect(
+        host,
+        int.parse(env['CANARY_PORT']!),
+        timeout: const Duration(milliseconds: 300),
+      );
+      canary.destroy();
+      throw StateError('Outside connection succeeded');
+    } on SocketException {
+      // The supervisor also independently checks both canary listeners.
+    }
+  }
+}
+
+Future<void> main() async {
+  final env = Platform.environment;
+  final testCase = env['CASE'];
+  final host = env['FAMILY'] == 'IPv4' ? '127.0.0.1' : '::1';
+  final token = testCase == 'wrong-token' ? 'wrong-token' : env['SESSION'];
+  final uri = Uri(
+    scheme: 'ws',
+    host: host,
+    port: int.parse(env['SERVER_PORT']!),
+    path: '/$token',
+  );
+  final WebSocket socket;
+  try {
+    socket = await WebSocket.connect(uri.toString());
+  } on WebSocketException {
+    if (testCase != 'wrong-token') rethrow;
+    // Let the parent observe the denied request and own process termination.
+    await Future<void>.delayed(const Duration(seconds: 10));
+    return;
+  }
+  if (testCase == 'missing-suite') {
+    await socket.close();
+    // Leave process termination to the stock device after the channel closes.
+    await Future<void>.delayed(const Duration(seconds: 10));
+    return;
+  }
+  final suite = RemoteListener.start(
+    () => () {
+      test('fixture renders in confinement', () => checkIsolation(env));
+      if (testCase != 'wrong-suite') {
+        test('fixture deliberate failure', () {
+          if (testCase != 'wrong-result') {
+            throw TestFailure('fixture deliberate failure marker');
+          }
+        });
+      }
+      if (testCase == 'deadline' || testCase == 'stop') {
+        test('fixture waits', () {
+          final waiting = '${env['HOME']}/waiting';
+        File('$waiting.tmp')
+          ..writeAsStringSync(env['FAMILY']!)
+          ..renameSync(waiting);
+          return Completer<void>().future;
+        });
+      }
+    },
+  );
+  unawaited(
+    socket.map((message) => jsonDecode(message as String)).pipe(suite.sink),
+  );
+  await socket.addStream(suite.stream.map(jsonEncode));
+  // The stock device owns engine termination even if the suite closes first.
+  await Future<void>.delayed(const Duration(seconds: 10));
+}
