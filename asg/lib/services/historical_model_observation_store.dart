@@ -41,7 +41,7 @@ class HistoricalModelObservationStore {
             promptTokens: metrics['prompt_tokens'] as int,
             completionTokens: metrics['completion_tokens'] as int,
             tokensPerSecond: (metrics['tokens_per_second'] as num).toDouble(),
-            processPeakGb: (metrics['peak_memory_gb'] as num).toDouble(),
+            mlxPeakGb: (metrics['peak_memory_gb'] as num).toDouble(),
           ),
         );
       }

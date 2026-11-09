@@ -63,7 +63,7 @@ class _ObservationState extends State<HistoricalModelObservationPanel> {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 6),
               child: Text(
-                '${run.label}: ${run.promptTokens} prompt / ${run.completionTokens} completion tokens; reported ${run.tokensPerSecond.toStringAsFixed(1)} tokens/s; process high-water ${run.processPeakGb.toStringAsFixed(2)} GB (decimal).',
+                '${run.label}: ${run.promptTokens} prompt / ${run.completionTokens} completion tokens; reported ${run.tokensPerSecond.toStringAsFixed(1)} tokens/s; MLX peak memory ${run.mlxPeakGb.toStringAsFixed(2)} GB (decimal).',
               ),
             ),
           Text(
@@ -71,7 +71,7 @@ class _ObservationState extends State<HistoricalModelObservationPanel> {
           ),
           const SizedBox(height: 8),
           const Text(
-            'Tiny warm workloads are not sustained throughput or memory requirements. Process high-water is cumulative, not per-request allocation. Metadata and probe input hashes are retained in the reviewed report; repository revision/license and HTTP identity were not authenticated. No app/manual acceptance or verified full profile follows.',
+            'Tiny warm workloads are not sustained throughput or memory requirements. The reported peak covers MLX allocations across the run; it is neither total process memory nor per-request allocation. Checkpoint metadata hashes are retained in the report. Repository revision/license and HTTP identity were not authenticated. No app/manual acceptance or verified full profile follows.',
           ),
           const SelectableText(
             'Evidence: arpit-it/ASG · docs/development/acceptance/2026-11-10-live-27b-profile/observations.json',

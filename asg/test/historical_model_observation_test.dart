@@ -21,7 +21,7 @@ void main() {
       expect(value.recordedAt, DateTime.utc(2026, 11, 9, 18, 56, 12));
       expect(value.runs.map((run) => run.completionTokens), [2, 10, 2]);
       expect(value.runs[1].tokensPerSecond, closeTo(22.3368, .001));
-      expect(value.runs[2].processPeakGb, closeTo(15.492977, .001));
+      expect(value.runs[2].mlxPeakGb, closeTo(15.492977, .001));
       expect(value.weightBytes, 16054541349);
       expect(value.disconnectSeconds, .212);
       expect(() => value.runs.clear(), throwsUnsupportedError);
@@ -136,7 +136,11 @@ void main() {
     await tester.pumpAndSettle();
     await tester.ensureVisible(find.textContaining('Structured SSE:'));
     expect(find.textContaining('31 prompt / 10 completion'), findsOneWidget);
-    expect(find.textContaining('process high-water'), findsNWidgets(3));
+    expect(find.textContaining('MLX peak memory'), findsNWidgets(3));
+    expect(find.textContaining('MLX peak memory 15.49 GB'), findsNWidgets(2));
+    expect(find.textContaining('Checkpoint metadata hashes'), findsOneWidget);
+    expect(find.textContaining('process high-water'), findsNothing);
+    expect(find.textContaining('probe input hashes'), findsNothing);
     await tester.ensureVisible(find.textContaining('Tiny warm workloads'));
     expect(tester.takeException(), isNull);
     expect(find.textContaining('PRIVATE'), findsNothing);
