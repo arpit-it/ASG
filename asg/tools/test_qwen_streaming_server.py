@@ -143,6 +143,22 @@ class ServerTests(unittest.TestCase):
                 'mlx_lm.sample_utils': SimpleNamespace(make_sampler=lambda **kw: kw),
             }):
                 for streaming in (True, False):
+                    stream.reset_mock()
+                    tokenizer.encode.return_value = [*ids, 4096]
+                    if streaming:
+                        with self.request(True) as response:
+                            refused = response.read().decode()
+                        self.assertIn('event: error', refused)
+                        self.assertNotIn('[DONE]', refused)
+                    else:
+                        with self.assertRaises(urllib.error.HTTPError) as failure:
+                            self.request(False)
+                        with failure.exception as response:
+                            self.assertEqual(response.code, 400)
+                            refused = response.read().decode()
+                    self.assertIn('Input exceeds 4096-token limit', refused)
+                    stream.assert_not_called()
+                    tokenizer.encode.return_value = ids
                     stream.return_value = iter([SimpleNamespace(
                         text='actual bridge', finish_reason='stop', generation_tps=1,
                         peak_memory=.1, generation_tokens=2)])
@@ -188,9 +204,10 @@ class ServerTests(unittest.TestCase):
                     else:
                         with self.assertRaises(urllib.error.HTTPError) as failure:
                             self.request(False, max_tokens=5)
-                        self.assertEqual(failure.exception.code, 500)
+                        self.assertEqual(failure.exception.code, 400)
                         refused = failure.exception.read().decode()
-                    self.assertIn('error', refused)
+                    self.assertIn('Prompt plus requested output exceeds checkpoint declared context limit', refused)
+                    self.assertNotIn('[DONE]', refused)
                     self.assertNotIn('completion_tokens', refused)
                     stream.assert_not_called()
                     backend.declared_context_tokens = 8
@@ -210,6 +227,10 @@ class ServerTests(unittest.TestCase):
         self.assertNotIn('[DONE]', text)
         self.assertIn('Invalid fixture prompt', text)
         self.assertNotIn('"model":', text)
+        with self.assertRaises(urllib.error.HTTPError) as failure:
+            self.request(False, content='error')
+        with failure.exception as response:
+            self.assertEqual(response.code, 500)
     def test_remote_origins_are_rejected(self):
         request = urllib.request.Request(self.url+'/v1/chat/completions', data=b'{}', headers={'Content-Type':'application/json','Origin':'https://example.com'})
         with self.assertRaises(urllib.error.HTTPError) as error:
@@ -306,9 +327,9 @@ class CPUHTTPTests(unittest.TestCase):
             else:
                 with self.assertRaises(urllib.error.HTTPError) as failure:
                     self.request(False)
-                self.assertEqual(failure.exception.code, 500)
+                self.assertEqual(failure.exception.code, 400)
                 refused = failure.exception.read().decode()
-            self.assertIn('CPU generation failed; check input length', refused)
+            self.assertIn('Prompt plus requested output exceeds checkpoint declared context limit', refused)
             self.assertNotIn('completion_tokens', refused)
             self.fixture.model.generate.assert_not_called()
             self.fixture.backend.declared_context_tokens = 5

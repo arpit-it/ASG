@@ -21,7 +21,8 @@ sys.path.insert(0, str(Path(__file__).parent / '.runtime-deps'))
 os.environ['HF_HUB_OFFLINE'] = '1'
 os.environ['TRANSFORMERS_OFFLINE'] = '1'
 
-from qwen_backends import GenerationCancelled, discover_capabilities, load_backend, select_backend, validate_model_config
+from qwen_backends import (GenerationCancelled, RequestTokenLimitError, discover_capabilities,
+                           load_backend, select_backend, validate_model_config)
 
 
 
@@ -170,6 +171,9 @@ def create_handler(backend, executor, model_id, model_path):
                     pass
                 except Exception as error:
                     try:
+                        if isinstance(error, RequestTokenLimitError):
+                            publish('request_error', str(error))
+                            return
                         if getattr(backend, 'device', None) == 'cpu':
                             # Optional CPU tokenizer/model exceptions can contain
                             # prompts, paths or dynamically named types. Keep the
@@ -240,7 +244,7 @@ def create_handler(backend, executor, model_id, model_path):
                         if streaming:
                             self.sse('error', {'error': value})
                         else:
-                            self.respond(500, {'error': value})
+                            self.respond(400 if kind == 'request_error' else 500, {'error': value})
                         break
             except (BrokenPipeError, ConnectionResetError, TimeoutError, OSError) as error:
                 if streaming:
