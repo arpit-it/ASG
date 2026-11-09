@@ -1,0 +1,169 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright 2026 Arpit Sinha
+import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:async/async.dart' show StreamSinkTransformer;
+import 'package:file/local.dart';
+import 'package:stream_channel/stream_channel.dart';
+import 'package:test_api/src/backend/state.dart';
+import 'package:test_api/src/backend/test.dart';
+import 'package:test_core/src/platform.dart';
+
+import 'stock_device.dart' show Gate, OwnedDevice;
+
+const eventDeadline = Duration(seconds: 3);
+const renderTest = 'fixture renders in confinement';
+const deliberateFailure = 'fixture deliberate failure';
+
+StreamChannel<Object?> eventChannel(StreamChannel<String> remote) {
+  var eventCount = 0;
+  return remote.transform(
+    StreamChannelTransformer<Object?, String>(
+      StreamTransformer.fromHandlers(
+        handleData: (data, sink) {
+          try {
+            // The existing WebSocket implementation decodes before this check.
+            if (++eventCount > 128 || data.length > 16384) {
+              throw const FormatException('Decoded test event exceeds limit');
+            }
+            final envelope = jsonDecode(data);
+            if (envelope is! List ||
+                (envelope.length != 1 && envelope.length != 2) ||
+                envelope.first is! int ||
+                (envelope.length == 2 && envelope[1] is! Map)) {
+              throw const FormatException('Invalid test event envelope');
+            }
+            if (envelope.length == 2 &&
+                (envelope[1] as Map)['type'] == 'spawn-hybrid-uri') {
+              throw const FormatException('Hybrid spawn refused');
+            }
+            sink.add(envelope);
+          } on FormatException catch (error, stack) {
+            sink.addError(error, stack);
+          }
+        },
+      ),
+      StreamSinkTransformer.fromStreamTransformer(
+        StreamTransformer.fromHandlers(
+          handleData: (data, sink) => sink.add(jsonEncode(data)),
+        ),
+      ),
+    ),
+  );
+}
+
+Future<void> runFamily(
+  HttpServer server,
+  String family,
+  Map<String, dynamic> config,
+  Map<String, Object?> report,
+) async {
+  final gate = Gate(server, config['session'] as String);
+  final device = OwnedDevice(gate, config, family, const LocalFileSystem());
+  final outcomes = <String, String>{};
+  report['family'] = family;
+  report['outcomes'] = outcomes;
+  var phase = 'device-start';
+  try {
+    final remote = await device
+        .start(config['kernel'] as String)
+        .timeout(eventDeadline);
+    phase = 'suite-load';
+    final controller = deserializeSuite(
+      'fixed_stock_fixture.dart',
+      SuitePlatform(Runtime.vm),
+      Configuration.current.suiteDefaults,
+      const PluginEnvironment(),
+      eventChannel(remote),
+      {'platformVariables': <String>[]},
+    );
+    final suite = await controller.suite.timeout(eventDeadline);
+    try {
+      final expected = [renderTest, deliberateFailure];
+      if (config['case'] == 'deadline' || config['case'] == 'stop') {
+        expected.add('fixture waits');
+      }
+      final tests = suite.group.entries.whereType<Test>().toList();
+      if (tests.length != suite.group.entries.length ||
+          tests.length != expected.length ||
+          Iterable<int>.generate(tests.length)
+              .any((i) => tests[i].name != expected[i])) {
+        report['failure'] = 'suite-names';
+        return;
+      }
+      phase = 'test-run';
+      for (final test in tests) {
+        final live = test.load(suite);
+        await live.run().timeout(eventDeadline);
+        final result = live.state.result;
+        outcomes[test.name] = result.name;
+        final expectedResult = test.name == deliberateFailure
+            ? Result.failure
+            : Result.success;
+        final errors = live.errors;
+        final expectedErrors = expectedResult == Result.failure
+            ? errors.length == 1 &&
+                  errors.single.error.toString().contains(
+                    'fixture deliberate failure marker',
+                  )
+            : errors.isEmpty;
+        if (live.state.status != Status.complete ||
+            result != expectedResult ||
+            !expectedErrors) {
+          report['failure'] = 'test-result';
+          return;
+        }
+      }
+    } finally {
+      await suite.close().timeout(eventDeadline);
+    }
+    report['complete'] = true;
+  } on TimeoutException {
+    report['failure'] = gate.rejected == 0 ? 'deadline' : 'token-refused';
+  } catch (error) {
+    report['failure'] = gate.rejected == 0 ? 'suite-error' : 'token-refused';
+    report['detail'] = error.toString();
+  } finally {
+    report['phase'] = phase;
+    report['rejected'] = gate.rejected;
+    if (config.remove('engineStarted') == true) {
+      await device.kill().timeout(eventDeadline);
+      report['engineSettled'] = true;
+    }
+  }
+}
+
+Future<void> main(List<String> arguments) async {
+  final config = jsonDecode(
+    File(arguments.single).readAsStringSync(),
+  ) as Map<String, dynamic>;
+  final result = <Map<String, Object?>>[];
+  final v4 = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+  HttpServer? v6;
+  try {
+    v6 = await HttpServer.bind(
+      InternetAddress.loopbackIPv6,
+      v4.port,
+      v6Only: true,
+    );
+    final ready = config['ready'] as String;
+    File('$ready.tmp')
+      ..writeAsStringSync(jsonEncode({'port': v4.port}))
+      ..renameSync(ready);
+    while (!File(config['continue'] as String).existsSync()) {
+      await Future<void>.delayed(const Duration(milliseconds: 10));
+    }
+    for (final entry in [(v4, 'IPv4'), (v6, 'IPv6')]) {
+      final familyReport = <String, Object?>{};
+      result.add(familyReport);
+      await runFamily(entry.$1, entry.$2, config, familyReport);
+      if (familyReport['complete'] != true) break;
+    }
+  } finally {
+    await v4.close(force: true);
+    await v6?.close(force: true);
+    File(config['result'] as String).writeAsStringSync(jsonEncode(result));
+  }
+}
