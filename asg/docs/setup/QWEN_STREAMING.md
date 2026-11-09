@@ -163,3 +163,9 @@ request or general schema/tool compatibility test. It does not authenticate
 loaded weights, establish a context budget or enable model support. Results are
 not saved to profiles or settings. Save remains a separate action. No new real
 model validation is implied by the deterministic HTTP/controller regressions.
+
+The bundled local bridge accepts plain text requests, including
+`response_format: {"type": "text"}`. Requests for JSON mode, JSON Schema,
+tool calls or tool history return HTTP 400 before generation, including
+when the caller requested streaming. Omitted or neutral options (such as an
+empty tool list or `tool_choice: "none"`) still allow text chat.
