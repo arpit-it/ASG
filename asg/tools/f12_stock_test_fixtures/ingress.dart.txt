@@ -1,0 +1,193 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright 2026 Arpit Sinha
+import 'dart:async';
+import 'dart:io';
+import 'dart:typed_data';
+
+import 'stock_device.dart' show Gate;
+
+const _maxPayloadBytes = 16384;
+const _maxWireBytes = 128 * 1024;
+const _maxFrameCount = 128;
+
+class IngressGate extends Gate {
+  IngressGate(super.server, super.token);
+
+  String? failure;
+  Socket? _socket;
+
+  void closeConnection() => _socket?.destroy();
+
+  bool get attached => _socket != null;
+
+  // The installed stock device takes the first admitted HTTP request. Wrap
+  // this exact seam so a subscription's replacement callback cannot bypass it.
+  @override
+  Future<HttpRequest> get first async {
+    final request = await super.first;
+    if (request.headers['sec-websocket-extensions'] != null) {
+      failure = 'extensions';
+      request.response.statusCode = HttpStatus.forbidden;
+      await request.response.close();
+      throw const FormatException('WebSocket extensions refused');
+    }
+    return _UpgradeRequest(request, _guardSocket);
+  }
+
+  Socket _guardSocket(Socket socket) {
+    _socket = socket;
+    return _IngressSocket(socket, (reason) => failure = reason);
+  }
+}
+
+class _UpgradeRequest extends Stream<Uint8List> implements HttpRequest {
+  _UpgradeRequest(this._request, this._guard);
+  final HttpRequest _request;
+  final Socket Function(Socket) _guard;
+
+  @override
+  String get method => _request.method;
+  @override
+  HttpHeaders get headers => _request.headers;
+  @override
+  HttpResponse get response => _UpgradeResponse(_request.response, _guard);
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+class _UpgradeResponse implements HttpResponse {
+  _UpgradeResponse(this._response, this._guard);
+  final HttpResponse _response;
+  final Socket Function(Socket) _guard;
+
+  @override
+  HttpHeaders get headers => _response.headers;
+  @override
+  set statusCode(int value) => _response.statusCode = value;
+  @override
+  Future<void> close() => _response.close();
+  @override
+  Future<Socket> detachSocket({bool writeHeaders = true}) async =>
+      _guard(await _response.detachSocket(writeHeaders: writeHeaders));
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+class _IngressSocket extends Stream<Uint8List> implements Socket {
+  _IngressSocket(this._socket, this._reject);
+  final Socket _socket;
+  final void Function(String) _reject;
+
+  // Hold at most one bounded frame, independent of TCP segmentation. The
+  // largest admitted header is four length bytes plus four mask bytes.
+  Stream<Uint8List> _frames() {
+    final frame = Uint8List(_maxPayloadBytes + 8);
+    var used = 0;
+    var headerSize = 2;
+    var frameSize = 0;
+    var wireBytes = 0;
+    var frameCount = 0;
+    var closed = false;
+    var rejected = false;
+    void reject(String reason, EventSink<Uint8List> sink) {
+      if (rejected) return;
+      rejected = true;
+      _reject(reason);
+      _socket.destroy();
+      sink.close();
+    }
+
+    return _socket.transform(
+      StreamTransformer<Uint8List, Uint8List>.fromHandlers(
+        handleData: (chunk, sink) {
+          if (rejected) return;
+          try {
+            for (final byte in chunk) {
+              if (closed) throw const FormatException('after-close');
+              frame[used++] = byte;
+              if (used == 2) {
+                final opcode = frame[0] & 0xf;
+                if ((frame[0] & 0xf0) != 0x80 ||
+                    (opcode != 1 && opcode != 8) ||
+                    (frame[1] & 0x80) == 0) {
+                  throw const FormatException('frame-format');
+                }
+                final marker = frame[1] & 0x7f;
+                if (opcode == 8 && (marker == 1 || marker > 125)) {
+                  throw const FormatException('frame-format');
+                }
+                if (marker == 127) throw const FormatException('frame-size');
+                headerSize = marker == 126 ? 4 : 2;
+              }
+              if (used == headerSize) {
+                final payload = headerSize == 2
+                    ? frame[1] & 0x7f
+                    : (frame[2] << 8) | frame[3];
+                if (headerSize == 4 && payload < 126) {
+                  throw const FormatException('frame-format');
+                }
+                if (payload > _maxPayloadBytes) {
+                  throw const FormatException('frame-size');
+                }
+                frameSize = headerSize + 4 + payload;
+                wireBytes += frameSize;
+                if (wireBytes > _maxWireBytes) {
+                  throw const FormatException('session-bytes');
+                }
+                if (++frameCount > _maxFrameCount) {
+                  throw const FormatException('session-frames');
+                }
+              }
+              if (used == frameSize) {
+                closed = (frame[0] & 0xf) == 8;
+                sink.add(
+                  Uint8List.fromList(Uint8List.sublistView(frame, 0, used)),
+                );
+                used = 0;
+                headerSize = 2;
+                frameSize = 0;
+              }
+            }
+          } on FormatException catch (error) {
+            reject(error.message, sink);
+          }
+        },
+        handleDone: (sink) {
+          if (used != 0) {
+            reject('truncated-frame', sink);
+          } else if (!rejected) {
+            sink.close();
+          }
+        },
+      ),
+    );
+  }
+
+  @override
+  StreamSubscription<Uint8List> listen(
+    void Function(Uint8List)? onData, {
+    Function? onError,
+    void Function()? onDone,
+    bool? cancelOnError,
+  }) => _frames().listen(
+    onData,
+    onError: onError,
+    onDone: onDone,
+    cancelOnError: cancelOnError,
+  );
+
+  @override
+  void add(List<int> data) => _socket.add(data);
+  @override
+  Future<void> addStream(Stream<List<int>> stream) => _socket.addStream(stream);
+  @override
+  Future<void> flush() => _socket.flush();
+  @override
+  Future<void> close() => _socket.close();
+  @override
+  Future<void> get done => _socket.done;
+  @override
+  void destroy() => _socket.destroy();
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}

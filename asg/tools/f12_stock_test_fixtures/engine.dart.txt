@@ -3,6 +3,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:test_api/backend.dart';
@@ -47,6 +48,99 @@ Future<void> checkIsolation(Map<String, String> env) async {
   }
 }
 
+const invalidWireCases = {
+  'oversized-header',
+  'fragmented-header',
+  'session-bytes',
+  'session-frames',
+};
+
+List<int> textHeader(int length) => length < 126
+    ? [0x81, 0x80 | length]
+    : [0x81, 0xfe, length >> 8, length & 0xff];
+
+Uint8List maskedTextFrame(List<int> header, List<int> body) {
+  final frame = Uint8List(header.length + 4 + body.length);
+  frame.setRange(0, header.length, header);
+  // Fixed mask for these authored test bytes.
+  const mask = [0x5a, 0x6b, 0x7c, 0x8d];
+  frame.setRange(header.length, header.length + 4, mask);
+  for (var i = 0; i < body.length; i++) {
+    frame[header.length + 4 + i] = body[i] ^ mask[i % mask.length];
+  }
+  return frame;
+}
+
+Future<void> sendInvalidFrame(Uri uri, String testCase) async {
+  final socket = await Socket.connect(uri.host, uri.port);
+  final upgraded = Completer<void>();
+  final response = <int>[];
+  var finalHeaderSent = false;
+  final subscription = socket.listen(
+    (chunk) {
+      if (upgraded.isCompleted) return;
+      response.addAll(chunk);
+      final text = latin1.decode(response);
+      if (text.contains('\r\n\r\n')) {
+        if (text.startsWith('HTTP/1.1 101 ')) {
+          upgraded.complete();
+        } else {
+          upgraded.completeError(StateError('Fixture upgrade was refused'));
+        }
+      }
+    },
+    onDone: () {
+      if (finalHeaderSent) {
+        final receipt = '${Platform.environment['HOME']}/wire-peer-closed';
+        File('$receipt.tmp')
+          ..writeAsStringSync(testCase)
+          ..renameSync(receipt);
+      }
+    },
+  );
+  try {
+    socket.write(
+      'GET ${uri.path} HTTP/1.1\r\n'
+      'Host: ${uri.authority}\r\n'
+      'Connection: Upgrade\r\n'
+      'Upgrade: websocket\r\n'
+      'Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==\r\n'
+      'Sec-WebSocket-Version: 13\r\n\r\n',
+    );
+    await upgraded.future.timeout(const Duration(seconds: 2));
+    final List<int> header;
+    if (testCase == 'session-bytes' || testCase == 'session-frames') {
+      // Valid envelopes on a pending channel keep the suite in its load phase.
+      const emptyEnvelope = '[901,{"pad":""}]';
+      final large = testCase == 'session-bytes';
+      final padding = large ? 'x' * (16384 - emptyEnvelope.length) : '';
+      final body = utf8.encode('[901,{"pad":"$padding"}]');
+      header = textHeader(body.length);
+      final frame = maskedTextFrame(header, body);
+      final admitted = large ? 7 : 128;
+      for (var i = 0; i < admitted; i++) {
+        socket.add(frame);
+        await socket.flush();
+      }
+    } else {
+      header = testCase == 'oversized-header'
+          ? textHeader(32768)
+          : [0x01, 0x80];
+    }
+    for (var i = 0; i < header.length; i++) {
+      finalHeaderSent = i == header.length - 1;
+      socket.add([header[i]]);
+      await socket.flush();
+      await Future<void>.delayed(const Duration(milliseconds: 20));
+    }
+    // No mask key or payload follows the last declared header.
+    await Future<void>.delayed(const Duration(seconds: 10));
+  } finally {
+    socket.destroy();
+    await subscription.cancel();
+  }
+}
+
 Future<void> main() async {
   final env = Platform.environment;
   final testCase = env['CASE'];
@@ -58,9 +152,16 @@ Future<void> main() async {
     port: int.parse(env['SERVER_PORT']!),
     path: '/$token',
   );
+  if (invalidWireCases.contains(testCase)) {
+    await sendInvalidFrame(uri, testCase!);
+    return;
+  }
   final WebSocket socket;
   try {
-    socket = await WebSocket.connect(uri.toString());
+    socket = await WebSocket.connect(
+      uri.toString(),
+      compression: CompressionOptions.compressionOff,
+    );
   } on WebSocketException {
     if (testCase != 'wrong-token') rethrow;
     // Let the parent observe the denied request and own process termination.
@@ -86,9 +187,9 @@ Future<void> main() async {
       if (testCase == 'deadline' || testCase == 'stop') {
         test('fixture waits', () {
           final waiting = '${env['HOME']}/waiting';
-        File('$waiting.tmp')
-          ..writeAsStringSync(env['FAMILY']!)
-          ..renameSync(waiting);
+          File('$waiting.tmp')
+            ..writeAsStringSync(env['FAMILY']!)
+            ..renameSync(waiting);
           return Completer<void>().future;
         });
       }

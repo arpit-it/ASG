@@ -19,11 +19,19 @@ import f12_runner_boundary as boundary
 import f12_supervisor_design as design
 
 FIXTURES = {
-    'driver.dart.txt': '7ada50dd7c48d9234685626acf824d95c26ea0f1616bf35b57617d93278f4a6f',
-    'engine.dart.txt': '74c8079afee94a349cd9444396584447a77c698edf2416decee40675766ebff7',
+    'driver.dart.txt': '28a77b3e24766f0e4fc2f3bd9aabcd923d4e4f4871895141686b5623d288ccea',
+    'engine.dart.txt': '71e75ba5c98ceb51db18e1b3b0bbd1f54d001683d23ea113455886710a103e23',
+    'ingress.dart.txt': '0b3fccd7851df9e8bb0da2fb1331552053f0b45e4c914beb53e11790766bf3c1',
 }
 STOCK_DEVICE_HASH = '4922efe655e01cc4c3574d274293c588ffdc3fc1018976038624085c76b3d8d4'
-CASES = ('positive', 'wrong-token', 'missing-suite', 'wrong-suite', 'wrong-result', 'deadline', 'stop')
+INGRESS_CASES = {
+    'oversized-header': 'frame-size', 'fragmented-header': 'frame-format',
+    'session-bytes': 'session-bytes', 'session-frames': 'session-frames',
+}
+CASES = (
+    'positive', 'wrong-token', 'missing-suite', 'wrong-suite', 'wrong-result', 'deadline', 'stop',
+    *INGRESS_CASES,
+)
 OUTCOMES = {
     'fixture renders in confinement': 'success',
     'fixture deliberate failure': 'failure',
@@ -71,7 +79,7 @@ def result_matches(case, families, execution):
     if case == 'positive':
         return families == [
             dict(family=family, outcomes=OUTCOMES, complete=True,
-                 phase='test-run', rejected=0, engineSettled=True)
+                 phase='test-run', rejected=0, engineSettled=True, ingressAttached=True)
             for family in ('IPv4', 'IPv6')
         ]
     if len(families) != 1:
@@ -82,8 +90,15 @@ def result_matches(case, families, execution):
     observed = (row.get('phase'), row.get('failure'), row.get('outcomes'))
     if case == 'wrong-token':
         return (observed == ('device-start', 'token-refused', {}) and
-                type(row.get('rejected')) is int and row['rejected'] > 0)
-    if row.get('rejected') != 0:
+                type(row.get('rejected')) is int and row['rejected'] > 0 and
+                row.get('ingressAttached') is False and 'ingressFailure' not in row)
+    if row.get('rejected') != 0 or row.get('ingressAttached') is not True:
+        return False
+    if case in INGRESS_CASES:
+        return (observed == ('suite-load', 'ingress-refused', {}) and
+                row.get('ingressFailure') == INGRESS_CASES[case] and
+                row.get('wirePeerClosed') is True and execution.get('wirePeerReceipt') is True)
+    if 'ingressFailure' in row:
         return False
     if case == 'missing-suite':
         return observed == ('suite-load', 'suite-error', {})
@@ -292,6 +307,10 @@ def exercise(sdk_path, case):
                 [tools['dart'], f'--packages={packages}', compiled / 'driver.dill', config_path],
                 root, config, sdk, source, case,
             )
+            if case in INGRESS_CASES:
+                peer_receipt = engine_dir / 'wire-peer-closed'
+                execution['wirePeerReceipt'] = (peer_receipt.exists() and
+                                                boundary.regular_bytes(peer_receipt, 32) == case.encode())
             report['execution'] = execution
             report['canaryConnections'] = 0
             for listener in canary.sockets:
