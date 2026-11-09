@@ -588,6 +588,37 @@ class ProposalTests(unittest.TestCase):
             candidate.apply_proposal(payload)
         self.assertEqual(len(list(destination.iterdir())), 1)
 
+    def test_proposal_refuses_linked_and_separate_git_storage(self):
+        ready, destination, payload = self.proposal_fixture()
+        linked = self.parent / 'linked'
+        self.git('worktree', 'add', '--detach', str(linked))
+        common = self.source / '.git'
+        for protected in (common, common / 'objects', common / 'worktrees' / linked.name):
+            with self.subTest(destination=protected):
+                with self.assertRaisesRegex(ValueError, 'outside Git metadata'):
+                    candidate.apply_proposal(dict(payload, destination=str(protected), trustedSource=str(linked)))
+                self.assertFalse((protected / payload['runName']).exists())
+        self.git('worktree', 'remove', str(linked))
+        separate = self.parent / 'separate Git data'
+        self.git('init', '-q', '--separate-git-dir', str(separate))
+        with self.assertRaisesRegex(ValueError, 'outside Git metadata'):
+            candidate.apply_proposal(dict(payload, destination=str(separate)))
+        self.assertFalse((separate / payload['runName']).exists())
+        self.assertEqual(candidate.fingerprint(ready), payload['expectedDigest'])
+        receipt = candidate.apply_proposal(payload)
+        self.assertEqual(Path(receipt['path']).parent.parent, destination)
+
+    def test_proposal_allows_no_trusted_checkout_and_refuses_invalid_selection(self):
+        ready, destination, payload = self.proposal_fixture()
+        not_git = self.parent / 'not-a-checkout'
+        not_git.mkdir()
+        with self.assertRaises(ValueError):
+            candidate.apply_proposal(dict(payload, trustedSource=str(not_git)))
+        self.assertEqual(list(destination.iterdir()), [])
+        receipt = candidate.apply_proposal(dict(payload, trustedSource=''))
+        self.assertEqual(Path(receipt['path']).parent.parent, destination)
+        self.assertEqual(candidate.fingerprint(ready), payload['expectedDigest'])
+
     def test_stale_noop_header_and_text_limits_refuse(self):
         ready, destination, payload = self.proposal_fixture()
         before = (ready / payload['path']).read_text()
