@@ -1,5 +1,9 @@
 # Durable project memory
 
+## F22 and F12 delivery evidence — 9 November 2026 UTC
+
+The [verified delivery records](PROGRESS.md#verified-f22-and-f12-deliveries--9-november-2026-utc) cover PRs #549–554. The local bridge rejects unsupported tool calls and constrained output requests. Keep prompt-based JSON results separate from API schema support and retain each live observation’s original model and revision. Both snapshot preparation and proposal saving protect linked and separate Git storage. Candidate execution remains gated on enforceable resource limits, runner lifecycle and Stop acceptance.
+
 ## Local development model — 9 November 2026
 
 The owner reaffirmed Qwen3.8-27B-4bit on MLX / Metal for current and remaining ASG tasks requiring live inference on this Mac. The saved development automation uses the exact loopback model ID. Earlier model measurements retain their original identities. F22 remains open pending live capability evidence.
