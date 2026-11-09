@@ -148,6 +148,11 @@ class CommandTests(unittest.TestCase):
             # A generic offline project keeps its existing project-only boundary.
             generic = base / 'generic'
             generic.mkdir()
+            for name in ('bin/cache/dart-sdk/bin/dart', 'bin/cache/flutter_tools.snapshot',
+                         'packages/flutter_tools/.dart_tool/package_config.json', 'bin/cache/lockfile'):
+                file = embedded / name
+                file.parent.mkdir(parents=True, exist_ok=True)
+                file.touch()
             with mock.patch.object(module.platform, 'system', return_value='Darwin'), \
                  mock.patch.object(Path, 'is_file', return_value=True), \
                  mock.patch.object(module, 'offline_snapshot_slot',
@@ -157,6 +162,71 @@ class CommandTests(unittest.TestCase):
                     module.confined_operation(generic, embedded, 'resolve', 1, os.getppid(),
                                               offline=True)
                 slot.assert_called_once_with(generic)
+
+    def test_offline_sdk_startup_files_cannot_point_into_prepared_snapshot(self):
+        with tempfile.TemporaryDirectory() as temp:
+            base = Path(temp).resolve()
+            snapshot = base / 'asg-self-candidate-a1b2c3d4' / ('source-' + 'a' * 40)
+            project = snapshot / 'asg'
+            project.mkdir(parents=True)
+            linked_inputs = snapshot / 'linked-inputs'
+            linked_inputs.mkdir()
+            sdk = base / 'sdk'
+            cache = base / 'pub-cache'
+            cache.mkdir()
+            files = [
+                sdk / 'bin/cache/dart-sdk/bin/dart',
+                sdk / 'bin/cache/flutter_tools.snapshot',
+                sdk / 'packages/flutter_tools/.dart_tool/package_config.json',
+                sdk / 'bin/cache/lockfile',
+            ]
+            for file in files:
+                file.parent.mkdir(parents=True, exist_ok=True)
+                file.touch()
+
+            original_is_file = Path.is_file
+            with mock.patch.object(module.platform, 'system', return_value='Darwin'), \
+                 mock.patch.object(Path, 'is_file', autospec=True,
+                                   side_effect=lambda path: path == Path('/usr/bin/sandbox-exec')
+                                   or original_is_file(path)), \
+                 mock.patch.object(module, 'offline_snapshot_slot',
+                                   side_effect=AssertionError('Reached offline setup')) as slot, \
+                 mock.patch.dict(os.environ, {'PUB_CACHE': str(cache)}):
+                for file in files:
+                    with self.subTest(file=file):
+                        target = linked_inputs / file.name
+                        target.touch()
+                        file.unlink()
+                        file.symlink_to(target)
+                        try:
+                            with self.assertRaisesRegex(ValueError, 'SDK startup file overlaps snapshot'):
+                                module.confined_operation(project, sdk, 'resolve', 1,
+                                                          os.getppid(), offline=True)
+                        finally:
+                            file.unlink()
+                            file.touch()
+                dart = files[0]
+                dart.unlink()
+                os.link(linked_inputs / dart.name, dart)
+                with self.assertRaisesRegex(ValueError, 'refuse hard-linked SDK startup files'):
+                    module.confined_operation(project, sdk, 'resolve', 1, os.getppid(), offline=True)
+                dart.unlink()
+                dart.touch()
+                lock = files[-1]
+                lock.unlink()
+                os.mkfifo(lock)
+                with self.assertRaisesRegex(ValueError, 'require regular SDK startup files'):
+                    module.confined_operation(project, sdk, 'resolve', 1, os.getppid(), offline=True)
+                lock.unlink()
+                lock.touch()
+                dart.unlink()
+                dart.parent.rmdir()
+                (linked_inputs / dart.name).touch()
+                dart.parent.symlink_to(linked_inputs, target_is_directory=True)
+                with self.assertRaisesRegex(ValueError, 'SDK startup file overlaps snapshot'):
+                    module.confined_operation(project, sdk, 'resolve', 1, os.getppid(), offline=True)
+                slot.assert_not_called()
+            self.assertEqual(list(project.iterdir()), [])
 
     def test_offline_cli_refuses_bundle_and_alias_before_setup(self):
         with tempfile.TemporaryDirectory() as temp:
