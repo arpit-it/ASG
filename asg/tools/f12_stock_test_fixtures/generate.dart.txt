@@ -8,6 +8,11 @@ import 'package:flutter_tools/src/test/flutter_platform.dart'
 void main(List<String> args) {
   final output = Directory(args[0]);
   final testUrl = Uri.file(args[1]);
+  final widget = switch (args[2]) {
+    'stock' => false,
+    'widget' => true,
+    _ => throw ArgumentError('Unknown fixed bootstrap fixture'),
+  };
   for (final host in [
     InternetAddress.loopbackIPv4,
     InternetAddress.loopbackIPv6,
@@ -15,7 +20,7 @@ void main(List<String> args) {
     final source = generateTestBootstrap(
       testUrl: testUrl,
       host: host,
-      flutterTestDep: false,
+      flutterTestDep: widget,
     );
     final family = host.type == InternetAddressType.IPv4 ? 'IPv4' : 'IPv6';
     File('${output.path}/bootstrap_$family.dart').writeAsStringSync(source);

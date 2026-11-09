@@ -4,6 +4,7 @@
 
 import contextlib
 import io
+import json
 from pathlib import Path
 import tempfile
 import unittest
@@ -77,6 +78,51 @@ class StockTestEventsTest(unittest.TestCase):
         self.assertTrue(events.result_matches('generated-positive', rows, settled))
         rows[1]['stockOfferDeclined'] = False
         self.assertFalse(events.result_matches('generated-positive', rows, settled))
+
+    def test_widget_overlay_uses_only_pinned_local_packages(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            sdk, cache = root / 'sdk', root / 'cache'
+            tool = dict(name='flutter_tools', rootUri='../', packageUri='lib/', languageVersion='3.11')
+            original = json.dumps(dict(configVersion=2, packages=[tool])).encode()
+            for name in ('flutter', 'flutter_test'):
+                (sdk / 'packages' / name / 'lib').mkdir(parents=True)
+            for name, (version, _) in events.WIDGET_CACHE_PACKAGES.items():
+                (cache / 'hosted/pub.dev' / f'{name}-{version}' / 'lib').mkdir(parents=True)
+            overlay = events.widget_package_config(original, sdk, cache)
+            self.assertEqual(events.widget_package_config(original, sdk, cache), overlay)
+            packages = {entry['name']: entry for entry in json.loads(overlay)['packages']}
+            self.assertEqual(set(packages), {'flutter_tools', 'flutter', 'flutter_test',
+                                             *events.WIDGET_CACHE_PACKAGES})
+            self.assertEqual(packages['flutter_tools']['rootUri'],
+                             (sdk / 'packages/flutter_tools').as_uri() + '/')
+            self.assertEqual(json.loads(original)['packages'][0]['rootUri'], '../')
+            conflicting = json.dumps(dict(configVersion=2, packages=[tool, packages['flutter']]))
+            with self.assertRaisesRegex(ValueError, 'Conflicting'):
+                events.widget_package_config(conflicting, sdk, cache)
+            (sdk / 'packages/flutter_test/lib').rmdir()
+            with self.assertRaisesRegex(ValueError, 'unavailable: flutter_test'):
+                events.widget_package_config(original, sdk, cache)
+
+    def test_widget_receipt_requires_widget_assertions_and_stop_evidence(self):
+        settled = dict(exitCode=0, reason=None, output=(
+            'Found 0 widgets with text "fixture absent widget marker"\n' * 2
+        ))
+        rows = [
+            dict(family=family, outcomes=events.WIDGET_OUTCOMES.copy(), complete=True,
+                 phase='test-run', rejected=0, engineSettled=True, ingressAttached=True,
+                 stockOfferDeclined=True)
+            for family in events.FAMILIES
+        ]
+        self.assertTrue(events.result_matches('generated-widget-positive', rows, settled))
+        self.assertFalse(events.result_matches('generated-widget-positive', rows,
+                                              dict(settled, output='')))
+        rows[1]['outcomes'] = events.OUTCOMES
+        self.assertFalse(events.result_matches('generated-widget-positive', rows, settled))
+        stopped = dict(exitCode=-15, reason='cancelled', waitEntered=True)
+        self.assertTrue(events.result_matches('generated-widget-stop', None, stopped))
+        self.assertFalse(events.result_matches('generated-widget-stop', None,
+                                              dict(stopped, waitEntered=False)))
 
     def test_generated_missing_token_requires_observed_natural_exit(self):
         settled = {'exitCode': 0, 'reason': None}

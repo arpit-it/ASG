@@ -66,6 +66,11 @@ Future<void> runFamily(
   final session = config['session'] as String;
   final testCase = config['case'] as String;
   final generated = testCase.startsWith('generated-');
+  final widget = testCase.startsWith('generated-widget-');
+  final passingTest = widget ? 'fixture finds the rendered widget' : renderTest;
+  final failingTest = widget
+      ? 'fixture deliberate widget failure'
+      : deliberateFailure;
   final expectsOffer = generated || testCase == 'unexpected-extension';
   final gate = IngressGate(server, session, generatedBootstrap: expectsOffer);
   final device = OwnedDevice(
@@ -96,10 +101,11 @@ Future<void> runFamily(
     );
     final suite = await controller.suite.timeout(eventDeadline);
     try {
-      final expected = [renderTest, deliberateFailure];
+      final expected = [passingTest, failingTest];
       if (testCase == 'deadline' ||
           testCase == 'stop' ||
-          testCase == 'generated-stop') {
+          testCase == 'generated-stop' ||
+          testCase == 'generated-widget-stop') {
         expected.add('fixture waits');
       }
       final tests = suite.group.entries.whereType<Test>().toList();
@@ -116,15 +122,17 @@ Future<void> runFamily(
         await live.run().timeout(eventDeadline);
         final result = live.state.result;
         outcomes[test.name] = result.name;
-        final expectedResult = test.name == deliberateFailure
-            ? Result.failure
+        final expectedResult = test.name == failingTest
+            ? (widget ? Result.error : Result.failure)
             : Result.success;
         final errors = live.errors;
-        final expectedErrors = expectedResult == Result.failure
+        final expectedError = widget
+            ? 'Test failed. See exception logs above.\n'
+                  'The test description was: fixture deliberate widget failure'
+            : 'fixture deliberate failure marker';
+        final expectedErrors = test.name == failingTest
             ? errors.length == 1 &&
-                  errors.single.error.toString().contains(
-                    'fixture deliberate failure marker',
-                  )
+                  errors.single.error.toString().contains(expectedError)
             : errors.isEmpty;
         if (live.state.status != Status.complete ||
             result != expectedResult ||
