@@ -31,6 +31,19 @@ with a fresh session path for these cases, which the generated bootstrap
 includes in its request. The missing-token case supplies only the numeric
 port and requires an observed gate refusal and settled process group.
 
+The generated widget case enables the installed bootstrap's `flutter_test`
+branch. It pumps a fixed text widget, checks that it is present, then reports
+a deliberate finder failure in a separate widget test. Flutter reports the
+finder failure as `Result.error`. Both families must return the named
+results and emit the original finder diagnostic. Its Stop case waits inside
+a third widget test until the supervisor cancels the owned process group. It uses an engine
+package configuration built from the SDK's tool configuration plus pinned
+installed Flutter and cache packages. The report hashes the overlay and the
+compiler's source closure, including `flutter` and `flutter_test` library
+entry points. The compiler omits embedded source text and the duplicate
+dependency log so the widget case fits the existing file and output limits.
+The dependency file still supplies the closure used for verification.
+
 The passing test requires an actual engine view and checks denied sentinel
 reads/writes, subprocess start and connection to an independent canary port.
 The deliberate failure must produce the actual stock failure state and its
@@ -72,12 +85,13 @@ From the repository root, with the reviewed SDK already installed:
 python3 -B -m unittest discover -s asg/tools -p test_f12_stock_test_events.py -v
 python3 -B asg/tools/f12_stock_test_events.py --synthetic-fixture --sdk "$SDK"
 python3 -B asg/tools/f12_stock_test_events.py --synthetic-fixture --sdk "$SDK" --case generated-positive
+python3 -B asg/tools/f12_stock_test_events.py --synthetic-fixture --sdk "$SDK" --case generated-widget-positive
 ```
 
 Add `--case wrong-token`, `missing-suite`, `wrong-suite`, `wrong-result`,
 `deadline`, `stop`, `oversized-header`, `fragmented-header`, `session-bytes`,
-`session-frames`, `generated-missing-token`, `generated-stop`, or
-`unexpected-extension` to observe a fixed adverse case. An expected adverse case
+`session-frames`, `generated-missing-token`, `generated-stop`,
+`generated-widget-stop`, or `unexpected-extension` to observe a fixed adverse case. An expected adverse case
 exits zero with `adverseCaseObserved: true` and `pass: false`. The command
 prints the path to a private report with observed outcomes and exact local
 identities. Portable tests validate refusal and parsing logic; use the live Mac

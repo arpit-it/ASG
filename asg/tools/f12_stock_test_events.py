@@ -19,9 +19,10 @@ import f12_runner_boundary as boundary
 import f12_supervisor_design as design
 
 FIXTURES = {
-    'generate.dart.txt': '030691a13a54a545a43a49c1a4839a3ba7319e36dd3e9a1cd2c66facb0799921',
+    'generate.dart.txt': 'f8420628e2c7b2e8ef23a2cba7fff67db53e68379e2d2619f4be15515b4be958',
+    'widget_tests.dart.txt': '1d1c3e0f42b90821fcd71e5508ab8dc61a6888f9130fc33e3f9f4d90e28c2052',
     'fixed_tests.dart.txt': '3833141c80c893d71344a167a0f6e997c4156b6570170178b6e7136122ff68a0',
-    'driver.dart.txt': '1c63a715bd9a23e704bccb89175d6d6faecc92ccf2b71ae4b727573ec7eb28c4',
+    'driver.dart.txt': 'ef81a3c56413bc1d8e529ddcbd1abd56ccbf5f77d408fa3f9f6ad3e090882ef2',
     'engine.dart.txt': 'a373fb96f3ad88822d6d5b04540fd573a01118a8126b17fb19adea11dccb2e5b',
     'ingress.dart.txt': '83ab9ecfeda1f941db26bf4b2e21ccf01c60b048eeaaaafaeaa3d79202b0d3b4',
 }
@@ -30,9 +31,10 @@ INGRESS_CASES = {
     'oversized-header': 'frame-size', 'fragmented-header': 'frame-format',
     'session-bytes': 'session-bytes', 'session-frames': 'session-frames',
 }
-POSITIVE_CASES = ('positive', 'generated-positive')
-STOP_CASES = ('stop', 'generated-stop')
-GENERATED_CASES = ('generated-positive', 'generated-missing-token', 'generated-stop')
+WIDGET_CASES = ('generated-widget-positive', 'generated-widget-stop')
+POSITIVE_CASES = ('positive', 'generated-positive', WIDGET_CASES[0])
+STOP_CASES = ('stop', 'generated-stop', WIDGET_CASES[1])
+GENERATED_CASES = ('generated-positive', 'generated-missing-token', 'generated-stop', *WIDGET_CASES)
 FAMILIES = ('IPv4', 'IPv6')
 CASES = (
     'positive', 'wrong-token', 'missing-suite', 'wrong-suite', 'wrong-result', 'deadline', 'stop',
@@ -42,7 +44,49 @@ OUTCOMES = {
     'fixture renders in confinement': 'success',
     'fixture deliberate failure': 'failure',
 }
+WIDGET_OUTCOMES = {
+    'fixture finds the rendered widget': 'success',
+    'fixture deliberate widget failure': 'error',
+}
 TEST_PACKAGES = {'test_api': '0.7.12', 'test_core': '0.6.18'}
+WIDGET_CACHE_PACKAGES = {
+    'characters': ('1.4.1', '3.4'),
+    'leak_tracker': ('11.0.2', '3.2'),
+    'leak_tracker_flutter_testing': ('3.0.10', '3.2'),
+    'leak_tracker_testing': ('3.0.2', '3.2'),
+    'material_color_utilities': ('0.13.0', '3.5'),
+    'vector_math': ('2.4.0', '3.10'),
+}
+
+
+def widget_package_config(package_config, sdk, cache):
+    # Add only the reviewed widget dependencies to the trusted tool configuration.
+    config = design.strict_json(package_config)
+    packages = config['packages']
+    names = {entry['name'] for entry in packages}
+    widget_roots = {
+        name: (sdk / 'packages' / name, '3.11') for name in ('flutter', 'flutter_test')
+    }
+    widget_roots.update({
+        name: (cache / 'hosted/pub.dev' / f'{name}-{version}', language)
+        for name, (version, language) in WIDGET_CACHE_PACKAGES.items()
+    })
+    if len(names) != len(packages) or names.intersection(widget_roots):
+        raise ValueError('Conflicting installed widget package declarations')
+    for entry in packages:
+        # The SDK's one relative URI is rooted at flutter_tools/.dart_tool.
+        if entry['name'] == 'flutter_tools' and entry['rootUri'] == '../':
+            entry['rootUri'] = (sdk / 'packages/flutter_tools').as_uri() + '/'
+        elif not entry['rootUri'].startswith('file:///'):
+            raise ValueError('Unexpected relative installed package URI')
+    for name, (root, language) in sorted(widget_roots.items()):
+        try:
+            boundary.canonical_directory(root / 'lib')
+        except (OSError, ValueError) as error:
+            raise ValueError(f'Pinned widget package is unavailable: {name}') from error
+        packages.append(dict(name=name, rootUri=root.as_uri() + '/',
+                             packageUri='lib/', languageVersion=language))
+    return (json.dumps(config, sort_keys=True) + '\n').encode()
 
 
 def read_fixtures(tools_dir):
@@ -84,8 +128,14 @@ def result_matches(case, families, execution):
         return False
     if case in POSITIVE_CASES:
         generated = {'stockOfferDeclined': True} if case in GENERATED_CASES else {}
+        widget = case in WIDGET_CASES
+        outcomes = WIDGET_OUTCOMES if widget else OUTCOMES
+        if widget and execution.get('output', '').count(
+            'Found 0 widgets with text "fixture absent widget marker"'
+        ) != len(FAMILIES):
+            return False
         return families == [
-            dict(family=family, outcomes=OUTCOMES, complete=True,
+            dict(family=family, outcomes=outcomes, complete=True,
                  phase='test-run', rejected=0, engineSettled=True, ingressAttached=True, **generated)
             for family in FAMILIES
         ]
@@ -224,7 +274,7 @@ def stage_environment(directory):
     return {'PATH': '/usr/bin:/bin', 'HOME': str(directory), 'TMPDIR': str(directory) + '/'}
 
 
-def compile_fixtures(root, source, sdk, tools, packages, cache, case, report):
+def compile_fixtures(root, source, sdk, tools, packages, engine_packages, cache, case, report):
     directory = root / 'compile'
     directory.mkdir()
     snapshot = sdk / 'bin/cache/dart-sdk/bin/snapshots/gen_kernel_aot.dart.snapshot'
@@ -256,7 +306,11 @@ def compile_fixtures(root, source, sdk, tools, packages, cache, case, report):
             [tools['aot'], snapshot, f'--platform={vm_platform}', '--no-embed-sources',
              f'--output={output}']
         )
-        run(name, [*compiler, '--no-link-platform', f'--packages={packages}',
+        package_path = engine_packages if flutter else packages
+        if flutter and case in WIDGET_CASES:
+            # Keep the depfile while fitting the existing file and log limits.
+            compiler.extend(['--no-embed-source-text', '--no-print-incremental-dependencies'])
+        run(name, [*compiler, '--no-link-platform', f'--packages={package_path}',
                    f'--depfile={depfile}', entry])
         data = boundary.regular_bytes(output, boundary.MAX_KERNEL)
         if data[:4] != b'\x90\xab\xcd\xef':
@@ -273,8 +327,10 @@ def compile_fixtures(root, source, sdk, tools, packages, cache, case, report):
         generator_source = sdk / 'packages/flutter_tools/lib/src/test/flutter_platform.dart'
         if str(generator_source) not in report['sourceClosures']['generator']:
             raise ValueError('Installed bootstrap generator is absent from the compiler closure')
+        widget = case in WIDGET_CASES
+        test_name = 'widget_tests.dart' if widget else 'fixed_tests.dart'
         run('generate', [tools['dart'], f'--packages={packages}', generator, directory,
-                         source / 'fixed_tests.dart'])
+                         source / test_name, 'widget' if widget else 'stock'])
         engines = {}
         for family in FAMILIES:
             bootstrap = directory / f'bootstrap_{family}.dart'
@@ -285,8 +341,12 @@ def compile_fixtures(root, source, sdk, tools, packages, cache, case, report):
             engines[family] = compile_kernel(stage, bootstrap, flutter=True)
             closure = report['sourceClosures'][stage]
             if (closure.get(str(bootstrap)) != generated_sources[bootstrap] or
-                    closure.get(str(source / 'fixed_tests.dart')) != report['fixtureHashes']['fixed_tests.dart']):
+                    closure.get(str(source / test_name)) != report['fixtureHashes'][test_name]):
                 raise ValueError('Generated bootstrap or fixed test identity differs in the engine closure')
+            if widget and not all(str(sdk / path) in closure for path in (
+                'packages/flutter_test/lib/flutter_test.dart', 'packages/flutter/lib/widgets.dart',
+            )):
+                raise ValueError('Installed widget libraries are absent from the engine closure')
         report['generatedBootstrapHashes'] = {p.name: h for p, h in generated_sources.items()}
     else:
         engine = compile_kernel('engine', source / 'engine.dart', flutter=True)
@@ -329,8 +389,15 @@ def exercise(sdk_path, case):
             path = source / name
             path.write_bytes(data)
             path.chmod(0o400)
+        engine_packages, engine_package_config = packages, package_config
+        if case in WIDGET_CASES:
+            engine_packages = source / 'widget_package_config.json'
+            engine_package_config = widget_package_config(package_config, sdk, cache)
+            engine_packages.write_bytes(engine_package_config)
+            engine_packages.chmod(0o400)
+            report['widgetPackageConfigHash'] = boundary.digest(engine_package_config)
         driver, engines, kernels, compiler_inputs, generated_sources = compile_fixtures(
-            root, source, sdk, tools, packages, cache, case, report,
+            root, source, sdk, tools, packages, engine_packages, cache, case, report,
         )
         engine_dir = root / 'engine'
         engine_dir.mkdir()
@@ -343,7 +410,7 @@ def exercise(sdk_path, case):
             config.update(
                 kernels={family: str(kernel) for family, kernel in engines.items()},
                 enginePolicies={family: str(root / f'engine-{family}.sb') for family in FAMILIES},
-                packages=str(packages), engine=str(tools['engine']), icu=str(tools['icu']),
+                packages=str(engine_packages), engine=str(tools['engine']), icu=str(tools['icu']),
                 engineDir=str(engine_dir),
                 session=secrets.token_hex(24), canaryPort=str(canary.port), case=case,
                 sourceHashes={
@@ -384,6 +451,7 @@ def exercise(sdk_path, case):
         report['inputsPreserved'] = (
             read_fixtures(tools_dir) == fixture_bytes
             and boundary.regular_bytes(packages, 1024 * 1024) == package_config
+            and boundary.regular_bytes(engine_packages, 1024 * 1024) == engine_package_config
             and boundary.toolchain(sdk)[3] == tool_hashes
             and all(boundary.digest(boundary.regular_bytes(p, 256 * 1024 * 1024)) == h
                     for p, h in compiler_inputs.items())

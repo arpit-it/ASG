@@ -1,0 +1,39 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright 2026 Arpit Sinha
+import 'dart:async';
+import 'dart:io';
+
+import 'package:flutter/widgets.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+import 'fixed_tests.dart' show checkIsolation;
+
+const _fixture = Directionality(
+  textDirection: TextDirection.ltr,
+  child: Text('Fixed guarded widget'),
+);
+
+void main() {
+  final env = Platform.environment;
+  testWidgets('fixture finds the rendered widget', (tester) async {
+    await tester.pumpWidget(_fixture);
+    expect(find.text('Fixed guarded widget'), findsOneWidget);
+    await tester.runAsync(() => checkIsolation(env));
+  });
+  testWidgets('fixture deliberate widget failure', (tester) async {
+    await tester.pumpWidget(_fixture);
+    expect(find.text('fixture absent widget marker'), findsOneWidget);
+  });
+  if (env['CASE'] == 'generated-widget-stop') {
+    testWidgets('fixture waits', (tester) async {
+      await tester.pumpWidget(_fixture);
+      await tester.runAsync(() async {
+        final waiting = '${env['HOME']}/waiting';
+        File('$waiting.tmp')
+          ..writeAsStringSync(env['FAMILY']!)
+          ..renameSync(waiting);
+        await Completer<void>().future;
+      });
+    });
+  }
+}
