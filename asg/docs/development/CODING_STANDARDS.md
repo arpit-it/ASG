@@ -66,7 +66,7 @@ Flutter's official architecture guidance favors MVVM. This project deliberately 
 - Give icon-only controls meaningful tooltips/semantics. Keep labels clear and touch targets usable. Avoid communicating status through color alone.
 - Handle unsupported platform APIs explicitly and preserve a usable fallback. Keep platform-specific implementation behind services.
 - Preserve loading/error behavior when redesigning screens. Display actual model/build/test state and distinguish unavailable features from working ones.
-- Browser and mobile builds do not imply that a phone can run or access a Mac-local 9B model. Document host connectivity and platform restrictions.
+- Browser and mobile builds do not imply that a phone can run or access a Mac-local model. Document host connectivity and platform restrictions.
 
 ## Execution and dependency safety
 

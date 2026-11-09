@@ -302,8 +302,7 @@ class ModelSettingsController extends BaseController {
     }
   }
 
-  String status =
-      'Qwen 9B selected as the initial model family. Confirm the exact server model ID before testing.';
+  String status = 'Confirm the exact server model ID before testing.';
   bool busy = false;
   Future<void> save(LocalModelConfig config) async {
     if (busy || settingsLoadFailed || isDisposed) return;

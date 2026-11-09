@@ -105,7 +105,7 @@ class _ModelSettingsState extends State<ModelSettings> {
   @override
   Widget build(BuildContext context) => AlertDialog(
     scrollable: true,
-    title: const Text('Local model · Qwen 9B'),
+    title: const Text('Local model connection'),
     content: SizedBox(
       width: 540,
       child: Column(

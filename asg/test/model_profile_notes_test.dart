@@ -294,7 +294,7 @@ void main() {
       );
       expect(field('Declared context tokens'), 'invalid');
       expect(find.textContaining('Invalid preset.'), findsOneWidget);
-      expect(store.load().model, 'Qwen3.5-9B');
+      expect(store.load().model, 'Qwen3.8-27B-4bit');
       expect(tester.takeException(), isNull);
     },
   );

@@ -429,7 +429,7 @@ def main():
     parser.add_argument('--capabilities', action='store_true', help='Report dependencies without loading weights or probing devices')
     parser.add_argument('--probe-devices', action='store_true', help='With --capabilities, query device APIs without loading weights')
     parser.add_argument('--port', type=int, default=8765)
-    parser.add_argument('--model-id', default='Qwen3.5-9B')
+    parser.add_argument('--model-id', default='Qwen3.8-27B-4bit')
     parser.add_argument('--backend', choices=['auto', 'mlx', 'torch', 'cpu'], default='auto')
     parser.add_argument('--experimental-cpu', action='store_true', help='Opt in to unverified CPU implementation for controlled testing; not a supported backend')
     parser.add_argument('--cpu-threads', type=int, default=None, help='Experimental CPU intra-op thread limit, 1..32 (default 2)')

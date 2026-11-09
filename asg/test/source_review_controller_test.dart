@@ -952,7 +952,7 @@ void main() {
     expect(controller.error, isNull);
     expect(bases, ['/saved', '/candidates/copy-1']);
     expect(controller.candidate!.directory, '/candidates/copy-2');
-    expect(controller.proposal!.modelRequest!.model, 'Qwen3.5-9B');
+    expect(controller.proposal!.modelRequest!.model, 'Qwen3.8-27B-4bit');
     expect(controller.proposal!.modelRequest!.outputTokens, 4096);
     expect(controller.proposal!.repairRun, isNull);
     // New candidate verification must not depend on the previous latest journal.
@@ -1679,12 +1679,12 @@ void main() {
       unawaited(provider.stream.close());
       await tester.pumpAndSettle();
       await tester.scrollUntilVisible(
-        find.textContaining('Requested model: Qwen3.5-9B'),
+        find.textContaining('Requested model: Qwen3.8-27B-4bit'),
         100,
         scrollable: find.byType(Scrollable).first,
       );
       expect(
-        find.textContaining('Requested model: Qwen3.5-9B'),
+        find.textContaining('Requested model: Qwen3.8-27B-4bit'),
         findsOneWidget,
       );
       expect(find.textContaining('4096 output tokens'), findsOneWidget);

@@ -36,13 +36,13 @@ class _ObservationState extends State<HistoricalModelObservationPanel> {
     final report = controller.observation;
     return ExpansionTile(
       tilePadding: EdgeInsets.zero,
-      title: const Text('Historical 9B MLX observation'),
+      title: const Text('Historical Qwen3.8 27B MLX observation'),
       onExpansionChanged: (expanded) {
         if (expanded) controller.load();
       },
       children: [
         const Text(
-          'Retained isolated Qwen3.5-9B workload on an arm64 Mac. This is historical evidence, separate from the currently connected model and catalog estimates. It does not verify current loaded identity, total context capacity, other models or other platforms. It never enables selection or grants memory credit.',
+          'Retained isolated Qwen3.8-27B-4bit workload on an arm64 Mac. This is historical evidence, separate from the currently connected model and catalog estimates. It does not verify current loaded identity, total context capacity, other models or other platforms. It never enables selection or grants memory credit.',
         ),
         if (controller.loading) const LinearProgressIndicator(),
         if (controller.error != null) ...[
@@ -74,7 +74,7 @@ class _ObservationState extends State<HistoricalModelObservationPanel> {
             'Tiny warm workloads are not sustained throughput or memory requirements. Process high-water is cumulative, not per-request allocation. Metadata and probe input hashes are retained in the reviewed report; repository revision/license and HTTP identity were not authenticated. No app/manual acceptance or verified full profile follows.',
           ),
           const SelectableText(
-            'Evidence: arpit-it/ASG PR #432 · docs/development/acceptance/2026-11-02-live-mlx-profile/observations.json',
+            'Evidence: arpit-it/ASG · docs/development/acceptance/2026-11-10-live-27b-profile/observations.json',
           ),
         ],
       ],

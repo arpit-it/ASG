@@ -169,8 +169,8 @@ void main() {
           (_) async => http.Response(
             jsonEncode({
               'status': host.ownsProcess ? 'ready' : 'loading',
-              'model': 'Qwen3.5-9B',
-              'model_path': '/models/Qwen3.5-9B',
+              'model': 'Qwen3.8-27B-4bit',
+              'model_path': '/models/Qwen3.8-27B-4bit',
             }),
             200,
           ),

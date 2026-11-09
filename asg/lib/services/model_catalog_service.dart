@@ -9,12 +9,6 @@ import '../models/model_catalog.dart';
 
 const codingModelCatalog = [
   ModelCatalogEntry(
-    repository: 'mlx-community/Qwen3.5-9B-4bit',
-    name: 'Qwen3.5 9B · 4-bit',
-    description: 'General engineering and structured coding assistant.',
-    github: 'https://github.com/QwenLM/Qwen3.5',
-  ),
-  ModelCatalogEntry(
     repository: 'mlx-community/Qwen3.5-27B-4bit',
     name: 'Qwen3.5 27B · 4-bit',
     description:
