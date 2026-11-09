@@ -10,12 +10,12 @@ import json
 import os
 from pathlib import Path
 import re
+import secrets
 import selectors
 import signal
 import stat
 import subprocess
 import sys
-import tempfile
 import time
 
 MAX_FILES = 2048
@@ -143,31 +143,84 @@ def prepare(source, commit, parent):
     if source == parent or source in parent.parents:
         raise ValueError('Choose a candidate parent outside the source repository.')
     deadline = time.monotonic() + 60
-    if read_git(source, ['rev-parse', '--show-toplevel'], 4096, deadline).rstrip(b'\n') != os.fsencode(source):
-        raise ValueError('Choose the root of the trusted local repository.')
-    if read_git(source, ['cat-file', '-t', commit], 16, deadline) != b'commit\n':
-        raise ValueError('The selected object must be a commit.')
-    entries = parse_tree(read_git(source, ['ls-tree', '-rlz', commit], MAX_TREE_BYTES, deadline))
-    run = Path(tempfile.mkdtemp(prefix='asg-self-candidate-', dir=parent))
-    staging = run / 'incomplete'
-    ready = run / f'source-{commit}'
+    parent_fd = open_directory_no_links(parent)
+    run_fd = stage_fd = None
+    run = None
     try:
-        staging.mkdir(mode=0o700)
-        root_fd = os.open(staging, os.O_DIRECTORY | os.O_NOFOLLOW)
-        try:
-            for parts, mode, oid, size in entries:
-                data = read_git(source, ['cat-file', 'blob', oid.decode()], size, deadline)
-                digest = hashlib.sha1(b'blob ' + str(size).encode() + b'\0' + data).hexdigest()
-                if len(data) != size or digest.encode() != oid:
-                    raise ValueError('Source object bytes differ from the selected tree.')
-                write_blob(root_fd, parts, 0o700 if mode == b'100755' else 0o600, data)
-        finally:
-            os.close(root_fd)
-        check_stop()
-        staging.rename(ready)
+        if read_git(source, ['rev-parse', '--show-toplevel'], 4096, deadline).rstrip(b'\n') != os.fsencode(source):
+            raise ValueError('Choose the root of the trusted local repository.')
+        if read_git(source, ['cat-file', '-t', commit], 16, deadline) != b'commit\n':
+            raise ValueError('The selected object must be a commit.')
+        entries = parse_tree(read_git(source, ['ls-tree', '-rlz', commit], MAX_TREE_BYTES, deadline))
+        require_directory_identity(parent, parent_fd)
+        for _ in range(8):
+            name = f'asg-self-candidate-{secrets.token_hex(4)}'
+            try:
+                os.mkdir(name, 0o700, dir_fd=parent_fd)
+            except FileExistsError:
+                continue
+            run = parent / name
+            break
+        if run is None:
+            raise ValueError('Could not allocate a new candidate run.')
+        run_fd = os.open(run.name, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=parent_fd)
+        staging = run / 'incomplete'
+        ready = run / f'source-{commit}'
+        os.mkdir(staging.name, 0o700, dir_fd=run_fd)
+        stage_fd = os.open(staging.name, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=run_fd)
+
+        expected_files = {}
+        expected_directories = set()
+        for parts, mode, oid, size in entries:
+            data = read_git(source, ['cat-file', 'blob', oid.decode()], size, deadline)
+            digest = hashlib.sha1(b'blob ' + str(size).encode() + b'\0' + data).hexdigest()
+            if len(data) != size or digest.encode() != oid:
+                raise ValueError('Source object bytes differ from the selected tree.')
+            file_mode = 0o700 if mode == b'100755' else 0o600
+            expected_files['/'.join(parts)] = (file_mode, hashlib.sha256(data).digest())
+            expected_directories.update('/'.join(parts[:i]) for i in range(1, len(parts)))
+            write_blob(stage_fd, parts, file_mode, data)
+
+        def verify_entry(relative, data, mode):
+            if data is None:
+                if relative not in expected_directories:
+                    raise ValueError('Staged snapshot has an unexpected directory.')
+                expected_directories.remove(relative)
+            elif expected_files.pop(relative, None) != (mode, hashlib.sha256(data).digest()):
+                raise ValueError('Staged snapshot differs from the selected tree.')
+
+        entry_limit = len(expected_files) + len(expected_directories)
+        staged_digest, _ = scan_candidate(
+            staging, sink=verify_entry, allow_incomplete=True, deadline=deadline,
+            entry_limit=entry_limit,
+        )
+        if expected_files or expected_directories:
+            raise ValueError('Staged snapshot is missing committed entries.')
+
+        check_preparation_deadline(deadline)
+        require_directory_identity(parent, parent_fd)
+        require_directory_identity(run, run_fd)
+        require_directory_identity(staging, stage_fd)
+        check_preparation_deadline(deadline)
+        exclusive_rename(run_fd, staging.name, ready.name)
+
+        require_directory_identity(ready, stage_fd)
+        published_digest, _ = scan_candidate(ready, deadline=deadline, entry_limit=entry_limit)
+        if published_digest != staged_digest:
+            raise ValueError('Published snapshot differs from the staged tree.')
+        require_directory_identity(parent, parent_fd)
+        require_directory_identity(run, run_fd)
+        require_directory_identity(ready, stage_fd)
+        check_preparation_deadline(deadline)
+        return ready
     except (OSError, ValueError, subprocess.SubprocessError, KeyboardInterrupt) as error:
+        if run is None:
+            raise
         raise ValueError(f'Preparation stopped. Inspect the candidate run at {run}.') from error
-    return ready
+    finally:
+        for descriptor in (stage_fd, run_fd, parent_fd):
+            if descriptor is not None:
+                os.close(descriptor)
 
 
 def open_directory_no_links(directory):
@@ -185,7 +238,24 @@ def open_directory_no_links(directory):
         os.close(parent)
 
 
-def scan_candidate(candidate, capture=None, sink=None, allow_incomplete=False):
+def require_directory_identity(directory, descriptor):
+    current = open_directory_no_links(directory)
+    try:
+        observed = os.fstat(current)
+        owned = os.fstat(descriptor)
+        if (observed.st_dev, observed.st_ino) != (owned.st_dev, owned.st_ino):
+            raise ValueError('Candidate directory identity changed during preparation.')
+    finally:
+        os.close(current)
+
+
+def check_preparation_deadline(deadline):
+    check_stop()
+    if deadline is not None and time.monotonic() >= deadline:
+        raise ValueError('Snapshot verification timed out.')
+
+
+def scan_candidate(candidate, capture=None, sink=None, allow_incomplete=False, *, deadline=None, entry_limit=None):
     """Hash names, executable bits and bytes without following candidate links."""
     if ((not re.fullmatch(r'source-[0-9a-f]{40}', candidate.name)
              and not (allow_incomplete and candidate.name == 'incomplete'))
@@ -193,6 +263,8 @@ def scan_candidate(candidate, capture=None, sink=None, allow_incomplete=False):
             or candidate.resolve(strict=True) != candidate):
         raise ValueError('Choose a prepared candidate directory.')
     digest = hashlib.sha256(b'ASG candidate tree v1\0')
+    if entry_limit is None:
+        entry_limit = MAX_FILES * 2
     entries = 0
     files = 0
     total = 0
@@ -209,14 +281,14 @@ def scan_candidate(candidate, capture=None, sink=None, allow_incomplete=False):
         with os.scandir(directory) as children:
             names = []
             for child in children:
-                check_stop()
+                check_preparation_deadline(deadline)
                 entries += 1
-                if entries > MAX_FILES * 2:
+                if entries > entry_limit:
                     raise ValueError('Candidate has too many entries.')
                 names.append(os.fsencode(child.name))
         seen = set()
         for name in sorted(names):
-            check_stop()
+            check_preparation_deadline(deadline)
             folded = name.lower()
             if (depth >= 16 or not COMPONENT.fullmatch(name)
                     or folded in (b'.', b'..', b'.git') or folded in seen):
@@ -267,7 +339,7 @@ def scan_candidate(candidate, capture=None, sink=None, allow_incomplete=False):
         root_identity = identity(os.fstat(root))
         visit(root, b'', 0)
         for relative, expected in observed.items():
-            check_stop()
+            check_preparation_deadline(deadline)
             parts = relative.split(b'/')
             parent = os.dup(root)
             try:

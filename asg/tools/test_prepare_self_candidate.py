@@ -80,6 +80,138 @@ class CandidateTests(unittest.TestCase):
         self.assertEqual((result / 'entry').read_bytes(), b'original')
         self.assertEqual((self.source / 'entry').read_bytes(), b'original')
 
+    def test_staging_substitution_is_refused_and_fresh_retry_succeeds(self):
+        (self.source / 'entry').write_bytes(b'original')
+        commit = self.commit()
+        write = candidate.write_blob
+
+        def substitute(root_fd, parts, mode, data):
+            write(root_fd, parts, mode, data)
+            staging, = self.parent.glob('*/incomplete')
+            staging.rename(staging.with_name('retained-original'))
+            staging.mkdir()
+            (staging / 'unexpected.txt').write_bytes(b'unexpected')
+
+        with patch.object(candidate, 'write_blob', side_effect=substitute):
+            with self.assertRaisesRegex(ValueError, 'Inspect the candidate run'):
+                candidate.prepare(self.source, commit, self.parent)
+        failed, = self.parent.glob('asg-self-candidate-*')
+        self.assertFalse((failed / f'source-{commit}').exists())
+        self.assertEqual((failed / 'retained-original/entry').read_bytes(), b'original')
+        self.assertEqual((failed / 'incomplete/unexpected.txt').read_bytes(), b'unexpected')
+        ready = candidate.prepare(self.source, commit, self.parent)
+        self.assertNotEqual(ready.parent, failed)
+        self.assertEqual((ready / 'entry').read_bytes(), b'original')
+
+    def test_existing_publication_target_is_preserved(self):
+        (self.source / 'entry').write_bytes(b'original')
+        commit = self.commit()
+        write = candidate.write_blob
+        existing = []
+
+        def occupy(root_fd, parts, mode, data):
+            write(root_fd, parts, mode, data)
+            staging, = self.parent.glob('*/incomplete')
+            target = staging.with_name(f'source-{commit}')
+            target.mkdir()
+            existing.append((target, target.stat().st_ino))
+
+        with patch.object(candidate, 'write_blob', side_effect=occupy):
+            with self.assertRaisesRegex(ValueError, 'Inspect the candidate run'):
+                candidate.prepare(self.source, commit, self.parent)
+        (target, inode), = existing
+        self.assertEqual(target.stat().st_ino, inode)
+        self.assertEqual(list(target.iterdir()), [])
+        self.assertEqual((target.parent / 'incomplete/entry').read_bytes(), b'original')
+
+    def test_changed_staged_mode_and_extra_directory_are_refused(self):
+        (self.source / 'entry').write_bytes(b'original')
+        commit = self.commit()
+        write = candidate.write_blob
+
+        for mutation in ('mode', 'empty-directory'):
+            with self.subTest(mutation=mutation):
+                destination = self.parent / mutation
+                destination.mkdir()
+
+                def change(root_fd, parts, mode, data):
+                    write(root_fd, parts, mode, data)
+                    staging, = destination.glob('*/incomplete')
+                    if mutation == 'mode':
+                        (staging / 'entry').chmod(0o700)
+                    else:
+                        (staging / 'extra').mkdir()
+
+                with patch.object(candidate, 'write_blob', side_effect=change):
+                    with self.assertRaisesRegex(ValueError, 'Inspect the candidate run'):
+                        candidate.prepare(self.source, commit, destination)
+                self.assertEqual(list(destination.glob('*/source-*')), [])
+
+    def test_changed_bytes_at_publication_are_refused(self):
+        (self.source / 'entry').write_bytes(b'original')
+        commit = self.commit()
+        publish = candidate.exclusive_rename
+
+        def change(run_fd, source, target):
+            publish(run_fd, source, target)
+            ready, = self.parent.glob(f'*/source-{commit}')
+            (ready / 'entry').write_bytes(b'changed!')
+
+        with patch.object(candidate, 'exclusive_rename', side_effect=change):
+            with self.assertRaisesRegex(ValueError, 'Inspect the candidate run'):
+                candidate.prepare(self.source, commit, self.parent)
+        ready, = self.parent.glob(f'*/source-{commit}')
+        self.assertEqual((ready / 'entry').read_bytes(), b'changed!')
+        self.assertEqual((self.source / 'entry').read_bytes(), b'original')
+
+    def test_replaced_destination_is_refused_before_run_creation(self):
+        (self.source / 'entry').write_bytes(b'original')
+        commit = self.commit()
+        destination = self.parent / 'destination'
+        destination.mkdir()
+        moved = self.parent / 'moved-destination'
+        read = candidate.read_git
+
+        def replace_after_tree(source, args, limit, deadline):
+            result = read(source, args, limit, deadline)
+            if args[0] == 'ls-tree':
+                destination.rename(moved)
+                destination.mkdir()
+            return result
+
+        with patch.object(candidate, 'read_git', side_effect=replace_after_tree):
+            with self.assertRaisesRegex(ValueError, 'identity changed'):
+                candidate.prepare(self.source, commit, destination)
+        self.assertEqual(list(destination.iterdir()), [])
+        self.assertEqual(list(moved.iterdir()), [])
+
+    def test_stop_after_stage_verification_leaves_incomplete_snapshot(self):
+        (self.source / 'entry').write_bytes(b'original')
+        commit = self.commit()
+        scan = candidate.scan_candidate
+
+        def stop_after_scan(path, **kwargs):
+            verified = scan(path, **kwargs)
+            candidate.request_stop(None, None)
+            return verified
+
+        with patch.object(candidate, '_stop_requested', False):
+            with patch.object(candidate, 'scan_candidate', side_effect=stop_after_scan):
+                with self.assertRaisesRegex(ValueError, 'Inspect the candidate run'):
+                    candidate.prepare(self.source, commit, self.parent)
+        run, = self.parent.glob('asg-self-candidate-*')
+        self.assertEqual((run / 'incomplete/entry').read_bytes(), b'original')
+        self.assertFalse((run / f'source-{commit}').exists())
+
+    def test_nested_committed_tree_keeps_preparation_file_limit(self):
+        path = self.source / 'a/b/c/entry'
+        path.parent.mkdir(parents=True)
+        path.write_bytes(b'nested committed bytes')
+        commit = self.commit()
+        with patch.object(candidate, 'MAX_FILES', 1):
+            ready = candidate.prepare(self.source, commit, self.parent)
+        self.assertEqual((ready / 'a/b/c/entry').read_bytes(), b'nested committed bytes')
+
     def test_case_collision_refused(self):
         oid = b'0' * 40
         header = b'100644 blob ' + oid + b' 0\t'
