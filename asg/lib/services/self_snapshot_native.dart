@@ -229,12 +229,13 @@ Future<String> prepareSelfSnapshot({
       cancellation: stop,
     );
     settled = true;
+    // A settled helper can identify the retained run after a cooperative Stop.
+    if (result.exitCode == 1 && result.stdout.isEmpty) {
+      final run = await _verifiedFailedRun(parent, result.stderr);
+      if (run != null) throw SnapshotPreparationFailure(run);
+    }
     if (stopped()) throw StateError('Snapshot stopped.');
     if (result.exitCode != 0) {
-      if (result.exitCode == 1 && result.stdout.isEmpty) {
-        final run = await _verifiedFailedRun(parent, result.stderr);
-        if (!stopped() && run != null) throw SnapshotPreparationFailure(run);
-      }
       throw StateError('Snapshot preparation failed.');
     }
     final output = result.stdout;

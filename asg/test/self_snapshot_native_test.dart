@@ -128,99 +128,145 @@ void main() {
     },
     skip: !Platform.isMacOS,
   );
-  test(
-    'bundled helper identifies the retained run after publication fails',
-    () async {
-      final root = await Directory.systemTemp.createTemp(
-        'asg-snapshot-recovery-',
-      );
-      addTearDown(() => root.delete(recursive: true));
-      final parent = await root.resolveSymbolicLinks();
-      final source = await Directory('$parent/source').create();
-      await File('${source.path}/entry').writeAsString('original');
+  for (final stopAfterPublish in [false, true]) {
+    test(
+      stopAfterPublish
+          ? 'bundled helper identifies the retained run after Stop'
+          : 'bundled helper identifies the retained run after publication fails',
+      () async {
+        final root = await Directory.systemTemp.createTemp(
+          'asg-snapshot-recovery-',
+        );
+        addTearDown(() => root.delete(recursive: true));
+        final parent = await root.resolveSymbolicLinks();
+        final source = await Directory('$parent/source').create();
+        await File('${source.path}/entry').writeAsString('original');
 
-      Future<String> git(List<String> args) async {
-        final result = await Process.run('/usr/bin/git', [
-          '-C',
-          source.path,
+        Future<String> git(List<String> args) async {
+          final result = await Process.run('/usr/bin/git', [
+            '-C',
+            source.path,
+            '-c',
+            'core.hooksPath=/dev/null',
+            ...args,
+          ]);
+          expect(result.exitCode, 0, reason: result.stderr.toString());
+          return (result.stdout as String).trim();
+        }
+
+        await git(['init', '-q']);
+        await git(['add', 'entry']);
+        await git([
           '-c',
-          'core.hooksPath=/dev/null',
-          ...args,
+          'user.name=Fixture',
+          '-c',
+          'user.email=fixture@example.invalid',
+          '-c',
+          'commit.gpgsign=false',
+          'commit',
+          '-qm',
+          'fixture',
         ]);
-        expect(result.exitCode, 0, reason: result.stderr.toString());
-        return (result.stdout as String).trim();
-      }
-
-      await git(['init', '-q']);
-      await git(['add', 'entry']);
-      await git([
-        '-c',
-        'user.name=Fixture',
-        '-c',
-        'user.email=fixture@example.invalid',
-        '-c',
-        'commit.gpgsign=false',
-        'commit',
-        '-qm',
-        'fixture',
-      ]);
-      final commit = await git(['rev-parse', 'HEAD']);
-      final launcher = await File('$parent/fixture-python')
-          .writeAsString(r'''#!/usr/bin/python3
+        final commit = await git(['rev-parse', 'HEAD']);
+        final barrier = File('$parent/after-publication');
+        final launcher = await File('$parent/fixture-python')
+            .writeAsString('''#!/usr/bin/python3
+import os
 import runpy
+import signal
 import sys
+import time
 from pathlib import Path
 main = runpy.run_path(sys.argv[3])['main']
 helpers = main.__globals__
 original_rename = helpers['exclusive_rename']
-def mutate(run_fd, staging, target):
+signal.signal(signal.SIGTERM, helpers['request_stop'])
+def after_publication(run_fd, staging, target):
     original_rename(run_fd, staging, target)
-    run, = Path(sys.argv[-1]).glob('asg-self-candidate-*')
+    parent = Path(sys.argv[-1])
+    if ${stopAfterPublish ? 'True' : 'False'}:
+        (parent / 'after-publication').write_text(str(os.getpid()))
+        deadline = time.monotonic() + 10
+        while time.monotonic() < deadline:
+            helpers['check_stop']()
+            time.sleep(0.01)
+        raise RuntimeError('Fixture did not receive Stop')
+    run, = parent.glob('asg-self-candidate-*')
     (run / target / 'entry').write_text('changed after publication')
-helpers['exclusive_rename'] = mutate
+helpers['exclusive_rename'] = after_publication
 raise SystemExit(main(sys.argv[4:]))
 ''');
-      expect(
-        (await Process.run('/bin/chmod', ['700', launcher.path])).exitCode,
-        0,
-      );
-      Future<String> prepare(String python) => prepareSelfSnapshot(
-        source: source.path,
-        destination: parent,
-        commit: commit,
-        python: python,
-        stop: Completer<void>().future,
-        stopped: () => false,
-      );
-      await expectLater(
-        prepare(launcher.path),
-        throwsA(
-          isA<SnapshotPreparationFailure>().having(
-            (failure) => failure.runPath,
-            'run folder',
-            startsWith('$parent/asg-self-candidate-'),
+        expect(
+          (await Process.run('/bin/chmod', ['700', launcher.path])).exitCode,
+          0,
+        );
+        Future<String> prepare(String python, Completer<void> stop) =>
+            prepareSelfSnapshot(
+              source: source.path,
+              destination: parent,
+              commit: commit,
+              python: python,
+              stop: stop.future,
+              stopped: () => stop.isCompleted,
+            );
+        Directory retainedRun() => Directory(parent)
+            .listSync()
+            .whereType<Directory>()
+            .singleWhere(
+              (directory) =>
+                  directory.path.startsWith('$parent/asg-self-candidate-'),
+            );
+        final stop = Completer<void>();
+        final failure = expectLater(
+          prepare(launcher.path, stop),
+          throwsA(
+            isA<SnapshotPreparationFailure>().having(
+              (failure) => failure.runPath,
+              'run folder',
+              predicate<String>(
+                (reported) => reported == retainedRun().path,
+                'the retained run folder',
+              ),
+            ),
           ),
-        ),
-      );
-      final failed = Directory(parent)
-          .listSync()
-          .whereType<Directory>()
-          .singleWhere(
-            (directory) =>
-                directory.path.startsWith('$parent/asg-self-candidate-'),
-          );
-      expect(
-        await File('${failed.path}/source-$commit/entry').readAsString(),
-        'changed after publication',
-      );
-      expect(await inspectIncompleteSnapshots(parent), isEmpty);
-      final ready = await prepare('/usr/bin/python3');
-      expect(ready, isNot(startsWith(failed.path)));
-      expect(await File('$ready/entry').readAsString(), 'original');
-      expect(await File('${source.path}/entry').readAsString(), 'original');
-    },
-    skip: !Platform.isMacOS,
-  );
+        );
+        if (stopAfterPublish) {
+          final watch = Stopwatch()..start();
+          try {
+            while (!await barrier.exists() &&
+                watch.elapsed < const Duration(seconds: 5)) {
+              await Future<void>.delayed(const Duration(milliseconds: 20));
+            }
+            expect(await barrier.exists(), isTrue);
+          } finally {
+            stop.complete();
+            await failure;
+          }
+          final pid = await barrier.readAsString();
+          final process = await Process.run('/bin/ps', [
+            '-p',
+            pid,
+            '-o',
+            'pid=',
+          ]);
+          expect(process.stdout.toString().trim(), isEmpty);
+        } else {
+          await failure;
+        }
+        final failed = retainedRun();
+        expect(
+          await File('${failed.path}/source-$commit/entry').readAsString(),
+          stopAfterPublish ? 'original' : 'changed after publication',
+        );
+        expect(await inspectIncompleteSnapshots(parent), isEmpty);
+        final ready = await prepare('/usr/bin/python3', Completer<void>());
+        expect(ready, isNot(startsWith(failed.path)));
+        expect(await File('$ready/entry').readAsString(), 'original');
+        expect(await File('${source.path}/entry').readAsString(), 'original');
+      },
+      skip: !Platform.isMacOS,
+    );
+  }
 
   test('native preparation rejects invalid recovery receipts', () async {
     final root = await Directory.systemTemp.createTemp('asg-recovery-receipt-');

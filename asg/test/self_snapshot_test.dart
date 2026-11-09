@@ -1159,35 +1159,41 @@ void main() {
     expect(find.textContaining('Snapshot ready'), findsNothing);
   });
 
-  test('ignores a recovery receipt received after Stop', () async {
-    final result = Completer<String>();
-    final controller = SelfSnapshotController(
-      prepare: ({
-        required source,
-        required destination,
-        required commit,
-        required python,
-        required stop,
-        required stopped,
-      }) => result.future,
-    );
-    addTearDown(controller.dispose);
-    final preparation = controller.prepare(
-      source: '/source',
-      destination: '/destination',
-      commit: commitId,
-      python: '/python',
-    );
-    controller.stop();
-    result.completeError(
-      const SnapshotPreparationFailure(
+  test(
+    'Stop shows the retained run without reporting a ready snapshot',
+    () async {
+      final result = Completer<String>();
+      final controller = SelfSnapshotController(
+        prepare: ({
+          required source,
+          required destination,
+          required commit,
+          required python,
+          required stop,
+          required stopped,
+        }) => result.future,
+      );
+      addTearDown(controller.dispose);
+      final preparation = controller.prepare(
+        source: '/source',
+        destination: '/destination',
+        commit: commitId,
+        python: '/python',
+      );
+      controller.stop();
+      result.completeError(
+        const SnapshotPreparationFailure(
+          '/destination/asg-self-candidate-a1b2c3d4',
+        ),
+      );
+      await preparation;
+      expect(
+        controller.status,
+        'Preparation stopped. Inspect the run folder before retrying.\n'
         '/destination/asg-self-candidate-a1b2c3d4',
-      ),
-    );
-    await preparation;
-    expect(controller.status, startsWith('Preparation stopped.'));
-    expect(controller.status, isNot(contains('asg-self-candidate-')));
-  });
+      );
+    },
+  );
 
   test('ignores a recovery receipt received after disposal', () async {
     final result = Completer<String>();
