@@ -18,12 +18,12 @@ void main() {
     () async {
       final store = HistoricalModelObservationStore(read: () async => report());
       final value = await store.load();
-      expect(value.recordedAt, DateTime.utc(2026, 11, 2, 5, 49, 49));
+      expect(value.recordedAt, DateTime.utc(2026, 11, 9, 18, 56, 12));
       expect(value.runs.map((run) => run.completionTokens), [2, 10, 2]);
-      expect(value.runs[1].tokensPerSecond, closeTo(77.6559, .001));
-      expect(value.runs[2].processPeakGb, closeTo(5.317288, .001));
-      expect(value.weightBytes, 5038162465);
-      expect(value.disconnectSeconds, .108);
+      expect(value.runs[1].tokensPerSecond, closeTo(22.3368, .001));
+      expect(value.runs[2].processPeakGb, closeTo(15.492977, .001));
+      expect(value.weightBytes, 16054541349);
+      expect(value.disconnectSeconds, .212);
       expect(() => value.runs.clear(), throwsUnsupportedError);
     },
   );
@@ -129,7 +129,7 @@ void main() {
       ),
     );
     expect(reads, 0);
-    await tester.tap(find.text('Historical 9B MLX observation'));
+    await tester.tap(find.text('Historical Qwen3.8 27B MLX observation'));
     await tester.pumpAndSettle();
     await tester.ensureVisible(find.text('Retry historical report'));
     await tester.tap(find.text('Retry historical report'));

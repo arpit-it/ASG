@@ -4,7 +4,7 @@ ASG is a Flutter application targeting Android, iOS, web, macOS, Windows and Lin
 
 The commands and measurements below describe the earlier Torch/BF16 experiment. For the active MLX setup, use [Qwen streaming](QWEN_STREAMING.md). They are retained for reproducibility, not the recommended current startup path.
 
-**Current runtime update:** Qwen now uses the verified local 4-bit MLX streaming backend. The earlier Torch timeout/nonstreaming notes below are historical. See [QWEN_STREAMING.md](QWEN_STREAMING.md) for current setup, limits and successful real-edit verification.
+The owner's Mac uses Qwen3.8-27B-4bit with MLX / Metal for current ASG development. See [the current setup and verification steps](QWEN_STREAMING.md).
 
 ## Verified checkpoint and runtime
 
@@ -20,7 +20,7 @@ From the Flutter app directory:
 ```sh
 cd /Users/arpitsinha/AndroidStudioProjects/ASG/asg
 /Users/arpitsinha/ComfyUI-Installs/mac_instance/ComfyUI/.venv/bin/python -B tools/qwen_server.py \
-  --model /Users/arpitsinha/ARG-model-downloads/qwen3.5-9b
+  --model /Users/arpitsinha/ARG-model-downloads/qwen3.5-9b --model-id Qwen3.5-9B
 ```
 
 Wait for `Ready at http://127.0.0.1:8765/v1`. The bridge binds only to loopback, uses local files only and disables remote model code. Stop it with Ctrl+C in that terminal to release model memory. On a clean checkout install the missing helper into the same project-local folder with:

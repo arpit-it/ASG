@@ -118,7 +118,7 @@ class _ModelCatalogScreenState extends State<ModelCatalogScreen> {
                   child: const Text('Check preferred models'),
                 ),
                 const Text(
-                  'ASG prioritizes Qwen3.8 27B, Qwen3.5 27B, then 9B when estimated memory fits a new load. This is a curated policy, not a measured quality or speed guarantee. Other platforms require a compatible runtime connection; no local model is recommended here.',
+                  'ASG prioritizes Qwen3.8 27B, then Qwen3.5 27B when estimated memory fits a new load. This is a curated policy, not a measured quality or speed guarantee. Other platforms require a compatible runtime connection; no local model is recommended here.',
                 ),
               ],
               const SizedBox(height: 16),

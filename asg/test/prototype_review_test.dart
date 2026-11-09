@@ -22,6 +22,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dashboard_build_status_test.dart' as build;
 import 'planning_conversation_test.dart'
     show project, ControlledRecords, PlanningProvider, tick, chat;
+import 'live_model_config.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -197,6 +198,7 @@ void main() {
       HttpOverrides.global = null;
       addTearDown(() => HttpOverrides.global = previous);
       final records = ControlledRecords();
+      await selectLiveModel(records);
       await ApplicationStore(records)
           .save(project.id, const ApplicationSnapshot(build.definition, [], 3));
       final before = records.values['studio.application.v1.planning'];

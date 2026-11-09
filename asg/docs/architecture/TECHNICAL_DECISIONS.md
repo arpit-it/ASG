@@ -4,6 +4,11 @@ ASG is a Flutter application targeting Android, iOS, web, macOS, Windows and Lin
 
 Flutter supersedes the original SwiftUI/macOS-only product framework. Historical decisions below retain provenance; later Sembast and MLX decisions supersede preference-only storage and BF16 runtime choices. Model files/environments remain external; prior MLX benchmarks are recorded observations, not current runtime health.
 
+## Owner's Mac development model — 9 November 2026
+
+Use the existing local `Qwen3.8-27B-4bit` checkpoint on MLX / Metal for all current and remaining ASG tasks on the owner's Mac that require live inference. Use the exact server model ID `Qwen3.8-27B-4bit` at `http://127.0.0.1:8765/v1`. Verify runtime health and model identity before recording live evidence. If the runtime is unavailable or reports a different model, keep the affected acceptance pending and continue eligible independent work. Keep dated observations and deterministic fixtures tied to their original model identities.
+See [local setup and verification](../setup/QWEN_STREAMING.md).
+
 ## Runtime setup — 25 October 2026
 
 Add a top-right landing FAB and a dedicated MVC setup screen. Support complete downloaded local checkpoints first; explicit HF/Git downloads create new folders and run no repository Python. Initial managed backend is the existing Qwen3.5 Transformers bridge on Apple Metal. Bundled scripts are app assets; Python selection and repository/model paths are configuration.
@@ -17,7 +22,7 @@ Make the user supply intent/choices while Studio leads creation. Restore the cur
 
 ## Verified MLX streaming runtime — 25 October 2026
 
-Use the existing Qwen3.5-9B weights converted locally to 4-bit MLX for the active Apple Silicon runtime. The full BF16 Torch path previously timed out on structured edits; the MLX path passes the actual custom-edit integration test with streamed phases/summary chunks. Preserve the existing API endpoint/model ID and original weights. Keep Python dependencies isolated/pinned and model caches ignored. Use SSE with heartbeats, explicit completion/error semantics, inactivity/total limits and cancellation. Show processing state and human-readable summary text; never apply an incomplete or unvalidated edit. Details and measurements: QWEN_STREAMING.md.
+The October verification used existing Qwen3.5-9B weights converted locally to 4-bit MLX on Apple Silicon. The full BF16 Torch path previously timed out on structured edits; the MLX path passes the actual custom-edit integration test with streamed phases/summary chunks. That verification preserved the API endpoint/model ID and original weights. Keep Python dependencies isolated/pinned and model caches ignored. Use SSE with heartbeats, explicit completion/error semantics, inactivity/total limits and cancellation. Show processing state and human-readable summary text; never apply an incomplete or unvalidated edit. Details and measurements: QWEN_STREAMING.md.
 
 ## Issue #4: transactional repositories
 

@@ -57,7 +57,7 @@ class FakeRuntimeHost implements RuntimeHost {
   Future<List<ModelCandidate>> scan(String path) async => [
     ModelCandidate(
       path: path,
-      name: 'Qwen3.5-9B',
+      name: 'Qwen3.8-27B-4bit',
       supported: true,
       detail: 'Complete checkpoint',
     ),
@@ -73,7 +73,7 @@ class FakeRuntimeHost implements RuntimeHost {
   @override
   Future<String> download(RuntimeSetup setup) async {
     downloads++;
-    return '/models/Qwen3.5-9B';
+    return '/models/Qwen3.8-27B-4bit';
   }
 
   @override
@@ -299,7 +299,7 @@ class CancelledLaunchHost extends DelayedStartupHost {
 
 RuntimeConnection connection({
   required bool Function() ready,
-  String model = 'Qwen3.5-9B',
+  String model = 'Qwen3.8-27B-4bit',
   String? path,
 }) => RuntimeConnection(
   client: MockClient(
@@ -539,7 +539,7 @@ void main() {
     expect(c.error, isNull);
     expect(c.health.ready, isTrue);
     expect(c.status, contains('Runtime ready'));
-    expect(c.modelStore.load().model, 'Qwen3.5-9B');
+    expect(c.modelStore.load().model, 'Qwen3.8-27B-4bit');
     expect(host.launches, 2);
   });
 
@@ -1294,13 +1294,15 @@ void main() {
     );
     final status = c.status;
     final initialConnection = c.connectionConfig;
-    final pending = c.connect(const LocalModelConfig(model: 'Qwen3.5-9B'));
+    final pending = c.connect(
+      const LocalModelConfig(model: 'Qwen3.8-27B-4bit'),
+    );
     await delayed.entered.future;
     c.dispose();
     delayed.release.complete();
     await pending;
     // A dispatched durable write is allowed to finish; closed UI stays unchanged.
-    expect(ordinary.load().model, 'Qwen3.5-9B');
+    expect(ordinary.load().model, 'Qwen3.8-27B-4bit');
     expect(c.connectionConfig, same(initialConnection));
     expect(c.status, status);
     expect(c.health.ready, isFalse);
@@ -1467,11 +1469,12 @@ void main() {
   test(
     'parses HF IDs/URLs and HTTPS Git, rejects credentials and shell input',
     () {
-      expect(ModelRepository.parse('Qwen/Qwen3.5-9B').huggingFace, true);
+      expect(ModelRepository.parse('Qwen/Qwen3.8-27B-4bit').huggingFace, true);
       expect(
-        ModelRepository.parse('https://huggingface.co/Qwen/Qwen3.5-9B.git')
-            .location,
-        'Qwen/Qwen3.5-9B',
+        ModelRepository.parse(
+          'https://huggingface.co/Qwen/Qwen3.8-27B-4bit.git',
+        ).location,
+        'Qwen/Qwen3.8-27B-4bit',
       );
       expect(
         ModelRepository.parse('https://github.com/team/model.git').name,
@@ -1506,12 +1509,12 @@ void main() {
     expect(host.downloads, 0);
     await c.download(
       const RuntimeSetup(
-        repository: 'Qwen/Qwen3.5-9B',
+        repository: 'Qwen/Qwen3.8-27B-4bit',
         downloadParent: '/models',
       ),
     );
     expect(host.downloads, 1);
-    expect(c.selected?.path, '/models/Qwen3.5-9B');
+    expect(c.selected?.path, '/models/Qwen3.8-27B-4bit');
     c.dispose();
   });
   test(
@@ -1530,7 +1533,7 @@ void main() {
         ModelSettingsStore.fromPreferences(
           await SharedPreferences.getInstance(),
         ).load().model,
-        'Qwen3.5-9B',
+        'Qwen3.8-27B-4bit',
       );
       await c.stop();
       expect(host.stops, 1);
@@ -1662,7 +1665,7 @@ void main() {
                 return http.Response(
                   jsonEncode({
                     'status': 'ready',
-                    'model': 'Qwen3.5-9B',
+                    'model': 'Qwen3.8-27B-4bit',
                     'model_path': '/models',
                   }),
                   200,
@@ -1713,7 +1716,7 @@ void main() {
               return http.Response(
                 jsonEncode({
                   'status': status,
-                  'model': 'Qwen3.5-9B',
+                  'model': 'Qwen3.8-27B-4bit',
                   'model_path': '/models',
                 }),
                 200,
@@ -1833,7 +1836,7 @@ void main() {
         }
         expect(c.error, isNull);
         expect(c.health.ready, isTrue);
-        expect(durable.load().model, 'Qwen3.5-9B');
+        expect(durable.load().model, 'Qwen3.8-27B-4bit');
         expect(durable.load().chatOutputTokens, 1024);
         expect(c.connectionConfig.chatOutputTokens, 1024);
         if (managed) await c.stop();
@@ -1855,7 +1858,7 @@ void main() {
     await c.inspect('/models');
     await c.start(const RuntimeSetup(python: '/python'));
     expect(c.error, isNull);
-    expect(settings.load().model, 'Qwen3.5-9B');
+    expect(settings.load().model, 'Qwen3.8-27B-4bit');
     expect(settings.load().chatOutputTokens, 512);
     expect(c.connectionConfig.chatOutputTokens, 512);
     await c.stop();
@@ -1913,7 +1916,7 @@ void main() {
       expect(c.error, isNot(contains('token=secret')));
       expect(requests, 0);
       expect(prefs.getString('studio.localModel.v1'), before);
-      expect(c.connectionConfig.model, 'Qwen3.5-9B');
+      expect(c.connectionConfig.model, 'Qwen3.8-27B-4bit');
       expect(c.busy, isFalse);
       c.dispose();
     },
@@ -1952,7 +1955,7 @@ void main() {
       ModelSettingsStore.fromPreferences(await SharedPreferences.getInstance())
           .load()
           .model,
-      'Qwen3.5-9B',
+      'Qwen3.8-27B-4bit',
     );
     await c.stop();
     expect(host.stops, 0);

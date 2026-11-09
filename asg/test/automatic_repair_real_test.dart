@@ -39,6 +39,7 @@ import 'board_mapped_build_plan_test.dart' show boardContent, sharedContract;
 
 import 'candidate_real_test.dart'
     show installedSdk, RealCandidateFolder, getPreview;
+import 'live_model_config.dart';
 
 /// Only the initial defect is deterministic; every repair uses real transport.
 class BrokenCandidateProposer extends SourceEditProposer {
@@ -93,6 +94,7 @@ void main() {
       var databaseClosed = false;
       SourceGenerationController? controller;
       try {
+        await selectLiveModel(records);
         await StudioStore(records).save([project]);
         final boards = RequirementsStore(records);
         await boards.save(

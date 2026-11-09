@@ -1,5 +1,9 @@
 # Durable project memory
 
+## Local development model — 9 November 2026
+
+The owner reaffirmed Qwen3.8-27B-4bit on MLX / Metal for current and remaining ASG tasks requiring live inference on this Mac. The saved development automation uses the exact loopback model ID. Earlier model measurements retain their original identities. F22 remains open pending live capability evidence.
+
 ## Fixed stock Flutter test events — 9 November 2026
 
 Offline checks refuse Flutter SDK and Pub cache roots that overlap the full prepared snapshot. [PR #547](https://github.com/arpit-it/ASG/pull/547) published head `ef085eb0c6ea631d4fafe599e2d40237b0533805` matched tested tree `1595f4b1f32de5e0e92dd284ce3c6d7aa86b7074`. [Independent review 5827012746](https://github.com/arpit-it/ASG/pull/547#pullrequestreview-5827012746) approved it, [required CI 42630615905](https://github.com/arpit-it/ASG/actions/runs/42630615905) passed, and protected merge `b0d6e992b81c30a02242c5722392d331c2435684` was verified on 9 November 2026 at 14:09:30 UTC. The disposable Mac fixture refused an SDK inside the snapshot before it ran and resolved dependencies with installed external Flutter. Issue #406 remains open.

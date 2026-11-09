@@ -22,6 +22,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:sembast/sembast_io.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'live_model_config.dart';
+
 const project = StudioProject(
   id: 'planning',
   name: 'Planner',
@@ -87,6 +89,7 @@ void main() {
       HttpOverrides.global = null;
       addTearDown(() => HttpOverrides.global = previousOverrides);
       final records = ControlledRecords();
+      await selectLiveModel(records);
       final controller = ChatController(
         project,
         openStore: () async => ConversationStore(records),
@@ -124,7 +127,10 @@ void main() {
         BuildPlan.parse(controller.messages.last.content).tasks,
         hasLength(4),
       );
-      expect(records.values.keys, ['studio.chat.v1.planning']);
+      expect(records.values.keys, [
+        'studio.localModel.v1',
+        'studio.chat.v1.planning',
+      ]);
     },
     skip: !const bool.fromEnvironment('ASG_REAL_INFERENCE'),
     timeout: const Timeout(Duration(minutes: 3)),

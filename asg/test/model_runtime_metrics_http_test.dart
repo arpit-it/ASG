@@ -21,7 +21,7 @@ const metrics = {
   'private_debug': 'never display this',
 };
 Map<String, Object> response({Object? reported = metrics}) => {
-  'model': 'Qwen3.5-9B',
+  'model': 'Qwen3.8-27B-4bit',
   'choices': [
     {
       'message': {'content': 'Ready'},
@@ -33,7 +33,7 @@ Map<String, Object> response({Object? reported = metrics}) => {
 String event(Object value) => 'data: ${jsonEncode(value)}\n\n';
 String streamStart({String reason = 'stop'}) =>
     event({
-      'model': 'Qwen3.5-9B',
+      'model': 'Qwen3.8-27B-4bit',
       'choices': [
         {
           'delta': {'content': 'Ready'},
@@ -117,7 +117,7 @@ void main() {
             .single
             .testObservation!
             .responseModel,
-        'Qwen3.5-9B',
+        'Qwen3.8-27B-4bit',
       );
       expect(records.values.values.join(), isNot(contains('private_debug')));
       expect(records.values.values.join(), isNot(contains('never display')));

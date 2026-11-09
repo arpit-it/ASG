@@ -149,7 +149,7 @@ void main() {
       expect(c.messages.last.modelRequest!.model, 'chosen');
       c.choosePreset(null);
       expect(await c.apply('global custom'), true);
-      expect(c.messages.last.modelRequest!.model, 'Qwen3.5-9B');
+      expect(c.messages.last.modelRequest!.model, 'Qwen3.8-27B-4bit');
       expect(r.values[ModelSettingsStore.presetsKey], 'corrupt');
       c.dispose();
     },

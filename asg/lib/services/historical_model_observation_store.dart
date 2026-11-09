@@ -13,9 +13,9 @@ class HistoricalModelObservationStore {
     : _read = read ?? (() => rootBundle.loadString(asset, cache: false));
   final Future<String> Function() _read;
   static const asset =
-      'docs/development/acceptance/2026-11-02-live-mlx-profile/observations.json';
+      'docs/development/acceptance/2026-11-10-live-27b-profile/observations.json';
   static const digest =
-      '20846a19a46e10b430d92889fe14275047e18c90d512169ef7d014214dd05fca';
+      'eee33435396d9bbb962012979a71c4180329d8e20dbe6517ef40d55647a4570f';
 
   Future<HistoricalModelObservation> load() async {
     try {

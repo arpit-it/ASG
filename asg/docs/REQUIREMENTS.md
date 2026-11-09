@@ -10,6 +10,11 @@ Statuses: Queued, In progress, Blocked, Awaiting merge, Done. A checked box mean
 
 Update this document with task selection and delivery evidence, alongside [agent memory](history/AGENT_MEMORY.md) and [progress](history/PROGRESS.md). Preserve unrelated edits. Include status updates in the relevant branch/PR where possible; reconcile the verified merge on the next run. Never overwrite this document from an older branch.
 
+### Current local development model — 9 November 2026
+
+Use the existing local `Qwen3.8-27B-4bit` checkpoint on MLX / Metal for all current and remaining ASG tasks on the owner's Mac that require live inference. Use the exact server model ID `Qwen3.8-27B-4bit` at `http://127.0.0.1:8765/v1`. Verify runtime health and model identity before recording live evidence. If the runtime is unavailable or reports a different model, keep the affected acceptance pending and continue eligible independent work. Keep dated observations and deterministic fixtures tied to their original model identities.
+See [local model setup and verification](setup/QWEN_STREAMING.md).
+
 ### Owner-authorized implementation and platform-validation separation — 1 November 2026
 
 Unavailable hardware blocks only the corresponding real-host acceptance, not implementable work. Continue bounded F15 CPU implementation, tests, integration and independent review before repeating an unchanged host-resource check. Keep non-Apple CPU and later CUDA live inference explicitly pending; fixtures and app builds never establish inference or full F15 completion. Finish/review/merge each implementable issue before selecting another. Where actual technical prerequisites are delivered, Mac-verifiable F22 selection, F16 capability reporting and F11 adapters may proceed without waiting for every F15/F16 platform milestone. Record the bounded dependency assessment; retain priority among eligible increments and all historical evidence. This owner exception supersedes historical whole-feature selection gates below. Keep experimental backends outside normal supported app choices until live validation.
@@ -259,7 +264,7 @@ F56 below is the owner-selected development-process improvement now, not a new a
   - Delivered owner-selected visibility increment — Done: [issue #354](https://github.com/arpit-it/ASG/issues/354), `354-current-preferred-model`, [PR #355](https://github.com/arpit-it/ASG/pull/355). Testedlocal e107437 / published62431105 share tree2a4b131a324949d02d88affe355049f6164e0131. Fresh independent final review5724199193 and requiredCI41222296670 passed; verified protectedmerge781f7e95bfd1ba428383d383532ccb15e3474b93 at2026-10-31T18:06:54Z, issue closed. Current model observed on open/refresh with truthful preferred/current labels, separate from new-load gates. FullF22 remains unchecked.
   - Delivered owner-selected curated-catalog increment: [issue #348](https://github.com/arpit-it/ASG/issues/348), `348-preferred-role-models`, [PR #349](https://github.com/arpit-it/ASG/pull/349), protectedmerge37b3470d91b860b118b7c85bd47df5f2b13fd7de at2026-10-31T15:33:06Z. Exactfinalreview5723547556/finalgate5723571602 and requiredCI41214940551 passed. Checked Qwen3.8/3.5 new-load order, separate current-runtime observation with no source-proof/RAM credit, advanced discovery retained. FullF15/F22 profile/backend/inference milestones remain outstanding.
   - Delivered owner-selected discovery milestone: [issue #261](https://github.com/arpit-it/ASG/issues/261), `261-coding-model-picker`, [PR #262](https://github.com/arpit-it/ASG/pull/262), merge `1da17314e297a246dbd9992e1fb126b6307fd671`: searchable MLX candidate picker, hardware estimates and explicit metadata checks before pinned download-form selection. F17 stays In progress; F15 and full F22 profile/inference acceptance remain outstanding.
-  - Source/value/priority: owner request on 28 October 2026 for larger models and varied machine form factors. Select after F15 and before F16/F11. F15 owns backend/device execution; F22 owns user-facing model discovery, compatibility, selection and per-model profiles. Qwen3.5-9B is the current verified setup, not a universal MacBook ceiling.
+  - Source/value/priority: owner request on 28 October 2026 for larger models and varied machine form factors. Select after F15 and before F16/F11. F15 owns backend/device execution; F22 owns user-facing model discovery, compatibility, selection and per-model profiles. The selected model on the owner's Mac is Qwen3.8-27B-4bit on MLX / Metal. F22 still requires capability evidence for each model, host and tested operation.
   - Scope: list installed/user-selected local models and optional explicitly browsed model catalogs; record exact model/revision/license, architecture, quantization, backend, context limits, file completeness and disk/memory estimates. Detect host RAM/unified memory or accelerator VRAM and available headroom without equating total memory with usable inference memory. Keep optional catalog downloads explicit; no background weight replacement.
   - Acceptance: choose model per chat/project/run, persist profiles and request provenance, load/unload or connect/test supported models, and safely switch only at an idle boundary. Recommend compatible candidates using weight size plus cache/activation/runtime/OS headroom and measured latency/throughput; label estimates versus actual measurements. Larger local models must pass real load/generation/check-format/cancellation tests before being advertised as supported. Unsupported architecture/quantization fails actionably and preserves the prior working model/settings.
   - Capability acceptance: free-form answers, structured edits, context limits and tool/JSON-format compatibility are explicit per model, not assumed from parameter count. Prompt/token accounting respects the selected model's verified budget; no silent truncation or cloud fallback. Show quality/speed/memory tradeoffs, and retain small-model choices for constrained devices. Quantized MoE models account for resident total weights rather than only active parameters.
@@ -1467,8 +1472,8 @@ Automated Software Generator is a local-first **Flutter/Dart application targeti
 | --- | --- | --- |
 | Flutter app shell, guided creation, project records, prototype UI and planning/requirements screens | Shared application code and six platform runners | Earlier Android debug/macOS debug and current web builds passed. iOS, Windows and Linux application builds and physical-device launches are not established. Responsive widget tests do not establish device acceptance. |
 | Durable local records | Native Sembast file; browser IndexedDB | Real native close/reopen and Chrome IndexedDB tests. Single application isolate/session contract; no cross-process or live multi-tab synchronization. |
-| Runtime connection controls | Shared UI, subject to reachable endpoint/platform network policy | macOS and localhost browser use host loopback; Android Emulator uses its host alias. Physical-phone connectivity is not configured. No phone-local 9B inference is claimed. |
-| Managed model scanning, explicit download, prepare/start/stop | macOS host integration | Existing Qwen3.5-9B 4-bit MLX setup on Apple Silicon; compatible selected Python/checkpoint required. Other targets show an explicit unsupported-managed-setup explanation and connection controls. |
+| Runtime connection controls | Shared UI, subject to reachable endpoint/platform network policy | macOS and localhost browser use host loopback; Android Emulator uses its host alias. Physical-phone connectivity is not configured. Physical-device inference remains unverified. |
+| Managed model scanning, explicit download, prepare/start/stop | macOS host integration | Existing Qwen3.8-27B-4bit MLX setup on the owner's Apple Silicon Mac; compatible selected Python/checkpoint required. Other targets show an explicit unsupported-managed-setup explanation and connection controls. |
 | Independent source generation and compiled preview | macOS-hosted fixed Flutter **web** adapter | Creates a separate new project, executes trusted offline Flutter verification and serves compiled web output. This does not generate macOS/native applications or execute arbitrary repositories. Linux CI fixtures do not change the product host gate. |
 
 ### MVC boundaries and data flow
@@ -1526,7 +1531,7 @@ Preserve existing keys/payload readability. New approval context does not backfi
 
 ### Local inference contract
 
-The current selected model is the existing Qwen3.5-9B, locally converted to 4-bit MLX; original weights and runtime environments remain outside Git. `ModelProvider` abstracts the configured endpoint/model. The bridge supports SSE status/token/heartbeat/completion/error events with one active worker. UI progress represents processing stages and human-readable streamed summaries, not private reasoning. Apply only complete validated edits after successful save.
+The owner's Mac uses the existing Qwen3.8-27B-4bit checkpoint with MLX / Metal; original weights and runtime environments remain outside Git. `ModelProvider` abstracts the configured endpoint/model. The bridge supports SSE status/token/heartbeat/completion/error events with one active worker. UI progress represents processing stages and human-readable streamed summaries, not private reasoning. Apply only complete validated edits after successful save.
 
 Current client limits are 15 seconds for connection/headers, 30 seconds for stream inactivity and an absolute 180-second total deadline across response modes. The bridge bounds input to 4096 tokens and output to at most 2048 tokens. Cancellation closes transport and is checked at bounded server generation/prefill points; a native kernel cannot be interrupted mid-execution. Explicit model downloads/setup require a selected destination/environment and never run just by opening setup. macOS host integration uses owner-approved host-user permissions, not an execution sandbox.
 
@@ -1550,7 +1555,7 @@ App-led workspace increment: user describes intent before technical configuratio
 
 # Product specification and original brief
 
-The user subsequently selected Flutter, the ASG repository, existing Qwen3.5-9B, an app-led creation flow, and chat-left/live-preview-right. These direct requirements supersede conflicting SwiftUI-first details below. The original brief is retained for product scope and provenance, not as a command to restart old milestones. Current MVC standards, the 15 minute task-selection rules above and the repository independent-review/merge workflow govern execution; the original manual-only merge language is superseded by the user-authorized independent reviewer merge process. This brief defines the broader product vision, not a claim of completed functionality.
+The user originally selected Flutter, the ASG repository, Qwen3.5-9B, an app-led creation flow, and chat-left/live-preview-right. These direct requirements supersede conflicting SwiftUI-first details below. The original brief is retained for product scope and provenance, not as a command to restart old milestones. Current MVC standards, the 15 minute task-selection rules above and the repository independent-review/merge workflow govern execution; the original manual-only merge language is superseded by the user-authorized independent reviewer merge process. This brief defines the broader product vision, not a claim of completed functionality.
 
 # CODEX MASTER PROMPT — AI PROJECT STUDIO
 
@@ -1570,7 +1575,7 @@ The application must also support **Self-Development Mode**, allowing its AI age
 - Hardware: Apple MacBook Pro M4 Max, 36 GB unified memory.
 - Operating system: macOS.
 - Primary application framework: Flutter and Dart (supersedes the original SwiftUI choice).
-- Current coding/planning model: existing Qwen3.5-9B, locally converted to 4-bit MLX. The original Qwen3-Coder 30B-A3B proposal was superseded; other models require explicit compatibility evidence.
+- Current coding/planning model on this Mac: existing Qwen3.8-27B-4bit with MLX / Metal. Other models require explicit compatibility evidence.
 - Current runtime: project-local MLX bridge with SSE streaming; legacy Torch fallback. Additional runtimes require compatibility testing.
 - Application targets: Android, iOS, web, macOS, Windows and Linux; local-first storage. Managed inference and the initial generator host are macOS-specific.
 - License requirement: Commercially usable dependencies and model checkpoints.
@@ -1761,7 +1766,7 @@ Use a typed model configuration.
 
 Do not hardcode a model name into the agent orchestration layer.
 
-The current selected model is the existing Qwen3.5-9B 4-bit MLX conversion, through the configurable provider interface; the earlier 30B-A3B candidate is historical.
+Use the existing Qwen3.8-27B-4bit checkpoint on the owner's Mac through the configurable provider interface.
 
 Before integration:
 

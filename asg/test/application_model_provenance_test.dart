@@ -227,7 +227,7 @@ void main() {
         db = await databaseFactoryIo.openDatabase(path);
         records = await StudioDatabase.migrate(db, preferences);
         final loaded = ApplicationStore(records).load(project);
-        expect(loaded.messages.last.modelRequest!.model, 'Qwen3.5-9B');
+        expect(loaded.messages.last.modelRequest!.model, 'Qwen3.8-27B-4bit');
         expect(loaded.messages.last.modelRequest!.outputTokens, 2048);
         final key = 'studio.application.v1.${project.id}';
         final data =
@@ -293,12 +293,12 @@ void main() {
           findsOneWidget,
         );
         expect(
-          find.textContaining('Requested model: Qwen3.5-9B'),
+          find.textContaining('Requested model: Qwen3.8-27B-4bit'),
           findsNothing,
         );
       } else {
         expect(
-          find.textContaining('Requested model: Qwen3.5-9B'),
+          find.textContaining('Requested model: Qwen3.8-27B-4bit'),
           findsOneWidget,
         );
         expect(

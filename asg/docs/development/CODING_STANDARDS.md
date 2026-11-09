@@ -55,7 +55,7 @@ Flutter's official architecture guidance favors MVVM. This project deliberately 
 - Preserve current keys and record formats: `studio.projects.v1`, `studio.localModel.v1`, `studio.chat.v1.<projectId>`. Add a tested migration before changing durable schemas.
 - Treat corrupted saved data as an error; do not silently replace it with an empty database.
 - Production records use transactional storage behind RecordStorage. Preserve atomic migration and retained legacy preference backups; see STORAGE.md. Do not use preferences for new production writes or either store for secrets.
-- Keep runtime/model configuration outside orchestration logic. Use the existing local Qwen3.8-27B-4bit for ASG development on the owner's Mac. See [the runtime selection and test steps](../setup/QWEN_STREAMING.md).
+- Keep runtime/model configuration outside orchestration logic. Use the existing local Qwen3.8-27B-4bit with MLX / Metal whenever current or remaining ASG development tasks need live inference on the owner's Mac. See [the runtime selection and test steps](../setup/QWEN_STREAMING.md).
 - Keep HTTP endpoints configurable, validate allowed destinations, close clients, and return actionable errors without logging prompts, credentials or sensitive filesystem content.
 - Do not hardcode machine-specific model/SDK paths in reusable Dart features. Machine setup belongs in configuration and setup documentation.
 
@@ -66,7 +66,7 @@ Flutter's official architecture guidance favors MVVM. This project deliberately 
 - Give icon-only controls meaningful tooltips/semantics. Keep labels clear and touch targets usable. Avoid communicating status through color alone.
 - Handle unsupported platform APIs explicitly and preserve a usable fallback. Keep platform-specific implementation behind services.
 - Preserve loading/error behavior when redesigning screens. Display actual model/build/test state and distinguish unavailable features from working ones.
-- Browser and mobile builds do not imply that a phone can run or access a Mac-local 9B model. Document host connectivity and platform restrictions.
+- Browser and mobile builds do not imply that a phone can run or access a Mac-local model. Document host connectivity and platform restrictions.
 
 ## Execution and dependency safety
 

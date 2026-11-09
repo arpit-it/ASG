@@ -429,7 +429,7 @@ def main():
     parser.add_argument('--capabilities', action='store_true', help='Report dependencies without loading weights or probing devices')
     parser.add_argument('--probe-devices', action='store_true', help='With --capabilities, query device APIs without loading weights')
     parser.add_argument('--port', type=int, default=8765)
-    parser.add_argument('--model-id', default='Qwen3.5-9B')
+    parser.add_argument('--model-id', help='Exact server model ID. Defaults to the resolved checkpoint folder name.')
     parser.add_argument('--backend', choices=['auto', 'mlx', 'torch', 'cpu'], default='auto')
     parser.add_argument('--experimental-cpu', action='store_true', help='Opt in to unverified CPU implementation for controlled testing; not a supported backend')
     parser.add_argument('--cpu-threads', type=int, default=None, help='Experimental CPU intra-op thread limit, 1..32 (default 2)')
@@ -473,6 +473,7 @@ def main():
         if args.backend != 'cpu':
             raise
         raise CPUCheckpointError('CPU checkpoint folder is unavailable; no model was loaded') from None
+    model_id = args.model_id if args.model_id is not None else folder.name
     config = (validate_cpu_checkpoint(folder, max_weight_bytes=args.cpu_max_weight_bytes) if args.backend == 'cpu' else
               json.loads((folder / 'config.json').read_text()))
     if args.backend == 'cpu':
@@ -499,7 +500,7 @@ def main():
         Thread(target=watch_parent, daemon=True).start()
     kind = select_backend(args.backend, config, experimental_cpu=args.experimental_cpu)
     executor = ThreadPoolExecutor(max_workers=1, thread_name_prefix='qwen-inference')
-    print(f'Loading {args.model_id} using {kind}. Local weights only.', flush=True)
+    print(f'Loading {model_id} using {kind}. Local weights only.', flush=True)
     deadline = cpu_load_deadline(args.cpu_load_timeout_seconds if args.cpu_load_timeout_seconds is not None else 180) if kind == 'cpu' else nullcontext()
     try:
         with deadline:
@@ -517,7 +518,7 @@ def main():
         else:
             message = 'CPU loading failed; check compatible local weights, tokenizer and installed loader APIs'
         raise CPUStartupError(message + '; no runtime was started and no fallback was attempted') from None
-    server = ThreadingHTTPServer(('127.0.0.1', args.port), create_handler(backend, executor, args.model_id, folder))
+    server = ThreadingHTTPServer(('127.0.0.1', args.port), create_handler(backend, executor, model_id, folder))
     server.daemon_threads = True
     print(f'Ready at http://127.0.0.1:{args.port}/v1 ({kind}, streaming)', flush=True)
     try:

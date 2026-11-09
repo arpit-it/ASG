@@ -81,7 +81,10 @@ ModelCatalogService service({
 class WidgetCatalogService extends ModelCatalogService {
   @override
   Future<ModelCatalogMetadata> check(ModelCatalogEntry entry) async => metadata(
-    bytes: entry.repository.contains('27B') ? 22 * gib : 5 * gib,
+    bytes:
+        entry.repository == ModelCatalogController.preferredRepositories.first
+        ? 16 * gib
+        : 22 * gib,
     declaredContextTokens: 32768,
   );
   @override
@@ -512,7 +515,7 @@ void main() {
     expect(c.entries, isEmpty);
     await c.refreshPreferred();
     expect(c.entries.single.repository, repositories[0]);
-    c.search('9B');
+    c.search('3.5 27B');
     expect(c.entries, isEmpty);
     c.search('');
     s.values[repositories[0]] = metadata(bytes: 22 * gib);
@@ -875,7 +878,7 @@ void main() {
       c.entries.any((e) => e.repository == 'mlx-community/Extra-Coder-4bit'),
       true,
     );
-    c.search('9B');
+    c.search('3.5 27B');
     await c.check(entry);
     expect(c.entries, isEmpty);
     c.showCompatibleOnly(false);
@@ -1005,7 +1008,7 @@ void main() {
     expect(find.text('Choose a coding model'), findsOneWidget);
     expect(tester.takeException(), null);
     await reveal(tester, find.byType(TextField));
-    await tester.enterText(find.byType(TextField), '9B');
+    await tester.enterText(find.byType(TextField), '3.5 27B');
     await tester.pump();
     await reveal(tester, find.byKey(ValueKey('check-${entry.repository}')));
     await tester.tap(find.byKey(ValueKey('check-${entry.repository}')));
@@ -1061,12 +1064,17 @@ void main() {
       await reveal(tester, find.text('Check preferred models'));
       await tester.tap(find.text('Check preferred models'));
       await tester.pumpAndSettle();
+      final preferred = c.entries.single;
       expect(
-        c.metadata(entry),
-        isNotNull,
-        reason: 'busy=${c.busy}; error=${c.error(entry)}',
+        preferred.repository,
+        ModelCatalogController.preferredRepositories.first,
       );
-      final choose = find.byKey(ValueKey('choose-${entry.repository}'));
+      expect(
+        c.metadata(preferred),
+        isNotNull,
+        reason: 'busy=${c.busy}; error=${c.error(preferred)}',
+      );
+      final choose = find.byKey(ValueKey('choose-${preferred.repository}'));
       await reveal(tester, choose);
       await tester.tap(choose);
       await tester.pumpAndSettle();
@@ -1077,7 +1085,7 @@ void main() {
         await reveal(tester, input);
         expect(
           tester.widget<TextField>(input).controller?.text,
-          label == 'Model repository' ? entry.repository : revision,
+          label == 'Model repository' ? preferred.repository : revision,
         );
       }
       expect(runtimeHost.downloads, 0);

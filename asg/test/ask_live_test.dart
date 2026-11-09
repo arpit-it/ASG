@@ -6,12 +6,14 @@ import 'package:asg/services/ask_store.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'ask_controller_test.dart' show AskRecords;
+import 'live_model_config.dart';
 
 void main() {
   test(
     'real configured local model answers standalone Ask and persists suggestion',
     () async {
       final records = AskRecords();
+      await selectLiveModel(records);
       final controller = AskController(AskStore(records))..load();
       var streamedUpdates = 0;
       controller.addListener(() {
@@ -40,7 +42,7 @@ void main() {
       controller.dispose();
       final reopened = AskController(AskStore(records))..load();
       expect(reopened.messages.last.content, saved);
-      expect(records.values.keys, [AskStore.key]);
+      expect(records.values.keys, ['studio.localModel.v1', AskStore.key]);
       // Bounded metadata only; no response, prompt or endpoint in diagnostics.
       // ignore: avoid_print
       print(

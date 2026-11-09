@@ -2,6 +2,8 @@
 
 ## Select the development model
 
+Use the existing local `Qwen3.8-27B-4bit` checkpoint on MLX / Metal for all current and remaining ASG tasks on the owner's Mac that require live inference. Use the exact server model ID `Qwen3.8-27B-4bit` at `http://127.0.0.1:8765/v1`. Verify runtime health and model identity before recording live evidence. If the runtime is unavailable or reports a different model, keep the affected acceptance pending and continue eligible independent work. Keep dated observations and deterministic fixtures tied to their original model identities.
+
 1. In ASG, open **Set up runtime** and choose **Local files**.
 2. On the owner's Mac, use the existing checkpoint at `~/ASG-model-downloads/Qwen3.8-27B-4bit`. Choose **Find local models** and select **Qwen3.8-27B-4bit**.
 3. Use the existing MLX environment's Python executable. Choose **Save runtime setup**, then **Start selected model**.
@@ -37,7 +39,7 @@ never coerces or silently clamps a requested output budget. This contract does
 not establish a model-specific verified context window or token-accounting
 profile; the existing input limit and per-backend checks still apply.
 
-Run regular Flutter checks and the opt-in live test:
+Run regular Flutter checks. Before opting into a live test on this Mac, check that `http://127.0.0.1:8765/health` reports ready on MLX / Metal and `http://127.0.0.1:8765/v1/models` advertises `Qwen3.8-27B-4bit`. The opt-in Flutter tests explicitly select that model. Run live tests serially and record the tested revision, model, host and actual result.
 
 ```sh
 flutter analyze

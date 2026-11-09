@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "scope": "Observed isolated selected-checkpoint MLX regression only; no verified total context, model identity authentication, app/manual acceptance, larger model or other platform support.",
+  "source_revision": "2c5ecb7fdf1bb14aeecb9b1c3b2611a15a7b654b",
+  "host": "27.0.1",
+  "architecture": "arm64",
+  "dependencies": {
+    "mlx": "0.32.4",
+    "mlx-lm": "0.32.2",
+    "transformers": "5.20.2",
+    "tokenizers": "0.23.3"
+  },
+  "checks": {
+    "json": {
+      "seconds": 1.591,
+      "metrics": {
+        "finish_reason": "stop",
+        "prompt_tokens": 20,
+        "completion_tokens": 2,
+        "tokens_per_second": 41.90895296021338,
+        "peak_memory_gb": 15.434645926
+      }
+    },
+    "structured_sse": {
+      "seconds": 0.734,
+      "content_chunks": 9,
+      "metrics": {
+        "finish_reason": "stop",
+        "prompt_tokens": 31,
+        "completion_tokens": 10,
+        "tokens_per_second": 22.336793436636864,
+        "peak_memory_gb": 15.492976508
+      }
+    },
+    "disconnect": {
+      "idle_seconds": 0.212,
+      "scope": "Client disconnect observed; not a native-kernel preemption or process-tree guarantee."
+    },
+    "retry": {
+      "metrics": {
+        "finish_reason": "stop",
+        "prompt_tokens": 20,
+        "completion_tokens": 2,
+        "tokens_per_second": 40.77991556679691,
+        "peak_memory_gb": 15.492976508
+      }
+    }
+  },
+  "advertised_limits": {
+    "schema_version": 1,
+    "max_input_tokens": 4096,
+    "max_output_tokens": 4096,
+    "checkpoint_context_tokens": 262144
+  },
+  "response_identity_scope": "Every observed present completion model ID must match the request. Missing legacy IDs remain unverified; matching IDs are server assertions, not weight authentication.",
+  "provenance": "Operator-selected source revision and local checkpoint metadata; weights counted but not hashed; HTTP backend/device/model remain server assertions, not authentication.",
+  "metadata_sha256": {
+    "config.json": "14b65a0ee06517060a6bbd979bb1a8ff54e7b304b1a1f01d54344b88b8285e85",
+    "tokenizer_config.json": "792fa3f0cb88b111e54ef3134c873531008c4df471d108da17903426e308aa7b",
+    "model.safetensors.index.json": "13b840162b4cb35c66fef7df072f7dbb4717908204364f5e5d9f9655a2758fa8"
+  },
+  "weights": {
+    "file_count": 3,
+    "disk_bytes": 16054541349
+  },
+  "recorded_at": "2026-11-09T18:56:12Z",
+  "observed_model": "Qwen3.8-27B-4bit",
+  "backend": "mlx",
+  "device": "metal"
+}

@@ -1,8 +1,8 @@
 # Coding model discovery on macOS
 
 Runtime setup → **Browse coding models for this computer** opens the F22 discovery
-milestone. It starts with eight coding/general-engineering MLX 4-bit candidates:
-Qwen3.5 9B/27B, Qwen3.8 27B, Qwen2.5 Coder 7B/14B/32B,
+milestone. It starts with seven coding/general-engineering MLX 4-bit candidates:
+Qwen3.5 27B, Qwen3.8 27B, Qwen2.5 Coder 7B/14B/32B,
 Qwen3 Coder 30B A3B and Devstral Small 2507. This is not an exhaustive catalog or
 an inference certification. Explicit Hugging Face search adds up to 40 matching
 `mlx-community` repositories per query; other formats/publishers remain available
@@ -51,7 +51,7 @@ The native macOS memory inspection runs fixed read-only `sysctl` and `vm_stat` h
 The default picker shows one curated new-load choice covering Ask, planning,
 coding and review. Press **Check preferred models** to refresh hardware, observe
 the configured local runtime and validate public pinned metadata for Qwen3.8 27B,
-Qwen3.5 27B and Qwen3.5 9B, in that order. New-load recommendations require
+then Qwen3.5 27B. New-load recommendations require
 supported 4-bit MLX metadata, conservative total-memory budget and current
 available-memory estimates. Unknown memory, pressure, unsupported hosts, failed
 source checks and arbitrary discovery results cannot become recommendations.
@@ -96,8 +96,9 @@ metadata cannot enable downloads or override the new-load assessment.
 
 ## Retained workload observations
 
-The catalog's **Historical 9B MLX observation** panel explicitly loads the exact
-reviewed PR #432 report from bundled offline assets. It displays date/runtime
+The catalog's **Historical Qwen3.8 27B MLX observation** panel loads the exact
+retained 27B report from bundled offline assets. The earlier PR #432 report
+remains in the repository's acceptance history. It displays date/runtime
 source revision, counted weight bytes, tiny JSON/structured-SSE/retry token
 workloads, reported warm token speed, cumulative process high-water memory and
 disconnect-to-idle time. These are historical observations, never a current
