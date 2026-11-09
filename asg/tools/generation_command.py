@@ -279,6 +279,19 @@ def directories_overlap(first, second):
             or any(second.samefile(ancestor) for ancestor in first.parents))
 
 
+def offline_sdk_file(path, snapshot_root):
+    # Validate the actual startup input before the helper creates any output.
+    resolved = path.resolve(strict=True)
+    if any(snapshot_root.samefile(parent) for parent in resolved.parents):
+        raise ValueError('SDK startup file overlaps snapshot')
+    metadata = resolved.stat()
+    if not stat.S_ISREG(metadata.st_mode):
+        raise ValueError('Offline snapshot checks require regular SDK startup files')
+    if metadata.st_nlink != 1:
+        raise ValueError('Offline snapshot checks refuse hard-linked SDK startup files')
+    return resolved
+
+
 def confined_operation(directory, sdk, operation, timeout, parent_pid, test_file=None, test_name=None, *, offline=False):
     if offline:
         if operation not in ('resolve', 'analyze', 'build'):
@@ -309,7 +322,13 @@ def confined_operation(directory, sdk, operation, timeout, parent_pid, test_file
     dart = sdk / 'bin/cache/dart-sdk/bin/dart'
     snapshot = sdk / 'bin/cache/flutter_tools.snapshot'
     packages = sdk / 'packages/flutter_tools/.dart_tool/package_config.json'
-    if not all(p.is_file() for p in (dart, snapshot, packages)):
+    cache_lock = sdk / 'bin/cache/lockfile'
+    if offline:
+        dart, snapshot, packages, cache_lock = (
+            offline_sdk_file(path, snapshot_root)
+            for path in (dart, snapshot, packages, cache_lock)
+        )
+    elif not all(p.is_file() for p in (dart, snapshot, packages)):
         raise ValueError('Confined verification requires initialized cached Flutter tools')
     slot = offline_snapshot_slot(directory) if offline else nullcontext()
     with slot, tempfile.TemporaryDirectory(prefix='asg-confined-') as temp:
@@ -355,7 +374,7 @@ def confined_operation(directory, sdk, operation, timeout, parent_pid, test_file
         }
         # Trusted supervisor owns the existing SDK cache lock; sandboxed tools
         # inherit no writable SDK descriptor and cannot update the SDK/cache.
-        lock = (sdk / 'bin/cache/lockfile').open('r+b')
+        lock = cache_lock.open('r+b')
         deadline = time.monotonic() + timeout
         try:
             while True:
