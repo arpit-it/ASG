@@ -588,13 +588,16 @@ def apply_proposal(payload):
         raise ValueError('Choose a canonical destination without links.')
     if destination == candidate or candidate in destination.parents:
         raise ValueError('Choose a destination outside the candidate.')
+    protected = [candidate]
     if payload['trustedSource']:
         trusted = Path(payload['trustedSource']).resolve(strict=True)
         if destination == trusted or trusted in destination.parents:
             raise ValueError('Choose a destination outside the trusted checkout.')
+        protected.append(trusted)
+        protected.extend(git_storage_directories(trusted, time.monotonic() + 5))
     parent_fd = open_snapshot_destination(
-        destination, (candidate, Path(payload['trustedSource']) if payload['trustedSource'] else None),
-        'Destination must be outside the candidate and trusted checkout.',
+        destination, protected,
+        'Choose a destination outside the candidate and trusted checkout and outside Git metadata.',
     )
     run_fd = stage_fd = None
     run = None
