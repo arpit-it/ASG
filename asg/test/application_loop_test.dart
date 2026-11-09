@@ -20,6 +20,8 @@ import 'package:asg/views/live_application_view.dart';
 import 'package:asg/views/studio_app.dart';
 import 'package:asg/views/project_workspace.dart';
 
+import 'live_model_config.dart';
+
 const project = StudioProject(
   id: 'live-test',
   name: 'Demo',
@@ -322,6 +324,7 @@ void main() {
       final store = ApplicationStore.fromPreferences(
         await SharedPreferences.getInstance(),
       );
+      await selectLiveModel(store.records);
       final c = AppWorkspaceController(
         project,
         openStore: () async => store,

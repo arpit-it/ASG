@@ -30,6 +30,7 @@ import 'support/acceptance_provenance.dart';
 
 import 'planning_conversation_test.dart' show project, ControlledRecords;
 import 'board_mapped_build_plan_test.dart' show boardContent, sharedContract;
+import 'live_model_config.dart';
 
 String installedSdk() {
   final configured =
@@ -124,6 +125,7 @@ void main() {
       var databaseClosed = false;
       SourceGenerationController? controller;
       try {
+        await selectLiveModel(records);
         await StudioStore(records).save([project]);
         final boards = RequirementsStore(records);
         await boards.save(

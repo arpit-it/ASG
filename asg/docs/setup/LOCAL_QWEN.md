@@ -4,7 +4,7 @@ ASG is a Flutter application targeting Android, iOS, web, macOS, Windows and Lin
 
 The commands and measurements below describe the earlier Torch/BF16 experiment. For the active MLX setup, use [Qwen streaming](QWEN_STREAMING.md). They are retained for reproducibility, not the recommended current startup path.
 
-**Current runtime update:** Qwen now uses the verified local 4-bit MLX streaming backend. The earlier Torch timeout/nonstreaming notes below are historical. See [QWEN_STREAMING.md](QWEN_STREAMING.md) for current setup, limits and successful real-edit verification.
+The owner's Mac uses Qwen3.8-27B-4bit with MLX / Metal for current ASG development. See [the current setup and verification steps](QWEN_STREAMING.md).
 
 ## Verified checkpoint and runtime
 

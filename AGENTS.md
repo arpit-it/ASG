@@ -4,6 +4,9 @@ The Flutter application root is `asg/`. Run Flutter commands there. ASG targets 
 
 Read and follow [the project coding standards](asg/docs/development/CODING_STANDARDS.md) before working on this repository. This is the canonical instruction document for Flutter style, MVC boundaries, async work, storage, UI, testing, and completion checks. Direct user instructions take precedence; preserve unrelated changes.
 
+Use the existing local `Qwen3.8-27B-4bit` checkpoint on MLX / Metal for all current and remaining ASG tasks on the owner's Mac that require live inference. Use the exact server model ID `Qwen3.8-27B-4bit` at `http://127.0.0.1:8765/v1`. Verify runtime health and model identity before recording live evidence. If the runtime is unavailable or reports a different model, keep the affected acceptance pending and continue eligible independent work. Keep dated observations and deterministic fixtures tied to their original model identities.
+See [local model setup and verification](asg/docs/setup/QWEN_STREAMING.md).
+
 Use MVC for new application features and files:
 - `lib/models/`: typed domain data and pure validation/serialization. No Flutter widgets, HTTP clients, or storage plugins.
 - `lib/views/`: screens and reusable UI. Keep layout, rendering, navigation, and text/form controller lifecycle here. Delegate application actions to controllers; do not send HTTP requests, serialize stored records, or use preferences directly.

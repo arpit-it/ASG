@@ -651,8 +651,9 @@ To reproduce on an isolated unique-bundle profile with a ready working build:
    main-file proposal inserting only `asgMissingFunction();` immediately before
    `runApp`. Verify it separately and inspect the actual undefined-function analyzer
    output. These faulty seed proposals are fixtures, not successful model inference.
-4. Restore real transport to the existing offline Qwen3.5-9B MLX runtime. Select a
-   separate parent folder, consent to bounded automatic repair for main only, and
+4. Connect to the selected local MLX runtime. For new acceptance on the owner's
+   Mac, verify `Qwen3.8-27B-4bit` using [the runtime steps](../setup/QWEN_STREAMING.md).
+   Select a separate parent folder, consent to bounded automatic repair for main only, and
    start. Confirm actual model correction removes only the undefined call, one
    analyze request is saved, and resolve/analyze/test/build all rerun and pass.
 5. Explicitly promote the verified candidate. Open its actual served app, add an
