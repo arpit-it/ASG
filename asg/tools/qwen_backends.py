@@ -19,6 +19,16 @@ class GenerationCancelled(Exception):
     pass
 
 
+class RequestTokenLimitError(ValueError):
+    """A caller can correct this fixed, public request error and retry."""
+
+    def __init__(self, *, checkpoint=False):
+        message = ('Prompt plus requested output exceeds checkpoint declared context limit; '
+                   'shorten the request or reduce output tokens' if checkpoint else
+                   'Input exceeds 4096-token limit; shorten the request')
+        super().__init__(message)
+
+
 def probe_device(kind):
     """Query only the backend device API; never import model loaders or weights.
 
@@ -105,7 +115,7 @@ def declared_context_limit(config):
 def check_context_budget(backend, prompt_tokens, output_tokens):
     limit = getattr(backend, 'declared_context_tokens', None)
     if limit is not None and prompt_tokens + output_tokens > limit:
-        raise ValueError('Prompt plus requested output exceeds checkpoint declared context limit; shorten the request or reduce output tokens')
+        raise RequestTokenLimitError(checkpoint=True)
 
 
 def validate_model_config(kind, config):
@@ -144,7 +154,7 @@ class MLXBackend:
             truncation=False)
         check()
         if len(prompt_ids) > 4096:
-            raise ValueError('Input exceeds 4096-token limit')
+            raise RequestTokenLimitError()
         check_context_budget(self, len(prompt_ids), tokens)
         from mlx_lm import stream_generate
         from mlx_lm.sample_utils import make_sampler
@@ -200,7 +210,7 @@ class TorchMPSBackend:
         check()
         prompt_tokens = inputs.input_ids.shape[-1]
         if prompt_tokens > 4096:
-            raise ValueError('Input exceeds 4096-token limit')
+            raise RequestTokenLimitError()
         check_context_budget(self, prompt_tokens, tokens)
         inputs = inputs.to(self.device)
         check()
