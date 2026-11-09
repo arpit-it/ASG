@@ -352,6 +352,17 @@ Future<GenerationCommandResult> checkSelfSnapshot({
           FileSystemEntityType.file) {
     throw const FormatException('Snapshot does not contain an ASG project.');
   }
+  final interpreter = await File(python).resolveSymbolicLinks();
+  // On macOS, different case or normalization can name the same directory.
+  var directory = path.dirname(interpreter);
+  while (directory != path.dirname(directory)) {
+    if (await FileSystemEntity.identical(directory, snapshot)) {
+      throw const FormatException(
+        'Choose a trusted Python outside the candidate.',
+      );
+    }
+    directory = path.dirname(directory);
+  }
   final temp = await Directory.systemTemp.createTemp('asg-snapshot-check-');
   Process? process;
   var settled = false;
@@ -369,7 +380,7 @@ Future<GenerationCommandResult> checkSelfSnapshot({
       flush: true,
     );
     if (stopped()) throw StateError('Snapshot check stopped.');
-    final owned = await Process.start(python, [
+    final owned = await Process.start(interpreter, [
       '-I',
       '-B',
       helper.path,

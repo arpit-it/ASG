@@ -501,6 +501,57 @@ raise SystemExit(main(sys.argv[4:]))
     );
   }, skip: !Platform.isMacOS);
 
+  test('offline checks refuse a snapshot-owned Python before launch', () async {
+    final root = await Directory.systemTemp.createTemp(
+      'asg-offline-check-python-',
+    );
+    addTearDown(() => root.delete(recursive: true));
+    final parent = await root.resolveSymbolicLinks();
+    final snapshot = '$parent/asg-self-candidate-a1b2c3d4/source-${'a' * 40}';
+    final project = await Directory('$snapshot/asg').create(recursive: true);
+    await File('${project.path}/pubspec.yaml').writeAsString('name: fixture\n');
+    final marker = File('$parent/interpreter-launched');
+    final interpreter = await File(
+      '$snapshot/fixture-python',
+    ).writeAsString('#!/bin/sh\nprintf launched > "${marker.path}"\nexit 42\n');
+    final chmod = await Process.run('/bin/chmod', ['700', interpreter.path]);
+    expect(chmod.exitCode, 0, reason: chmod.stderr.toString());
+    final alias = await Link('$parent/linked-python').create(interpreter.path);
+    final caseAlias = interpreter.path.replaceFirst(
+      'source-${'a' * 40}',
+      'SOURCE-${'A' * 40}',
+    );
+    final stop = Completer<void>();
+    for (final python in [
+      interpreter.path,
+      alias.path,
+      if (await File(caseAlias).exists()) caseAlias,
+    ]) {
+      try {
+        await expectLater(
+          checkSelfSnapshot(
+            snapshot: snapshot,
+            sdk: '$parent/unused-sdk',
+            python: python,
+            operation: SelfSnapshotOperation.resolve,
+            stop: stop.future,
+            stopped: () => stop.isCompleted,
+          ),
+          throwsA(
+            isA<FormatException>().having(
+              (error) => error.message,
+              'message',
+              'Choose a trusted Python outside the candidate.',
+            ),
+          ),
+          reason: python,
+        );
+      } finally {
+        expect(await marker.exists(), isFalse, reason: python);
+      }
+    }
+  }, skip: !Platform.isMacOS);
+
   const sdk = String.fromEnvironment('ASG_SNAPSHOT_TEST_SDK');
   test('confined offline checks and Stop during SDK lock wait', () async {
     final root = await Directory.systemTemp.createTemp('asg-offline-check-');
@@ -513,11 +564,15 @@ raise SystemExit(main(sys.argv[4:]))
     const original = 'name: asg\nenvironment:\n  sdk: ">=3.0.0 <4.0.0"\n';
     await manifest.writeAsString(original);
     await File('${project.path}/lib/main.dart').writeAsString('void main() {}');
-    Future<int> check(bool analyze, Completer<void> stop) async {
+    Future<int> check(
+      bool analyze,
+      Completer<void> stop, {
+      String python = '/usr/bin/python3',
+    }) async {
       final result = await checkSelfSnapshot(
         snapshot: snapshot,
         sdk: sdk,
-        python: '/usr/bin/python3',
+        python: python,
         operation: analyze
             ? SelfSnapshotOperation.analyze
             : SelfSnapshotOperation.resolve,
@@ -528,7 +583,9 @@ raise SystemExit(main(sys.argv[4:]))
     }
 
     expect(await check(false, Completer<void>()), 0);
-    expect(await check(true, Completer<void>()), 0);
+    final trustedAlias = await Link('$parent/trusted-python')
+        .create('/usr/bin/python3');
+    expect(await check(true, Completer<void>(), python: trustedAlias.path), 0);
     expect(await manifest.readAsString(), original);
 
     final sentinel = File('$parent/external-sentinel');
