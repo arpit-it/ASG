@@ -7,6 +7,7 @@ import '../models/candidate_comparison.dart';
 import '../models/candidate_file_review.dart';
 import '../models/generation_command_result.dart';
 import '../models/self_snapshot_operation.dart';
+import '../models/snapshot_preparation_failure.dart';
 import '../services/self_snapshot.dart';
 import 'base_controller.dart';
 
@@ -140,15 +141,23 @@ class SelfSnapshotController extends BaseController {
         stop: stop.future,
         stopped: () => stop.isCompleted,
       );
-      _status = stop.isCompleted
-          ? 'Preparation stopped. $recovery'
-          : 'Snapshot ready at $ready';
+      if (!isDisposed && !stop.isCompleted) {
+        _status = 'Snapshot ready at $ready';
+      }
+    } on SnapshotPreparationFailure catch (error) {
+      if (!isDisposed && !stop.isCompleted) {
+        _status =
+            'Preparation failed. Inspect the run folder before retrying.\n'
+            '${error.runPath}';
+      }
     } catch (_) {
-      _status = stop.isCompleted
-          ? 'Preparation stopped. $recovery'
-          : 'Preparation failed. $recovery';
+      if (!isDisposed && !stop.isCompleted) {
+        _status = 'Preparation failed. $recovery';
+      }
     } finally {
-      if (stop.isCompleted) _status = 'Preparation stopped. $recovery';
+      if (!isDisposed && stop.isCompleted) {
+        _status = 'Preparation stopped. $recovery';
+      }
       _stop = null;
       update();
     }

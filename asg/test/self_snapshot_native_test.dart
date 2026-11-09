@@ -9,6 +9,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:asg/models/self_snapshot_operation.dart';
+import 'package:asg/models/snapshot_preparation_failure.dart';
 import 'package:asg/models/candidate_source_proposal.dart';
 import 'package:asg/services/self_snapshot.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -127,6 +128,142 @@ void main() {
     },
     skip: !Platform.isMacOS,
   );
+  test(
+    'bundled helper identifies the retained run after publication fails',
+    () async {
+      final root = await Directory.systemTemp.createTemp(
+        'asg-snapshot-recovery-',
+      );
+      addTearDown(() => root.delete(recursive: true));
+      final parent = await root.resolveSymbolicLinks();
+      final source = await Directory('$parent/source').create();
+      await File('${source.path}/entry').writeAsString('original');
+
+      Future<String> git(List<String> args) async {
+        final result = await Process.run('/usr/bin/git', [
+          '-C',
+          source.path,
+          '-c',
+          'core.hooksPath=/dev/null',
+          ...args,
+        ]);
+        expect(result.exitCode, 0, reason: result.stderr.toString());
+        return (result.stdout as String).trim();
+      }
+
+      await git(['init', '-q']);
+      await git(['add', 'entry']);
+      await git([
+        '-c',
+        'user.name=Fixture',
+        '-c',
+        'user.email=fixture@example.invalid',
+        '-c',
+        'commit.gpgsign=false',
+        'commit',
+        '-qm',
+        'fixture',
+      ]);
+      final commit = await git(['rev-parse', 'HEAD']);
+      final launcher = await File('$parent/fixture-python')
+          .writeAsString(r'''#!/usr/bin/python3
+import runpy
+import sys
+from pathlib import Path
+main = runpy.run_path(sys.argv[3])['main']
+helpers = main.__globals__
+original_rename = helpers['exclusive_rename']
+def mutate(run_fd, staging, target):
+    original_rename(run_fd, staging, target)
+    run, = Path(sys.argv[-1]).glob('asg-self-candidate-*')
+    (run / target / 'entry').write_text('changed after publication')
+helpers['exclusive_rename'] = mutate
+raise SystemExit(main(sys.argv[4:]))
+''');
+      expect(
+        (await Process.run('/bin/chmod', ['700', launcher.path])).exitCode,
+        0,
+      );
+      Future<String> prepare(String python) => prepareSelfSnapshot(
+        source: source.path,
+        destination: parent,
+        commit: commit,
+        python: python,
+        stop: Completer<void>().future,
+        stopped: () => false,
+      );
+      await expectLater(
+        prepare(launcher.path),
+        throwsA(
+          isA<SnapshotPreparationFailure>().having(
+            (failure) => failure.runPath,
+            'run folder',
+            startsWith('$parent/asg-self-candidate-'),
+          ),
+        ),
+      );
+      final failed = Directory(parent)
+          .listSync()
+          .whereType<Directory>()
+          .singleWhere(
+            (directory) =>
+                directory.path.startsWith('$parent/asg-self-candidate-'),
+          );
+      expect(
+        await File('${failed.path}/source-$commit/entry').readAsString(),
+        'changed after publication',
+      );
+      expect(await inspectIncompleteSnapshots(parent), isEmpty);
+      final ready = await prepare('/usr/bin/python3');
+      expect(ready, isNot(startsWith(failed.path)));
+      expect(await File('$ready/entry').readAsString(), 'original');
+      expect(await File('${source.path}/entry').readAsString(), 'original');
+    },
+    skip: !Platform.isMacOS,
+  );
+
+  test('native preparation rejects invalid recovery receipts', () async {
+    final root = await Directory.systemTemp.createTemp('asg-recovery-receipt-');
+    addTearDown(() => root.delete(recursive: true));
+    final parent = await root.resolveSymbolicLinks();
+    final run = await Directory('$parent/asg-self-candidate-a1b2c3d4').create();
+    await Link('$parent/asg-self-candidate-a1b2c3d5').create(run.path);
+    const receipt = 'ASG_SNAPSHOT_RECOVERY_V1 asg-self-candidate-a1b2c3d4\n';
+    final launcher = File('$parent/fixture-python');
+    final samples = [
+      (1, '', '${receipt}extra\n'),
+      (1, '', 'ASG_SNAPSHOT_RECOVERY_V1 ../asg-self-candidate-a1b2c3d4\n'),
+      (1, '', 'ASG_SNAPSHOT_RECOVERY_V1 asg-self-candidate-a1b2c3d5\n'),
+      (1, '', 'ASG_SNAPSHOT_RECOVERY_V1 asg-self-candidate-a1b2c3d6\n'),
+      (1, '/unverified\n', receipt),
+      (2, '', receipt),
+    ];
+    for (final (exitCode, output, error) in samples) {
+      await launcher.writeAsString(
+        '#!/usr/bin/python3\nimport sys\n'
+        'sys.stdout.write(${jsonEncode(output)})\n'
+        'sys.stderr.write(${jsonEncode(error)})\n'
+        'raise SystemExit($exitCode)\n',
+      );
+      expect(
+        (await Process.run('/bin/chmod', ['700', launcher.path])).exitCode,
+        0,
+      );
+      await expectLater(
+        prepareSelfSnapshot(
+          source: parent,
+          destination: parent,
+          commit: 'a' * 40,
+          python: launcher.path,
+          stop: Completer<void>().future,
+          stopped: () => false,
+        ),
+        throwsStateError,
+        reason: '$exitCode, $output, $error',
+      );
+    }
+  }, skip: !Platform.isMacOS);
+
   test('Stop reaps Git blocked on a loose object', () async {
     final root = await Directory.systemTemp.createTemp('asg-snapshot-stop-');
     addTearDown(() => root.delete(recursive: true));

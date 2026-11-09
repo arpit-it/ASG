@@ -134,6 +134,12 @@ def write_blob(root_fd, parts, mode, data):
         os.close(parent)
 
 
+class PreparationRunError(ValueError):
+    def __init__(self, run, confirmed):
+        super().__init__(f'Preparation stopped. Inspect the candidate run at {run}.')
+        self.run_name = run.name if confirmed else None
+
+
 def prepare(source, commit, parent):
     """Return a complete candidate path. Only the returned path is ready."""
     if not OBJECT_ID.fullmatch(commit.encode('ascii')):
@@ -218,7 +224,15 @@ def prepare(source, commit, parent):
     except (OSError, ValueError, subprocess.SubprocessError, KeyboardInterrupt) as error:
         if run is None:
             raise
-        raise ValueError(f'Preparation stopped. Inspect the candidate run at {run}.') from error
+        confirmed = False
+        if run_fd is not None:
+            try:
+                require_directory_identity(parent, parent_fd)
+                require_directory_identity(run, run_fd)
+                confirmed = True
+            except (OSError, ValueError):
+                pass  # The original preparation error still takes precedence.
+        raise PreparationRunError(run, confirmed) from error
     finally:
         for descriptor in (stage_fd, run_fd, parent_fd):
             if descriptor is not None:
@@ -709,6 +723,7 @@ def main(argv=None):
             print('Candidate fingerprint unavailable.', file=sys.stderr)
             return 1
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--app-recovery-receipt', action='store_true', help=argparse.SUPPRESS)
     parser.add_argument('source', type=Path, help='root of the trusted local ASG repository')
     parser.add_argument('commit', help='full reviewed commit ID')
     parser.add_argument('parent', type=Path, help='trusted destination parent outside the repository')
@@ -716,7 +731,11 @@ def main(argv=None):
     try:
         candidate = prepare(args.source, args.commit, args.parent)
     except (OSError, ValueError, subprocess.SubprocessError, KeyboardInterrupt) as error:
-        print(f'Candidate unavailable. {error}', file=sys.stderr)
+        if args.app_recovery_receipt:
+            if isinstance(error, PreparationRunError) and error.run_name is not None:
+                print(f'ASG_SNAPSHOT_RECOVERY_V1 {error.run_name}', file=sys.stderr)
+        else:
+            print(f'Candidate unavailable. {error}', file=sys.stderr)
         return 1
     print(candidate)
     return 0
