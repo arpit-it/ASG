@@ -9,11 +9,11 @@ The tool accepts only its bundled, hash-checked sources, a reviewed installed
 Flutter SDK and a named fixture case. It uses Flutter 3.47.6 framework
 `5fc346839b5d0eef006ed8404392afb4dfae428d`, Dart 3.13.5, `test_api` 0.7.12 and
 `test_core` 0.6.18. No SDK, package cache or application changes are needed.
-Compiler reports identify the actual source dependencies of both compiled
+Compiler reports identify the actual source dependencies of the compiled
 programs. The tool checks the installed package configuration, compiler tools,
 source bytes, generated kernels and outside sentinel for preservation.
 
-The confined engine runs an authored bootstrap that uses the unchanged
+The default case runs an authored bootstrap that uses the unchanged
 `RemoteListener.start` and connects to an already retained IPv4 or IPv6 socket
 through the exact fresh session path. The trusted driver uses the existing
 `OwnedDevice` adapter and extends its token gate at the installed stock
@@ -22,8 +22,14 @@ WebSocket upgrade, and the fixture guards the detached socket's inbound stream.
 The driver relays individual JSON messages from the actual
 `FlutterTesterTestDevice.start` channel to the unchanged `deserializeSuite`
 and observes the terminal state from each real live test.
-The bootstrap is purpose-built for the token path. The installed Flutter
-bootstrap generator emits a bare socket URL and is not part of this fixture.
+The generated cases invoke the installed Flutter tool's `generateTestBootstrap`
+for each loopback family and compile its output as emitted. The generated source,
+fixed test file, installed generator dependency and resulting kernels are
+identified in the private report. The stock launch command must request the
+owned numeric port. The confined process adapter then supplies the same port
+with a fresh session path for these cases, which the generated bootstrap
+includes in its request. The missing-token case supplies only the numeric
+port and requires an observed gate refusal and settled process group.
 
 The passing test requires an actual engine view and checks denied sentinel
 reads/writes, subprocess start and connection to an independent canary port.
@@ -36,9 +42,15 @@ waiting. The supervisor bounds time and output, settles the owned process group
 and checks both independent canary listeners for zero connections.
 
 The guard accepts masked, final text frames and bounded close frames. It
-refuses compression offers before upgrade, and rejects unsupported flags,
-opcodes, masks and lengths before forwarding a frame to the stock decoder.
-It caps each payload at 16 KiB, and each incoming session at 128 KiB of framed
+rejects unsupported flags, opcodes, masks and lengths before forwarding a
+frame to the stock decoder. The authored bootstrap disables compression.
+After the token check, the generated cases admit only the installed client's
+exact default compression offer. The driver hides that offer from stock
+negotiation and checks that the outgoing upgrade response has no extension
+header before detaching the socket. A fixed authenticated client offering
+different parameters must observe HTTP 403 before the driver stops it.
+
+The frame guard caps each payload at 16 KiB, and each incoming session at 128 KiB of framed
 bytes and 128 frames, including close. It assembles at most one frame at a time.
 The fixed raw peer writes the offending header a byte at a time and withholds
 the mask and body. The byte-budget and frame-budget cases first send legal text
@@ -59,11 +71,13 @@ From the repository root, with the reviewed SDK already installed:
 ```sh
 python3 -B -m unittest discover -s asg/tools -p test_f12_stock_test_events.py -v
 python3 -B asg/tools/f12_stock_test_events.py --synthetic-fixture --sdk "$SDK"
+python3 -B asg/tools/f12_stock_test_events.py --synthetic-fixture --sdk "$SDK" --case generated-positive
 ```
 
 Add `--case wrong-token`, `missing-suite`, `wrong-suite`, `wrong-result`,
 `deadline`, `stop`, `oversized-header`, `fragmented-header`, `session-bytes`,
-or `session-frames` to observe a fixed adverse case. An expected adverse case
+`session-frames`, `generated-missing-token`, `generated-stop`, or
+`unexpected-extension` to observe a fixed adverse case. An expected adverse case
 exits zero with `adverseCaseObserved: true` and `pass: false`. The command
 prints the path to a private report with observed outcomes and exact local
 identities. Portable tests validate refusal and parsing logic; use the live Mac

@@ -6,6 +6,8 @@ import 'dart:io';
 
 import 'package:async/async.dart' show StreamSinkTransformer;
 import 'package:file/local.dart';
+import 'package:flutter_tools/src/test/test_device.dart'
+    show TestDeviceException;
 import 'package:stream_channel/stream_channel.dart';
 import 'package:test_api/src/backend/state.dart';
 import 'package:test_api/src/backend/test.dart';
@@ -61,8 +63,20 @@ Future<void> runFamily(
   Map<String, dynamic> config,
   Map<String, Object?> report,
 ) async {
-  final gate = IngressGate(server, config['session'] as String);
-  final device = OwnedDevice(gate, config, family, const LocalFileSystem());
+  final session = config['session'] as String;
+  final testCase = config['case'] as String;
+  final generated = testCase.startsWith('generated-');
+  final expectsOffer = generated || testCase == 'unexpected-extension';
+  final gate = IngressGate(server, session, generatedBootstrap: expectsOffer);
+  final device = OwnedDevice(
+    gate,
+    config,
+    family,
+    const LocalFileSystem(),
+    bootstrapToken: generated && testCase != 'generated-missing-token'
+        ? session
+        : null,
+  );
   final outcomes = <String, String>{};
   report['family'] = family;
   report['outcomes'] = outcomes;
@@ -83,7 +97,9 @@ Future<void> runFamily(
     final suite = await controller.suite.timeout(eventDeadline);
     try {
       final expected = [renderTest, deliberateFailure];
-      if (config['case'] == 'deadline' || config['case'] == 'stop') {
+      if (testCase == 'deadline' ||
+          testCase == 'stop' ||
+          testCase == 'generated-stop') {
         expected.add('fixture waits');
       }
       final tests = suite.group.entries.whereType<Test>().toList();
@@ -134,20 +150,39 @@ Future<void> runFamily(
     report['phase'] = phase;
     report['rejected'] = gate.rejected;
     report['ingressAttached'] = gate.attached;
+    if (expectsOffer) report['stockOfferDeclined'] = gate.stockOfferDeclined;
     try {
-      if (gate.failure != null && gate.attached) {
+      if (gate.failure != null &&
+          (gate.attached || testCase == 'unexpected-extension')) {
         final receipt = File('${config['engineDir']}/wire-peer-closed');
         final elapsed = Stopwatch()..start();
         while (!receipt.existsSync() &&
             elapsed.elapsed < const Duration(milliseconds: 500)) {
           await Future<void>.delayed(const Duration(milliseconds: 10));
         }
-        report['wirePeerClosed'] = receipt.existsSync();
+        final key = gate.attached ? 'wirePeerClosed' : 'wirePeerRefused';
+        report[key] = receipt.existsSync();
       }
     } finally {
       try {
         if (config.remove('engineStarted') == true) {
-          await device.kill().timeout(eventDeadline);
+          try {
+            await device.kill().timeout(eventDeadline);
+          } on TestDeviceException {
+            // The generated bootstrap naturally exits on HTTP refusal before
+            // kill(). Admit only that refused path and observed clean code 1.
+            if (testCase != 'generated-missing-token' ||
+                report['failure'] != 'token-refused' ||
+                gate.rejected != 1 ||
+                gate.attached ||
+                await (config['engineExit'] as Future<int>).timeout(
+                      eventDeadline,
+                    ) !=
+                    1) {
+              rethrow;
+            }
+            report['engineExitCode'] = 1;
+          }
           report['engineSettled'] = true;
         }
       } finally {
@@ -181,7 +216,15 @@ Future<void> main(List<String> arguments) async {
     for (final entry in [(v4, 'IPv4'), (v6, 'IPv6')]) {
       final familyReport = <String, Object?>{};
       result.add(familyReport);
-      await runFamily(entry.$1, entry.$2, config, familyReport);
+      final family = entry.$2;
+      await runFamily(entry.$1, family, {
+        ...config,
+        'kernel': (config['kernels'] as Map<String, dynamic>)[family],
+        'kernelHash': (config['kernelHashes'] as Map<String, dynamic>)[family],
+        'sourceHash': (config['sourceHashes'] as Map<String, dynamic>)[family],
+        'enginePolicy':
+            (config['enginePolicies'] as Map<String, dynamic>)[family],
+      }, familyReport);
       if (familyReport['complete'] != true) break;
     }
   } finally {

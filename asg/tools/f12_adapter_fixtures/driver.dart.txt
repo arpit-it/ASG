@@ -63,10 +63,11 @@ class Gate extends Stream<HttpRequest> implements HttpServer {
 }
 
 class ConfinedProcesses extends LocalProcessManager {
-  ConfinedProcesses(this.config, this.family, this.port);
+  ConfinedProcesses(this.config, this.family, this.port, this.bootstrapToken);
   final Map<String, dynamic> config;
   final String family;
   final int port;
+  final String? bootstrapToken;
   @override
   Future<Process> start(
     List<Object> command, {
@@ -99,6 +100,10 @@ class ConfinedProcesses extends LocalProcessManager {
         mode != ProcessStartMode.normal ||
         environment?['SERVER_PORT'] != port.toString())
       throw StateError('Unadmitted stock command: $command');
+    final token = bootstrapToken;
+    if (token != null && !RegExp(r'^[a-f0-9]{48}$').hasMatch(token)) {
+      throw StateError('Invalid fixed bootstrap token');
+    }
     final process = await Process.start(
       '/usr/bin/sandbox-exec',
       ['-f', config['enginePolicy'], ...expected],
@@ -115,11 +120,12 @@ class ConfinedProcesses extends LocalProcessManager {
         'KERNEL_HASH': config['kernelHash'],
         'FAMILY': family,
         'CASE': config['case'],
-        'SERVER_PORT': port.toString(),
+        'SERVER_PORT': token == null ? port.toString() : '$port/$token',
         'FLUTTER_TEST': 'true',
       },
     );
     config['engineStarted'] = true;
+    config['engineExit'] = process.exitCode;
     return process;
   }
 }
@@ -129,29 +135,35 @@ class OwnedDevice extends FlutterTesterTestDevice {
     this.gate,
     Map<String, dynamic> c,
     String family,
-    files.FileSystem fs,
-  ) : super(
-        id: family == 'IPv4' ? 1 : 2,
-        platform: const platform.LocalPlatform(),
-        fileSystem: fs,
-        processManager: ConfinedProcesses(c, family, gate.port),
-        logger: BufferLogger.test(),
-        flutterTesterBinPath: c['engine'],
-        debuggingOptions: DebuggingOptions.disabled(
-          BuildInfo.debug.copyWith(packageConfigPath: c['packages']),
-        ),
-        enableVmService: false,
-        machine: false,
-        host: family == 'IPv4'
-            ? InternetAddress.loopbackIPv4
-            : InternetAddress.loopbackIPv6,
-        testAssetDirectory: null,
-        flutterProject: null,
-        icudtlPath: c['icu'],
-        compileExpression: null,
-        fontConfigManager: FixedFonts(fs.file(c['fonts'])),
-        nativeAssetsBuilder: null,
-      );
+    files.FileSystem fs, {
+    String? bootstrapToken,
+  }) : super(
+         id: family == 'IPv4' ? 1 : 2,
+         platform: const platform.LocalPlatform(),
+         fileSystem: fs,
+         processManager: ConfinedProcesses(
+           c,
+           family,
+           gate.port,
+           bootstrapToken,
+         ),
+         logger: BufferLogger.test(),
+         flutterTesterBinPath: c['engine'],
+         debuggingOptions: DebuggingOptions.disabled(
+           BuildInfo.debug.copyWith(packageConfigPath: c['packages']),
+         ),
+         enableVmService: false,
+         machine: false,
+         host: family == 'IPv4'
+             ? InternetAddress.loopbackIPv4
+             : InternetAddress.loopbackIPv6,
+         testAssetDirectory: null,
+         flutterProject: null,
+         icudtlPath: c['icu'],
+         compileExpression: null,
+         fontConfigManager: FixedFonts(fs.file(c['fonts'])),
+         nativeAssetsBuilder: null,
+       );
   final Gate gate;
   @override
   Future<HttpServer> bind(InternetAddress? host, int port) async {
