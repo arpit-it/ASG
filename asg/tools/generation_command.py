@@ -264,6 +264,13 @@ def offline_snapshot_slot(directory):
         os.close(descriptor)
 
 def confined_operation(directory, sdk, operation, timeout, parent_pid, test_file=None, test_name=None, *, offline=False):
+    if offline:
+        if operation not in ('resolve', 'analyze', 'build'):
+            raise ValueError('Only offline snapshot checks are allowed')
+        if not directory.is_absolute() or directory.resolve(strict=True) != directory:
+            raise ValueError('Expected a canonical snapshot directory')
+        if any(part.lower().endswith('.app') for part in directory.parts):
+            raise ValueError('Choose a snapshot outside application bundles.')
     arguments = OPERATIONS[operation]
     if test_file is not None or test_name is not None:
         if operation != 'test':
@@ -277,12 +284,9 @@ def confined_operation(directory, sdk, operation, timeout, parent_pid, test_file
     home = Path.home().resolve()
     if pub_cache == home or sdk == home or directory == home or directory in sdk.parents or directory in pub_cache.parents:
         raise ValueError('Unsafe candidate tool/cache roots')
-    if offline:
-        if operation not in ('resolve', 'analyze', 'build'):
-            raise ValueError('Only offline snapshot checks are allowed')
-        if any(directory == root or directory in root.parents or root in directory.parents
-               for root in (sdk, pub_cache)):
-            raise ValueError('Snapshot overlaps tool or cache roots')
+    if offline and any(directory == root or directory in root.parents or root in directory.parents
+                       for root in (sdk, pub_cache)):
+        raise ValueError('Snapshot overlaps tool or cache roots')
     offline_build = offline and operation == 'build'
     build_directory = directory / 'build'
     dart = sdk / 'bin/cache/dart-sdk/bin/dart'
