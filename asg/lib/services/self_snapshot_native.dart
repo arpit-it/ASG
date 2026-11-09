@@ -13,6 +13,7 @@ import '../models/candidate_source_proposal.dart';
 import '../models/candidate_file_review.dart';
 import '../models/generation_command_result.dart';
 import '../models/self_snapshot_operation.dart';
+import '../models/snapshot_preparation_failure.dart';
 import 'generation_process_capture.dart';
 
 bool get supportsSelfSnapshot => Platform.isMacOS;
@@ -206,7 +207,15 @@ Future<String> prepareSelfSnapshot({
     if (stopped()) throw StateError('Snapshot stopped.');
     process = await Process.start(
       python,
-      ['-I', '-B', helper.path, source, commit, parent],
+      [
+        '-I',
+        '-B',
+        helper.path,
+        '--app-recovery-receipt',
+        source,
+        commit,
+        parent,
+      ],
       runInShell: false,
       includeParentEnvironment: false,
     );
@@ -220,7 +229,12 @@ Future<String> prepareSelfSnapshot({
       cancellation: stop,
     );
     settled = true;
-    if (stopped() || result.exitCode != 0) {
+    if (stopped()) throw StateError('Snapshot stopped.');
+    if (result.exitCode != 0) {
+      if (result.exitCode == 1 && result.stdout.isEmpty) {
+        final run = await _verifiedFailedRun(parent, result.stderr);
+        if (!stopped() && run != null) throw SnapshotPreparationFailure(run);
+      }
       throw StateError('Snapshot preparation failed.');
     }
     final output = result.stdout;
@@ -249,6 +263,27 @@ Future<String> prepareSelfSnapshot({
     settled = true;
     await temp.delete(recursive: true);
   }
+}
+
+Future<String?> _verifiedFailedRun(String parent, String receipt) async {
+  if (receipt.length > 64 || RegExp(r'[\x00-\x1f\x7f]').hasMatch(parent)) {
+    return null;
+  }
+  final match = RegExp(
+    r'^ASG_SNAPSHOT_RECOVERY_V1 (asg-self-candidate-[a-f0-9]{8})\n$',
+  ).firstMatch(receipt);
+  if (match == null || match.end != receipt.length) return null;
+  final run = path.join(parent, match.group(1));
+  try {
+    if (await FileSystemEntity.type(run, followLinks: false) ==
+            FileSystemEntityType.directory &&
+        await Directory(run).resolveSymbolicLinks() == run) {
+      return run;
+    }
+  } on FileSystemException {
+    // The folder may have moved or disappeared since the helper exited.
+  }
+  return null;
 }
 
 /// Looks only for the incomplete staging folders created by snapshot runs.

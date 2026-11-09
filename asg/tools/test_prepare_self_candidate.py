@@ -2,6 +2,8 @@
 # Copyright 2026 Arpit Sinha
 
 from pathlib import Path
+from contextlib import redirect_stderr, redirect_stdout
+from io import StringIO
 import json
 import os
 import subprocess
@@ -274,6 +276,48 @@ class CandidateTests(unittest.TestCase):
         with patch.object(candidate, 'MAX_FILES', 1):
             ready = candidate.prepare(self.source, commit, self.parent)
         self.assertEqual((ready / 'a/b/c/entry').read_bytes(), b'nested committed bytes')
+
+    def test_app_receipt_identifies_owned_run_after_post_publication_failure(self):
+        (self.source / 'entry').write_bytes(b'original')
+        commit = self.commit()
+        rename = candidate.exclusive_rename
+
+        def mutate_after_publish(run_fd, source, target):
+            rename(run_fd, source, target)
+            run = next(self.parent.glob('asg-self-candidate-*'))
+            (run / target / 'entry').write_bytes(b'changed')
+
+        stderr, stdout = StringIO(), StringIO()
+        with patch.object(candidate, 'exclusive_rename', mutate_after_publish):
+            with redirect_stderr(stderr), redirect_stdout(stdout):
+                code = candidate.main([
+                    '--app-recovery-receipt', str(self.source), commit, str(self.parent),
+                ])
+        run, = self.parent.glob('asg-self-candidate-*')
+        self.assertEqual(code, 1)
+        self.assertEqual(stdout.getvalue(), '')
+        self.assertEqual(stderr.getvalue(), f'ASG_SNAPSHOT_RECOVERY_V1 {run.name}\n')
+        self.assertEqual((run / f'source-{commit}' / 'entry').read_bytes(), b'changed')
+        self.assertEqual((self.source / 'entry').read_bytes(), b'original')
+
+    def test_app_receipt_omits_replaced_run(self):
+        (self.source / 'entry').write_bytes(b'original')
+        commit = self.commit()
+
+        def replace_run(*_):
+            run = next(self.parent.glob('asg-self-candidate-*'))
+            run.rename(self.parent / 'moved-run')
+            run.mkdir()
+            raise OSError('run replaced')
+
+        stderr = StringIO()
+        with patch.object(candidate, 'write_blob', replace_run), redirect_stderr(stderr):
+            code = candidate.main([
+                '--app-recovery-receipt', str(self.source), commit, str(self.parent),
+            ])
+        self.assertEqual(code, 1)
+        self.assertEqual(stderr.getvalue(), '')
+        self.assertTrue((self.parent / 'moved-run' / 'incomplete').is_dir())
 
     def test_case_collision_refused(self):
         oid = b'0' * 40

@@ -5,6 +5,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:asg/models/self_snapshot_operation.dart';
+import 'package:asg/models/snapshot_preparation_failure.dart';
 import 'package:asg/models/candidate_comparison.dart';
 import 'package:asg/models/candidate_file_review.dart';
 import 'package:asg/views/candidate_file_review_dialog.dart';
@@ -1115,6 +1116,105 @@ void main() {
     expect(decode, throwsFormatException);
     result.remove('artifactPath');
     expect(decode().artifactPath, isNull);
+  });
+
+  testWidgets('shows the exact retained run after preparation fails', (
+    tester,
+  ) async {
+    const run = '/destination/asg-self-candidate-a1b2c3d4';
+    final controller = SelfSnapshotController(
+      prepare: ({
+        required source,
+        required destination,
+        required commit,
+        required python,
+        required stop,
+        required stopped,
+      }) async => throw const SnapshotPreparationFailure(run),
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        home: SelfSnapshotScreen(
+          controller: controller,
+          picker: FixturePicker(),
+        ),
+      ),
+    );
+    await tester.tap(find.text('Choose trusted checkout'));
+    await tester.pump();
+    await tester.tap(find.text('Choose snapshot destination'));
+    await tester.pump();
+    await tester.enterText(find.byType(TextField).at(0), commitId);
+    await tester.enterText(find.byType(TextField).at(1), '/python');
+    await tester.tap(find.text('Prepare source snapshot'));
+    await tester.pumpAndSettle();
+
+    final status = tester.widget<SelectableText>(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is SelectableText && (widget.data?.contains(run) ?? false),
+      ),
+    );
+    expect(status.data, startsWith('Preparation failed.'));
+    expect(find.textContaining('Snapshot ready'), findsNothing);
+  });
+
+  test('ignores a recovery receipt received after Stop', () async {
+    final result = Completer<String>();
+    final controller = SelfSnapshotController(
+      prepare: ({
+        required source,
+        required destination,
+        required commit,
+        required python,
+        required stop,
+        required stopped,
+      }) => result.future,
+    );
+    addTearDown(controller.dispose);
+    final preparation = controller.prepare(
+      source: '/source',
+      destination: '/destination',
+      commit: commitId,
+      python: '/python',
+    );
+    controller.stop();
+    result.completeError(
+      const SnapshotPreparationFailure(
+        '/destination/asg-self-candidate-a1b2c3d4',
+      ),
+    );
+    await preparation;
+    expect(controller.status, startsWith('Preparation stopped.'));
+    expect(controller.status, isNot(contains('asg-self-candidate-')));
+  });
+
+  test('ignores a recovery receipt received after disposal', () async {
+    final result = Completer<String>();
+    final controller = SelfSnapshotController(
+      prepare: ({
+        required source,
+        required destination,
+        required commit,
+        required python,
+        required stop,
+        required stopped,
+      }) => result.future,
+    );
+    final preparation = controller.prepare(
+      source: '/source',
+      destination: '/destination',
+      commit: commitId,
+      python: '/python',
+    );
+    controller.dispose();
+    result.completeError(
+      const SnapshotPreparationFailure(
+        '/destination/asg-self-candidate-a1b2c3d4',
+      ),
+    );
+    await preparation;
+    expect(controller.status, isNull);
   });
 
   testWidgets(
