@@ -20,7 +20,7 @@ From the Flutter app directory:
 ```sh
 cd /Users/arpitsinha/AndroidStudioProjects/ASG/asg
 /Users/arpitsinha/ComfyUI-Installs/mac_instance/ComfyUI/.venv/bin/python -B tools/qwen_server.py \
-  --model /Users/arpitsinha/ARG-model-downloads/qwen3.5-9b
+  --model /Users/arpitsinha/ARG-model-downloads/qwen3.5-9b --model-id Qwen3.5-9B
 ```
 
 Wait for `Ready at http://127.0.0.1:8765/v1`. The bridge binds only to loopback, uses local files only and disables remote model code. Stop it with Ctrl+C in that terminal to release model memory. On a clean checkout install the missing helper into the same project-local folder with:

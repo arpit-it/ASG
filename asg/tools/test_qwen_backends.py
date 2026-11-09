@@ -273,16 +273,18 @@ print('HELPER_REAPED_PIPES_CLOSED', flush=True)
             (folder / 'model.safetensors').write_bytes(b'fixture')
             for kind, flags, seconds in (
                     ('cpu', [], 180), ('cpu', ['--cpu-load-timeout-seconds', '3600'], 3600),
-                    ('mlx', [], None), ('torch', [], None)):
+                    ('mlx', ['--model-id', 'configured-mlx'], None), ('torch', [], None)):
                 with self.subTest(kind=kind, seconds=seconds):
                     backend = Mock(kind=kind)
                     server = Mock()
                     server.serve_forever.side_effect = KeyboardInterrupt()
                     arguments = ['qwen_server.py', '--model', str(folder), '--backend', kind, *flags]
                     if kind == 'cpu': arguments.append('--experimental-cpu')
-                    with patch.object(sys, 'argv', arguments), patch.object(qwen_server, 'select_backend', return_value=kind), patch.object(qwen_server, 'load_backend', return_value=backend) as load, patch.object(qwen_server, 'ThreadingHTTPServer', return_value=server), patch.object(qwen_server, 'cpu_load_deadline') as guard, redirect_stdout(StringIO()):
+                    with patch.object(sys, 'argv', arguments), patch.object(qwen_server, 'select_backend', return_value=kind), patch.object(qwen_server, 'load_backend', return_value=backend) as load, patch.object(qwen_server, 'ThreadingHTTPServer', return_value=server), patch.object(qwen_server, 'cpu_load_deadline') as guard, patch.object(qwen_server, 'create_handler') as handler, redirect_stdout(StringIO()):
                         qwen_server.main()
                     self.assertEqual(load.call_args.kwargs['model_config'], CONFIG)
+                    expected_id = 'configured-mlx' if kind == 'mlx' else folder.name
+                    self.assertEqual(handler.call_args.args[2:], (expected_id, folder.resolve()))
                     if seconds is None: guard.assert_not_called()
                     else: guard.assert_called_once_with(seconds)
 

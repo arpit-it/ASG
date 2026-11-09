@@ -279,7 +279,8 @@ class _RuntimeSetupScreenState extends State<RuntimeSetupScreen> {
                   field(
                     repository,
                     'Model repository',
-                    hint: 'mlx-community/Qwen3.8-27B-4bit or https://…/model.git',
+                    hint:
+                        'mlx-community/Qwen3.8-27B-4bit or https://…/model.git',
                   ),
                   field(revision, 'Revision / branch'),
                   field(
