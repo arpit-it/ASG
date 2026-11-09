@@ -131,6 +131,7 @@ class SelfSnapshotController extends BaseController {
     update();
     const recovery =
         'Check the selected destination for snapshot files before retrying.';
+    String? retainedRun;
     try {
       if (stop.isCompleted) return;
       final ready = await _prepare(
@@ -145,18 +146,19 @@ class SelfSnapshotController extends BaseController {
         _status = 'Snapshot ready at $ready';
       }
     } on SnapshotPreparationFailure catch (error) {
-      if (!isDisposed && !stop.isCompleted) {
-        _status =
-            'Preparation failed. Inspect the run folder before retrying.\n'
-            '${error.runPath}';
-      }
+      retainedRun = error.runPath;
     } catch (_) {
       if (!isDisposed && !stop.isCompleted) {
         _status = 'Preparation failed. $recovery';
       }
     } finally {
-      if (!isDisposed && stop.isCompleted) {
-        _status = 'Preparation stopped. $recovery';
+      if (!isDisposed && (stop.isCompleted || retainedRun != null)) {
+        final outcome = stop.isCompleted
+            ? 'Preparation stopped.'
+            : 'Preparation failed.';
+        _status = retainedRun == null
+            ? '$outcome $recovery'
+            : '$outcome Inspect the run folder before retrying.\n$retainedRun';
       }
       _stop = null;
       update();
