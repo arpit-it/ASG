@@ -185,6 +185,69 @@ class CandidateTests(unittest.TestCase):
         self.assertEqual(list(destination.iterdir()), [])
         self.assertEqual(list(moved.iterdir()), [])
 
+    def test_prepare_refuses_checkout_identity_in_destination_ancestry(self):
+        (self.source / 'entry').write_bytes(b'original')
+        commit = self.commit()
+        inside = self.source / 'inside'
+        inside.mkdir()
+        (inside / 'sentinel').write_bytes(b'preserved')
+        alias = self.parent / 'different-name'
+        alias.mkdir()
+        (alias / 'inside').mkdir()
+        original_open = os.open
+
+        def open_with_alias(name, *args, **kwargs):
+            if name == alias.name and kwargs.get('dir_fd') is not None:
+                name = self.source.name
+            return original_open(name, *args, **kwargs)
+
+        with patch.object(candidate.os, 'open', side_effect=open_with_alias):
+            with self.assertRaisesRegex(ValueError, 'outside the source repository'):
+                candidate.prepare(self.source, commit, alias / 'inside')
+        self.assertEqual(list(inside.iterdir()), [inside / 'sentinel'])
+        self.assertEqual((inside / 'sentinel').read_bytes(), b'preserved')
+        self.assertEqual(list((alias / 'inside').iterdir()), [])
+
+    def test_prepare_refuses_real_checkout_case_alias(self):
+        alternate = self.source.with_name(self.source.name.upper())
+        if not alternate.is_dir() or alternate.resolve() == self.source:
+            self.skipTest('Case-preserving checkout alias unavailable on this filesystem.')
+        (self.source / 'entry').write_bytes(b'original')
+        commit = self.commit()
+        inside = self.source / 'inside'
+        inside.mkdir()
+
+        with self.assertRaisesRegex(ValueError, 'outside the source repository'):
+            candidate.prepare(self.source, commit, alternate / 'inside')
+        self.assertEqual(list(inside.iterdir()), [])
+        self.assertEqual((self.source / 'entry').read_bytes(), b'original')
+
+    def test_prepare_refuses_bundle_destinations_and_can_retry_outside(self):
+        (self.source / 'entry').write_bytes(b'original')
+        commit = self.commit()
+        inside = self.parent / 'StableFixture.ApP' / 'Contents'
+        inside.mkdir(parents=True)
+        sentinel = inside / 'sentinel'
+        sentinel.write_bytes(b'preserved')
+        alias = self.parent / 'selected-folder'
+        alias.symlink_to(inside, target_is_directory=True)
+
+        for target in (inside, alias):
+            with self.subTest(target=target):
+                with self.assertRaisesRegex(ValueError, 'outside application bundles'):
+                    candidate.prepare(self.source, commit, target)
+        self.assertEqual(list(inside.iterdir()), [sentinel])
+        self.assertEqual(sentinel.read_bytes(), b'preserved')
+
+        external = self.parent / 'external'
+        external.mkdir()
+        alias.unlink()
+        alias.symlink_to(external, target_is_directory=True)
+        ready = candidate.prepare(self.source, commit, alias)
+        self.assertEqual(ready.parent.parent, external)
+        self.assertEqual((ready / 'entry').read_bytes(), b'original')
+        self.assertEqual((self.source / 'entry').read_bytes(), b'original')
+
     def test_stop_after_stage_verification_leaves_incomplete_snapshot(self):
         (self.source / 'entry').write_bytes(b'original')
         commit = self.commit()
