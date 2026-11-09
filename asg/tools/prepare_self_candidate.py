@@ -143,7 +143,9 @@ def prepare(source, commit, parent):
     if source == parent or source in parent.parents:
         raise ValueError('Choose a candidate parent outside the source repository.')
     deadline = time.monotonic() + 60
-    parent_fd = open_directory_no_links(parent)
+    parent_fd = open_snapshot_destination(
+        parent, (source,), 'Choose a candidate parent outside the source repository.',
+    )
     run_fd = stage_fd = None
     run = None
     try:
@@ -499,13 +501,14 @@ def exclusive_rename(directory, source, target):
 
 
 
-def open_proposal_destination(destination, candidate, trusted_source):
+def open_snapshot_destination(destination, protected_paths, outside_error):
+    """Open a destination outside the protected directory identities."""
     if any(part.lower().endswith('.app') for part in destination.parts):
         raise ValueError('Choose a destination outside application bundles.')
     forbidden = []
     held = []
     try:
-        for path in (candidate, Path(trusted_source) if trusted_source else None):
+        for path in protected_paths:
             if path is None:
                 continue
             descriptor = open_directory_no_links(path)
@@ -520,7 +523,7 @@ def open_proposal_destination(destination, candidate, trusted_source):
                 parent = child
                 info = os.fstat(parent)
                 if (info.st_dev, info.st_ino) in forbidden:
-                    raise ValueError('Destination must be outside the candidate and trusted checkout.')
+                    raise ValueError(outside_error)
             return os.dup(parent)
         finally:
             os.close(parent)
@@ -555,7 +558,10 @@ def apply_proposal(payload):
         trusted = Path(payload['trustedSource']).resolve(strict=True)
         if destination == trusted or trusted in destination.parents:
             raise ValueError('Choose a destination outside the trusted checkout.')
-    parent_fd = open_proposal_destination(destination, candidate, payload['trustedSource'])
+    parent_fd = open_snapshot_destination(
+        destination, (candidate, Path(payload['trustedSource']) if payload['trustedSource'] else None),
+        'Destination must be outside the candidate and trusted checkout.',
+    )
     run_fd = stage_fd = None
     run = None
     total = substitutions = 0
