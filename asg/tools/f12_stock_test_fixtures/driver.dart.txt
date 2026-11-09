@@ -11,7 +11,8 @@ import 'package:test_api/src/backend/state.dart';
 import 'package:test_api/src/backend/test.dart';
 import 'package:test_core/src/platform.dart';
 
-import 'stock_device.dart' show Gate, OwnedDevice;
+import 'ingress.dart';
+import 'stock_device.dart' show OwnedDevice;
 
 const eventDeadline = Duration(seconds: 3);
 const renderTest = 'fixture renders in confinement';
@@ -24,7 +25,7 @@ StreamChannel<Object?> eventChannel(StreamChannel<String> remote) {
       StreamTransformer.fromHandlers(
         handleData: (data, sink) {
           try {
-            // The existing WebSocket implementation decodes before this check.
+            // The wire guard bounds input before decoding. Validate events here.
             if (++eventCount > 128 || data.length > 16384) {
               throw const FormatException('Decoded test event exceeds limit');
             }
@@ -60,7 +61,7 @@ Future<void> runFamily(
   Map<String, dynamic> config,
   Map<String, Object?> report,
 ) async {
-  final gate = Gate(server, config['session'] as String);
+  final gate = IngressGate(server, config['session'] as String);
   final device = OwnedDevice(gate, config, family, const LocalFileSystem());
   final outcomes = <String, String>{};
   report['family'] = family;
@@ -123,14 +124,36 @@ Future<void> runFamily(
   } on TimeoutException {
     report['failure'] = gate.rejected == 0 ? 'deadline' : 'token-refused';
   } catch (error) {
-    report['failure'] = gate.rejected == 0 ? 'suite-error' : 'token-refused';
+    report['failure'] = gate.failure != null
+        ? 'ingress-refused'
+        : gate.rejected == 0
+        ? 'suite-error'
+        : 'token-refused';
     report['detail'] = error.toString();
   } finally {
     report['phase'] = phase;
     report['rejected'] = gate.rejected;
-    if (config.remove('engineStarted') == true) {
-      await device.kill().timeout(eventDeadline);
-      report['engineSettled'] = true;
+    report['ingressAttached'] = gate.attached;
+    try {
+      if (gate.failure != null && gate.attached) {
+        final receipt = File('${config['engineDir']}/wire-peer-closed');
+        final elapsed = Stopwatch()..start();
+        while (!receipt.existsSync() &&
+            elapsed.elapsed < const Duration(milliseconds: 500)) {
+          await Future<void>.delayed(const Duration(milliseconds: 10));
+        }
+        report['wirePeerClosed'] = receipt.existsSync();
+      }
+    } finally {
+      try {
+        if (config.remove('engineStarted') == true) {
+          await device.kill().timeout(eventDeadline);
+          report['engineSettled'] = true;
+        }
+      } finally {
+        gate.closeConnection();
+        if (gate.failure != null) report['ingressFailure'] = gate.failure;
+      }
     }
   }
 }

@@ -54,7 +54,7 @@ class StockTestEventsTest(unittest.TestCase):
         settled = {'exitCode': 0, 'reason': None, 'waitEntered': False}
         rows = [
             dict(family=family, outcomes=events.OUTCOMES.copy(), complete=True,
-                 phase='test-run', rejected=0, engineSettled=True)
+                 phase='test-run', rejected=0, engineSettled=True, ingressAttached=True)
             for family in ('IPv4', 'IPv6')
         ]
         self.assertTrue(events.result_matches('positive', rows, settled))
@@ -63,6 +63,23 @@ class StockTestEventsTest(unittest.TestCase):
         self.assertFalse(events.result_matches('positive', rows, dict(settled, reason='cancelled')))
         rows[0]['outcomes']['fixture deliberate failure'] = 'success'
         self.assertFalse(events.result_matches('positive', rows, settled))
+
+    def test_ingress_refusal_requires_the_specific_guard_receipt(self):
+        settled = {'exitCode': 0, 'reason': None, 'waitEntered': False, 'wirePeerReceipt': True}
+        for case, reason in events.INGRESS_CASES.items():
+            with self.subTest(case=case):
+                row = dict(family='IPv4', outcomes={}, phase='suite-load', rejected=0,
+                           engineSettled=True, failure='ingress-refused', ingressFailure=reason,
+                           ingressAttached=True, wirePeerClosed=True)
+                self.assertTrue(events.result_matches(case, [row], settled))
+                self.assertFalse(events.result_matches(case, [dict(row, failure='deadline')], settled))
+                self.assertFalse(events.result_matches(case, [dict(row, ingressAttached=False)], settled))
+                self.assertFalse(events.result_matches(case, [dict(row, wirePeerClosed=False)], settled))
+                self.assertFalse(events.result_matches(case, [dict(row, ingressFailure='other')], settled))
+                self.assertFalse(events.result_matches(case, [dict(row, complete=True)], settled))
+                self.assertFalse(events.result_matches(case, [dict(row, engineSettled=False)], settled))
+                self.assertFalse(events.result_matches(case, [row], dict(settled, reason='driver-deadline')))
+                self.assertFalse(events.result_matches(case, [row], dict(settled, wirePeerReceipt=False)))
 
     def test_stop_requires_observed_wait_and_no_suite_receipt(self):
         stopped = {'exitCode': -15, 'reason': 'cancelled', 'waitEntered': True}
