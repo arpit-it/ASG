@@ -263,6 +263,22 @@ def offline_snapshot_slot(directory):
     finally:
         os.close(descriptor)
 
+def offline_snapshot_root(directory):
+    # The app passes the Flutter project inside a prepared source snapshot.
+    source = directory.parent
+    if (directory.name.lower() == 'asg'
+            and re.fullmatch(r'source-[a-f0-9]{40}', source.name.lower())
+            and re.fullmatch(r'asg-self-candidate-[a-z0-9_]{8}', source.parent.name.lower())):
+        return source
+    return directory
+
+
+def directories_overlap(first, second):
+    # Filesystem identity also catches case aliases on macOS.
+    return (any(first.samefile(ancestor) for ancestor in (second, *second.parents))
+            or any(second.samefile(ancestor) for ancestor in first.parents))
+
+
 def confined_operation(directory, sdk, operation, timeout, parent_pid, test_file=None, test_name=None, *, offline=False):
     if offline:
         if operation not in ('resolve', 'analyze', 'build'):
@@ -284,9 +300,10 @@ def confined_operation(directory, sdk, operation, timeout, parent_pid, test_file
     home = Path.home().resolve()
     if pub_cache == home or sdk == home or directory == home or directory in sdk.parents or directory in pub_cache.parents:
         raise ValueError('Unsafe candidate tool/cache roots')
-    if offline and any(directory == root or directory in root.parents or root in directory.parents
-                       for root in (sdk, pub_cache)):
-        raise ValueError('Snapshot overlaps tool or cache roots')
+    if offline:
+        snapshot_root = offline_snapshot_root(directory)
+        if any(directories_overlap(snapshot_root, root) for root in (sdk, pub_cache)):
+            raise ValueError('Snapshot overlaps tool or cache roots')
     offline_build = offline and operation == 'build'
     build_directory = directory / 'build'
     dart = sdk / 'bin/cache/dart-sdk/bin/dart'

@@ -105,6 +105,59 @@ class CommandTests(unittest.TestCase):
                 self.assertNotEqual(result.returncode, 0)
                 self.assertIn('invalid choice', result.stderr)
 
+    def test_offline_tools_and_cache_cannot_overlap_the_prepared_snapshot(self):
+        with tempfile.TemporaryDirectory() as temp:
+            base = Path(temp).resolve()
+            run = base / 'asg-self-candidate-a1b2c3d4'
+            snapshot = run / ('source-' + 'a' * 40)
+            project = snapshot / 'asg'
+            project.mkdir(parents=True)
+            embedded = snapshot / 'tools'
+            embedded.mkdir()
+            external = base / 'trusted'
+            external.mkdir()
+            linked = base / 'linked'
+            linked.symlink_to(embedded, target_is_directory=True)
+            case_alias = snapshot.with_name(snapshot.name.upper()) / embedded.name
+            cases = [
+                (project, embedded, external),
+                (project, external, embedded),
+                (project, linked, external),
+                (project, external, linked),
+                (project, snapshot, external),
+                (project, external, run),
+            ]
+            if case_alias.is_dir():
+                cases.extend([
+                    (project, case_alias, external),
+                    (case_alias.parent / 'ASG', embedded, external),
+                ])
+
+            with mock.patch.object(module.platform, 'system', return_value='Darwin'), \
+                 mock.patch.object(Path, 'is_file', return_value=True), \
+                 mock.patch.object(module, 'offline_snapshot_slot') as slot:
+                for directory, sdk, cache in cases:
+                    with self.subTest(directory=directory, sdk=sdk, cache=cache), \
+                         mock.patch.dict(os.environ, {'PUB_CACHE': str(cache)}):
+                        with self.assertRaisesRegex(ValueError, 'Snapshot overlaps tool or cache roots'):
+                            module.confined_operation(directory, sdk, 'resolve', 1, os.getppid(),
+                                                      offline=True)
+                slot.assert_not_called()
+            self.assertEqual(list(project.iterdir()), [])
+
+            # A generic offline project keeps its existing project-only boundary.
+            generic = base / 'generic'
+            generic.mkdir()
+            with mock.patch.object(module.platform, 'system', return_value='Darwin'), \
+                 mock.patch.object(Path, 'is_file', return_value=True), \
+                 mock.patch.object(module, 'offline_snapshot_slot',
+                                   side_effect=RuntimeError('Reached offline setup')) as slot, \
+                 mock.patch.dict(os.environ, {'PUB_CACHE': str(external)}):
+                with self.assertRaisesRegex(RuntimeError, 'Reached offline setup'):
+                    module.confined_operation(generic, embedded, 'resolve', 1, os.getppid(),
+                                              offline=True)
+                slot.assert_called_once_with(generic)
+
     def test_offline_cli_refuses_bundle_and_alias_before_setup(self):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp).resolve()
