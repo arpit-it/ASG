@@ -619,6 +619,7 @@
           "tools/product_acceptance.py",
           "tools/qwen_server.py",
           "tools/test_download_model.py",
+          "tools/test_generation_command.py",
           "tools/test_product_acceptance.py",
           "tools/test_qwen_streaming_server.py"
         ],
@@ -979,6 +980,7 @@
           "tools/product_acceptance.py",
           "tools/qwen_server.py",
           "tools/test_download_model.py",
+          "tools/test_generation_command.py",
           "tools/test_product_acceptance.py",
           "tools/test_qwen_streaming_server.py"
         ],
@@ -1308,6 +1310,7 @@
           "tools/product_acceptance.py",
           "tools/qwen_server.py",
           "tools/test_download_model.py",
+          "tools/test_generation_command.py",
           "tools/test_product_acceptance.py",
           "tools/test_qwen_streaming_server.py"
         ],
@@ -1565,6 +1568,7 @@
           "tools/product_acceptance.py",
           "tools/qwen_server.py",
           "tools/test_download_model.py",
+          "tools/test_generation_command.py",
           "tools/test_product_acceptance.py",
           "tools/test_qwen_streaming_server.py"
         ],
@@ -2064,6 +2068,7 @@
           "tools/product_acceptance.py",
           "tools/qwen_server.py",
           "tools/test_download_model.py",
+          "tools/test_generation_command.py",
           "tools/test_product_acceptance.py",
           "tools/test_qwen_streaming_server.py"
         ],
@@ -2312,6 +2317,7 @@
           "tools/product_acceptance.py",
           "tools/qwen_server.py",
           "tools/test_download_model.py",
+          "tools/test_generation_command.py",
           "tools/test_product_acceptance.py",
           "tools/test_qwen_streaming_server.py"
         ],
@@ -2789,6 +2795,7 @@
           "tools/product_acceptance.py",
           "tools/qwen_server.py",
           "tools/test_download_model.py",
+          "tools/test_generation_command.py",
           "tools/test_product_acceptance.py",
           "tools/test_qwen_streaming_server.py"
         ],
@@ -3037,6 +3044,7 @@
           "tools/product_acceptance.py",
           "tools/qwen_server.py",
           "tools/test_download_model.py",
+          "tools/test_generation_command.py",
           "tools/test_product_acceptance.py",
           "tools/test_qwen_streaming_server.py"
         ],
@@ -3285,6 +3293,7 @@
           "tools/product_acceptance.py",
           "tools/qwen_server.py",
           "tools/test_download_model.py",
+          "tools/test_generation_command.py",
           "tools/test_product_acceptance.py",
           "tools/test_qwen_streaming_server.py"
         ],
@@ -3533,6 +3542,7 @@
           "tools/product_acceptance.py",
           "tools/qwen_server.py",
           "tools/test_download_model.py",
+          "tools/test_generation_command.py",
           "tools/test_product_acceptance.py",
           "tools/test_qwen_streaming_server.py"
         ],
@@ -4518,6 +4528,7 @@
           "tools/product_acceptance.py",
           "tools/qwen_server.py",
           "tools/test_download_model.py",
+          "tools/test_generation_command.py",
           "tools/test_product_acceptance.py",
           "tools/test_qwen_streaming_server.py"
         ],
@@ -4817,6 +4828,7 @@
           "tools/product_acceptance.py",
           "tools/qwen_server.py",
           "tools/test_download_model.py",
+          "tools/test_generation_command.py",
           "tools/test_product_acceptance.py",
           "tools/test_qwen_streaming_server.py"
         ],

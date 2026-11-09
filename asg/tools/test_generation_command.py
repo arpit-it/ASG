@@ -105,6 +105,30 @@ class CommandTests(unittest.TestCase):
                 self.assertNotEqual(result.returncode, 0)
                 self.assertIn('invalid choice', result.stderr)
 
+    def test_offline_cli_refuses_bundle_and_alias_before_setup(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp).resolve()
+            snapshot = root / 'FixedFixture.ApP' / 'Contents' / 'snapshot' / 'asg'
+            snapshot.mkdir(parents=True)
+            manifest = snapshot / 'pubspec.yaml'
+            manifest.write_text('name: fixture\n')
+            alias = root / 'snapshot-alias'
+            alias.symlink_to(snapshot, target_is_directory=True)
+            for operation in ('resolve', 'analyze', 'build'):
+                for directory, error in (
+                    (snapshot, 'Choose a snapshot outside application bundles.'),
+                    (alias, 'Expected a canonical generated project directory'),
+                ):
+                    with self.subTest(operation=operation, directory=directory):
+                        result = subprocess.run(
+                            [sys.executable, '-I', '-B', str(Path(__file__).with_name('generation_command.py')),
+                             '--confined', '--offline-snapshot-check', '--operation', operation,
+                             '--sdk', str(root / 'missing-sdk'), '--directory', str(directory)],
+                            capture_output=True, text=True, timeout=5)
+                        self.assertNotEqual(result.returncode, 0)
+                        self.assertIn(error, result.stderr)
+                        self.assertEqual(list(snapshot.iterdir()), [manifest])
+
     def test_cli_deadline_matches_saved_policy_before_dispatch(self):
         with tempfile.TemporaryDirectory() as directory:
             directory = str(Path(directory).resolve())
