@@ -5,15 +5,80 @@
 import contextlib
 import io
 import json
+import signal
+import sys
 from pathlib import Path
 import tempfile
 import unittest
-from unittest.mock import patch
+from unittest.mock import Mock, call, patch
 
 import f12_stock_test_events as events
 
 
 class StockTestEventsTest(unittest.TestCase):
+    def test_reaped_group_absence_needs_no_kill(self):
+        with patch.object(events.os, 'killpg', side_effect=ProcessLookupError) as killpg:
+            self.assertIsNone(events.settle_reaped_group(123))
+        killpg.assert_called_once_with(123, 0)
+
+    def test_post_reap_kill_denial_requires_a_later_absence_probe(self):
+        observations = [None, PermissionError, PermissionError, ProcessLookupError]
+        with (patch.object(events.os, 'killpg', side_effect=observations) as killpg,
+              patch.object(events.time, 'monotonic', side_effect=[0, .01, .02]),
+              patch.object(events.time, 'sleep')):
+            self.assertIsNone(events.settle_reaped_group(123))
+        self.assertEqual(killpg.call_args_list, [
+            call(123, 0), call(123, signal.SIGKILL), call(123, 0), call(123, 0),
+        ])
+
+    def test_unconfirmed_group_cleanup_has_a_bounded_diagnostic(self):
+        for observations, message in (
+            ([PermissionError, PermissionError], 'signal-zero probe denied'),
+            ([None, PermissionError, None], 'post-reap SIGKILL denied'),
+            ([None, None, None], 'group still present'),
+        ):
+            with self.subTest(message=message):
+                with (patch.object(events.os, 'killpg', side_effect=observations),
+                      patch.object(events.time, 'monotonic', side_effect=[0, .49, .5]),
+                      patch.object(events.time, 'sleep') as sleep):
+                    self.assertIn(message, events.settle_reaped_group(123))
+                sleep.assert_called_once()
+
+    def test_driver_report_retains_unconfirmed_cleanup(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            config = {'ready': root / 'ready', 'engineDir': root}
+            with patch.object(events, 'settle_reaped_group', return_value='group present') as settle:
+                execution = events.run_driver(
+                    [sys.executable, '-c', 'print("observed output")'],
+                    root, config, root, root, 'positive',
+                )
+            self.assertEqual(execution['exitCode'], 0)
+            self.assertEqual(execution['output'], 'observed output\n')
+            self.assertFalse(execution['groupReaped'])
+            self.assertEqual(execution['cleanupError'], 'group present')
+            settle.assert_called_once()
+
+    def test_emergency_cleanup_failure_preserves_original_error_and_handlers(self):
+        handlers = {sig: signal.getsignal(sig) for sig in (signal.SIGTERM, signal.SIGINT)}
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            ready = root / 'ready'
+            ready.touch()
+            config = {'ready': ready, 'engineDir': root}
+            process = Mock(pid=123)
+            process.poll.return_value = None
+            process.stdout.close.side_effect = OSError('pipe close denied')
+            with (patch.object(events.subprocess, 'Popen', return_value=process),
+                  patch.object(events.selectors, 'DefaultSelector'),
+                  patch.object(events, 'read_port', side_effect=ValueError('bad receipt')),
+                  patch.object(events.os, 'killpg', side_effect=PermissionError) as killpg):
+                with self.assertRaisesRegex(ValueError, 'bad receipt'):
+                    events.run_driver([], root, config, root, root, 'positive')
+        killpg.assert_called_once_with(123, signal.SIGKILL)
+        process.stdout.close.assert_called_once()
+        self.assertEqual({sig: signal.getsignal(sig) for sig in handlers}, handlers)
+
     def test_cli_refuses_arbitrary_source_before_dispatch(self):
         with patch.object(events, 'exercise') as exercise, contextlib.redirect_stderr(io.StringIO()):
             with self.assertRaises(SystemExit) as refused:
