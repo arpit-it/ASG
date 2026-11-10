@@ -258,8 +258,26 @@ raise SystemExit(main(sys.argv[4:]))
           await File('${failed.path}/source-$commit/entry').readAsString(),
           stopAfterPublish ? 'original' : 'changed after publication',
         );
-        expect(await inspectIncompleteSnapshots(parent), isEmpty);
+        expect(await inspectIncompleteSnapshots(parent), [failed.path]);
+        await expectLater(
+          checkSelfSnapshot(
+            snapshot: '${failed.path}/source-$commit',
+            sdk: '/unavailable-sdk',
+            python: '/unavailable-python',
+            operation: SelfSnapshotOperation.resolve,
+            stop: Completer<void>().future,
+            stopped: () => false,
+          ),
+          throwsA(
+            isA<FormatException>().having(
+              (error) => error.message,
+              'message',
+              contains('Snapshot preparation did not finish'),
+            ),
+          ),
+        );
         final ready = await prepare('/usr/bin/python3', Completer<void>());
+        expect(await inspectIncompleteSnapshots(parent), [failed.path]);
         expect(ready, isNot(startsWith(failed.path)));
         expect(await File('$ready/entry').readAsString(), 'original');
         expect(await File('${source.path}/entry').readAsString(), 'original');

@@ -287,7 +287,9 @@ Future<String?> _verifiedFailedRun(String parent, String receipt) async {
   return null;
 }
 
-/// Looks only for the incomplete staging folders created by snapshot runs.
+const _pendingPublication = '.asg-preparation-pending';
+
+/// Finds incomplete staging folders or runs still pending final verification.
 Future<List<String>> inspectIncompleteSnapshots(String destination) async {
   if (!supportsSelfSnapshot || !path.isAbsolute(destination)) {
     throw const FormatException('Invalid snapshot destination.');
@@ -310,19 +312,30 @@ Future<List<String>> inspectIncompleteSnapshots(String destination) async {
       continue;
     }
     final staging = path.join(entry.path, 'incomplete');
+    final pending = path.join(entry.path, _pendingPublication);
+    String? retained;
     if (await FileSystemEntity.type(
-          staging,
-          followLinks: false,
-        ).timeout(limit) !=
-        FileSystemEntityType.directory) {
-      continue;
+              staging,
+              followLinks: false,
+            ).timeout(limit) ==
+            FileSystemEntityType.directory &&
+        await Directory(staging).resolveSymbolicLinks().timeout(limit) ==
+            staging) {
+      retained = staging;
+    } else if (await FileSystemEntity.type(
+              pending,
+              followLinks: false,
+            ).timeout(limit) ==
+            FileSystemEntityType.directory &&
+        await Directory(pending).resolveSymbolicLinks().timeout(limit) ==
+            pending) {
+      retained = entry.path;
     }
-    if (await Directory(staging).resolveSymbolicLinks().timeout(limit) ==
-        staging) {
+    if (retained != null) {
       if (found.length == 20) {
         throw StateError('Snapshot inspection exceeded its limits.');
       }
-      found.add(staging);
+      found.add(retained);
     }
   }
   return found..sort();
@@ -344,6 +357,15 @@ Future<GenerationCommandResult> checkSelfSnapshot({
           .hasMatch(path.basename(run)) ||
       await Directory(snapshot).resolveSymbolicLinks() != snapshot) {
     throw const FormatException('Select a prepared ASG source snapshot.');
+  }
+  if (await FileSystemEntity.type(
+        path.join(run, _pendingPublication),
+        followLinks: false,
+      ) !=
+      FileSystemEntityType.notFound) {
+    throw const FormatException(
+      'Snapshot preparation did not finish. Inspect the run before retrying.',
+    );
   }
   final project = path.join(snapshot, 'asg');
   final manifest = path.join(project, 'pubspec.yaml');

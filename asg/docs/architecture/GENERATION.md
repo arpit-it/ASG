@@ -31,6 +31,13 @@ Only a successful analyze/test/build can produce a ready result. **Start actual 
 
 ## Boundaries and recovery
 
+For ASG's own source snapshots, the preparation helper leaves a private marker
+during final verification. If the helper stops or verification fails after the
+snapshot directory is renamed, Projects can still find the retained run with
+**Find incomplete snapshots**. Candidate review and Projects' offline checks
+refuse that snapshot while the marker remains. The original checkout and
+retained bytes stay in place; retry preparation in a new run.
+
 Parent/SDK paths are canonicalized, symbolic-link aliases rejected, and a single new directory is created exclusively. Template files use exclusive creation. Source files and generated output are fingerprinted. Verification checks source before stages; dependency lock/package configuration/graph fingerprints are captured after resolution and checked before later commands and retries. Source or critical metadata changes stop verification instead of executing changed inputs. Output changes prevent/reject preview serving.
 
 Outcomes, step exit codes/output and failures are stored transactionally under studio.generation.v1.<projectId>. Exceptions after preparation persist a failed outcome; failed history writes preserve previous durable history. On reopening, interrupted verification is displayed honestly. Retry runs the saved verification sequence on unchanged source and metadata; corrected SDK/Python selections can be explicitly supplied. An interrupted resolution without a durable metadata snapshot requires a new folder. Partial generation folders are retained; generation failure never silently deletes/replaces them. Initial starter generation does not repair source automatically. A separately consented bounded candidate-repair session is available after a recorded candidate failure; see the F05 sections below.
