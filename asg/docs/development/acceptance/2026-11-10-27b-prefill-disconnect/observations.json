@@ -1,0 +1,65 @@
+{
+  "operator_checkout": "802d276c7fded79479d0253d707dec47aba7bd14",
+  "running_server_source_revision": null,
+  "started_at_utc": "2026-11-10T15:22:04+00:00",
+  "model": "Qwen3.8-27B-4bit",
+  "backend": "mlx",
+  "device": "metal",
+  "host": "27.0.1",
+  "architecture": "arm64",
+  "prompt_sha256": "0d38331d346da453ae299a8c860b8b95e294c8282eff6447ae451a8d7978b8b2",
+  "max_tokens": 128,
+  "thinking_pings": 2,
+  "content_observed": false,
+  "terminal_observed": false,
+  "closed_on_thinking_ping": true,
+  "http_status": 200,
+  "closed_seconds": 2.011,
+  "post_disconnect_health": [
+    {
+      "elapsed": 0.003,
+      "phase": "thinking",
+      "model": "Qwen3.8-27B-4bit"
+    },
+    {
+      "elapsed": 1.004,
+      "phase": "thinking",
+      "model": "Qwen3.8-27B-4bit"
+    },
+    {
+      "elapsed": 2.015,
+      "phase": "thinking",
+      "model": "Qwen3.8-27B-4bit"
+    },
+    {
+      "elapsed": 3.023,
+      "phase": "thinking",
+      "model": "Qwen3.8-27B-4bit"
+    },
+    {
+      "elapsed": 4.033,
+      "phase": "idle",
+      "model": "Qwen3.8-27B-4bit"
+    }
+  ],
+  "idle_after_disconnect": true,
+  "retry": {
+    "http_status": 200,
+    "response_model": "Qwen3.8-27B-4bit",
+    "finish_reason": "stop",
+    "exact_ready": true,
+    "seconds": 0.315
+  },
+  "post_retry_health": [
+    {
+      "elapsed": 0.0,
+      "phase": "idle",
+      "model": "Qwen3.8-27B-4bit"
+    }
+  ],
+  "idle_after_retry": true,
+  "scope": "One observed client disconnect before streamed text and one retry after idle. Running source revision is unknown. App Stop and native kernel preemption require separate evidence.",
+  "prompt_fixture": "../2026-11-10-27b-prompt-fit/observations.json",
+  "retry_prompt": "Reply with exactly the single word READY.",
+  "retry_max_tokens": 32
+}
