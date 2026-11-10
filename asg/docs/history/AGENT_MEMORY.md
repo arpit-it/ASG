@@ -1,5 +1,9 @@
 # Durable project memory
 
+## Local 27B disconnect recovery — 10 November 2026 UTC
+
+One client closed before streamed text. The server returned to idle and the exact-model retry succeeded. This covers the loopback transport. App Stop and native kernel behavior require separate evidence. The [verified delivery record](PROGRESS.md#verified-local-27b-disconnect-recovery--10-november-2026-utc) covers PR #567.
+
 ## Local 27B prompt fit — 10 November 2026 UTC
 
 One exact-model SSE request completed with 3,794 reported prompt tokens and returned both markers. The prior JSON attempt timed out. Keep the observed point separate from the checkpoint context declaration. The [verified delivery record](PROGRESS.md#verified-local-27b-prompt-fit-observation--10-november-2026-utc) covers PR #566.
