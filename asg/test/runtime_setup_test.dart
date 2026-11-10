@@ -2055,6 +2055,66 @@ void main() {
     final scaffold = tester.widget<Scaffold>(find.byType(Scaffold).first);
     expect(scaffold.floatingActionButtonLocation, isA<RuntimeFabLocation>());
   });
+  testWidgets('ready health compares reported identity to the saved model', (
+    tester,
+  ) async {
+    const savedModel = 'saved-model';
+    String? reportedModel = 'private-model-sentinel';
+    final c = await controller(
+      FakeRuntimeHost(),
+      api: RuntimeConnection(
+        client: MockClient(
+          (_) async => http.Response(
+            jsonEncode({
+              'status': 'ready',
+              'phase': 'idle',
+              'model': ?reportedModel,
+            }),
+            200,
+          ),
+        ),
+      ),
+    );
+    await c.modelStore.save(const LocalModelConfig(model: savedModel));
+    await tester.pumpWidget(
+      MaterialApp(home: RuntimeSetupScreen(controller: c)),
+    );
+    await tester.pumpAndSettle();
+
+    final mismatch = find.text(
+      'Reported model ID differs from the saved connection.',
+    );
+    final missing = find.text('Runtime did not report a model ID.');
+    final match = find.text('Reported model ID matches the saved connection.');
+    final ready = find.text('Runtime reports ready');
+    expect(ready, findsOneWidget);
+    expect(mismatch, findsOneWidget);
+    expect(find.textContaining('private-model-sentinel'), findsNothing);
+
+    final refresh = find.text('Refresh status');
+    for (final (value, expected) in <(String?, Finder)>[
+      (null, missing),
+      ('  ', missing),
+      (' $savedModel ', mismatch),
+      (savedModel, match),
+    ]) {
+      reportedModel = value;
+      await tester.tap(refresh);
+      await tester.pumpAndSettle();
+      expect(ready, findsOneWidget);
+      for (final message in [mismatch, missing, match]) {
+        expect(
+          message,
+          identical(message, expected) ? findsOneWidget : findsNothing,
+        );
+      }
+    }
+    expect(c.connectionConfig.model, savedModel);
+    expect(c.modelStore.load().model, savedModel);
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox());
+  });
+
   testWidgets(
     'health panel omits server identity and does not label loading offline',
     (tester) async {
@@ -2080,6 +2140,8 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Runtime not ready'), findsOneWidget);
       expect(find.textContaining('model loading'), findsOneWidget);
+      expect(find.textContaining('saved connection.'), findsNothing);
+      expect(find.text('Runtime did not report a model ID.'), findsNothing);
       expect(find.text('Runtime offline'), findsNothing);
       expect(find.textContaining('sentinel'), findsNothing);
       expect(tester.takeException(), isNull);

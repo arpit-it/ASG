@@ -1,5 +1,9 @@
 # Durable project memory
 
+## Retained recovery inventory — 10 November 2026 UTC
+
+Projects shows 20 sorted eligible recovery paths and the count of additional matches. A complete scan still enforces its 512-entry and elapsed limits. See the [verified delivery record](PROGRESS.md#verified-retained-recovery-inventory--10-november-2026-utc).
+
 ## Runtime health response limit — 10 November 2026 UTC
 
 The runtime probe accepts successful responses through 64 KiB and handles HTTP errors from their status without waiting for their bodies. See the [verified delivery record](PROGRESS.md#verified-runtime-health-response-limit--10-november-2026-utc).
