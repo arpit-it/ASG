@@ -80,6 +80,61 @@ void main() {
       connection.close();
     },
   );
+  test(
+    'health keeps decoding declared and implicit response encodings',
+    () async {
+      const body = '{"status":"ready","model":"modèle"}';
+      final connection = RuntimeConnection(
+        client: MockClient((request) async {
+          final utf8Body = request.url.port == 8765;
+          return http.Response.bytes(
+            utf8Body ? utf8.encode(body) : latin1.encode(body),
+            200,
+            headers: {
+              'content-type': utf8Body
+                  ? 'application/json'
+                  : 'application/json; charset=iso-8859-1',
+            },
+          );
+        }),
+      );
+      addTearDown(connection.close);
+      for (final port in [8765, 8766]) {
+        final health = await connection.check(
+          LocalModelConfig(baseUrl: 'http://127.0.0.1:$port/v1'),
+        );
+        expect(health.model, 'modèle');
+        expect(health.ready, isTrue);
+      }
+    },
+  );
+
+  test('health timeout cancels only its unfinished body', () async {
+    final cancelled = Completer<void>();
+    final body = StreamController<List<int>>(onCancel: cancelled.complete);
+    addTearDown(body.close);
+    var stall = true;
+    final connection = RuntimeConnection(
+      client: MockClient.streaming((request, _) async {
+        if (stall) return http.StreamedResponse(body.stream, 200);
+        return http.StreamedResponse(
+          Stream.value(utf8.encode('{"status":"ready","model":"retry"}')),
+          200,
+        );
+      }),
+    );
+    addTearDown(connection.close);
+
+    final health = await connection.check(const LocalModelConfig());
+    expect(health.detail, contains('timed out'));
+    await cancelled.future.timeout(const Duration(seconds: 1));
+
+    stall = false;
+    final retry = await connection.check(const LocalModelConfig());
+    expect(retry.model, 'retry');
+    expect(retry.ready, isTrue);
+  });
+
   test('invalid records fail privately without claiming ready', () async {
     for (final body in [
       'private-sentinel',
