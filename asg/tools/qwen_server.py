@@ -191,6 +191,10 @@ def create_handler(backend, executor, model_id, model_path):
                 if type(tokens) is not int or not 1 <= tokens <= 4096:
                     self.respond(400, {'error': f'{budget_field} must be an integer from 1 to 4096; no budget was changed or generation started'})
                     return
+                count = request.get('n', 1)
+                if type(count) is not int or count != 1:
+                    self.respond(400, {'error': 'n must be 1; this local bridge returns one completion'})
+                    return
                 streaming = request.get('stream', False)
                 if not isinstance(streaming, bool):
                     self.respond(400, {'error': 'stream must be a boolean'})

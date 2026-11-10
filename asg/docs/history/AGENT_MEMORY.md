@@ -1,5 +1,9 @@
 # Durable project memory
 
+## Local bridge origins — 10 November 2026 UTC
+
+The bridge refuses malformed or repeated browser origins before dispatch. Preserve access for valid HTTP loopback origins and native clients. The [verified delivery record](PROGRESS.md#verified-local-bridge-origin-validation--10-november-2026-utc) covers PR #562.
+
 ## Local bridge and snapshot recovery — 10 November 2026 UTC
 
 The [verified delivery records](PROGRESS.md#verified-f22-and-f12-deliveries--10-november-2026-utc) cover PRs #556–558. The bridge refuses ambiguous output budgets and duplicate request fields before dispatch. Projects can rediscover a retained snapshot after final verification fails or stops. Preserve the existing live model evidence and keep candidate execution gated.

@@ -10,6 +10,11 @@ Statuses: Queued, In progress, Blocked, Awaiting merge, Done. A checked box mean
 
 Update this document with task selection and delivery evidence, alongside [agent memory](history/AGENT_MEMORY.md) and [progress](history/PROGRESS.md). Preserve unrelated edits. Include status updates in the relevant branch/PR where possible; reconcile the verified merge on the next run. Never overwrite this document from an older branch.
 
+### F22 local bridge request validation — 10 November 2026
+
+- [x] Refuse malformed or repeated browser origins before generation. [PR #562](https://github.com/arpit-it/ASG/pull/562) merged as `d09f1f550117cee900797f72e51947d2ff73b281`. See the [verified delivery record](history/PROGRESS.md#verified-local-bridge-origin-validation--10-november-2026-utc).
+- [ ] Refuse unsupported completion counts under [#396](https://github.com/arpit-it/ASG/issues/396). Omitted `n` and integer `n: 1` produce one choice. Other values must return HTTP 400 before dispatch in both JSON and streaming modes. Verify the refusal and a valid retry with the local bridge HTTP fixture.
+
 ### Current local development model — 9 November 2026
 
 Use the existing local `Qwen3.8-27B-4bit` checkpoint on MLX / Metal for all current and remaining ASG tasks on the owner's Mac that require live inference. Use the exact server model ID `Qwen3.8-27B-4bit` at `http://127.0.0.1:8765/v1`. Verify runtime health and model identity before recording live evidence. If the runtime is unavailable or reports a different model, keep the affected acceptance pending and continue eligible independent work. Keep dated observations and deterministic fixtures tied to their original model identities.

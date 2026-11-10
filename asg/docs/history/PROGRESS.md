@@ -1,5 +1,9 @@
 # Progress and delivery history
 
+## Verified local bridge origin validation — 10 November 2026 UTC
+
+[PR #562](https://github.com/arpit-it/ASG/pull/562) rejects malformed or repeated Origin headers before model dispatch and preserves valid loopback and native clients. Disposable HTTP fixtures verified refusal, absent CORS permission, and valid retries. Published head `9d9c3d108423841af3fba33b3d260f43099c5c9a` matched tested tree `8f35a58f17d096b2a13c4e610a433bf22d97eade`. [Independent review](https://github.com/arpit-it/ASG/pull/562#pullrequestreview-5843266076) approved it and both [required checks](https://github.com/arpit-it/ASG/actions/runs/42832080743) passed. The protected merge `d09f1f550117cee900797f72e51947d2ff73b281` was verified on main at 14:22:26 UTC. These fixture results establish request handling. F22 / #396 remains open for broader live model evidence.
+
 ## Verified F22 and F12 deliveries — 10 November 2026 UTC
 
 - **Local completion token budget** ([#396](https://github.com/arpit-it/ASG/issues/396), [PR #556](https://github.com/arpit-it/ASG/pull/556)). The local bridge honors either output-budget field in JSON and streaming requests and rejects invalid or conflicting values before inference. Disposable HTTP fixtures verified exact forwarding and a valid retry. Tested head `fdd89aa3ee2c0794bac96dc0ba536c487dedc4b4` passed [required CI](https://github.com/arpit-it/ASG/actions/runs/42727258414) and [independent review](https://github.com/arpit-it/ASG/pull/556#pullrequestreview-5834771170). Verified merge `cbe04c44c39ae0f95c0c1d5a48165a850b473ccd` at 00:25:37 UTC.
