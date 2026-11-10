@@ -176,7 +176,8 @@ class ProbeDeadlineTest(unittest.TestCase):
 class ProbeIdentityTest(unittest.TestCase):
     """Owned synthetic HTTP checks only; never evidence of real inference."""
 
-    def probe(self, folder, stage=None, identity='other-model', omit=False, *, bridge_source=None, require_bridge_source=False):
+    def probe(self, folder, stage=None, identity='other-model', omit=False, *, bridge_source=None, require_bridge_source=False,
+              input_limit=False, refusal_status=400):
         import json
         from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
         from threading import Thread
@@ -212,7 +213,13 @@ class ProbeIdentityTest(unittest.TestCase):
 
             def do_POST(self):
                 request = json.loads(self.rfile.read(int(self.headers['Content-Length'])))
-                name = ('json' if not seen else 'retry') if not request['stream'] else (
+                if input_limit and len(request['messages'][0]['content']) > 12000:
+                    seen.append('input-limit')
+                    self.send_response(refusal_status)
+                    self.end_headers()
+                    self.wfile.write(b'{"error":"Input exceeds 4096-token limit; shorten the request"}')
+                    return
+                name = ('json' if seen in ([], ['input-limit']) else 'retry') if not request['stream'] else (
                     'disconnect' if request['max_tokens'] == 4096 else 'structured')
                 seen.append(name)
                 metric = {'finish_reason': 'stop', 'prompt_tokens': 20,
@@ -252,13 +259,42 @@ class ProbeIdentityTest(unittest.TestCase):
                 '--origin', 'http://127.0.0.1:' + str(server.server_port),
                 '--checkpoint', str(checkpoint), '--model', 'synthetic',
                 '--source-revision', 'a' * 40, '--output', str(output),
-                '--confirm-live', *(['--require-bridge-source'] if require_bridge_source else [])],
+                '--confirm-live', *(['--require-bridge-source'] if require_bridge_source else []),
+                *(['--check-input-limit'] if input_limit else [])],
                 capture_output=True, timeout=5)
             return result, output, seen
         finally:
             server.shutdown()
             server.server_close()
             worker.join(timeout=1)
+
+    def test_opt_in_input_limit_checks_status_and_exact_retry(self):
+        import hashlib
+        import json
+
+        expected = {name: hashlib.sha256(SCRIPT.with_name(name).read_bytes()).hexdigest()
+                    for name in ('qwen_server.py', 'qwen_backends.py')}
+        with tempfile.TemporaryDirectory() as folder:
+            result, output, seen = self.probe(folder, bridge_source=expected,
+                require_bridge_source=True, input_limit=True)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual(seen, ['input-limit', 'json', 'structured', 'disconnect', 'retry'])
+            evidence = json.loads(output.read_text())['checks']['input_limit']
+            self.assertEqual(evidence['http_status'], 400)
+            self.assertTrue(evidence['idle_after_refusal'])
+            self.assertEqual(evidence['retry_model'], 'synthetic')
+        for kwargs, expected_posts in (
+            ({'require_bridge_source': False}, []),
+            ({'refusal_status': 500}, ['input-limit']),
+            ({'omit': True}, ['input-limit', 'json']),
+        ):
+            with self.subTest(kwargs=kwargs), tempfile.TemporaryDirectory() as folder:
+                options = {'bridge_source': expected, 'require_bridge_source': True,
+                           'input_limit': True, **kwargs}
+                result, output, seen = self.probe(folder, **options)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertEqual(seen, expected_posts)
+                self.assertFalse(output.exists())
 
     def test_required_bridge_source_matches_both_files_before_inference(self):
         import hashlib

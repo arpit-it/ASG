@@ -1,5 +1,9 @@
 # Durable project memory
 
+## Local profiler bridge source gate — 10 November 2026 UTC
+
+Use the optional bridge source check to compare startup fingerprints before profiling. A missing or mismatched observation stops strict profiling before inference. The [verified delivery record](PROGRESS.md#verified-local-profiler-bridge-source-gate--10-november-2026-utc) covers PR #570.
+
 ## Local bridge startup fingerprints — 10 November 2026 UTC
 
 Ready health can report fixed-name SHA-256 hashes of the bridge source files observed at startup. Keep the observations separate from model identity and later on-disk inspection. The [verified delivery record](PROGRESS.md#verified-local-bridge-startup-fingerprints--10-november-2026-utc) covers PR #569.

@@ -28,6 +28,10 @@ The profiler stops before inference if either hash is missing or differs.
 A successful report includes both hashes separately from the supplied source
 revision. The hashes describe startup source-file observations.
 
+Add `--check-input-limit` with `--require-bridge-source` to test one synthetic
+prompt above the bridge limit. The profiler requires HTTP 400, matching idle
+health, and an exact-model short retry before it saves a passing report.
+
 ## Streaming and visible state
 
 The bridge accepts `stream=true` and sends SSE events immediately:

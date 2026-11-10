@@ -21,8 +21,12 @@ parser.add_argument('--output', type=Path, required=True)
 parser.add_argument('--operation-timeout', type=float, default=90)
 parser.add_argument('--require-bridge-source', action='store_true',
                     help='Require the bridge startup fingerprints to match the source files next to this tool.')
+parser.add_argument('--check-input-limit', action='store_true',
+                    help='Verify an oversized synthetic prompt is refused before the normal short retry.')
 parser.add_argument('--confirm-live', action='store_true', required=True)
 args = parser.parse_args()
+if args.check_input_limit and not args.require_bridge_source:
+    parser.error('--check-input-limit requires --require-bridge-source.')
 if not 0.1 <= args.operation_timeout <= 90:
     parser.error('Operation timeout must be between 0.1 and 90 seconds.')
 try:
@@ -188,6 +192,30 @@ def run():
     weights = list(folder.glob('*.safetensors'))
     assert weights and all(p.is_file() and not p.is_symlink() for p in weights)
     report['weights'] = {'file_count': len(list(folder.glob('*.safetensors'))), 'disk_bytes': sum((p.stat().st_size for p in folder.glob('*.safetensors')))}
+    if args.check_input_limit:
+        prompt = (
+            'First marker: RUBY-739\n'
+            + ''.join(f'Record {i:04d}: A neutral archive note has no requested action.\n'
+                      for i in range(1, 261))
+            + 'Last marker: CEDAR-416\n'
+            + 'Return just the values of the first and last markers, joined by |. Do not add labels or commentary.'
+        )
+        start = time.monotonic()
+        status, refusal = call('/v1/chat/completions', request(prompt, 32))
+        assert status == 400 and refusal == {
+            'error': 'Input exceeds 4096-token limit; shorten the request',
+        }
+        refusal_seconds = round(time.monotonic() - start, 3)
+        status, health_after = call('/health')
+        assert status == 200 and (health_after.get('model'), health_after.get('backend'),
+                                  health_after.get('device'), health_after.get('phase')) == (
+            args.model, 'mlx', 'metal', 'idle')
+        require_matching_bridge_source(health_after)
+        report['checks']['input_limit'] = {
+            'http_status': 400, 'seconds': refusal_seconds,
+            'prompt_sha256': hashlib.sha256(prompt.encode()).hexdigest(),
+            'idle_after_refusal': True,
+        }
     start = time.monotonic()
     status, result = call('/v1/chat/completions', request('Reply with exactly the single word READY.', 32))
     validate_response_identity(result)
@@ -195,6 +223,9 @@ def run():
     assert result['choices'][0]['message']['content'].strip() == 'READY'
     metrics = safe_metrics(result['metrics'], 32)
     assert type(metrics['prompt_tokens']) is int and metrics['prompt_tokens'] > 0 and (0 < metrics['completion_tokens'] <= 32)
+    if args.check_input_limit:
+        assert result.get('model') == args.model
+        report['checks']['input_limit']['retry_model'] = result['model']
     report['checks']['json'] = {'seconds': round(time.monotonic() - start, 3), 'metrics': metrics}
     c = connection()
     c.request('POST', '/v1/chat/completions', json.dumps(request('Return only this exact JSON object, without markdown: {"status":"ready","count":3}', 128, True)), {'Content-Type': 'application/json'})
