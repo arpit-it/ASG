@@ -1,5 +1,9 @@
 # Progress and delivery history
 
+## Verified toolchain lookup guidance — 10 November 2026 UTC
+
+[PR #578](https://github.com/arpit-it/ASG/pull/578) explains bounded PATH and SDK observations. Mac fixtures verified the 64-entry and 65,536-character limits, absolute Python path handling, first candidate preservation, SDK file and directory handling, and read-only metadata observation. Published head `ae815347f4327d83009489b21a99d712ed8a519d` matched tested tree `49ef2ea892c99d9f81959c454260123e07ec8b44`. [Independent review](https://github.com/arpit-it/ASG/pull/578#pullrequestreview-5846833274) and [required checks](https://github.com/arpit-it/ASG/actions/runs/42870718728) passed. Protected merge `0fa2ac1ea7c60398609752591da97c4d19091740` was verified on main at 2026-11-10T18:08:52Z. Portable host execution remains open under #401.
+
 ## Verified Runtime Setup model identity — 10 November 2026 UTC
 
 [PR #577](https://github.com/arpit-it/ASG/pull/577) distinguishes readiness from an exact saved model match. Mac widgets verified exact, missing and different IDs, private guidance and the loading state. Published head `a808e353e65fa4e8de4a47ac8b9348d813e0117e` matched tested tree `2a133155d04fc348aa4d8e5f3ba7bcd75030c9cc`. [Independent review](https://github.com/arpit-it/ASG/pull/577#pullrequestreview-5846680810) and [required checks](https://github.com/arpit-it/ASG/actions/runs/42869008128) passed. Protected merge `2207401147621a4377e1daf39d217a487cce4e0d` was verified on main at 2026-11-10T17:58:08Z. Live model acceptance remains open under #396.

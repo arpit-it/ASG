@@ -1,5 +1,9 @@
 # Durable project memory
 
+## Toolchain lookup guidance — 10 November 2026 UTC
+
+Build distinguishes skipped or limited PATH lookup and an SDK file selection from a directory with missing tools. Inspection observes metadata within its existing limits. See the [verified delivery record](PROGRESS.md#verified-toolchain-lookup-guidance--10-november-2026-utc).
+
 ## Runtime Setup model identity — 10 November 2026 UTC
 
 The ready card shows whether the reported model ID exactly matches the saved connection. Missing and different IDs have separate local guidance. See the [verified delivery record](PROGRESS.md#verified-runtime-setup-model-identity--10-november-2026-utc).

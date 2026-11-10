@@ -82,6 +82,72 @@ class CandidateTests(unittest.TestCase):
         ready = candidate.prepare(self.source, commit, self.parent)
         self.assertEqual((ready / 'entry').read_bytes(), b'separate bytes')
 
+    def test_resolved_primary_object_store_is_protected_before_allocation(self):
+        (self.source / 'entry').write_bytes(b'original')
+        commit = self.commit()
+        objects = self.source / '.git/objects'
+        physical = self.parent / 'physical object store'
+        objects.rename(physical)
+        objects.symlink_to(physical, target_is_directory=True)
+        alias = self.parent / 'object store alias'
+        alias.symlink_to(physical, target_is_directory=True)
+        before = sorted(physical.rglob('*'))
+        for destination in (physical, physical / 'info', alias):
+            with self.subTest(destination=destination):
+                with self.assertRaisesRegex(ValueError, 'outside Git metadata'):
+                    candidate.prepare(self.source, commit, destination)
+        self.assertEqual(sorted(physical.rglob('*')), before)
+        ready = candidate.prepare(self.source, commit, self.parent)
+        self.assertEqual((ready / 'entry').read_bytes(), b'original')
+
+    def test_shared_clones_protect_relative_and_transitive_alternates(self):
+        (self.source / 'entry').write_bytes(b'original')
+        commit = self.commit()
+        borrowed = self.parent / 'borrowed'
+        nested = self.parent / 'nested'
+        self.git('clone', '-q', '--shared', str(self.source), str(borrowed))
+        self.git('clone', '-q', '--shared', str(borrowed), str(nested))
+        original_objects = self.source / '.git/objects'
+        borrowed_objects = borrowed / '.git/objects'
+        (borrowed_objects / 'info/alternates').write_text(
+            os.path.relpath(original_objects, borrowed_objects) + '\n',
+        )
+        for source, destination in ((borrowed, original_objects),
+                                    (nested, borrowed_objects),
+                                    (nested, original_objects / 'info')):
+            with self.subTest(source=source, destination=destination):
+                with self.assertRaisesRegex(ValueError, 'outside Git metadata'):
+                    candidate.prepare(source, commit, destination)
+                self.assertFalse(list(destination.glob('asg-self-candidate-*')))
+        with patch.object(candidate, 'MAX_GIT_OBJECT_STORES', 2):
+            with self.assertRaisesRegex(ValueError, 'Too many Git object stores'):
+                candidate.prepare(nested, commit, self.parent)
+        self.assertFalse(list(self.parent.glob('asg-self-candidate-*')))
+        ready = candidate.prepare(nested, commit, self.parent)
+        self.assertEqual((ready / 'entry').read_bytes(), b'original')
+
+    def test_destination_guard_checks_a_protected_filesystem_root(self):
+        with self.assertRaisesRegex(ValueError, 'outside Git metadata'):
+            candidate.open_snapshot_destination(
+                self.parent, [Path(self.parent.anchor)], 'Choose a destination outside Git metadata.',
+            )
+
+    def test_unsupported_alternate_metadata_refuses_before_allocation(self):
+        (self.source / 'entry').write_bytes(b'original')
+        commit = self.commit()
+        alternate = self.source / '.git/objects/info/alternates'
+        alternate.write_bytes(b'"/some/quoted/path"\n')
+        with self.assertRaisesRegex(ValueError, 'Unsupported Git object alternate'):
+            candidate.prepare(self.source, commit, self.parent)
+        alternate.write_bytes(b'x' * (candidate.MAX_GIT_ALTERNATE_BYTES + 1))
+        with self.assertRaisesRegex(ValueError, 'exceeds its size limit'):
+            candidate.prepare(self.source, commit, self.parent)
+        alternate.unlink()
+        os.mkfifo(alternate)
+        with self.assertRaisesRegex(ValueError, 'regular Git alternates file'):
+            candidate.prepare(self.source, commit, self.parent)
+        self.assertFalse(list(self.parent.glob('asg-self-candidate-*')))
+
     def test_symlink_and_oversized_file_fail_before_writing(self):
         file = self.source / 'entry'
         file.symlink_to(self.parent / 'outside')
@@ -619,6 +685,28 @@ class ProposalTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'outside Git metadata'):
             candidate.apply_proposal(dict(payload, destination=str(separate)))
         self.assertFalse((separate / payload['runName']).exists())
+        self.assertEqual(candidate.fingerprint(ready), payload['expectedDigest'])
+        receipt = candidate.apply_proposal(payload)
+        self.assertEqual(Path(receipt['path']).parent.parent, destination)
+
+    def test_proposal_protects_physical_primary_and_alternate_object_stores(self):
+        ready, destination, payload = self.proposal_fixture()
+        objects = self.source / '.git/objects'
+        physical = self.parent / 'proposal object store'
+        objects.rename(physical)
+        objects.symlink_to(physical, target_is_directory=True)
+        borrowed = self.parent / 'borrowed'
+        self.git('clone', '-q', '--shared', str(self.source), str(borrowed))
+        before = sorted(physical.rglob('*'))
+        for trusted, run_name in ((self.source, 'asg-self-candidate-aaaaaaaa'),
+                                  (borrowed, 'asg-self-candidate-bbbbbbbb')):
+            with self.subTest(trusted=trusted):
+                with self.assertRaisesRegex(ValueError, 'outside Git metadata'):
+                    candidate.apply_proposal(dict(
+                        payload, destination=str(physical / 'info'), trustedSource=str(trusted),
+                        runName=run_name,
+                    ))
+        self.assertEqual(sorted(physical.rglob('*')), before)
         self.assertEqual(candidate.fingerprint(ready), payload['expectedDigest'])
         receipt = candidate.apply_proposal(payload)
         self.assertEqual(Path(receipt['path']).parent.parent, destination)
