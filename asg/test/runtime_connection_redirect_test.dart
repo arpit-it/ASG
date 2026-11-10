@@ -69,6 +69,80 @@ void main() {
     expect(targetRequests, 0);
   });
 
+  test('runtime health caps declared and chunked successful bodies', () async {
+    final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+    addTearDown(() => server.close(force: true));
+    final connection = RuntimeConnection();
+    addTearDown(connection.close);
+    final config = LocalModelConfig(
+      baseUrl: 'http://127.0.0.1:${server.port}/v1',
+    );
+
+    const limit = 64 * 1024;
+    const prefix = '{"status":"ready","model":"configured","padding":"';
+    const suffix = '"}';
+    var size = limit;
+    var chunked = false;
+    server.listen((request) async {
+      final response = request.response;
+      if (!chunked) response.contentLength = size;
+      final padding = 'x' * (size - prefix.length - suffix.length);
+      response.write(prefix);
+      response.write(padding.substring(0, padding.length ~/ 2));
+      if (chunked) await response.flush();
+      response.write(padding.substring(padding.length ~/ 2));
+      response.write(suffix);
+      await response.close();
+    });
+
+    final atLimit = await connection.check(config);
+    expect(atLimit.ready, isTrue);
+    expect(atLimit.model, 'configured');
+
+    size = limit + 1;
+    for (final useChunked in [false, true]) {
+      chunked = useChunked;
+      final oversized = await connection.check(config);
+      expect(oversized.ready, isFalse, reason: 'chunked: $useChunked');
+      expect(oversized.model, isNull);
+      expect(oversized.detail, contains('invalid'));
+      expect(oversized.detail, isNot(contains('configured')));
+    }
+    size = limit;
+    expect((await connection.check(config)).ready, isTrue);
+  });
+
+  test('runtime health reports HTTP failure with a stalled body', () async {
+    final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+    addTearDown(() => server.close(force: true));
+    final connection = RuntimeConnection();
+    addTearDown(connection.close);
+    final config = LocalModelConfig(
+      baseUrl: 'http://127.0.0.1:${server.port}/v1',
+    );
+    var fail = true;
+    server.listen((request) async {
+      final response = request.response;
+      if (fail) {
+        response.statusCode = HttpStatus.serviceUnavailable;
+        response.bufferOutput = false;
+        response.write('private-sentinel');
+        await response.flush();
+        return;
+      }
+      response.write('{"status":"ready","phase":"idle","model":"configured"}');
+      await response.close();
+    });
+
+    final failed = await connection.check(config);
+    expect(failed.ready, isFalse);
+    expect(failed.detail, contains('did not respond successfully'));
+    expect(failed.detail, isNot(contains('private-sentinel')));
+
+    fail = false;
+    expect((await connection.check(config)).model, 'configured');
+  });
+
   test('runtime health deadline includes a stalled response body', () async {
     final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
     addTearDown(() => server.close(force: true));

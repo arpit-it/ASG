@@ -1,5 +1,9 @@
 # Progress and delivery history
 
+## Verified inline SVG presentation references — 10 November 2026 UTC
+
+[PR #574](https://github.com/arpit-it/ASG/pull/574) inventories lowercase URL references in selected SVG presentation attributes. The Mac regression reproduced zero of eight references on the base. Independent review found that nested input could exhaust the parser stack. The revised fixture confirmed an advisory and preservation of a separate missing-fragment diagnostic. Published head `77e5435fc3c57d02c30b171efbbeceee68522820` matched tested tree `e5aca3cd92a7a8a075072d9694eca5ae5aa8fb31`. [Independent review](https://github.com/arpit-it/ASG/pull/574#pullrequestreview-5846179139) and [required checks](https://github.com/arpit-it/ASG/actions/runs/42862881964) passed. Protected merge `29813cd31c6eb6d77d058233bf250ccf0dea12f2` was verified on main at 17:21:59 UTC. Browser rendering and F11 remain open.
+
 ## Verified replacement proposal publication recovery — 10 November 2026 UTC
 
 [PR #573](https://github.com/arpit-it/ASG/pull/573) reuses the pending-publication marker for replacement proposals. Disposable Mac fixtures reproduced corruption and Stop after rename on the base and verified retained recovery, review refusal, original preservation and a separate successful retry. Published head `5f57bae6bf18730ad55ad8470fbf488d202319c8` matched tested tree `eed28c09a2b6191ab014b2df26d0effd4c0365f5`. [Independent review](https://github.com/arpit-it/ASG/pull/573#pullrequestreview-5845970516) and [required checks](https://github.com/arpit-it/ASG/actions/runs/42860216041) passed. Protected merge `eb5e803926ab351230597573f4c17adffb3d37c2` was verified on main at 17:06:15 UTC. Candidate execution and protected app-driven delivery remain open under #406.
