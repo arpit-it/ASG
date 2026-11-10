@@ -1,5 +1,9 @@
 # Durable project memory
 
+## Local bridge and snapshot recovery — 10 November 2026 UTC
+
+The [verified delivery records](PROGRESS.md#verified-f22-and-f12-deliveries--10-november-2026-utc) cover PRs #556–558. The bridge refuses ambiguous output budgets and duplicate request fields before dispatch. Projects can rediscover a retained snapshot after final verification fails or stops. Preserve the existing live model evidence and keep candidate execution gated.
+
 ## F22 and F12 delivery evidence — 9 November 2026 UTC
 
 The [verified delivery records](PROGRESS.md#verified-f22-and-f12-deliveries--9-november-2026-utc) cover PRs #549–554. The local bridge rejects unsupported tool calls and constrained output requests. Keep prompt-based JSON results separate from API schema support and retain each live observation’s original model and revision. Both snapshot preparation and proposal saving protect linked and separate Git storage. Candidate execution remains gated on enforceable resource limits, runner lifecycle and Stop acceptance.
