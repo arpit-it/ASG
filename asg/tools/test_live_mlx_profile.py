@@ -176,7 +176,7 @@ class ProbeDeadlineTest(unittest.TestCase):
 class ProbeIdentityTest(unittest.TestCase):
     """Owned synthetic HTTP checks only; never evidence of real inference."""
 
-    def probe(self, folder, stage=None, identity='other-model', omit=False):
+    def probe(self, folder, stage=None, identity='other-model', omit=False, *, bridge_source=None, require_bridge_source=False):
         import json
         from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
         from threading import Thread
@@ -195,8 +195,11 @@ class ProbeIdentityTest(unittest.TestCase):
 
             def do_GET(self):
                 if self.path == '/health':
-                    self.respond({'backend': 'mlx', 'device': 'metal',
-                        'phase': 'idle', 'model': 'synthetic'})
+                    health = {'backend': 'mlx', 'device': 'metal',
+                              'phase': 'idle', 'model': 'synthetic'}
+                    if bridge_source is not None:
+                        health['bridge_source_sha256'] = bridge_source
+                    self.respond(health)
                 else:
                     self.respond({'data': [{'id': 'synthetic', 'asg_request_limits': {
                         'schema_version': 1, 'max_input_tokens': 4096,
@@ -249,12 +252,39 @@ class ProbeIdentityTest(unittest.TestCase):
                 '--origin', 'http://127.0.0.1:' + str(server.server_port),
                 '--checkpoint', str(checkpoint), '--model', 'synthetic',
                 '--source-revision', 'a' * 40, '--output', str(output),
-                '--confirm-live'], capture_output=True, timeout=5)
+                '--confirm-live', *(['--require-bridge-source'] if require_bridge_source else [])],
+                capture_output=True, timeout=5)
             return result, output, seen
         finally:
             server.shutdown()
             server.server_close()
             worker.join(timeout=1)
+
+    def test_required_bridge_source_matches_both_files_before_inference(self):
+        import hashlib
+        import json
+
+        expected = {name: hashlib.sha256(SCRIPT.with_name(name).read_bytes()).hexdigest()
+                    for name in ('qwen_server.py', 'qwen_backends.py')}
+        with tempfile.TemporaryDirectory() as folder:
+            result, output, seen = self.probe(
+                folder, bridge_source=expected, require_bridge_source=True)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual(seen, ['json', 'structured', 'disconnect', 'retry'])
+            self.assertEqual(json.loads(output.read_text())['bridge_source_sha256'], expected)
+        invalid_reports = (None, {}, {'qwen_server.py': expected['qwen_server.py']},
+                           {**expected, 'qwen_backends.py': 'f' * 64},
+                           {**expected, 'extra': 'private fixture value'}, ['private fixture value'])
+        for invalid in invalid_reports:
+            with self.subTest(bridge_source=invalid), tempfile.TemporaryDirectory() as folder:
+                result, output, seen = self.probe(
+                    folder, bridge_source=invalid, require_bridge_source=True)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn(b'Bridge source fingerprints did not match', result.stderr)
+                self.assertEqual(seen, [])
+                self.assertFalse(output.exists())
+                self.assertNotIn(b'private fixture value', result.stderr)
+                self.assertNotIn(folder.encode(), result.stderr)
 
     def test_valid_and_legacy_missing_identity_complete_fixture(self):
         for omit in (False, True):

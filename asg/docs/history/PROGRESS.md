@@ -1,5 +1,9 @@
 # Progress and delivery history
 
+## Verified local bridge startup fingerprints — 10 November 2026 UTC
+
+[PR #569](https://github.com/arpit-it/ASG/pull/569) exposes two fixed-name startup source hashes through ready health when both files are readable within the bound. Local HTTP fixtures verified matching hashes, stability, and graceful omission. Published head `afce6a53e4839655bf538372b18db8e5e8bf4c9d` matched tree `b73f4276dc0ac179ae8b815894ef03f40b2ee7f4`. [Independent review](https://github.com/arpit-it/ASG/pull/569#pullrequestreview-5844949691) and [required checks](https://github.com/arpit-it/ASG/actions/runs/42849663373) passed. Protected merge `c449a333dac25cea369c7f946ef5c0850459f788` was verified on main at 16:05:20 UTC. Live HTTP 400 and #396 remain open.
+
 ## Verified local 27B input-limit observation — 10 November 2026 UTC
 
 [PR #568](https://github.com/arpit-it/ASG/pull/568) records live HTTP 500 for an over-limit request, idle recovery and a successful exact-model retry. The current-source fixture returned HTTP 400. The listener's on-disk scripts matched an earlier revision, and the loaded source was unknown. Published head `3e7050f966721721facffeec30fd0517910e4d6b` matched validated tree `71210020b69c8dc7d890b2aed2cc98513bb7bca9`. [Independent review](https://github.com/arpit-it/ASG/pull/568#pullrequestreview-5844689375) and [required checks](https://github.com/arpit-it/ASG/actions/runs/42847045517) passed. Protected merge `6a19929710e920ba2d507926a0e74271e1b1e95c` was verified on main at 15:50:28 UTC. Live HTTP 400 and #396 remain open.

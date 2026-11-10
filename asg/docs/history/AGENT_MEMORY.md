@@ -1,5 +1,9 @@
 # Durable project memory
 
+## Local bridge startup fingerprints — 10 November 2026 UTC
+
+Ready health can report fixed-name SHA-256 hashes of the bridge source files observed at startup. Keep the observations separate from model identity and later on-disk inspection. The [verified delivery record](PROGRESS.md#verified-local-bridge-startup-fingerprints--10-november-2026-utc) covers PR #569.
+
 ## Local 27B input-limit status — 10 November 2026 UTC
 
 The running bridge returned HTTP 500 for an oversized prompt and accepted a valid retry. The current-source fixture returned HTTP 400. The launch-path file hashes matched earlier source, with the loaded revision unknown. The [verified delivery record](PROGRESS.md#verified-local-27b-input-limit-observation--10-november-2026-utc) covers PR #568.

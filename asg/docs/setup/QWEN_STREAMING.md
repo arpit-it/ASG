@@ -22,6 +22,12 @@ reads these files once before serving requests. Compare both hashes with a known
 checkout and record the running observation separately from model weight identity.
 Older runtimes and runtimes without readable source files may omit the field.
 
+For `tools/live_mlx_profile.py`, add `--require-bridge-source` to require both
+reported startup fingerprints to match the bridge files next to the tool.
+The profiler stops before inference if either hash is missing or differs.
+A successful report includes both hashes separately from the supplied source
+revision. The hashes describe startup source-file observations.
+
 ## Streaming and visible state
 
 The bridge accepts `stream=true` and sends SSE events immediately:
