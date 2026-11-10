@@ -129,6 +129,39 @@ HtmlReferenceReport _inspect(HtmlSourceProposal proposal) {
     );
   }
 
+  void inspectSvgPresentation(String value, String location) {
+    // The CSS parser recurses into functions and rules. Count possible
+    // openings conservatively, including ones in malformed values.
+    if (RegExp(r'[({\[]').allMatches(value).take(65).length > 64) {
+      report('SVG presentation value is too complex to inspect: $location');
+      return;
+    }
+    // Parse a single value with a neutral property so csslib does not treat
+    // SVG filter values as legacy CSS filter declarations.
+    final errors = <css.Message>[];
+    final tree = css.parse('x{svg-presentation:$value}', errors: errors);
+    final rule = tree.topLevels.singleOrNull;
+    final declaration = rule is css.RuleSet
+        ? rule.declarationGroup.declarations.singleOrNull
+        : null;
+    if (errors.isNotEmpty ||
+        declaration is! css.Declaration ||
+        declaration.property != 'svg-presentation' ||
+        declaration.important) {
+      report('SVG presentation value could not be inspected: $location');
+      return;
+    }
+    declaration.expression?.visit(
+      _CssReferences(
+        (reference) => inspectReference(
+          reference,
+          '$location ${_label(reference)}',
+          inline: true,
+        ),
+      ),
+    );
+  }
+
   for (final element in elements) {
     final attributes = [
       'href', 'src', 'action', 'poster', 'data',
@@ -154,6 +187,12 @@ HtmlReferenceReport _inspect(HtmlSourceProposal proposal) {
     // attributes. Inventory both href declarations, without inferring which
     // one wins or whether the element can render or navigate.
     if (element.namespaceUri == 'http://www.w3.org/2000/svg') {
+      for (final attribute in _svgUrlPresentationAttributes) {
+        final value = element.attributes[attribute];
+        if (value != null && value.trim().isNotEmpty) {
+          inspectSvgPresentation(value, '${element.localName}[$attribute]');
+        }
+      }
       for (final attribute in element.attributes.entries) {
         final name = attribute.key;
         if (name is dom.AttributeName &&
@@ -202,6 +241,17 @@ HtmlReferenceReport _inspect(HtmlSourceProposal proposal) {
   );
 }
 
+const _svgUrlPresentationAttributes = [
+  'fill',
+  'stroke',
+  'clip-path',
+  'mask',
+  'filter',
+  'marker-start',
+  'marker-mid',
+  'marker-end',
+];
+
 bool _insideTemplate(dom.Element element) {
   for (var parent = element.parent; parent != null; parent = parent.parent) {
     if (parent.namespaceUri == 'http://www.w3.org/1999/xhtml' &&
@@ -220,14 +270,14 @@ String _label(String value) {
 
 /// Comments and ordinary quoted strings are not URL references.
 class _CssReferences extends css.Visitor {
-  _CssReferences(this.onReference, this.onFilter);
+  _CssReferences(this.onReference, [this.onFilter]);
   final void Function(String) onReference;
-  final void Function() onFilter;
+  final void Function()? onFilter;
 
   @override
   void visitDeclaration(css.Declaration node) {
     if (node.property.toLowerCase().replaceFirst('*', '') == 'filter') {
-      onFilter();
+      onFilter?.call();
     }
     super.visitDeclaration(node);
   }

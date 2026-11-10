@@ -310,6 +310,131 @@ void main() {
     expect(report.findings, 0);
   });
 
+  test('SVG presentation URLs resolve local and external targets', () async {
+    final report = await inspectHtmlReferences(
+      proposal(
+        page('''
+          <svg><defs><linearGradient id="a&amp;b"/></defs>
+            <rect fill='url("#a%26b") red' stroke="url(#absent)"
+              clip-path="url(#missing)" mask="url(mask.svg#m)"
+              filter="url(#filter) blur(2px)"/>
+            <path marker-start="url(#start)" marker-mid="url(#middle)"
+              marker-end="url(https://example.invalid/marker.svg#end)"/>
+          </svg>
+        '''),
+      ),
+    );
+    expect(report.references, 8);
+    expect(report.findings, 7);
+    expect(
+      report.messages,
+      contains('Missing HTML fragment: rect[stroke] #absent'),
+    );
+    expect(
+      report.messages,
+      contains('Missing HTML fragment: rect[clip-path] #missing'),
+    );
+    expect(
+      report.messages,
+      contains('Missing local target: rect[mask] mask.svg#m'),
+    );
+    expect(
+      report.messages,
+      contains('Missing HTML fragment: rect[filter] #filter'),
+    );
+    expect(
+      report.messages,
+      contains('Missing HTML fragment: path[marker-start] #start'),
+    );
+    expect(
+      report.messages,
+      contains('Missing HTML fragment: path[marker-mid] #middle'),
+    );
+    expect(
+      report.messages,
+      contains(
+        'External or scheme reference needs separate review: '
+        'path[marker-end] https://example.invalid/marker.svg#end',
+      ),
+    );
+  });
+
+  test(
+    'SVG presentation inspection ignores ordinary and non-SVG values',
+    () async {
+      final report = await inspectHtmlReferences(
+        proposal(
+          page('''
+          <div fill="url(#html)"></div>
+          <math><mi stroke="url(#math)">x</mi></math>
+          <svg><rect fill="rgb(10 20 30)" stroke="currentColor"
+            mask="none" filter="blur(2px)"/>
+            <rect fill='"url(#literal)"'/>
+            <foreignObject><div clip-path="url(#html)"></div></foreignObject>
+          </svg>
+        '''),
+        ),
+      );
+      expect(report.references, 0);
+      expect(report.findings, 0);
+    },
+  );
+
+  test('SVG presentation URLs respect the live HTML base', () async {
+    final report = await inspectHtmlReferences(
+      proposal(
+        page('''
+          <base href="https://example.invalid/">
+          <svg><rect fill="url(#absent)" mask="url(mask.svg#m)"
+            filter="url(https://example.invalid/filter.svg#f)"/></svg>
+        '''),
+      ),
+    );
+    expect(report.references, 4);
+    expect(
+      report.messages.join('\n'),
+      contains('External or scheme reference'),
+    );
+    expect(
+      report.messages.join('\n'),
+      isNot(contains('Missing HTML fragment')),
+    );
+    expect(report.messages.join('\n'), isNot(contains('Missing local target')));
+  });
+
+  test('deeply nested SVG values leave other diagnostics available', () async {
+    final opening = List.filled(12000, 'f(').join();
+    final closing = List.filled(12000, ')').join();
+    final report = await inspectHtmlReferences(
+      proposal(
+        page(
+          '<svg><rect fill="${opening}url(#deep)$closing" '
+          'clip-path="url(#missing)"/></svg>',
+        ),
+      ),
+    );
+    expect(report.references, 1);
+    expect(report.messages, [
+      'SVG presentation value is too complex to inspect: rect[fill]',
+      'Missing HTML fragment: rect[clip-path] #missing',
+    ]);
+  });
+
+  test('SVG values cannot introduce declarations or imports', () async {
+    final report = await inspectHtmlReferences(
+      proposal(
+        page('''
+          <svg><rect fill="red; stroke:url(#unrelated)"
+            mask="none} @import url(extra.css);"/></svg>
+        '''),
+      ),
+    );
+    expect(report.references, 0);
+    expect(report.messages, hasLength(2));
+    expect(report.messages.join('\n'), contains('rect[fill]'));
+    expect(report.messages.join('\n'), contains('rect[mask]'));
+  });
+
   test('SVG XLink diagnostics use the shared message bound', () async {
     final report = await inspectHtmlReferences(
       proposal(
