@@ -1,5 +1,9 @@
 # Durable project memory
 
+## Local bridge token probabilities — 10 November 2026 UTC
+
+The bridge refuses unsupported probability requests before dispatch. Omitted or disabled options preserve ordinary responses. The [verified delivery record](PROGRESS.md#verified-local-bridge-token-probabilities--10-november-2026-utc) covers PR #565.
+
 ## Local bridge custom stop handling — 10 November 2026 UTC
 
 The bridge refuses custom stop sequences before dispatch. Omitted, null, and empty-list values preserve ordinary generation. The [verified delivery record](PROGRESS.md#verified-local-bridge-custom-stop-handling--10-november-2026-utc) covers PR #564.

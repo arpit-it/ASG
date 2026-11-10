@@ -1,0 +1,93 @@
+{
+  "observed_at_utc": "2026-11-10T15:07:42+00:00",
+  "operator_checkout": "8c922a16b0d2d8d21e79af3cff97156f526512b6",
+  "running_server_source_revision": null,
+  "scope": "One synthetic prompt tested in two response modes against the existing loopback server. The successful SSE observation records one prompt length and exact marker retrieval. The running server source revision is unknown. The checkpoint context declaration is separate from this measurement.",
+  "model": "Qwen3.8-27B-4bit",
+  "backend": "mlx",
+  "device": "metal",
+  "host": "27.0.1",
+  "architecture": "arm64",
+  "advertised_limits": {
+    "schema_version": 1,
+    "max_input_tokens": 4096,
+    "max_output_tokens": 4096,
+    "checkpoint_context_tokens": 262144
+  },
+  "request": {
+    "stream": false,
+    "archive_rows": 220,
+    "max_tokens": 128,
+    "prompt_sha256": "0d38331d346da453ae299a8c860b8b95e294c8282eff6447ae451a8d7978b8b2",
+    "request_bytes": 13899,
+    "client_read_timeout_seconds": 50,
+    "prompt_recipe": {
+      "first_line": "First marker: RUBY-739\n",
+      "row_format": "Record {i:04d}: A neutral archive note has no requested action.\n",
+      "last_line": "Last marker: CEDAR-416\n",
+      "instruction": "Return just the values of the first and last markers, joined by |. Do not add labels or commentary."
+    }
+  },
+  "sample": {
+    "error_type": "TimeoutError",
+    "seconds": 50.007
+  },
+  "returned_to_idle_during_initial_poll": false,
+  "post_timeout_health": [
+    {
+      "time_utc": "2026-11-10T15:07:51+00:00",
+      "http_status": 200,
+      "model": "Qwen3.8-27B-4bit",
+      "phase": "thinking"
+    },
+    {
+      "time_utc": "2026-11-10T15:08:03+00:00",
+      "http_status": 200,
+      "model": "Qwen3.8-27B-4bit",
+      "phase": "idle"
+    }
+  ],
+  "streaming_followup": {
+    "started_at_utc": "2026-11-10T15:11:09+00:00",
+    "request_bytes": 13898,
+    "prompt_sha256": "0d38331d346da453ae299a8c860b8b95e294c8282eff6447ae451a8d7978b8b2",
+    "stream": true,
+    "max_tokens": 128,
+    "total_deadline_seconds": 140,
+    "inactive_timeout_seconds": 25,
+    "health_model": "Qwen3.8-27B-4bit",
+    "inventory_model": "Qwen3.8-27B-4bit",
+    "backend": "mlx",
+    "device": "metal",
+    "expected_exact_marker_pair": "RUBY-739|CEDAR-416",
+    "done": true,
+    "ping_count": 21,
+    "observed_response_model_ids": [
+      "Qwen3.8-27B-4bit"
+    ],
+    "http_status": 200,
+    "response_content_type": "text/event-stream; charset=utf-8",
+    "first_text_seconds": 21.459,
+    "finish_reason": "stop",
+    "response_model": "Qwen3.8-27B-4bit",
+    "metrics": {
+      "prompt_tokens": 3794,
+      "completion_tokens": 14,
+      "generation_tps": null,
+      "prompt_tps": null,
+      "peak_memory": null
+    },
+    "seconds": 22.054,
+    "marker_pair_exact": true,
+    "content_chunks": 13,
+    "response_text": "RUBY-739|CEDAR-416",
+    "post_request_health": [
+      {
+        "time_utc": "2026-11-10T15:11:31+00:00",
+        "model": "Qwen3.8-27B-4bit",
+        "phase": "idle"
+      }
+    ],
+    "returned_to_idle": true
+  }
+}
