@@ -14,6 +14,8 @@ This flow uses existing local files. See [runtime setup](RUNTIME_SETUP.md) for s
 
 On 5 November 2026, the installed ASG app loaded this checkpoint on MLX / Metal. The loopback model inventory advertised the exact ID above. The in-app connection test completed in 5,520 ms, with first text at 4,923 ms. This was one bounded connection test. Full chat-to-preview acceptance, memory fit and usable context still need separate evidence.
 
+On 10 November 2026, the same named local model completed one synthetic SSE request with 3,794 reported prompt tokens and returned both exact markers. The first text arrived at 21.459 seconds and the stream finished at 22.054 seconds. The prior JSON attempt reached a 50-second client deadline and the server later returned to idle. The running server source revision was unknown. The checkpoint's advertised 262,144-token context is a separate declaration. [Recorded observations](../development/acceptance/2026-11-10-27b-prompt-fit/observations.json)
+
 ## Streaming and visible state
 
 The bridge accepts `stream=true` and sends SSE events immediately:

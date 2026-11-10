@@ -1,5 +1,9 @@
 # Progress and delivery history
 
+## Verified local bridge token probabilities — 10 November 2026 UTC
+
+[PR #565](https://github.com/arpit-it/ASG/pull/565) refuses unsupported token-probability requests before dispatch. HTTP fixtures verified both response modes, a valid retry and error privacy. Published head `9654b13b50bec548c533ffa186daa87aafa2cb24` matched tested tree `82347ca4e1961de05e513e6c15d9d0d7e0299c19`. [Independent review](https://github.com/arpit-it/ASG/pull/565#pullrequestreview-5843961089) and both [required checks](https://github.com/arpit-it/ASG/actions/runs/42839262587) passed. Protected merge `8c922a16b0d2d8d21e79af3cff97156f526512b6` was verified on main at 15:05:37 UTC. F22 / #396 remains open for broader live model evidence.
+
 ## Verified local bridge custom stop handling — 10 November 2026 UTC
 
 [PR #564](https://github.com/arpit-it/ASG/pull/564) refuses custom stop sequences before model dispatch. Local HTTP fixtures verified refusal in JSON and streaming modes, privacy of request values, and normal generation when no sequence is requested. Published head `035288fdd9fedb9361859309cee39a1febcd885c` matched tested tree `7a1c03c6e836975dcb600fb403b7b45c4e4db943`. [Independent review](https://github.com/arpit-it/ASG/pull/564#pullrequestreview-5843708325) and both [required checks](https://github.com/arpit-it/ASG/actions/runs/42836684848) passed. Protected merge `2570f1fa0cbb95c753723e3c68b6c84274cc122d` was verified on main at 14:47:53 UTC. F22 / #396 remains open for broader live model evidence.
