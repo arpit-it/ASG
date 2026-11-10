@@ -32,6 +32,11 @@ Limits: 15-second connection/header timeout, 30-second inactive-stream timeout, 
 
 ## Validation
 
+The bundled bridge requires exactly one local HTTP Host header. It accepts
+`localhost`, `127.0.0.1`, `[::1]`, or the Android Emulator host alias
+`10.0.2.2`, with an optional valid port. Other or ambiguous Host headers
+receive HTTP 403 before metadata or generation routes are reached.
+
 Each JSON object in a chat request must use unique field names. The bridge
 returns HTTP 400 for duplicate fields before inference in either response mode.
 

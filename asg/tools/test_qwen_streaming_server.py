@@ -145,6 +145,57 @@ class ServerTests(unittest.TestCase):
             self.assertEqual(json.load(response)['model'], 'fixture')
         self.assertEqual(self.backend.tokens, 1)
 
+    def test_loopback_host_required_before_routing_or_dispatch(self):
+        import http.client
+        import socket
+        from unittest.mock import patch
+
+        def send(method, route, hosts, streaming=False):
+            body = json.dumps({'model': 'fixture', 'stream': streaming, 'messages': [
+                {'role': 'user', 'content': 'PRIVATE_PROMPT'},
+            ]}).encode() if method == 'POST' else b''
+            headers = [f'{method} {route} HTTP/1.1',
+                       *(f'Host: {host}' for host in hosts),
+                       'Origin: http://localhost:8080',
+                       'Content-Type: application/json',
+                       f'Content-Length: {len(body)}', '', '']
+            with socket.create_connection(self.server.server_address, timeout=5) as connection:
+                connection.sendall('\r\n'.join(headers).encode() + body)
+                response = http.client.HTTPResponse(connection)
+                response.begin()
+                return response.status, response.getheader('Access-Control-Allow-Origin'), response.read()
+
+        routes = (('GET', '/health'), ('GET', '/v1/models'),
+                  ('OPTIONS', '/v1/chat/completions'), ('POST', '/v1/chat/completions'))
+        invalid = ((), ('untrusted.example',), ('localhost', 'localhost'),
+                   ('localhost, localhost',), ('localhost@127.0.0.1',),
+                   ('localhost:65536',), ('localhost:0',), ('[::1',))
+        for hosts in invalid:
+            for method, route in routes:
+                with self.subTest(hosts=hosts, method=method, route=route):
+                    with patch.object(self.executor, 'submit', wraps=self.executor.submit) as submit:
+                        status, cors, body = send(method, route, hosts)
+                        self.assertEqual(status, 403)
+                        self.assertIsNone(cors)
+                        self.assertNotIn(b'PRIVATE_PROMPT', body)
+                        self.assertNotIn(b'/fixture', body)
+                        self.assertNotIn(b'untrusted.example', body)
+                        submit.assert_not_called()
+
+        port = self.server.server_port
+        for host in ('localhost', f'LOCALHOST:{port}', f'127.0.0.1:{port}',
+                     f'[::1]:{port}', f'10.0.2.2:{port}'):
+            with self.subTest(local_host=host):
+                status, cors, _ = send('OPTIONS', '/v1/chat/completions', (host,))
+                self.assertEqual((status, cors), (200, 'http://localhost:8080'))
+                for streaming in (False, True):
+                    status, _, body = send('POST', '/v1/chat/completions', (host,), streaming)
+                    self.assertEqual(status, 200)
+                    if streaming:
+                        self.assertIn(b'[DONE]', body)
+                    else:
+                        self.assertEqual(json.loads(body)['model'], 'fixture')
+
     def test_neutral_chat_options_preserve_text_and_streaming(self):
         with self.request(False, response_format={'type': 'text'}, tools=[],
                           functions=[], tool_choice='none', function_call='none',
