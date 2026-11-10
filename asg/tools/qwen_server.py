@@ -16,7 +16,6 @@ from concurrent.futures import ThreadPoolExecutor
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from threading import Event, Lock, Thread
-from urllib.parse import urlparse
 
 sys.path.insert(0, str(Path(__file__).parent / '.runtime-deps'))
 os.environ['HF_HUB_OFFLINE'] = '1'
@@ -34,6 +33,11 @@ class DuplicateRequestField(ValueError):
 # Android Emulator forwards this fixed address to the host loopback.
 LOCAL_HTTP_HOST = re.compile(
     r'(?:localhost|127\.0\.0\.1|\[::1\]|10\.0\.2\.2)(?::([0-9]{1,5}))?',
+    re.ASCII | re.IGNORECASE,
+)
+
+LOCAL_HTTP_ORIGIN = re.compile(
+    r'http://(?:localhost|127\.0\.0\.1|\[::1\])(?::([0-9]{1,5}))?',
     re.ASCII | re.IGNORECASE,
 )
 
@@ -66,21 +70,19 @@ def create_handler(backend, executor, model_id, model_path):
             return True
 
         def local_origin(self):
-            origin = self.headers.get('Origin')
-            if not origin:
+            origins = self.headers.get_all('Origin', [])
+            if not origins:
                 return True
-            try:
-                parsed = urlparse(origin)
-                return parsed.scheme == 'http' and parsed.hostname in ('localhost', '127.0.0.1', '::1')
-            except ValueError:
-                # Malformed authorities are untrusted headers, not server errors.
-                return False
+            # Origin must be one serialized loopback origin, with no URL
+            # credentials, path, or other fields a general URL parser accepts.
+            match = LOCAL_HTTP_ORIGIN.fullmatch(origins[0].strip(' \t')) if len(origins) == 1 else None
+            return match is not None and (match[1] is None or 1 <= int(match[1]) <= 65535)
 
         def send_headers(self, code, content_type, length=None):
             self.send_response(code)
             origin = self.headers.get('Origin')
             if origin and self.local_origin():
-                self.send_header('Access-Control-Allow-Origin', origin)
+                self.send_header('Access-Control-Allow-Origin', origin.strip(' \t'))
                 self.send_header('Vary', 'Origin')
                 self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
                 self.send_header('Access-Control-Allow-Headers', 'Content-Type')
