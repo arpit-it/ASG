@@ -32,6 +32,9 @@ Limits: 15-second connection/header timeout, 30-second inactive-stream timeout, 
 
 ## Validation
 
+Each JSON object in a chat request must use unique field names. The bridge
+returns HTTP 400 for duplicate fields before inference in either response mode.
+
 For JSON and streaming requests, the HTTP bridge accepts an exact JSON
 integer from 1 through 4096 in either `max_tokens` or
 `max_completion_tokens`. Send only one field. Omitting both defaults to 256.

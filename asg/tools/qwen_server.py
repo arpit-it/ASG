@@ -26,6 +26,19 @@ from qwen_backends import (GenerationCancelled, RequestTokenLimitError, discover
 
 
 
+class DuplicateRequestField(ValueError):
+    pass
+
+
+def unique_request_fields(pairs):
+    fields = {}
+    for name, value in pairs:
+        if name in fields:
+            raise DuplicateRequestField
+        fields[name] = value
+    return fields
+
+
 def create_handler(backend, executor, model_id, model_path):
     lock = Lock()
     phase = {'value': 'idle'}
@@ -114,7 +127,7 @@ def create_handler(backend, executor, model_id, model_path):
                 if len(body) != size:
                     self.respond(400, {'error': 'Incomplete request body; send the complete JSON request and retry'})
                     return
-                request = json.loads(body)
+                request = json.loads(body, object_pairs_hook=unique_request_fields)
                 if request.get('model') != model_id:
                     raise ValueError('Use the configured model ID')
                 messages = request.get('messages')
@@ -158,6 +171,9 @@ def create_handler(backend, executor, model_id, model_path):
                     self.respond(400, {'error': f'{budget_field} must be an integer from 1 to 4096; no budget was changed or generation started'})
                     return
                 streaming = request.get('stream') is True
+            except DuplicateRequestField:
+                self.respond(400, {'error': 'Duplicate JSON fields are not supported; send each field once.'})
+                return
             except TimeoutError:
                 self.respond(408, {'error': 'Request body timed out; send the complete JSON request and retry'})
                 return

@@ -108,6 +108,43 @@ class ServerTests(unittest.TestCase):
         with self.request(False) as response:
             self.assertEqual(json.load(response)['model'], 'fixture')
 
+    def test_duplicate_request_fields_are_rejected_before_dispatch(self):
+        from unittest.mock import patch
+
+        cases = (
+            '"messages":[{"role":"user","content":"fixture"}],'
+            '"max_tokens":1,"max_tokens":256',
+            '"messages":[{"role":"user","content":"fixture"}],'
+            r'"max_completion_tokens":1,"max_completion_\u0074okens":256',
+            '"messages":[{"role":"user","content":"PRIVATE_VALUE","content":"fixture"}]',
+            '"messages":[{"role":"user","content":"fixture"}],'
+            '"PRIVATE_FIELD":1,"PRIVATE_FIELD":2',
+        )
+        for streaming in ('true', 'false'):
+            for fields in cases:
+                with self.subTest(streaming=streaming, fields=fields):
+                    body = ('{"model":"fixture","stream":' + streaming + ',' + fields + '}').encode()
+                    request = urllib.request.Request(
+                        self.url + '/v1/chat/completions', data=body,
+                        headers={'Content-Type': 'application/json'},
+                    )
+                    with patch.object(self.executor, 'submit', wraps=self.executor.submit) as submit:
+                        with self.assertRaises(urllib.error.HTTPError) as failure:
+                            urllib.request.urlopen(request, timeout=5)
+                        with failure.exception as response:
+                            self.assertEqual(response.code, 400)
+                            self.assertEqual(response.headers.get_content_type(), 'application/json')
+                            self.assertEqual(json.load(response), {
+                                'error': 'Duplicate JSON fields are not supported; send each field once.',
+                            })
+                        submit.assert_not_called()
+                    self.assertIsNone(self.backend.tokens)
+        with self.request(False, max_completion_tokens=1, messages=[
+            {'role': 'user', 'content': 'first'}, {'role': 'assistant', 'content': 'second'},
+        ]) as response:
+            self.assertEqual(json.load(response)['model'], 'fixture')
+        self.assertEqual(self.backend.tokens, 1)
+
     def test_neutral_chat_options_preserve_text_and_streaming(self):
         with self.request(False, response_format={'type': 'text'}, tools=[],
                           functions=[], tool_choice='none', function_call='none',
