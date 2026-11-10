@@ -191,6 +191,13 @@ def create_handler(backend, executor, model_id, model_path):
                 if type(tokens) is not int or not 1 <= tokens <= 4096:
                     self.respond(400, {'error': f'{budget_field} must be an integer from 1 to 4096; no budget was changed or generation started'})
                     return
+                logprobs = request.get('logprobs')
+                top_logprobs = request.get('top_logprobs', 0)
+                if ((logprobs is not None and logprobs is not False)
+                        or (top_logprobs is not None
+                            and (type(top_logprobs) is not int or top_logprobs != 0))):
+                    self.respond(400, {'error': 'Token probabilities are not supported by this local bridge'})
+                    return
                 if request.get('stop') not in (None, []):
                     self.respond(400, {'error': 'Custom stop sequences are not supported by this local bridge'})
                     return

@@ -1,5 +1,9 @@
 # Durable project memory
 
+## Local bridge custom stop handling — 10 November 2026 UTC
+
+The bridge refuses custom stop sequences before dispatch. Omitted, null, and empty-list values preserve ordinary generation. The [verified delivery record](PROGRESS.md#verified-local-bridge-custom-stop-handling--10-november-2026-utc) covers PR #564.
+
 ## Local bridge completion count — 10 November 2026 UTC
 
 The bridge accepts one completion per request and refuses other explicit counts before dispatch. The [verified delivery record](PROGRESS.md#verified-local-bridge-completion-count--10-november-2026-utc) covers PR #563.

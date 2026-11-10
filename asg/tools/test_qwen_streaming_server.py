@@ -82,6 +82,46 @@ class ServerTests(unittest.TestCase):
                     self.assertEqual(json.load(response), {'error': 'stream must be a boolean'})
                 self.assertIsNone(self.backend.tokens)
 
+    def test_token_probability_requests_are_rejected_before_dispatch(self):
+        from unittest.mock import patch
+
+        invalid = (
+            {'logprobs': True},
+            {'logprobs': True, 'top_logprobs': 2},
+            {'logprobs': 'private fixture value'},
+            {'logprobs': 0},
+            {'logprobs': False, 'top_logprobs': 2},
+            {'top_logprobs': 1},
+            {'top_logprobs': -1},
+            {'top_logprobs': False},
+            {'top_logprobs': 0.0},
+        )
+        for streaming in (True, False):
+            for options in invalid:
+                with self.subTest(streaming=streaming, options=options):
+                    self.backend.tokens = None
+                    with patch.object(self.executor, 'submit', wraps=self.executor.submit) as submit:
+                        with self.assertRaises(urllib.error.HTTPError) as failure:
+                            with self.request(streaming, **options) as response:
+                                response.read()
+                        with failure.exception as response:
+                            self.assertEqual(response.code, 400)
+                            self.assertEqual(json.load(response), {
+                                'error': 'Token probabilities are not supported by this local bridge',
+                            })
+                        submit.assert_not_called()
+                    self.assertIsNone(self.backend.tokens)
+            valid = ({}, {'logprobs': None, 'top_logprobs': None},
+                     {'logprobs': False, 'top_logprobs': 0})
+            for options in valid:
+                with self.subTest(streaming=streaming, options=options):
+                    with self.request(streaming, **options) as response:
+                        body = response.read().decode()
+                    if streaming:
+                        self.assertIn('[DONE]', body)
+                    else:
+                        self.assertEqual(json.loads(body)['model'], 'fixture')
+
     def test_custom_stop_sequences_are_rejected_before_dispatch(self):
         from unittest.mock import patch
 

@@ -14,7 +14,8 @@ Update this document with task selection and delivery evidence, alongside [agent
 
 - [x] Refuse malformed or repeated browser origins before generation. [PR #562](https://github.com/arpit-it/ASG/pull/562) merged as `d09f1f550117cee900797f72e51947d2ff73b281`. See the [verified delivery record](history/PROGRESS.md#verified-local-bridge-origin-validation--10-november-2026-utc).
 - [x] Refuse unsupported completion counts before dispatch in JSON and streaming modes. [PR #563](https://github.com/arpit-it/ASG/pull/563) merged as `a261270641b11aee91c3cc16424f5df6200cd6a3`. See the [verified delivery record](history/PROGRESS.md#verified-local-bridge-completion-count--10-november-2026-utc).
-- [ ] Refuse custom stop sequences under [#396](https://github.com/arpit-it/ASG/issues/396). A custom stop value must return HTTP 400 before dispatch in JSON and streaming modes. Omitted, null, and empty-list values preserve ordinary generation. Verify refusal and a valid retry with the local HTTP fixture.
+- [x] Refuse custom stop sequences before dispatch in JSON and streaming modes. [PR #564](https://github.com/arpit-it/ASG/pull/564) merged as `2570f1fa0cbb95c753723e3c68b6c84274cc122d`. See the [verified delivery record](history/PROGRESS.md#verified-local-bridge-custom-stop-handling--10-november-2026-utc).
+- [ ] Refuse unsupported token-probability requests under [#396](https://github.com/arpit-it/ASG/issues/396). Return HTTP 400 before dispatch when the client requests probabilities or submits malformed probability options. Verify both response modes and successful retries with defaults or explicit disabled options.
 
 ### Current local development model — 9 November 2026
 
