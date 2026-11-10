@@ -82,6 +82,37 @@ class ServerTests(unittest.TestCase):
                     self.assertEqual(json.load(response), {'error': 'stream must be a boolean'})
                 self.assertIsNone(self.backend.tokens)
 
+    def test_completion_count_requires_one_choice(self):
+        from unittest.mock import patch
+
+        for streaming in (True, False):
+            for count in (2, 0, -1, True, 1.0, '1', None, []):
+                with self.subTest(streaming=streaming, count=count):
+                    self.backend.tokens = None
+                    with patch.object(self.executor, 'submit', wraps=self.executor.submit) as submit:
+                        with self.assertRaises(urllib.error.HTTPError) as failure:
+                            with self.request(streaming, n=count) as response:
+                                response.read()
+                        with failure.exception as response:
+                            self.assertEqual(response.code, 400)
+                            self.assertEqual(json.load(response), {
+                                'error': 'n must be 1; this local bridge returns one completion',
+                            })
+                        submit.assert_not_called()
+                    self.assertIsNone(self.backend.tokens)
+            for options in ({}, {'n': 1}):
+                with self.subTest(streaming=streaming, options=options):
+                    with self.request(streaming, **options) as response:
+                        body = response.read().decode()
+                    if streaming:
+                        events = [line[6:] for line in body.splitlines() if line.startswith('data: ')]
+                        self.assertEqual(events[-1], '[DONE]')
+                        result = json.loads(events[-2])
+                    else:
+                        result = json.loads(body)
+                    self.assertEqual(result['model'], 'fixture')
+                    self.assertEqual(len(result['choices']), 1)
+
     def test_omitted_stream_defaults_to_json(self):
         body = json.dumps({
             'model': 'fixture',

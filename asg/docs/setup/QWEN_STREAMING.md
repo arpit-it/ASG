@@ -59,6 +59,9 @@ stream that has already started sends an actionable `error` event without
 the total context limit) and retry; these checks do not verify usable context
 capacity.
 
+The local bridge returns one completion per request. Omit `n` or send integer
+`n: 1`. Other values receive HTTP 400 before generation.
+
 Run regular Flutter checks. Before opting into a live test on this Mac, check that `http://127.0.0.1:8765/health` reports ready on MLX / Metal and `http://127.0.0.1:8765/v1/models` advertises `Qwen3.8-27B-4bit`. The opt-in Flutter tests explicitly select that model. Run live tests serially and record the tested revision, model, host and actual result.
 
 ```sh
