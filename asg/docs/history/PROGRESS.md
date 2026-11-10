@@ -1,5 +1,9 @@
 # Progress and delivery history
 
+## Verified local profiler input-limit recovery — 10 November 2026 UTC
+
+[PR #571](https://github.com/arpit-it/ASG/pull/571) adds an opt-in synthetic input-limit check to the profiler. It requires matching bridge fingerprints, HTTP 400, idle health and an exact-model retry. Local synthetic HTTP fixtures verified the pass and refusal paths. Published head `3cbc6c5461d41507680bc2fcec95ea06dcb0007f` matched tree `2dd99622bb1d8547ede698de9cc33cb1fdbac56c`. [Independent review](https://github.com/arpit-it/ASG/pull/571#pullrequestreview-5845493148) and [required checks](https://github.com/arpit-it/ASG/actions/runs/42855086377) passed. Protected merge `155bcf8201af61b6dd0f956443ca6a9ae2f4b617` was verified on main at 16:41:23 UTC. Live HTTP 400 and #396 remain open.
+
 ## Verified local profiler bridge source gate — 10 November 2026 UTC
 
 [PR #570](https://github.com/arpit-it/ASG/pull/570) adds an opt-in source-fingerprint check before inference and records matching hashes in the profile. Synthetic HTTP fixtures verified success and refusals with no inference or report. Published head `7a23c9c04762228f61f1e5643cd8e34a17c4b141` matched tree `7e6c8598d3f48838612fb50c33828ffd4b5045be`. [Independent review](https://github.com/arpit-it/ASG/pull/570#pullrequestreview-5845219498) and [required checks](https://github.com/arpit-it/ASG/actions/runs/42852281395) passed. Protected merge `aa2eed95e5b16e799df701f9077be724319a1c9c` was verified on main at 16:19:19 UTC. The running bridge had no startup fingerprints when checked, so live HTTP 400 and #396 remain open.

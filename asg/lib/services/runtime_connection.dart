@@ -15,8 +15,11 @@ class RuntimeConnection {
   Future<RuntimeHealth> check(LocalModelConfig config) async {
     try {
       final base = config.endpoint;
+      final request = http.Request('GET', base.replace(path: '/health'))
+        ..followRedirects = false;
       final response = await _client
-          .get(base.replace(path: '/health'))
+          .send(request)
+          .then(http.Response.fromStream)
           .timeout(const Duration(seconds: 3));
       if (response.statusCode != 200) {
         return const RuntimeHealth(
