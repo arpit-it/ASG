@@ -1,5 +1,9 @@
 # Durable project memory
 
+## Local profiler input-limit recovery — 10 November 2026 UTC
+
+The optional profiler check requires matching startup fingerprints, an actionable HTTP 400 response, idle health and an exact-model retry. The fixture result and installed bridge observations remain separate. The [verified delivery record](PROGRESS.md#verified-local-profiler-input-limit-recovery--10-november-2026-utc) covers PR #571.
+
 ## Local profiler bridge source gate — 10 November 2026 UTC
 
 Use the optional bridge source check to compare startup fingerprints before profiling. A missing or mismatched observation stops strict profiling before inference. The [verified delivery record](PROGRESS.md#verified-local-profiler-bridge-source-gate--10-november-2026-utc) covers PR #570.
