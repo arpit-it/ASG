@@ -40,6 +40,10 @@ receive HTTP 403 before metadata or generation routes are reached.
 Each JSON object in a chat request must use unique field names. The bridge
 returns HTTP 400 for duplicate fields before inference in either response mode.
 
+Set `stream` to JSON `true` for SSE or `false` for a JSON response.
+Omitting `stream` returns a JSON response. Other values return HTTP 400
+before inference.
+
 For JSON and streaming requests, the HTTP bridge accepts an exact JSON
 integer from 1 through 4096 in either `max_tokens` or
 `max_completion_tokens`. Send only one field. Omitting both defaults to 256.

@@ -69,6 +69,32 @@ class ServerTests(unittest.TestCase):
                 })
                 self.assertTrue(all('model' not in json.loads(item) for item in data[:-2]))
 
+    def test_stream_requires_a_boolean_when_present(self):
+        for invalid in ('private fixture value', 'true', 1, None, [], {}):
+            with self.subTest(stream=invalid):
+                self.backend.tokens = None
+                with self.assertRaises(urllib.error.HTTPError) as failure:
+                    with self.request(streaming=invalid) as response:
+                        response.read()
+                with failure.exception as response:
+                    self.assertEqual(response.code, 400)
+                    self.assertEqual(response.headers.get_content_type(), 'application/json')
+                    self.assertEqual(json.load(response), {'error': 'stream must be a boolean'})
+                self.assertIsNone(self.backend.tokens)
+
+    def test_omitted_stream_defaults_to_json(self):
+        body = json.dumps({
+            'model': 'fixture',
+            'messages': [{'role': 'user', 'content': 'hello'}],
+        }).encode()
+        request = urllib.request.Request(
+            self.url + '/v1/chat/completions', data=body,
+            headers={'Content-Type': 'application/json'},
+        )
+        with urllib.request.urlopen(request, timeout=5) as response:
+            self.assertEqual(response.headers.get_content_type(), 'application/json')
+            self.assertEqual(json.load(response)['model'], 'fixture')
+
     def test_wrong_model_is_rejected_before_generation(self):
         with self.assertRaises(urllib.error.HTTPError) as error:
             self.request(model='different-model')
