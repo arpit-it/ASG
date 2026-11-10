@@ -7,6 +7,7 @@ import json
 import math
 import os
 import queue
+import re
 import subprocess
 import sys
 import time
@@ -30,6 +31,13 @@ class DuplicateRequestField(ValueError):
     pass
 
 
+# Android Emulator forwards this fixed address to the host loopback.
+LOCAL_HTTP_HOST = re.compile(
+    r'(?:localhost|127\.0\.0\.1|\[::1\]|10\.0\.2\.2)(?::([0-9]{1,5}))?',
+    re.ASCII | re.IGNORECASE,
+)
+
+
 def unique_request_fields(pairs):
     fields = {}
     for name, value in pairs:
@@ -45,6 +53,17 @@ def create_handler(backend, executor, model_id, model_path):
     class Handler(BaseHTTPRequestHandler):
         def log_message(self, *_):
             pass
+
+        def parse_request(self):
+            if not super().parse_request():
+                return False
+            # A loopback listener can still receive a foreign HTTP authority.
+            hosts = self.headers.get_all('Host', [])
+            match = LOCAL_HTTP_HOST.fullmatch(hosts[0].strip(' \t')) if len(hosts) == 1 else None
+            if match is None or (match[1] is not None and not 1 <= int(match[1]) <= 65535):
+                self.send_error(403, 'Local Host required')
+                return False
+            return True
 
         def local_origin(self):
             origin = self.headers.get('Origin')
