@@ -1,5 +1,9 @@
 # Progress and delivery history
 
+## Verified retained recovery inventory — 10 November 2026 UTC
+
+[PR #576](https://github.com/arpit-it/ASG/pull/576) keeps recovery paths visible when more than 20 runs qualify. Mac native and widget fixtures verified stable ordering, the remaining count, excluded links and ready runs, and the 512-entry scan limit. Published head `6a329e6f189c61eba3072ca0e1850b8924aac159` matched tested tree `2b7b13ce1e4710fd0a0cd92c6efb0927b85d4d51`. [Independent review](https://github.com/arpit-it/ASG/pull/576#pullrequestreview-5846476412) and [required checks](https://github.com/arpit-it/ASG/actions/runs/42866597710) passed. Protected merge `96d328d3912381167cf0b779a65b53a6d328294c` was verified on main at 17:43:35 UTC. Candidate execution and protected app-driven delivery remain open under #406.
+
 ## Verified runtime health response limit — 10 November 2026 UTC
 
 [PR #575](https://github.com/arpit-it/ASG/pull/575) caps successful probe bodies at 64 KiB and handles unsuccessful statuses before reading their bodies. Mac loopback fixtures verified the exact limit, declared and streamed overflow refusal, prompt handling of a stalled 503, private diagnostics and retry. Published head `74304017a1b3c4797dd8c666f3d90750f1855974` matched tested tree `606d921efb04b0e77326173bf4845a2b662f6e82`. [Independent review](https://github.com/arpit-it/ASG/pull/575#pullrequestreview-5846331974) and [required checks](https://github.com/arpit-it/ASG/actions/runs/42864676929) passed. Protected merge `554399db020a47cf5298f659aec140f59e2ac3a1` was verified on main at 2026-11-10T17:33:26Z. Live runtime acceptance and #396 remain open.

@@ -169,6 +169,16 @@ class _RuntimeSetupScreenState extends State<RuntimeSetupScreen> {
               ),
               const SizedBox(height: 12),
               Text(controller.health.detail),
+              if (controller.health.ready) ...[
+                const SizedBox(height: 8),
+                Text(switch (controller.health.model) {
+                  final id when id == null || id.trim().isEmpty =>
+                    'Runtime did not report a model ID.',
+                  final id when id == controller.connectionConfig.model =>
+                    'Reported model ID matches the saved connection.',
+                  _ => 'Reported model ID differs from the saved connection.',
+                }),
+              ],
               const SizedBox(height: 8),
               Text(
                 controller.health.loadedDevice == null
