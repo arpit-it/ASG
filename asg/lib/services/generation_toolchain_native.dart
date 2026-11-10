@@ -59,10 +59,15 @@ Future<GenerationToolchain> _inspect(
     try {
       final canonical = await Directory(sdk).resolveSymbolicLinks();
       if (canonical == path.normalize(sdk)) {
-        flutter = await _file(path.join(canonical, 'bin', 'flutter'));
-        dart = await _file(
-          path.join(canonical, 'bin', 'cache', 'dart-sdk', 'bin', 'dart'),
-        );
+        if (await FileSystemEntity.type(canonical) !=
+            FileSystemEntityType.directory) {
+          flutter = dart = 'The selected Flutter SDK path is not a directory.';
+        } else {
+          flutter = await _file(path.join(canonical, 'bin', 'flutter'));
+          dart = await _file(
+            path.join(canonical, 'bin', 'cache', 'dart-sdk', 'bin', 'dart'),
+          );
+        }
       }
     } catch (_) {
       flutter = dart =
@@ -74,23 +79,36 @@ Future<GenerationToolchain> _inspect(
     if (path.isAbsolute(python)) {
       pythonResult = await _file(python);
     } else if (RegExp(r'^[A-Za-z0-9][A-Za-z0-9._-]*$').hasMatch(python)) {
-      pythonResult = 'Command not found in the first 64 absolute PATH entries. Choose an absolute Python executable.';
-      // Bound both environment parsing and filesystem work; empty/relative
-      // entries never cause a search in the working directory.
-      if (searchPath != null && searchPath.length <= 65536) {
-        for (final folder in searchPath.split(':').take(64)) {
-          if (!_bounded(folder) || !path.isAbsolute(folder)) continue;
-          final candidate = path.join(folder, python);
-          if (await FileSystemEntity.type(candidate) !=
-              FileSystemEntityType.notFound) {
-            // First matching entry is authoritative; do not hide a broken one
-            // by reporting a later executable that a launch may not use.
-            pythonResult = await _file(candidate);
-            break;
-          }
-        }
-      }
+      pythonResult = await _inspectPythonPath(python, searchPath);
     }
   }
   return GenerationToolchain(flutter, dart, pythonResult);
+}
+
+Future<String> _inspectPythonPath(String python, String? searchPath) async {
+  const guidance = 'Choose an absolute Python executable.';
+  if (searchPath == null || searchPath.isEmpty) {
+    return 'PATH is unavailable or empty. $guidance';
+  }
+  if (searchPath.length > 65536) {
+    return 'PATH exceeds the inspection limit of 65,536 characters. $guidance';
+  }
+  var checkedFolder = false;
+  // Empty or relative entries count toward the limit without being searched.
+  for (final folder in searchPath.split(':').take(64)) {
+    if (!_bounded(folder) || !path.isAbsolute(folder)) continue;
+    checkedFolder = true;
+    final candidate = path.join(folder, python);
+    if (await FileSystemEntity.type(candidate) !=
+        FileSystemEntityType.notFound) {
+      // Report the first observed candidate, even if it is unusable.
+      return _file(candidate);
+    }
+  }
+  if (!checkedFolder) {
+    return 'The first 64 PATH entries contain no eligible absolute directory '
+        'paths. $guidance';
+  }
+  return 'Command not found in the eligible directories among the first 64 '
+      'PATH entries. $guidance';
 }

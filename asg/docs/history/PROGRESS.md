@@ -1,5 +1,9 @@
 # Progress and delivery history
 
+## Verified Runtime Setup model identity — 10 November 2026 UTC
+
+[PR #577](https://github.com/arpit-it/ASG/pull/577) distinguishes readiness from an exact saved model match. Mac widgets verified exact, missing and different IDs, private guidance and the loading state. Published head `a808e353e65fa4e8de4a47ac8b9348d813e0117e` matched tested tree `2a133155d04fc348aa4d8e5f3ba7bcd75030c9cc`. [Independent review](https://github.com/arpit-it/ASG/pull/577#pullrequestreview-5846680810) and [required checks](https://github.com/arpit-it/ASG/actions/runs/42869008128) passed. Protected merge `2207401147621a4377e1daf39d217a487cce4e0d` was verified on main at 2026-11-10T17:58:08Z. Live model acceptance remains open under #396.
+
 ## Verified retained recovery inventory — 10 November 2026 UTC
 
 [PR #576](https://github.com/arpit-it/ASG/pull/576) keeps recovery paths visible when more than 20 runs qualify. Mac native and widget fixtures verified stable ordering, the remaining count, excluded links and ready runs, and the 512-entry scan limit. Published head `6a329e6f189c61eba3072ca0e1850b8924aac159` matched tested tree `2b7b13ce1e4710fd0a0cd92c6efb0927b85d4d51`. [Independent review](https://github.com/arpit-it/ASG/pull/576#pullrequestreview-5846476412) and [required checks](https://github.com/arpit-it/ASG/actions/runs/42866597710) passed. Protected merge `96d328d3912381167cf0b779a65b53a6d328294c` was verified on main at 17:43:35 UTC. Candidate execution and protected app-driven delivery remain open under #406.

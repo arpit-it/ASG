@@ -130,25 +130,112 @@ void main() {
       expect(report.dart, contains('unavailable'));
     });
     test(
-      'SDK aliases refused, Python lookup bounded without relative search',
+      'SDK file, linked SDK, and missing tools have distinct guidance',
       () async {
-        await Directory('${root.path}/sdk').create();
-        await Link('${root.path}/alias').create('${root.path}/sdk');
-        await executable('tools/python3');
-        final report = await inspectGenerationToolchain(
-          '${root.path}/alias',
-          'python3',
-          searchPath:
-              '${List.filled(64, 'relative').join(':')}:${root.path}/tools',
-        );
-        expect(report.flutter, contains('real Flutter SDK'));
-        expect(report.python, contains('not found'));
-        final invalid = await inspectGenerationToolchain(
-          'x' * 4097,
-          '\u0000',
-          searchPath: root.path,
-        );
+        final sdkFile = await executable('sdk-file');
+        final sdk = await Directory('${root.path}/sdk').create();
+        final alias = await Link('${root.path}/alias').create(sdk.path);
+        for (final entry in {
+          sdkFile.path: 'not a directory',
+          alias.path: 'real Flutter SDK',
+          sdk.path: 'File unavailable',
+        }.entries) {
+          final report = await inspectGenerationToolchain(
+            entry.key,
+            sdkFile.path,
+          );
+          expect(report.flutter, contains(entry.value));
+          expect(report.dart, contains(entry.value));
+          expect(
+            '${report.flutter} ${report.dart}',
+            isNot(contains(root.path)),
+          );
+        }
+        final invalid = await inspectGenerationToolchain('x' * 4097, '\u0000');
         expect(invalid.python, contains('absolute Python'));
+      },
+    );
+    test(
+      'PATH caps raw entries and reports which folders were eligible',
+      () async {
+        await executable('tools/python3');
+        final tools = '${root.path}/tools';
+        final missing = '${root.path}/missing';
+        final relative = List.filled(62, 'relative').join(':');
+        final observed = await inspectGenerationToolchain(
+          '',
+          'python3',
+          searchPath: '$missing:$relative:$tools',
+        );
+        expect(
+          observed.python,
+          contains('executable permission bits observed'),
+        );
+        final bounded = await inspectGenerationToolchain(
+          '',
+          'python3',
+          searchPath: '$missing:$relative::$tools',
+        );
+        expect(
+          bounded.python,
+          contains('eligible directories among the first 64 PATH entries'),
+        );
+        final ineligible = await inspectGenerationToolchain(
+          '',
+          'python3',
+          searchPath: 'relative:$relative::$tools',
+        );
+        expect(
+          ineligible.python,
+          contains('no eligible absolute directory paths'),
+        );
+        final empty = await inspectGenerationToolchain(
+          '',
+          'python3',
+          searchPath: '',
+        );
+        expect(empty.python, contains('PATH is unavailable or empty'));
+        expect(
+          '${bounded.python} ${ineligible.python}',
+          isNot(contains(root.path)),
+        );
+        expect(await File('${root.path}/EXECUTED').exists(), isFalse);
+      },
+    );
+    test(
+      'oversized PATH skips lookup but not an absolute Python selection',
+      () async {
+        final python = await executable('tools/python3');
+        final prefix = '${root.path}/tools:';
+        final withinLimit = prefix + 'x' * (65536 - prefix.length);
+        final overLimit = '${withinLimit}x';
+        final observed = await inspectGenerationToolchain(
+          '',
+          'python3',
+          searchPath: withinLimit,
+        );
+        expect(
+          observed.python,
+          contains('executable permission bits observed'),
+        );
+        final skipped = await inspectGenerationToolchain(
+          '',
+          'python3',
+          searchPath: overLimit,
+        );
+        expect(skipped.python, contains('PATH exceeds the inspection limit'));
+        expect(skipped.python, contains('absolute Python executable'));
+        expect(skipped.python, isNot(contains(root.path)));
+        final absolute = await inspectGenerationToolchain(
+          '',
+          python.path,
+          searchPath: overLimit,
+        );
+        expect(
+          absolute.python,
+          contains('executable permission bits observed'),
+        );
+        expect(await File('${root.path}/EXECUTED').exists(), isFalse);
       },
     );
     test(
