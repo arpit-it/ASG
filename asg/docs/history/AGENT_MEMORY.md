@@ -1,5 +1,9 @@
 # Durable project memory
 
+## Runtime health redirect refusal — 10 November 2026 UTC
+
+Readiness checks stay on the configured endpoint. Mac loopback fixtures verified five redirect statuses, direct retry and the existing response deadline. See the [verified delivery record](PROGRESS.md#verified-runtime-health-redirect-refusal--10-november-2026-utc).
+
 ## Local profiler input-limit recovery — 10 November 2026 UTC
 
 The optional profiler check requires matching startup fingerprints, an actionable HTTP 400 response, idle health and an exact-model retry. The fixture result and installed bridge observations remain separate. The [verified delivery record](PROGRESS.md#verified-local-profiler-input-limit-recovery--10-november-2026-utc) covers PR #571.
