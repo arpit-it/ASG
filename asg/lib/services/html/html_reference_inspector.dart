@@ -130,6 +130,12 @@ HtmlReferenceReport _inspect(HtmlSourceProposal proposal) {
   }
 
   void inspectSvgPresentation(String value, String location) {
+    // The CSS parser recurses into functions and rules. Count possible
+    // openings conservatively, including ones in malformed values.
+    if (RegExp(r'[({\[]').allMatches(value).take(65).length > 64) {
+      report('SVG presentation value is too complex to inspect: $location');
+      return;
+    }
     // Parse a single value with a neutral property so csslib does not treat
     // SVG filter values as legacy CSS filter declarations.
     final errors = <css.Message>[];

@@ -402,6 +402,24 @@ void main() {
     expect(report.messages.join('\n'), isNot(contains('Missing local target')));
   });
 
+  test('deeply nested SVG values leave other diagnostics available', () async {
+    final opening = List.filled(12000, 'f(').join();
+    final closing = List.filled(12000, ')').join();
+    final report = await inspectHtmlReferences(
+      proposal(
+        page(
+          '<svg><rect fill="${opening}url(#deep)$closing" '
+          'clip-path="url(#missing)"/></svg>',
+        ),
+      ),
+    );
+    expect(report.references, 1);
+    expect(report.messages, [
+      'SVG presentation value is too complex to inspect: rect[fill]',
+      'Missing HTML fragment: rect[clip-path] #missing',
+    ]);
+  });
+
   test('SVG values cannot introduce declarations or imports', () async {
     final report = await inspectHtmlReferences(
       proposal(
