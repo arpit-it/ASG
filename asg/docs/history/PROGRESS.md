@@ -1,5 +1,9 @@
 # Progress and delivery history
 
+## Verified local 27B disconnect recovery — 10 November 2026 UTC
+
+[PR #567](https://github.com/arpit-it/ASG/pull/567) records one disconnect before streamed text, first observed idle at 4.033 seconds, an exact-model READY retry and final idle. Published head `662a8cc0759a1179c1dde46a95ec10e8ef899122` matched validated tree `a7da6473209ff867b1dee88ec0b67e4f0e869191`. [Independent review](https://github.com/arpit-it/ASG/pull/567#pullrequestreview-5844436223) and [required checks](https://github.com/arpit-it/ASG/actions/runs/42844397899) passed. Protected merge `9fef2b1ccc9798ee36d435070234f9bb982d1e99` was verified on main at 15:32:44 UTC. The running server source was unknown. F22 / #396 remains open.
+
 ## Verified local 27B prompt-fit observation — 10 November 2026 UTC
 
 [PR #566](https://github.com/arpit-it/ASG/pull/566) records one 3,794-token synthetic SSE completion with exact markers, response model identity and idle recovery. The earlier JSON request timed out. The server source revision was unknown. Published head `4550e781d0b6603215dc14aecac3a0d7ef57da94` matched tree `efb50392a9d88da5a47ac084e74acb34e96e69fb`. [Independent review](https://github.com/arpit-it/ASG/pull/566#pullrequestreview-5844226065) and [required checks](https://github.com/arpit-it/ASG/actions/runs/42842016502) passed. Protected merge `802d276c7fded79479d0253d707dec47aba7bd14` was verified on main at 15:20:18 UTC. The result covers one prompt length and leaves #396 open.
