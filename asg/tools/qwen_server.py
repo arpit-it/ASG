@@ -3,6 +3,7 @@
 
 """Local Qwen inference bridge: MLX (preferred) or legacy Torch, with SSE."""
 import argparse
+import hashlib
 import json
 import math
 import os
@@ -21,6 +22,7 @@ sys.path.insert(0, str(Path(__file__).parent / '.runtime-deps'))
 os.environ['HF_HUB_OFFLINE'] = '1'
 os.environ['TRANSFORMERS_OFFLINE'] = '1'
 
+import qwen_backends
 from qwen_backends import (GenerationCancelled, RequestTokenLimitError, discover_capabilities,
                            load_backend, select_backend, validate_model_config)
 
@@ -51,7 +53,29 @@ def unique_request_fields(pairs):
     return fields
 
 
+def bridge_source_hashes():
+    max_source_bytes = 1024 * 1024
+    files = {
+        'qwen_server.py': __file__,
+        'qwen_backends.py': qwen_backends.__file__,
+    }
+    hashes = {}
+    try:
+        for name, source in files.items():
+            if source is None:
+                return None
+            with Path(source).open('rb') as handle:
+                data = handle.read(max_source_bytes + 1)
+            if len(data) > max_source_bytes:
+                return None
+            hashes[name] = hashlib.sha256(data).hexdigest()
+    except OSError:
+        return None
+    return hashes
+
+
 def create_handler(backend, executor, model_id, model_path):
+    source_hashes = bridge_source_hashes()
     lock = Lock()
     phase = {'value': 'idle'}
     class Handler(BaseHTTPRequestHandler):
@@ -110,7 +134,14 @@ def create_handler(backend, executor, model_id, model_path):
 
         def do_GET(self):
             if self.path == '/health':
-                self.respond(200, {'status': 'ready', 'phase': phase['value'], 'model': model_id, 'model_path': str(model_path), 'device': getattr(backend, 'device', 'unknown'), 'backend': backend.kind, 'streaming': True})
+                health = {
+                    'status': 'ready', 'phase': phase['value'], 'model': model_id,
+                    'model_path': str(model_path), 'device': getattr(backend, 'device', 'unknown'),
+                    'backend': backend.kind, 'streaming': True,
+                }
+                if source_hashes is not None:
+                    health['bridge_source_sha256'] = source_hashes
+                self.respond(200, health)
             elif self.path == '/v1/models':
                 entry = {'id': model_id, 'object': 'model'}
                 if backend.kind in ('mlx', 'torch'):

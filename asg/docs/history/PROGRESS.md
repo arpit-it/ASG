@@ -1,5 +1,9 @@
 # Progress and delivery history
 
+## Verified local 27B input-limit observation — 10 November 2026 UTC
+
+[PR #568](https://github.com/arpit-it/ASG/pull/568) records live HTTP 500 for an over-limit request, idle recovery and a successful exact-model retry. The current-source fixture returned HTTP 400. The listener's on-disk scripts matched an earlier revision, and the loaded source was unknown. Published head `3e7050f966721721facffeec30fd0517910e4d6b` matched validated tree `71210020b69c8dc7d890b2aed2cc98513bb7bca9`. [Independent review](https://github.com/arpit-it/ASG/pull/568#pullrequestreview-5844689375) and [required checks](https://github.com/arpit-it/ASG/actions/runs/42847045517) passed. Protected merge `6a19929710e920ba2d507926a0e74271e1b1e95c` was verified on main at 15:50:28 UTC. Live HTTP 400 and #396 remain open.
+
 ## Verified local 27B disconnect recovery — 10 November 2026 UTC
 
 [PR #567](https://github.com/arpit-it/ASG/pull/567) records one disconnect before streamed text, first observed idle at 4.033 seconds, an exact-model READY retry and final idle. Published head `662a8cc0759a1179c1dde46a95ec10e8ef899122` matched validated tree `a7da6473209ff867b1dee88ec0b67e4f0e869191`. [Independent review](https://github.com/arpit-it/ASG/pull/567#pullrequestreview-5844436223) and [required checks](https://github.com/arpit-it/ASG/actions/runs/42844397899) passed. Protected merge `9fef2b1ccc9798ee36d435070234f9bb982d1e99` was verified on main at 15:32:44 UTC. The running server source was unknown. F22 / #396 remains open.

@@ -1,5 +1,9 @@
 # Durable project memory
 
+## Local 27B input-limit status — 10 November 2026 UTC
+
+The running bridge returned HTTP 500 for an oversized prompt and accepted a valid retry. The current-source fixture returned HTTP 400. The launch-path file hashes matched earlier source, with the loaded revision unknown. The [verified delivery record](PROGRESS.md#verified-local-27b-input-limit-observation--10-november-2026-utc) covers PR #568.
+
 ## Local 27B disconnect recovery — 10 November 2026 UTC
 
 One client closed before streamed text. The server returned to idle and the exact-model retry succeeded. This covers the loopback transport. App Stop and native kernel behavior require separate evidence. The [verified delivery record](PROGRESS.md#verified-local-27b-disconnect-recovery--10-november-2026-utc) covers PR #567.
