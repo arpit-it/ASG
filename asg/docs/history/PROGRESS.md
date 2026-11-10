@@ -1,5 +1,9 @@
 # Progress and delivery history
 
+## Verified replacement proposal publication recovery — 10 November 2026 UTC
+
+[PR #573](https://github.com/arpit-it/ASG/pull/573) reuses the pending-publication marker for replacement proposals. Disposable Mac fixtures reproduced corruption and Stop after rename on the base and verified retained recovery, review refusal, original preservation and a separate successful retry. Published head `5f57bae6bf18730ad55ad8470fbf488d202319c8` matched tested tree `eed28c09a2b6191ab014b2df26d0effd4c0365f5`. [Independent review](https://github.com/arpit-it/ASG/pull/573#pullrequestreview-5845970516) and [required checks](https://github.com/arpit-it/ASG/actions/runs/42860216041) passed. Protected merge `eb5e803926ab351230597573f4c17adffb3d37c2` was verified on main at 17:06:15 UTC. Candidate execution and protected app-driven delivery remain open under #406.
+
 ## Verified runtime health redirect refusal — 10 November 2026 UTC
 
 [PR #572](https://github.com/arpit-it/ASG/pull/572) keeps readiness on the configured endpoint. Mac loopback fixtures verified no requests reached redirect targets for HTTP 301, 302, 303, 307 or 308. Direct retry succeeded and a stalled body hit the three-second deadline. Published head `ccdbc09b8273d639d4b7609c9ed03ff5c494e614` matched tested tree `627b88f5387aec7939409cb62d22a70650cbd420`. [Independent review](https://github.com/arpit-it/ASG/pull/572#pullrequestreview-5845786771) and [required checks](https://github.com/arpit-it/ASG/actions/runs/42858180880) passed. Protected merge `b06c59611006187173795777f605dc3bcc2b3300` was verified on main at 16:54:39 UTC. Live runtime acceptance and #396 remain open.

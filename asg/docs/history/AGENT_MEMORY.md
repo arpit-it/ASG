@@ -1,5 +1,9 @@
 # Durable project memory
 
+## Replacement proposal publication recovery — 10 November 2026 UTC
+
+Replacement proposals use the same pending marker as initial preparation. Failed final verification or Stop after rename leaves a recoverable run while review and offline checks refuse it. See [PR #573 delivery](PROGRESS.md#verified-replacement-proposal-publication-recovery--10-november-2026-utc).
+
 ## Runtime health redirect refusal — 10 November 2026 UTC
 
 Readiness checks stay on the configured endpoint. Mac loopback fixtures verified five redirect statuses, direct retry and the existing response deadline. See the [verified delivery record](PROGRESS.md#verified-runtime-health-redirect-refusal--10-november-2026-utc).
