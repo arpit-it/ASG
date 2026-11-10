@@ -82,6 +82,39 @@ class ServerTests(unittest.TestCase):
                     self.assertEqual(json.load(response), {'error': 'stream must be a boolean'})
                 self.assertIsNone(self.backend.tokens)
 
+    def test_health_reports_a_snapshot_of_both_bridge_source_hashes(self):
+        import hashlib
+        from unittest.mock import patch
+        import qwen_backends
+
+        expected = {
+            'qwen_server.py': hashlib.sha256(Path(module.__file__).read_bytes()).hexdigest(),
+            'qwen_backends.py': hashlib.sha256(Path(qwen_backends.__file__).read_bytes()).hexdigest(),
+        }
+        with patch.object(Path, 'open', side_effect=OSError('source no longer readable')):
+            with urllib.request.urlopen(self.url + '/health', timeout=5) as response:
+                health = json.load(response)
+        self.assertEqual(health['bridge_source_sha256'], expected)
+        self.assertEqual(health['status'], 'ready')
+
+    def test_health_omits_source_hashes_when_a_file_cannot_be_observed(self):
+        from unittest.mock import patch
+
+        with patch.object(Path, 'open', side_effect=OSError('private fixture path')):
+            handler = module.create_handler(self.backend, self.executor, 'fixture', Path('/fixture'))
+        with ThreadingHTTPServer(('127.0.0.1', 0), handler) as server:
+            thread = Thread(target=server.serve_forever, daemon=True)
+            thread.start()
+            try:
+                with urllib.request.urlopen(f'http://127.0.0.1:{server.server_port}/health', timeout=5) as response:
+                    health = json.load(response)
+                self.assertEqual(health['status'], 'ready')
+                self.assertNotIn('bridge_source_sha256', health)
+                self.assertNotIn('private fixture path', json.dumps(health))
+            finally:
+                server.shutdown()
+                thread.join(5)
+
     def test_token_probability_requests_are_rejected_before_dispatch(self):
         from unittest.mock import patch
 

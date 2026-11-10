@@ -16,6 +16,12 @@ On 5 November 2026, the installed ASG app loaded this checkpoint on MLX / Metal.
 
 On 10 November 2026, the same named local model completed one synthetic SSE request with 3,794 reported prompt tokens and returned both exact markers. The first text arrived at 21.459 seconds and the stream finished at 22.054 seconds. The prior JSON attempt reached a 50-second client deadline and the server later returned to idle. The running server source revision was unknown. The checkpoint's advertised 262,144-token context is a separate declaration. [Recorded observations](../development/acceptance/2026-11-10-27b-prompt-fit/observations.json)
 
+When available, `/health` includes `bridge_source_sha256` with SHA-256 hashes of
+`qwen_server.py` and the imported backend's `qwen_backends.py` file. The bridge
+reads these files once before serving requests. Compare both hashes with a known
+checkout and record the running observation separately from model weight identity.
+Older runtimes and runtimes without readable source files may omit the field.
+
 ## Streaming and visible state
 
 The bridge accepts `stream=true` and sends SSE events immediately:
