@@ -1,5 +1,9 @@
 # Progress and delivery history
 
+## Verified local bridge custom stop handling — 10 November 2026 UTC
+
+[PR #564](https://github.com/arpit-it/ASG/pull/564) refuses custom stop sequences before model dispatch. Local HTTP fixtures verified refusal in JSON and streaming modes, privacy of request values, and normal generation when no sequence is requested. Published head `035288fdd9fedb9361859309cee39a1febcd885c` matched tested tree `7a1c03c6e836975dcb600fb403b7b45c4e4db943`. [Independent review](https://github.com/arpit-it/ASG/pull/564#pullrequestreview-5843708325) and both [required checks](https://github.com/arpit-it/ASG/actions/runs/42836684848) passed. Protected merge `2570f1fa0cbb95c753723e3c68b6c84274cc122d` was verified on main at 14:47:53 UTC. F22 / #396 remains open for broader live model evidence.
+
 ## Verified local bridge completion count — 10 November 2026 UTC
 
 [PR #563](https://github.com/arpit-it/ASG/pull/563) refuses unsupported completion counts before model dispatch in JSON and streaming modes. Disposable HTTP fixtures verified refusal and one-choice responses for omitted counts and integer `n: 1`. Published head `4c0e7fd10b18d2b3c44122efe6c1f6d934b0c188` matched tested tree `d816b0c0b79636754c09c22eacaeee8ded86ac2e`. [Independent review](https://github.com/arpit-it/ASG/pull/563#pullrequestreview-5843484556) and both [required checks](https://github.com/arpit-it/ASG/actions/runs/42834267662) passed. The protected merge `a261270641b11aee91c3cc16424f5df6200cd6a3` was verified on main at 14:35:50 UTC. F22 / #396 remains open for broader live model evidence.
