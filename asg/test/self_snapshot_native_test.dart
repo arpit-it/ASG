@@ -258,7 +258,7 @@ raise SystemExit(main(sys.argv[4:]))
           await File('${failed.path}/source-$commit/entry').readAsString(),
           stopAfterPublish ? 'original' : 'changed after publication',
         );
-        expect(await inspectIncompleteSnapshots(parent), [failed.path]);
+        expect((await inspectIncompleteSnapshots(parent)).paths, [failed.path]);
         await expectLater(
           checkSelfSnapshot(
             snapshot: '${failed.path}/source-$commit',
@@ -277,7 +277,7 @@ raise SystemExit(main(sys.argv[4:]))
           ),
         );
         final ready = await prepare('/usr/bin/python3', Completer<void>());
-        expect(await inspectIncompleteSnapshots(parent), [failed.path]);
+        expect((await inspectIncompleteSnapshots(parent)).paths, [failed.path]);
         expect(ready, isNot(startsWith(failed.path)));
         expect(await File('$ready/entry').readAsString(), 'original');
         expect(await File('${source.path}/entry').readAsString(), 'original');
@@ -406,12 +406,54 @@ raise SystemExit(main(sys.argv[4:]))
         .create();
     await Link('${linked.path}/incomplete').create(other.path);
     final rootPath = await root.resolveSymbolicLinks();
-    expect(await inspectIncompleteSnapshots(root.path), [
-      '$rootPath/asg-self-candidate-a1b2c3d4/incomplete',
-    ]);
+    final found = await inspectIncompleteSnapshots(root.path);
+    expect(found.paths, ['$rootPath/asg-self-candidate-a1b2c3d4/incomplete']);
+    expect(found.additionalCount, 0);
     expect(await ready.exists(), isTrue);
     expect(await other.exists(), isTrue);
   }, skip: !Platform.isMacOS);
+  test(
+    'inspection sorts retained paths before applying the display cap',
+    () async {
+      final root = await Directory.systemTemp.createTemp('asg-snapshot-cap-');
+      addTearDown(() => root.delete(recursive: true));
+      final parent = await root.resolveSymbolicLinks();
+      final expected = <String>[];
+      for (var index = 20; index >= 0; index--) {
+        final name = index.toRadixString(16).padLeft(8, '0');
+        final run = '$parent/asg-self-candidate-$name';
+        final child = index.isEven ? 'incomplete' : '.asg-preparation-pending';
+        await Directory('$run/$child').create(recursive: true);
+        expected.add(index.isEven ? '$run/incomplete' : run);
+      }
+      await Directory('$parent/asg-self-candidate-fffffffe/source-${'a' * 40}')
+          .create(recursive: true);
+      final linked = await Directory('$parent/asg-self-candidate-ffffffff')
+          .create();
+      await Link('${linked.path}/.asg-preparation-pending')
+          .create(expected.last);
+
+      final found = await inspectIncompleteSnapshots(parent);
+      expect(found.paths, expected.reversed.take(20));
+      expect(found.additionalCount, 1);
+    },
+    skip: !Platform.isMacOS,
+  );
+
+  test('inspection still refuses more than 512 direct entries', () async {
+    final root = await Directory.systemTemp.createTemp('asg-snapshot-limit-');
+    addTearDown(() => root.delete(recursive: true));
+    final parent = await root.resolveSymbolicLinks();
+    for (var index = 0; index < 512; index++) {
+      await File('$parent/ignored-$index').create();
+    }
+    final found = await inspectIncompleteSnapshots(parent);
+    expect(found.paths, isEmpty);
+    expect(found.additionalCount, 0);
+    await File('$parent/ignored-over-limit').create();
+    await expectLater(inspectIncompleteSnapshots(parent), throwsStateError);
+  }, skip: !Platform.isMacOS);
+
   test('actual approved replacement forks a new unverified snapshot', () async {
     final root = await Directory.systemTemp.createTemp('asg-proposal-native-');
     addTearDown(() => root.delete(recursive: true));

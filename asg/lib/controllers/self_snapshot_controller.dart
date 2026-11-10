@@ -7,6 +7,7 @@ import '../models/candidate_comparison.dart';
 import '../models/candidate_file_review.dart';
 import '../models/generation_command_result.dart';
 import '../models/self_snapshot_operation.dart';
+import '../models/snapshot_recovery_inventory.dart';
 import '../models/snapshot_preparation_failure.dart';
 import '../services/self_snapshot.dart';
 import 'base_controller.dart';
@@ -79,7 +80,7 @@ class SelfSnapshotController extends BaseController {
     CandidateFingerprint? fingerprint,
     CandidateCompare? compare,
     CandidateFileRead? readFile,
-    Future<List<String>> Function(String)? inspect,
+    Future<SnapshotRecoveryInventory> Function(String)? inspect,
   }) : _prepare = prepare ?? prepareSelfSnapshot,
        _inspect = inspect ?? inspectIncompleteSnapshots,
        _check = check ?? checkSelfSnapshot,
@@ -94,7 +95,7 @@ class SelfSnapshotController extends BaseController {
   final CandidateFileRead _readFile;
   int _reviewEpoch = 0;
   CandidateReview? _pendingReview;
-  final Future<List<String>> Function(String) _inspect;
+  final Future<SnapshotRecoveryInventory> Function(String) _inspect;
   bool _inspecting = false;
   bool get inspecting => _inspecting;
   Completer<void>? _stop;
@@ -425,9 +426,15 @@ class SelfSnapshotController extends BaseController {
     try {
       final found = await _inspect(destination);
       if (isDisposed) return;
-      _status = found.isEmpty
+      final additional = found.additionalCount;
+      _status = found.paths.isEmpty
           ? 'No incomplete snapshot folders found.'
-          : 'Possible incomplete snapshot folders:\n${found.join('\n')}';
+          : [
+              'Possible incomplete snapshot folders:',
+              ...found.paths,
+              if (additional > 0)
+                '$additional additional ${additional == 1 ? 'folder' : 'folders'} found.',
+            ].join('\n');
     } catch (_) {
       if (!isDisposed) {
         _status = 'Could not inspect the selected destination. Check access and folder size.';

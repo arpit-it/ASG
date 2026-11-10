@@ -13,6 +13,7 @@ import '../models/candidate_source_proposal.dart';
 import '../models/candidate_file_review.dart';
 import '../models/generation_command_result.dart';
 import '../models/self_snapshot_operation.dart';
+import '../models/snapshot_recovery_inventory.dart';
 import '../models/snapshot_preparation_failure.dart';
 import 'generation_process_capture.dart';
 
@@ -290,7 +291,9 @@ Future<String?> _verifiedFailedRun(String parent, String receipt) async {
 const _pendingPublication = '.asg-preparation-pending';
 
 /// Finds incomplete staging folders or runs still pending final verification.
-Future<List<String>> inspectIncompleteSnapshots(String destination) async {
+Future<SnapshotRecoveryInventory> inspectIncompleteSnapshots(
+  String destination,
+) async {
   if (!supportsSelfSnapshot || !path.isAbsolute(destination)) {
     throw const FormatException('Invalid snapshot destination.');
   }
@@ -331,14 +334,18 @@ Future<List<String>> inspectIncompleteSnapshots(String destination) async {
             pending) {
       retained = entry.path;
     }
-    if (retained != null) {
-      if (found.length == 20) {
-        throw StateError('Snapshot inspection exceeded its limits.');
-      }
-      found.add(retained);
-    }
+    if (retained != null) found.add(retained);
   }
-  return found..sort();
+  if (elapsed.elapsed >= limit) {
+    throw StateError('Snapshot inspection exceeded its limits.');
+  }
+  const displayLimit = 20;
+  found.sort();
+  final paths = found.take(displayLimit).toList();
+  return SnapshotRecoveryInventory(
+    paths: paths,
+    additionalCount: found.length - paths.length,
+  );
 }
 
 Future<GenerationCommandResult> checkSelfSnapshot({

@@ -1,5 +1,9 @@
 # Progress and delivery history
 
+## Verified runtime health response limit — 10 November 2026 UTC
+
+[PR #575](https://github.com/arpit-it/ASG/pull/575) caps successful probe bodies at 64 KiB and handles unsuccessful statuses before reading their bodies. Mac loopback fixtures verified the exact limit, declared and streamed overflow refusal, prompt handling of a stalled 503, private diagnostics and retry. Published head `74304017a1b3c4797dd8c666f3d90750f1855974` matched tested tree `606d921efb04b0e77326173bf4845a2b662f6e82`. [Independent review](https://github.com/arpit-it/ASG/pull/575#pullrequestreview-5846331974) and [required checks](https://github.com/arpit-it/ASG/actions/runs/42864676929) passed. Protected merge `554399db020a47cf5298f659aec140f59e2ac3a1` was verified on main at 2026-11-10T17:33:26Z. Live runtime acceptance and #396 remain open.
+
 ## Verified inline SVG presentation references — 10 November 2026 UTC
 
 [PR #574](https://github.com/arpit-it/ASG/pull/574) inventories lowercase URL references in selected SVG presentation attributes. The Mac regression reproduced zero of eight references on the base. Independent review found that nested input could exhaust the parser stack. The revised fixture confirmed an advisory and preservation of a separate missing-fragment diagnostic. Published head `77e5435fc3c57d02c30b171efbbeceee68522820` matched tested tree `e5aca3cd92a7a8a075072d9694eca5ae5aa8fb31`. [Independent review](https://github.com/arpit-it/ASG/pull/574#pullrequestreview-5846179139) and [required checks](https://github.com/arpit-it/ASG/actions/runs/42862881964) passed. Protected merge `29813cd31c6eb6d77d058233bf250ccf0dea12f2` was verified on main at 17:21:59 UTC. Browser rendering and F11 remain open.

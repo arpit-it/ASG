@@ -6,6 +6,7 @@ import '../models/candidate_source_proposal.dart';
 import '../models/candidate_comparison.dart';
 import '../models/generation_command_result.dart';
 import '../models/self_snapshot_operation.dart';
+import '../models/snapshot_recovery_inventory.dart';
 
 bool get supportsSelfSnapshot => false;
 
@@ -18,8 +19,9 @@ Future<String> prepareSelfSnapshot({
   required bool Function() stopped,
 }) async => throw UnsupportedError('Source snapshots require macOS.');
 
-Future<List<String>> inspectIncompleteSnapshots(String destination) async =>
-    throw UnsupportedError('Source snapshots require macOS.');
+Future<SnapshotRecoveryInventory> inspectIncompleteSnapshots(
+  String destination,
+) async => throw UnsupportedError('Source snapshots require macOS.');
 
 Future<GenerationCommandResult> checkSelfSnapshot({
   required String snapshot,
