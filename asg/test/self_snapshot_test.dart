@@ -6,6 +6,7 @@ import 'dart:convert';
 
 import 'package:asg/models/self_snapshot_operation.dart';
 import 'package:asg/models/snapshot_preparation_failure.dart';
+import 'package:asg/models/snapshot_recovery_inventory.dart';
 import 'package:asg/models/candidate_comparison.dart';
 import 'package:asg/models/candidate_file_review.dart';
 import 'package:asg/views/candidate_file_review_dialog.dart';
@@ -1288,7 +1289,7 @@ void main() {
   testWidgets('inspection uses the selected destination without preparation', (
     tester,
   ) async {
-    final pending = Completer<List<String>>();
+    final pending = Completer<SnapshotRecoveryInventory>();
     final picker = FixturePicker()..folders.moveNext();
     final controller = SelfSnapshotController(
       inspect: (destination) {
@@ -1308,12 +1309,17 @@ void main() {
     await tester.pump();
     expect(find.text('Inspecting destination…'), findsOneWidget);
     expect(find.text('Stop'), findsNothing);
-    pending.complete(['/destination/asg-self-candidate-a1b2c3d4/incomplete']);
+    const shown = '/destination/asg-self-candidate-a1b2c3d4/incomplete';
+    pending.complete(
+      SnapshotRecoveryInventory(paths: [shown], additionalCount: 1),
+    );
     await tester.pump();
     expect(
       find.textContaining('Possible incomplete snapshot folders'),
       findsOneWidget,
     );
+    expect(find.textContaining(shown), findsOneWidget);
+    expect(find.textContaining('1 additional folder found.'), findsOneWidget);
     await tester.scrollUntilVisible(
       find.text('Choose snapshot destination'),
       -180,

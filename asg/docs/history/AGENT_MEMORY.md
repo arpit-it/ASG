@@ -1,5 +1,9 @@
 # Durable project memory
 
+## Runtime health response limit — 10 November 2026 UTC
+
+The runtime probe accepts successful responses through 64 KiB and handles HTTP errors from their status without waiting for their bodies. See the [verified delivery record](PROGRESS.md#verified-runtime-health-response-limit--10-november-2026-utc).
+
 ## Inline SVG presentation references — 10 November 2026 UTC
 
 Static HTML review reports lowercase URL references in selected inline SVG attributes. A complexity limit preserves the rest of the report when a value is too deeply nested. See the [verified delivery record](PROGRESS.md#verified-inline-svg-presentation-references--10-november-2026-utc).
