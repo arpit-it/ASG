@@ -1,5 +1,9 @@
 # Progress and delivery history
 
+## Verified local 27B prompt-fit observation — 10 November 2026 UTC
+
+[PR #566](https://github.com/arpit-it/ASG/pull/566) records one 3,794-token synthetic SSE completion with exact markers, response model identity and idle recovery. The earlier JSON request timed out. The server source revision was unknown. Published head `4550e781d0b6603215dc14aecac3a0d7ef57da94` matched tree `efb50392a9d88da5a47ac084e74acb34e96e69fb`. [Independent review](https://github.com/arpit-it/ASG/pull/566#pullrequestreview-5844226065) and [required checks](https://github.com/arpit-it/ASG/actions/runs/42842016502) passed. Protected merge `802d276c7fded79479d0253d707dec47aba7bd14` was verified on main at 15:20:18 UTC. The result covers one prompt length and leaves #396 open.
+
 ## Verified local bridge token probabilities — 10 November 2026 UTC
 
 [PR #565](https://github.com/arpit-it/ASG/pull/565) refuses unsupported token-probability requests before dispatch. HTTP fixtures verified both response modes, a valid retry and error privacy. Published head `9654b13b50bec548c533ffa186daa87aafa2cb24` matched tested tree `82347ca4e1961de05e513e6c15d9d0d7e0299c19`. [Independent review](https://github.com/arpit-it/ASG/pull/565#pullrequestreview-5843961089) and both [required checks](https://github.com/arpit-it/ASG/actions/runs/42839262587) passed. Protected merge `8c922a16b0d2d8d21e79af3cff97156f526512b6` was verified on main at 15:05:37 UTC. F22 / #396 remains open for broader live model evidence.

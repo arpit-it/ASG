@@ -1,5 +1,9 @@
 # Durable project memory
 
+## Local 27B prompt fit — 10 November 2026 UTC
+
+One exact-model SSE request completed with 3,794 reported prompt tokens and returned both markers. The prior JSON attempt timed out. Keep the observed point separate from the checkpoint context declaration. The [verified delivery record](PROGRESS.md#verified-local-27b-prompt-fit-observation--10-november-2026-utc) covers PR #566.
+
 ## Local bridge token probabilities — 10 November 2026 UTC
 
 The bridge refuses unsupported probability requests before dispatch. Omitted or disabled options preserve ordinary responses. The [verified delivery record](PROGRESS.md#verified-local-bridge-token-probabilities--10-november-2026-utc) covers PR #565.
