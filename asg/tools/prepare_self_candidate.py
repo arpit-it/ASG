@@ -177,7 +177,7 @@ def prepare(source, commit, parent):
         parent, (source, *metadata),
         'Choose a candidate parent outside the source repository and outside Git metadata.',
     )
-    run_fd = stage_fd = pending_fd = None
+    run_fd = stage_fd = None
     run = None
     try:
         if read_git(source, ['cat-file', '-t', commit], 16, deadline) != b'commit\n':
@@ -228,30 +228,10 @@ def prepare(source, commit, parent):
         if expected_files or expected_directories:
             raise ValueError('Staged snapshot is missing committed entries.')
 
-        check_preparation_deadline(deadline)
-        require_directory_identity(parent, parent_fd)
-        require_directory_identity(run, run_fd)
-        require_directory_identity(staging, stage_fd)
-        check_preparation_deadline(deadline)
-        # Keep the run discoverable and unusable until the published bytes pass
-        # verification. A killed helper can leave the marker without a receipt.
-        os.mkdir(PENDING_PUBLICATION, 0o700, dir_fd=run_fd)
-        pending_fd = os.open(PENDING_PUBLICATION, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW,
-                             dir_fd=run_fd)
-        exclusive_rename(run_fd, staging.name, ready.name)
-
-        require_directory_identity(ready, stage_fd)
-        published_digest, _ = scan_candidate(
-            ready, deadline=deadline, entry_limit=entry_limit, allow_pending_publication=True,
+        publish_verified_snapshot(
+            ready, parent_fd, run_fd, stage_fd, staged_digest,
+            deadline=deadline, entry_limit=entry_limit,
         )
-        if published_digest != staged_digest:
-            raise ValueError('Published snapshot differs from the staged tree.')
-        require_directory_identity(parent, parent_fd)
-        require_directory_identity(run, run_fd)
-        require_directory_identity(ready, stage_fd)
-        require_directory_identity(run / PENDING_PUBLICATION, pending_fd)
-        check_preparation_deadline(deadline)
-        os.rmdir(PENDING_PUBLICATION, dir_fd=run_fd)
         return ready
     except (OSError, ValueError, subprocess.SubprocessError, KeyboardInterrupt) as error:
         if run is None:
@@ -266,7 +246,7 @@ def prepare(source, commit, parent):
                 pass  # The original preparation error still takes precedence.
         raise PreparationRunError(run, confirmed) from error
     finally:
-        for descriptor in (pending_fd, stage_fd, run_fd, parent_fd):
+        for descriptor in (stage_fd, run_fd, parent_fd):
             if descriptor is not None:
                 os.close(descriptor)
 
@@ -301,6 +281,39 @@ def check_preparation_deadline(deadline):
     check_stop()
     if deadline is not None and time.monotonic() >= deadline:
         raise ValueError('Snapshot verification timed out.')
+
+
+def publish_verified_snapshot(ready, parent_fd, run_fd, stage_fd, expected_digest, *,
+                              deadline=None, entry_limit=None):
+    """Keep a renamed snapshot recoverable until its final verification succeeds."""
+    run = ready.parent
+    staging = run / 'incomplete'
+    check_preparation_deadline(deadline)
+    require_directory_identity(run.parent, parent_fd)
+    require_directory_identity(run, run_fd)
+    require_directory_identity(staging, stage_fd)
+    check_preparation_deadline(deadline)
+    # A failed or killed helper leaves the marker for recovery, even after rename.
+    os.mkdir(PENDING_PUBLICATION, 0o700, dir_fd=run_fd)
+    pending_fd = os.open(PENDING_PUBLICATION, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW,
+                         dir_fd=run_fd)
+    try:
+        exclusive_rename(run_fd, staging.name, ready.name)
+        require_directory_identity(ready, stage_fd)
+        published_digest, _ = scan_candidate(
+            ready, deadline=deadline, entry_limit=entry_limit, allow_pending_publication=True,
+        )
+        if published_digest != expected_digest:
+            raise ValueError('Published snapshot differs from the staged tree.')
+        require_directory_identity(run.parent, parent_fd)
+        require_directory_identity(run, run_fd)
+        require_directory_identity(ready, stage_fd)
+        require_directory_identity(run / PENDING_PUBLICATION, pending_fd)
+        check_preparation_deadline(deadline)
+        os.rmdir(PENDING_PUBLICATION, dir_fd=run_fd)
+        return published_digest
+    finally:
+        os.close(pending_fd)
 
 
 def scan_candidate(candidate, capture=None, sink=None, allow_incomplete=False, *,
@@ -624,7 +637,6 @@ def apply_proposal(payload):
     total = substitutions = 0
     output_hash = hashlib.sha256(b'ASG candidate tree v1\0')
     try:
-        parent_identity = os.fstat(parent_fd)
         run = payload['runName']
         os.mkdir(run, 0o700, dir_fd=parent_fd)
         run_fd = os.open(run, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=parent_fd)
@@ -672,36 +684,16 @@ def apply_proposal(payload):
         if digest != payload['expectedDigest'] or substitutions != 1:
             raise ValueError('Source fingerprint or selected file changed.')
         check_stop()
-        current = open_directory_no_links(destination)
-        try:
-            info = os.fstat(current)
-            if (info.st_dev, info.st_ino) != (parent_identity.st_dev, parent_identity.st_ino):
-                raise ValueError('Destination changed during proposal.')
-        finally:
-            os.close(current)
-        # The owned run must remain at its selected destination before publication.
-        observed = os.stat(run, dir_fd=parent_fd, follow_symlinks=False)
-        own = os.fstat(run_fd)
-        if (observed.st_dev, observed.st_ino) != (own.st_dev, own.st_ino):
-            raise ValueError('Proposal run changed during writing.')
-        stage_digest, _ = scan_candidate(destination / run / 'incomplete', allow_incomplete=True)
+        run_path = destination / run
+        staging = run_path / 'incomplete'
+        require_directory_identity(destination, parent_fd)
+        require_directory_identity(run_path, run_fd)
+        require_directory_identity(staging, stage_fd)
+        stage_digest, _ = scan_candidate(staging, allow_incomplete=True)
         if stage_digest != output_hash.hexdigest():
             raise ValueError('Written snapshot differs from the proposal.')
-        check_stop()
-        exclusive_rename(run_fd, 'incomplete', candidate.name)
-        ready = destination / run / candidate.name
-        output_digest = fingerprint(ready)
-        if output_digest != output_hash.hexdigest():
-            raise ValueError('Published snapshot differs from the proposal.')
-        named = open_directory_no_links(ready)
-        try:
-            output_info = os.fstat(named)
-            stage_info = os.fstat(stage_fd)
-            if (output_info.st_dev, output_info.st_ino) != (stage_info.st_dev, stage_info.st_ino):
-                raise ValueError('Published candidate identity changed.')
-        finally:
-            os.close(named)
-        check_stop()
+        ready = run_path / candidate.name
+        output_digest = publish_verified_snapshot(ready, parent_fd, run_fd, stage_fd, stage_digest)
         return {'schemaVersion': 1, 'path': str(ready), 'digest': output_digest,
                 'sourceDigest': digest, 'file': name, 'afterHash': payload['afterHash']}
     except (OSError, ValueError, KeyboardInterrupt) as error:

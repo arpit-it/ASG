@@ -1,5 +1,9 @@
 # Progress and delivery history
 
+## Verified runtime health redirect refusal — 10 November 2026 UTC
+
+[PR #572](https://github.com/arpit-it/ASG/pull/572) keeps readiness on the configured endpoint. Mac loopback fixtures verified no requests reached redirect targets for HTTP 301, 302, 303, 307 or 308. Direct retry succeeded and a stalled body hit the three-second deadline. Published head `ccdbc09b8273d639d4b7609c9ed03ff5c494e614` matched tested tree `627b88f5387aec7939409cb62d22a70650cbd420`. [Independent review](https://github.com/arpit-it/ASG/pull/572#pullrequestreview-5845786771) and [required checks](https://github.com/arpit-it/ASG/actions/runs/42858180880) passed. Protected merge `b06c59611006187173795777f605dc3bcc2b3300` was verified on main at 16:54:39 UTC. Live runtime acceptance and #396 remain open.
+
 ## Verified local profiler input-limit recovery — 10 November 2026 UTC
 
 [PR #571](https://github.com/arpit-it/ASG/pull/571) adds an opt-in synthetic input-limit check to the profiler. It requires matching bridge fingerprints, HTTP 400, idle health and an exact-model retry. Local synthetic HTTP fixtures verified the pass and refusal paths. Published head `3cbc6c5461d41507680bc2fcec95ea06dcb0007f` matched tree `2dd99622bb1d8547ede698de9cc33cb1fdbac56c`. [Independent review](https://github.com/arpit-it/ASG/pull/571#pullrequestreview-5845493148) and [required checks](https://github.com/arpit-it/ASG/actions/runs/42855086377) passed. Protected merge `155bcf8201af61b6dd0f956443ca6a9ae2f4b617` was verified on main at 16:41:23 UTC. Live HTTP 400 and #396 remain open.

@@ -710,6 +710,63 @@ class ProposalTests(unittest.TestCase):
         self.assertEqual((occupied / 'sentinel').read_text(), 'preserved')
         self.assertFalse(list(destination.glob('*/source-*')))
 
+    def test_post_rename_proposal_corruption_retains_failed_run_and_allows_retry(self):
+        ready, destination, payload = self.proposal_fixture()
+        original = (ready / payload['path']).read_bytes()
+        failed = destination / payload['runName'] / ready.name
+        marker = failed.parent / candidate.PENDING_PUBLICATION
+        publish = candidate.exclusive_rename
+
+        def corrupt_after_rename(fd, staging, target):
+            publish(fd, staging, target)
+            (failed / payload['path']).write_text('changed after rename')
+
+        with patch.object(candidate, 'exclusive_rename', side_effect=corrupt_after_rename):
+            with self.assertRaisesRegex(ValueError, 'Inspect the selected destination') as refusal:
+                candidate.apply_proposal(payload)
+        self.assertIn('Published snapshot differs', str(refusal.exception.__cause__))
+        self.assertTrue(failed.is_dir())
+        self.assertFalse((failed.parent / 'incomplete').exists())
+        self.assertTrue(marker.is_dir())
+        with self.assertRaisesRegex(ValueError, 'did not finish'):
+            candidate.fingerprint(failed)
+        with self.assertRaisesRegex(ValueError, 'did not finish'):
+            candidate.proposal_read(failed, payload['path'])
+
+        retry = candidate.apply_proposal(dict(payload, runName='asg-self-candidate-2234abcd'))
+        output = Path(retry['path'])
+        self.assertEqual(output.parent.parent, destination)
+        self.assertEqual(candidate.fingerprint(output), retry['digest'])
+        self.assertEqual((output / payload['path']).read_text(), payload['replacement'])
+        self.assertFalse((output.parent / candidate.PENDING_PUBLICATION).exists())
+        self.assertTrue(marker.is_dir())
+        self.assertEqual((failed / payload['path']).read_text(), 'changed after rename')
+        self.assertEqual((ready / payload['path']).read_bytes(), original)
+        self.assertEqual((self.source / payload['path']).read_bytes(), original)
+
+    def test_stop_after_final_proposal_scan_keeps_publication_pending(self):
+        ready, destination, payload = self.proposal_fixture()
+        published = destination / payload['runName'] / ready.name
+        scan = candidate.scan_candidate
+
+        def stop_after_final_scan(path, *args, **kwargs):
+            result = scan(path, *args, **kwargs)
+            if path == published:
+                candidate.request_stop(None, None)
+            return result
+
+        with patch.object(candidate, '_stop_requested', False), patch.object(
+            candidate, 'scan_candidate', side_effect=stop_after_final_scan,
+        ):
+            with self.assertRaisesRegex(ValueError, 'Inspect the selected destination') as refusal:
+                candidate.apply_proposal(payload)
+        self.assertIn('Snapshot preparation stopped', str(refusal.exception.__cause__))
+        self.assertTrue(published.is_dir())
+        self.assertTrue((published.parent / candidate.PENDING_PUBLICATION).is_dir())
+        with self.assertRaisesRegex(ValueError, 'did not finish'):
+            candidate.fingerprint(published)
+        self.assertEqual(candidate.fingerprint(ready), payload['expectedDigest'])
+
     def test_application_bundle_destination_refused(self):
         _, _, payload = self.proposal_fixture()
         destination = self.parent / 'Sentinel.ApP' / 'Contents'
