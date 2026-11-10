@@ -19,6 +19,8 @@ parser.add_argument('--model', required=True)
 parser.add_argument('--source-revision', required=True)
 parser.add_argument('--output', type=Path, required=True)
 parser.add_argument('--operation-timeout', type=float, default=90)
+parser.add_argument('--require-bridge-source', action='store_true',
+                    help='Require the bridge startup fingerprints to match the source files next to this tool.')
 parser.add_argument('--confirm-live', action='store_true', required=True)
 args = parser.parse_args()
 if not 0.1 <= args.operation_timeout <= 90:
@@ -36,6 +38,27 @@ if len(args.source_revision) != 40 or any((c not in '0123456789abcdef' for c in 
     parser.error('Use the tested 40-character source commit.')
 if args.output.exists():
     parser.error('Output already exists; choose a new report path.')
+
+class BridgeSourceMismatch(Exception):
+    pass
+
+
+def require_matching_bridge_source(health):
+    hashes = {}
+    max_source_bytes = 1024 * 1024
+    try:
+        for name in ('qwen_server.py', 'qwen_backends.py'):
+            with Path(__file__).with_name(name).open('rb') as source:
+                data = source.read(max_source_bytes + 1)
+            if len(data) > max_source_bytes:
+                raise BridgeSourceMismatch()
+            hashes[name] = hashlib.sha256(data).hexdigest()
+    except OSError:
+        raise BridgeSourceMismatch() from None
+    if health.get('bridge_source_sha256') != hashes:
+        raise BridgeSourceMismatch()
+    return hashes
+
 
 class DeadlineConnection(http.client.HTTPConnection):
     """Own a duplicate socket so deadline interrupts detached response reads."""
@@ -144,6 +167,8 @@ def run():
     report = {'schema_version': 1, 'scope': 'Observed isolated selected-checkpoint MLX regression only; no verified total context, model identity authentication, app/manual acceptance, larger model or other platform support.', 'source_revision': args.source_revision, 'host': platform.mac_ver()[0], 'architecture': platform.machine(), 'dependencies': {n: importlib.metadata.version(n) for n in ['mlx', 'mlx-lm', 'transformers', 'tokenizers']}, 'checks': {}}
     status, h = call('/health')
     assert status == 200 and h['backend'] == 'mlx' and (h['device'] == 'metal') and (h['phase'] == 'idle')
+    if args.require_bridge_source:
+        report['bridge_source_sha256'] = require_matching_bridge_source(h)
     status, inv = call('/v1/models')
     assert status == 200
     assert inv['data'][0]['id'] == args.model
@@ -242,6 +267,9 @@ def run():
 if __name__ == '__main__':
     try:
         run()
+    except BridgeSourceMismatch:
+        print('Bridge source fingerprints did not match. Check that the running bridge was started from the source next to this tool.', file=sys.stderr)
+        sys.exit(1)
     except Exception:
         print('Live regression failed; no passing report written. Check the owned runtime and retry with a new output path.', file=sys.stderr)
         sys.exit(1)
