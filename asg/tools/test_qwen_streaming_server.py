@@ -171,6 +171,54 @@ class ServerTests(unittest.TestCase):
             self.assertEqual(json.load(response)['model'], 'fixture')
         self.assertEqual(self.backend.tokens, 1)
 
+    def test_ambiguous_or_malformed_origins_fail_before_dispatch(self):
+        import http.client
+        import socket
+        from unittest.mock import patch
+
+        body = json.dumps({'model': 'fixture', 'messages': [
+            {'role': 'user', 'content': 'private fixture prompt'},
+        ]}).encode()
+
+        def send(method, route, origins):
+            payload = body if method == 'POST' else b''
+            headers = [f'{method} {route} HTTP/1.1', 'Host: localhost',
+                       'Content-Type: application/json',
+                       f'Content-Length: {len(payload)}',
+                       *(f'Origin: {origin}' for origin in origins), '', '']
+            with socket.create_connection(self.server.server_address, timeout=5) as connection:
+                connection.sendall('\r\n'.join(headers).encode() + payload)
+                with http.client.HTTPResponse(connection) as response:
+                    response.begin()
+                    return (response.status, response.getheader('Access-Control-Allow-Origin'),
+                            json.load(response))
+
+        cases = (('',), ('http://localhost/private',), ('http://localhost?',),
+                 ('http://private@localhost',), ('http://localhost:65536',),
+                 ('http://localhost:0',), ('http://localhost:\r\n 8080',),
+                 ('http://10.0.2.2',), ('http://localhost', 'http://localhost'),
+                 ('http://localhost', 'https://external.invalid'))
+        route = '/v1/chat/completions'
+        for origins in cases:
+            for method in ('POST', 'OPTIONS'):
+                with self.subTest(origins=origins, method=method):
+                    with patch.object(self.executor, 'submit', wraps=self.executor.submit) as submit:
+                        status, cors, result = send(method, route, origins)
+                        self.assertEqual(status, 403)
+                        self.assertIsNone(cors)
+                        self.assertEqual(result, {'error': 'Local JSON requests only'}
+                                         if method == 'POST' else {})
+                        submit.assert_not_called()
+        self.assertIsNone(self.backend.tokens)
+        status, cors, result = send('GET', '/health', ('http://localhost/private',))
+        self.assertEqual((status, cors, result['phase']), (200, None, 'idle'))
+        for origin in ('http://localhost', 'http://127.0.0.1:8080', 'http://[::1]:8080'):
+            with self.subTest(origin=origin):
+                self.assertEqual(send('OPTIONS', route, (origin,))[:2], (200, origin))
+                status, cors, result = send('POST', route, (origin,))
+                self.assertEqual((status, cors, result['model']), (200, origin, 'fixture'))
+        self.assertEqual(send('POST', route, ())[:2], (200, None))
+
     def test_loopback_host_required_before_routing_or_dispatch(self):
         import http.client
         import socket
