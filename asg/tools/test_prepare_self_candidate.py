@@ -268,8 +268,8 @@ class CandidateTests(unittest.TestCase):
         moved = self.parent / 'moved-destination'
         read = candidate.read_git
 
-        def replace_after_tree(source, args, limit, deadline):
-            result = read(source, args, limit, deadline)
+        def replace_after_tree(source, args, limit, deadline, **kwargs):
+            result = read(source, args, limit, deadline, **kwargs)
             if args[0] == 'ls-tree':
                 destination.rename(moved)
                 destination.mkdir()
