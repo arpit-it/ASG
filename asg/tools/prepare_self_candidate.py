@@ -16,12 +16,15 @@ import signal
 import stat
 import subprocess
 import sys
+import tempfile
 import time
 
 MAX_FILES = 2048
 MAX_FILE_BYTES = 2 * 1024 * 1024
 MAX_TOTAL_BYTES = 24 * 1024 * 1024
 MAX_TREE_BYTES = 1024 * 1024
+MAX_GIT_ALTERNATE_BYTES = 16 * 1024
+MAX_GIT_OBJECT_STORES = 32
 OBJECT_ID = re.compile(rb'[0-9a-f]{40}')
 COMPONENT = re.compile(rb'[A-Za-z0-9_. @-]{1,100}')
 
@@ -39,7 +42,7 @@ def check_stop():
         raise ValueError('Snapshot preparation stopped.')
 
 
-def read_git(source, args, limit, deadline):
+def read_git(source, args, limit, deadline, *, discovery_objects=None):
     check_stop()
     env = {
         'PATH': '/usr/bin:/bin',
@@ -48,6 +51,8 @@ def read_git(source, args, limit, deadline):
         'GIT_NO_LAZY_FETCH': '1',
         'GIT_TERMINAL_PROMPT': '0',
     }
+    if discovery_objects is not None:
+        env['GIT_OBJECT_DIRECTORY'] = discovery_objects
     with subprocess.Popen(
         ['/usr/bin/git', '--no-replace-objects', '-C', str(source), *args],
         env=env, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
@@ -143,22 +148,72 @@ class PreparationRunError(ValueError):
         self.run_name = run.name if confirmed else None
 
 
-def git_storage_directories(source, deadline):
-    """Find the Git metadata that may live outside the selected checkout."""
-    directories = []
-    for option in ('--git-dir', '--git-common-dir'):
-        raw = read_git(source, ['rev-parse', '--path-format=absolute', option], 4096, deadline)
-        # A newline in the path would make Git's line output ambiguous. Refuse
-        # rather than passing a truncated path to the destination guard.
-        if not raw.endswith(b'\n') or b'\n' in raw[:-1]:
-            raise ValueError('Could not determine Git metadata directory.')
-        directory = Path(os.fsdecode(raw[:-1]))
-        if not directory.is_absolute():
-            raise ValueError('Could not determine Git metadata directory.')
-        directory = directory.resolve(strict=True)
-        if directory not in directories:
-            directories.append(directory)
-    return directories
+def declared_git_alternates(store, deadline):
+    """Read bounded alternate declarations without traversing the object inventory."""
+    check_preparation_deadline(deadline)
+    try:
+        descriptor = os.open(store / 'info/alternates', os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+    except FileNotFoundError:
+        return
+    try:
+        if not stat.S_ISREG(os.fstat(descriptor).st_mode):
+            raise ValueError('Expected a regular Git alternates file.')
+        with os.fdopen(os.dup(descriptor), 'rb') as stream:
+            data = stream.read(MAX_GIT_ALTERNATE_BYTES + 1)
+    finally:
+        os.close(descriptor)
+    if len(data) > MAX_GIT_ALTERNATE_BYTES:
+        raise ValueError('Git alternates metadata exceeds its size limit.')
+    for line in data.split(b'\n'):
+        check_preparation_deadline(deadline)
+        if not line or line.startswith(b'#'):
+            continue
+        # Refuse unsupported encodings rather than interpreting Git's C quoting
+        # or silently dropping a store from the destination guard.
+        if (len(line) > 4096 or line.startswith(b'"')
+                or any(byte < 32 or byte == 127 for byte in line)):
+            raise ValueError('Unsupported Git object alternate path.')
+        try:
+            yield (store / os.fsdecode(line)).resolve(strict=True)
+        except (OSError, RuntimeError) as error:
+            raise ValueError('Could not resolve a declared Git object alternate.') from error
+
+
+def git_storage_directories(source, deadline, *, require_worktree_root=False):
+    """Find Git metadata and object storage outside the selected checkout."""
+    # Newer Git versions open alternates during repository setup, even for
+    # path-only queries. Discover paths with an empty object store, then
+    # inspect the real stores ourselves before asking Git to read objects.
+    with tempfile.TemporaryDirectory(prefix='asg-git-discovery-') as empty_objects:
+        if require_worktree_root:
+            top = read_git(source, ['rev-parse', '--show-toplevel'], 4096, deadline,
+                           discovery_objects=empty_objects)
+            if top != os.fsencode(source) + b'\n':
+                raise ValueError('Choose the root of the trusted local repository.')
+        directories = []
+        for option in ('--git-dir', '--git-common-dir'):
+            raw = read_git(source, ['rev-parse', '--path-format=absolute', option],
+                           4096, deadline, discovery_objects=empty_objects)
+            # Embedded line breaks make Git's path output ambiguous.
+            if not raw.endswith(b'\n') or b'\n' in raw[:-1] or b'\0' in raw:
+                raise ValueError('Could not determine Git metadata directory.')
+            directory = Path(os.fsdecode(raw[:-1]))
+            if not directory.is_absolute():
+                raise ValueError('Could not determine Git metadata directory.')
+            directories.append(directory.resolve(strict=True))
+
+    # The helper strips external Git overrides. Git normally uses objects
+    # beneath its common directory, which may itself point outside the checkout.
+    object_stores = [(directories[-1] / 'objects').resolve(strict=True)]
+    # Iterate newly discovered stores too. Deduplication bounds cycles and aliases.
+    for store in object_stores:
+        for alternate in declared_git_alternates(store, deadline):
+            if alternate in object_stores:
+                continue
+            if len(object_stores) == MAX_GIT_OBJECT_STORES:
+                raise ValueError('Too many Git object stores.')
+            object_stores.append(alternate)
+    return list(dict.fromkeys([*directories, *object_stores]))
 
 
 def prepare(source, commit, parent):
@@ -170,9 +225,7 @@ def prepare(source, commit, parent):
     if source == parent or source in parent.parents:
         raise ValueError('Choose a candidate parent outside the source repository.')
     deadline = time.monotonic() + 60
-    if read_git(source, ['rev-parse', '--show-toplevel'], 4096, deadline).rstrip(b'\n') != os.fsencode(source):
-        raise ValueError('Choose the root of the trusted local repository.')
-    metadata = git_storage_directories(source, deadline)
+    metadata = git_storage_directories(source, deadline, require_worktree_root=True)
     parent_fd = open_snapshot_destination(
         parent, (source, *metadata),
         'Choose a candidate parent outside the source repository and outside Git metadata.',
@@ -584,10 +637,11 @@ def open_snapshot_destination(destination, protected_paths, outside_error):
             forbidden.append((info.st_dev, info.st_ino))
         parent = os.open('/', os.O_RDONLY | os.O_DIRECTORY)
         try:
-            for part in destination.parts[1:]:
-                child = os.open(part, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=parent)
-                os.close(parent)
-                parent = child
+            for index, part in enumerate(destination.parts):
+                if index > 0:
+                    child = os.open(part, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=parent)
+                    os.close(parent)
+                    parent = child
                 info = os.fstat(parent)
                 if (info.st_dev, info.st_ino) in forbidden:
                     raise ValueError(outside_error)
