@@ -32,10 +32,12 @@ Limits: 15-second connection/header timeout, 30-second inactive-stream timeout, 
 
 ## Validation
 
-The HTTP bridge accepts an exact JSON integer `max_tokens` from 1 through
-4096, or defaults to 256 when omitted. Zero, negative, oversized, fractional,
-boolean, string and null values return HTTP 400 before inference. The bridge
-never coerces or silently clamps a requested output budget. This contract does
+For JSON and streaming requests, the HTTP bridge accepts an exact JSON
+integer from 1 through 4096 in either `max_tokens` or
+`max_completion_tokens`. Send only one field. Omitting both defaults to 256.
+Sending both fields or a zero, negative, oversized, fractional, boolean,
+string or null value returns HTTP 400 before inference. The bridge never
+coerces or silently clamps a requested output budget. This contract does
 not establish a model-specific verified context window or token-accounting
 profile; the existing input limit and per-backend checks still apply.
 Once the bridge counts the exact prompt, exceeding the input ceiling or the
