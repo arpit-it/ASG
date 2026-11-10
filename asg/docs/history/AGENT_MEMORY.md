@@ -1,5 +1,9 @@
 # Durable project memory
 
+## Local bridge completion count — 10 November 2026 UTC
+
+The bridge accepts one completion per request and refuses other explicit counts before dispatch. The [verified delivery record](PROGRESS.md#verified-local-bridge-completion-count--10-november-2026-utc) covers PR #563.
+
 ## Local bridge origins — 10 November 2026 UTC
 
 The bridge refuses malformed or repeated browser origins before dispatch. Preserve access for valid HTTP loopback origins and native clients. The [verified delivery record](PROGRESS.md#verified-local-bridge-origin-validation--10-november-2026-utc) covers PR #562.

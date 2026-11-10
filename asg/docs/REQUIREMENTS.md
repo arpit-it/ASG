@@ -13,7 +13,8 @@ Update this document with task selection and delivery evidence, alongside [agent
 ### F22 local bridge request validation — 10 November 2026
 
 - [x] Refuse malformed or repeated browser origins before generation. [PR #562](https://github.com/arpit-it/ASG/pull/562) merged as `d09f1f550117cee900797f72e51947d2ff73b281`. See the [verified delivery record](history/PROGRESS.md#verified-local-bridge-origin-validation--10-november-2026-utc).
-- [ ] Refuse unsupported completion counts under [#396](https://github.com/arpit-it/ASG/issues/396). Omitted `n` and integer `n: 1` produce one choice. Other values must return HTTP 400 before dispatch in both JSON and streaming modes. Verify the refusal and a valid retry with the local bridge HTTP fixture.
+- [x] Refuse unsupported completion counts before dispatch in JSON and streaming modes. [PR #563](https://github.com/arpit-it/ASG/pull/563) merged as `a261270641b11aee91c3cc16424f5df6200cd6a3`. See the [verified delivery record](history/PROGRESS.md#verified-local-bridge-completion-count--10-november-2026-utc).
+- [ ] Refuse custom stop sequences under [#396](https://github.com/arpit-it/ASG/issues/396). A custom stop value must return HTTP 400 before dispatch in JSON and streaming modes. Omitted, null, and empty-list values preserve ordinary generation. Verify refusal and a valid retry with the local HTTP fixture.
 
 ### Current local development model — 9 November 2026
 
