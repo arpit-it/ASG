@@ -1,5 +1,9 @@
 # Durable project memory
 
+## Runtime Setup model identity — 10 November 2026 UTC
+
+The ready card shows whether the reported model ID exactly matches the saved connection. Missing and different IDs have separate local guidance. See the [verified delivery record](PROGRESS.md#verified-runtime-setup-model-identity--10-november-2026-utc).
+
 ## Retained recovery inventory — 10 November 2026 UTC
 
 Projects shows 20 sorted eligible recovery paths and the count of additional matches. A complete scan still enforces its 512-entry and elapsed limits. See the [verified delivery record](PROGRESS.md#verified-retained-recovery-inventory--10-november-2026-utc).
