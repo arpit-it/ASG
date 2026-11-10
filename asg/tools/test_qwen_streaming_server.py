@@ -82,6 +82,35 @@ class ServerTests(unittest.TestCase):
                     self.assertEqual(json.load(response), {'error': 'stream must be a boolean'})
                 self.assertIsNone(self.backend.tokens)
 
+    def test_custom_stop_sequences_are_rejected_before_dispatch(self):
+        from unittest.mock import patch
+
+        for streaming in (True, False):
+            for stop in ('private fixture stop', ['world'], '', False, 1, {}):
+                with self.subTest(streaming=streaming, stop=stop):
+                    self.backend.tokens = None
+                    with patch.object(self.executor, 'submit', wraps=self.executor.submit) as submit:
+                        with self.assertRaises(urllib.error.HTTPError) as failure:
+                            with self.request(streaming, stop=stop) as response:
+                                response.read()
+                        with failure.exception as response:
+                            self.assertEqual(response.code, 400)
+                            self.assertEqual(json.load(response), {
+                                'error': 'Custom stop sequences are not supported by this local bridge',
+                            })
+                        submit.assert_not_called()
+                    self.assertIsNone(self.backend.tokens)
+            for options in ({}, {'stop': None}, {'stop': []}):
+                with self.subTest(streaming=streaming, options=options):
+                    with self.request(streaming, **options) as response:
+                        body = response.read().decode()
+                    if streaming:
+                        self.assertIn('world', body)
+                        self.assertIn('[DONE]', body)
+                    else:
+                        result = json.loads(body)
+                        self.assertEqual(result['choices'][0]['message']['content'], 'Hello world')
+
     def test_completion_count_requires_one_choice(self):
         from unittest.mock import patch
 
