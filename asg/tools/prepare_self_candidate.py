@@ -134,6 +134,9 @@ def write_blob(root_fd, parts, mode, data):
         os.close(parent)
 
 
+PENDING_PUBLICATION = '.asg-preparation-pending'
+
+
 class PreparationRunError(ValueError):
     def __init__(self, run, confirmed):
         super().__init__(f'Preparation stopped. Inspect the candidate run at {run}.')
@@ -174,7 +177,7 @@ def prepare(source, commit, parent):
         parent, (source, *metadata),
         'Choose a candidate parent outside the source repository and outside Git metadata.',
     )
-    run_fd = stage_fd = None
+    run_fd = stage_fd = pending_fd = None
     run = None
     try:
         if read_git(source, ['cat-file', '-t', commit], 16, deadline) != b'commit\n':
@@ -230,16 +233,25 @@ def prepare(source, commit, parent):
         require_directory_identity(run, run_fd)
         require_directory_identity(staging, stage_fd)
         check_preparation_deadline(deadline)
+        # Keep the run discoverable and unusable until the published bytes pass
+        # verification. A killed helper can leave the marker without a receipt.
+        os.mkdir(PENDING_PUBLICATION, 0o700, dir_fd=run_fd)
+        pending_fd = os.open(PENDING_PUBLICATION, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW,
+                             dir_fd=run_fd)
         exclusive_rename(run_fd, staging.name, ready.name)
 
         require_directory_identity(ready, stage_fd)
-        published_digest, _ = scan_candidate(ready, deadline=deadline, entry_limit=entry_limit)
+        published_digest, _ = scan_candidate(
+            ready, deadline=deadline, entry_limit=entry_limit, allow_pending_publication=True,
+        )
         if published_digest != staged_digest:
             raise ValueError('Published snapshot differs from the staged tree.')
         require_directory_identity(parent, parent_fd)
         require_directory_identity(run, run_fd)
         require_directory_identity(ready, stage_fd)
+        require_directory_identity(run / PENDING_PUBLICATION, pending_fd)
         check_preparation_deadline(deadline)
+        os.rmdir(PENDING_PUBLICATION, dir_fd=run_fd)
         return ready
     except (OSError, ValueError, subprocess.SubprocessError, KeyboardInterrupt) as error:
         if run is None:
@@ -254,7 +266,7 @@ def prepare(source, commit, parent):
                 pass  # The original preparation error still takes precedence.
         raise PreparationRunError(run, confirmed) from error
     finally:
-        for descriptor in (stage_fd, run_fd, parent_fd):
+        for descriptor in (pending_fd, stage_fd, run_fd, parent_fd):
             if descriptor is not None:
                 os.close(descriptor)
 
@@ -291,13 +303,21 @@ def check_preparation_deadline(deadline):
         raise ValueError('Snapshot verification timed out.')
 
 
-def scan_candidate(candidate, capture=None, sink=None, allow_incomplete=False, *, deadline=None, entry_limit=None):
+def scan_candidate(candidate, capture=None, sink=None, allow_incomplete=False, *,
+                   deadline=None, entry_limit=None, allow_pending_publication=False):
     """Hash names, executable bits and bytes without following candidate links."""
     if ((not re.fullmatch(r'source-[0-9a-f]{40}', candidate.name)
              and not (allow_incomplete and candidate.name == 'incomplete'))
             or not candidate.parent.name.startswith('asg-self-candidate-')
             or candidate.resolve(strict=True) != candidate):
         raise ValueError('Choose a prepared candidate directory.')
+    if not allow_pending_publication:
+        try:
+            (candidate.parent / PENDING_PUBLICATION).lstat()
+        except FileNotFoundError:
+            pass
+        else:
+            raise ValueError('Snapshot preparation did not finish. Inspect the run before retrying.')
     digest = hashlib.sha256(b'ASG candidate tree v1\0')
     if entry_limit is None:
         entry_limit = MAX_FILES * 2

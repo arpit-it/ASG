@@ -325,8 +325,23 @@ class CandidateTests(unittest.TestCase):
         self.assertEqual(code, 1)
         self.assertEqual(stdout.getvalue(), '')
         self.assertEqual(stderr.getvalue(), f'ASG_SNAPSHOT_RECOVERY_V1 {run.name}\n')
-        self.assertEqual((run / f'source-{commit}' / 'entry').read_bytes(), b'changed')
+        retained = run / f'source-{commit}'
+        self.assertEqual((retained / 'entry').read_bytes(), b'changed')
+        self.assertTrue((run / '.asg-preparation-pending').is_dir())
+        with self.assertRaisesRegex(ValueError, 'Snapshot preparation did not finish'):
+            candidate.fingerprint(retained)
         self.assertEqual((self.source / 'entry').read_bytes(), b'original')
+
+        ready = candidate.prepare(self.source, commit, self.parent)
+        self.assertNotEqual(ready.parent, run)
+        self.assertFalse((ready.parent / '.asg-preparation-pending').exists())
+        self.assertEqual((ready / 'entry').read_bytes(), b'original')
+        self.assertTrue(candidate.fingerprint(ready))
+        alias = ready.parent / '.asg-preparation-pending'
+        alias.symlink_to(ready.parent / 'missing')
+        with self.assertRaisesRegex(ValueError, 'Snapshot preparation did not finish'):
+            candidate.fingerprint(ready)
+        self.assertTrue(alias.is_symlink())
 
     def test_app_receipt_omits_replaced_run(self):
         (self.source / 'entry').write_bytes(b'original')
