@@ -288,20 +288,38 @@ class ServerTests(unittest.TestCase):
             with self.request(streaming) as response:
                 response.read()
             self.assertEqual(self.backend.tokens, 256)
+    def test_completion_budget_is_forwarded_exactly(self):
+        for streaming in (True, False):
+            for requested in (1, 512, 4096):
+                with self.subTest(streaming=streaming, requested=requested):
+                    with self.request(streaming, max_completion_tokens=requested) as response:
+                        response.read()
+                    self.assertEqual(self.backend.tokens, requested)
+
     def test_invalid_token_budget_is_rejected_before_inference(self):
         from unittest.mock import patch
         invalid = (0, -1, 4097, 9000, 10**100, True, False, None,
                    1.0, 1.5, '256', 'PRIVATE_BUDGET', [], {})
+        cases = [
+            ({field: value},
+             f'{field} must be an integer from 1 to 4096; no budget was changed or generation started')
+            for field in ('max_tokens', 'max_completion_tokens')
+            for value in invalid
+        ] + [
+            ({'max_tokens': 256, 'max_completion_tokens': value},
+             'Send only one of max_tokens or max_completion_tokens; no generation started')
+            for value in (1, 256, None)
+        ]
         for streaming in (True, False):
-            for requested in invalid:
-                with self.subTest(streaming=streaming, requested=requested):
+            for options, message in cases:
+                with self.subTest(streaming=streaming, options=options):
                     self.backend.tokens = None
                     with patch.object(self.executor, 'submit', wraps=self.executor.submit) as submit:
                         with self.assertRaises(urllib.error.HTTPError) as error:
-                            self.request(streaming, max_tokens=requested)
+                            self.request(streaming, **options)
                         with error.exception as response:
                             self.assertEqual(response.code, 400)
-                            self.assertEqual(json.load(response), {'error': 'max_tokens must be an integer from 1 to 4096; no budget was changed or generation started'})
+                            self.assertEqual(json.load(response), {'error': message})
                         submit.assert_not_called()
                     self.assertIsNone(self.backend.tokens)
                     with urllib.request.urlopen(self.url+'/health') as response:
