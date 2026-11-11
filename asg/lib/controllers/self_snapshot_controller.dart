@@ -131,7 +131,6 @@ class SelfSnapshotController extends BaseController {
       return;
     }
     final stop = Completer<void>();
-    _retainedPreparation = null;
     _stop = stop;
     _status = null;
     update();
