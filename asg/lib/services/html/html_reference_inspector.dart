@@ -162,6 +162,7 @@ HtmlReferenceReport _inspect(HtmlSourceProposal proposal) {
     );
   }
 
+  final idSeparators = RegExp(r'[\t\n\f\r ]+');
   for (final element in elements) {
     if (element.namespaceUri == 'http://www.w3.org/1999/xhtml' &&
         element.localName == 'label' &&
@@ -172,6 +173,19 @@ HtmlReferenceReport _inspect(HtmlSourceProposal proposal) {
         if (!ids.contains(target)) {
           final label = target.isEmpty ? '(empty)' : _label(target);
           report('Missing HTML label target: label[for] $label');
+        }
+      }
+    }
+    if (!_insideTemplate(element)) {
+      for (final attribute in const ['aria-labelledby', 'aria-describedby']) {
+        final value = element.attributes[attribute];
+        if (value == null) continue;
+        for (final target in value.split(idSeparators)) {
+          if (target.isEmpty) continue;
+          references++;
+          if (!ids.contains(target)) {
+            report('Missing ARIA target: $attribute ${_label(target)}');
+          }
         }
       }
     }

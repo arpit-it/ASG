@@ -156,6 +156,24 @@ void main() {
     expect(report.findings, 0);
   });
 
+  test('checks each live ARIA label and description target', () async {
+    final report = await inspectHtmlReferences(
+      proposal(
+        page(
+          '<button aria-labelledby=" live&#9;missing " '
+          'aria-describedby="inert live">Go</button>'
+          '<span id="live">Name</span>'
+          '<template><span id="inert" aria-labelledby="ignored"></span></template>',
+        ),
+      ),
+    );
+    expect(report.references, 4);
+    expect(report.messages, [
+      'Missing ARIA target: aria-labelledby missing',
+      'Missing ARIA target: aria-describedby inert',
+    ]);
+  });
+
   test('inert base does not suppress missing live references', () async {
     final report = await inspectHtmlReferences(
       proposal(
