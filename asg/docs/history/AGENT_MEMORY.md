@@ -1,5 +1,9 @@
 # Durable project memory
 
+## HTML export destination protection — 11 November 2026 UTC
+
+Both HTML export modes refuse destinations inside app bundles before output creation. See [PR #580](https://github.com/arpit-it/ASG/pull/580).
+
 ## Git object-store destination protection — 10 November 2026 UTC
 
 Snapshot preparation and proposal saving protect resolved primary and declared alternate Git object stores. Git path discovery uses an empty temporary store before validating real alternates. See the [verified delivery record](PROGRESS.md#verified-git-object-store-destination-protection--10-november-2026-utc).
