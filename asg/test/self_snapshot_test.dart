@@ -1249,6 +1249,52 @@ void main() {
     expect(controller.status, isNot(contains(run)));
   });
 
+  test('early retry preserves the last confirmed retained run', () async {
+    const original = '/destination/asg-self-candidate-a1b2c3d4';
+    const replacement = '/destination/asg-self-candidate-d4c3b2a1';
+    var attempts = 0;
+    final controller = SelfSnapshotController(
+      prepare:
+          ({
+            required source,
+            required destination,
+            required commit,
+            required python,
+            required stop,
+            required stopped,
+          }) async {
+            switch (++attempts) {
+              case 1:
+                throw const SnapshotPreparationFailure(original);
+              case 2:
+                throw StateError('Preparation failed before allocating a run.');
+              default:
+                throw const SnapshotPreparationFailure(replacement);
+            }
+          },
+      inspect: (_) async =>
+          SnapshotRecoveryInventory(paths: [], additionalCount: 0),
+    );
+    addTearDown(controller.dispose);
+
+    Future<void> prepare() => controller.prepare(
+      source: '/source',
+      destination: '/destination',
+      commit: commitId,
+      python: '/python',
+    );
+
+    await prepare();
+    await prepare();
+    await controller.inspect('/destination');
+    expect(controller.status, contains(original));
+
+    await prepare();
+    await controller.inspect('/destination');
+    expect(controller.status, contains(replacement));
+    expect(controller.status, isNot(contains(original)));
+  });
+
   test(
     'Stop shows the retained run without reporting a ready snapshot',
     () async {
