@@ -1,5 +1,9 @@
 # Durable project memory
 
+## Verified Mac response identity and snapshot recovery — 11 November 2026 UTC
+
+Application edits, planning and standalone Ask verify the response model from the request that saves the result. Snapshot inspection keeps the retained run path visible for the same destination. See the delivery records in [PROGRESS.md](PROGRESS.md).
+
 ## HTML form label targets — 11 November 2026 UTC
 
 Static HTML review reports missing exact live IDs for explicit labels. See [PR #583](https://github.com/arpit-it/ASG/pull/583).

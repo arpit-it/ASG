@@ -1,5 +1,23 @@
 # Progress and delivery history
 
+## Live Ask verifies response model — 11 November 2026 UTC
+
+[PR #587](https://github.com/arpit-it/ASG/pull/587). The Mac test verified the response model ID, streamed updates and exact restoration of the saved answer. [Independent review](https://github.com/arpit-it/ASG/pull/587#pullrequestreview-5859827571) and [both required checks](https://github.com/arpit-it/ASG/actions/runs/43033273885) passed for published revision `38e382cc0a8bd8ad218e05ea8ced5f5b621dff02`. Signed merge `f711686c3a4f3b759239be8252139198837b5a81` was verified at 2026-11-11T14:08:38Z. Issue #396 remains open.
+
+## Live planning verifies response model — 11 November 2026 UTC
+
+[PR #586](https://github.com/arpit-it/ASG/pull/586). The Mac planning and application edit tests passed serially and verified the response model ID. [Independent review](https://github.com/arpit-it/ASG/pull/586#pullrequestreview-5859220184) and [both required checks](https://github.com/arpit-it/ASG/actions/runs/43026484770) passed for published revision `59738b91e4f39fd9e285c7200eae7ce1fde5db4c`. Signed merge `0bcd8a85753c4234bce3329a69eab427ca1235c6` was verified at 2026-11-11T13:23:40Z. Issue #396 remains open.
+
+## Live application edit verifies response model — 11 November 2026 UTC
+
+[PR #585](https://github.com/arpit-it/ASG/pull/585). The Mac test verified that the response that updated the saved application revision reported the expected model ID. [Independent review](https://github.com/arpit-it/ASG/pull/585#pullrequestreview-5858464316) and [both required checks](https://github.com/arpit-it/ASG/actions/runs/43015712401) passed for published revision `f2ea2e31e9364ab86d0cd453ac67a398e29c8ec0`. Signed merge `e48d51bb9d5f45f171e8e9c373be2c1a2b9aae75` was verified at 2026-11-11T12:09:20Z. Issue #396 remains open.
+
+## Snapshot recovery retains the exact run path — 11 November 2026 UTC
+
+[PR #584](https://github.com/arpit-it/ASG/pull/584). Mac fixtures verified that inspection preserves the last retained run path for the same destination, even when the scan omits it. [Independent review](https://github.com/arpit-it/ASG/pull/584#pullrequestreview-5857100530) and [both required checks](https://github.com/arpit-it/ASG/actions/runs/43001423299) passed for published revision `a4d037cb744cc6068ae2c83210e31dbd141df9ac`. Signed merge `6d1ea1e4f4fc267953addd307301028a448c5cbb` was verified at 2026-11-11T10:23:37Z. Issue #406 remains open.
+
+The three live tests used the existing Qwen3.8-27B-4bit checkpoint on MLX/Metal. The evidence covers those requests on the Mac. Unavailable platform acceptance remains deferred under #400.
+
 ## Verified HTML form label targets — 11 November 2026 UTC
 
 [PR #583](https://github.com/arpit-it/ASG/pull/583) reports explicit HTML labels with no matching live ID. The corrected inventory passed all nine Mac fixture tests. [Independent review](https://github.com/arpit-it/ASG/pull/583#pullrequestreview-5855994023) and [both required checks](https://github.com/arpit-it/ASG/actions/runs/42988661124) passed on revision `ac8cecb691577e1078836910a6a434f56f0fd595`. The signed merge `74474044a81c563323cec5e42c66fe91cafc8dd9` matched the reviewed tree at 08:53:50 UTC. #402 remains open.
