@@ -1,5 +1,17 @@
 # Progress and delivery history
 
+## Snapshot recovery through early retries — 11 November 2026 UTC
+
+[Snapshot recovery through early retries](https://github.com/arpit-it/ASG/pull/591). Mac fixtures verified that an early retry failure preserves the last confirmed retained path and that a newer confirmed run replaces it. [Independent review](https://github.com/arpit-it/ASG/pull/591#pullrequestreview-5862942885) and [both required checks](https://github.com/arpit-it/ASG/actions/runs/43070171594) passed on revision `7cbf80f931b16033db699408b1bec51e6267c2be`. Signed merge `179379b444c58cdf532a669aff7a7fd065f6b257` was verified at 2026-11-11T17:53:46Z. Issue #406 remains open.
+
+## ARIA reference diagnostics — 11 November 2026 UTC
+
+[ARIA reference diagnostics](https://github.com/arpit-it/ASG/pull/590). Static HTML review reports missing live IDs in ARIA label and description references. Mac fixtures verified valid, missing and template-only targets. [Independent review](https://github.com/arpit-it/ASG/pull/590#pullrequestreview-5862147465) and [both required checks](https://github.com/arpit-it/ASG/actions/runs/43060374107) passed on revision `daa9d20540df3bd022d91392877864ee712fe879`. Signed merge `af204295b910a87755350301faecf0c438faa239` was verified at 2026-11-11T16:53:42Z. Issue #402 remains open.
+
+## SDK tool guidance — 11 November 2026 UTC
+
+[SDK tool guidance](https://github.com/arpit-it/ASG/pull/589). Build names the expected SDK-relative path when Flutter or bundled Dart cannot be inspected. Mac fixtures verified both missing-tool cases without executing either tool. [Independent review](https://github.com/arpit-it/ASG/pull/589#pullrequestreview-5861319384) and [both required checks](https://github.com/arpit-it/ASG/actions/runs/43050433811) passed on revision `cd7d34f976a711f5361fdb7d4fe0f97d8f615c78`. Signed merge `7a931f0b59de80213dc9088380acc51444014474` was verified at 2026-11-11T15:53:44Z. Issue #401 remains open.
+
 ## Live Ask verifies response model — 11 November 2026 UTC
 
 [PR #587](https://github.com/arpit-it/ASG/pull/587). The Mac test verified the response model ID, streamed updates and exact restoration of the saved answer. [Independent review](https://github.com/arpit-it/ASG/pull/587#pullrequestreview-5859827571) and [both required checks](https://github.com/arpit-it/ASG/actions/runs/43033273885) passed for published revision `38e382cc0a8bd8ad218e05ea8ced5f5b621dff02`. Signed merge `f711686c3a4f3b759239be8252139198837b5a81` was verified at 2026-11-11T14:08:38Z. Issue #396 remains open.
