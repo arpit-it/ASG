@@ -163,6 +163,18 @@ HtmlReferenceReport _inspect(HtmlSourceProposal proposal) {
   }
 
   for (final element in elements) {
+    if (element.namespaceUri == 'http://www.w3.org/1999/xhtml' &&
+        element.localName == 'label' &&
+        !_insideTemplate(element)) {
+      final target = element.attributes['for'];
+      if (target != null) {
+        references++;
+        if (!ids.contains(target)) {
+          final label = target.isEmpty ? '(empty)' : _label(target);
+          report('Missing HTML label target: label[for] $label');
+        }
+      }
+    }
     final attributes = [
       'href', 'src', 'action', 'poster', 'data',
       // Inventory declarations even on currently inactive control types. This

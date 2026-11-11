@@ -28,6 +28,36 @@ String page(String body) =>
     '<!doctype html><html><head><title>References</title></head><body>$body</body></html>';
 
 void main() {
+  test(
+    'explicit live label targets use exact IDs independently of base',
+    () async {
+      final report = await inspectHtmlReferences(
+        proposal(
+          page(
+            '<base href="/">'
+            '<label for="present&amp;exact">Found</label><input id="present&amp;exact">'
+            '<label for="Present&amp;exact">Wrong case</label>'
+            '<label for="present&amp;exact ">Extra space</label>'
+            '<label for="inert">Missing</label>'
+            '<template><input id="inert"><label for="ignored">Inert</label></template>'
+            '<label>Implicit<input></label><div for="ignored"></div>',
+          ),
+        ),
+      );
+      expect(report.references, 5);
+      expect(
+        report.messages.where(
+          (message) => message.startsWith('Missing HTML label'),
+        ),
+        [
+          'Missing HTML label target: label[for] Present&exact',
+          'Missing HTML label target: label[for] present&exact ',
+          'Missing HTML label target: label[for] inert',
+        ],
+      );
+    },
+  );
+
   test('HTML navigation recognizes top-of-document fallback', () async {
     final report = await inspectHtmlReferences(
       proposal(
