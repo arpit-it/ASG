@@ -187,8 +187,23 @@ class ModelCatalogController extends BaseController {
     try {
       final result = await service.check(entry);
       if (!isDisposed) _metadata[entry.repository] = result;
-    } catch (_) {
-      if (!isDisposed) _errors[entry.repository] = 'Source check failed or artifacts are incomplete. Retry when online. No settings or files were changed.';
+    } catch (failure) {
+      if (!isDisposed) {
+        // Only these fixed service messages describe incomplete checkpoints.
+        // Transport and unexpected failures can contain private details.
+        final guidance = switch (failure) {
+          ModelCatalogFailure(:final message)
+              when const {
+                'Required model artifacts are empty. Choose a complete checkpoint.',
+                'This repository has no complete model artifacts. Documentation-only GitHub projects are not downloadable checkpoints.',
+                'Weight index references missing or invalid shards.',
+                'Missing weight index or standalone model.safetensors.',
+              }.contains(message) =>
+            message,
+          _ => 'Source check failed. Retry when online. No settings or files were changed.',
+        };
+        _errors[entry.repository] = guidance;
+      }
     } finally {
       _checking = null;
       update();

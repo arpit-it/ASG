@@ -821,6 +821,51 @@ void main() {
     await c.check(entry);
     expect(c.choose(entry), isNotNull);
   });
+  test(
+    'catalog explains incomplete artifacts and restores selection on retry',
+    () async {
+      var attempt = 0;
+      final service = ModelCatalogService(
+        client: MockClient((request) async {
+          if (attempt == 2) {
+            throw const ModelCatalogFailure('PRIVATE_SENTINEL');
+          }
+          final doc = api();
+          if (attempt == 1) {
+            (doc['siblings'] as List)[2]['size'] = 0;
+          }
+          return response(
+            request.url.path.startsWith('/api/') ? doc : config(),
+          );
+        }),
+      );
+      final catalog = ModelCatalogController(
+        service: service,
+        probe: () async => host,
+      );
+      addTearDown(catalog.dispose);
+      await catalog.initialize();
+      await catalog.check(entry);
+      expect(catalog.choose(entry), isNotNull);
+
+      attempt = 1;
+      await catalog.check(entry);
+      expect(catalog.error(entry), contains('Choose a complete checkpoint.'));
+      expect(catalog.metadata(entry), isNull);
+      expect(catalog.choose(entry), isNull);
+
+      attempt = 2;
+      await catalog.check(entry);
+      expect(catalog.error(entry), contains('Retry when online.'));
+      expect(catalog.error(entry), isNot(contains('PRIVATE_SENTINEL')));
+      expect(catalog.choose(entry), isNull);
+
+      attempt = 3;
+      await catalog.check(entry);
+      expect(catalog.error(entry), isNull);
+      expect(catalog.choose(entry), isNotNull);
+    },
+  );
   test('busy exclusion and disposal prevent late result updates', () async {
     final gate = Completer<http.Response>();
     var calls = 0;
