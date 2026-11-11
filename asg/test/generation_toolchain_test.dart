@@ -116,6 +116,22 @@ void main() {
       expect(report.python, contains('absolute Python'));
       expect('${report.flutter}${report.python}', isNot(contains(root.path)));
     });
+    test('incomplete SDK identifies the missing bundled tool', () async {
+      final flutter = await executable('sdk/bin/flutter');
+      final sdk = '${root.path}/sdk';
+      final report = await inspectGenerationToolchain(sdk, '');
+      expect(report.flutter, contains('executable permission bits observed'));
+      expect(report.dart, contains('bin/cache/dart-sdk/bin/dart'));
+      expect(report.dart, isNot(contains(sdk)));
+
+      await flutter.delete();
+      await executable('sdk/bin/cache/dart-sdk/bin/dart');
+      final retry = await inspectGenerationToolchain(sdk, '');
+      expect(retry.flutter, contains('bin/flutter'));
+      expect(retry.flutter, isNot(contains(sdk)));
+      expect(retry.dart, contains('executable permission bits observed'));
+      expect(await File('${root.path}/EXECUTED').exists(), isFalse);
+    });
     test('nonexecutable and directory entries are not accepted', () async {
       await Directory('${root.path}/sdk/bin/flutter').create(recursive: true);
       final python = File('${root.path}/python');
