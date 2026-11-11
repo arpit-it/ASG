@@ -439,9 +439,12 @@ class SelfSnapshotController extends BaseController {
     _status = null;
     _checkOutput = null;
     update();
+    final retained = _retainedPreparation;
+    var containsRetainedPath = false;
     try {
       final found = await _inspect(destination);
       if (isDisposed) return;
+      containsRetainedPath = found.paths.contains(retained?.path);
       final additional = found.additionalCount;
       _status = found.paths.isEmpty
           ? 'No incomplete snapshot folders found.'
@@ -456,8 +459,8 @@ class SelfSnapshotController extends BaseController {
         _status = 'Could not inspect the selected destination. Check access and folder size.';
       }
     } finally {
-      final retained = _retainedPreparation;
       if (!isDisposed &&
+          !containsRetainedPath &&
           retained != null &&
           retained.destination == destination) {
         _status =
