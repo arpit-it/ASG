@@ -37,10 +37,14 @@ Future<String> _file(String value, {String? sdkRelativePath}) async {
     final resolved = await File(value).resolveSymbolicLinks();
     final stat = await File(resolved).stat();
     if (stat.type != FileSystemEntityType.file) {
-      return 'No regular executable file found. Check the selected path.';
+      return sdkRelativePath == null
+          ? 'No regular executable file found. Check the selected path.'
+          : 'No regular executable file found at $sdkRelativePath in the selected SDK.';
     }
     if (stat.mode & 0x49 == 0) {
-      return 'File has no executable permission bits. Check permissions.';
+      return sdkRelativePath == null
+          ? 'File has no executable permission bits. Check permissions.'
+          : 'File at $sdkRelativePath in the selected SDK has no executable permission bits.';
     }
     return 'Regular file with executable permission bits observed.';
   } catch (_) {
