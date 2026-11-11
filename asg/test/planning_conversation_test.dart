@@ -90,9 +90,16 @@ void main() {
       addTearDown(() => HttpOverrides.global = previousOverrides);
       final records = ControlledRecords();
       await selectLiveModel(records);
+      late LiveResponseModelProvider liveProvider;
       final controller = ChatController(
         project,
         openStore: () async => ConversationStore(records),
+        createProvider: (config) => liveProvider = LiveResponseModelProvider(
+          config,
+          maxTokens: config.chatOutputTokens,
+          idleTimeout: ChatController.inactivityLimit,
+          totalTimeout: ChatController.requestLimit,
+        ),
       );
       addTearDown(controller.dispose);
       await controller.load();
@@ -110,6 +117,7 @@ void main() {
         true,
       );
       expect(controller.error, isNull);
+      expect(liveProvider.responseModelBeforeCleanup, liveModelId);
       expect(drafts.length, greaterThan(1));
       expect(
         controller.messages.last.content,

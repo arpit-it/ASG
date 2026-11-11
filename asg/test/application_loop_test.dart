@@ -14,7 +14,6 @@ import 'package:asg/models/project.dart';
 import 'package:asg/services/application_editor.dart';
 import 'package:asg/services/application_store.dart';
 import 'package:asg/services/model_provider.dart';
-import 'package:asg/services/local_model.dart';
 import 'package:asg/services/studio_store.dart';
 import 'package:asg/services/studio_session_store.dart';
 import 'package:asg/views/live_application_view.dart';
@@ -38,19 +37,6 @@ const changed = AppDefinition(
     AppElement(id: 'count', kind: ElementKind.counter, label: 'My count'),
   ],
 );
-
-class LiveEditProvider extends LocalModelProvider {
-  LiveEditProvider(super.config)
-    : super(maxTokens: ApplicationEditor.outputTokens);
-
-  String? responseModelBeforeCleanup;
-
-  @override
-  Future<void> cancel() async {
-    responseModelBeforeCleanup ??= completedResponseModel;
-    await super.cancel();
-  }
-}
 
 class ReplyProvider implements ModelProvider {
   ReplyProvider(this.reply);
@@ -339,13 +325,16 @@ void main() {
         await SharedPreferences.getInstance(),
       );
       await selectLiveModel(store.records);
-      late LiveEditProvider liveProvider;
+      late LiveResponseModelProvider liveProvider;
       final c = AppWorkspaceController(
         project,
         openStore: () async => store,
         editor: ApplicationEditor(
           allowBuiltInEdits: false,
-          createProvider: (config) => liveProvider = LiveEditProvider(config),
+          createProvider: (config) => liveProvider = LiveResponseModelProvider(
+            config,
+            maxTokens: ApplicationEditor.outputTokens,
+          ),
         ),
       );
       final phases = <String>{};
@@ -359,7 +348,7 @@ void main() {
         'Change only the application title to Updated Demo and theme to green. Keep the existing elements.',
       );
       expect(applied, true, reason: c.error);
-      expect(liveProvider.responseModelBeforeCleanup, 'Qwen3.8-27B-4bit');
+      expect(liveProvider.responseModelBeforeCleanup, liveModelId);
       expect(c.definition!.title, 'Updated Demo');
       expect(c.definition!.theme, 'green');
       expect(store.load(project).revision, 2);
