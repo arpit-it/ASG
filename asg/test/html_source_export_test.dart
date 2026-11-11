@@ -2,10 +2,12 @@
 // Copyright 2026 Arpit Sinha
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:asg/models/html/html_export_request.dart';
 import 'package:asg/models/html/html_site_input.dart';
+import 'package:asg/models/html/html_source_proposal.dart';
 import 'package:asg/services/html/html_site_template.dart';
 import 'package:asg/services/html/html_source_export_native.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -93,6 +95,76 @@ void main() {
           throwsStateError,
         );
         expect(await temporary.list().toList(), isEmpty);
+      });
+
+      test('both export modes refuse bundle parents before dispatch', () async {
+        final bundle = Directory(path.join(temporary.path, 'Synthetic.ApP'));
+        final resources = await Directory(
+          path.join(bundle.path, 'Contents', 'Resources'),
+        ).create(recursive: true);
+        final sentinel = File(path.join(resources.path, 'original.txt'));
+        await sentinel.writeAsString('keep this content');
+
+        final dispatches = <String>[];
+        final recordingExporter = HtmlSourceExportNative(
+          startDirectoryProcess: (directory) {
+            dispatches.add(directory);
+            return Process.start('/bin/mkdir', ['-m', '700', directory]);
+          },
+        );
+        final proposal = HtmlSourceProposal.decode(
+          jsonEncode({
+            'summary': 'Reviewed export fixture',
+            'files': {
+              'index.html': '<!doctype html><title>Reviewed</title>',
+              'styles.css': 'body { color: black; }',
+            },
+          }),
+        );
+        Future<String> fixed(String parent) {
+          final plan = request(parent);
+          return recordingExporter.export(
+            request: plan,
+            confirmedRequest: plan,
+            authorizeWrite: () {},
+          );
+        }
+
+        Future<String> reviewed(String parent) {
+          final plan = HtmlReviewedExportRequest(
+            proposal: proposal,
+            parent: parent,
+            folderName: 'reviewed_site',
+          );
+          return recordingExporter.exportReviewed(
+            request: plan,
+            confirmedRequest: plan,
+            authorizeWrite: () {},
+          );
+        }
+
+        for (final parent in [bundle.path, resources.path]) {
+          await expectLater(fixed(parent), throwsFormatException);
+          await expectLater(reviewed(parent), throwsFormatException);
+        }
+        expect(dispatches, isEmpty);
+        expect(await sentinel.readAsString(), 'keep this content');
+        expect(await resources.list().map((entry) => entry.path).toList(), [
+          sentinel.path,
+        ]);
+        expect(await bundle.list().map((entry) => entry.path).toList(), [
+          path.join(bundle.path, 'Contents'),
+        ]);
+
+        final external = await Directory(
+          path.join(temporary.path, 'example.app-assets'),
+        ).create();
+        for (final export in [fixed, reviewed]) {
+          final output = await export(external.path);
+          expect(path.dirname(output), external.path);
+          expect(await File(path.join(output, 'index.html')).exists(), isTrue);
+        }
+        expect(dispatches, hasLength(2));
       });
 
       test('invalid folders and symbolic parents create nothing', () async {

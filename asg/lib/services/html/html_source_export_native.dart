@@ -96,6 +96,11 @@ class HtmlSourceExportNative
     if (parent != path.normalize(parentPath)) {
       throw const FormatException('Choose a real parent, not a symbolic link.');
     }
+    if (path.split(parent).any((part) => part.toLowerCase().endsWith('.app'))) {
+      throw const FormatException(
+        'Choose a folder outside an application bundle.',
+      );
+    }
     final destination = path.join(parent, folderName);
     if (await FileSystemEntity.type(destination, followLinks: false) !=
         FileSystemEntityType.notFound) {

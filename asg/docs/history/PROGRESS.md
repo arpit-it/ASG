@@ -1,5 +1,9 @@
 # Progress and delivery history
 
+## Verified Git object-store destination protection — 10 November 2026 UTC
+
+[PR #579](https://github.com/arpit-it/ASG/pull/579) protects the resolved primary and declared alternate object stores from snapshot output. Mac fixtures verified relocated stores, shared and transitive alternates, preallocation refusal and ordinary retries. Initial Linux CI reached its Git deadline when repository discovery opened a FIFO alternates entry. The revision isolates discovery in an empty temporary store and verifies the real metadata before reading objects. Published head `0dc382f75146a6399e6d5af5b010952f2f25f381` matched tested tree `1308c1a9ab2979709c0fade0c338c880c768f3e1`. [Independent review](https://github.com/arpit-it/ASG/pull/579#pullrequestreview-5847087080) and [required checks](https://github.com/arpit-it/ASG/actions/runs/42873766634) passed. Protected merge `4e50742fe57d7b68523094bbbd49a767c372fa61` was verified on main at 2026-11-10T18:27:47Z. Candidate execution and protected app-driven delivery remain open under #406.
+
 ## Verified toolchain lookup guidance — 10 November 2026 UTC
 
 [PR #578](https://github.com/arpit-it/ASG/pull/578) explains bounded PATH and SDK observations. Mac fixtures verified the 64-entry and 65,536-character limits, absolute Python path handling, first candidate preservation, SDK file and directory handling, and read-only metadata observation. Published head `ae815347f4327d83009489b21a99d712ed8a519d` matched tested tree `49ef2ea892c99d9f81959c454260123e07ec8b44`. [Independent review](https://github.com/arpit-it/ASG/pull/578#pullrequestreview-5846833274) and [required checks](https://github.com/arpit-it/ASG/actions/runs/42870718728) passed. Protected merge `0fa2ac1ea7c60398609752591da97c4d19091740` was verified on main at 2026-11-10T18:08:52Z. Portable host execution remains open under #401.

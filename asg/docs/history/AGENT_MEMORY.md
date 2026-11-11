@@ -1,5 +1,9 @@
 # Durable project memory
 
+## Git object-store destination protection — 10 November 2026 UTC
+
+Snapshot preparation and proposal saving protect resolved primary and declared alternate Git object stores. Git path discovery uses an empty temporary store before validating real alternates. See the [verified delivery record](PROGRESS.md#verified-git-object-store-destination-protection--10-november-2026-utc).
+
 ## Toolchain lookup guidance — 10 November 2026 UTC
 
 Build distinguishes skipped or limited PATH lookup and an SDK file selection from a directory with missing tools. Inspection observes metadata within its existing limits. See the [verified delivery record](PROGRESS.md#verified-toolchain-lookup-guidance--10-november-2026-utc).
