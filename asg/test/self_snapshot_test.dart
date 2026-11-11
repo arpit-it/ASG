@@ -18,7 +18,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 class FixturePicker extends FolderPicker {
-  final folders = ['/source', '/destination'].iterator;
+  FixturePicker([List<String> paths = const ['/source', '/destination']])
+    : folders = paths.iterator;
+
+  final Iterator<String> folders;
 
   @override
   Future<String?> pick() async => folders.moveNext() ? folders.current : null;
@@ -1119,6 +1122,81 @@ void main() {
     expect(decode().artifactPath, isNull);
   });
 
+  testWidgets(
+    'prepared snapshot handoff requires selection and check approval',
+    (tester) async {
+      const prepared = '/destination/asg-self-candidate-a1b2c3d4/source-new';
+      final calls = <SelfSnapshotOperation>[];
+      final controller = SelfSnapshotController(
+        prepare: ({
+          required source,
+          required destination,
+          required commit,
+          required python,
+          required stop,
+          required stopped,
+        }) async => prepared,
+        check:
+            ({
+              required snapshot,
+              required sdk,
+              required python,
+              required operation,
+              required stop,
+              required stopped,
+            }) async {
+              expect(snapshot, prepared);
+              calls.add(operation);
+              return const GenerationCommandResult(exitCode: 0, output: '');
+            },
+      );
+      await tester.pumpWidget(
+        MaterialApp(
+          home: SelfSnapshotScreen(
+            controller: controller,
+            picker: FixturePicker(['/source', '/destination', '/older']),
+          ),
+        ),
+      );
+      Future<void> tap(String label) async {
+        final item = find.text(label);
+        await tester.ensureVisible(item);
+        await tester.tap(item);
+        await tester.pumpAndSettle();
+      }
+
+      await tap('Choose trusted checkout');
+      await tap('Choose snapshot destination');
+      await tester.enterText(find.byType(TextField).at(0), commitId);
+      await tester.enterText(find.byType(TextField).at(1), '/python');
+      await tap('Choose prepared snapshot for checks');
+      final sdk = find.widgetWithText(TextField, 'Flutter SDK folder');
+      await tester.scrollUntilVisible(
+        sdk,
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.enterText(sdk, '/sdk');
+      await tap('Prepare source snapshot');
+      expect(find.text('/older'), findsOneWidget);
+      expect(find.text(prepared), findsNothing);
+      expect(calls, isEmpty);
+      await tap('Use prepared snapshot');
+      expect(find.text('/older'), findsNothing);
+      expect(find.text(prepared), findsOneWidget);
+      expect(find.text('Use prepared snapshot'), findsNothing);
+      expect(calls, isEmpty);
+      await tap('Review offline checks');
+      expect(find.textContaining(prepared), findsAtLeastNWidgets(1));
+      expect(calls, isEmpty);
+      await tap('Approve and run');
+      expect(calls, [
+        SelfSnapshotOperation.resolve,
+        SelfSnapshotOperation.analyze,
+      ]);
+    },
+  );
+
   testWidgets('shows the exact retained run after preparation fails', (
     tester,
   ) async {
@@ -1158,6 +1236,7 @@ void main() {
     );
     expect(status.data, startsWith('Preparation failed.'));
     expect(find.textContaining('Snapshot ready'), findsNothing);
+    expect(find.text('Use prepared snapshot'), findsNothing);
   });
 
   test(
@@ -1271,6 +1350,7 @@ void main() {
       await tester.pump();
       expect(find.textContaining('Preparation stopped'), findsOneWidget);
       expect(find.textContaining('Snapshot ready'), findsNothing);
+      expect(find.text('Use prepared snapshot'), findsNothing);
     },
   );
 

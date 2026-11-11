@@ -1,5 +1,9 @@
 # Progress and delivery history
 
+## Verified catalog checkpoint recovery — 11 November 2026 UTC
+
+[PR #581](https://github.com/arpit-it/ASG/pull/581) preserves local recovery guidance for recognized artifact failures. Mac fixtures verified privacy, unavailable selection and a valid retry. Published head `1dce7862d49388c0db5e70c4b584ba391cd63801` matched tested tree `51fb4d8d860c88e4e9ccfc11b040d2f5335b8fe0`. [Independent review](https://github.com/arpit-it/ASG/pull/581#pullrequestreview-5855237209) and [required checks](https://github.com/arpit-it/ASG/actions/runs/42979382227) passed. Signed merge `df85bb88a0dc25487a514693817804528aeb4240` was verified at 07:32:09 UTC. #396 remains open.
+
 ## Verified HTML export destination protection — 11 November 2026 UTC
 
 [PR #580](https://github.com/arpit-it/ASG/pull/580) refused app bundle destinations for both export modes. Mac fixtures verified refusal before allocation and ordinary export. Published head `50932bdc643f66f419051f499be79716f1250950` matched tested tree `2b9a6ccfbd33cd0a51ca25be5712afa2349b5051`. [Independent review](https://github.com/arpit-it/ASG/pull/580#pullrequestreview-5855073777) and [required checks](https://github.com/arpit-it/ASG/actions/runs/42876016300) passed. Signed merge `d03c397c75a4eec9c07e96c80c62ee231197cd6b` was verified on main at 07:09:06 UTC. #402 remains open.

@@ -237,6 +237,18 @@ class _SelfSnapshotScreenState extends State<SelfSnapshotScreen> {
                   child: Text(controller.stopping ? 'Stopping…' : 'Stop'),
                 ),
               if (controller.status case final status?) SelectableText(status),
+              if (controller.preparedSnapshot != null)
+                OutlinedButton(
+                  onPressed: enabled
+                      ? () {
+                          final prepared = controller.takePreparedSnapshot();
+                          if (prepared != null) {
+                            setState(() => snapshot = prepared);
+                          }
+                        }
+                      : null,
+                  child: const Text('Use prepared snapshot'),
+                ),
               if (controller.checkOutput case final output?)
                 Card(
                   child: Padding(
