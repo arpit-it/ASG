@@ -31,7 +31,7 @@ Future<GenerationToolchain> inspectGenerationToolchain(
 bool _bounded(String value) =>
     value.isNotEmpty && value.length <= 4096 && !value.contains('\u0000');
 
-Future<String> _file(String value) async {
+Future<String> _file(String value, {String? sdkRelativePath}) async {
   try {
     // Resolve selected executable aliases, but require a final ordinary file.
     final resolved = await File(value).resolveSymbolicLinks();
@@ -44,7 +44,9 @@ Future<String> _file(String value) async {
     }
     return 'Regular file with executable permission bits observed.';
   } catch (_) {
-    return 'File unavailable. Check the selected path and permissions.';
+    return sdkRelativePath == null
+        ? 'File unavailable. Check the selected path and permissions.'
+        : 'File unavailable. Check $sdkRelativePath in the selected SDK and its permissions.';
   }
 }
 
@@ -63,9 +65,15 @@ Future<GenerationToolchain> _inspect(
             FileSystemEntityType.directory) {
           flutter = dart = 'The selected Flutter SDK path is not a directory.';
         } else {
-          flutter = await _file(path.join(canonical, 'bin', 'flutter'));
+          const flutterPath = 'bin/flutter';
+          const dartPath = 'bin/cache/dart-sdk/bin/dart';
+          flutter = await _file(
+            path.join(canonical, flutterPath),
+            sdkRelativePath: flutterPath,
+          );
           dart = await _file(
-            path.join(canonical, 'bin', 'cache', 'dart-sdk', 'bin', 'dart'),
+            path.join(canonical, dartPath),
+            sdkRelativePath: dartPath,
           );
         }
       }
