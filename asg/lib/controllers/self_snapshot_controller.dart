@@ -103,6 +103,7 @@ class SelfSnapshotController extends BaseController {
   bool get stopping => _stop?.isCompleted ?? false;
   String? _status;
   String? get status => _status;
+  ({String destination, String path})? _retainedPreparation;
   String? _preparedSnapshot;
   String? get preparedSnapshot => _preparedSnapshot;
   String? _checkOutput;
@@ -130,6 +131,7 @@ class SelfSnapshotController extends BaseController {
       return;
     }
     final stop = Completer<void>();
+    _retainedPreparation = null;
     _stop = stop;
     _status = null;
     update();
@@ -152,6 +154,9 @@ class SelfSnapshotController extends BaseController {
       }
     } on SnapshotPreparationFailure catch (error) {
       retainedRun = error.runPath;
+      if (!isDisposed) {
+        _retainedPreparation = (destination: destination, path: error.runPath);
+      }
     } catch (_) {
       if (!isDisposed && !stop.isCompleted) {
         _status = 'Preparation failed. $recovery';
@@ -452,6 +457,13 @@ class SelfSnapshotController extends BaseController {
         _status = 'Could not inspect the selected destination. Check access and folder size.';
       }
     } finally {
+      final retained = _retainedPreparation;
+      if (!isDisposed &&
+          retained != null &&
+          retained.destination == destination) {
+        _status =
+            'Last retained preparation run:\n${retained.path}\n\n$_status';
+      }
       _inspecting = false;
       update();
     }
