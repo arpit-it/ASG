@@ -1,5 +1,9 @@
 # Durable project memory
 
+## HTML form label targets — 11 November 2026 UTC
+
+Static HTML review reports missing exact live IDs for explicit labels. See [PR #583](https://github.com/arpit-it/ASG/pull/583).
+
 ## Catalog checkpoint recovery — 11 November 2026 UTC
 
 The catalog explains recognized incomplete artifacts and allows selection after a valid retry. See [PR #581](https://github.com/arpit-it/ASG/pull/581).

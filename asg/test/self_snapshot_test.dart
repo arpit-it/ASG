@@ -1202,6 +1202,10 @@ void main() {
   ) async {
     const run = '/destination/asg-self-candidate-a1b2c3d4';
     final controller = SelfSnapshotController(
+      inspect: (_) async => SnapshotRecoveryInventory(
+        paths: ['/destination/another-run'],
+        additionalCount: 1,
+      ),
       prepare: ({
         required source,
         required destination,
@@ -1237,6 +1241,12 @@ void main() {
     expect(status.data, startsWith('Preparation failed.'));
     expect(find.textContaining('Snapshot ready'), findsNothing);
     expect(find.text('Use prepared snapshot'), findsNothing);
+
+    await controller.inspect('/destination');
+    expect(controller.status, contains(run));
+    expect(controller.status, contains('/destination/another-run'));
+    await controller.inspect('/other');
+    expect(controller.status, isNot(contains(run)));
   });
 
   test(

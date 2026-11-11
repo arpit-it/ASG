@@ -1,5 +1,9 @@
 # Progress and delivery history
 
+## Verified HTML form label targets — 11 November 2026 UTC
+
+[PR #583](https://github.com/arpit-it/ASG/pull/583) reports explicit HTML labels with no matching live ID. The corrected inventory passed all nine Mac fixture tests. [Independent review](https://github.com/arpit-it/ASG/pull/583#pullrequestreview-5855994023) and [both required checks](https://github.com/arpit-it/ASG/actions/runs/42988661124) passed on revision `ac8cecb691577e1078836910a6a434f56f0fd595`. The signed merge `74474044a81c563323cec5e42c66fe91cafc8dd9` matched the reviewed tree at 08:53:50 UTC. #402 remains open.
+
 ## Verified catalog checkpoint recovery — 11 November 2026 UTC
 
 [PR #581](https://github.com/arpit-it/ASG/pull/581) preserves local recovery guidance for recognized artifact failures. Mac fixtures verified privacy, unavailable selection and a valid retry. Published head `1dce7862d49388c0db5e70c4b584ba391cd63801` matched tested tree `51fb4d8d860c88e4e9ccfc11b040d2f5335b8fe0`. [Independent review](https://github.com/arpit-it/ASG/pull/581#pullrequestreview-5855237209) and [required checks](https://github.com/arpit-it/ASG/actions/runs/42979382227) passed. Signed merge `df85bb88a0dc25487a514693817804528aeb4240` was verified at 07:32:09 UTC. #396 remains open.
