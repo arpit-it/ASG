@@ -1,5 +1,9 @@
 # Durable project memory
 
+## Catalog checkpoint recovery — 11 November 2026 UTC
+
+The catalog explains recognized incomplete artifacts and allows selection after a valid retry. See [PR #581](https://github.com/arpit-it/ASG/pull/581).
+
 ## HTML export destination protection — 11 November 2026 UTC
 
 Both HTML export modes refuse destinations inside app bundles before output creation. See [PR #580](https://github.com/arpit-it/ASG/pull/580).

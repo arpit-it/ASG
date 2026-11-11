@@ -103,6 +103,8 @@ class SelfSnapshotController extends BaseController {
   bool get stopping => _stop?.isCompleted ?? false;
   String? _status;
   String? get status => _status;
+  String? _preparedSnapshot;
+  String? get preparedSnapshot => _preparedSnapshot;
   String? _checkOutput;
 
   /// Temporary diagnostics from the last failed, approved check.
@@ -116,6 +118,7 @@ class SelfSnapshotController extends BaseController {
   }) async {
     if (busy || isDisposed) return;
     discardCandidateReview();
+    _preparedSnapshot = null;
     _checkOutput = null;
     if (source.isEmpty ||
         destination.isEmpty ||
@@ -144,6 +147,7 @@ class SelfSnapshotController extends BaseController {
         stopped: () => stop.isCompleted,
       );
       if (!isDisposed && !stop.isCompleted) {
+        _preparedSnapshot = ready;
         _status = 'Snapshot ready at $ready';
       }
     } on SnapshotPreparationFailure catch (error) {
@@ -408,10 +412,18 @@ class SelfSnapshotController extends BaseController {
     }
   }
 
+  String? takePreparedSnapshot() {
+    final prepared = _preparedSnapshot;
+    if (prepared == null || busy || isDisposed) return null;
+    clearStatus();
+    return prepared;
+  }
+
   void clearStatus() {
     discardCandidateReview();
     if (busy || isDisposed) return;
     _status = null;
+    _preparedSnapshot = null;
     _checkOutput = null;
     update();
   }
