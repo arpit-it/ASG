@@ -14,7 +14,14 @@ void main() {
     () async {
       final records = AskRecords();
       await selectLiveModel(records);
-      final controller = AskController(AskStore(records))..load();
+      late LiveResponseModelProvider liveProvider;
+      final controller = AskController(
+        AskStore(records),
+        createProvider: (config) => liveProvider = LiveResponseModelProvider(
+          config,
+          maxTokens: config.chatOutputTokens,
+        ),
+      )..load();
       var streamedUpdates = 0;
       controller.addListener(() {
         if (controller.draft.isNotEmpty) streamedUpdates++;
@@ -27,6 +34,7 @@ void main() {
         isTrue,
       );
       expect(controller.error, isNull);
+      expect(liveProvider.responseModelBeforeCleanup, liveModelId);
       expect(controller.messages.length, 2);
       expect(
         controller.messages.last.content.toLowerCase(),
