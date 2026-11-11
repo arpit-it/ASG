@@ -134,6 +134,9 @@ void main() {
     });
     test('nonexecutable and directory entries are not accepted', () async {
       await Directory('${root.path}/sdk/bin/flutter').create(recursive: true);
+      final dart = File('${root.path}/sdk/bin/cache/dart-sdk/bin/dart');
+      await dart.create(recursive: true);
+      await Process.run('/bin/chmod', ['644', dart.path]);
       final python = File('${root.path}/python');
       await python.writeAsString('not executable');
       await Process.run('/bin/chmod', ['644', python.path]);
@@ -143,7 +146,10 @@ void main() {
       );
       expect(report.flutter, contains('No regular'));
       expect(report.python, contains('no executable permission'));
-      expect(report.dart, contains('unavailable'));
+      expect(report.flutter, contains('bin/flutter'));
+      expect(report.dart, contains('bin/cache/dart-sdk/bin/dart'));
+      expect(report.dart, contains('no executable permission'));
+      expect('${report.flutter} ${report.dart}', isNot(contains(root.path)));
     });
     test(
       'SDK file, linked SDK, and missing tools have distinct guidance',
