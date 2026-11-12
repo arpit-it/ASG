@@ -169,6 +169,20 @@ HtmlReferenceReport _inspect(HtmlSourceProposal proposal) {
   final idSeparators = RegExp(r'[\t\n\f\r ]+');
   for (final element in elements) {
     if (element.namespaceUri == 'http://www.w3.org/1999/xhtml' &&
+        element.localName == 'output' &&
+        !_insideTemplate(element)) {
+      final value = element.attributes['for'];
+      if (value != null) {
+        for (final target in value.split(idSeparators)) {
+          if (target.isEmpty) continue;
+          references++;
+          if (!ids.containsKey(target)) {
+            report('Missing HTML output target: output[for] ${_label(target)}');
+          }
+        }
+      }
+    }
+    if (element.namespaceUri == 'http://www.w3.org/1999/xhtml' &&
         element.localName == 'label' &&
         !_insideTemplate(element)) {
       final target = element.attributes['for'];

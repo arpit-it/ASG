@@ -28,6 +28,22 @@ String page(String body) =>
     '<!doctype html><html><head><title>References</title></head><body>$body</body></html>';
 
 void main() {
+  test('checks live IDs in HTML output references', () async {
+    final report = await inspectHtmlReferences(
+      proposal(
+        page(
+          '<input id="live"><output for="live&#9;missing inert"></output>'
+          '<template><input id="inert"><output for="ignored"></output></template>',
+        ),
+      ),
+    );
+    expect(report.references, 3);
+    expect(report.messages, [
+      'Missing HTML output target: output[for] missing',
+      'Missing HTML output target: output[for] inert',
+    ]);
+  });
+
   test('checks each table header target once per cell', () async {
     final report = await inspectHtmlReferences(
       proposal(

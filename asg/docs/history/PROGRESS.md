@@ -14416,3 +14416,10 @@ F11 / #402: [PR #606](https://github.com/arpit-it/ASG/pull/606) merged as
 `c0ef3d9ce9b083b1423f04ef35c1177fb1c7ed9a` after independent review and
 required CI run `43269503740`. Signed main matches the reviewed tree.
 Static review flags table headers that reference themselves. Issue #402 remains open.
+
+## Verified repeated table header references — 12 November 2026 UTC
+
+F11 / #402: [PR #607](https://github.com/arpit-it/ASG/pull/607) merged as
+`f01207827cd951fdb3c04038efd594d4f7c56726` after independent review and
+required CI run `43277313133`. Signed main matches the reviewed tree.
+Static review flags repeated header IDs within a single cell. Issue #402 is open.
