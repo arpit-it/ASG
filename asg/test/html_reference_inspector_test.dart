@@ -175,6 +175,25 @@ void main() {
     ]);
   });
 
+  test('checks live ARIA error message targets', () async {
+    final report = await inspectHtmlReferences(
+      proposal(
+        page(
+          '<input aria-invalid="true" aria-errormessage="live">'
+          '<input aria-invalid="true" aria-errormessage="missing">'
+          '<input aria-invalid="true" aria-errormessage="inert">'
+          '<span id="live">Error</span>'
+          '<template><span id="inert">Error</span></template>',
+        ),
+      ),
+    );
+    expect(report.references, 3);
+    expect(report.messages, [
+      'Missing ARIA target: aria-errormessage missing',
+      'Missing ARIA target: aria-errormessage inert',
+    ]);
+  });
+
   test('inert base does not suppress missing live references', () async {
     final report = await inspectHtmlReferences(
       proposal(

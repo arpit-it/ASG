@@ -14337,3 +14337,10 @@ Receipts:/private/tmp/asg511-publication.json,/private/tmp/asg511-review-evidenc
 /private/tmp/asg511-verified-pr.json,/private/tmp/asg511-sync-record.json,
 /private/tmp/asg511-check-runs.json.
 Recorded 2026-11-05T04:47:02.251179+00:00.
+
+## Verified snapshot recovery and ARIA controls fixes — 12 November 2026 UTC
+
+- F12 / #406: [PR #594](https://github.com/arpit-it/ASG/pull/594) merged at `ee34b044cc280d1bbf34949a461c6b2324dacd22` after independent review and required CI run `43093800433`. Snapshot recovery lists the retained path once and keeps the fallback if scanning omits it or fails. The merged tree matched the reviewed tree.
+- F11 / #402: [PR #595](https://github.com/arpit-it/ASG/pull/595) merged at `916fe3b5454148ce01b9a4f5655c622559351d79` after independent review and required CI run `43166094826`. Static HTML review reports missing live IDs referenced by `aria-controls`. The merged tree matched the reviewed tree.
+
+Both umbrella issues remain open.
