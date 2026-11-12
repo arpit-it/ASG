@@ -28,6 +28,28 @@ String page(String body) =>
     '<!doctype html><html><head><title>References</title></head><body>$body</body></html>';
 
 void main() {
+  test('checks built-in popover commands against live HTML popovers', () async {
+    final report = await inspectHtmlReferences(
+      proposal(
+        page(
+          '<button command="SHOW-POPOVER" commandfor="plain"></button>'
+          '<button command="hide-popover" commandfor="menu"></button>'
+          '<button command="toggle-popover" commandfor="foreign"></button>'
+          '<button command="hide-popover" commandfor="absent"></button>'
+          '<button command="--show-popover" commandfor="plain"></button>'
+          '<div id="plain"></div><div id="menu" popover></div>'
+          '<svg id="foreign" popover></svg>',
+        ),
+      ),
+    );
+    expect(report.references, 5);
+    expect(report.messages, [
+      'Expected HTML popover target: plain',
+      'Expected HTML popover target: foreign',
+      'Missing HTML control target: commandfor absent',
+    ]);
+  });
+
   test('checks built-in dialog commands against live HTML dialogs', () async {
     final report = await inspectHtmlReferences(
       proposal(
