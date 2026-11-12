@@ -14344,3 +14344,7 @@ Recorded 2026-11-05T04:47:02.251179+00:00.
 - F11 / #402: [PR #595](https://github.com/arpit-it/ASG/pull/595) merged at `916fe3b5454148ce01b9a4f5655c622559351d79` after independent review and required CI run `43166094826`. Static HTML review reports missing live IDs referenced by `aria-controls`. The merged tree matched the reviewed tree.
 
 Both umbrella issues remain open.
+
+## Verified ARIA error message diagnostics — 12 November 2026 UTC
+
+F11 / #402: [PR #596](https://github.com/arpit-it/ASG/pull/596) merged at `7add95baf6f84cfb9b349efe580eb5a8eb16d93a` after independent review and required CI run `43178745039`. Static HTML review flags missing `aria-errormessage` targets, including IDs found only inside a template. The merged tree matched the reviewed tree. Issue #402 remains open.
