@@ -14446,3 +14446,11 @@ F11 / #402: [PR #610](https://github.com/arpit-it/ASG/pull/610) merged as
 `5882475744` and required CI run `43311407085`. The signed main tree matches
 the reviewed tree. Static HTML review flags missing popover and command target
 IDs. Issue #402 remains open.
+
+## Verified HTML popover target type — 12 November 2026 UTC
+
+F11 / #402: [PR #611](https://github.com/arpit-it/ASG/pull/611) merged as
+`2915d47863625ec333173771979856b262756346` after independent review
+`5883136758` and required CI run `43320981453`. The signed main tree matches
+the reviewed tree. Static review flags resolved popover targets that lack the
+popover attribute. Issue #402 remains open.
