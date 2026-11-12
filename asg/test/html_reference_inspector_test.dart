@@ -156,21 +156,22 @@ void main() {
     expect(report.findings, 0);
   });
 
-  test('checks each live ARIA label and description target', () async {
+  test('checks each live ARIA label, description and control target', () async {
     final report = await inspectHtmlReferences(
       proposal(
         page(
           '<button aria-labelledby=" live&#9;missing " '
-          'aria-describedby="inert live">Go</button>'
+          'aria-describedby="inert live" aria-controls="live panel">Go</button>'
           '<span id="live">Name</span>'
           '<template><span id="inert" aria-labelledby="ignored"></span></template>',
         ),
       ),
     );
-    expect(report.references, 4);
+    expect(report.references, 6);
     expect(report.messages, [
       'Missing ARIA target: aria-labelledby missing',
       'Missing ARIA target: aria-describedby inert',
+      'Missing ARIA target: aria-controls panel',
     ]);
   });
 
