@@ -28,6 +28,26 @@ String page(String body) =>
     '<!doctype html><html><head><title>References</title></head><body>$body</body></html>';
 
 void main() {
+  test('checks whether the first live label target can be labeled', () async {
+    final report = await inspectHtmlReferences(
+      proposal(
+        page(
+          '<div id="duplicate"></div><input id="duplicate">'
+          '<input id="hidden" type="HIDDEN"><button id="valid">Save</button>'
+          '<custom-control id="custom"></custom-control>'
+          '<label for="duplicate">Duplicate</label><label for="hidden">Hidden</label>'
+          '<label for="valid">Valid</label><label for="custom">Custom</label>',
+        ),
+      ),
+    );
+    expect(report.references, 4);
+    expect(report.messages, [
+      'Duplicate HTML ID: duplicate',
+      'Expected labelable HTML target: label[for] duplicate',
+      'Expected labelable HTML target: label[for] hidden',
+    ]);
+  });
+
   test(
     'checks the element type of the first live form and datalist IDs',
     () async {

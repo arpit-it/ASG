@@ -14385,3 +14385,11 @@ F11 / #402: [PR #602](https://github.com/arpit-it/ASG/pull/602) merged as
 required CI run `43237264832`. Signed main matches the reviewed tree.
 Static review flags missing live IDs in explicit form references on supported
 HTML controls. Issue #402 remains open.
+
+## Verified HTML form and datalist target types — 12 November 2026 UTC
+
+F11 / #402: [PR #603](https://github.com/arpit-it/ASG/pull/603) merged as
+`705f90a730aabb86c67459e8a910b8499198676a` after independent review and
+required CI run `43245164053`. Signed main matches the reviewed tree.
+Static HTML review reports when the first live matching ID has the wrong
+element type for a form or datalist reference. Issue #402 remains open.
