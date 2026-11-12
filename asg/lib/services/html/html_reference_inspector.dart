@@ -173,9 +173,16 @@ HtmlReferenceReport _inspect(HtmlSourceProposal proposal) {
         !_insideTemplate(element)) {
       final value = element.attributes['for'];
       if (value != null) {
+        final seenTargets = <String>{};
         for (final target in value.split(idSeparators)) {
           if (target.isEmpty) continue;
           references++;
+          if (!seenTargets.add(target)) {
+            report(
+              'Repeated HTML output target: output[for] ${_label(target)}',
+            );
+            continue;
+          }
           if (!ids.containsKey(target)) {
             report('Missing HTML output target: output[for] ${_label(target)}');
           }
