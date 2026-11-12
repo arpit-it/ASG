@@ -28,6 +28,24 @@ String page(String body) =>
     '<!doctype html><html><head><title>References</title></head><body>$body</body></html>';
 
 void main() {
+  test('checks each table header target once per cell', () async {
+    final report = await inspectHtmlReferences(
+      proposal(
+        page(
+          '<table><tr><th id="a">Header</th>'
+          '<td headers="a missing missing">One</td>'
+          '<td headers="a A">Two</td></tr></table>',
+        ),
+      ),
+    );
+    expect(report.references, 5);
+    expect(report.messages, [
+      'Missing HTML table header target: headers missing',
+      'Repeated HTML table header target: missing',
+      'Missing HTML table header target: headers A',
+    ]);
+  });
+
   test('reports explicit table header self-references', () async {
     final report = await inspectHtmlReferences(
       proposal(

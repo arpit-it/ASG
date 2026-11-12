@@ -233,9 +233,14 @@ HtmlReferenceReport _inspect(HtmlSourceProposal proposal) {
       final value = element.attributes['headers'];
       if (value != null) {
         final table = _containingTable(element);
+        final seenTargets = <String>{};
         for (final target in value.split(idSeparators)) {
           if (target.isEmpty) continue;
           references++;
+          if (!seenTargets.add(target)) {
+            report('Repeated HTML table header target: ${_label(target)}');
+            continue;
+          }
           final header = ids[target];
           if (header == null) {
             report(

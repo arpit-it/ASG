@@ -14409,3 +14409,10 @@ F11 / #402: [PR #605](https://github.com/arpit-it/ASG/pull/605) merged as
 required CI run `43261555870`. Signed main matches the reviewed tree.
 Static review flags table-header references to data cells or headers in
 another table. Issue #402 remains open.
+
+## Verified HTML table header self-references — 12 November 2026 UTC
+
+F11 / #402: [PR #606](https://github.com/arpit-it/ASG/pull/606) merged as
+`c0ef3d9ce9b083b1423f04ef35c1177fb1c7ed9a` after independent review and
+required CI run `43269503740`. Signed main matches the reviewed tree.
+Static review flags table headers that reference themselves. Issue #402 remains open.
