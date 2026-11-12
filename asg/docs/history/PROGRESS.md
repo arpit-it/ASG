@@ -14430,3 +14430,11 @@ F11 / #402: [PR #608](https://github.com/arpit-it/ASG/pull/608) merged as
 `049c5d62f3fea476bb8a3f552bae6209446b7d45` after independent review and
 required CI run `43285072786`. Signed main matches the reviewed tree.
 Static review flags missing live IDs in `output[for]`. Issue #402 remains open.
+
+## Verified repeated HTML output targets — 12 November 2026 UTC
+
+F11 / #402: [PR #609](https://github.com/arpit-it/ASG/pull/609) merged as
+`80d6e2db78aaceec294018d2c89adca0963aa19e` after independent review
+`5880937086` and required CI run `43292802586`. The signed main tree was
+verified. Static review flags repeated IDs within one `output[for]` attribute.
+Issue #402 remains open.

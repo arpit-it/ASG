@@ -28,6 +28,26 @@ String page(String body) =>
     '<!doctype html><html><head><title>References</title></head><body>$body</body></html>';
 
 void main() {
+  test('checks static popover and command targets on HTML controls', () async {
+    final report = await inspectHtmlReferences(
+      proposal(
+        page(
+          '<button popovertarget="menu" commandfor="missing"></button>'
+          '<input type="button" popovertarget="Menu" commandfor="ignored">'
+          '<button commandfor="menu" popovertarget=""></button>'
+          '<div popovertarget="ignored"></div>'
+          '<template><button commandfor="ignored"></button></template>'
+          '<div id="menu" popover></div>',
+        ),
+      ),
+    );
+    expect(report.references, 4);
+    expect(report.messages, [
+      'Missing HTML control target: commandfor missing',
+      'Missing HTML control target: popovertarget Menu',
+    ]);
+  });
+
   test('checks distinct output references per element', () async {
     final report = await inspectHtmlReferences(
       proposal(
