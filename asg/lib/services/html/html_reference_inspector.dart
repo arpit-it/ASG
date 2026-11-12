@@ -188,6 +188,26 @@ HtmlReferenceReport _inspect(HtmlSourceProposal proposal) {
         }
       }
     }
+    if (element.namespaceUri == 'http://www.w3.org/1999/xhtml' &&
+        const {
+          'button',
+          'fieldset',
+          'input',
+          'object',
+          'output',
+          'select',
+          'textarea',
+        }.contains(element.localName) &&
+        !_insideTemplate(element)) {
+      final target = element.attributes['form'];
+      if (target != null) {
+        references++;
+        if (!ids.contains(target)) {
+          final label = target.isEmpty ? '(empty)' : _label(target);
+          report('Missing HTML form target: ${element.localName}[form] $label');
+        }
+      }
+    }
     if (!_insideTemplate(element) &&
         element.namespaceUri == 'http://www.w3.org/1999/xhtml' &&
         (element.localName == 'td' || element.localName == 'th')) {

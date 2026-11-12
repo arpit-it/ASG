@@ -14370,3 +14370,10 @@ F11 / #402: [PR #600](https://github.com/arpit-it/ASG/pull/600) merged as
 `b90058a8b532c0be8bb5a026df22b0d7ddcb1887` after independent review and both
 required checks in run `43222556810`. Signed main matches the reviewed tree.
 Static review flags missing live IDs in table-cell `headers`. Issue #402 is open.
+
+## Verified HTML input list diagnostics — 12 November 2026 UTC
+
+F11 / #402: [PR #601](https://github.com/arpit-it/ASG/pull/601) merged as
+`fe17d77279c28a0c4786dc468a7e257bcd45c87a` after independent review and
+required CI run `43229746579`. Signed main matches the reviewed tree.
+Static review flags missing live IDs referenced by `input[list]`. Issue #402 is open.

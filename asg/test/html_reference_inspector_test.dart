@@ -28,6 +28,25 @@ String page(String body) =>
     '<!doctype html><html><head><title>References</title></head><body>$body</body></html>';
 
 void main() {
+  test('checks live explicit form references', () async {
+    final report = await inspectHtmlReferences(
+      proposal(
+        page(
+          '<input form="live"><form id="live"></form>'
+          '<button form="Live">Submit</button><select form="inert"></select>'
+          '<output form=""></output><div form="ignored"></div>'
+          '<template><form id="inert"></form><input form="ignored"></template>',
+        ),
+      ),
+    );
+    expect(report.references, 4);
+    expect(report.messages, [
+      'Missing HTML form target: button[form] Live',
+      'Missing HTML form target: select[form] inert',
+      'Missing HTML form target: output[form] (empty)',
+    ]);
+  });
+
   test('checks exact live input list IDs', () async {
     final report = await inspectHtmlReferences(
       proposal(
