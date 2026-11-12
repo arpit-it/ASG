@@ -28,6 +28,26 @@ String page(String body) =>
     '<!doctype html><html><head><title>References</title></head><body>$body</body></html>';
 
 void main() {
+  test('requires table header IDs to name headers in the same table', () async {
+    final report = await inspectHtmlReferences(
+      proposal(
+        page(
+          '<table><tr><th id="same">Header</th><td id="data">Data</td>'
+          '<td headers="same data nested other">'
+          '<table><tr><th id="nested">Nested</th></tr></table>'
+          '</td></tr></table>'
+          '<table><tr><th id="other">Other</th></tr></table>',
+        ),
+      ),
+    );
+    expect(report.references, 4);
+    expect(report.messages, [
+      'Expected header in the same HTML table: data',
+      'Expected header in the same HTML table: nested',
+      'Expected header in the same HTML table: other',
+    ]);
+  });
+
   test('checks whether the first live label target can be labeled', () async {
     final report = await inspectHtmlReferences(
       proposal(

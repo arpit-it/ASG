@@ -232,13 +232,20 @@ HtmlReferenceReport _inspect(HtmlSourceProposal proposal) {
         (element.localName == 'td' || element.localName == 'th')) {
       final value = element.attributes['headers'];
       if (value != null) {
+        final table = _containingTable(element);
         for (final target in value.split(idSeparators)) {
           if (target.isEmpty) continue;
           references++;
-          if (!ids.containsKey(target)) {
+          final header = ids[target];
+          if (header == null) {
             report(
               'Missing HTML table header target: headers ${_label(target)}',
             );
+          } else if (header.namespaceUri != 'http://www.w3.org/1999/xhtml' ||
+              header.localName != 'th' ||
+              table == null ||
+              !identical(table, _containingTable(header))) {
+            report('Expected header in the same HTML table: ${_label(target)}');
           }
         }
       }
@@ -414,4 +421,14 @@ bool _canBeLabelTarget(dom.Element element) {
         'select',
         'textarea',
       }.contains(name);
+}
+
+dom.Element? _containingTable(dom.Element element) {
+  for (var parent = element.parent; parent != null; parent = parent.parent) {
+    if (parent.namespaceUri == 'http://www.w3.org/1999/xhtml' &&
+        parent.localName == 'table') {
+      return parent;
+    }
+  }
+  return null;
 }

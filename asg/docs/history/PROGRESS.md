@@ -14393,3 +14393,11 @@ F11 / #402: [PR #603](https://github.com/arpit-it/ASG/pull/603) merged as
 required CI run `43245164053`. Signed main matches the reviewed tree.
 Static HTML review reports when the first live matching ID has the wrong
 element type for a form or datalist reference. Issue #402 remains open.
+
+## Verified HTML label target types — 12 November 2026 UTC
+
+F11 / #402: [PR #604](https://github.com/arpit-it/ASG/pull/604) merged as
+`7e07bb21cff696b533732163f310a12e03209f57` after independent review and
+required CI run `43253257071`. Signed main matches the reviewed tree.
+Static review flags explicit labels whose first live ID matches an element
+that cannot be labeled. Issue #402 remains open.
