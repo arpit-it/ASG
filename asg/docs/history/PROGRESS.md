@@ -14377,3 +14377,11 @@ F11 / #402: [PR #601](https://github.com/arpit-it/ASG/pull/601) merged as
 `fe17d77279c28a0c4786dc468a7e257bcd45c87a` after independent review and
 required CI run `43229746579`. Signed main matches the reviewed tree.
 Static review flags missing live IDs referenced by `input[list]`. Issue #402 is open.
+
+## Verified HTML form reference diagnostics — 12 November 2026 UTC
+
+F11 / #402: [PR #602](https://github.com/arpit-it/ASG/pull/602) merged as
+`d17982b5d9f5fa70f298009359933f0c7b0a2da7` after independent review and
+required CI run `43237264832`. Signed main matches the reviewed tree.
+Static review flags missing live IDs in explicit form references on supported
+HTML controls. Issue #402 remains open.

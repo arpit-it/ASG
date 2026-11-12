@@ -21,7 +21,7 @@ HtmlReferenceReport _inspect(HtmlSourceProposal proposal) {
   final parser = html.HtmlParser(proposal.files['index.html']!);
   final document = parser.parse();
   final elements = document.querySelectorAll('*');
-  final ids = <String>{};
+  final ids = <String, dom.Element>{};
   final navigationNames = <String>{};
   final messages = <String>[];
   var findings = 0, references = 0;
@@ -58,8 +58,12 @@ HtmlReferenceReport _inspect(HtmlSourceProposal proposal) {
       if (name != null && name.isNotEmpty) navigationNames.add(name);
     }
     final id = element.attributes['id'];
-    if (id != null && id.isNotEmpty && !ids.add(id)) {
-      report('Duplicate HTML ID: ${_label(id)}');
+    if (id != null && id.isNotEmpty) {
+      if (ids.containsKey(id)) {
+        report('Duplicate HTML ID: ${_label(id)}');
+      } else {
+        ids[id] = element;
+      }
     }
   }
   final base = Uri.parse('https://proposal.invalid/');
@@ -90,7 +94,7 @@ HtmlReferenceReport _inspect(HtmlSourceProposal proposal) {
       } else if (resolved.hasFragment && resolved.fragment.isNotEmpty) {
         if (target != 'index.html') {
           report('Non-HTML fragment not checked: $label');
-        } else if (!ids.contains(Uri.decodeComponent(resolved.fragment)) &&
+        } else if (!ids.containsKey(Uri.decodeComponent(resolved.fragment)) &&
             !(navigation &&
                 (navigationNames.contains(
                       Uri.decodeComponent(resolved.fragment),
@@ -170,7 +174,7 @@ HtmlReferenceReport _inspect(HtmlSourceProposal proposal) {
       final target = element.attributes['for'];
       if (target != null) {
         references++;
-        if (!ids.contains(target)) {
+        if (!ids.containsKey(target)) {
           final label = target.isEmpty ? '(empty)' : _label(target);
           report('Missing HTML label target: label[for] $label');
         }
@@ -182,9 +186,14 @@ HtmlReferenceReport _inspect(HtmlSourceProposal proposal) {
       final target = element.attributes['list'];
       if (target != null) {
         references++;
-        if (!ids.contains(target)) {
+        final targetElement = ids[target];
+        if (targetElement == null) {
           final label = target.isEmpty ? '(empty)' : _label(target);
           report('Missing HTML datalist target: input[list] $label');
+        } else if (targetElement.namespaceUri !=
+                'http://www.w3.org/1999/xhtml' ||
+            targetElement.localName != 'datalist') {
+          report('Expected HTML datalist target: ${_label(target)}');
         }
       }
     }
@@ -202,9 +211,14 @@ HtmlReferenceReport _inspect(HtmlSourceProposal proposal) {
       final target = element.attributes['form'];
       if (target != null) {
         references++;
-        if (!ids.contains(target)) {
+        final targetElement = ids[target];
+        if (targetElement == null) {
           final label = target.isEmpty ? '(empty)' : _label(target);
           report('Missing HTML form target: ${element.localName}[form] $label');
+        } else if (targetElement.namespaceUri !=
+                'http://www.w3.org/1999/xhtml' ||
+            targetElement.localName != 'form') {
+          report('Expected HTML form target: ${_label(target)}');
         }
       }
     }
@@ -216,7 +230,7 @@ HtmlReferenceReport _inspect(HtmlSourceProposal proposal) {
         for (final target in value.split(idSeparators)) {
           if (target.isEmpty) continue;
           references++;
-          if (!ids.contains(target)) {
+          if (!ids.containsKey(target)) {
             report(
               'Missing HTML table header target: headers ${_label(target)}',
             );
@@ -239,7 +253,7 @@ HtmlReferenceReport _inspect(HtmlSourceProposal proposal) {
         for (final target in value.split(idSeparators)) {
           if (target.isEmpty) continue;
           references++;
-          if (!ids.contains(target)) {
+          if (!ids.containsKey(target)) {
             report('Missing ARIA target: $attribute ${_label(target)}');
           }
         }
