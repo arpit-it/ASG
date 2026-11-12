@@ -241,6 +241,8 @@ HtmlReferenceReport _inspect(HtmlSourceProposal proposal) {
             report(
               'Missing HTML table header target: headers ${_label(target)}',
             );
+          } else if (identical(header, element) && header.localName == 'th') {
+            report('HTML table header references itself: ${_label(target)}');
           } else if (header.namespaceUri != 'http://www.w3.org/1999/xhtml' ||
               header.localName != 'th' ||
               table == null ||
