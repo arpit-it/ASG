@@ -175,6 +175,25 @@ void main() {
     ]);
   });
 
+  test('checks live ARIA details targets', () async {
+    final report = await inspectHtmlReferences(
+      proposal(
+        page(
+          '<p aria-details="live">Summary</p>'
+          '<p aria-details="missing">Summary</p>'
+          '<p aria-details="inert">Summary</p>'
+          '<div id="live">Details</div>'
+          '<template><div id="inert">Details</div></template>',
+        ),
+      ),
+    );
+    expect(report.references, 3);
+    expect(report.messages, [
+      'Missing ARIA target: aria-details missing',
+      'Missing ARIA target: aria-details inert',
+    ]);
+  });
+
   test('checks each live ARIA ownership target', () async {
     final report = await inspectHtmlReferences(
       proposal(

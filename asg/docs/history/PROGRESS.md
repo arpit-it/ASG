@@ -14348,3 +14348,7 @@ Both umbrella issues remain open.
 ## Verified ARIA error message diagnostics — 12 November 2026 UTC
 
 F11 / #402: [PR #596](https://github.com/arpit-it/ASG/pull/596) merged at `7add95baf6f84cfb9b349efe580eb5a8eb16d93a` after independent review and required CI run `43178745039`. Static HTML review flags missing `aria-errormessage` targets, including IDs found only inside a template. The merged tree matched the reviewed tree. Issue #402 remains open.
+
+## Verified ARIA ownership diagnostics — 12 November 2026 UTC
+
+F11 / #402: [PR #597](https://github.com/arpit-it/ASG/pull/597) merged at `79422ea0f30362987cd0539e5f53c15b64679f1a` after independent review and required CI run `43186776741`. Static HTML review flags missing `aria-owns` targets. The merged tree matched the reviewed tree. Issue #402 remains open.
