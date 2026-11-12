@@ -28,6 +28,26 @@ String page(String body) =>
     '<!doctype html><html><head><title>References</title></head><body>$body</body></html>';
 
 void main() {
+  test('checks exact live input list IDs', () async {
+    final report = await inspectHtmlReferences(
+      proposal(
+        page(
+          '<input list="live"><datalist id="live"></datalist>'
+          '<input list="Live"><input list="inert"><input list="">'
+          '<div list="ignored"></div>'
+          '<template><datalist id="inert"></datalist>'
+          '<input list="ignored"></template>',
+        ),
+      ),
+    );
+    expect(report.references, 4);
+    expect(report.messages, [
+      'Missing HTML datalist target: input[list] Live',
+      'Missing HTML datalist target: input[list] inert',
+      'Missing HTML datalist target: input[list] (empty)',
+    ]);
+  });
+
   test(
     'explicit live label targets use exact IDs independently of base',
     () async {

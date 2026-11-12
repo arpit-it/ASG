@@ -14363,3 +14363,10 @@ F11 / #402: [PR #599](https://github.com/arpit-it/ASG/pull/599) merged as
 `e11b04df93fa1263518d606f17054571858ccdbe` after independent review and required
 CI run `43211344880`. Signed main matches the reviewed tree. Static HTML review
 flags missing live IDs in `aria-flowto`. The umbrella issue remains open.
+
+## Verified HTML table header diagnostics — 12 November 2026 UTC
+
+F11 / #402: [PR #600](https://github.com/arpit-it/ASG/pull/600) merged as
+`b90058a8b532c0be8bb5a026df22b0d7ddcb1887` after independent review and both
+required checks in run `43222556810`. Signed main matches the reviewed tree.
+Static review flags missing live IDs in table-cell `headers`. Issue #402 is open.

@@ -176,6 +176,18 @@ HtmlReferenceReport _inspect(HtmlSourceProposal proposal) {
         }
       }
     }
+    if (element.namespaceUri == 'http://www.w3.org/1999/xhtml' &&
+        element.localName == 'input' &&
+        !_insideTemplate(element)) {
+      final target = element.attributes['list'];
+      if (target != null) {
+        references++;
+        if (!ids.contains(target)) {
+          final label = target.isEmpty ? '(empty)' : _label(target);
+          report('Missing HTML datalist target: input[list] $label');
+        }
+      }
+    }
     if (!_insideTemplate(element) &&
         element.namespaceUri == 'http://www.w3.org/1999/xhtml' &&
         (element.localName == 'td' || element.localName == 'th')) {
