@@ -175,6 +175,23 @@ void main() {
     ]);
   });
 
+  test('checks each live ARIA ownership target', () async {
+    final report = await inspectHtmlReferences(
+      proposal(
+        page(
+          '<ul aria-owns="live missing inert"></ul>'
+          '<li id="live">Item</li>'
+          '<template><li id="inert">Item</li></template>',
+        ),
+      ),
+    );
+    expect(report.references, 3);
+    expect(report.messages, [
+      'Missing ARIA target: aria-owns missing',
+      'Missing ARIA target: aria-owns inert',
+    ]);
+  });
+
   test('checks live ARIA error message targets', () async {
     final report = await inspectHtmlReferences(
       proposal(
