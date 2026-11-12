@@ -1201,11 +1201,10 @@ void main() {
     tester,
   ) async {
     const run = '/destination/asg-self-candidate-a1b2c3d4';
+    var paths = ['/destination/another-run'];
     final controller = SelfSnapshotController(
-      inspect: (_) async => SnapshotRecoveryInventory(
-        paths: ['/destination/another-run'],
-        additionalCount: 1,
-      ),
+      inspect: (_) async =>
+          SnapshotRecoveryInventory(paths: paths, additionalCount: 1),
       prepare: ({
         required source,
         required destination,
@@ -1245,6 +1244,14 @@ void main() {
     await controller.inspect('/destination');
     expect(controller.status, contains(run));
     expect(controller.status, contains('/destination/another-run'));
+    paths = [run];
+    await controller.inspect('/destination');
+    expect(
+      controller.status!.split('\n').where((line) => line == run),
+      hasLength(1),
+    );
+
+    paths = [];
     await controller.inspect('/other');
     expect(controller.status, isNot(contains(run)));
   });
