@@ -28,6 +28,27 @@ String page(String body) =>
     '<!doctype html><html><head><title>References</title></head><body>$body</body></html>';
 
 void main() {
+  test(
+    'checks the element type of the first live form and datalist IDs',
+    () async {
+      final report = await inspectHtmlReferences(
+        proposal(
+          page(
+            '<div id="choices"></div><datalist id="choices"></datalist>'
+            '<svg><g id="owner"></g></svg><form id="valid"></form>'
+            '<input list="choices" form="owner"><button form="valid">Save</button>',
+          ),
+        ),
+      );
+      expect(report.references, 3);
+      expect(report.messages, [
+        'Duplicate HTML ID: choices',
+        'Expected HTML datalist target: choices',
+        'Expected HTML form target: owner',
+      ]);
+    },
+  );
+
   test('checks live explicit form references', () async {
     final report = await inspectHtmlReferences(
       proposal(
