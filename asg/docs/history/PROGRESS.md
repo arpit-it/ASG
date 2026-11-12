@@ -14438,3 +14438,11 @@ F11 / #402: [PR #609](https://github.com/arpit-it/ASG/pull/609) merged as
 `5880937086` and required CI run `43292802586`. The signed main tree was
 verified. Static review flags repeated IDs within one `output[for]` attribute.
 Issue #402 remains open.
+
+## Verified HTML control targets — 12 November 2026 UTC
+
+F11 / #402: [PR #610](https://github.com/arpit-it/ASG/pull/610) merged as
+`927722b32734f41ff98ec334df83265959ca0b5a` after independent review
+`5882475744` and required CI run `43311407085`. The signed main tree matches
+the reviewed tree. Static HTML review flags missing popover and command target
+IDs. Issue #402 remains open.
