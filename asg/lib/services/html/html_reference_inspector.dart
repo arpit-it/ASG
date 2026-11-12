@@ -177,7 +177,11 @@ HtmlReferenceReport _inspect(HtmlSourceProposal proposal) {
       }
     }
     if (!_insideTemplate(element)) {
-      for (final attribute in const ['aria-labelledby', 'aria-describedby']) {
+      for (final attribute in const [
+        'aria-labelledby',
+        'aria-describedby',
+        'aria-controls',
+      ]) {
         final value = element.attributes[attribute];
         if (value == null) continue;
         for (final target in value.split(idSeparators)) {
