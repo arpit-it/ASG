@@ -175,6 +175,24 @@ void main() {
     ]);
   });
 
+  test('checks live HTML table cell header references', () async {
+    final report = await inspectHtmlReferences(
+      proposal(
+        page(
+          '<table><tr><th id="live" headers="missing">Title</th>'
+          '<td headers="live&#9;inert">Value</td></tr></table>'
+          '<div headers="ignored"></div>'
+          '<template><p id="inert">Inert</p></template>',
+        ),
+      ),
+    );
+    expect(report.references, 3);
+    expect(report.messages, [
+      'Missing HTML table header target: headers missing',
+      'Missing HTML table header target: headers inert',
+    ]);
+  });
+
   test('checks each live ARIA flow target', () async {
     final report = await inspectHtmlReferences(
       proposal(

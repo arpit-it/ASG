@@ -14356,3 +14356,10 @@ F11 / #402: [PR #597](https://github.com/arpit-it/ASG/pull/597) merged at `79422
 ## Verified ARIA details diagnostics — 12 November 2026 UTC
 
 F11 / #402: [PR #598](https://github.com/arpit-it/ASG/pull/598) merged at `fa0556419dacceea5d558d530a46e6bc5e118dfe` after independent review and required CI run `43195556822`. The reviewed tree matches main. Static HTML review reports missing `aria-details` targets. Issue #402 remains open.
+
+## Verified ARIA flow diagnostics — 12 November 2026 UTC
+
+F11 / #402: [PR #599](https://github.com/arpit-it/ASG/pull/599) merged as
+`e11b04df93fa1263518d606f17054571858ccdbe` after independent review and required
+CI run `43211344880`. Signed main matches the reviewed tree. Static HTML review
+flags missing live IDs in `aria-flowto`. The umbrella issue remains open.

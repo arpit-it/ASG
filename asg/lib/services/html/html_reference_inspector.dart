@@ -176,6 +176,22 @@ HtmlReferenceReport _inspect(HtmlSourceProposal proposal) {
         }
       }
     }
+    if (!_insideTemplate(element) &&
+        element.namespaceUri == 'http://www.w3.org/1999/xhtml' &&
+        (element.localName == 'td' || element.localName == 'th')) {
+      final value = element.attributes['headers'];
+      if (value != null) {
+        for (final target in value.split(idSeparators)) {
+          if (target.isEmpty) continue;
+          references++;
+          if (!ids.contains(target)) {
+            report(
+              'Missing HTML table header target: headers ${_label(target)}',
+            );
+          }
+        }
+      }
+    }
     if (!_insideTemplate(element)) {
       for (final attribute in const [
         'aria-labelledby',
