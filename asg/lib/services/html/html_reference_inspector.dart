@@ -184,6 +184,7 @@ HtmlReferenceReport _inspect(HtmlSourceProposal proposal) {
         'aria-errormessage',
         'aria-owns',
         'aria-details',
+        'aria-flowto',
       ]) {
         final value = element.attributes[attribute];
         if (value == null) continue;

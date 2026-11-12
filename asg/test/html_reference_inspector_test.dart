@@ -175,6 +175,23 @@ void main() {
     ]);
   });
 
+  test('checks each live ARIA flow target', () async {
+    final report = await inspectHtmlReferences(
+      proposal(
+        page(
+          '<p aria-flowto="live missing inert">Start</p>'
+          '<p id="live">Next</p>'
+          '<template><p id="inert">Inert</p></template>',
+        ),
+      ),
+    );
+    expect(report.references, 3);
+    expect(report.messages, [
+      'Missing ARIA target: aria-flowto missing',
+      'Missing ARIA target: aria-flowto inert',
+    ]);
+  });
+
   test('checks live ARIA details targets', () async {
     final report = await inspectHtmlReferences(
       proposal(
