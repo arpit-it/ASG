@@ -174,9 +174,14 @@ HtmlReferenceReport _inspect(HtmlSourceProposal proposal) {
       final target = element.attributes['for'];
       if (target != null) {
         references++;
-        if (!ids.containsKey(target)) {
+        final targetElement = ids[target];
+        if (targetElement == null) {
           final label = target.isEmpty ? '(empty)' : _label(target);
           report('Missing HTML label target: label[for] $label');
+        } else if (!_canBeLabelTarget(targetElement)) {
+          report(
+            'Expected labelable HTML target: label[for] ${_label(target)}',
+          );
         }
       }
     }
@@ -391,4 +396,22 @@ class _CssReferences extends css.Visitor {
     onReference(quoted ? value.substring(1, value.length - 1) : value);
     super.visitImportDirective(node);
   }
+}
+
+bool _canBeLabelTarget(dom.Element element) {
+  if (element.namespaceUri != 'http://www.w3.org/1999/xhtml') return false;
+  final name = element.localName;
+  if (name == 'input') {
+    return element.attributes['type']?.toLowerCase() != 'hidden';
+  }
+  // Custom elements may become labelable when their definitions run.
+  return (name?.contains('-') ?? false) ||
+      const {
+        'button',
+        'meter',
+        'output',
+        'progress',
+        'select',
+        'textarea',
+      }.contains(name);
 }
