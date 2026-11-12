@@ -299,6 +299,21 @@ HtmlReferenceReport _inspect(HtmlSourceProposal proposal) {
         }
       }
     }
+    if (!_insideTemplate(element) &&
+        element.namespaceUri == 'http://www.w3.org/1999/xhtml') {
+      for (final attribute in [
+        if (element.localName == 'button' || element.localName == 'input')
+          'popovertarget',
+        if (element.localName == 'button') 'commandfor',
+      ]) {
+        final target = element.attributes[attribute];
+        if (target == null || target.isEmpty) continue;
+        references++;
+        if (!ids.containsKey(target)) {
+          report('Missing HTML control target: $attribute ${_label(target)}');
+        }
+      }
+    }
     final attributes = [
       'href', 'src', 'action', 'poster', 'data',
       // Inventory declarations even on currently inactive control types. This
