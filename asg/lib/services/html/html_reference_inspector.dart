@@ -309,8 +309,12 @@ HtmlReferenceReport _inspect(HtmlSourceProposal proposal) {
         final target = element.attributes[attribute];
         if (target == null || target.isEmpty) continue;
         references++;
-        if (!ids.containsKey(target)) {
+        final targetElement = ids[target];
+        if (targetElement == null) {
           report('Missing HTML control target: $attribute ${_label(target)}');
+        } else if (attribute == 'popovertarget' &&
+            !targetElement.attributes.containsKey('popover')) {
+          report('Expected HTML popover target: ${_label(target)}');
         }
       }
     }

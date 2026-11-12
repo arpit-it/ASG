@@ -28,6 +28,28 @@ String page(String body) =>
     '<!doctype html><html><head><title>References</title></head><body>$body</body></html>';
 
 void main() {
+  test('checks for a popover attribute on the first live target', () async {
+    final report = await inspectHtmlReferences(
+      proposal(
+        page(
+          '<button popovertarget="plain" commandfor="plain"></button>'
+          '<input type="button" popovertarget="menu">'
+          '<button popovertarget="manual"></button>'
+          '<div id="plain"></div><div id="plain" popover></div>'
+          '<div id="menu" popover></div><div id="manual" popover="manual"></div>',
+        ),
+      ),
+    );
+    expect(report.references, 4);
+    expect(report.messages, contains('Expected HTML popover target: plain'));
+    expect(
+      report.messages.where(
+        (message) => message.startsWith('Expected HTML popover target:'),
+      ),
+      ['Expected HTML popover target: plain'],
+    );
+  });
+
   test('checks static popover and command targets on HTML controls', () async {
     final report = await inspectHtmlReferences(
       proposal(
