@@ -28,6 +28,24 @@ String page(String body) =>
     '<!doctype html><html><head><title>References</title></head><body>$body</body></html>';
 
 void main() {
+  test('checks distinct output references per element', () async {
+    final report = await inspectHtmlReferences(
+      proposal(
+        page(
+          '<input id="live"><output for="live live absent absent"></output>'
+          '<output for="live Live"></output>',
+        ),
+      ),
+    );
+    expect(report.references, 6);
+    expect(report.messages, [
+      'Repeated HTML output target: output[for] live',
+      'Missing HTML output target: output[for] absent',
+      'Repeated HTML output target: output[for] absent',
+      'Missing HTML output target: output[for] Live',
+    ]);
+  });
+
   test('checks live IDs in HTML output references', () async {
     final report = await inspectHtmlReferences(
       proposal(
