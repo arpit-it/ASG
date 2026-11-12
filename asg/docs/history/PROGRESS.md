@@ -14352,3 +14352,7 @@ F11 / #402: [PR #596](https://github.com/arpit-it/ASG/pull/596) merged at `7add9
 ## Verified ARIA ownership diagnostics — 12 November 2026 UTC
 
 F11 / #402: [PR #597](https://github.com/arpit-it/ASG/pull/597) merged at `79422ea0f30362987cd0539e5f53c15b64679f1a` after independent review and required CI run `43186776741`. Static HTML review flags missing `aria-owns` targets. The merged tree matched the reviewed tree. Issue #402 remains open.
+
+## Verified ARIA details diagnostics — 12 November 2026 UTC
+
+F11 / #402: [PR #598](https://github.com/arpit-it/ASG/pull/598) merged at `fa0556419dacceea5d558d530a46e6bc5e118dfe` after independent review and required CI run `43195556822`. The reviewed tree matches main. Static HTML review reports missing `aria-details` targets. Issue #402 remains open.
