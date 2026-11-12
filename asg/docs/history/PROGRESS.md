@@ -14401,3 +14401,11 @@ F11 / #402: [PR #604](https://github.com/arpit-it/ASG/pull/604) merged as
 required CI run `43253257071`. Signed main matches the reviewed tree.
 Static review flags explicit labels whose first live ID matches an element
 that cannot be labeled. Issue #402 remains open.
+
+## Verified HTML table header targets — 12 November 2026 UTC
+
+F11 / #402: [PR #605](https://github.com/arpit-it/ASG/pull/605) merged as
+`e4dbc42022b51e9dc99becc85866192a5b8aeaec` after independent review and
+required CI run `43261555870`. Signed main matches the reviewed tree.
+Static review flags table-header references to data cells or headers in
+another table. Issue #402 remains open.

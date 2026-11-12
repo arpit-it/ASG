@@ -28,6 +28,19 @@ String page(String body) =>
     '<!doctype html><html><head><title>References</title></head><body>$body</body></html>';
 
 void main() {
+  test('reports explicit table header self-references', () async {
+    final report = await inspectHtmlReferences(
+      proposal(
+        page(
+          '<table><tr><th id="self" headers="self other">One</th>'
+          '<th id="other">Two</th></tr></table>',
+        ),
+      ),
+    );
+    expect(report.references, 2);
+    expect(report.messages, ['HTML table header references itself: self']);
+  });
+
   test('requires table header IDs to name headers in the same table', () async {
     final report = await inspectHtmlReferences(
       proposal(
