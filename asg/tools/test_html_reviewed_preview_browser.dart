@@ -26,7 +26,7 @@ Future<void> main() async {
     jsonEncode({
       'summary': 'Passive fixture',
       'files': {
-        'index.html': '<!doctype html><title>Passive</title><meta name="viewport" content="width=device-width"><link rel="stylesheet" href="styles.css"><h1>Passive</h1><img src="image.svg" alt="Local rectangle"><script>document.body.dataset.ran="inline"</script><script src="app.js"></script><form action="/sent"><input name="message"><button>Send</button></form>',
+        'index.html': '<!doctype html><title>Passive</title><meta name="viewport" content="width=device-width"><link rel="stylesheet" href="styles.css"><h1>Passive</h1><details><summary>Show details</summary><p>Disclosure content</p></details><button type="button">Next control</button><img src="image.svg" alt="Local rectangle"><script>document.body.dataset.ran="inline"</script><script src="app.js"></script><form action="/sent"><input name="message"><button>Send</button></form>',
         'styles.css':
             'h1 { color: rgb(0, 128, 0); } body { overflow-wrap: anywhere; }',
         'image.svg': '<svg xmlns="http://www.w3.org/2000/svg" width="80" height="40"><rect width="80" height="40" fill="green"/><script>parent.document.body.dataset.ran="svg"</script></svg>',
@@ -117,6 +117,40 @@ Future<void> main() async {
     require(
       await protocol.evaluate('location.href') == url.toString(),
       'Forms must not navigate',
+    );
+    final keyboardProtocol = protocol;
+    Future<void> pressKey(String key, int code) async {
+      for (final type in ['keyDown', 'keyUp']) {
+        await keyboardProtocol.call('Input.dispatchKeyEvent', {
+          'type': type,
+          'key': key,
+          'code': key,
+          'windowsVirtualKeyCode': code,
+          if (key == 'Enter' && type == 'keyDown') 'text': '\r',
+        });
+      }
+    }
+
+    await pressKey('Tab', 9);
+    require(
+      await protocol.evaluate(
+            "document.activeElement === document.querySelector('summary')",
+          ) ==
+          true,
+      'Tab must focus the disclosure',
+    );
+    await pressKey('Enter', 13);
+    require(
+      await protocol.evaluate("document.querySelector('details').open") == true,
+      'Enter must open the disclosure',
+    );
+    await pressKey('Tab', 9);
+    require(
+      await protocol.evaluate(
+            "document.activeElement.textContent === 'Next control'",
+          ) ==
+          true,
+      'Tab must move focus to the next control',
     );
     for (final width in [320, 1280]) {
       await protocol.call('Emulation.setDeviceMetricsOverride', {
