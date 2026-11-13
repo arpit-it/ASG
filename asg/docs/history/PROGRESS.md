@@ -14490,3 +14490,7 @@ This is fixture evidence for passive preview. Issue #402 remains open.
 ### Solo PR review evidence
 
 [PR #617](https://github.com/arpit-it/ASG/pull/617) merged as `71367150c29113aabb9c7320613910339a93f837` after fresh review of `bbe566400c41b0769c0059fcd00bc09653052036` and passing required CI run `43453872930`. Remote main matched the tested tree and #616 closed. The coordinator recorded the verified outcome and released the claims.
+
+### Solo PR review guides
+
+[PR #619](https://github.com/arpit-it/ASG/pull/619) merged as `b4eb78c98c0b44d010cc18f7932212d802bc6e47` after fresh review and both required CI jobs in run `43462323364` passed. Main matched the tested tree, issue #618 closed, and the coordinator recorded the outcome and released the claims. The active automation now follows the fresh PR review workflow.

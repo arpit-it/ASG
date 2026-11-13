@@ -119,13 +119,14 @@ Future<void> main() async {
       'Forms must not navigate',
     );
     final keyboardProtocol = protocol;
-    Future<void> pressKey(String key, int code) async {
+    Future<void> pressKey(String key, int code, {int modifiers = 0}) async {
       for (final type in ['keyDown', 'keyUp']) {
         await keyboardProtocol.call('Input.dispatchKeyEvent', {
           'type': type,
           'key': key,
           'code': key,
           'windowsVirtualKeyCode': code,
+          'modifiers': modifiers,
           if (key == 'Enter' && type == 'keyDown') 'text': '\r',
         });
       }
@@ -151,6 +152,15 @@ Future<void> main() async {
           ) ==
           true,
       'Tab must move focus to the next control',
+    );
+    const shiftModifier = 8;
+    await pressKey('Tab', 9, modifiers: shiftModifier);
+    require(
+      await protocol.evaluate(
+            "document.activeElement === document.querySelector('summary')",
+          ) ==
+          true,
+      'Shift+Tab must return focus to the disclosure',
     );
     for (final width in [320, 1280]) {
       await protocol.call('Emulation.setDeviceMetricsOverride', {

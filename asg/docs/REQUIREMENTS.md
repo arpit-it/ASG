@@ -15934,4 +15934,4 @@ Recorded 2026-11-05T04:47:02.251179+00:00.
 
 - [x] [#616](https://github.com/arpit-it/ASG/issues/616) Accept a fresh PR review recorded by the implementer. Require passing checks and review evidence for the exact revision and invalidate both after blocking findings.
 
-- [ ] [#618](https://github.com/arpit-it/ASG/issues/618) Align the Git and parallel-development guides and repository automation prompt with fresh PR review under AGENTS.md. Preserve revision checks, required CI and protected merge.
+- [x] [#618](https://github.com/arpit-it/ASG/issues/618) Align the Git and parallel-development guides and repository automation prompt with fresh PR review under AGENTS.md. Preserve revision checks, required CI and protected merge.
