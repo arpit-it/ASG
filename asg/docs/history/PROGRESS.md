@@ -14470,3 +14470,15 @@ F11 / #402: [PR #613](https://github.com/arpit-it/ASG/pull/613) merged as
 revision that passed required CI run `43332602907`. Static review flags
 built-in popover commands whose targets lack an HTML popover declaration.
 Issue #402 remains open.
+
+## Verified direct HTML popover targets and passive keyboard behavior — 13 November 2026 UTC
+
+F11 / #402: [PR #614](https://github.com/arpit-it/ASG/pull/614) merged as
+`2c1e2d04099e95747e58f3718915fe8e58c498b8` after independent review and
+required CI run `43371767413`. The merged tree matches the tested tree.
+Direct popover controls now report targets outside the HTML namespace.
+
+On the same source tree, a disposable fixture served by the production
+passive preview host was checked in the Mac in-app browser. Tab focused
+the native disclosure, Enter opened it, and Tab moved to the next button.
+This is fixture evidence for passive preview. Issue #402 remains open.
