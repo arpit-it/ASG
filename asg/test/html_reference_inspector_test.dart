@@ -69,6 +69,20 @@ void main() {
     ]);
   });
 
+  test('requires an HTML element for a direct popover target', () async {
+    final report = await inspectHtmlReferences(
+      proposal(
+        page(
+          '<button popovertarget="foreign"></button>'
+          '<button popovertarget="menu"></button>'
+          '<svg><g id="foreign" popover=""></g></svg>'
+          '<div id="menu" popover></div>',
+        ),
+      ),
+    );
+    expect(report.messages, ['Expected HTML popover target: foreign']);
+  });
+
   test('checks for a popover attribute on the first live target', () async {
     final report = await inspectHtmlReferences(
       proposal(

@@ -14462,3 +14462,11 @@ F11 / #402: [PR #612](https://github.com/arpit-it/ASG/pull/612) merged as
 `5883693655` and required CI run `43328439447`. The signed main tree matches
 the reviewed tree. Static review flags built-in dialog commands targeting
 elements other than HTML dialogs. Issue #402 remains open.
+
+## Verified HTML popover commands — 13 November 2026 UTC
+
+F11 / #402: [PR #613](https://github.com/arpit-it/ASG/pull/613) merged as
+`42cef1063c6135e64bc24d7d126e16de345ad211`. Its tree matches the reviewed
+revision that passed required CI run `43332602907`. Static review flags
+built-in popover commands whose targets lack an HTML popover declaration.
+Issue #402 remains open.

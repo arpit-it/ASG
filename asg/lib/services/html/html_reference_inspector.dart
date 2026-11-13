@@ -313,7 +313,8 @@ HtmlReferenceReport _inspect(HtmlSourceProposal proposal) {
         if (targetElement == null) {
           report('Missing HTML control target: $attribute ${_label(target)}');
         } else if (attribute == 'popovertarget' &&
-            !targetElement.attributes.containsKey('popover')) {
+            (targetElement.namespaceUri != 'http://www.w3.org/1999/xhtml' ||
+                !targetElement.attributes.containsKey('popover'))) {
           report('Expected HTML popover target: ${_label(target)}');
         } else if (attribute == 'commandfor' &&
             const {
