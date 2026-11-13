@@ -14486,3 +14486,7 @@ This is fixture evidence for passive preview. Issue #402 remains open.
 ### Passive preview keyboard regression
 
 [PR #615](https://github.com/arpit-it/ASG/pull/615) merged on 13 November 2026 as `dcbe937572977521b6764e85423ba7c5131b6466`. Remote main matched the tested tree after required CI run `43383111003`. The fixture covers Tab focus, Enter activation and Tab movement to the next control. F11 issue #402 remains open.
+
+### Solo PR review evidence
+
+[PR #617](https://github.com/arpit-it/ASG/pull/617) merged as `71367150c29113aabb9c7320613910339a93f837` after fresh review of `bbe566400c41b0769c0059fcd00bc09653052036` and passing required CI run `43453872930`. Remote main matched the tested tree and #616 closed. The coordinator recorded the verified outcome and released the claims.

@@ -10,7 +10,7 @@ The owner authorized this workflow on 5 November 2026 under issue #510. It super
 | Writer, maximum two | Implement and test one claimed outcome in its own registered worktree | Only the literal file/directory prefixes in its contract |
 | Research/test-design specialist | Map code, check documentation, identify edge cases or propose independent scenarios | Read-only; implementation changes require a writer slot |
 | Integration owner | Combine final handoffs, edit shared ledgers, publish, serialize checks/review/merge | Counts as a writer while editing; one exclusive integration slot |
-| Independent reviewer | Inspect exact final diff, acceptance and real checks, then merge if all gates pass | No implementation edits; findings return to a writer |
+| Final PR review | Inspect exact final diff, acceptance and real checks, then merge if all gates pass | Fix blocking findings, retest and review the revised PR |
 
 Two writers must have disjoint paths and no unmet dependency on each other's unmerged work. Each gets a separate registered Git worktree and issue-linked branch. Two tracks under one parent issue may produce a single coherent PR; do not split tiny methods merely to increase PR counts. For example, a data-import outcome may include parsing, validation, error display and restart tests in one increment. An unrelated document recipe may proceed concurrently only when it does not depend on that unfinished import.
 
@@ -60,8 +60,8 @@ Apply the same rule to native build output, preview ports, mutable caches and sh
 1. During editing, run focused regression tests that exercise actual changed behavior, especially representative failures. Research/test designers may prepare scenarios independently.
 2. Before handoff, run relevant broader tests and required local format/analyze/build checks. Stop writing and send owned paths, tested head/tree, actual commands/results, failures/fixes, open limits and resource state to the integration owner.
 3. The integration owner acquires exclusive integration before publication/final CI, reconciles current remote main and integrates handoffs without losing work. If editing, it occupies an available writer slot; it cannot become a third concurrent writer.
-4. Run all existing required CI checks against the final candidate. The reviewer independently examines that exact diff, criterion coverage and actual results. A changed candidate or base needs new matching evidence and fresh review.
-5. The independent reviewer performs the protected merge, verifies remote result/issue closure and returns evidence. Record completion only after that verification.
+4. Run all existing required CI checks against the final candidate. In a fresh review, the agent examines that exact diff, criterion coverage and actual results. A changed candidate or base needs new matching evidence and fresh review.
+5. The agent who reviewed the final revision performs the protected merge, verifies remote result/issue closure and returns evidence. Record completion only after that verification.
 
 Reuse unchanged evidence only when an explicit verification policy permits it. Focused checks never substitute for required CI. Keep deterministic fixtures, skipped/live model tests, manual observations, native launches and platform builds separate. Do not shorten the feedback loop by weakening branch protection, removing tests or accepting a skipped real-host requirement.
 
@@ -83,9 +83,9 @@ python3 asg/tools/development_coordinator.py --repo "$ASG_WORKTREE" record --tas
 python3 asg/tools/development_coordinator.py --repo "$ASG_WORKTREE" ready --task "$ASG_TASK" --token "$ASG_TASK_TOKEN" --head "$ASG_HEAD" --base "$ASG_BASE"
 ```
 
-Use a reviewer actor different from the implementation owner, with real independent reviewer evidence. Actor names are operator assertions, not separate authenticated GitHub identities. The `ready` gate checks local revision/ownership and matching observations; it neither queries GitHub nor executes a merge. Required remote checks, resolved conversations, fresh reviewer approval and branch protection remain authoritative.
+Record the actor who performed the fresh PR review. The implementer may perform this review under AGENTS.md. Actor names are operator assertions, not separate authenticated GitHub identities. The `ready` gate checks local revision/ownership and matching observations; it neither queries GitHub nor executes a merge. Required remote checks, resolved conversations, fresh reviewer approval and branch protection remain authoritative.
 
-If main changes externally, preserve work, finish/abandon the old integration attempt safely, integrate the new base and reacquire with the new exact identity. Repeat relevant checks, required final CI and independent review. A local integration lock cannot block unrelated clones, machines or external contributors.
+If main changes externally, preserve work, finish/abandon the old integration attempt safely, integrate the new base and reacquire with the new exact identity. Repeat relevant checks, required final CI and fresh PR review. A local integration lock cannot block unrelated clones, machines or external contributors.
 
 After the protected merge is independently verified, record `merged` with its verified `--merge-sha`, then record `outcome_verified` only for acceptance actually established on that exact merged identity. Do not count an unmerged or stale-revision observation as a completed verified outcome. Then release integration and the writer claim:
 
@@ -121,4 +121,4 @@ The tool is a cooperative same-host development aid, not an execution sandbox, s
 
 ## Saved development automation
 
-The [reviewable prompt](development_automation_prompt.txt) is the intended saved development automation instruction. Apply it through the automation management tool only after this workflow is independently reviewed and merged. Preserve the existing 15-minute interval, project, model, reasoning setting, active state and notification policy; do not edit automation files directly. Read the current saved configuration before updating and reconcile intervening changes. This prompt does not create a new schedule or authorize external marketplace actions.
+The [reviewable prompt](development_automation_prompt.txt) is the intended saved development automation instruction. Apply it through the automation management tool only after this workflow is reviewed and merged. Preserve the existing 15-minute interval, project, model, reasoning setting, active state and notification policy; do not edit automation files directly. Read the current saved configuration before updating and reconcile intervening changes. This prompt does not create a new schedule or authorize external marketplace actions.
