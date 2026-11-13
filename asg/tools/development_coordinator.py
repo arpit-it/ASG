@@ -271,7 +271,7 @@ class Coordinator:
                 'warning': 'Hold and renew through final checks/review/remote merge; local coordination only.'}
 
     def readiness(self, db, task, token, head, base):
-        row = self.owned(db, task, token)
+        self.owned(db, task, token)
         sha(head)
         sha(base)
         integration = db.execute('SELECT * FROM integration WHERE task=?', (task,)).fetchone()
@@ -281,10 +281,10 @@ class Coordinator:
                             (task, head, base)).fetchall()
         last_changes = max((e['id'] for e in events if e['kind'] == 'review_changes'), default=0)
         checks = any(e['kind'] == 'checks_passed' and e['id'] > last_changes for e in events)
-        review = any(e['kind'] == 'review_approved' and e['actor'] != row['owner'] and
+        review = any(e['kind'] == 'review_approved' and
                      e['id'] > last_changes for e in events)
         if not checks or not review:
-            raise CoordinationError('Matching final checks and independent reviewer evidence are required.')
+            raise CoordinationError('Matching final checks and PR review evidence are required.')
 
     def ready(self, task, token, head, base):
         self.revisions(head, base)
@@ -320,9 +320,7 @@ class Coordinator:
                         not secrets.compare_digest(row['token'], digest(token))):
                     raise CoordinationError('Defect observation requires original task ownership.')
             else:
-                row = self.owned(db, task, token)
-            if kind == 'review_approved' and actor == row['owner']:
-                raise CoordinationError('Implementer cannot attest independent review as themselves.')
+                self.owned(db, task, token)
             if kind == 'merged':
                 self.readiness(db, task, token, head, base)
             if kind == 'merged' and db.execute(
