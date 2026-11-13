@@ -187,15 +187,15 @@ class CoordinatorTests(unittest.TestCase):
         self.coords[1].finish_integration('510-b', other)
         self.coords[1].release('510-b', other)
 
-    def test_ready_requires_exact_check_and_independent_review(self):
+    def test_ready_requires_exact_checks_and_pr_review(self):
         token = self.claim()
         self.coords[0].integrate('510-a', token, self.base, self.base)
         with self.assertRaises(module.CoordinationError):
             self.coords[0].ready('510-a', token, self.base, self.base)
         self.record(token, 'checks_passed')
         with self.assertRaises(module.CoordinationError):
-            self.record(token, 'review_approved', actor='writer-0')
-        self.record(token, 'review_approved')
+            self.coords[0].ready('510-a', token, self.base, self.base)
+        self.record(token, 'review_approved', actor='writer-0')
         self.coords[0].ready('510-a', token, self.base, self.base)
         self.record(token, 'review_changes')
         with self.assertRaises(module.CoordinationError):

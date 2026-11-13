@@ -14482,3 +14482,7 @@ On the same source tree, a disposable fixture served by the production
 passive preview host was checked in the Mac in-app browser. Tab focused
 the native disclosure, Enter opened it, and Tab moved to the next button.
 This is fixture evidence for passive preview. Issue #402 remains open.
+
+### Passive preview keyboard regression
+
+[PR #615](https://github.com/arpit-it/ASG/pull/615) merged on 13 November 2026 as `dcbe937572977521b6764e85423ba7c5131b6466`. Remote main matched the tested tree after required CI run `43383111003`. The fixture covers Tab focus, Enter activation and Tab movement to the next control. F11 issue #402 remains open.

@@ -15929,3 +15929,7 @@ Receipts:/private/tmp/asg511-publication.json,/private/tmp/asg511-review-evidenc
 /private/tmp/asg511-verified-pr.json,/private/tmp/asg511-sync-record.json,
 /private/tmp/asg511-check-runs.json.
 Recorded 2026-11-05T04:47:02.251179+00:00.
+
+### F56 PR review evidence
+
+- [ ] [#616](https://github.com/arpit-it/ASG/issues/616) Accept a fresh PR review recorded by the implementer. Require passing checks and review evidence for the exact revision and invalidate both after blocking findings.
