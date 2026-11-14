@@ -587,6 +587,29 @@ void main() {
     },
   );
 
+  test('missing saved Flutter launcher leaves prior output intact', () async {
+    final generated = await generate();
+    final output = File('${generated.directory}/build/web/index.html');
+    await output.parent.create(recursive: true);
+    await output.writeAsString('previous output');
+    await File('$sdk/bin/flutter').delete();
+    final native = NativeGenerationHost(
+      loadAsset: (_) async => fail('Verify must not prepare a helper'),
+    );
+    addTearDown(native.dispose);
+    await expectLater(
+      native.verify(generated, (_) async => fail('Verify must not dispatch')),
+      throwsA(
+        isA<MissingFlutterLauncher>().having(
+          (error) => error.toString(),
+          'guidance',
+          isNot(contains(temp.path)),
+        ),
+      ),
+    );
+    expect(await output.readAsString(), 'previous output');
+  });
+
   test('missing saved Python preserves output and recovery evidence', () async {
     final generated = (await generate()).copy(
       python: '${temp.path}/missing-python',
