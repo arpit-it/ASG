@@ -452,6 +452,8 @@ class SourceGenerationController extends BaseController {
     if (isDisposed) return;
     _error = _stopRequested
         ? 'Verification stopped by user. Existing files and completed results are retained.'
+        : error is MissingFlutterLauncher
+        ? 'The selected SDK is missing bin/flutter. Choose an installed Flutter SDK and retry. Existing files were preserved.'
         : error is FlutterSdkCacheMissing
         ? '${FlutterSdkCacheMissing.guidance} Existing files were preserved.'
         : 'Generation stopped; existing files were preserved. Check project data, current Plan approval, folder access and toolchain availability. Reopen Build after correcting saved data; retry with a current approved structured starter Plan.';
@@ -515,11 +517,6 @@ class SourceGenerationController extends BaseController {
       return !isDisposed &&
           !_stopRequested &&
           verified.phase == SourceGenerationPhase.ready;
-    } on MissingFlutterLauncher {
-      if (!isDisposed) {
-        _error = 'The selected SDK is missing bin/flutter. Choose an installed Flutter SDK and retry. Existing files were preserved.';
-      }
-      return false;
     } catch (error) {
       await _failure(active, error);
       return false;

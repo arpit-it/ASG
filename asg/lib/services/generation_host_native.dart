@@ -299,11 +299,13 @@ class NativeGenerationHost
     if (!path.isAbsolute(project.sdk) ||
         project.python.trim().isEmpty ||
         await Directory(project.sdk).resolveSymbolicLinks() !=
-            path.normalize(project.sdk) ||
-        !await File(path.join(project.sdk, 'bin', 'flutter')).exists()) {
+            path.normalize(project.sdk)) {
       throw const FormatException(
         'Select a real, installed Flutter SDK and Python executable.',
       );
+    }
+    if (!await File(path.join(project.sdk, 'bin', 'flutter')).exists()) {
+      throw const MissingFlutterLauncher();
     }
     await checkSources(project);
     await checkResolution(project);
