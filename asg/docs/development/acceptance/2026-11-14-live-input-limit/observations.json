@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "scope": "Observed isolated selected-checkpoint MLX regression only; no verified total context, model identity authentication, app/manual acceptance, larger model or other platform support.",
+  "source_revision": "2afdcfd8d076035b8f2d1d3f5191ee839952a1e1",
+  "host": "27.0.1",
+  "architecture": "arm64",
+  "dependencies": {
+    "mlx": "0.32.4",
+    "mlx-lm": "0.32.2",
+    "transformers": "5.20.2",
+    "tokenizers": "0.23.3"
+  },
+  "checks": {
+    "input_limit": {
+      "http_status": 400,
+      "seconds": 0.036,
+      "prompt_sha256": "1f9e5101f5260b80e29892bf302bff1d534cffc5c0d44674c60741517f6fad61",
+      "idle_after_refusal": true,
+      "retry_model": "Qwen3.8-27B-4bit"
+    },
+    "json": {
+      "seconds": 1.855,
+      "metrics": {
+        "finish_reason": "stop",
+        "prompt_tokens": 20,
+        "completion_tokens": 2,
+        "tokens_per_second": 45.0079611161998,
+        "peak_memory_gb": 15.814921002
+      }
+    },
+    "structured_sse": {
+      "seconds": 0.659,
+      "content_chunks": 9,
+      "metrics": {
+        "finish_reason": "stop",
+        "prompt_tokens": 31,
+        "completion_tokens": 10,
+        "tokens_per_second": 25.548619362481492,
+        "peak_memory_gb": 15.814921002
+      }
+    },
+    "disconnect": {
+      "idle_seconds": 0.216,
+      "scope": "Client disconnect observed; not a native-kernel preemption or process-tree guarantee."
+    },
+    "retry": {
+      "metrics": {
+        "finish_reason": "stop",
+        "prompt_tokens": 20,
+        "completion_tokens": 2,
+        "tokens_per_second": 46.14483866647078,
+        "peak_memory_gb": 15.814921002
+      }
+    }
+  },
+  "bridge_source_sha256": {
+    "qwen_server.py": "f4e8e3911b0bf5f028060a6e0bb11110222851dfb9952bbc909b5e4511108ff6",
+    "qwen_backends.py": "49f66d062a6b259c4d7f19b0cb8f6fb4746c20c25c141880d105a860f0694385"
+  },
+  "advertised_limits": {
+    "schema_version": 1,
+    "max_input_tokens": 4096,
+    "max_output_tokens": 4096,
+    "checkpoint_context_tokens": 262144
+  },
+  "response_identity_scope": "Every observed present completion model ID must match the request. Missing legacy IDs remain unverified; matching IDs are server assertions, not weight authentication.",
+  "provenance": "Operator-selected source revision and local checkpoint metadata; weights counted but not hashed; HTTP backend/device/model remain server assertions, not authentication.",
+  "metadata_sha256": {
+    "config.json": "14b65a0ee06517060a6bbd979bb1a8ff54e7b304b1a1f01d54344b88b8285e85",
+    "tokenizer_config.json": "792fa3f0cb88b111e54ef3134c873531008c4df471d108da17903426e308aa7b",
+    "model.safetensors.index.json": "13b840162b4cb35c66fef7df072f7dbb4717908204364f5e5d9f9655a2758fa8"
+  },
+  "weights": {
+    "file_count": 3,
+    "disk_bytes": 16054541349
+  },
+  "recorded_at": "2026-11-14T05:29:09Z"
+}
