@@ -1462,6 +1462,12 @@ void main() {
       findsOneWidget,
     );
     expect(find.textContaining(shown), findsOneWidget);
+    expect(
+      find.textContaining(
+        'Inspect the listed folders before retrying preparation.',
+      ),
+      findsOneWidget,
+    );
     expect(find.textContaining('1 additional folder found.'), findsOneWidget);
     await tester.scrollUntilVisible(
       find.text('Choose snapshot destination'),
