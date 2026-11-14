@@ -1,5 +1,9 @@
 # Progress and delivery history
 
+## Missing Python executable during Verify — 14 November 2026
+
+[PR #635](https://github.com/arpit-it/ASG/pull/635) adds recovery guidance for a saved Python executable that cannot start. On macOS, 77 focused tests and nine inventory tests passed; both required CI jobs passed on 8099252b88c3979e28a0cb6409beea6b9358cf3f. The reviewed tree was verified on main at 9ca758b8c363fe63082c359ae3a11495ce43408e. F16 remains open under #401.
+
 ## Missing Flutter launcher during Verify — 14 November 2026
 
 Verify explains when the saved SDK lacks the Flutter launcher before starting commands and preserves the existing output directory. On macOS, 76 Build and toolchain tests and nine inventory tests passed. Both required CI jobs passed on reviewed revision ab9d84b77f62b62107a9fa40325084c4e118ab35. The reviewed tree was verified on main at f11618de049270a9a95201b2651513ab2e6264ee. F16 remains open under #401. [PR #634](https://github.com/arpit-it/ASG/pull/634) · [Required CI](https://github.com/arpit-it/ASG/actions/runs/43642187344).
