@@ -8,6 +8,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:asg/controllers/self_snapshot_controller.dart';
 import 'package:asg/models/self_snapshot_operation.dart';
 import 'package:asg/models/snapshot_preparation_failure.dart';
 import 'package:asg/models/candidate_source_proposal.dart';
@@ -436,6 +437,34 @@ raise SystemExit(main(sys.argv[4:]))
       final found = await inspectIncompleteSnapshots(parent);
       expect(found.paths, expected.reversed.take(20));
       expect(found.additionalCount, 1);
+
+      final retained = expected.first;
+      expect(found.paths, isNot(contains(retained)));
+      final controller = SelfSnapshotController(
+        inspect: inspectIncompleteSnapshots,
+        prepare: ({
+          required source,
+          required destination,
+          required commit,
+          required python,
+          required stop,
+          required stopped,
+        }) async => throw SnapshotPreparationFailure(retained),
+      );
+      addTearDown(controller.dispose);
+      await controller.prepare(
+        source: '/source',
+        destination: parent,
+        commit: 'a' * 40,
+        python: '/python',
+      );
+      await controller.inspect(parent);
+      final status = controller.status!;
+      expect(status, contains('1 additional folder found.'));
+      expect(
+        status.split('\n').where((line) => line == retained),
+        hasLength(1),
+      );
     },
     skip: !Platform.isMacOS,
   );
