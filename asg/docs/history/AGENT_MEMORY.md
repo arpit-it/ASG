@@ -1,5 +1,9 @@
 # Durable project memory
 
+## Snapshot recovery destination visibility — 14 November 2026
+
+Snapshot recovery guidance keeps the retained path scoped to its original destination. See the [verified delivery record](PROGRESS.md#snapshot-recovery-destination-visibility--14-november-2026).
+
 ## Mac delivery evidence — 11 November 2026 UTC
 
 Build identifies unavailable SDK tools, static HTML review reports missing ARIA targets, and early snapshot retries preserve the last retained path. See the [verified delivery records](PROGRESS.md).
