@@ -1,5 +1,9 @@
 # Progress and delivery history
 
+## Snapshot recovery beyond the scan display limit — 14 November 2026
+
+[PR #630](https://github.com/arpit-it/ASG/pull/630) verified on macOS that the controller shows the retained path exactly once when the native scan lists 20 of 21 recovery folders. The snapshot suites reported 41 passed and one skipped. Both [required CI jobs](https://github.com/arpit-it/ASG/actions/runs/43619585904) passed on reviewed revision 4c8604a22e453349da8f3d5e7455e2565826752a. The reviewed tree was verified on main at 8b6528881964ad099b83d28c75837b6309b68e24. F12 remains open under #406.
+
 ## Snapshot recovery when inspection fails — 14 November 2026
 
 [PR #629](https://github.com/arpit-it/ASG/pull/629) verifies that a failed scan displays the retained path only for the original destination. All 31 snapshot tests passed locally and both [required CI jobs](https://github.com/arpit-it/ASG/actions/runs/43614111193) passed on a14b9be9d92d893e4cb6c0460620f3a7ad7a6a4a. The reviewed tree was verified on main at 6834e7838969c39bbd7301d40d806d950fa218e3. F12 remains open under #406.
