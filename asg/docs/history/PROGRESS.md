@@ -1,5 +1,9 @@
 # Progress and delivery history
 
+## Native Python launch regression — 14 November 2026
+
+[PR #636](https://github.com/arpit-it/ASG/pull/636) verifies that a missing saved Python executable leaves existing output and recovery evidence intact without disclosing paths or manufacturing a command result. macOS: 1,749 Flutter tests passed, ten skipped; analysis, web build, and nine inventory tests passed. Both [required CI jobs](https://github.com/arpit-it/ASG/actions/runs/43652674151) passed on 5a4a25724b278eb598390cd78c579cbb2b470919. The identical tested tree was verified on main at d17340360ae6c3e7456105ad6c007255eefc603e. F16 remains open under #401.
+
 ## Missing Python executable during Verify — 14 November 2026
 
 [PR #635](https://github.com/arpit-it/ASG/pull/635) adds recovery guidance for a saved Python executable that cannot start. On macOS, 77 focused tests and nine inventory tests passed; both required CI jobs passed on 8099252b88c3979e28a0cb6409beea6b9358cf3f. The reviewed tree was verified on main at 9ca758b8c363fe63082c359ae3a11495ce43408e. F16 remains open under #401.
