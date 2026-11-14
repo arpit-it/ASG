@@ -1,5 +1,15 @@
 # Progress and delivery history
 
+## F11 / #402 local observation — 14 November 2026
+
+Source revision: 0147dc69eaeb9bf1d0a97aaaaa6fa0f4b6202d11. macOS 27.0.1. Debug app in a disposable build with a distinct bundle identifier.
+
+- Native ASG requested, reviewed, and exported the Garden proposal. The separately confirmed passive preview rendered the Garden heading and welcome text in IAB. Stop cleared the URL and reload reported ERR_CONNECTION_REFUSED. The response ID for this particular UI request was not captured.
+- A separate disposable Flutter test used HtmlSourceProposer with the existing LiveResponseModelProvider hook. Health showed ready on MLX/Metal and /v1/models advertised Qwen3.8-27B-4bit. The test validated a Garden proposal and captured the exact same-stream response model ID Qwen3.8-27B-4bit before cleanup. One test passed in 13 seconds. This proposal was not the one rendered in IAB.
+
+F11 remains open.
+
+
 ## Snapshot recovery through early retries — 11 November 2026 UTC
 
 [Snapshot recovery through early retries](https://github.com/arpit-it/ASG/pull/591). Mac fixtures verified that an early retry failure preserves the last confirmed retained path and that a newer confirmed run replaces it. [Independent review](https://github.com/arpit-it/ASG/pull/591#pullrequestreview-5862942885) and [both required checks](https://github.com/arpit-it/ASG/actions/runs/43070171594) passed on revision `7cbf80f931b16033db699408b1bec51e6267c2be`. Signed merge `179379b444c58cdf532a669aff7a7fd065f6b257` was verified at 2026-11-11T17:53:46Z. Issue #406 remains open.
