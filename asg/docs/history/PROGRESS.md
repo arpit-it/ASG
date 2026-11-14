@@ -14504,3 +14504,18 @@ This is fixture evidence for passive preview. Issue #402 remains open.
 ### Solo PR review guides
 
 [PR #619](https://github.com/arpit-it/ASG/pull/619) merged as `b4eb78c98c0b44d010cc18f7932212d802bc6e47` after fresh review and both required CI jobs in run `43462323364` passed. Main matched the tested tree, issue #618 closed, and the coordinator recorded the outcome and released the claims. The active automation now follows the fresh PR review workflow.
+
+### F11 Garden export viewport observation (14 November 2026)
+
+For issue #402, the Garden export from the disposable macOS debug app at
+`0147dc69eaeb9bf1d0a97aaaaa6fa0f4b6202d11` was measured in the Mac in-app
+browser. The exported HTML and CSS hashes matched the reviewed export before
+serving it through a disposable loopback server. At viewport widths of 320 and
+1280 CSS px, the document scroll widths were 320 and 1280 px and the Garden
+card widths were 272 and 640 px, respectively. The heading rendered and the
+stylesheet loaded with HTTP 200. The browser's favicon request returned 404.
+The disposable server was stopped after measurement.
+
+PR #621 records the separate native passive preview and Stop observation and the
+separate proposal stream that returned model ID `Qwen3.8-27B-4bit`. The native
+UI request's response model ID was not captured. F11 remains open.
