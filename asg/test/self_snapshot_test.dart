@@ -1296,6 +1296,11 @@ void main() {
     await controller.inspect('/destination');
     expect(controller.status, contains(original));
 
+    await controller.inspect('/different');
+    expect(controller.status, isNot(contains(original)));
+    await controller.inspect('/destination');
+    expect(controller.status, contains(original));
+
     await prepare();
     await controller.inspect('/destination');
     expect(controller.status, contains(replacement));
