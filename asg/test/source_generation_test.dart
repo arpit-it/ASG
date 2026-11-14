@@ -23,6 +23,7 @@ import 'package:asg/models/app_definition.dart';
 import 'package:asg/models/project.dart';
 import 'package:asg/models/artifact_inspection.dart';
 import 'package:asg/models/source_generation.dart';
+import 'package:asg/models/generation_toolchain.dart';
 import 'package:asg/services/generation_host_native.dart';
 import 'package:asg/services/generation_input.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -585,6 +586,38 @@ void main() {
       await native.dispose();
     },
   );
+
+  test('missing saved Python preserves output and recovery evidence', () async {
+    final generated = (await generate()).copy(
+      python: '${temp.path}/missing-python',
+    );
+    for (final relative in [
+      'bin/cache/flutter_tools.snapshot',
+      'bin/cache/dart-sdk/bin/dart',
+      'packages/flutter_tools/.dart_tool/package_config.json',
+    ]) {
+      final file = File('$sdk/$relative');
+      await file.parent.create(recursive: true);
+      await file.writeAsString('fixture');
+    }
+    final output = File('${generated.directory}/build/web/index.html');
+    await output.parent.create(recursive: true);
+    await output.writeAsString('previous output');
+    final native = NativeGenerationHost(loadAsset: assets);
+    addTearDown(native.dispose);
+    final events = <GeneratedProject>[];
+    await expectLater(
+      native.verify(generated, (event) async => events.add(event)),
+      throwsA(isA<VerificationPythonUnavailable>()),
+    );
+    final saved = GeneratedProject.fromJson(events.last.toJson());
+    expect(saved.phase, SourceGenerationPhase.failed);
+    expect(saved.pendingOperation, 'resolve');
+    expect(saved.failedOperation, 'resolve');
+    expect(saved.steps, isEmpty);
+    expect(saved.error, isNot(contains(temp.path)));
+    expect(await output.readAsString(), 'previous output');
+  });
 
   test(
     'runner exceptions identify failed task and retry clears identity',
