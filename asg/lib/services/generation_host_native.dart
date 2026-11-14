@@ -141,9 +141,7 @@ class NativeGenerationHost
       );
     }
     if (!await File(path.join(canonicalSdk, 'bin', 'flutter')).exists()) {
-      throw const FormatException(
-        'The selected SDK has no bin/flutter executable.',
-      );
+      throw const MissingFlutterLauncher();
     }
     final destination = path.join(canonicalParent, name);
     if (!path.isWithin(canonicalParent, destination) ||

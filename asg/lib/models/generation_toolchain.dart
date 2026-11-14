@@ -19,3 +19,8 @@ class GenerationToolchain {
       'do not prove versions, dependencies, permissions, safe contents or a '
       'working build. Generation still requires approval and verification.';
 }
+
+/// The selected SDK does not contain the Flutter launcher.
+class MissingFlutterLauncher implements Exception {
+  const MissingFlutterLauncher();
+}

@@ -4,6 +4,12 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:asg/models/build_plan.dart';
+import 'package:asg/models/chat_message.dart';
+import 'package:asg/services/application_store.dart';
+import 'package:asg/services/conversation_store.dart';
+import 'package:asg/services/plan_approval_store.dart';
+import 'package:asg/services/studio_store.dart';
 import 'package:asg/controllers/source_generation_controller.dart';
 import 'package:asg/models/generation_toolchain.dart';
 import 'package:asg/services/generation_host.dart';
@@ -292,6 +298,48 @@ void main() {
   tearDown(() {
     if (!controller.isDisposed) controller.dispose();
   });
+  test(
+    'approved Build gives specific guidance for a missing launcher',
+    () async {
+      final records = PreferenceRecords(preferences);
+      await StudioStore(records).save([project]);
+      await ApplicationStore(records)
+          .save(project.id, const ApplicationSnapshot(definition, [], 1));
+      final approvals = PlanApprovalStore(records);
+      final plans = [
+        ChatMessage(
+          role: 'assistant',
+          content: BuildPlan.starterContract,
+          planContext: approvals.contextFor(project),
+        ),
+      ];
+      await ConversationStore(records).save(project.id, plans);
+      await approvals.save(project, plans, true);
+
+      Future<bool> generate() => controller.generate(
+        parent: '/parent',
+        name: 'new_app',
+        sdk: '/sdk',
+        python: 'python3',
+        approved: true,
+      );
+
+      host.beforeGenerationWrite = () async =>
+          throw const MissingFlutterLauncher();
+      expect(await generate(), isFalse);
+      expect(controller.error, contains('Choose an installed Flutter SDK'));
+      expect(host.writes, 0);
+      expect(host.verifications, 0);
+      expect(controller.result, isNull);
+
+      host.beforeGenerationWrite = () async =>
+          throw StateError('private detail');
+      expect(await generate(), isFalse);
+      expect(controller.error, contains('Check project data'));
+      expect(controller.error, isNot(contains('private detail')));
+    },
+  );
+
   test('unsupported generation does not block inspection', () async {
     host.generationSupported = false;
     expect(controller.available, isFalse);
