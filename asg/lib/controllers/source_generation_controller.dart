@@ -513,6 +513,11 @@ class SourceGenerationController extends BaseController {
       return !isDisposed &&
           !_stopRequested &&
           verified.phase == SourceGenerationPhase.ready;
+    } on MissingFlutterLauncher {
+      if (!isDisposed) {
+        _error = 'The selected SDK is missing bin/flutter. Choose an installed Flutter SDK and retry. Existing files were preserved.';
+      }
+      return false;
     } catch (_) {
       await _failure(active);
       return false;
