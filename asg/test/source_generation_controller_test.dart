@@ -27,6 +27,7 @@ import 'package:asg/models/app_definition.dart';
 import 'package:asg/models/project.dart';
 import 'package:asg/models/artifact_inspection.dart';
 import 'package:asg/models/source_generation.dart';
+import 'package:asg/models/generation_toolchain.dart';
 import 'package:asg/services/generation_host.dart';
 import 'package:asg/services/record_storage.dart';
 import 'package:asg/services/source_generation_store.dart';
@@ -249,6 +250,24 @@ void main() {
       expect(c.capabilities.host, 'Uninspected host');
     },
   );
+
+  test('Build and Verify save missing SDK cache guidance', () async {
+    host.verificationError = FlutterSdkCacheMissing();
+    expect(await generate(true), isFalse);
+    expect(c.error, contains(FlutterSdkCacheMissing.guidance));
+    expect(
+      store.load(project.id)?.error,
+      contains(FlutterSdkCacheMissing.guidance),
+    );
+
+    expect(await c.verifyAgain(approved: true), isFalse);
+    expect(host.verifications, 2);
+    expect(c.error, contains(FlutterSdkCacheMissing.guidance));
+    expect(
+      store.load(project.id)?.error,
+      contains(FlutterSdkCacheMissing.guidance),
+    );
+  });
 
   test('new preparation failure does not inherit previous Stop', () async {
     host.afterResolve = () async => c.stopVerification();

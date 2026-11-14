@@ -1,5 +1,9 @@
 # Progress and delivery history
 
+## Missing Flutter launcher guidance — 14 November 2026
+
+[PR #632](https://github.com/arpit-it/ASG/pull/632) gives specific guidance before Build writes output if the selected SDK lacks bin/flutter. All 74 focused tests passed on macOS, and nine inventory tests passed after regeneration. Both [required CI jobs](https://github.com/arpit-it/ASG/actions/runs/43633272761) passed on reviewed revision 355886d7f61280cfa36fee42492768d97e5c5b4f. The reviewed tree was verified on main at 44bbf7d493b9630b8f748d23c670235e3e41f800. F16 remains open under #401.
+
 ## Snapshot recovery beyond the scan display limit — 14 November 2026
 
 [PR #630](https://github.com/arpit-it/ASG/pull/630) verified on macOS that the controller shows the retained path exactly once when the native scan lists 20 of 21 recovery folders. The snapshot suites reported 41 passed and one skipped. Both [required CI jobs](https://github.com/arpit-it/ASG/actions/runs/43619585904) passed on reviewed revision 4c8604a22e453349da8f3d5e7455e2565826752a. The reviewed tree was verified on main at 8b6528881964ad099b83d28c75837b6309b68e24. F12 remains open under #406.

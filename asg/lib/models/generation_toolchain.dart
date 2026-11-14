@@ -24,3 +24,11 @@ class GenerationToolchain {
 class MissingFlutterLauncher implements Exception {
   const MissingFlutterLauncher();
 }
+
+/// Verification requires a Flutter SDK with its tools already cached.
+class FlutterSdkCacheMissing extends StateError {
+  FlutterSdkCacheMissing() : super(guidance);
+
+  static const guidance =
+      'Use an already initialized Flutter SDK with cached tools and Dart.';
+}
