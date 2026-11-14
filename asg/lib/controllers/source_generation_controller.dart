@@ -454,6 +454,8 @@ class SourceGenerationController extends BaseController {
         ? 'Verification stopped by user. Existing files and completed results are retained.'
         : error is MissingFlutterLauncher
         ? 'The selected SDK is missing bin/flutter. Choose an installed Flutter SDK and retry. Existing files were preserved.'
+        : error is VerificationPythonUnavailable
+        ? 'Could not start the selected Python executable. Restore it at the saved path or choose an installed Python executable for a new build. Existing files were preserved.'
         : error is FlutterSdkCacheMissing
         ? '${FlutterSdkCacheMissing.guidance} Existing files were preserved.'
         : 'Generation stopped; existing files were preserved. Check project data, current Plan approval, folder access and toolchain availability. Reopen Build after correcting saved data; retry with a current approved structured starter Plan.';

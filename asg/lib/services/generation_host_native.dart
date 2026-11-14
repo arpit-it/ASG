@@ -537,28 +537,32 @@ class NativeGenerationHost
       await beforeStart?.call();
       checkVerification();
       _activeCaptureCancellation = cancellation;
-      process = await Process.start(project.python, [
-        '-I',
-        '-B',
-        helper.path,
-        '--operation',
-        operation,
-        '--sdk',
-        project.sdk,
-        '--directory',
-        project.directory,
-        '--timeout',
-        '${project.limits.commandTimeoutSeconds}',
-        '--output-limit',
-        '${project.limits.outputLimitBytes}',
-        if (project.confined) '--confined',
-        if (target != null) ...[
-          '--test-file',
-          target.file,
-          '--test-name',
-          target.name,
-        ],
-      ], runInShell: false);
+      try {
+        process = await Process.start(project.python, [
+          '-I',
+          '-B',
+          helper.path,
+          '--operation',
+          operation,
+          '--sdk',
+          project.sdk,
+          '--directory',
+          project.directory,
+          '--timeout',
+          '${project.limits.commandTimeoutSeconds}',
+          '--output-limit',
+          '${project.limits.outputLimitBytes}',
+          if (project.confined) '--confined',
+          if (target != null) ...[
+            '--test-file',
+            target.file,
+            '--test-name',
+            target.name,
+          ],
+        ], runInShell: false);
+      } on ProcessException {
+        throw const VerificationPythonUnavailable();
+      }
       _activeProcess = process;
       if (_closed || _verificationCancelled) {
         _stopCapture();
