@@ -514,9 +514,7 @@ class NativeGenerationHost
       'packages/flutter_tools/.dart_tool/package_config.json',
     ]) {
       if (!await File(path.join(project.sdk, relative)).exists()) {
-        throw StateError(
-          'Use an already initialized Flutter SDK with cached tools and Dart. ASG will not bootstrap an SDK.',
-        );
+        throw FlutterSdkCacheMissing();
       }
     }
     final helperDirectory = await Directory.systemTemp.createTemp(

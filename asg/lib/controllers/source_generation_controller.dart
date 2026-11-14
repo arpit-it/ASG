@@ -448,10 +448,12 @@ class SourceGenerationController extends BaseController {
     update();
   }
 
-  Future<void> _failure(GeneratedProject? active) async {
+  Future<void> _failure(GeneratedProject? active, Object error) async {
     if (isDisposed) return;
     _error = _stopRequested
         ? 'Verification stopped by user. Existing files and completed results are retained.'
+        : error is FlutterSdkCacheMissing
+        ? '${FlutterSdkCacheMissing.guidance} Existing files were preserved.'
         : 'Generation stopped; existing files were preserved. Check project data, current Plan approval, folder access and toolchain availability. Reopen Build after correcting saved data; retry with a current approved structured starter Plan.';
     if (active == null) return;
     final latest = _result?.directory == active.directory ? _result! : active;
@@ -518,8 +520,8 @@ class SourceGenerationController extends BaseController {
         _error = 'The selected SDK is missing bin/flutter. Choose an installed Flutter SDK and retry. Existing files were preserved.';
       }
       return false;
-    } catch (_) {
-      await _failure(active);
+    } catch (error) {
+      await _failure(active, error);
       return false;
     } finally {
       _verifying = false;
@@ -589,9 +591,9 @@ class SourceGenerationController extends BaseController {
       return !isDisposed &&
           !_stopRequested &&
           verified.phase == SourceGenerationPhase.ready;
-    } catch (_) {
+    } catch (error) {
       if (verificationStarted) {
-        await _failure(current);
+        await _failure(current, error);
       } else if (!isDisposed) {
         _error = 'Build did not start; existing output is preserved. Check saved project data, the current prototype and approved structured starter Plan. For changed inputs, Generate a new folder. Resume requires unchanged saved toolchains and a safe checkpoint; model-written output requires a separate source review candidate. Reopen Build after resolving the problem.';
       }
