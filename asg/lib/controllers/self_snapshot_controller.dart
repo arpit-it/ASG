@@ -450,6 +450,7 @@ class SelfSnapshotController extends BaseController {
           ? 'No incomplete snapshot folders found.'
           : [
               'Possible incomplete snapshot folders:',
+              'Inspect the listed folders before retrying preparation.',
               ...found.paths,
               if (additional > 0)
                 '$additional additional ${additional == 1 ? 'folder' : 'folders'} found.',
