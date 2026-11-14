@@ -1260,6 +1260,7 @@ void main() {
     const original = '/destination/asg-self-candidate-a1b2c3d4';
     const replacement = '/destination/asg-self-candidate-d4c3b2a1';
     var attempts = 0;
+    var inspectionFails = false;
     final controller = SelfSnapshotController(
       prepare:
           ({
@@ -1279,8 +1280,10 @@ void main() {
                 throw const SnapshotPreparationFailure(replacement);
             }
           },
-      inspect: (_) async =>
-          SnapshotRecoveryInventory(paths: [], additionalCount: 0),
+      inspect: (_) async {
+        if (inspectionFails) throw StateError('Destination unavailable.');
+        return SnapshotRecoveryInventory(paths: [], additionalCount: 0);
+      },
     );
     addTearDown(controller.dispose);
 
@@ -1301,6 +1304,21 @@ void main() {
     await controller.inspect('/destination');
     expect(controller.status, contains(original));
 
+    inspectionFails = true;
+    await controller.inspect('/destination');
+    expect(
+      controller.status,
+      contains('Could not inspect the selected destination'),
+    );
+    expect(controller.status, contains(original));
+    await controller.inspect('/different');
+    expect(
+      controller.status,
+      contains('Could not inspect the selected destination'),
+    );
+    expect(controller.status, isNot(contains(original)));
+
+    inspectionFails = false;
     await prepare();
     await controller.inspect('/destination');
     expect(controller.status, contains(replacement));
