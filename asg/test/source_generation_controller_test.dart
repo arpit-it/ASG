@@ -269,6 +269,20 @@ void main() {
     );
   });
 
+  test(
+    'Verify explains a missing launcher and keeps the working output',
+    () async {
+      expect(await generate(true), isTrue);
+      final working = c.result!;
+      host.verificationError = const MissingFlutterLauncher();
+      expect(await c.verifyAgain(approved: true), isFalse);
+      expect(c.error, contains('missing bin/flutter'));
+      expect(store.load(project.id)?.error, contains('missing bin/flutter'));
+      expect(store.load(project.id)?.directory, working.directory);
+      expect(host.generations, 1);
+    },
+  );
+
   test('new preparation failure does not inherit previous Stop', () async {
     host.afterResolve = () async => c.stopVerification();
     expect(await generate(true), isFalse);

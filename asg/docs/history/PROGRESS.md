@@ -1,5 +1,9 @@
 # Progress and delivery history
 
+## Flutter SDK cache guidance — 14 November 2026
+
+[PR #633](https://github.com/arpit-it/ASG/pull/633) preserves initialized SDK guidance in Build and Verify when cached Flutter tools are missing. The focused regression and all nine inventory tests passed. Both [required CI jobs](https://github.com/arpit-it/ASG/actions/runs/43637756507) passed on reviewed revision 28fcb65823891a9671e122be9b9c5d1d8e56672e. The reviewed tree was verified on main at 936dda2d5a7841d34ab879abffbc29a26de1250d. F16 remains open under #401.
+
 ## Missing Flutter launcher guidance — 14 November 2026
 
 [PR #632](https://github.com/arpit-it/ASG/pull/632) gives specific guidance before Build writes output if the selected SDK lacks bin/flutter. All 74 focused tests passed on macOS, and nine inventory tests passed after regeneration. Both [required CI jobs](https://github.com/arpit-it/ASG/actions/runs/43633272761) passed on reviewed revision 355886d7f61280cfa36fee42492768d97e5c5b4f. The reviewed tree was verified on main at 44bbf7d493b9630b8f748d23c670235e3e41f800. F16 remains open under #401.
