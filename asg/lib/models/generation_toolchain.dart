@@ -32,3 +32,11 @@ class FlutterSdkCacheMissing extends StateError {
   static const guidance =
       'Use an already initialized Flutter SDK with cached tools and Dart.';
 }
+
+/// The selected Python executable could not start the verification helper.
+class VerificationPythonUnavailable implements Exception {
+  const VerificationPythonUnavailable();
+
+  @override
+  String toString() => 'Could not start the selected Python executable.';
+}

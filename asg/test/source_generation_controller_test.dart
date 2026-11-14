@@ -283,6 +283,22 @@ void main() {
     },
   );
 
+  test('Verify explains Python launch failure and retains output', () async {
+    expect(await generate(true), isTrue);
+    final working = c.result!;
+    host.verificationError = const VerificationPythonUnavailable();
+
+    expect(await c.verifyAgain(approved: true), isFalse);
+    expect(c.error, contains('Restore it at the saved path'));
+    final saved = store.load(project.id)!;
+    expect(
+      saved.error,
+      contains('Could not start the selected Python executable'),
+    );
+    expect(saved.directory, working.directory);
+    expect(host.generations, 1);
+  });
+
   test('new preparation failure does not inherit previous Stop', () async {
     host.afterResolve = () async => c.stopVerification();
     expect(await generate(true), isFalse);

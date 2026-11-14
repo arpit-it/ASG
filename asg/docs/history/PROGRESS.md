@@ -1,5 +1,9 @@
 # Progress and delivery history
 
+## Missing Flutter launcher during Verify — 14 November 2026
+
+Verify explains when the saved SDK lacks the Flutter launcher before starting commands and preserves the existing output directory. On macOS, 76 Build and toolchain tests and nine inventory tests passed. Both required CI jobs passed on reviewed revision ab9d84b77f62b62107a9fa40325084c4e118ab35. The reviewed tree was verified on main at f11618de049270a9a95201b2651513ab2e6264ee. F16 remains open under #401. [PR #634](https://github.com/arpit-it/ASG/pull/634) · [Required CI](https://github.com/arpit-it/ASG/actions/runs/43642187344).
+
 ## Flutter SDK cache guidance — 14 November 2026
 
 [PR #633](https://github.com/arpit-it/ASG/pull/633) preserves initialized SDK guidance in Build and Verify when cached Flutter tools are missing. The focused regression and all nine inventory tests passed. Both [required CI jobs](https://github.com/arpit-it/ASG/actions/runs/43637756507) passed on reviewed revision 28fcb65823891a9671e122be9b9c5d1d8e56672e. The reviewed tree was verified on main at 936dda2d5a7841d34ab879abffbc29a26de1250d. F16 remains open under #401.
