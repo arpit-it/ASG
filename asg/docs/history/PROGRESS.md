@@ -14519,3 +14519,14 @@ The disposable server was stopped after measurement.
 PR #621 records the separate native passive preview and Stop observation and the
 separate proposal stream that returned model ID `Qwen3.8-27B-4bit`. The native
 UI request's response model ID was not captured. F11 remains open.
+
+### F11 live response and passive preview (14 November 2026)
+
+A disposable macOS Flutter test used application sources matching
+`0147dc69eaeb9bf1d0a97aaaaa6fa0f4b6202d11`. The existing MLX/Metal runtime
+reported ready and advertised `Qwen3.8-27B-4bit`. The test asserted that model
+ID on the completed proposal stream and passed the same proposal and matching
+export bytes to the production passive preview host. The in-app browser
+rendered the Garden Stream Check heading and welcome text. The test called
+the host's Stop method and verified that a new connection failed. The check
+passed in 76 seconds. This test exercised the host directly. F11 remains open.
