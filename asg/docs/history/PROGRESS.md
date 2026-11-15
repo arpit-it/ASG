@@ -1,5 +1,9 @@
 # Progress and delivery history
 
+## Local MLX output budget — 15 November 2026
+
+F22 (#396). The existing MLX / Metal bridge refused a requested output budget of 4,097 tokens with HTTP 400. A request with a one-token budget timed out at 35 seconds. After health returned to idle, a second request with a different prompt and the same budget completed in 45.34 seconds, returned Qwen3.8-27B-4bit, counted one generated token, reported a length stop and returned to idle. These observations concern budget enforcement. Sustained throughput and generation at the 4,096-token output cap remain unverified. The input boundary evidence is on main at d0f63c36e989f2d62dbacd3d7d134d46babcdb9d ([PR #642](https://github.com/arpit-it/ASG/pull/642)).
+
 ## Local MLX bridge input boundary — 15 November 2026
 
 F22 (#396): The installed tokenizer and bridge chat template produced synthetic prompts of exactly 4,096 and 4,097 input tokens. The owner-started MLX / Metal bridge returned HTTP 400 with guidance to shorten the 4,097-token request. At 4,096 tokens it returned Qwen3.8-27B-4bit and both markers, generating 14 tokens in a 22.85-second request. The bridge reported 23.09 generated tokens/s and 16.26 GB peak memory. Health returned to idle after each request. Total checkpoint context remains unverified. The near-limit observation was verified on main at 4a4d4d1356fb0a86e4b82e93d6f8496bbeca5c8f ([PR #641](https://github.com/arpit-it/ASG/pull/641)).
