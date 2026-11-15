@@ -1,5 +1,9 @@
 # Progress and delivery history
 
+## Live Qwen preset observation — 15 November 2026 UTC
+
+F22 (#396). On the isolated web build from the application source in 45b5371, Settings completed a nonblank text test and explicitly saved it to a named preset. After closing and reopening Settings, preset comparison showed Qwen3.8-27B-4bit as the historical response model ID, 6,957 ms to first text and 7,542 ms to completion. The MLX / Metal server reported 26 prompt tokens, 13 completion tokens, 22.27 tokens/s and 16.26 GB process peak memory. The observation covers one model and one test. Full F22 acceptance remains open.
+
 ## Server-reported model in browser project chat — 15 November 2026
 
 F22 (#396). In the isolated Flutter web build matching merge 45b5371, a completed task planner Discuss reply displayed Qwen3.8-27B-4bit as the server-reported model. The runtime health endpoint identified MLX on Metal and the model listing returned the same ID. Both required CI jobs passed for the reviewed revision. Broader F22 acceptance remains open. [PR #647](https://github.com/arpit-it/ASG/pull/647)
