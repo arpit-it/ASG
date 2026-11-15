@@ -1,5 +1,9 @@
 # Progress and delivery history
 
+## Local MLX marker retrieval — 15 November 2026
+
+F22 (#396): The existing Qwen3.8-27B-4bit runtime advertised the exact model ID and reported idle on MLX / Metal before the request. The JSON completion returned the same model ID and both markers from a 2,594-token synthetic prompt. It emitted 14 tokens in a 15.037-second request. The bridge reported 24.02 generated tokens/s and 16.14 GB peak memory. Health returned to idle. This is one observed request on this Mac. The 4,096-token bridge boundary and total checkpoint context were not measured. F22 remains open.
+
 ## Linux starter prerequisite investigation — 15 November 2026
 
 Ubuntu CI directly invokes the native host to generate, resume after a saved resolve checkpoint, build and serve the fixed Flutter starter. The Build controller still requires the host's macOS-only support flag, so the fixture bypasses the desktop entry point. The next prerequisite is a Linux desktop test through Build that covers capability reporting, approval, Stop and recovery. Real Linux desktop acceptance remains deferred under #400, and F16 remains open under #401.
