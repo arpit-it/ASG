@@ -573,17 +573,23 @@ void main() {
     () async {
       final generated = await generate();
       final events = <GeneratedProject>[];
-      final native = NativeGenerationHost(loadAsset: assets);
+      final output = File('${generated.directory}/build/web/index.html');
+      await output.parent.create(recursive: true);
+      await output.writeAsString('previous output');
+      final native = NativeGenerationHost(
+        loadAsset: (_) async => fail('Verify must not prepare a helper'),
+      );
+      addTearDown(native.dispose);
       await expectLater(
         native.verify(generated, (event) async => events.add(event)),
-        throwsStateError,
+        throwsA(isA<FlutterSdkCacheMissing>()),
       );
       final failed = GeneratedProject.fromJson(events.last.toJson());
       expect(failed.failedOperation, 'resolve');
       expect(failed.phase, SourceGenerationPhase.failed);
       expect(failed.steps, isEmpty);
       expect(failed.error, contains('already initialized Flutter SDK'));
-      await native.dispose();
+      expect(await output.readAsString(), 'previous output');
     },
   );
 

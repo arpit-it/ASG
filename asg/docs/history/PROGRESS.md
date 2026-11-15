@@ -1,5 +1,9 @@
 # Progress and delivery history
 
+## Native Flutter launcher regression — 14 November 2026
+
+[PR #637](https://github.com/arpit-it/ASG/pull/637) verifies that removing the saved Flutter launcher prevents helper preparation and preserves existing web output. macOS analysis, the web build, nine inventory checks and 1,750 Flutter tests passed, with ten skipped. Both [required CI jobs](https://github.com/arpit-it/ASG/actions/runs/43655275334) passed on febc49b80d2c4561660284197b2c2aa6b8789055. The tested tree was verified on main at e5c74bf877846f5d3ac48c645c1879667186b47a. F16 remains open under #401.
+
 ## Native Python launch regression — 14 November 2026
 
 [PR #636](https://github.com/arpit-it/ASG/pull/636) verifies that a missing saved Python executable leaves existing output and recovery evidence intact without disclosing paths or manufacturing a command result. macOS: 1,749 Flutter tests passed, ten skipped; analysis, web build, and nine inventory tests passed. Both [required CI jobs](https://github.com/arpit-it/ASG/actions/runs/43652674151) passed on 5a4a25724b278eb598390cd78c579cbb2b470919. The identical tested tree was verified on main at d17340360ae6c3e7456105ad6c007255eefc603e. F16 remains open under #401.
