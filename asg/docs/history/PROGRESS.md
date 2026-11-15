@@ -1,5 +1,9 @@
 # Progress and delivery history
 
+## Local MLX retrieval near the bridge input limit — 15 November 2026
+
+F22 (#396): The owner-started MLX / Metal runtime advertised Qwen3.8-27B-4bit and a 4,096-token input limit. Starting idle, it returned the exact model ID and both markers from a synthetic 4,039-token prompt, emitting 14 tokens in 22.884 seconds. The bridge reported 22.55 generated tokens/s and 16.24 GB peak memory. The runtime returned to idle. The input was 57 tokens below the bridge limit. Exact boundary and full checkpoint context remain pending. The earlier 2,594-token observation is verified on main at 53201fc9e4d5ea67e6b662a562ceb0914c24db07 ([PR #640](https://github.com/arpit-it/ASG/pull/640)).
+
 ## Local MLX marker retrieval — 15 November 2026
 
 F22 (#396): The existing Qwen3.8-27B-4bit runtime advertised the exact model ID and reported idle on MLX / Metal before the request. The JSON completion returned the same model ID and both markers from a 2,594-token synthetic prompt. It emitted 14 tokens in a 15.037-second request. The bridge reported 24.02 generated tokens/s and 16.14 GB peak memory. Health returned to idle. This is one observed request on this Mac. The 4,096-token bridge boundary and total checkpoint context were not measured. F22 remains open.
