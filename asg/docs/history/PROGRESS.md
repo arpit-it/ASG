@@ -1,5 +1,13 @@
 # Progress and delivery history
 
+## Linux starter prerequisite investigation — 15 November 2026
+
+Ubuntu CI directly invokes the native host to generate, resume after a saved resolve checkpoint, build and serve the fixed Flutter starter. The Build controller still requires the host's macOS-only support flag, so the fixture bypasses the desktop entry point. The next prerequisite is a Linux desktop test through Build that covers capability reporting, approval, Stop and recovery. Real Linux desktop acceptance remains deferred under #400, and F16 remains open under #401.
+
+## Flutter SDK cache regression — 15 November 2026
+
+[PR #638](https://github.com/arpit-it/ASG/pull/638) verifies that a missing cache stops Verify before helper preparation and retains prior web output. Both [required CI jobs](https://github.com/arpit-it/ASG/actions/runs/43657594757) passed on ad24aa99dd2cdc38f1df78abf8a6523e7b96a90b. The tested tree was verified on main at a1c05f322945bb1225807d7318e0e33510551cbe. F16 remains open under #401.
+
 ## Native Flutter launcher regression — 14 November 2026
 
 [PR #637](https://github.com/arpit-it/ASG/pull/637) verifies that removing the saved Flutter launcher prevents helper preparation and preserves existing web output. macOS analysis, the web build, nine inventory checks and 1,750 Flutter tests passed, with ten skipped. Both [required CI jobs](https://github.com/arpit-it/ASG/actions/runs/43655275334) passed on febc49b80d2c4561660284197b2c2aa6b8789055. The tested tree was verified on main at e5c74bf877846f5d3ac48c645c1879667186b47a. F16 remains open under #401.
