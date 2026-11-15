@@ -1,5 +1,9 @@
 # Progress and delivery history
 
+## Live project chat near the MLX input limit — 15 November 2026
+
+F22 (#396). A disposable Flutter test using ChatController and LocalModelProvider passed in 21 seconds. Health and model discovery confirmed the existing MLX / Metal service and Qwen3.8-27B-4bit. The completed stream reported the same model ID and 3,919 prompt tokens against the advertised 4,096-token input cap. The controller saved an assistant reply with the requested model ID in fixture storage. The test captured completion data before normal connection cleanup, which cleared those fields and caused the first assertion to fail. Application source matched main at 80c49c6. Full context and manual interface acceptance remain open.
+
 ## Local MLX recovery after streamed text — 15 November 2026
 
 F22 (#396). On the owner-started MLX / Metal runtime, the client closed a request after receiving its first text. Health first reported idle 0.215 seconds after close. A subsequent JSON completion returned READY and the exact Qwen3.8-27B-4bit model ID, followed by idle health. This measures one client disconnect and retry. The output-budget observation was verified on main at efc64bca4a621e21cd38abaebe13576fbfd15c63 ([PR #643](https://github.com/arpit-it/ASG/pull/643)).
