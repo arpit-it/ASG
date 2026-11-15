@@ -1,5 +1,9 @@
 # Progress and delivery history
 
+## Server-reported model in browser project chat — 15 November 2026
+
+F22 (#396). In the isolated Flutter web build matching merge 45b5371, a completed task planner Discuss reply displayed Qwen3.8-27B-4bit as the server-reported model. The runtime health endpoint identified MLX on Metal and the model listing returned the same ID. Both required CI jobs passed for the reviewed revision. Broader F22 acceptance remains open. [PR #647](https://github.com/arpit-it/ASG/pull/647)
+
 ## Live project chat in the in-app browser — 15 November 2026
 
 F22 (#396). The isolated Flutter web build from fb21cf0 opened the task planner project created through the wizard. Its Discuss screen displayed a live reply describing how a newly added task would appear in the list with a Pending status. The existing service's health and model listing identified Qwen3.8-27B-4bit on MLX / Metal. The browser displayed the requested model ID. The ID returned by that browser response was not captured. The separate controller run captured its returned model ID and is recorded in [PR #645](https://github.com/arpit-it/ASG/pull/645), merged at 81141c4. Full F22 acceptance remains open.
