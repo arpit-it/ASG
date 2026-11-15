@@ -1,5 +1,9 @@
 # Progress and delivery history
 
+## Local MLX recovery after streamed text — 15 November 2026
+
+F22 (#396). On the owner-started MLX / Metal runtime, the client closed a request after receiving its first text. Health first reported idle 0.215 seconds after close. A subsequent JSON completion returned READY and the exact Qwen3.8-27B-4bit model ID, followed by idle health. This measures one client disconnect and retry. The output-budget observation was verified on main at efc64bca4a621e21cd38abaebe13576fbfd15c63 ([PR #643](https://github.com/arpit-it/ASG/pull/643)).
+
 ## Local MLX output budget — 15 November 2026
 
 F22 (#396). The existing MLX / Metal bridge refused a requested output budget of 4,097 tokens with HTTP 400. A request with a one-token budget timed out at 35 seconds. After health returned to idle, a second request with a different prompt and the same budget completed in 45.34 seconds, returned Qwen3.8-27B-4bit, counted one generated token, reported a length stop and returned to idle. These observations concern budget enforcement. Sustained throughput and generation at the 4,096-token output cap remain unverified. The input boundary evidence is on main at d0f63c36e989f2d62dbacd3d7d134d46babcdb9d ([PR #642](https://github.com/arpit-it/ASG/pull/642)).
