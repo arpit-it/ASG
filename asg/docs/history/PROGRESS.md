@@ -1,5 +1,9 @@
 # Progress and delivery history
 
+## Live Qwen Settings JSON test — 15 November 2026 UTC
+
+F22 (#396). Settings in the isolated web build from the application source in 45b5371 accepted the expected JSON sentinel object and saved the historical response model ID Qwen3.8-27B-4bit on the selected preset. MLX / Metal health and model discovery matched the requested ID. Client first text arrived in 7,813 ms and completion in 8,164 ms. Saving replaced the earlier text observation in the disposable preset. This observation covers one fixed JSON prompt. Broader format, tool and two-model profile acceptance remain open.
+
 ## Live Qwen preset observation — 15 November 2026 UTC
 
 F22 (#396). On the isolated web build from the application source in 45b5371, Settings completed a nonblank text test and explicitly saved it to a named preset. After closing and reopening Settings, preset comparison showed Qwen3.8-27B-4bit as the historical response model ID, 6,957 ms to first text and 7,542 ms to completion. The MLX / Metal server reported 26 prompt tokens, 13 completion tokens, 22.27 tokens/s and 16.26 GB process peak memory. The observation covers one model and one test. Full F22 acceptance remains open.
