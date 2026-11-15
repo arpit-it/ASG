@@ -576,7 +576,11 @@ class ChatController extends BaseController {
       _unsavedResponse = ChatMessage(
         role: 'assistant',
         content: requestMode.labelResponse(result),
-        modelRequest: modelRequest,
+        modelRequest: modelRequest.withResponseModel(
+          activeProvider is ModelResponseIdentityProvider
+              ? activeProvider.completedResponseModel
+              : null,
+        ),
         planContext: requestMode == ConversationMode.plan
             ? requestPlanContext
             : null,
