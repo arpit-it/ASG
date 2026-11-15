@@ -1,5 +1,9 @@
 # Progress and delivery history
 
+## Live project chat in the in-app browser — 15 November 2026
+
+F22 (#396). The isolated Flutter web build from fb21cf0 opened the task planner project created through the wizard. Its Discuss screen displayed a live reply describing how a newly added task would appear in the list with a Pending status. The existing service's health and model listing identified Qwen3.8-27B-4bit on MLX / Metal. The browser displayed the requested model ID. The ID returned by that browser response was not captured. The separate controller run captured its returned model ID and is recorded in [PR #645](https://github.com/arpit-it/ASG/pull/645), merged at 81141c4. Full F22 acceptance remains open.
+
 ## Live project chat near the MLX input limit — 15 November 2026
 
 F22 (#396). A disposable Flutter test using ChatController and LocalModelProvider passed in 21 seconds. Health and model discovery confirmed the existing MLX / Metal service and Qwen3.8-27B-4bit. The completed stream reported the same model ID and 3,919 prompt tokens against the advertised 4,096-token input cap. The controller saved an assistant reply with the requested model ID in fixture storage. The test captured completion data before normal connection cleanup, which cleared those fields and caused the first assertion to fail. Application source matched main at 80c49c6. Full context and manual interface acceptance remain open.
