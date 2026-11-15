@@ -1,5 +1,9 @@
 # Progress and delivery history
 
+## Local MLX bridge input boundary — 15 November 2026
+
+F22 (#396): The installed tokenizer and bridge chat template produced synthetic prompts of exactly 4,096 and 4,097 input tokens. The owner-started MLX / Metal bridge returned HTTP 400 with guidance to shorten the 4,097-token request. At 4,096 tokens it returned Qwen3.8-27B-4bit and both markers, generating 14 tokens in a 22.85-second request. The bridge reported 23.09 generated tokens/s and 16.26 GB peak memory. Health returned to idle after each request. Total checkpoint context remains unverified. The near-limit observation was verified on main at 4a4d4d1356fb0a86e4b82e93d6f8496bbeca5c8f ([PR #641](https://github.com/arpit-it/ASG/pull/641)).
+
 ## Local MLX retrieval near the bridge input limit — 15 November 2026
 
 F22 (#396): The owner-started MLX / Metal runtime advertised Qwen3.8-27B-4bit and a 4,096-token input limit. Starting idle, it returned the exact model ID and both markers from a synthetic 4,039-token prompt, emitting 14 tokens in 22.884 seconds. The bridge reported 22.55 generated tokens/s and 16.24 GB peak memory. The runtime returned to idle. The input was 57 tokens below the bridge limit. Exact boundary and full checkpoint context remain pending. The earlier 2,594-token observation is verified on main at 53201fc9e4d5ea67e6b662a562ceb0914c24db07 ([PR #640](https://github.com/arpit-it/ASG/pull/640)).
