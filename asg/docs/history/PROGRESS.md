@@ -1,5 +1,9 @@
 # Progress and delivery history
 
+## Browser prototype edit refusal and retry — 16 November 2026 UTC
+
+F22 (#396). In the isolated in-app browser preview of the web build matching the application source in PR #655, saving the prototype edit restriction made ASG explain why it refused the model-assisted instruction. The disposable task planner stayed at revision v1. After turning the restriction off and saving, the same instruction completed and the preview advanced to v2 with “Weekly review begins Friday.” The completed response reported Qwen3.8-27B-4bit, matching the model listing and ready MLX / Metal health response. Broader F22 acceptance remains open.
+
 ## Per-connection prototype edit restriction — 16 November 2026 UTC
 
 F22 (#396). Settings and named presets can disable model-assisted prototype edits. The editor refuses before creating an inference provider and explains the reason in the workspace. Built-in edits remain available. Flutter analysis, 1,752 tests with 10 skips, the web build and nine inventory checks passed locally. Both required CI checks passed for reviewed revision 1a9f733 of [PR #655](https://github.com/arpit-it/ASG/pull/655). Verified main cde344cdbe367e329a264d749cccbfab478e86a9 matches the tested tree. Browser refusal and retry evidence remains pending under #396.
