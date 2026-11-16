@@ -112,7 +112,15 @@ class ApplicationEditor {
           'Model did not return a valid update summary.',
         );
       }
-      return ApplicationUpdate(definition, summary, modelRequest: modelRequest);
+      return ApplicationUpdate(
+        definition,
+        summary,
+        modelRequest: modelRequest.withResponseModel(
+          activeProvider is ModelResponseIdentityProvider
+              ? activeProvider.completedResponseModel
+              : null,
+        ),
+      );
     } finally {
       await _provider?.cancel();
       _provider = null;
