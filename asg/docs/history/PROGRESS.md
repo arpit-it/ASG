@@ -1,5 +1,11 @@
 # Progress and delivery history
 
+## Live Qwen prototype edit and bridge tool refusal — 16 November 2026 UTC
+
+F22 (#396). In the isolated Flutter web build, the live prototype edit displayed “Weekly review begins Friday,” revision v2, and the server-reported model ID Qwen3.8-27B-4bit. Health and model discovery confirmed the MLX / Metal runtime and exact model ID. Both required CI jobs passed for the reviewed revision of [PR #651](https://github.com/arpit-it/ASG/pull/651); the verified merge bb62a49335c37ad0ab1329a71e62df52cfa8f9ca matched the tested tree.
+
+Separately, the running local bridge returned HTTP 400 for a request declaring one harmless function, with the message “Tool calls are not supported by this local bridge; send text messages without tools.” The bridge remained idle and no function ran. This establishes refusal for the observed request. Full F22 acceptance remains open.
+
 ## Live Qwen Settings JSON test — 15 November 2026 UTC
 
 F22 (#396). Settings in the isolated web build from the application source in 45b5371 accepted the expected JSON sentinel object and saved the historical response model ID Qwen3.8-27B-4bit on the selected preset. MLX / Metal health and model discovery matched the requested ID. Client first text arrived in 7,813 ms and completion in 8,164 ms. Saving replaced the earlier text observation in the disposable preset. This observation covers one fixed JSON prompt. Broader format, tool and two-model profile acceptance remain open.
