@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart';
 
+import '../models/model_connection_preset.dart';
 import '../controllers/source_review_controller.dart';
 
 class SourceConnectionView extends StatelessWidget {
@@ -24,7 +25,7 @@ class SourceConnectionView extends StatelessWidget {
           labelText: 'Source/repair connection',
         ),
         child: DropdownButtonHideUnderline(
-          child: DropdownButton<int>(
+          child: DropdownButton<Object>(
             key: const ValueKey('sourceConnection'),
             value: controller.connectionPreset == null ? -1 : -2,
             isExpanded: true,
@@ -42,22 +43,23 @@ class SourceConnectionView extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-              for (var i = 0; i < controller.presets.length; i++)
+              for (final preset in controller.presets)
                 DropdownMenuItem(
-                  value: i,
+                  value: preset,
                   child: Text(
-                    controller.presets[i].name,
+                    preset.name,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
             ],
             onChanged: controller.canChooseConnection
-                ? (index) {
-                    if (index == null || index == -2) return;
-                    controller.choosePreset(
-                      index == -1 ? null : controller.presets[index],
-                    );
+                ? (selection) {
+                    if (selection == -1) {
+                      controller.choosePreset(null);
+                    } else if (selection is ModelConnectionPreset) {
+                      controller.choosePreset(selection);
+                    }
                   }
                 : null,
           ),

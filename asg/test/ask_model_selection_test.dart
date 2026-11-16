@@ -224,7 +224,7 @@ void main() {
         ),
       ),
     );
-    final dropdown = find.byType(DropdownButton<int>);
+    final dropdown = find.byType(DropdownButton<Object>);
     await tester.scrollUntilVisible(
       dropdown,
       220,
@@ -235,18 +235,16 @@ void main() {
     await tester.tap(find.text(preset.name).last);
     await tester.pumpAndSettle();
     expect(controller.connectionPreset!.name, preset.name);
-    // Reselect the same offered object, then remove/refresh its source preset.
-    // The conversation snapshot must remain selected without stale form state.
     await tester.tap(dropdown);
-    await tester.pumpAndSettle();
-    await tester.tap(find.text(preset.name).last);
     await tester.pumpAndSettle();
     await ModelSettingsStore(records).savePresets([]);
     controller.refreshPresets();
     await tester.pumpAndSettle();
+    await tester.tap(find.text(preset.name).last);
+    await tester.pumpAndSettle();
     expect(controller.presets, isEmpty);
     expect(controller.connectionPreset!.name, preset.name);
-    expect(tester.widget<DropdownButton<int>>(dropdown).value, -2);
+    expect(tester.widget<DropdownButton<Object>>(dropdown).value, -2);
     expect(
       find.textContaining('Requested model: selected-model'),
       findsOneWidget,

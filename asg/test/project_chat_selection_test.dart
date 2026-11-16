@@ -311,7 +311,7 @@ void main() {
     await ModelSettingsStore(r).savePresets([]);
     c.refreshPresets();
     await tester.pumpAndSettle();
-    expect(tester.widget<DropdownButton<int>>(dropdown).value, -2);
+    expect(tester.widget<DropdownButton<Object>>(dropdown).value, -2);
     expect(tester.takeException(), isNull);
     await tester.ensureVisible(dropdown);
     await tester.tap(dropdown);

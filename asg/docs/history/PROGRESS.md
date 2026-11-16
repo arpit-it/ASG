@@ -1,5 +1,9 @@
 # Progress and delivery history
 
+## Prototype preset selection survives a menu refresh — 16 November 2026 UTC
+
+F22 (#396). Selecting a removed entry from an open prototype connection menu preserves the active connection. A widget test refreshes the list while the menu is open and selects the removed entry. Both required CI jobs passed for reviewed revision 92e30156 of [PR #661](https://github.com/arpit-it/ASG/pull/661). The verified merge 8e2419087f2fbe6f8eaafdb188bf6681fd475126 matches the tested tree.
+
 ## Selected preset refuses restricted prototype edits — 16 November 2026 UTC
 
 F22 (#396). The regression verifies that a restricted named preset takes precedence over permissive global settings, refuses a model-assisted edit before provider creation, and preserves the saved prototype revision. Both required CI jobs passed for reviewed revision c3925e2 of [PR #660](https://github.com/arpit-it/ASG/pull/660). The verified merge 199042186c7303b7a9bd64dea39ca09ae04ac42a matches the tested tree. Broader F22 acceptance remains open.
