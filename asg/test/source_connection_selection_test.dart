@@ -190,7 +190,7 @@ void main() {
     await tester.tap(refresh);
     await tester.pumpAndSettle();
     expect(c.presets, isEmpty);
-    expect(tester.widget<DropdownButton<int>>(dropdown).value, -2);
+    expect(tester.widget<DropdownButton<Object>>(dropdown).value, -2);
     await select('Global model settings');
     expect(c.connectionPreset, isNull);
     expect(tester.takeException(), isNull);

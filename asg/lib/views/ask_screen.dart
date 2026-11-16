@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../models/model_connection_preset.dart';
 import '../controllers/ask_controller.dart';
 import '../models/model_request_provenance.dart';
 
@@ -120,7 +121,7 @@ class _AskScreenState extends State<AskScreen> {
                       labelText: 'Conversation model connection',
                     ),
                     child: DropdownButtonHideUnderline(
-                      child: DropdownButton<int>(
+                      child: DropdownButton<Object>(
                         value: controller.connectionPreset == null ? -1 : -2,
                         isExpanded: true,
                         items: [
@@ -137,24 +138,23 @@ class _AskScreenState extends State<AskScreen> {
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
-                          for (var i = 0; i < controller.presets.length; i++)
+                          for (final preset in controller.presets)
                             DropdownMenuItem(
-                              value: i,
+                              value: preset,
                               child: Text(
-                                controller.presets[i].name,
+                                preset.name,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
                         ],
                         onChanged: controller.canChangeConversation
-                            ? (index) {
-                                if (index == null || index == -2) return;
-                                controller.choosePreset(
-                                  index == -1
-                                      ? null
-                                      : controller.presets[index],
-                                );
+                            ? (selection) {
+                                if (selection == -1) {
+                                  controller.choosePreset(null);
+                                } else if (selection is ModelConnectionPreset) {
+                                  controller.choosePreset(selection);
+                                }
                               }
                             : null,
                       ),
