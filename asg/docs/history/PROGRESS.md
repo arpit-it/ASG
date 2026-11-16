@@ -1,5 +1,9 @@
 # Progress and delivery history
 
+## Flutter source proposals reject mismatched model IDs — 16 November 2026 UTC
+
+F22 (#396). Flutter source and repair proposals reject a different reported model ID before parsing. A regression verifies that the connection is released and a retry from the requested model succeeds. Both required CI jobs passed for reviewed revision c68d85a of [PR #664](https://github.com/arpit-it/ASG/pull/664). The verified merge c7f7f2d701ffcd2f2565dc1645d4b90a0ff343b0 matches the tested tree.
+
 ## Settings rejects mismatched response model IDs — 16 November 2026 UTC
 
 F22 (#396). Settings refuses a test response when the server reports a different model ID. A regression verifies that a valid JSON response from another model cannot replace a saved observation. Both required CI jobs passed for reviewed revision 16782a88 of [PR #663](https://github.com/arpit-it/ASG/pull/663). The verified merge 290bb80bc34364fd61c2c0474121e7d323c076ac matches the tested tree.
