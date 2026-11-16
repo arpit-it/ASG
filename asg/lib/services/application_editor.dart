@@ -101,6 +101,14 @@ class ApplicationEditor {
         }
       }
       onProgress?.call(const GenerationEvent.phase(GenerationPhase.validating));
+      final responseModel = activeProvider is ModelResponseIdentityProvider
+          ? activeProvider.completedResponseModel
+          : null;
+      if (responseModel != null && responseModel != modelRequest.model) {
+        throw const FormatException(
+          'Prototype edit reported a different model ID.',
+        );
+      }
       var jsonText = buffer.toString().trim();
       if (jsonText.startsWith('```') && jsonText.endsWith('```')) {
         jsonText = jsonText
@@ -122,11 +130,7 @@ class ApplicationEditor {
       return ApplicationUpdate(
         definition,
         summary,
-        modelRequest: modelRequest.withResponseModel(
-          activeProvider is ModelResponseIdentityProvider
-              ? activeProvider.completedResponseModel
-              : null,
-        ),
+        modelRequest: modelRequest.withResponseModel(responseModel),
       );
     } finally {
       await _provider?.cancel();

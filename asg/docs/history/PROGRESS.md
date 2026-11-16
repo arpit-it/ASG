@@ -1,5 +1,9 @@
 # Progress and delivery history
 
+## HTML drafts retain response model identity — 16 November 2026 UTC
+
+F22 (#396). HTML drafts retain a server-reported model ID on save and reopen. Fixtures verified matching and missing IDs. Both required checks passed on reviewed revision fca1768. PR #669 merged and was verified on main at 12611d2. [PR #669](https://github.com/arpit-it/ASG/pull/669) · [Required CI](https://github.com/arpit-it/ASG/actions/runs/43960009992)
+
 ## Repair history retains response model identity — 16 November 2026 UTC
 
 F22 (#396). Completed repair attempts save the model ID reported by the server alongside the requested ID and token limit. An HTTP fixture verified the ID after reloading the journal. Both required CI jobs passed on reviewed revision `d66d5073`. PR #668 merged and was verified on main at `cf1f7f2`. The umbrella issue remains open. [PR #668](https://github.com/arpit-it/ASG/pull/668) · [Required CI](https://github.com/arpit-it/ASG/actions/runs/43944401042)
