@@ -77,6 +77,14 @@ class SourceEditProposer {
         buffer.write(chunk);
       }
       if (_cancelled) throw StateError('Source proposal cancelled.');
+      final responseModel = provider is ModelResponseIdentityProvider
+          ? provider.completedResponseModel
+          : null;
+      if (responseModel != null && responseModel != config.model) {
+        throw const FormatException(
+          'Source proposal reported a different model ID.',
+        );
+      }
       final json = buffer.toString();
       final decoded = jsonDecode(json);
       // Decode first so the member scanner only receives valid JSON. Reject

@@ -1,5 +1,9 @@
 # Progress and delivery history
 
+## Settings rejects mismatched response model IDs — 16 November 2026 UTC
+
+F22 (#396). Settings refuses a test response when the server reports a different model ID. A regression verifies that a valid JSON response from another model cannot replace a saved observation. Both required CI jobs passed for reviewed revision 16782a88 of [PR #663](https://github.com/arpit-it/ASG/pull/663). The verified merge 290bb80bc34364fd61c2c0474121e7d323c076ac matches the tested tree.
+
 ## Connection preset menus preserve selection during refresh — 16 November 2026 UTC
 
 F22 (#396). Ask, project chat, and source generation carry the selected preset through the menu callback. Ask has a widget regression for selecting a preset removed while the menu was open. Both required CI jobs passed for reviewed revision 03204fd of [PR #662](https://github.com/arpit-it/ASG/pull/662). The verified merge def02c39a14e9cae45a2aeea2ad8934986b4adf4 matches the tested tree.
