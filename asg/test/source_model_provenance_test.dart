@@ -32,6 +32,7 @@ import 'candidate_repair_proposer_test.dart' show boundFailure, saveFailure;
 
 const request = ModelRequestProvenance(
   model: 'source-model',
+  responseModel: 'source-model',
   outputTokens: 4096,
 );
 GeneratedProject candidate({bool legacy = false, bool ready = false}) =>
@@ -139,6 +140,7 @@ void main() {
           );
           incoming.response.write(
             'data: ${jsonEncode({
+              'model': 'wire-selected',
               'choices': [
                 {
                   'delta': {'content': response()},
@@ -188,9 +190,15 @@ void main() {
           expect(body['max_tokens'], value.modelRequest!.outputTokens);
           expect(body['max_tokens'], 4096);
           expect(body['model'], 'wire-selected');
+          expect(value.modelRequest!.responseModel, 'wire-selected');
           expect(
             value.modelRequest!.toJson().keys,
-            unorderedEquals(['version', 'model', 'outputTokens']),
+            unorderedEquals([
+              'version',
+              'model',
+              'outputTokens',
+              'responseModel',
+            ]),
           );
         } finally {
           controller.dispose();
@@ -272,6 +280,7 @@ void main() {
       records = await StudioDatabase.migrate(db, preferences);
       store = SourceGenerationStore(records);
       expect(store.load('p')!.sourceRequest!.model, 'source-model');
+      expect(store.load('p')!.sourceRequest!.responseModel, 'source-model');
       expect(store.history('p').first.project.sourceRequest, isNull);
       expect(store.history('p').last.project.sourceRequest!.outputTokens, 4096);
       final rollback = jsonDecode(

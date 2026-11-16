@@ -1,5 +1,9 @@
 # Progress and delivery history
 
+## Ask retains response model identity — 16 November 2026 UTC
+
+F22 (#396). Ask saves the server-reported model ID alongside the requested ID. The regression verifies persistence across reopening and preserves unknown identity for responses without a model ID. Both required CI jobs passed for reviewed revision 81bc5fb of [PR #666](https://github.com/arpit-it/ASG/pull/666). The verified merge 0c0d5502bed339186995ba386e287c101abca3c1 matches the tested tree.
+
 ## HTML proposals reject mismatched model IDs — 16 November 2026 UTC
 
 F22 (#396). HTML proposals reject a different reported model before decoding. The regression verifies cleanup and a successful retry with the requested model. Both required CI jobs passed for reviewed revision 7f6a9bc of [PR #665](https://github.com/arpit-it/ASG/pull/665). The verified merge f9862cebc70fe817eda547e75b9bb913ad547bba matches the tested tree.

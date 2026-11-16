@@ -164,7 +164,7 @@ class ApprovedSourceProposer {
         boardTaskId: task.id,
         approval: approval,
         proposal: proposal,
-        modelRequest: modelRequest,
+        modelRequest: modelRequest.withResponseModel(proposal.responseModel),
         repairRun: repairRun,
       );
       // Includes changes while the provider was finishing transport cleanup.

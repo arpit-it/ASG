@@ -5,13 +5,17 @@ import 'source_line_diff.dart';
 
 /// A review artifact only. Constructing it grants no write or execution access.
 class SourceEditProposal {
-  SourceEditProposal._(this.summary, List<SourceReplacement> changes)
-    : changes = List.unmodifiable(changes);
+  SourceEditProposal._(
+    this.summary,
+    List<SourceReplacement> changes,
+    this.responseModel,
+  ) : changes = List.unmodifiable(changes);
 
   static const maxFiles = 8;
   static const maxText = 32000;
   static const maxResponse = 128000;
   final String summary;
+  final String? responseModel;
   final List<SourceReplacement> changes;
 
   static bool isSourcePath(String path) =>
@@ -21,6 +25,7 @@ class SourceEditProposal {
   factory SourceEditProposal.parse(
     Object? raw, {
     required Map<String, String> originals,
+    String? responseModel,
   }) {
     if (raw is! Map ||
         raw.length != 2 ||
@@ -78,7 +83,7 @@ class SourceEditProposal {
       }
       changes.add(SourceReplacement._(path, before, after));
     }
-    return SourceEditProposal._(summary.trim(), changes);
+    return SourceEditProposal._(summary.trim(), changes, responseModel);
   }
 }
 

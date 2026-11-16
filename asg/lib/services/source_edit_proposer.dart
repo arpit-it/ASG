@@ -93,6 +93,7 @@ class SourceEditProposer {
       result = SourceEditProposal.parse(
         _hydrateOriginals(decoded, snapshot, fingerprints),
         originals: snapshot,
+        responseModel: responseModel,
       );
     } finally {
       try {
