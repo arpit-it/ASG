@@ -8,15 +8,20 @@ import '../structured_proposal_json.dart';
 /// Untrusted source for review only. This is not HTML validation, approval,
 /// execution permission or a replacement for the fixed starter identity check.
 class HtmlSourceProposal {
-  HtmlSourceProposal._(this.summary, Map<String, String> files)
-    : files = Map.unmodifiable(files);
+  HtmlSourceProposal._(
+    this.summary,
+    Map<String, String> files,
+    this.responseModel,
+  ) : files = Map.unmodifiable(files);
 
   static const maxResponse = 128000;
   static const maxFile = 64000;
   final String summary;
   final Map<String, String> files;
 
-  factory HtmlSourceProposal.decode(String response) {
+  final String? responseModel;
+
+  factory HtmlSourceProposal.decode(String response, {String? responseModel}) {
     if (response.length > maxResponse ||
         utf8.encode(response).length > maxResponse) {
       throw const FormatException('HTML proposal response is too large.');
@@ -60,6 +65,6 @@ class HtmlSourceProposal {
       }
       files[name as String] = text;
     }
-    return HtmlSourceProposal._(summary.trim(), files);
+    return HtmlSourceProposal._(summary.trim(), files, responseModel);
   }
 }

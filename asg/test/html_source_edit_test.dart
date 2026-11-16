@@ -24,6 +24,48 @@ HtmlReferenceReport report() =>
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
+  for (final reportsModel in [true, false]) {
+    test(
+      'HTML draft restores response identity (reported: $reportsModel)',
+      () async {
+        final records = await drafts.records();
+        final provider = Provider();
+        final controller = HtmlSourceReviewController(
+          project: seed.project,
+          records: records,
+          proposer: HtmlSourceProposer(
+            createProvider: (config) {
+              provider.completedResponseModel = reportsModel
+                  ? config.model
+                  : null;
+              return provider;
+            },
+          ),
+          inspectReferences: (_) async => report(),
+        );
+        addTearDown(controller.dispose);
+        final request = controller.request('Greeting');
+        provider.stream.add(response());
+        await provider.stream.close();
+        await request;
+        final expectedModel = reportsModel
+            ? controller.provenance!.model
+            : null;
+        expect(controller.provenance!.responseModel, expectedModel);
+        await controller.saveDraft();
+
+        final reopened = HtmlSourceReviewController(
+          project: seed.project,
+          records: records,
+          inspectReferences: (_) async => report(),
+        );
+        addTearDown(reopened.dispose);
+        await reopened.restoreDraft();
+        expect(reopened.provenance!.responseModel, expectedModel);
+      },
+    );
+  }
+
   test(
     'edits recheck references and revoke old identity without writes/inference',
     () async {

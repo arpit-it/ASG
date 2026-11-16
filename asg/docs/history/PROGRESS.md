@@ -1,5 +1,9 @@
 # Progress and delivery history
 
+## Repair history retains response model identity — 16 November 2026 UTC
+
+F22 (#396). Completed repair attempts save the model ID reported by the server alongside the requested ID and token limit. An HTTP fixture verified the ID after reloading the journal. Both required CI jobs passed on reviewed revision `d66d5073`. PR #668 merged and was verified on main at `cf1f7f2`. The umbrella issue remains open. [PR #668](https://github.com/arpit-it/ASG/pull/668) · [Required CI](https://github.com/arpit-it/ASG/actions/runs/43944401042)
+
 ## Ask retains response model identity — 16 November 2026 UTC
 
 F22 (#396). Ask saves the server-reported model ID alongside the requested ID. The regression verifies persistence across reopening and preserves unknown identity for responses without a model ID. Both required CI jobs passed for reviewed revision 81bc5fb of [PR #666](https://github.com/arpit-it/ASG/pull/666). The verified merge 0c0d5502bed339186995ba386e287c101abca3c1 matches the tested tree.
