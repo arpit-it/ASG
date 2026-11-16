@@ -47,6 +47,41 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   setUp(() => SharedPreferences.setMockInitialValues({}));
 
+  test('selected restricted preset preserves the current prototype', () async {
+    final store = ApplicationStore.fromPreferences(
+      await SharedPreferences.getInstance(),
+    );
+    final settings = ModelSettingsStore(store.records);
+    await settings.save(const LocalModelConfig());
+    await settings.savePresets([
+      const ModelConnectionPreset(
+        name: 'Restricted',
+        config: LocalModelConfig(disablePrototypeEdits: true),
+      ),
+    ]);
+    var providerCalls = 0;
+    final controller = AppWorkspaceController(
+      project,
+      openStore: () async => store,
+      editor: ApplicationEditor(
+        allowBuiltInEdits: false,
+        createProvider: (_) {
+          providerCalls++;
+          throw StateError('Unexpected inference');
+        },
+      ),
+    );
+    addTearDown(controller.dispose);
+    await controller.load();
+    final revision = store.load(project).revision;
+    controller.choosePreset(controller.presets.single);
+
+    expect(await controller.apply('Insert a custom heading'), isFalse);
+    expect(providerCalls, 0);
+    expect(controller.error, contains('disabled for this connection'));
+    expect(store.load(project).revision, revision);
+  });
+
   test(
     'saved prototype restriction refuses before provider creation',
     () async {
