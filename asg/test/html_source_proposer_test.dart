@@ -9,7 +9,9 @@ import 'package:asg/services/html/html_source_proposer.dart';
 import 'package:asg/services/model_provider.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-class Provider implements ModelProvider {
+class Provider implements ModelResponseIdentityProvider {
+  @override
+  String? completedResponseModel;
   final stream = StreamController<String>();
   Completer<void>? cleanup;
   int cancellations = 0;
@@ -39,6 +41,33 @@ void main() {
     'summary': ' Greeting ',
     'files': {...files, ...extra},
   });
+  test(
+    'rejects a mismatched response model and accepts a matching retry',
+    () async {
+      var provider = Provider()..completedResponseModel = 'different-model';
+      final proposer = HtmlSourceProposer(createProvider: (_) => provider);
+      final rejected = expectLater(
+        proposer.propose(config: config, instruction: 'Greeting'),
+        throwsA(
+          isA<FormatException>().having(
+            (error) => error.message,
+            'message',
+            contains('different model ID'),
+          ),
+        ),
+      );
+      provider.stream.add(response());
+      await provider.stream.close();
+      await rejected;
+      expect(provider.cancellations, 1);
+
+      provider = Provider()..completedResponseModel = config.model;
+      final retry = proposer.propose(config: config, instruction: 'Greeting');
+      provider.stream.add(response());
+      await provider.stream.close();
+      expect((await retry).files, files);
+    },
+  );
   test('immutable complete sources and optional JavaScript', () {
     for (final extra in [
       <String, Object?>{},

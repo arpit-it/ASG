@@ -83,6 +83,14 @@ class HtmlSourceProposer {
         }
       }
       if (_cancelled) throw StateError('HTML source proposal cancelled.');
+      final responseModel = provider is ModelResponseIdentityProvider
+          ? provider.completedResponseModel
+          : null;
+      if (responseModel != null && responseModel != config.model) {
+        throw const FormatException(
+          'HTML source proposal reported a different model ID.',
+        );
+      }
       result = HtmlSourceProposal.decode(buffer.toString());
     } finally {
       try {
