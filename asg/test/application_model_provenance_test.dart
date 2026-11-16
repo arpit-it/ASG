@@ -22,17 +22,22 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'application_loop_test.dart' show project, changed, editor;
 
-class PendingProvider implements ModelProvider {
+class PendingProvider implements ModelResponseIdentityProvider {
+  @override
+  String? completedResponseModel;
   final started = Completer<void>();
   final reply = Completer<String>();
   @override
   Stream<String> generate(String prompt) async* {
     started.complete();
     yield await reply.future;
+    completedResponseModel = 'reported-model';
   }
 
   @override
-  Future<void> cancel() async {}
+  Future<void> cancel() async {
+    completedResponseModel = null;
+  }
 }
 
 String get validReply =>
@@ -77,6 +82,8 @@ void main() {
       final saved = ApplicationStore(store.records).load(project);
       expect(saved.messages.first.modelRequest, isNull);
       expect(saved.messages.last.modelRequest!.model, 'model-a');
+      expect(saved.messages.last.modelRequest!.responseModel, 'reported-model');
+      expect(provider.completedResponseModel, isNull);
       expect(saved.messages.last.modelRequest!.outputTokens, 2048);
       expect(saved.revision, 2);
       c.dispose();
