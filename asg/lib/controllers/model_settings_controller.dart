@@ -387,13 +387,22 @@ class ModelSettingsController extends BaseController {
             },
             onDone: () {
               if (request != _request || isDisposed) return;
+              final provider = _provider;
+              final responseModel = provider is ModelResponseIdentityProvider
+                  ? provider.completedResponseModel
+                  : null;
+              if (responseModel != null && responseModel != config.model) {
+                _finish(
+                  'Connection test failed: the server reported a different model ID. Check the configured model ID and retry.',
+                );
+                return;
+              }
               final successful = jsonFormat
                   ? ModelFormatProbe.accepts(response.toString())
                   : hasText;
               final firstTextLatency = firstText;
               final completed = _elapsed() - started;
               if (successful && firstTextLatency != null) {
-                final provider = _provider;
                 final metrics = provider is ModelMetricsProvider
                     ? provider.completedMetrics
                     : null;
@@ -404,9 +413,7 @@ class ModelSettingsController extends BaseController {
                   firstTextMilliseconds: firstTextLatency.inMilliseconds,
                   completedMilliseconds: completed.inMilliseconds,
                   runtimeMetrics: metrics,
-                  responseModel: provider is ModelResponseIdentityProvider
-                      ? provider.completedResponseModel
-                      : null,
+                  responseModel: responseModel,
                 );
                 // A late completion must never create an out-of-budget record.
                 if (firstTextLatency >= Duration.zero &&
