@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 
 import '../controllers/app_workspace_controller.dart';
+import '../models/model_connection_preset.dart';
 
 class PrototypeConnectionView extends StatelessWidget {
   const PrototypeConnectionView({super.key, required this.controller});
@@ -22,7 +23,7 @@ class PrototypeConnectionView extends StatelessWidget {
       InputDecorator(
         decoration: const InputDecoration(labelText: 'Prototype connection'),
         child: DropdownButtonHideUnderline(
-          child: DropdownButton<int>(
+          child: DropdownButton<Object>(
             key: const ValueKey('prototypeConnection'),
             value: controller.connectionPreset == null ? -1 : -2,
             isExpanded: true,
@@ -40,22 +41,23 @@ class PrototypeConnectionView extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-              for (var i = 0; i < controller.presets.length; i++)
+              for (final preset in controller.presets)
                 DropdownMenuItem(
-                  value: i,
+                  value: preset,
                   child: Text(
-                    controller.presets[i].name,
+                    preset.name,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
             ],
             onChanged: controller.canChooseConnection
-                ? (index) {
-                    if (index == null || index == -2) return;
-                    controller.choosePreset(
-                      index == -1 ? null : controller.presets[index],
-                    );
+                ? (selection) {
+                    if (selection == -1) {
+                      controller.choosePreset(null);
+                    } else if (selection is ModelConnectionPreset) {
+                      controller.choosePreset(selection);
+                    }
                   }
                 : null,
           ),
