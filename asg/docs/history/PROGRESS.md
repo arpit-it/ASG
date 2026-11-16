@@ -1,5 +1,9 @@
 # Progress and delivery history
 
+## Per-connection prototype edit restriction — 16 November 2026 UTC
+
+F22 (#396). Settings and named presets can disable model-assisted prototype edits. The editor refuses before creating an inference provider and explains the reason in the workspace. Built-in edits remain available. Flutter analysis, 1,752 tests with 10 skips, the web build and nine inventory checks passed locally. Both required CI checks passed for reviewed revision 1a9f733 of [PR #655](https://github.com/arpit-it/ASG/pull/655). Verified main cde344cdbe367e329a264d749cccbfab478e86a9 matches the tested tree. Browser refusal and retry evidence remains pending under #396.
+
 ## Live Qwen constrained JSON refusal — 16 November 2026 UTC
 
 F22 (#396). Health reported ready on MLX / Metal and model discovery listed Qwen3.8-27B-4bit. A request for that ID with response_format set to json_object returned HTTP 400 and guidance to omit the format or select text. The refusal had no completion model ID. Text prompts requesting JSON are a separate path. All 42 bridge fixtures passed on this Mac before this observation. [PR #653](https://github.com/arpit-it/ASG/pull/653) established the Qwen3.8-only live acceptance scope at verified main 608ad58. Broader operation-specific enforcement remains open.
