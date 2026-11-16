@@ -1,5 +1,9 @@
 # Progress and delivery history
 
+## Runtime Setup preserves prototype edit restriction — 16 November 2026 UTC
+
+F22 (#396). Runtime Setup retains the latest saved prototype edit restriction when reconnecting. The regression changed the restriction while health verification was in progress and verified both the saved settings and the active connection afterward. Flutter analysis, 1,752 tests with 10 skips, the web build, and nine acceptance inventory checks passed locally. Both required CI jobs passed for reviewed revision c5eb4e0 of [PR #658](https://github.com/arpit-it/ASG/pull/658). Verified main 49e3d10ce6b98a92f68732aa51f80b89f9b6cbd1 matches the tested tree. Broader F22 acceptance remains open.
+
 ## Browser prototype edit refusal and retry — 16 November 2026 UTC
 
 F22 (#396). In the isolated in-app browser preview of the web build matching the application source in PR #655, saving the prototype edit restriction made ASG explain why it refused the model-assisted instruction. The disposable task planner stayed at revision v1. After turning the restriction off and saving, the same instruction completed and the preview advanced to v2 with “Weekly review begins Friday.” The completed response reported Qwen3.8-27B-4bit, matching the model listing and ready MLX / Metal health response. Broader F22 acceptance remains open.
