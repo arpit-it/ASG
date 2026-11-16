@@ -552,7 +552,7 @@ class RuntimeSetupController extends BaseController {
         'A runtime is already running. Use it or stop it before starting another. Externally started runtimes must be stopped in their terminal.',
       );
     }
-    _loadChatCeiling();
+    _loadSavedConnection();
     // Revalidate immediately before launch, in case files changed after scanning.
     final validated = await _scan(candidate.path);
     if (_startupCancelled) return;
@@ -656,7 +656,7 @@ class RuntimeSetupController extends BaseController {
         'Invalid connection settings. Use a local HTTP URL without credentials, query or fragment and a nonempty model ID.',
       );
     }
-    _loadChatCeiling();
+    _loadSavedConnection();
     final result = await connection.check(config);
     if (isDisposed) return;
     if (!result.ready || result.model != config.model) {
@@ -689,9 +689,9 @@ class RuntimeSetupController extends BaseController {
     }
   }
 
-  int _loadChatCeiling() {
+  LocalModelConfig _loadSavedConnection() {
     try {
-      return modelStore.load().chatOutputTokens;
+      return modelStore.load();
     } catch (_) {
       throw StateError(
         'Saved model settings could not be loaded. Restore valid settings before connecting or starting a model. Records have not been overwritten.',
@@ -702,10 +702,12 @@ class RuntimeSetupController extends BaseController {
   Future<LocalModelConfig> _saveConnection(LocalModelConfig config) async {
     // Setup changes only the connection. Reload at save time to retain settings
     // changed during health verification or model loading.
+    final previous = _loadSavedConnection();
     final saved = LocalModelConfig(
       baseUrl: config.baseUrl,
       model: config.model,
-      chatOutputTokens: _loadChatCeiling(),
+      chatOutputTokens: previous.chatOutputTokens,
+      disablePrototypeEdits: previous.disablePrototypeEdits,
     );
     try {
       await modelStore.save(saved);

@@ -1739,39 +1739,43 @@ void main() {
     },
   );
 
-  test(
-    'reconnect preserves latest durable ceiling after health verification',
-    () async {
-      final prefs = await SharedPreferences.getInstance();
-      final settings = ModelSettingsStore.fromPreferences(prefs);
-      await settings.save(const LocalModelConfig(chatOutputTokens: 512));
-      final entered = Completer<void>();
-      final release = Completer<void>();
-      final c = await controller(
-        FakeRuntimeHost(),
-        api: RuntimeConnection(
-          client: MockClient((_) async {
-            entered.complete();
-            await release.future;
-            return http.Response(
-              jsonEncode({'status': 'ready', 'model': 'new'}),
-              200,
-            );
-          }),
-        ),
-      );
-      final pending = c.connect(const LocalModelConfig(model: 'new'));
-      await entered.future;
-      await settings.save(const LocalModelConfig(chatOutputTokens: 1024));
-      release.complete();
-      await pending;
-      expect(c.error, isNull);
-      expect(settings.load().model, 'new');
-      expect(settings.load().chatOutputTokens, 1024);
-      expect(c.connectionConfig.chatOutputTokens, 1024);
-      c.dispose();
-    },
-  );
+  test('reconnect preserves latest durable ceiling and prototype restriction after health verification', () async {
+    final prefs = await SharedPreferences.getInstance();
+    final settings = ModelSettingsStore.fromPreferences(prefs);
+    await settings.save(const LocalModelConfig(chatOutputTokens: 512));
+    final entered = Completer<void>();
+    final release = Completer<void>();
+    final c = await controller(
+      FakeRuntimeHost(),
+      api: RuntimeConnection(
+        client: MockClient((_) async {
+          entered.complete();
+          await release.future;
+          return http.Response(
+            jsonEncode({'status': 'ready', 'model': 'new'}),
+            200,
+          );
+        }),
+      ),
+    );
+    final pending = c.connect(const LocalModelConfig(model: 'new'));
+    await entered.future;
+    await settings.save(
+      const LocalModelConfig(
+        chatOutputTokens: 1024,
+        disablePrototypeEdits: true,
+      ),
+    );
+    release.complete();
+    await pending;
+    expect(c.error, isNull);
+    expect(settings.load().model, 'new');
+    expect(settings.load().chatOutputTokens, 1024);
+    expect(c.connectionConfig.chatOutputTokens, 1024);
+    expect(settings.load().disablePrototypeEdits, isTrue);
+    expect(c.connectionConfig.disablePrototypeEdits, isTrue);
+    c.dispose();
+  });
 
   for (final managed in [false, true]) {
     test(
