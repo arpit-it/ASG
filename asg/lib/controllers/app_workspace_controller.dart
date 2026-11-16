@@ -210,6 +210,13 @@ class AppWorkspaceController extends BaseController {
       _state = updated;
       _runtimeDefinition = null;
       return true;
+    } on PrototypeEditsDisabled {
+      if (!isDisposed) {
+        _error =
+            'Model-assisted prototype edits are disabled for this connection. '
+            'Use a built-in edit or change the connection in Settings.';
+      }
+      return false;
     } catch (_) {
       if (!isDisposed) {
         _error = _cancelRequested

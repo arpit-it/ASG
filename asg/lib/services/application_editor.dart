@@ -19,6 +19,10 @@ class ApplicationUpdate {
   final String summary;
 }
 
+class PrototypeEditsDisabled implements Exception {
+  const PrototypeEditsDisabled();
+}
+
 class ApplicationEditor {
   ApplicationEditor({
     ProviderFactory? createProvider,
@@ -44,9 +48,7 @@ class ApplicationEditor {
       return ApplicationUpdate(direct.definition, direct.summary);
     }
     if (config.disablePrototypeEdits) {
-      throw StateError(
-        'Model-assisted prototype edits are disabled for this connection.',
-      );
+      throw const PrototypeEditsDisabled();
     }
     // Prototype edits use their own fixed ceiling, independent of chat limits.
     final modelRequest = ModelRequestProvenance(

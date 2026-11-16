@@ -62,7 +62,7 @@ void main() {
 
       await expectLater(
         restrictedEditor.apply(settings.load(), changed, 'Add a heading'),
-        throwsStateError,
+        throwsA(isA<PrototypeEditsDisabled>()),
       );
       final preset = ModelConnectionPreset(
         name: 'Text model',
