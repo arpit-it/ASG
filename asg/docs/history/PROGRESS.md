@@ -1,5 +1,9 @@
 # Progress and delivery history
 
+## Selected preset refuses restricted prototype edits — 16 November 2026 UTC
+
+F22 (#396). The regression verifies that a restricted named preset takes precedence over permissive global settings, refuses a model-assisted edit before provider creation, and preserves the saved prototype revision. Both required CI jobs passed for reviewed revision c3925e2 of [PR #660](https://github.com/arpit-it/ASG/pull/660). The verified merge 199042186c7303b7a9bd64dea39ca09ae04ac42a matches the tested tree. Broader F22 acceptance remains open.
+
 ## Runtime Setup preserves prototype edit restriction — 16 November 2026 UTC
 
 F22 (#396). Runtime Setup retains the latest saved prototype edit restriction when reconnecting. The regression changed the restriction while health verification was in progress and verified both the saved settings and the active connection afterward. Flutter analysis, 1,752 tests with 10 skips, the web build, and nine acceptance inventory checks passed locally. Both required CI jobs passed for reviewed revision c5eb4e0 of [PR #658](https://github.com/arpit-it/ASG/pull/658). Verified main 49e3d10ce6b98a92f68732aa51f80b89f9b6cbd1 matches the tested tree. Broader F22 acceptance remains open.
