@@ -31,7 +31,9 @@ class AskRecords implements RecordStorage {
   }
 }
 
-class AskProvider implements ModelProvider {
+class AskProvider implements ModelResponseIdentityProvider {
+  @override
+  String? completedResponseModel;
   final stream = StreamController<String>();
   final prompts = <String>[];
   bool cancelled = false;
@@ -70,6 +72,7 @@ void main() {
     await settings.save(
       const LocalModelConfig(model: 'first', chatOutputTokens: 512),
     );
+    provider.completedResponseModel = 'reported-first';
     records.gate = Completer<void>();
     final first = controller.send('first question');
     records.values['studio.localModel.v1'] = jsonEncode({
@@ -100,6 +103,10 @@ void main() {
         .where((m) => m.role == 'assistant')
         .toList();
     expect(saved.map((m) => m.modelRequest!.model), ['first', 'second']);
+    expect(saved.map((m) => m.modelRequest!.responseModel), [
+      'reported-first',
+      null,
+    ]);
     expect(saved.map((m) => m.modelRequest!.outputTokens), [512, 1024]);
     expect(provider.prompts.single, isNot(contains('modelRequest')));
     reopened.dispose();

@@ -1,5 +1,9 @@
 # Progress and delivery history
 
+## HTML proposals reject mismatched model IDs — 16 November 2026 UTC
+
+F22 (#396). HTML proposals reject a different reported model before decoding. The regression verifies cleanup and a successful retry with the requested model. Both required CI jobs passed for reviewed revision 7f6a9bc of [PR #665](https://github.com/arpit-it/ASG/pull/665). The verified merge f9862cebc70fe817eda547e75b9bb913ad547bba matches the tested tree.
+
 ## Flutter source proposals reject mismatched model IDs — 16 November 2026 UTC
 
 F22 (#396). Flutter source and repair proposals reject a different reported model ID before parsing. A regression verifies that the connection is released and a retry from the requested model succeeds. Both required CI jobs passed for reviewed revision c68d85a of [PR #664](https://github.com/arpit-it/ASG/pull/664). The verified merge c7f7f2d701ffcd2f2565dc1645d4b90a0ff343b0 matches the tested tree.
