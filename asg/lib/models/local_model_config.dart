@@ -5,12 +5,14 @@ class LocalModelConfig {
   const LocalModelConfig({
     this.baseUrl = 'http://127.0.0.1:8765/v1',
     this.model = defaultModel,
+    this.disablePrototypeEdits = false,
     this.chatOutputTokens = defaultChatOutputTokens,
   });
   static const defaultModel = 'Qwen3.8-27B-4bit';
   static const defaultChatOutputTokens = 1536;
   static const chatTokenOptions = [512, 1024, 1536, 2048];
   final int chatOutputTokens;
+  final bool disablePrototypeEdits;
   final String baseUrl, model;
 
   void validateChatLimit() {

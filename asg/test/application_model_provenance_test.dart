@@ -48,6 +48,36 @@ void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
 
   test(
+    'saved prototype restriction refuses before provider creation',
+    () async {
+      final store = ApplicationStore.fromPreferences(
+        await SharedPreferences.getInstance(),
+      );
+      final settings = ModelSettingsStore(store.records);
+      await settings.save(const LocalModelConfig(disablePrototypeEdits: true));
+      final restrictedEditor = ApplicationEditor(
+        allowBuiltInEdits: false,
+        createProvider: (_) => throw AssertionError('Provider was created'),
+      );
+
+      await expectLater(
+        restrictedEditor.apply(settings.load(), changed, 'Add a heading'),
+        throwsA(isA<PrototypeEditsDisabled>()),
+      );
+      final preset = ModelConnectionPreset(
+        name: 'Text model',
+        config: settings.load(),
+      );
+      expect(
+        ModelConnectionPreset.fromJson(preset.toJson())
+            .config
+            .disablePrototypeEdits,
+        isTrue,
+      );
+    },
+  );
+
+  test(
     'Build captures request model and fixed editor ceiling, not chat budget',
     () async {
       final store = ApplicationStore.fromPreferences(
