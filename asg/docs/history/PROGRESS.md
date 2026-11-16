@@ -1,5 +1,9 @@
 # Progress and delivery history
 
+## Connection preset menus preserve selection during refresh — 16 November 2026 UTC
+
+F22 (#396). Ask, project chat, and source generation carry the selected preset through the menu callback. Ask has a widget regression for selecting a preset removed while the menu was open. Both required CI jobs passed for reviewed revision 03204fd of [PR #662](https://github.com/arpit-it/ASG/pull/662). The verified merge def02c39a14e9cae45a2aeea2ad8934986b4adf4 matches the tested tree.
+
 ## Prototype preset selection survives a menu refresh — 16 November 2026 UTC
 
 F22 (#396). Selecting a removed entry from an open prototype connection menu preserves the active connection. A widget test refreshes the list while the menu is open and selects the removed entry. Both required CI jobs passed for reviewed revision 92e30156 of [PR #661](https://github.com/arpit-it/ASG/pull/661). The verified merge 8e2419087f2fbe6f8eaafdb188bf6681fd475126 matches the tested tree.

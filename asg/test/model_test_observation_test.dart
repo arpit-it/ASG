@@ -10,6 +10,7 @@ import 'package:asg/models/model_connection_preset.dart';
 import 'package:asg/models/model_test_observation.dart';
 import 'package:asg/models/model_profile_notes.dart';
 import 'package:asg/services/model_settings_store.dart';
+import 'package:asg/services/model_provider.dart';
 import 'package:asg/views/model_test_observation_view.dart';
 import 'package:asg/views/model_settings.dart';
 import 'package:flutter/material.dart';
@@ -27,16 +28,21 @@ ModelTestObservation observation({bool json = false}) => ModelTestObservation(
   completedMilliseconds: 100,
 );
 
+class _IdentityProbe extends Probe implements ModelResponseIdentityProvider {
+  @override
+  String? completedResponseModel;
+}
+
 void main() {
   late PresetRecords records;
   late ModelSettingsStore store;
   late ModelSettingsController controller;
-  late Probe probe;
+  late _IdentityProbe probe;
   late Duration elapsed;
   setUp(() async {
     records = PresetRecords();
     store = ModelSettingsStore(records);
-    probe = Probe();
+    probe = _IdentityProbe();
     elapsed = Duration.zero;
     controller = ModelSettingsController(
       store,
@@ -59,6 +65,24 @@ void main() {
     await probe.output.close();
     await pending;
   }
+
+  test('mismatched response preserves a saved observation', () async {
+    await store.savePresets([
+      ModelConnectionPreset(
+        name: 'Selected',
+        config: config,
+        testObservation: observation(),
+      ),
+    ]);
+    final saved = records.values[ModelSettingsStore.presetsKey];
+    probe.completedResponseModel = 'different-model';
+
+    await complete(json: true);
+
+    expect(controller.status, contains('different model ID'));
+    expect(controller.canSaveTestObservation(config), isFalse);
+    expect(records.values[ModelSettingsStore.presetsKey], saved);
+  });
 
   test('test-time notes survive edits, failed save retry and reopen', () async {
     const notes = ModelProfileNotes(
@@ -98,7 +122,7 @@ void main() {
     controller.selectedPreset = 'Selected';
     await controller.saveTestObservation(config);
     expect(store.loadPresets().single.testObservation!.profileNotes, isNull);
-    probe = Probe();
+    probe = _IdentityProbe();
     const other = LocalModelConfig(model: 'different');
     final pending = controller.test(other);
     probe.output.add('done');
@@ -284,7 +308,7 @@ void main() {
       controller.selectedPreset = null;
       expect(controller.canRemoveTestObservation, isFalse);
       controller.selectedPreset = 'Selected';
-      probe = Probe();
+      probe = _IdentityProbe();
       final pending = controller.test(config);
       final original = records.values[ModelSettingsStore.presetsKey];
       await controller.removeTestObservation();
@@ -327,13 +351,13 @@ void main() {
       expect(store.loadPresets().single.testObservation, isNull);
       controller.connectionDraftChanged();
       expect(controller.canSaveTestObservation(config), isFalse);
-      probe = Probe();
+      probe = _IdentityProbe();
       await complete();
       controller.selectPreset('Selected');
       expect(controller.canSaveTestObservation(config), isFalse);
       await controller.savePreset('Other', const LocalModelConfig());
       controller.selectPreset('Other');
-      probe = Probe();
+      probe = _IdentityProbe();
       await complete();
       expect(controller.canSaveTestObservation(config), isFalse);
     },
@@ -343,7 +367,7 @@ void main() {
     () async {
       await complete();
       for (final failure in ['empty', 'json', 'error', 'stop']) {
-        probe = Probe();
+        probe = _IdentityProbe();
         final pending = controller.test(config, jsonFormat: failure == 'json');
         expect(controller.canSaveTestObservation(config), isFalse);
         if (failure == 'stop') {
