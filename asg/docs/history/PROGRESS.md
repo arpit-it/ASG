@@ -1,5 +1,9 @@
 # Progress and delivery history
 
+## Live Qwen constrained JSON refusal — 16 November 2026 UTC
+
+F22 (#396). Health reported ready on MLX / Metal and model discovery listed Qwen3.8-27B-4bit. A request for that ID with response_format set to json_object returned HTTP 400 and guidance to omit the format or select text. The refusal had no completion model ID. Text prompts requesting JSON are a separate path. All 42 bridge fixtures passed on this Mac before this observation. [PR #653](https://github.com/arpit-it/ASG/pull/653) established the Qwen3.8-only live acceptance scope at verified main 608ad58. Broader operation-specific enforcement remains open.
+
 ## Live Qwen prototype edit and bridge tool refusal — 16 November 2026 UTC
 
 F22 (#396). In the isolated Flutter web build, the live prototype edit displayed “Weekly review begins Friday,” revision v2, and the server-reported model ID Qwen3.8-27B-4bit. Health and model discovery confirmed the MLX / Metal runtime and exact model ID. Both required CI jobs passed for the reviewed revision of [PR #651](https://github.com/arpit-it/ASG/pull/651); the verified merge bb62a49335c37ad0ab1329a71e62df52cfa8f9ca matched the tested tree.
