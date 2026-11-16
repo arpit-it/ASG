@@ -238,10 +238,15 @@ class AskController extends BaseController {
       await completion.future;
       if (isDisposed || _stopped) return accepted;
       if (draft.trim().isEmpty) throw StateError('Empty answer');
+      final provider = _provider;
       _unsavedReply = ChatMessage(
         role: 'assistant',
         content: draft,
-        modelRequest: request,
+        modelRequest: request.withResponseModel(
+          provider is ModelResponseIdentityProvider
+              ? provider.completedResponseModel
+              : null,
+        ),
       );
       saving = true;
       update();
