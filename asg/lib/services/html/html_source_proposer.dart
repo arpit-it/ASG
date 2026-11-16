@@ -91,7 +91,10 @@ class HtmlSourceProposer {
           'HTML source proposal reported a different model ID.',
         );
       }
-      result = HtmlSourceProposal.decode(buffer.toString());
+      result = HtmlSourceProposal.decode(
+        buffer.toString(),
+        responseModel: responseModel,
+      );
     } finally {
       try {
         await _provider?.cancel();

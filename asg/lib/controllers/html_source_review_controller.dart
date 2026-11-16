@@ -330,7 +330,7 @@ class HtmlSourceReviewController extends BaseController {
       _requireCurrent();
       _references = references;
       _proposal = value;
-      _provenance = provenance;
+      _provenance = provenance.withResponseModel(value.responseModel);
       _status = 'Untrusted proposal ready for review. No files changed.';
     } catch (_) {
       if (!isDisposed && !_revoked) {
