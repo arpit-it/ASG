@@ -109,6 +109,7 @@ class ModelSettingsStore {
       baseUrl: data['baseUrl'] as String,
       model: data['model'] as String,
       chatOutputTokens: tokens,
+      disablePrototypeEdits: data['disablePrototypeEdits'] as bool? ?? false,
     );
     config.endpoint;
     config.validateChatLimit();
@@ -124,6 +125,7 @@ class ModelSettingsStore {
         'baseUrl': config.baseUrl,
         'model': config.model,
         'chatOutputTokens': config.chatOutputTokens,
+        if (config.disablePrototypeEdits) 'disablePrototypeEdits': true,
       }),
     )) {
       throw StateError('Unable to save local model settings.');

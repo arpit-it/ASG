@@ -47,6 +47,7 @@ class ModelConnectionPreset {
       'baseUrl': config.baseUrl,
       'model': config.model,
       'chatOutputTokens': config.chatOutputTokens,
+      if (config.disablePrototypeEdits) 'disablePrototypeEdits': true,
       if (profileNotes != null) 'profileNotes': profileNotes!.toJson(),
       if (testObservation != null) 'testObservation': testObservation!.toJson(),
     };
@@ -57,11 +58,14 @@ class ModelConnectionPreset {
         (value.length !=
             4 +
                 (value.containsKey('profileNotes') ? 1 : 0) +
-                (value.containsKey('testObservation') ? 1 : 0)) ||
+                (value.containsKey('testObservation') ? 1 : 0) +
+                (value.containsKey('disablePrototypeEdits') ? 1 : 0)) ||
         value['name'] is! String ||
         value['baseUrl'] is! String ||
         value['model'] is! String ||
-        value['chatOutputTokens'] is! int) {
+        value['chatOutputTokens'] is! int ||
+        (value.containsKey('disablePrototypeEdits') &&
+            value['disablePrototypeEdits'] is! bool)) {
       throw const FormatException('Invalid saved connection preset.');
     }
     final preset = ModelConnectionPreset(
@@ -76,6 +80,7 @@ class ModelConnectionPreset {
         baseUrl: value['baseUrl'] as String,
         model: value['model'] as String,
         chatOutputTokens: value['chatOutputTokens'] as int,
+        disablePrototypeEdits: value['disablePrototypeEdits'] as bool? ?? false,
       ),
     );
     preset.validate();

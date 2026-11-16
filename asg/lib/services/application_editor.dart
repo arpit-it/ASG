@@ -43,6 +43,11 @@ class ApplicationEditor {
       onProgress?.call(const GenerationEvent.phase(GenerationPhase.applying));
       return ApplicationUpdate(direct.definition, direct.summary);
     }
+    if (config.disablePrototypeEdits) {
+      throw StateError(
+        'Model-assisted prototype edits are disabled for this connection.',
+      );
+    }
     // Prototype edits use their own fixed ceiling, independent of chat limits.
     final modelRequest = ModelRequestProvenance(
       model: config.model,

@@ -60,10 +60,12 @@ class _ModelSettingsState extends State<ModelSettings> {
   }
 
   late int chatOutputTokens = initial.chatOutputTokens;
+  late bool disablePrototypeEdits = initial.disablePrototypeEdits;
   LocalModelConfig get config => LocalModelConfig(
     baseUrl: url.text.trim(),
     model: model.text.trim(),
     chatOutputTokens: chatOutputTokens,
+    disablePrototypeEdits: disablePrototypeEdits,
   );
   @override
   void initState() {
@@ -129,6 +131,11 @@ class _ModelSettingsState extends State<ModelSettings> {
             ),
           ),
           const SizedBox(height: 16),
+          SwitchListTile(
+            title: const Text('Disable model-assisted prototype edits'),
+            value: disablePrototypeEdits,
+            onChanged: (value) => setState(() => disablePrototypeEdits = value),
+          ),
           DropdownButtonFormField<int>(
             key: ValueKey(chatOutputTokens),
             initialValue: chatOutputTokens,
@@ -183,6 +190,7 @@ class _ModelSettingsState extends State<ModelSettings> {
                       url.text = restored.baseUrl;
                       model.text = restored.model;
                       chatOutputTokens = restored.chatOutputTokens;
+                      disablePrototypeEdits = restored.disablePrototypeEdits;
                       presetName.text = name;
                       restoreNotes(
                         controller.presets
