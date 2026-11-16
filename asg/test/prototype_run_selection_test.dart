@@ -82,7 +82,7 @@ void main() {
       final r = AskRecords();
       final settings = ModelSettingsStore(r);
       await settings.savePresets([preset]);
-      final provider = PendingProvider();
+      final provider = PendingProvider('chosen');
       final c = await open(
         r,
         editor: ApplicationEditor(

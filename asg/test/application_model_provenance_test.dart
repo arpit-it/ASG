@@ -23,6 +23,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'application_loop_test.dart' show project, changed, editor;
 
 class PendingProvider implements ModelResponseIdentityProvider {
+  PendingProvider([this.responseModel = 'model-a']);
+
+  final String responseModel;
   @override
   String? completedResponseModel;
   final started = Completer<void>();
@@ -31,7 +34,7 @@ class PendingProvider implements ModelResponseIdentityProvider {
   Stream<String> generate(String prompt) async* {
     started.complete();
     yield await reply.future;
-    completedResponseModel = 'reported-model';
+    completedResponseModel = responseModel;
   }
 
   @override
@@ -147,7 +150,7 @@ void main() {
       final saved = ApplicationStore(store.records).load(project);
       expect(saved.messages.first.modelRequest, isNull);
       expect(saved.messages.last.modelRequest!.model, 'model-a');
-      expect(saved.messages.last.modelRequest!.responseModel, 'reported-model');
+      expect(saved.messages.last.modelRequest!.responseModel, 'model-a');
       expect(provider.completedResponseModel, isNull);
       expect(saved.messages.last.modelRequest!.outputTokens, 2048);
       expect(saved.revision, 2);
@@ -162,6 +165,42 @@ void main() {
       expect(second.messages.last.modelRequest!.model, 'model-b');
       expect(second.messages[1].modelRequest!.model, 'model-a');
       second.dispose();
+    },
+  );
+
+  test(
+    'prototype rejects a mismatched model and retries with the requested model',
+    () async {
+      final store = ApplicationStore.fromPreferences(
+        await SharedPreferences.getInstance(),
+      );
+      await ModelSettingsStore(store.records)
+          .save(const LocalModelConfig(model: 'model-a'));
+      var provider = PendingProvider('different-model');
+      final controller = AppWorkspaceController(
+        project,
+        openStore: () async => store,
+        editor: ApplicationEditor(
+          allowBuiltInEdits: false,
+          createProvider: (_) => provider,
+        ),
+      );
+      addTearDown(controller.dispose);
+      await controller.load();
+      final before = store.load(project).revision;
+      final refused = controller.apply('custom change');
+      await provider.started.future;
+      provider.reply.complete(validReply);
+      expect(await refused, false);
+      expect(store.load(project).revision, before);
+      expect(provider.completedResponseModel, isNull);
+
+      provider = PendingProvider();
+      final retry = controller.apply('custom change');
+      await provider.started.future;
+      provider.reply.complete(validReply);
+      expect(await retry, true);
+      expect(store.load(project).revision, before + 1);
     },
   );
 
