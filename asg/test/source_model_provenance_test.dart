@@ -76,6 +76,7 @@ void main() {
           );
           incoming.response.write(
             'data: ${jsonEncode({
+              'model': 'wire-source',
               'choices': [
                 {
                   'delta': {'content': response()},
@@ -109,10 +110,16 @@ void main() {
           project.id,
         ).load().attempts.single;
         expect(attempt.modelRequest!.model, body['model']);
+        expect(attempt.modelRequest!.responseModel, 'wire-source');
         expect(attempt.modelRequest!.outputTokens, body['max_tokens']);
         expect(
           value.modelRequest!.toJson().keys,
-          unorderedEquals(['version', 'model', 'outputTokens']),
+          unorderedEquals([
+            'version',
+            'model',
+            'outputTokens',
+            'responseModel',
+          ]),
         );
       } finally {
         await server.close(force: true);

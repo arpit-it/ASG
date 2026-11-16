@@ -75,7 +75,9 @@ class RepairAttemptStore {
       throw StateError('Saved repair request changed. Reopen history.');
     }
     attempts[owned.number - 1] = RepairAttempt(
-      modelRequest: owned.modelRequest,
+      modelRequest: owned.modelRequest?.withResponseModel(
+        proposal?.responseModel,
+      ),
       number: owned.number,
       startedAt: owned.startedAt,
       failure: owned.failure,
