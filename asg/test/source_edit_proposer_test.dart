@@ -29,6 +29,14 @@ class FakeProvider implements ModelProvider {
   }
 }
 
+class _IdentityProvider extends FakeProvider
+    implements ModelResponseIdentityProvider {
+  _IdentityProvider(this.completedResponseModel);
+
+  @override
+  final String completedResponseModel;
+}
+
 void main() {
   const original = 'void main() {}';
   const replacement = 'void main() { print("Hello"); }';
@@ -43,6 +51,49 @@ void main() {
       {'path': path, 'before': before, 'after': after},
     ],
   };
+
+  test(
+    'rejects a different response model and accepts matching retry',
+    () async {
+      const config = LocalModelConfig(model: 'requested');
+      final mismatch = _IdentityProvider('different');
+      final retry = _IdentityProvider(config.model);
+      final providers = [mismatch, retry].iterator;
+      final proposer = SourceEditProposer(
+        createProvider: (_) {
+          providers.moveNext();
+          return providers.current;
+        },
+      );
+
+      Future<SourceEditProposal> propose() => proposer.propose(
+        config: config,
+        instruction: 'Add greeting',
+        originals: originals,
+      );
+
+      final rejected = expectLater(
+        propose(),
+        throwsA(
+          isA<FormatException>().having(
+            (error) => error.message,
+            'message',
+            contains('different model ID'),
+          ),
+        ),
+      );
+      mismatch.stream.add(jsonEncode(response()));
+      await mismatch.stream.close();
+      await rejected;
+      expect(mismatch.cancellations, 1);
+
+      final accepted = propose();
+      retry.stream.add(jsonEncode(response()));
+      await retry.stream.close();
+      expect((await accepted).changes.single.after, replacement);
+      expect(retry.cancellations, 1);
+    },
+  );
 
   test('proposal provides immutable full before/after review evidence', () {
     final result = SourceEditProposal.parse(response(), originals: originals);
