@@ -72,7 +72,7 @@ void main() {
     await settings.save(
       const LocalModelConfig(model: 'first', chatOutputTokens: 512),
     );
-    provider.completedResponseModel = 'reported-first';
+    provider.completedResponseModel = 'first';
     records.gate = Completer<void>();
     final first = controller.send('first question');
     records.values['studio.localModel.v1'] = jsonEncode({
@@ -103,14 +103,40 @@ void main() {
         .where((m) => m.role == 'assistant')
         .toList();
     expect(saved.map((m) => m.modelRequest!.model), ['first', 'second']);
-    expect(saved.map((m) => m.modelRequest!.responseModel), [
-      'reported-first',
-      null,
-    ]);
+    expect(saved.map((m) => m.modelRequest!.responseModel), ['first', null]);
     expect(saved.map((m) => m.modelRequest!.outputTokens), [512, 1024]);
     expect(provider.prompts.single, isNot(contains('modelRequest')));
     reopened.dispose();
   });
+  test(
+    'Ask preserves the question when a model mismatch requires retry',
+    () async {
+      await ModelSettingsStore(records)
+          .save(const LocalModelConfig(model: 'chosen'));
+      provider.completedResponseModel = 'other';
+      final sent = controller.send('question');
+      await tick();
+      provider.stream.add('wrong answer');
+      await provider.stream.close();
+      await sent;
+      expect(controller.error, contains('different model'));
+      expect(controller.unsavedReply, isNull);
+      expect(AskStore(records).load().single.messages.map((m) => m.content), [
+        'question',
+      ]);
+      expect(provider.cancelled, isTrue);
+
+      provider = AskProvider()..completedResponseModel = 'chosen';
+      final retried = controller.retryAnswer();
+      await tick();
+      provider.stream.add('right answer');
+      await provider.stream.close();
+      await retried;
+      final saved = AskStore(records).load().single.messages;
+      expect(saved.map((m) => m.content), ['question', 'right answer']);
+      expect(saved.last.modelRequest!.responseModel, 'chosen');
+    },
+  );
   test('corrupt Ask provenance refuses overwrite and preserves original data', () async {
     const raw =
         '{"version":1,"conversations":[{"id":"ask-1","messages":[{"role":"user","content":"q"},{"role":"assistant","content":"a","modelRequest":null}]}]}';

@@ -239,14 +239,17 @@ class AskController extends BaseController {
       if (isDisposed || _stopped) return accepted;
       if (draft.trim().isEmpty) throw StateError('Empty answer');
       final provider = _provider;
+      final responseModel = provider is ModelResponseIdentityProvider
+          ? provider.completedResponseModel
+          : null;
+      if (responseModel != null && responseModel != request.model) {
+        error = 'The server reported a different model. Check the saved model settings, then Retry answer.';
+        return accepted;
+      }
       _unsavedReply = ChatMessage(
         role: 'assistant',
         content: draft,
-        modelRequest: request.withResponseModel(
-          provider is ModelResponseIdentityProvider
-              ? provider.completedResponseModel
-              : null,
-        ),
+        modelRequest: request.withResponseModel(responseModel),
       );
       saving = true;
       update();

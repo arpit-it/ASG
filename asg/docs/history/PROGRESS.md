@@ -1,5 +1,10 @@
 # Progress and delivery history
 
+## Prototype edits reject mismatched model IDs — 16 November 2026 UTC
+
+F22 (#396). Prototype edits refuse a different reported model before parsing proposed changes. A regression verified the saved revision survives refusal and a matching retry saves. Both required CI jobs passed for reviewed revision f985d28. PR #670 merged and was verified on main at 4a3ef33. [PR #670](https://github.com/arpit-it/ASG/pull/670) · [Required CI](https://github.com/arpit-it/ASG/actions/runs/43973120398)
+
+
 ## HTML drafts retain response model identity — 16 November 2026 UTC
 
 F22 (#396). HTML drafts retain a server-reported model ID on save and reopen. Fixtures verified matching and missing IDs. Both required checks passed on reviewed revision fca1768. PR #669 merged and was verified on main at 12611d2. [PR #669](https://github.com/arpit-it/ASG/pull/669) · [Required CI](https://github.com/arpit-it/ASG/actions/runs/43960009992)
