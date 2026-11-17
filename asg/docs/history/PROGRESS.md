@@ -1,5 +1,9 @@
 # Progress and delivery history
 
+## Browser Ask Stop and retry — 17 November 2026 UTC
+
+F22 (#396). In the isolated in-app browser preview, Stop restored Retry answer and retained the saved question without an assistant answer. The long enumeration retry streamed but returned to Retry answer without saving. In a fresh conversation with a short prompt, Stop again retained the question and Retry answer saved a response displaying Qwen3.8-27B-4bit as both requested and server-reported model. The existing MLX Metal runtime identified the same model in health and inventory checks. The preview used the app build from the tested PR #672 tree, whose application source also matches main at 91590f0 after the history-only PR #673. [PR #673](https://github.com/arpit-it/ASG/pull/673)
+
 ## Live MLX streaming disconnect and recovery — 17 November 2026 UTC
 
 F22 (#396). On the owner's Mac, /health reported the existing Qwen3.8-27B-4bit runtime idle on MLX and Metal, and /v1/models listed the same ID. The streaming response reported that ID before the client closed the connection ahead of completion. The first health poll after disconnect observed idle, approximately 0.01 seconds after the client closed. A sequential retry returned HTTP 200 with the same model ID and nonempty content. This verifies loopback transport recovery on the observed runtime at main 74871b8. Browser Stop acceptance remains separate.
