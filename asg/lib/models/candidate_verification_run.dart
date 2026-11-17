@@ -10,11 +10,13 @@ class CandidateVerificationRun {
     required this.startedAt,
     required this.snapshot,
     required this.finished,
+    this.dispatchId,
   });
   final int number;
   final DateTime startedAt;
   final GeneratedProject snapshot;
   final bool finished;
+  final String? dispatchId;
 
   String get status => !finished
       ? 'interrupted or still active'
@@ -27,10 +29,16 @@ class CandidateVerificationRun {
     'startedAt': startedAt.toUtc().toIso8601String(),
     'snapshot': snapshot.toJson(),
     'finished': finished,
+    'dispatchId': ?dispatchId,
   };
 
   factory CandidateVerificationRun.fromJson(Map<String, dynamic> json) {
-    if (json.length != 4 ||
+    final dispatchId = json['dispatchId'];
+    if (json.length != (json.containsKey('dispatchId') ? 5 : 4) ||
+        (json.containsKey('dispatchId') &&
+            (dispatchId is! String ||
+                !RegExp(r'^[a-zA-Z0-9_-]{1,128}:[1-9][0-9]*$')
+                    .hasMatch(dispatchId))) ||
         json['number'] is! int ||
         (json['number'] as int) < 1 ||
         json['startedAt'] is! String ||
@@ -56,6 +64,7 @@ class CandidateVerificationRun {
       startedAt: startedAt,
       snapshot: snapshot,
       finished: json['finished'] as bool,
+      dispatchId: dispatchId as String?,
     );
   }
 }

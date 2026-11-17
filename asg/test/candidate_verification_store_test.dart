@@ -115,6 +115,11 @@ void main() {
       await interrupted.start(
         failure().copy(steps: [], pendingOperation: 'resolve'),
         () {},
+        dispatchId: 'task-1:3',
+      );
+      await interrupted.checkpoint(
+        failure().copy(steps: [], pendingOperation: 'resolve'),
+        () {},
       );
       final before = records.getString(store.key);
       await db.close();
@@ -126,6 +131,8 @@ void main() {
       final reopened = CandidateVerificationStore(records, 'p');
       expect(records.getString(store.key), before);
       expect(reopened.load().runs.first.snapshot.steps.last.cancelled, isTrue);
+      expect(reopened.load().runs.first.dispatchId, isNull);
+      expect(reopened.load().runs.last.dispatchId, 'task-1:3');
       expect(reopened.load().runs.last.finished, isFalse);
       expect(reopened.load().runs.last.snapshot.pendingOperation, 'resolve');
       await StoreRef<String, String>('records')
