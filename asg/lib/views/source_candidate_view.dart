@@ -49,6 +49,44 @@ class _SourceCandidateViewState extends State<SourceCandidateView> {
               ? null
               : (value) => setState(() => consent = value ?? false),
         ),
+        if (controller.history.isNotEmpty &&
+            !controller.history.last.finished &&
+            controller.history.last.snapshot.pendingOperation.isNotEmpty)
+          TextButton(
+            onPressed: controller.busy || !widget.actionsEnabled
+                ? null
+                : () async {
+                    final run = controller.history.last;
+                    final confirmed = await showDialog<bool>(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text('Resolve interrupted verification'),
+                        content: Text(
+                          'Check that the previous ${run.snapshot.pendingOperation} '
+                          'process has stopped and inspect any candidate changes. '
+                          'Its exit outcome is unknown. Confirm only after checking '
+                          'that a fresh verification can safely run again.',
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context, false),
+                            child: const Text('Keep interrupted'),
+                          ),
+                          FilledButton(
+                            onPressed: () => Navigator.pop(context, true),
+                            child: const Text(
+                              'I checked the process and changes',
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                    if (confirmed == true && mounted) {
+                      await controller.acknowledgeStopped(run);
+                    }
+                  },
+            child: const Text('Resolve interrupted verification'),
+          ),
         FilledButton(
           onPressed:
               !widget.actionsEnabled ||

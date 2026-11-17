@@ -4,6 +4,7 @@
 import 'dart:convert';
 
 import '../models/candidate_verification_run.dart';
+import '../models/agent_execution_checkpoint.dart';
 import '../models/source_generation.dart';
 import 'record_storage.dart';
 
@@ -35,14 +36,32 @@ class CandidateVerificationStore {
     _expectedJournal = records.getString(key);
     _expectedCandidate = records.getString(candidateKey);
     final journal = load();
+    if (journal.runs.isNotEmpty &&
+        !journal.runs.last.finished &&
+        journal.runs.last.snapshot.pendingOperation.isNotEmpty) {
+      throw StateError('Reconcile the interrupted candidate operation first.');
+    }
+    final execution = dispatchId == null
+        ? AgentExecutionCheckpoint.create(
+                'candidate-$projectId-${journal.runs.length + 1}',
+              )
+              .advance(AgentExecutionPhase.planning)
+              .advance(AgentExecutionPhase.awaitingApproval)
+              .advance(AgentExecutionPhase.executing)
+        : null;
     final run = CandidateVerificationRun(
       number: journal.runs.length + 1,
       startedAt: DateTime.now().toUtc(),
       snapshot: snapshot,
       finished: false,
-      dispatchId: dispatchId,
+      dispatchId: dispatchId ?? execution?.dispatchId,
     );
-    await _commit([...journal.runs, run], snapshot, authorize);
+    await _commit(
+      [...journal.runs, run],
+      snapshot,
+      authorize,
+      execution: execution,
+    );
     _owned = run;
   }
 
@@ -69,11 +88,65 @@ class CandidateVerificationStore {
     _owned = finished ? null : run;
   }
 
+  Future<void> acknowledgeStopped(
+    CandidateVerificationRun expected,
+    void Function() authorize,
+  ) async {
+    final storage = records;
+    if (storage is! ConditionalRecordStorage) {
+      throw StateError('Atomic storage is required.');
+    }
+    final raw = records.getString(key);
+    final journal = load();
+    if (journal.runs.isEmpty ||
+        jsonEncode(journal.runs.last.toJson()) !=
+            jsonEncode(expected.toJson()) ||
+        expected.finished ||
+        expected.snapshot.pendingOperation.isEmpty) {
+      throw StateError('Interrupted verification changed.');
+    }
+    final stopped = CandidateVerificationRun(
+      number: expected.number,
+      startedAt: expected.startedAt,
+      snapshot: expected.snapshot.copy(phase: SourceGenerationPhase.failed),
+      finished: true,
+      dispatchId: expected.dispatchId,
+    );
+    final updated = CandidateVerificationJournal([
+      ...journal.runs.take(journal.runs.length - 1),
+      stopped,
+    ]);
+    String? executionKey, executionRaw, reconciled;
+    if (expected.dispatchId != null) {
+      executionKey =
+          'studio.agentExecution.v1.${expected.dispatchId!.split(':').first}';
+      executionRaw = records.getString(executionKey);
+      if (executionRaw != null) {
+        var saved = AgentExecutionCheckpoint.fromJson(jsonDecode(executionRaw));
+        if (saved.dispatchId != expected.dispatchId) {
+          throw StateError('Interrupted execution changed.');
+        }
+        if (saved.phase == AgentExecutionPhase.executing) {
+          saved = saved.advance(AgentExecutionPhase.recovering);
+        }
+        reconciled = jsonEncode(
+          saved.advance(AgentExecutionPhase.awaitingApproval).toJson(),
+        );
+      }
+    }
+    await storage.commitRecords(
+      expected: {key: raw, if (reconciled != null) executionKey!: executionRaw},
+      updates: {key: jsonEncode(updated.toJson()), ?executionKey: ?reconciled},
+      authorize: authorize,
+    );
+  }
+
   Future<void> _commit(
     List<CandidateVerificationRun> runs,
     GeneratedProject snapshot,
-    void Function() authorize,
-  ) async {
+    void Function() authorize, {
+    AgentExecutionCheckpoint? execution,
+  }) async {
     final storage = records;
     if (storage is! ConditionalRecordStorage) {
       throw StateError('Atomic storage is required for candidate checks.');
@@ -83,9 +156,38 @@ class CandidateVerificationStore {
       jsonDecode(raw) as Map<String, dynamic>,
     );
     final candidate = jsonEncode(snapshot.toJson());
+    String? executionKey, expectedExecution, updatedExecution;
+    if (execution != null) {
+      executionKey = 'studio.agentExecution.v1.${execution.taskId}';
+      updatedExecution = jsonEncode(execution.toJson());
+    } else if (runs.last.finished && runs.last.dispatchId != null) {
+      final id = runs.last.dispatchId!;
+      executionKey = 'studio.agentExecution.v1.${id.split(':').first}';
+      expectedExecution = records.getString(executionKey);
+      if (expectedExecution != null) {
+        final saved = AgentExecutionCheckpoint.fromJson(
+          jsonDecode(expectedExecution),
+        );
+        if (saved.dispatchId != id ||
+            saved.phase != AgentExecutionPhase.executing) {
+          throw StateError('Verification execution changed.');
+        }
+        updatedExecution = jsonEncode(
+          saved.advance(AgentExecutionPhase.verifying).toJson(),
+        );
+      }
+    }
     await storage.commitRecords(
-      expected: {key: _expectedJournal, candidateKey: _expectedCandidate},
-      updates: {key: raw, candidateKey: candidate},
+      expected: {
+        key: _expectedJournal,
+        candidateKey: _expectedCandidate,
+        if (updatedExecution != null) executionKey!: expectedExecution,
+      },
+      updates: {
+        key: raw,
+        candidateKey: candidate,
+        ?executionKey: ?updatedExecution,
+      },
       authorize: authorize,
     );
     _expectedJournal = raw;
