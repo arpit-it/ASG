@@ -30,6 +30,7 @@ class RequestTokenLimitError(ValueError):
                    'shorten the request or reduce output tokens' if checkpoint else
                    f'Input exceeds {MAX_INPUT_TOKENS}-token limit; shorten the request')
         super().__init__(message)
+        self.reason = 'context_budget' if checkpoint else 'input_ceiling'
 
 
 def probe_device(kind):

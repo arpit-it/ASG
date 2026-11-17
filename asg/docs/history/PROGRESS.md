@@ -1,5 +1,9 @@
 # Progress and delivery history
 
+## Project Chat context guidance — 17 November 2026 UTC
+
+F22 (#396). Project Chat explains that recent messages and project details count toward the model request limit. Flutter analysis, regression tests and web build passed. Both required checks passed on reviewed revision d664f6d. PR #681 merged at 6b94817 and main matched the tested tree. [PR #681](https://github.com/arpit-it/ASG/pull/681) · [Required CI](https://github.com/arpit-it/ASG/actions/runs/44058559550)
+
 ## Project Chat token limit recovery — 17 November 2026 UTC
 
 F22 (#396). Project Chat distinguishes a refused request from a truncated reply and preserves the saved question in both cases. Reopen regressions, Flutter analysis and the web build passed. Both required jobs passed on reviewed revision 6cf0bfd. PR #680 merged at d54907c, and main matched the tested tree. [PR #680](https://github.com/arpit-it/ASG/pull/680) · [Required CI](https://github.com/arpit-it/ASG/actions/runs/44054082369)

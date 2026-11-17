@@ -545,6 +545,19 @@ class ServerTests(unittest.TestCase):
                         refused = failure.exception.read().decode()
                     self.assertIn('Prompt plus requested output exceeds checkpoint declared context limit', refused)
                     self.assertIn('request_token_limit', refused)
+                    self.assertIn('context_budget', refused)
+                    backend.tokenizer.encode.return_value = [1] * (qwen_backends.MAX_INPUT_TOKENS + 1)
+                    if streaming:
+                        with self.request(True, max_tokens=5) as response:
+                            oversized = response.read().decode()
+                    else:
+                        with self.assertRaises(urllib.error.HTTPError) as failure:
+                            self.request(False, max_tokens=5)
+                        self.assertEqual(failure.exception.code, 400)
+                        oversized = failure.exception.read().decode()
+                    self.assertIn('request_token_limit', oversized)
+                    self.assertIn('input_ceiling', oversized)
+                    backend.tokenizer.encode.return_value = [1, 2, 3]
                     self.assertNotIn('[DONE]', refused)
                     self.assertNotIn('completion_tokens', refused)
                     stream.assert_not_called()
