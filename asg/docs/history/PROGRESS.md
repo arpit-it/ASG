@@ -1,5 +1,9 @@
 # Progress and delivery history
 
+## Bridge token refusal reasons — 17 November 2026 UTC
+
+F22 (#396). JSON and streaming responses identify input ceiling and combined context budget refusals. Backend, bridge and inventory fixtures passed. Both required checks passed on reviewed revision 99188ca. PR #682 merged at c11f597 and main matched the tested tree. [PR #682](https://github.com/arpit-it/ASG/pull/682) · [Required CI](https://github.com/arpit-it/ASG/actions/runs/44064766887)
+
 ## Project Chat context guidance — 17 November 2026 UTC
 
 F22 (#396). Project Chat explains that recent messages and project details count toward the model request limit. Flutter analysis, regression tests and web build passed. Both required checks passed on reviewed revision d664f6d. PR #681 merged at 6b94817 and main matched the tested tree. [PR #681](https://github.com/arpit-it/ASG/pull/681) · [Required CI](https://github.com/arpit-it/ASG/actions/runs/44058559550)

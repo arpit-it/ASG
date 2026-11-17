@@ -34,6 +34,7 @@ class _Reply implements ModelResponseIdentityProvider {
 
 void main() {
   for (final (failure, guidance) in [
+    (ModelRequestLimitFailure(inputCeiling: true), 'Shorten the input'),
     (ModelRequestLimitFailure(), 'lower the chat output limit'),
     (ModelOutputLimitFailure(), 'raise the chat output limit'),
   ]) {
