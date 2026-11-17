@@ -24,8 +24,10 @@ final class ModelOutputLimitFailure extends _SafeModelFailure {
 
 /// The bridge rejected the request because its token budget did not fit.
 final class ModelRequestLimitFailure extends _SafeModelFailure {
-  ModelRequestLimitFailure()
+  ModelRequestLimitFailure({this.inputCeiling = false})
     : super('The request exceeds a model token limit.');
+
+  final bool inputCeiling;
 }
 
 /// Token streaming with bounded startup, inactivity and total request duration.
@@ -179,7 +181,9 @@ class LocalModelProvider
         try {
           final data = jsonDecode(body);
           if (data is Map && data['code'] == 'request_token_limit') {
-            throw ModelRequestLimitFailure();
+            throw ModelRequestLimitFailure(
+              inputCeiling: data['reason'] == 'input_ceiling',
+            );
           }
         } on FormatException {
           // Older endpoints may return a plain-text HTTP error.
@@ -255,7 +259,9 @@ class LocalModelProvider
       final data = jsonDecode(payload) as Map<String, dynamic>;
       if (name == 'error' || data.containsKey('error')) {
         if (data['code'] == 'request_token_limit') {
-          throw ModelRequestLimitFailure();
+          throw ModelRequestLimitFailure(
+            inputCeiling: data['reason'] == 'input_ceiling',
+          );
         }
         throw _SafeModelFailure(
           'Local generation failed. Check the runtime and retry.',

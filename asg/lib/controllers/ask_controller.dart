@@ -255,9 +255,11 @@ class AskController extends BaseController {
       update();
       await _save([...messages, _unsavedReply!]);
       if (!isDisposed) _unsavedReply = null;
-    } on ModelRequestLimitFailure {
+    } on ModelRequestLimitFailure catch (failure) {
       if (!isDisposed && !_stopped) {
-        error = 'The request exceeds a model token limit. Your question is saved. Try a shorter question in a new conversation, or lower the chat output limit if available and select Retry answer.';
+        error = failure.inputCeiling
+            ? 'The input exceeds the model token limit. Your question is saved. Try a shorter question in a new conversation.'
+            : 'The request exceeds a model token limit. Your question is saved. Try a shorter question in a new conversation, or lower the chat output limit if available and select Retry answer.';
       }
     } on ModelOutputLimitFailure {
       if (!isDisposed && !_stopped) {

@@ -358,6 +358,7 @@ void main() {
           client: MockClient((_) async {
             final refusal = jsonEncode({
               'code': 'request_token_limit',
+              if (streaming) 'reason': 'input_ceiling',
               'error': 'private server details',
             });
             return streaming
@@ -373,6 +374,10 @@ void main() {
       addTearDown(ask.dispose);
       expect(await ask.send('My question'), isTrue);
       expect(ask.error, contains('model token limit'));
+      expect(
+        ask.error,
+        streaming ? isNot(contains('lower')) : contains('lower'),
+      );
       expect(ask.error, isNot(contains('private server details')));
       expect(ask.canRetryAnswer, isTrue);
       expect(
