@@ -54,6 +54,30 @@ The existing Flutter prototype critical path starts with durable operation state
 
 Planning targets in UTC are 30 November 2026 for the runtime foundation, 15 December for the first coding loop, 31 December for the existing Flutter repository demonstration, 15 January 2027 for delegation and 31 January for a beta with Git, recovery, browser verification and benchmarks. Broader frameworks and extensions follow in February or later. Each target depends on verified predecessor outcomes.
 
+### Existing requirements and implementation gaps
+
+| Existing requirements | Coding engine relationship and verified boundary |
+| --- | --- |
+| F01, F02, F10 | CE12 and CE16 reuse the task board, approved plan contracts and deterministic requirements review. Repository-wide plan-to-diff traceability is pending. |
+| F03, F06 | CE01, CE06 and CE24 reuse bounded fixed operations, verification checkpoints and last-working history. A durable session covering multiple tool calls and reconciliation remains pending. |
+| F04, F05 | CE05, CE14 and CE15 reuse scoped candidate editing, checks and repair evidence. Those flows require a separately verified existing-repository integration. |
+| F07, F08, F20 | CE07, CE08, CE13 and CE34 reuse project import and backup. The imported project flow needs a read-only Git workspace inventory before approved source changes. Issue #404 owns this slice. |
+| F09, F15, F22, F24 | CE02 and CE25 reuse runtime diagnostics, local transport and model setup. Coding roles need a shared inference queue with explicit cancellation and resource evidence. Existing model selection remains available outside coding roles. |
+| F11, F16, F19 | CE04, CE06, CE11 and CE33 reuse bounded runners and capability reporting. Additional stack execution needs adapter-specific isolation and verification. |
+| F12 | CE21 reuses isolated snapshots and candidate verification. Promotion requires its own verified acceptance. |
+| F13, F17 | CE35 reuses documentation conventions and the acceptance inventory. Repeatable coding scenarios with failure, recovery and review evidence remain pending. |
+| F14, F18 | CE18–CE20 reuse adjustable panes and standalone Ask. File navigation, approvals and live agent activity still need integration. |
+| F21 | CE10 and CE23 share local instruction and scheduling concepts. Scheduled product actions wait for scoped repository execution. |
+| F23 | Cloud inference is deferred for the single-model coding phase. |
+| F25–F36 | Commercial platforms, accounts, permissions and discovery are deferred. CE04 and CE22 implement only local coding tool contracts and scoped connector foundations. |
+| F37–F44 | Commercial analysis, proposals, bidding, communications and contracts are deferred. CE12 applies requirements extraction to user-owned software. |
+| F45–F46 | Commercial executors are deferred. CE01, CE04 and CE13 cover bounded software operations for the user's workspace. |
+| F47–F51 | Commercial data, document, research, spreadsheet and media executors are deferred. |
+| F52–F55 | Commercial connector and delivery acceptance is deferred. CE04, CE17, CE22 and CE34 cover coding-specific contracts, browser checks, extensions and runnable delivery. |
+| F56 | Repository coordination governs development of the product. CE03 applies independent task ownership and the two-writer limit inside the product. |
+
+The first P0 implementation under #404 is the CE01 execution checkpoint model. It records a unique task ID and explicit lifecycle transitions, refuses invalid transitions and preserves an interrupted dispatch for reconciliation after reload. Validate round-trip, invalid transitions and interrupted dispatch with deterministic tests. This slice can run alongside read-only repository inventory design. The December prototype then needs scoped inspection and editing, typed dispatch, approved execution and a verified repair loop. The January delegation target depends on scoped contexts, scheduling and cancellation; the beta additionally depends on Git review, rollback and browser evidence.
+
 ## Completion and selection rules
 
 Read this document on every scheduled run. First reconcile active issues/PRs and coordination claims against GitHub and current main. Resume owned work first; the 5 November coordinated-development policy permits at most two independent writers. Select the first eligible queued outcome whose actual dependencies are satisfied; keep each issue a coherent reviewable outcome. Do not mark a whole feature done when only an increment is delivered.
