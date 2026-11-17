@@ -571,16 +571,21 @@ class ChatController extends BaseController {
       if (result.isEmpty) {
         throw StateError('The local model returned no response.');
       }
+      final responseModel = activeProvider is ModelResponseIdentityProvider
+          ? activeProvider.completedResponseModel
+          : null;
+      if (responseModel != null && responseModel != modelRequest.model) {
+        if (!isDisposed) {
+          error = 'The server reported a different model. Check the saved model settings and retry.';
+        }
+        return accepted;
+      }
       requestingModel = false;
       if (isDisposed) return accepted;
       _unsavedResponse = ChatMessage(
         role: 'assistant',
         content: requestMode.labelResponse(result),
-        modelRequest: modelRequest.withResponseModel(
-          activeProvider is ModelResponseIdentityProvider
-              ? activeProvider.completedResponseModel
-              : null,
-        ),
+        modelRequest: modelRequest.withResponseModel(responseModel),
         planContext: requestMode == ConversationMode.plan
             ? requestPlanContext
             : null,

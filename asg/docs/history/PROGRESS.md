@@ -1,5 +1,9 @@
 # Progress and delivery history
 
+## Ask rejects mismatched model IDs — 16 November 2026 UTC
+
+F22 (#396). Ask discards a response from a different reported model and retains the saved question for retry. A regression verified a matching retry saves. Both required CI jobs passed on reviewed revision 358a24d. PR #671 merged and was verified on main at 7b40c04. [PR #671](https://github.com/arpit-it/ASG/pull/671)
+
 ## Prototype edits reject mismatched model IDs — 16 November 2026 UTC
 
 F22 (#396). Prototype edits refuse a different reported model before parsing proposed changes. A regression verified the saved revision survives refusal and a matching retry saves. Both required CI jobs passed for reviewed revision f985d28. PR #670 merged and was verified on main at 4a3ef33. [PR #670](https://github.com/arpit-it/ASG/pull/670) · [Required CI](https://github.com/arpit-it/ASG/actions/runs/43973120398)
