@@ -328,6 +328,7 @@ void main() {
 
       expect(await ask.send('Explain the trade-off'), isTrue);
       expect(ask.error, contains('model output limit'));
+      expect(ask.error, contains('shorter question in a new conversation'));
       expect(ask.draft, isEmpty);
       expect(ask.canRetryAnswer, isTrue);
       expect(ask.messages.map((message) => message.content), [

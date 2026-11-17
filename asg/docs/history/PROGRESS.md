@@ -1,5 +1,9 @@
 # Progress and delivery history
 
+## Ask output limit recovery — 17 November 2026 UTC
+
+F22 (#396). Ask explains why a reply ended at the model output limit and preserves the saved question for retry. The regression verifies that a complete retry is saved once and survives reopening. The reviewed revision 9d95e402 passed both required checks and merged at bd383fc, with the merged tree verified against the tested tree. Issue #396 remains open. [PR #675](https://github.com/arpit-it/ASG/pull/675) · [Required CI](https://github.com/arpit-it/ASG/actions/runs/44022451544)
+
 ## Browser Ask Stop and retry — 17 November 2026 UTC
 
 F22 (#396). In the isolated in-app browser preview, Stop restored Retry answer and retained the saved question without an assistant answer. The long enumeration retry streamed but returned to Retry answer without saving. In a fresh conversation with a short prompt, Stop again retained the question and Retry answer saved a response displaying Qwen3.8-27B-4bit as both requested and server-reported model. The existing MLX Metal runtime identified the same model in health and inventory checks. The preview used the app build from the tested PR #672 tree, whose application source also matches main at 91590f0 after the history-only PR #673. [PR #673](https://github.com/arpit-it/ASG/pull/673)
