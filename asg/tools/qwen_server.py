@@ -149,7 +149,7 @@ def create_handler(backend, executor, model_id, model_path):
                     # never measured usable capacity or model provenance.
                     entry['asg_request_limits'] = {
                         'schema_version': 1,
-                        'max_input_tokens': 4096,
+                        'max_input_tokens': qwen_backends.MAX_INPUT_TOKENS,
                         'max_output_tokens': 4096,
                         'checkpoint_context_tokens': getattr(backend, 'declared_context_tokens', None),
                     }
