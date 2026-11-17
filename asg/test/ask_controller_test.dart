@@ -348,6 +348,40 @@ void main() {
     },
   );
 
+  test('Ask preserves a question after a structured token refusal', () async {
+    for (final streaming in [false, true]) {
+      final storage = AskRecords();
+      final ask = AskController(
+        AskStore(storage),
+        createProvider: (config) => LocalModelProvider(
+          config,
+          client: MockClient((_) async {
+            final refusal = jsonEncode({
+              'code': 'request_token_limit',
+              'error': 'private server details',
+            });
+            return streaming
+                ? http.Response(
+                    'event: error\ndata: $refusal\n\n',
+                    200,
+                    headers: {'content-type': 'text/event-stream'},
+                  )
+                : http.Response(refusal, 400);
+          }),
+        ),
+      )..load();
+      addTearDown(ask.dispose);
+      expect(await ask.send('My question'), isTrue);
+      expect(ask.error, contains('model token limit'));
+      expect(ask.error, isNot(contains('private server details')));
+      expect(ask.canRetryAnswer, isTrue);
+      expect(
+        AskStore(storage).load().single.messages.single.content,
+        'My question',
+      );
+    }
+  });
+
   test(
     'absolute deadline ends stalled stream and preserves saved question',
     () async {

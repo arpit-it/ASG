@@ -544,6 +544,7 @@ class ServerTests(unittest.TestCase):
                         self.assertEqual(failure.exception.code, 400)
                         refused = failure.exception.read().decode()
                     self.assertIn('Prompt plus requested output exceeds checkpoint declared context limit', refused)
+                    self.assertIn('request_token_limit', refused)
                     self.assertNotIn('[DONE]', refused)
                     self.assertNotIn('completion_tokens', refused)
                     stream.assert_not_called()

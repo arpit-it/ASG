@@ -1,5 +1,9 @@
 # Progress and delivery history
 
+## Shared bridge input ceiling — 17 November 2026 UTC
+
+F22 (#396). The model inventory and both backend guards use the same 4,096-token input ceiling. Backend fixtures covered the boundary and the HTTP bridge suite passed. Both required checks passed on reviewed revision 2c3c0c9. PR #678 merged at 54d0c7e and main matched the tested tree. [PR #678](https://github.com/arpit-it/ASG/pull/678) · [Required CI](https://github.com/arpit-it/ASG/actions/runs/44039941954)
+
 ## Live MLX input near the configured ceiling — 17 November 2026 UTC
 
 F22 (#396). The existing loopback runtime reported Qwen3.8-27B-4bit on MLX and Metal in health and listed the same ID with a 4,096-token input ceiling. A non-streaming probe with 3,900 repetitions of a filler word exceeded the 45-second client deadline without returning a model ID or token count. Health still showed thinking immediately afterward. The worker later returned to idle, and a short JSON retry finished with the matching model ID.

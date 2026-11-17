@@ -355,10 +355,13 @@ def create_handler(backend, executor, model_id, model_path):
                             self.respond(200, {'model': model_id, 'choices': [{'message': {'role': 'assistant', 'content': ''.join(fragments)}, 'finish_reason': reason}], 'metrics': value})
                         break
                     else:
+                        payload = {'error': value}
+                        if kind == 'request_error':
+                            payload['code'] = 'request_token_limit'
                         if streaming:
-                            self.sse('error', {'error': value})
+                            self.sse('error', payload)
                         else:
-                            self.respond(400 if kind == 'request_error' else 500, {'error': value})
+                            self.respond(400 if kind == 'request_error' else 500, payload)
                         break
             except (BrokenPipeError, ConnectionResetError, TimeoutError, OSError) as error:
                 if streaming:
