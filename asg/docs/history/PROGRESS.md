@@ -14757,3 +14757,8 @@ CI44173982804 and final review. Verified remote main equals tested tree.
 Candidate execution startup and completion use atomic linked records. Recovery
 requires operator acknowledgement of stopped activity and candidate changes.
 Automatic process reconciliation remains pending under #404.
+
+PR #690 merged at 083c9c872588ecdfbadd968b404f2f263b90b852 after required
+CI44186183837 and fresh review. Remote main tree matched the tested source.
+Recovery clears previously selected verification consent. Widget coverage
+verifies dismissal, confirmation and renewed consent. #404 remains open.
