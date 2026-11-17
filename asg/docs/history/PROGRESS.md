@@ -1,5 +1,15 @@
 # Progress and delivery history
 
+## Live MLX input near the configured ceiling — 17 November 2026 UTC
+
+F22 (#396). The existing loopback runtime reported Qwen3.8-27B-4bit on MLX and Metal in health and listed the same ID with a 4,096-token input ceiling. A non-streaming probe with 3,900 repetitions of a filler word exceeded the 45-second client deadline without returning a model ID or token count. Health still showed thinking immediately afterward. The worker later returned to idle, and a short JSON retry finished with the matching model ID.
+
+Two subsequent streaming requests asked for a short answer with repeated filler. The first reported 2,522 prompt tokens and produced its first text after 14.62 seconds. The second reported 3,922 prompt tokens and completed in 24.92 seconds. Both reported the matching model ID and a normal stop, ended with DONE, and left the worker idle. These transport observations were made during development at main 504aa90. Verification of full usable context remains pending.
+
+## Ask recovery at the maximum output limit — 17 November 2026 UTC
+
+F22 (#396). Ask suggests a shorter question in a new conversation when the model reaches its output limit. The regression verified the guidance and a successful retry with the original question preserved. Both required checks passed on reviewed revision f701b25. PR #676 merged at 504aa90, and main matched the tested tree. [PR #676](https://github.com/arpit-it/ASG/pull/676) · [Required CI](https://github.com/arpit-it/ASG/actions/runs/44026415334)
+
 ## Ask output limit recovery — 17 November 2026 UTC
 
 F22 (#396). Ask explains why a reply ended at the model output limit and preserves the saved question for retry. The regression verifies that a complete retry is saved once and survives reopening. The reviewed revision 9d95e402 passed both required checks and merged at bd383fc, with the merged tree verified against the tested tree. Issue #396 remains open. [PR #675](https://github.com/arpit-it/ASG/pull/675) · [Required CI](https://github.com/arpit-it/ASG/actions/runs/44022451544)
