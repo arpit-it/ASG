@@ -20,7 +20,7 @@ void main() {
     final records = AtomicRecords();
     final first = CandidateVerificationStore(records, 'p');
     final second = CandidateVerificationStore(records, 'p');
-    final pending = failure().copy(steps: [], pendingOperation: 'resolve');
+    final pending = failure().copy(steps: [], pendingOperation: '');
     await first.start(pending, () {});
     await second.start(pending, () {});
     final preserved = Map.of(records.values);
@@ -33,7 +33,7 @@ void main() {
     final runs = second.load().runs;
     expect(runs.map((run) => run.number), [1, 2]);
     expect(runs.first.finished, isFalse);
-    expect(runs.first.snapshot.pendingOperation, 'resolve');
+    expect(runs.first.snapshot.pendingOperation, isEmpty);
     expect(runs.last.snapshot.steps.last.exitCode, 1);
     expect(runs.last.snapshot.steps.last.output, contains('line 2'));
     expect(runs.last.finished, isTrue);
@@ -131,10 +131,20 @@ void main() {
       final reopened = CandidateVerificationStore(records, 'p');
       expect(records.getString(store.key), before);
       expect(reopened.load().runs.first.snapshot.steps.last.cancelled, isTrue);
-      expect(reopened.load().runs.first.dispatchId, isNull);
+      final first = reopened.load().runs.first;
+      expect(first.dispatchId, 'candidate-p-1:3');
+      final legacy = first.toJson()..remove('dispatchId');
+      expect(CandidateVerificationRun.fromJson(legacy).dispatchId, isNull);
+      final execution = jsonDecode(
+        records.getString('studio.agentExecution.v1.candidate-p-1')!,
+      ) as Map<String, dynamic>;
+      expect(execution['phase'], 'verifying');
+      expect(execution['revision'], 4);
       expect(reopened.load().runs.last.dispatchId, 'task-1:3');
       expect(reopened.load().runs.last.finished, isFalse);
       expect(reopened.load().runs.last.snapshot.pendingOperation, 'resolve');
+      await expectLater(reopened.start(failure(), () {}), throwsStateError);
+      expect(records.getString(store.key), before);
       await StoreRef<String, String>('records')
           .record(store.key)
           .put(db, '{broken');

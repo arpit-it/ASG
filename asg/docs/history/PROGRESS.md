@@ -14741,3 +14741,13 @@ PR #687 merged at 8f3b01a368b3d3f1c2fc2ea8a56effd1b2ec4be0 after CI
 44125223458 passed. Checkpoint recovery preserves the dispatch identity and
 requires a matching identity plus caller reconciliation. Remote main tree
 matched the tested tree. Claims released. #404 remains open for workflow wiring.
+
+PR #688 merged at 9f01fe68230819d5778db8911c86d721dc46a1a4 after CI
+44138287831 passed. The merged tree matched the tested journal changes.
+The 404-candidate-execution-flow investigation confirmed that RecordStorage
+exposes atomic multi-record conditional publication. CandidateVerificationStore
+already publishes journal and candidate together. The execution record must
+join that transaction before host dispatch, with a null expected value for a
+new execution key. Separate execution and journal writes would leave a crash
+window. Completion and Stop must preserve the same identity and observed exits.
+Workflow implementation and controller regression validation remain pending.
