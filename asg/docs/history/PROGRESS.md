@@ -14731,3 +14731,8 @@ export bytes to the production passive preview host. The in-app browser
 rendered the Garden Stream Check heading and welcome text. The test called
 the host's Stop method and verified that a new connection failed. The check
 passed in 76 seconds. This test exercised the host directly. F11 remains open.
+
+PR #686 merged at 424536547637be6cd0ed38b2e9e81d9264792636 after CI
+44109933381 passed. Stop retains an interrupted candidate verification when
+a command outcome is pending. The merged tree matched the tested local tree.
+Umbrella issue #404 stays open for the remaining CE01 integration.

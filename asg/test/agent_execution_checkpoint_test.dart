@@ -64,6 +64,8 @@ void main() {
       final recovering = (await store.reopen('task-1'))!;
       expect(recovering.phase, AgentExecutionPhase.recovering);
       expect(recovering.revision, dispatched.revision + 1);
+      expect(dispatched.dispatchId, isNotNull);
+      expect(recovering.dispatchId, dispatched.dispatchId);
       expect((await store.reopen('task-1'))!.revision, recovering.revision);
       await expectLater(
         store.advance(
@@ -81,14 +83,27 @@ void main() {
         store.advance(
           recovering,
           AgentExecutionPhase.awaitingApproval,
+          reconciledDispatchId: recovering.dispatchId,
           authorize: () => throw StateError('Dispatch still unresolved'),
         ),
         throwsStateError,
       );
+      for (final id in [null, 'different-task:3']) {
+        await expectLater(
+          store.advance(
+            recovering,
+            AgentExecutionPhase.awaitingApproval,
+            reconciledDispatchId: id,
+            authorize: () {},
+          ),
+          throwsStateError,
+        );
+      }
       expect(store.load('task-1')!.requiresReconciliation, isTrue);
       final reconciled = await store.advance(
         recovering,
         AgentExecutionPhase.awaitingApproval,
+        reconciledDispatchId: recovering.dispatchId,
         authorize: () {},
       );
       expect(reconciled.requiresReconciliation, isFalse);

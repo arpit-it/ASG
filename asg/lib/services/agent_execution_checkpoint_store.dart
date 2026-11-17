@@ -56,11 +56,16 @@ final class AgentExecutionCheckpointStore {
     AgentExecutionCheckpoint expected,
     AgentExecutionPhase next, {
     void Function()? authorize,
+    String? reconciledDispatchId,
   }) async {
     if ((next == AgentExecutionPhase.executing ||
             expected.phase == AgentExecutionPhase.recovering) &&
         authorize == null) {
       throw StateError('Approval or reconciliation is required.');
+    }
+    if (expected.phase == AgentExecutionPhase.recovering &&
+        reconciledDispatchId != expected.dispatchId) {
+      throw StateError('Recovery evidence must match the pending dispatch.');
     }
     final key = _key(expected.taskId);
     final raw = records.getString(key);

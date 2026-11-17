@@ -35,6 +35,13 @@ final class AgentExecutionCheckpoint {
       phase == AgentExecutionPhase.executing ||
       phase == AgentExecutionPhase.recovering;
 
+  /// Stable for the pending dispatch, including after reopening.
+  String? get dispatchId => switch (phase) {
+    AgentExecutionPhase.executing => '$taskId:$revision',
+    AgentExecutionPhase.recovering => '$taskId:${revision - 1}',
+    _ => null,
+  };
+
   AgentExecutionCheckpoint advance(AgentExecutionPhase next) {
     final allowed = switch (phase) {
       AgentExecutionPhase.created => {
