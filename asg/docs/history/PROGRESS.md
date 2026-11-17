@@ -14751,3 +14751,9 @@ join that transaction before host dispatch, with a null expected value for a
 new execution key. Separate execution and journal writes would leave a crash
 window. Completion and Stop must preserve the same identity and observed exits.
 Workflow implementation and controller regression validation remain pending.
+
+PR #689 merged at 51ebcd5db53fe21fd56ae6f6cd324a10f0cf8b38 after required
+CI44173982804 and final review. Verified remote main equals tested tree.
+Candidate execution startup and completion use atomic linked records. Recovery
+requires operator acknowledgement of stopped activity and candidate changes.
+Automatic process reconciliation remains pending under #404.
