@@ -1,5 +1,9 @@
 # Progress and delivery history
 
+## Coding engine requirements — 17 November 2026 UTC
+
+PR #684 added the coding-engine roadmap under #404. Both required jobs passed on reviewed revision fa7f115. Main at 45575ac matched the reviewed tree. [PR #684](https://github.com/arpit-it/ASG/pull/684) · [CI](https://github.com/arpit-it/ASG/actions/runs/44081696925)
+
 ## Bridge token refusal reasons — 17 November 2026 UTC
 
 F22 (#396). JSON and streaming responses identify input ceiling and combined context budget refusals. Backend, bridge and inventory fixtures passed. Both required checks passed on reviewed revision 99188ca. PR #682 merged at c11f597 and main matched the tested tree. [PR #682](https://github.com/arpit-it/ASG/pull/682) · [Required CI](https://github.com/arpit-it/ASG/actions/runs/44064766887)
