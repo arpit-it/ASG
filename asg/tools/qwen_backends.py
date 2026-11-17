@@ -19,13 +19,16 @@ class GenerationCancelled(Exception):
     pass
 
 
+MAX_INPUT_TOKENS = 4096
+
+
 class RequestTokenLimitError(ValueError):
     """A caller can correct this fixed, public request error and retry."""
 
     def __init__(self, *, checkpoint=False):
         message = ('Prompt plus requested output exceeds checkpoint declared context limit; '
                    'shorten the request or reduce output tokens' if checkpoint else
-                   'Input exceeds 4096-token limit; shorten the request')
+                   f'Input exceeds {MAX_INPUT_TOKENS}-token limit; shorten the request')
         super().__init__(message)
 
 
@@ -153,7 +156,7 @@ class MLXBackend:
             prompt, add_special_tokens=bos is None or not prompt.startswith(bos),
             truncation=False)
         check()
-        if len(prompt_ids) > 4096:
+        if len(prompt_ids) > MAX_INPUT_TOKENS:
             raise RequestTokenLimitError()
         check_context_budget(self, len(prompt_ids), tokens)
         from mlx_lm import stream_generate
@@ -209,7 +212,7 @@ class TorchMPSBackend:
         inputs = self.tokenizer(prompt, return_tensors='pt', truncation=False)
         check()
         prompt_tokens = inputs.input_ids.shape[-1]
-        if prompt_tokens > 4096:
+        if prompt_tokens > MAX_INPUT_TOKENS:
             raise RequestTokenLimitError()
         check_context_budget(self, prompt_tokens, tokens)
         inputs = inputs.to(self.device)
