@@ -1,5 +1,13 @@
 # Progress and delivery history
 
+## Live MLX streaming disconnect and recovery — 17 November 2026 UTC
+
+F22 (#396). On the owner's Mac, /health reported the existing Qwen3.8-27B-4bit runtime idle on MLX and Metal, and /v1/models listed the same ID. The streaming response reported that ID before the client closed the connection ahead of completion. The first health poll after disconnect observed idle, approximately 0.01 seconds after the client closed. A sequential retry returned HTTP 200 with the same model ID and nonempty content. This verifies loopback transport recovery on the observed runtime at main 74871b8. Browser Stop acceptance remains separate.
+
+## Project chat rejects mismatched model IDs — 17 November 2026 UTC
+
+F22 (#396). Project chat discards responses from a different reported model before saving. A regression verified the saved question survives refusal and a subsequent response from the requested model succeeds. Both required jobs passed on reviewed revision f7465e9. PR #672 merged and was verified on main at 74871b8. [PR #672](https://github.com/arpit-it/ASG/pull/672) · [Required CI](https://github.com/arpit-it/ASG/actions/runs/43988903024)
+
 ## Ask rejects mismatched model IDs — 16 November 2026 UTC
 
 F22 (#396). Ask discards a response from a different reported model and retains the saved question for retry. A regression verified a matching retry saves. Both required CI jobs passed on reviewed revision 358a24d. PR #671 merged and was verified on main at 7b40c04. [PR #671](https://github.com/arpit-it/ASG/pull/671)
