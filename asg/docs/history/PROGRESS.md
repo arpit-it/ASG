@@ -14736,3 +14736,8 @@ PR #686 merged at 424536547637be6cd0ed38b2e9e81d9264792636 after CI
 44109933381 passed. Stop retains an interrupted candidate verification when
 a command outcome is pending. The merged tree matched the tested local tree.
 Umbrella issue #404 stays open for the remaining CE01 integration.
+
+PR #687 merged at 8f3b01a368b3d3f1c2fc2ea8a56effd1b2ec4be0 after CI
+44125223458 passed. Checkpoint recovery preserves the dispatch identity and
+requires a matching identity plus caller reconciliation. Remote main tree
+matched the tested tree. Claims released. #404 remains open for workflow wiring.

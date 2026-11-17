@@ -28,8 +28,9 @@ class CandidateVerificationStore {
 
   Future<void> start(
     GeneratedProject snapshot,
-    void Function() authorize,
-  ) async {
+    void Function() authorize, {
+    String? dispatchId,
+  }) async {
     if (_owned != null) throw StateError('Verification run already reserved.');
     _expectedJournal = records.getString(key);
     _expectedCandidate = records.getString(candidateKey);
@@ -39,6 +40,7 @@ class CandidateVerificationStore {
       startedAt: DateTime.now().toUtc(),
       snapshot: snapshot,
       finished: false,
+      dispatchId: dispatchId,
     );
     await _commit([...journal.runs, run], snapshot, authorize);
     _owned = run;
@@ -56,6 +58,7 @@ class CandidateVerificationStore {
       startedAt: owned.startedAt,
       snapshot: snapshot,
       finished: finished,
+      dispatchId: owned.dispatchId,
     );
     final journal = load();
     await _commit(
