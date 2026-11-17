@@ -667,6 +667,72 @@ void main() {
     },
   );
 
+  testWidgets('stale recovery dialog preserves changed saved evidence', (
+    tester,
+  ) async {
+    final initial = candidate.result;
+    final evidence = candidate.evidence;
+    candidate.dispose();
+    final host = InterruptedCheckHost();
+    candidate = SourceCandidateController(
+      project: project,
+      candidate: initial,
+      evidence: evidence,
+      records: records,
+      host: host,
+      publish: (value, host, guard) =>
+          throw StateError('Unexpected publication'),
+    );
+    host.stop = candidate.cancel;
+    await candidate.verify(approved: true);
+    final before = candidate.history.single.toJson();
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: SingleChildScrollView(
+            child: ListenableBuilder(
+              listenable: candidate,
+              builder: (_, _) => SourceCandidateView(controller: candidate),
+            ),
+          ),
+        ),
+      ),
+    );
+    final resolve = find.widgetWithText(
+      TextButton,
+      'Resolve interrupted verification',
+    );
+    await tester.ensureVisible(resolve);
+    await tester.tap(resolve);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Keep interrupted'));
+    await tester.pumpAndSettle();
+    expect(candidate.history.single.toJson(), before);
+    final checkbox = find.byType(CheckboxListTile).first;
+    await tester.ensureVisible(checkbox);
+    await tester.tap(checkbox);
+    await tester.pumpAndSettle();
+    expect(tester.widget<CheckboxListTile>(checkbox).value, isTrue);
+    await tester.ensureVisible(resolve);
+    await tester.tap(resolve);
+    await tester.pumpAndSettle();
+    final key = 'studio.candidateChecks.v1.${project.id}';
+    final changed = jsonDecode(records.getString(key)!) as Map<String, dynamic>;
+    (changed['runs'] as List).last['startedAt'] = '2026-11-17T00:00:00.000Z';
+    final replacement = jsonEncode(changed);
+    records.values[key] = replacement;
+    await tester.tap(find.text('I checked the process and changes'));
+    await tester.pumpAndSettle();
+    expect(candidate.history.single.finished, isFalse);
+    expect(records.getString(key), replacement);
+    expect(candidate.error, contains('Recovery could not be saved'));
+    expect(candidate.history.single.snapshot.steps, isEmpty);
+    final verify = tester.widget<FilledButton>(
+      find.widgetWithText(FilledButton, 'Verify candidate in sandbox'),
+    );
+    expect(verify.onPressed, isNull);
+  });
+
   test('retries preserve actual results in separate saved runs', () async {
     candidateHost.throwAnalyze = true;
     await candidate.verify(approved: true);
