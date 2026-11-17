@@ -191,6 +191,25 @@ class SourceCandidateController extends BaseController {
     }
   }
 
+  Future<void> acknowledgeStopped(CandidateVerificationRun expected) async {
+    if (_busy || isDisposed) return;
+    _busy = true;
+    _cancelled = false;
+    try {
+      await CandidateVerificationStore(
+        records,
+        project.id,
+      ).acknowledgeStopped(expected, _authorize);
+      _error = null;
+    } catch (_) {
+      _error = 'Recovery could not be saved. Reopen the saved check history.';
+    } finally {
+      _busy = false;
+      if (!isDisposed) _refreshHistory();
+      update();
+    }
+  }
+
   void cancel() {
     if (!_busy || _promoting || isDisposed) return;
     _cancelled = true;

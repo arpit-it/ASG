@@ -145,6 +145,17 @@ void main() {
       expect(reopened.load().runs.last.snapshot.pendingOperation, 'resolve');
       await expectLater(reopened.start(failure(), () {}), throwsStateError);
       expect(records.getString(store.key), before);
+      final pendingRun = reopened.load().runs.last;
+      await reopened.acknowledgeStopped(pendingRun, () {});
+      expect(reopened.load().runs.last.finished, isTrue);
+      expect(reopened.load().runs.last.snapshot.pendingOperation, 'resolve');
+      expect(reopened.load().runs.last.snapshot.steps, isEmpty);
+      await expectLater(
+        reopened.acknowledgeStopped(pendingRun, () {}),
+        throwsStateError,
+      );
+      await reopened.start(failure(), () {});
+      expect(reopened.load().runs.length, 3);
       await StoreRef<String, String>('records')
           .record(store.key)
           .put(db, '{broken');

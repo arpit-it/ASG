@@ -88,6 +88,59 @@ class CandidateVerificationStore {
     _owned = finished ? null : run;
   }
 
+  Future<void> acknowledgeStopped(
+    CandidateVerificationRun expected,
+    void Function() authorize,
+  ) async {
+    final storage = records;
+    if (storage is! ConditionalRecordStorage) {
+      throw StateError('Atomic storage is required.');
+    }
+    final raw = records.getString(key);
+    final journal = load();
+    if (journal.runs.isEmpty ||
+        jsonEncode(journal.runs.last.toJson()) !=
+            jsonEncode(expected.toJson()) ||
+        expected.finished ||
+        expected.snapshot.pendingOperation.isEmpty) {
+      throw StateError('Interrupted verification changed.');
+    }
+    final stopped = CandidateVerificationRun(
+      number: expected.number,
+      startedAt: expected.startedAt,
+      snapshot: expected.snapshot.copy(phase: SourceGenerationPhase.failed),
+      finished: true,
+      dispatchId: expected.dispatchId,
+    );
+    final updated = CandidateVerificationJournal([
+      ...journal.runs.take(journal.runs.length - 1),
+      stopped,
+    ]);
+    String? executionKey, executionRaw, reconciled;
+    if (expected.dispatchId != null) {
+      executionKey =
+          'studio.agentExecution.v1.${expected.dispatchId!.split(':').first}';
+      executionRaw = records.getString(executionKey);
+      if (executionRaw != null) {
+        var saved = AgentExecutionCheckpoint.fromJson(jsonDecode(executionRaw));
+        if (saved.dispatchId != expected.dispatchId) {
+          throw StateError('Interrupted execution changed.');
+        }
+        if (saved.phase == AgentExecutionPhase.executing) {
+          saved = saved.advance(AgentExecutionPhase.recovering);
+        }
+        reconciled = jsonEncode(
+          saved.advance(AgentExecutionPhase.awaitingApproval).toJson(),
+        );
+      }
+    }
+    await storage.commitRecords(
+      expected: {key: raw, if (reconciled != null) executionKey!: executionRaw},
+      updates: {key: jsonEncode(updated.toJson()), ?executionKey: ?reconciled},
+      authorize: authorize,
+    );
+  }
+
   Future<void> _commit(
     List<CandidateVerificationRun> runs,
     GeneratedProject snapshot,
