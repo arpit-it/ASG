@@ -286,7 +286,11 @@ def create_handler(backend, executor, model_id, model_path):
                 except Exception as error:
                     try:
                         if isinstance(error, RequestTokenLimitError):
-                            publish('request_error', str(error))
+                            publish('request_error', {
+                                'error': str(error),
+                                'code': 'request_token_limit',
+                                'reason': error.reason,
+                            })
                             return
                         if getattr(backend, 'device', None) == 'cpu':
                             # Optional CPU tokenizer/model exceptions can contain
@@ -355,9 +359,7 @@ def create_handler(backend, executor, model_id, model_path):
                             self.respond(200, {'model': model_id, 'choices': [{'message': {'role': 'assistant', 'content': ''.join(fragments)}, 'finish_reason': reason}], 'metrics': value})
                         break
                     else:
-                        payload = {'error': value}
-                        if kind == 'request_error':
-                            payload['code'] = 'request_token_limit'
+                        payload = value if kind == 'request_error' else {'error': value}
                         if streaming:
                             self.sse('error', payload)
                         else:
