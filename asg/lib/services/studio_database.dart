@@ -3,6 +3,7 @@
 
 import 'dart:convert';
 
+import '../models/agent_execution_checkpoint.dart';
 import '../models/imported_plan.dart';
 import '../models/portable_project_archive.dart';
 
@@ -145,7 +146,12 @@ class StudioDatabase implements ConditionalRecordStorage {
     if (key == 'studio.lastProject.v1') return;
     final decoded = jsonDecode(value);
     final source = _SingleRecord(key, value);
-    if (key.startsWith(HtmlSourceDraftStore.prefix)) {
+    if (key.startsWith('studio.agentExecution.v1.')) {
+      final checkpoint = AgentExecutionCheckpoint.fromJson(decoded);
+      if (key != 'studio.agentExecution.v1.${checkpoint.taskId}') {
+        throw const FormatException('Execution checkpoint identity mismatch.');
+      }
+    } else if (key.startsWith(HtmlSourceDraftStore.prefix)) {
       HtmlSourceDraftStore(
         source,
         key.substring(HtmlSourceDraftStore.prefix.length),
