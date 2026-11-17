@@ -4,6 +4,7 @@
 import 'package:asg/controllers/chat_controller.dart';
 import 'package:asg/models/local_model_config.dart';
 import 'package:asg/services/conversation_store.dart';
+import 'package:asg/services/local_model.dart';
 import 'package:asg/services/model_provider.dart';
 import 'package:asg/services/model_settings_store.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -12,6 +13,7 @@ import 'chat_diagnostics_test.dart' show project;
 import 'model_request_provenance_test.dart' show Records;
 
 class _Reply implements ModelResponseIdentityProvider {
+  Object? failure;
   String responseModel = 'requested-model';
 
   @override
@@ -20,6 +22,7 @@ class _Reply implements ModelResponseIdentityProvider {
   @override
   Stream<String> generate(String prompt) async* {
     yield 'A completed reply';
+    if (failure case final error?) throw error;
     completedResponseModel = responseModel;
   }
 
@@ -30,6 +33,34 @@ class _Reply implements ModelResponseIdentityProvider {
 }
 
 void main() {
+  for (final (failure, guidance) in [
+    (ModelRequestLimitFailure(), 'lower the chat output limit'),
+    (ModelOutputLimitFailure(), 'raise the chat output limit'),
+  ]) {
+    test(
+      'project chat retains the question after ${failure.runtimeType}',
+      () async {
+        final records = Records();
+        final store = ConversationStore(records);
+        final provider = _Reply()..failure = failure;
+        ChatController openChat() => ChatController(
+          project,
+          openStore: () async => store,
+          createProvider: (_) => provider,
+        );
+        final chat = openChat();
+        addTearDown(chat.dispose);
+        await chat.load();
+        await chat.send('What should I change?');
+        expect(chat.error, contains(guidance));
+        final reopened = openChat();
+        addTearDown(reopened.dispose);
+        await reopened.load();
+        expect(reopened.messages.single.content, 'What should I change?');
+      },
+    );
+  }
+
   test(
     'project chat discards mismatched reply and accepts the next request',
     () async {

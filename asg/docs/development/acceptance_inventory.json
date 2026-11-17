@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "claim": "separate-historical-observations-only",
   "manifestSha256": "0505c640aa4a9170a73946648bd6205062942bcc3a2a37704e7a37fa0cbcbe1c",
-  "comparisonRuntimeSha256": "50fc570344032c493dc593c789f73da87ce6bb7b7a2feab2e7c65f686eed9a7b",
+  "comparisonRuntimeSha256": "96c8ca324713e0dcbbd50d04616883d14db3e2c8cb6df64ed2cdffec3587e9c1",
   "limitations": [
     "No combined identity, current pass, support verdict or authenticated observation.",
     "Recorded source hashes do not prove bundle equivalence or unaffected behavior.",

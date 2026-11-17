@@ -600,9 +600,13 @@ class ChatController extends BaseController {
           _failureDiagnostic = e is TimeoutException
               ? 'Chat request timed out. Partial response discarded; saved messages retained.'
               : 'Chat request failed. Partial response discarded; saved messages retained.';
-          error = e is TimeoutException
-              ? 'The model request timed out. Check the local runtime and retry.'
-              : 'The model request failed. Check the local runtime, model ID and connection, then retry.';
+          error = switch (e) {
+            ModelRequestLimitFailure() => 'The request exceeds a model token limit. Your message is saved. Try a shorter follow-up or lower the chat output limit in the selected model settings.',
+            ModelOutputLimitFailure() => 'The reply reached the model output limit. Your message is saved. Try a smaller request or raise the chat output limit in the selected model settings.',
+            TimeoutException() =>
+              'The model request timed out. Check the local runtime and retry.',
+            _ => 'The model request failed. Check the local runtime, model ID and connection, then retry.',
+          };
         }
       } else {
         _reportSaveFailure();
