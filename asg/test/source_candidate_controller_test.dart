@@ -51,6 +51,21 @@ class AtomicRecords extends ControlledRecords
   }
 }
 
+class InterruptedCheckHost extends FixtureHost {
+  late void Function() stop;
+
+  @override
+  Future<GeneratedProject> verify(
+    GeneratedProject project,
+    GenerationProgress progress, {
+    bool resume = false,
+  }) async {
+    await progress(project.copy(pendingOperation: 'resolve'));
+    stop();
+    throw StateError('Command outcome unavailable');
+  }
+}
+
 class FailedCheckHost extends FixtureHost {
   void Function()? beforeFailure;
   @override
@@ -562,6 +577,33 @@ void main() {
       expect(candidateHost.operations, ['resolve', 'analyze']);
       expect(candidate.canPromote, isFalse);
       expect(workingHost.server, isTrue);
+    },
+  );
+
+  test(
+    'Stop preserves a pending command as interrupted in saved history',
+    () async {
+      final initial = candidate.result;
+      final evidence = candidate.evidence;
+      candidate.dispose();
+      final host = InterruptedCheckHost();
+      candidate = SourceCandidateController(
+        project: project,
+        candidate: initial,
+        evidence: evidence,
+        records: records,
+        host: host,
+        publish: (value, host, guard) =>
+            throw StateError('Unexpected publication'),
+      );
+      host.stop = candidate.cancel;
+
+      await candidate.verify(approved: true);
+      final retained = candidate.history.single;
+      expect(retained.finished, isFalse);
+      expect(retained.snapshot.pendingOperation, 'resolve');
+      expect(retained.snapshot.steps, isEmpty);
+      expect(candidate.canPromote, isFalse);
     },
   );
 

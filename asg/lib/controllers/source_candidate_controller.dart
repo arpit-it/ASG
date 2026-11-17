@@ -174,7 +174,11 @@ class SourceCandidateController extends BaseController {
         try {
           // Recording an observed stop grants no command or promotion authority.
           // CAS still prevents a superseded session from overwriting history.
-          await _activeStore?.checkpoint(_result, () {}, finished: true);
+          await _activeStore?.checkpoint(
+            _result,
+            () {},
+            finished: _result.pendingOperation.isEmpty,
+          );
         } catch (_) {
           _error = '$_error Candidate checkpoint could not be saved.';
         }
