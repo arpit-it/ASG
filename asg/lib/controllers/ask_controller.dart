@@ -257,7 +257,7 @@ class AskController extends BaseController {
       if (!isDisposed) _unsavedReply = null;
     } on ModelOutputLimitFailure {
       if (!isDisposed && !_stopped) {
-        error = 'The reply reached the model output limit. Your question is saved. Increase the chat output limit in the active model settings, then select Retry answer.';
+        error = 'The reply reached the model output limit. Your question is saved. Try a shorter question in a new conversation, or raise the chat output limit if available and select Retry answer.';
       }
     } catch (_) {
       if (!isDisposed && !_stopped) {
