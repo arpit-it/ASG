@@ -16,6 +16,12 @@ class _SafeModelFailure extends StateError {
   _SafeModelFailure(super.message);
 }
 
+/// The server ended a reply because its output budget was exhausted.
+final class ModelOutputLimitFailure extends _SafeModelFailure {
+  ModelOutputLimitFailure()
+    : super('Model output was truncated. Try a smaller instruction.');
+}
+
 /// Token streaming with bounded startup, inactivity and total request duration.
 class LocalModelProvider
     implements
@@ -183,9 +189,7 @@ class LocalModelProvider
       _validateResponseModel(data);
       final choice = (data['choices'] as List).first as Map;
       if (choice['finish_reason'] == 'length') {
-        throw _SafeModelFailure(
-          'Model output was truncated. Try a smaller instruction.',
-        );
+        throw ModelOutputLimitFailure();
       }
       final content = (choice['message'] as Map)['content'] as String?;
       if (content == null || content.trim().isEmpty) {
@@ -250,9 +254,7 @@ class LocalModelProvider
       if (choices is! List || choices.isEmpty) continue;
       final choice = choices.first as Map;
       if (choice['finish_reason'] == 'length') {
-        throw _SafeModelFailure(
-          'Model output was truncated. Try a smaller instruction.',
-        );
+        throw ModelOutputLimitFailure();
       }
       final content = (choice['delta'] as Map?)?['content'];
       // Only the terminal successful choice can provide telemetry. It remains
