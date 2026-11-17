@@ -172,3 +172,7 @@ unknown versions and damaged data fail without replacement; unrelated project
 bootstrap remains usable. Save already dispatched may complete after leaving the
 screen; no success is published into a disposed controller. Library deletion and
 relocation are not delivered by this increment.
+
+## Coding engine adapters
+
+General-purpose project creation and repository modification are planned under CE11–CE13. Reuse the current adapter and candidate boundaries. Each adapter must demonstrate an independently runnable output and report actual build and verification results.

@@ -53,3 +53,7 @@ cell. The collector compares identity/manifest for freshness, and the app contin
 to label reports saved evidence. This bridge does not complete the real native/web
 manual baseline or establish device support. Never publish private logs, prompts,
 model paths or credentials as input metadata.
+
+## Coding engine acceptance
+
+Use pinned existing-repository and new-project fixtures. Exercise approval, multi-file changes, tests, repair, review, restart recovery and rollback. Include malformed tool calls, model disconnection and Stop. Record live model identity separately for Mac inference evidence.

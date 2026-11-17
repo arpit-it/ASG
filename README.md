@@ -108,3 +108,7 @@ Third-party components and models retain their own terms. Generated user project
 ## Planned marketplace expansion
 
 The [canonical post-current-queue plan](asg/docs/REQUIREMENTS.md#post-current-queue-marketplace-and-universal-work--5-november-2026) adds freelance discovery, approved bidding/client communication, capability-based software and noncoding work, and authorized delivery. F25–F55 are queued after existing F01–F24 work and its acceptance; none of these marketplace features is currently delivered. The existing development scheduler follows that ledger.
+
+## Coding engine direction
+
+ASG is evolving toward a local-first coding engine for creating supported apps and modifying existing repositories through conversation, scoped approvals and verified results. It uses one shared local coding model. See the [development phase](asg/docs/REQUIREMENTS.md#coding-engine-development-phase) for planned capabilities and acceptance.

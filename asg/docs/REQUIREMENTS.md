@@ -2,6 +2,58 @@
 
 Created 25 October 2026. This is the ordered feature queue for the 15 minute development schedule. The product specification below supplies the broader scope. Existing work takes precedence over starting a new item.
 
+## Coding engine development phase
+
+Use the coding engine priorities below for new work in this phase. Preserve existing IDs, delivered increments and acceptance gaps. Use [#404](https://github.com/arpit-it/ASG/issues/404) for the initial existing-repository workflow. F25–F55 are deferred to P3. F23 cloud inference is deferred for this phase, and unavailable platform evidence remains tracked by #400.
+
+Two workflows define acceptance. Create a supported app from a conversation, approved plan and verified build, then deliver an independently runnable project. For an existing local repository, inspect source and instructions, obtain approval, make scoped changes, test and repair, review the diff, and offer a commit and rollback. Chat is the primary interface in both workflows.
+
+Use one configured model and one inference service for all logical coding roles. The Mac reference runtime is Qwen3.8-27B-4bit on MLX/Metal at `http://127.0.0.1:8765/v1`. Each role has separate instructions, context, permissions and budget. Cloud inference, automatic model selection, ensembles, marketplace automation and unrestricted deployment are outside this phase.
+
+Every CE entry starts pending. Existing F requirements supply implementation and evidence where applicable. Use CE IDs to reference new acceptance, and use the existing F issue for work it already covers.
+
+| ID | Capability | Priority | Initial dependency | Acceptance evidence |
+| --- | --- | --- | --- | --- |
+| CE01 | Persistent Agent Execution Loop | P0 | Existing operation journals | Persist task transitions, approval, cancellation and recovery. Resume without replaying an uncertain write. |
+| CE02 | Single-Model Multi-Agent Architecture | P0 | CE01 | Delegate scoped roles through one configured Qwen3.8-27B-4bit MLX/Metal runtime with serialized inference. |
+| CE03 | Agent Delegation and Collaboration | P1 | CE02 | Run independent exploration and testing alongside an authorized writer. Cancel child tasks and enforce leases. |
+| CE04 | Tool Execution Framework | P0 | CE01 | Validate typed tool calls and results. Reject malformed arguments and record side effects. |
+| CE05 | Safe Workspace Editing | P0 | CE04 | Produce a scoped diff, reject stale baselines and preserve unrelated data on rollback. |
+| CE06 | Terminal and Process Management | P0 | CE04 | Run approved argument-vector commands with output, time and resource limits and observable Stop. |
+| CE07 | Git-Native Development | P0 | CE05 | Show status, diffs and history. Create a branch and commit only the reviewed scope with approval. |
+| CE08 | Repository Intelligence Engine | P1 | CE05 | Detect the project stack and build tools, and identify files relevant to a requested change. |
+| CE09 | Context and Memory Management | P0 | CE08 | Persist scoped evidence and retain decisions and approvals across context compaction. |
+| CE10 | Project Instruction Files and Skills | P1 | CE08 | Load project instructions with provenance while keeping tool authority explicit. |
+| CE11 | General-Purpose Project Generation | P1 | CE05 | Create and export a supported independently runnable project from approved requirements. |
+| CE12 | Requirements-to-Code Pipeline | P1 | CE01 | Trace requirements through dependency-ordered tasks, approval, changes and verification. |
+| CE13 | Existing Project Modification | P1 | CE05 | Open an existing Flutter repository and implement, test and review a scoped change. |
+| CE14 | Autonomous Testing Engine | P0 | CE06 | Discover and run relevant tests, capture real results and distinguish skips and failures. |
+| CE15 | Automated Debugging and Repair | P0 | CE14 | Diagnose a failing check and run a bounded repair and verification cycle. |
+| CE16 | Independent Code Review | P1 | CE14 | Review the final diff and report regressions, defensive security findings and missing evidence. |
+| CE17 | Browser-Based Application Verification | P1 | CE06 | Verify an actual running application in the browser and retain the last working preview on failure. |
+| CE18 | Codex-Class Development Interface | P1 | CE08 | Provide resizable Explorer, Chat and Preview panels with per-project persistence and responsive tabs. |
+| CE19 | Development Modes | P1 | CE18 | Expose clear planning, editing and review modes with visible approval boundaries. |
+| CE20 | Streaming Agent Activity | P1 | CE01 | Stream actual task, tool and agent events with recovery and cancellation status. |
+| CE21 | Autonomous Self-Development | P2 | CE13 | Develop ASG in isolated candidates with explicit promotion and verified rollback. |
+| CE22 | MCP-Compatible Extension System | P2 | CE04 | Advertise typed connector tools and require scoped approval for effects and external data transfer. |
+| CE23 | Scheduled Development Tasks | P2 | CE01 | Run authorized maintenance schedules with durable history and prevent overlapping runs. |
+| CE24 | Background and Long-Running Tasks | P0 | CE01 | Reopen long-running tasks with visible status and reconcile interrupted side effects. |
+| CE25 | Performance and Resource Management | P0 | CE02 | Show model and process resource status and enforce bounded budgets. |
+| CE26 | Architecture Visualization | P2 | CE08 | Present architecture and dependency relationships with source references. |
+| CE27 | Automatic Technical Debt Analysis | P2 | CE08 | Document actionable technical debt findings with code evidence. |
+| CE28 | Software Quality Scoring | P2 | CE14 | Explain quality findings and score inputs with repeatable evidence. |
+| CE29 | Reusable Development Knowledge | P2 | CE09 | Save reusable project decisions with provenance and user control. |
+| CE30 | Automated Migration Assistant | P2 | CE13 | Plan and verify a migration with reviewable changes and rollback. |
+| CE31 | API and Database Engineering | P2 | CE13 | Generate and verify API and database changes with migration and data safety checks. |
+| CE32 | Performance Profiling Assistant | P2 | CE14 | Capture measured performance and compare a repeatable baseline. |
+| CE33 | Reproducible Development Environments | P2 | CE06 | Recreate a project environment from declared, approved dependencies. |
+| CE34 | Project Portability and Delivery | P1 | CE11 | Export a verified runnable project with dependency and startup instructions. |
+| CE35 | Coding Agent Benchmark Suite | P1 | CE13 | Repeat both workflows on pinned fixtures with negative cases for invalid tools, disconnect and Stop. |
+
+The existing Flutter prototype critical path starts with durable operation state, typed tools and scoped repository inspection. Workspace writes and process execution follow validated plans and approval. Build and test evidence enables repair and separate final review. Delegate independent read-only work behind shared scheduling and preserve the two-writer limit.
+
+Planning targets in UTC are 30 November 2026 for the runtime foundation, 15 December for the first coding loop, 31 December for the existing Flutter repository demonstration, 15 January 2027 for delegation and 31 January for a beta with Git, recovery, browser verification and benchmarks. Broader frameworks and extensions follow in February or later. Each target depends on verified predecessor outcomes.
+
 ## Completion and selection rules
 
 Read this document on every scheduled run. First reconcile active issues/PRs and coordination claims against GitHub and current main. Resume owned work first; the 5 November coordinated-development policy permits at most two independent writers. Select the first eligible queued outcome whose actual dependencies are satisfied; keep each issue a coherent reviewable outcome. Do not mark a whole feature done when only an increment is delivered.
