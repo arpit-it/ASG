@@ -1,5 +1,9 @@
 # Progress and delivery history
 
+## Ask guidance for refused token budgets — 17 November 2026 UTC
+
+F22 (#396). Ask preserves the saved question and offers recovery guidance for a request that exceeds the model token budget. Both required checks passed on reviewed revision 3bac7df. PR #679 merged at c2596e4 and main matched the tested tree. [PR #679](https://github.com/arpit-it/ASG/pull/679) · [Required CI](https://github.com/arpit-it/ASG/actions/runs/44049556814)
+
 ## Shared bridge input ceiling — 17 November 2026 UTC
 
 F22 (#396). The model inventory and both backend guards use the same 4,096-token input ceiling. Backend fixtures covered the boundary and the HTTP bridge suite passed. Both required checks passed on reviewed revision 2c3c0c9. PR #678 merged at 54d0c7e and main matched the tested tree. [PR #678](https://github.com/arpit-it/ASG/pull/678) · [Required CI](https://github.com/arpit-it/ASG/actions/runs/44039941954)
