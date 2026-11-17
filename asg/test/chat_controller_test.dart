@@ -53,6 +53,9 @@ void main() {
         await chat.load();
         await chat.send('What should I change?');
         expect(chat.error, contains(guidance));
+        if (failure is ModelRequestLimitFailure) {
+          expect(chat.error, contains('Recent messages and project details'));
+        }
         final reopened = openChat();
         addTearDown(reopened.dispose);
         await reopened.load();
