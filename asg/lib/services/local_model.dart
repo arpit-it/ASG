@@ -22,6 +22,12 @@ final class ModelOutputLimitFailure extends _SafeModelFailure {
     : super('Model output was truncated. Try a smaller instruction.');
 }
 
+/// The bridge rejected the request because its token budget did not fit.
+final class ModelRequestLimitFailure extends _SafeModelFailure {
+  ModelRequestLimitFailure()
+    : super('The request exceeds a model token limit.');
+}
+
 /// Token streaming with bounded startup, inactivity and total request duration.
 class LocalModelProvider
     implements
@@ -166,8 +172,21 @@ class LocalModelProvider
           'Local model redirects are refused. Check the selected local endpoint and retry.',
         );
       }
-      // Close the response stream even on a rejected request.
-      await response.stream.take(1).drain<void>();
+      if (response.statusCode == 400) {
+        final body = await utf8.decoder
+            .bind(_boundedResponse(response.stream).timeout(idleTimeout))
+            .join();
+        try {
+          final data = jsonDecode(body);
+          if (data is Map && data['code'] == 'request_token_limit') {
+            throw ModelRequestLimitFailure();
+          }
+        } on FormatException {
+          // Older endpoints may return a plain-text HTTP error.
+        }
+      } else {
+        await response.stream.take(1).drain<void>();
+      }
       throw _SafeModelFailure(
         response.statusCode == 429
             ? 'The local model is busy. Cancel or wait for the current request.'
@@ -235,6 +254,9 @@ class LocalModelProvider
       }
       final data = jsonDecode(payload) as Map<String, dynamic>;
       if (name == 'error' || data.containsKey('error')) {
+        if (data['code'] == 'request_token_limit') {
+          throw ModelRequestLimitFailure();
+        }
         throw _SafeModelFailure(
           'Local generation failed. Check the runtime and retry.',
         );
