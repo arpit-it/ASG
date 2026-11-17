@@ -82,6 +82,7 @@ class _SourceCandidateViewState extends State<SourceCandidateView> {
                       ),
                     );
                     if (confirmed == true && mounted) {
+                      setState(() => consent = false);
                       await controller.acknowledgeStopped(run);
                     }
                   },
