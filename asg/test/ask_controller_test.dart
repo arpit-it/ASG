@@ -10,9 +10,12 @@ import 'package:asg/models/chat_message.dart';
 import 'package:asg/models/local_model_config.dart';
 import 'package:asg/services/model_settings_store.dart';
 import 'package:asg/services/ask_store.dart';
+import 'package:asg/services/local_model.dart';
 import 'package:asg/services/model_provider.dart';
 import 'package:asg/services/record_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
 
 class AskRecords implements RecordStorage {
   final values = <String, String>{};
@@ -286,6 +289,64 @@ void main() {
     expect(controller.messages, isEmpty);
     await provider.stream.close();
   });
+  test(
+    'Ask explains a truncated stream and retries the saved question',
+    () async {
+      final prompts = <Object?>[];
+      final ask = AskController(
+        AskStore(records),
+        createProvider: (config) => LocalModelProvider(
+          config,
+          client: MockClient((request) async {
+            prompts.add((jsonDecode(request.body) as Map)['messages']);
+            final first = prompts.length == 1;
+            String event(Map<String, Object?> payload) =>
+                'data: ${jsonEncode(payload)}\n\n';
+            final contentEvent = event({
+              'model': config.model,
+              'choices': [
+                {
+                  'delta': {'content': first ? 'Partial' : 'Complete'},
+                },
+              ],
+            });
+            final finishEvent = event({
+              'model': config.model,
+              'choices': [
+                {'finish_reason': first ? 'length' : 'stop'},
+              ],
+            });
+            return http.Response(
+              '$contentEvent${finishEvent}data: [DONE]\n\n',
+              200,
+              headers: {'content-type': 'text/event-stream'},
+            );
+          }),
+        ),
+      )..load();
+      addTearDown(ask.dispose);
+
+      expect(await ask.send('Explain the trade-off'), isTrue);
+      expect(ask.error, contains('model output limit'));
+      expect(ask.draft, isEmpty);
+      expect(ask.canRetryAnswer, isTrue);
+      expect(ask.messages.map((message) => message.content), [
+        'Explain the trade-off',
+      ]);
+
+      expect(await ask.retryAnswer(), isTrue);
+      expect(ask.error, isNull);
+      expect(prompts, hasLength(2));
+      expect(prompts.last, prompts.first);
+      final reopened = AskController(AskStore(records))..load();
+      addTearDown(reopened.dispose);
+      expect(reopened.messages.map((message) => message.content), [
+        'Explain the trade-off',
+        'Complete',
+      ]);
+    },
+  );
+
   test(
     'absolute deadline ends stalled stream and preserves saved question',
     () async {
