@@ -55,3 +55,11 @@ Repository contribution instructions and vulnerability reporting remain at the r
 - [F12 real-hook and owned WebSocket supervisor design](development/F12_SUPERVISOR_DESIGN.md): bounded authored Mac fixtures; candidate execution remains disabled.
 
 - [F12 real hook orchestration and stock Flutter IPC adapters](development/F12_RUNNER_ADAPTERS.md): fixed authored Mac fixtures; candidate execution remains disabled.
+
+## Coding engine architecture
+
+- [Agent Engine](architecture/AGENT_ENGINE.md)
+- [Tool Runtime](architecture/TOOL_RUNTIME.md)
+- [Context Memory](architecture/CONTEXT_MEMORY.md)
+- [Multi Agent](architecture/MULTI_AGENT.md)
+- [Development Studio](architecture/DEVELOPMENT_STUDIO.md)
