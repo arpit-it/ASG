@@ -456,6 +456,47 @@ class CandidateCrashTests(unittest.TestCase):
                 probe.assert_not_called()
                 launch.assert_not_called()
 
+    def test_invalid_acknowledgement_proof_prevents_launching_retry_app(self):
+        sdk = self.root / 'sdk'
+        (sdk / 'bin/cache').mkdir(parents=True)
+        (sdk / 'bin/cache/flutter_tools.snapshot').write_text('existing cache')
+        processes = []
+        outer = self
+
+        class Process:
+            def __init__(self, *args, **kwargs):
+                self.launch = len(processes) + 1
+                self.killed = False
+                processes.append(self)
+                proof = outer.retry_proof(self.launch)
+                before = fixture.retry_digest(outer.retry_proof(max(1, self.launch - 1)))
+                if self.launch == 2:
+                    proof['firstReceiptSha256'] = 'f' * 64
+                outer.report(self.launch, operation='test', sessionBound=True,
+                    sessionRetryProof=proof, beforeActionSha256=before,
+                    retry=True, acknowledge=True, stopRequested=True, savedStopPresent=True,
+                    running=True, runningMarker=True, stopSignalled=True, runningCancelled=True,
+                    retainedExit=-1, executionPhase='executing', noNewDispatch=True,
+                    acknowledgedAfterRead=self.launch == 2,
+                    afterAcknowledgementPhase='awaitingApproval' if self.launch == 2 else None)
+            def poll(self):
+                return -9 if self.killed else (0 if self.launch == 2 else None)
+            def kill(self):
+                self.killed = True
+            def wait(self, timeout):
+                return self.poll()
+
+        with mock.patch.object(fixture.sys, 'platform', 'darwin'), \
+                mock.patch.object(fixture, 'inspect_bundle', return_value=(self.root / 'executable', 'fixedhash')), \
+                mock.patch.object(fixture.tempfile, 'mkdtemp', return_value=str(self.root)), \
+                mock.patch.object(fixture.secrets, 'token_hex', return_value=self.nonce), \
+                mock.patch.object(fixture.subprocess, 'Popen', side_effect=Process):
+            with self.assertRaisesRegex(ValueError, 'immutable prior evidence'):
+                fixture.observe(self.root / 'fixture.app', sdk, operation='test', stop=True,
+                    running=True, acknowledge=True, retry=True, session_bound=True)
+        self.assertEqual(len(processes), 2)
+        self.assertEqual([process.killed for process in processes], [True, False])
+
     def test_bundle_preflight_failure_launches_nothing(self):
         with mock.patch.object(fixture.sys, 'platform', 'darwin'), \
                 mock.patch.object(fixture, 'inspect_bundle', side_effect=ValueError('wrong identity')), \

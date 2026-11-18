@@ -241,6 +241,9 @@ def observe(bundle, sdk, operation='resolve', stop=False, precommit=False, runni
                         time.sleep(0.02)
                 if inspect_bundle(bundle) != (executable, binary):
                     raise ValueError('Fixture binary changed before crash/reopen')
+                if session_bound and retry:
+                    previous = observations[-1]['sessionRetryProof'] if observations else None
+                    require_retry_transition(previous, value['sessionRetryProof'], launch, value['beforeActionSha256'])
                 if launch == 1 or (promotion_crash and launch == 4):
                     if process.poll() is not None:
                         raise ValueError('App exited before host crash')

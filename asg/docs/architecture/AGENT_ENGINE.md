@@ -1172,10 +1172,20 @@ the last read-only reopen must preserve all record hashes. This avoids claiming
 that an authorized acknowledgment or retry left its journal unchanged.
 
 Final same-session retry evidence is
-/tmp/asg-404-native-session-retry-final-observation.json on binary
+/tmp/asg-404-native-session-retry-reviewed-observation.json on binary
 76112128c6526a5495409d6068109360650a5ffa0ecd5549cc537fd0e8846d7a.
 The earlier213fa7f4392b65342a81be62deb694f3ad2b013662792e26ecb6a16b57441ed6
 observation preceded the receipt-completeness guard and is not final-source
 acceptance. This remains fixed fixture evidence, not production-main navigation,
 automatic scheduling/replay, arbitrary model source synthesis, live inference,
 cleanup confirmation or full CE01. Bound native promotion remains pending.
+
+
+PR730 fresh review found that the first host implementation validated cross-stage
+proof only after all launches. The reviewed fix validates each report against the
+preceding stage before crashing/waiting for that app or starting another app.
+A deterministic corrupted-acknowledgment regression confirms that only the first
+two app handles are created; no retry app launches. All eight actual scenarios
+were rerun with the revised host on the unchanged fixture binary. The reviewed
+observation files use /tmp/asg-404-native-session-retry-reviewed*-observation.json;
+the earlier final-named files do not establish the revised guard-order behavior.
