@@ -1098,3 +1098,43 @@ This is bounded fixture evidence, not production-main navigation, arbitrary sour
 synthesis, generalized scheduling, live inference, another platform, or bound
 session retry/promotion/cancellation-process acceptance. Existing deterministic
 controller tests cover narrower session cancellation and promotion races.
+
+
+18 November2026 — native first-receipt session cancellation fixture
+
+Protocol12 adds --session-cancel only with --session-bound --operation test --stop;
+other running/uncertain/acknowledgment/retry/promotion/admission-crash combinations
+are refused before launch. Here --stop selects the approved mapped fixture slice;
+this mode does not request a Candidate Stop signal. Its report explicitly requires
+candidateStopPresent=false, and no running-process cleanup or exit is inferred.
+Protocol10/11 observations keep their original identities and cannot be relabelled.
+
+After the actual native resolve command returns its validated receipt, the fixture
+saves the exact uncancelled admitted binding and calls production session
+requestCancellation. The stored session becomes revision2 with its existing one
+reference and cancellation intent. Production candidate progress retains the real
+resolve exit0 before rechecking session authority; the next command is refused.
+The attempt closes with candidate phase failed, no pending command, and execution
+phase verifying. Neither a closed attempt nor that checkpoint phase means the full
+check graph or board task completed. Promotion remains unavailable.
+
+Before the owned app is killed, the fixture validates exactly one resolve step and
+receipt, no analyze/test/build command markers, unchanged candidate source and
+seeded prior working files/record, and hashes the receipt context, intent and raw
+result bytes. A separately launched app reopens read-only with the saved pre-cancel
+binding, checking that its cancellation successor exactly equals the actual stored
+record. It never silently falls back to an unbound controller. Session/journal/
+candidate/execution/receipt hashes and cancellation intent remain identical, with
+zero new preparation or command entry. Report validators reject wrong mode,
+missing/rewritten evidence, fabricated exit, later work and promotion permission.
+
+Final actual cancellation evidence is
+/tmp/asg-404-native-session-cancellation-final-observation.json on binary
+8356dfccefbfd21aa02b408ea83d7a3c1b82ddf895469dec0c4afbf2b637b44d.
+The same binary passed both session admission modes and four legacy scenarios,
+including the five-launch running Stop/acknowledgment/retry/promotion-commit crash.
+The earlier 98ba809b0117d67aac3dd7903085ee7623c1d58db9dd5d7e25d91fd89b4461e2
+observation preceded the tightened binding ancestry check and is not final-source
+acceptance. This remains bounded fixture evidence: no production-main navigation,
+live inference, running-command session-cancellation cleanup claim, bound retry/
+promotion-process proof or full CE01 acceptance is added.
