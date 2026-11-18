@@ -4,6 +4,8 @@
 import 'dart:async';
 import 'dart:convert';
 
+import '../models/agent_execution_checkpoint.dart';
+import '../services/candidate_verification_store.dart';
 import '../models/app_definition.dart';
 import '../models/generation_capabilities.dart';
 import '../models/generation_toolchain.dart';
@@ -309,12 +311,44 @@ class SourceGenerationController extends BaseController {
         ])
           key: records.getString(key),
       };
+      final executionUpdates = <String, String>{};
+      final journalStore = CandidateVerificationStore(records, project.id);
+      final journal = journalStore.load();
+      if (journal.runs.isNotEmpty) {
+        final run = journal.runs.last;
+        if (run.dispatchId != null &&
+            run.finished &&
+            jsonEncode(run.snapshot.toJson()) ==
+                jsonEncode(candidate.toJson())) {
+          final executionKey =
+              'studio.agentExecution.v1.${run.dispatchId!.split(':').first}';
+          final executionRaw = records.getString(executionKey);
+          if (executionRaw == null) {
+            throw StateError('Candidate execution checkpoint is missing.');
+          }
+          final execution = AgentExecutionCheckpoint.fromJson(
+            jsonDecode(executionRaw),
+          );
+          if (execution.phase != AgentExecutionPhase.verifying) {
+            throw StateError('Candidate execution is not ready for review.');
+          }
+          expected[journalStore.key] = records.getString(journalStore.key);
+          expected[executionKey] = executionRaw;
+          executionUpdates[executionKey] = jsonEncode(
+            execution
+                .advance(AgentExecutionPhase.reviewing)
+                .advance(AgentExecutionPhase.completed)
+                .toJson(),
+          );
+        }
+      }
       // Separate host: validating/starting the new preview cannot stop the old one.
       final uri = await candidateHost.startPreview(candidate);
       check();
       await records.commitRecords(
         expected: expected,
         updates: {
+          ...executionUpdates,
           generationKey: store.encodeUpdate(project.id, candidate),
           'studio.generationPrevious.v1.${project.id}': old,
         },

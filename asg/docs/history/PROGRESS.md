@@ -14762,3 +14762,8 @@ PR #690 merged at 083c9c872588ecdfbadd968b404f2f263b90b852 after required
 CI44186183837 and fresh review. Remote main tree matched the tested source.
 Recovery clears previously selected verification consent. Widget coverage
 verifies dismissal, confirmation and renewed consent. #404 remains open.
+
+PR #691 merged at 062e39e0bb648f418c52fb65ee44abb83236bc26 after required
+CI44195904483 and fresh review. The verified merged tree matches local tests.
+The stale recovery dialog regression preserves changed saved evidence and
+requires renewed consent. #404 remains open for remaining execution integration.
