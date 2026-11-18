@@ -8,6 +8,8 @@ import 'dart:io';
 
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:asg/models/candidate_operation_receipt.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 
@@ -78,6 +80,7 @@ final class SignalledFixtureHost extends NativeGenerationHost {
   SignalledFixtureHost({
     required super.receiptFiles,
     required super.runOperation,
+    super.loadAsset,
   });
   bool stopSignalled = false;
   @override
@@ -124,7 +127,7 @@ Future<void> main() async {
     }
     final input = jsonDecode(await challenge.readAsString());
     if (input is! Map<String, dynamic> ||
-        input.length != 7 ||
+        input.length != 8 ||
         input['nonce'] is! String ||
         !RegExp(r'^[a-f0-9]{32}$').hasMatch(input['nonce'] as String) ||
         ![1, 2].contains(input['launch']) ||
@@ -132,6 +135,8 @@ Future<void> main() async {
         input['stop'] is! bool ||
         input['precommit'] is! bool ||
         input['running'] is! bool ||
+        input['uncertain'] is! bool ||
+        (input['uncertain'] == true && input['running'] != true) ||
         (input['running'] == true &&
             (input['stop'] != true ||
                 input['precommit'] == true ||
@@ -147,6 +152,7 @@ Future<void> main() async {
     final stop = input['stop'] as bool;
     final precommit = input['precommit'] as bool;
     final running = input['running'] as bool;
+    final uncertain = input['uncertain'] as bool;
     final sdk = await Directory(input['sdk'] as String).resolveSymbolicLinks();
     final support = await getApplicationSupportDirectory();
     if (path.basename(support.path) != bundle ||
@@ -183,6 +189,42 @@ Future<void> main() async {
     );
     final receipts = CandidateReceiptFiles(root: () async => receiptRoot);
     final host = NativeGenerationHost(receiptFiles: receipts);
+    Future<String?> retainedIntent(String dispatch) async {
+      if (!uncertain) return null;
+      final directory =
+          (await receiptRoot
+                  .list(followLinks: false)
+                  .where((entry) => entry is Directory)
+                  .toList())
+              .single;
+      final intent = File(path.join(directory.path, 'test.intent.json'));
+      final result = File(path.join(directory.path, 'test.result.json'));
+      if (await FileSystemEntity.isLink(intent.path) ||
+          await intent.length() > 4096 ||
+          await FileSystemEntity.type(result.path, followLinks: false) !=
+              FileSystemEntityType.notFound) {
+        throw StateError('Uncertain target result changed');
+      }
+      final raw = await intent.readAsString();
+      final value = jsonDecode(raw);
+      final context = CandidateReceiptContext.fromJson(
+        jsonDecode(
+          await File(path.join(directory.path, 'context.json')).readAsString(),
+        ),
+      );
+      if (value is! Map<String, dynamic> ||
+          value.length != 3 ||
+          value['version'] != 1 ||
+          value['operation'] != 'test' ||
+          context.dispatchId != dispatch ||
+          !context.matches(
+            CandidateReceiptContext.fromJson(value['context']),
+          )) {
+        throw StateError('Uncertain intent identity mismatch');
+      }
+      return digest(raw);
+    }
+
     SourceCandidateController makeController(
       GeneratedProject snapshot,
       NativeGenerationHost selectedHost,
@@ -343,6 +385,18 @@ Future<void> main() async {
       late SourceCandidateController runningController;
       late SignalledFixtureHost verifier;
       verifier = SignalledFixtureHost(
+        loadAsset: (key) async {
+          final source = await rootBundle.loadString(key);
+          if (!uncertain || key != 'tools/generation_command.py') return source;
+          const anchor = '            receipt.publish(result)';
+          if (source.split(anchor).length != 2) {
+            throw StateError('Fixture publication anchor changed');
+          }
+          return source.replaceFirst(
+            anchor,
+            "            if args.operation == 'test':\n                Path(args.directory, 'build', 'result-fault-$nonce').write_text('$nonce')\n                os._exit(73)\n$anchor",
+          );
+        },
         receiptFiles: receipts,
         runOperation: (project, currentOperation) async {
           final run = checks.load().runs.single;
@@ -385,7 +439,8 @@ Future<void> main() async {
             }
             runningController.cancel();
             step = await result.timeout(const Duration(seconds: 12));
-            if (step != null && !step.cancelled) {
+            if ((uncertain && step != null) ||
+                (step != null && !step.cancelled)) {
               throw StateError('Running test did not cancel');
             }
           } else {
@@ -403,11 +458,11 @@ Future<void> main() async {
           final saved = await receipts.read(pending);
           if (pending.snapshot.pendingOperation != operation ||
               pending.snapshot.steps.length != targetIndex ||
-              saved.length != targetIndex + 1 ||
+              saved.length != targetIndex + (uncertain ? 0 : 1) ||
               saved
                   .take(targetIndex)
                   .any((receipt) => receipt.result.exitCode != 0) ||
-              (running
+              (!uncertain && running
                   ? !saved.last.result.cancelled ||
                         saved.last.result.exitCode == 0
                   : saved.last.result.exitCode != 0)) {
@@ -433,11 +488,21 @@ Future<void> main() async {
               throw StateError('Durable Stop intent missing.');
             }
           }
+          final intentHash = await retainedIntent(run.dispatchId!);
+          if (uncertain) {
+            final fault = File(
+              path.join(candidate.path, 'build', 'result-fault-$nonce'),
+            );
+            if (!await fault.exists() || await fault.readAsString() != nonce) {
+              throw StateError('Publication fault not observed');
+            }
+          }
           final stopRaw = records.getString(
             '${CandidateVerificationStore.stopPrefix}${run.dispatchId}',
           );
           final state = {
             'stop': stopRaw == null ? null : digest(stopRaw),
+            'intent': intentHash,
             'journal': digest(records.getString(checks.key)!),
             'candidate': digest(records.getString(checks.candidateKey)!),
             'working': digest(records.getString(workingKey)!),
@@ -458,6 +523,9 @@ Future<void> main() async {
             'stopRequested': stop,
             'precommit': precommit,
             'running': running,
+            'uncertain': uncertain,
+
+            'publicationFault': uncertain,
             'runningMarker': running,
             'stopSaveBlocked': barrier.reached,
             'stopSignalled': verifier.stopSignalled,
@@ -536,25 +604,28 @@ Future<void> main() async {
       snapshot.directory,
       source: true,
     );
-    if (!sameStop() ||
+    if (await retainedIntent(run.dispatchId!) != before['intent'] ||
+        !sameStop() ||
         controller.stopRequestHistoryError != null ||
         controller.historyError != null ||
         controller.receiptHistoryError != null ||
         run.finished ||
         run.snapshot.pendingOperation != operation ||
         run.dispatchId != before['dispatch'] ||
-        retained.length != targetIndex + 1 ||
+        retained.length != targetIndex + (uncertain ? 0 : 1) ||
         retained
             .take(targetIndex)
             .any((receipt) => receipt.result.exitCode != 0) ||
-        (running
+        (!uncertain && running
             ? !retained.last.result.cancelled ||
                   retained.last.result.exitCode == 0
             : retained.last.result.exitCode != 0) ||
         jsonEncode(
               retained.map((receipt) => receipt.operation.name).toList(),
             ) !=
-            jsonEncode(operations.take(targetIndex + 1).toList()) ||
+            jsonEncode(
+              operations.take(targetIndex + (uncertain ? 0 : 1)).toList(),
+            ) ||
         jsonEncode(run.snapshot.steps.map((step) => step.operation).toList()) !=
             jsonEncode(operations.take(targetIndex).toList()) ||
         run.snapshot.steps.any((step) => !step.succeeded) ||
@@ -607,15 +678,18 @@ Future<void> main() async {
     if ((text.any((value) => value.contains('Saved Stop request.')) !=
             (stop && !precommit)) ||
         !text.any((value) => value.contains('Candidate checks: verifying')) ||
-        !text.any(
-          (value) => value.contains(
-            'Retained $operation result: exit ${retained.last.result.exitCode}',
-          ),
-        )) {
+        (uncertain
+            ? text.any((value) => value.contains('Retained $operation result:'))
+            : !text.any(
+                (value) => value.contains(
+                  'Retained $operation result: exit ${retained.last.result.exitCode}',
+                ),
+              ))) {
       throw StateError('Production candidate view did not render.');
     }
     // Rendering must remain read-only too, including any future view callbacks.
-    if (!sameStop() ||
+    if (await retainedIntent(run.dispatchId!) != before['intent'] ||
+        !sameStop() ||
         digest(records.getString(checks.key)!) != before['journal'] ||
         digest(records.getString(checks.candidateKey)!) !=
             before['candidate'] ||
@@ -637,7 +711,11 @@ Future<void> main() async {
       'stopRequested': stop,
       'precommit': precommit,
       'running': running,
-      'runningCancelled': running && retained.last.result.cancelled,
+      'uncertain': uncertain,
+      'intentUnchanged':
+          await retainedIntent(run.dispatchId!) == before['intent'],
+      'runningCancelled':
+          running && !uncertain && retained.last.result.cancelled,
       'savedStopPresent': controller.stopRequestFor(run) != null,
       'stopUnchanged': sameStop(),
       'operation': operation,
@@ -647,7 +725,7 @@ Future<void> main() async {
       'receiptOperations': retained
           .map((receipt) => receipt.operation.name)
           .toList(),
-      'retainedExit': retained.last.result.exitCode,
+      'retainedExit': uncertain ? null : retained.last.result.exitCode,
       'cleanup': 'unknown',
       'journalUnchanged': true,
       'sourcesUnchanged': true,
@@ -675,7 +753,7 @@ Future<void> report(
   final file = File(path.join(root, 'launch-$launch.json'));
   await file.create(exclusive: true);
   await file.writeAsString(
-    jsonEncode({'version': 5, 'launch': launch, ...observation}),
+    jsonEncode({'version': 6, 'launch': launch, ...observation}),
     flush: true,
   );
 }
