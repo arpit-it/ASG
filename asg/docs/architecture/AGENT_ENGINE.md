@@ -1138,3 +1138,54 @@ observation preceded the tightened binding ancestry check and is not final-sourc
 acceptance. This remains bounded fixture evidence: no production-main navigation,
 live inference, running-command session-cancellation cleanup claim, bound retry/
 promotion-process proof or full CE01 acceptance is added.
+
+
+18 November2026 — native same-session explicit retry fixture
+
+Protocol13 admits one additional bound slice: --session-bound --operation test
+--stop --running --acknowledge --retry, with promotion, uncertain, precommit,
+admission-crash and session-cancel refused. This is an uncancelled session;
+Candidate Stop intent and actual stopped test exit do not cancel the session.
+Partial/conflicting flag combinations refuse before any app launch. Historical
+protocol10/11/12 observations retain their original identities.
+
+The existing four-launch flow first stops the actual running test, then reopens
+read-only before explicit receipt-backed acknowledgment, then reopens with fresh
+unchecked consent before invoking the real verification checkbox/button callbacks.
+Only that explicit consent permits the second canonical dispatch and actual
+resolve/analyze/test/build commands. The fourth app reopens without preparing or
+entering any command. Session revisions/counts are 1/1/2/2 and command entries
+are 3/0/4/0. Both ordered dispatch references retain the same frozen approval/task
+basis; a cancelled session is not revived or silently made unbound.
+
+A separate bounded sessionRetryProof tracks immutable basis, session bytes,
+ordered IDs, journal/candidate, first run/checkpoint/receipts/Stop/recovery audit,
+and second checkpoint/receipts. Receipt hashes include validated context/intent/
+result bytes and require the complete expected result set: first resolve/analyze
+exit0 and stopped test exit-1, then four uncancelled retry exits0. Generic receipt
+and first-dispatch session proofs cannot stand in for this stage-specific proof.
+One canonical before-action digest excludes only local effect counters. The host
+compares it to the preceding after-action proof. Acknowledgment must change the
+first run/journal/checkpoint while preserving the session and actual receipts;
+retry must append the second reference while retaining immutable first-run audit;
+the last read-only reopen must preserve all record hashes. This avoids claiming
+that an authorized acknowledgment or retry left its journal unchanged.
+
+Final same-session retry evidence is
+/tmp/asg-404-native-session-retry-reviewed-observation.json on binary
+76112128c6526a5495409d6068109360650a5ffa0ecd5549cc537fd0e8846d7a.
+The earlier213fa7f4392b65342a81be62deb694f3ad2b013662792e26ecb6a16b57441ed6
+observation preceded the receipt-completeness guard and is not final-source
+acceptance. This remains fixed fixture evidence, not production-main navigation,
+automatic scheduling/replay, arbitrary model source synthesis, live inference,
+cleanup confirmation or full CE01. Bound native promotion remains pending.
+
+
+PR730 fresh review found that the first host implementation validated cross-stage
+proof only after all launches. The reviewed fix validates each report against the
+preceding stage before crashing/waiting for that app or starting another app.
+A deterministic corrupted-acknowledgment regression confirms that only the first
+two app handles are created; no retry app launches. All eight actual scenarios
+were rerun with the revised host on the unchanged fixture binary. The reviewed
+observation files use /tmp/asg-404-native-session-retry-reviewed*-observation.json;
+the earlier final-named files do not establish the revised guard-order behavior.

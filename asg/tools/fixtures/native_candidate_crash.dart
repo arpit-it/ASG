@@ -14,6 +14,7 @@ import 'package:asg/models/agent_session.dart';
 import 'package:asg/models/candidate_verification_run.dart';
 import 'package:asg/models/agent_session_binding.dart';
 import 'package:asg/services/agent_session_store.dart';
+import 'package:asg/services/agent_session_admission.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 
@@ -158,8 +159,25 @@ final class SignalledFixtureHost extends NativeGenerationHost {
     required super.runOperation,
     super.loadAsset,
     this.onPrepare,
+    this.onCommand,
   });
-  final void Function()? onPrepare;
+  final void Function()? onPrepare, onCommand;
+  @override
+  Future<GenerationStep> runFlutterOperation(
+    GeneratedProject project,
+    String operation, {
+    Future<void> Function()? beforeStart,
+    String? receiptDirectory,
+  }) async {
+    onCommand?.call();
+    return super.runFlutterOperation(
+      project,
+      operation,
+      beforeStart: beforeStart,
+      receiptDirectory: receiptDirectory,
+    );
+  }
+
   @override
   Future<void> prepareCandidateReceipts(
     CandidateVerificationRun run,
@@ -231,13 +249,20 @@ Future<void> main() async {
                 input['operation'] != 'test' ||
                 [
                   'precommit',
-                  'running',
                   'uncertain',
-                  'acknowledge',
-                  'retry',
                   'promote',
                   'promotionCrash',
-                ].any((key) => input[key] != false))) ||
+                ].any((key) => input[key] != false) ||
+                ([
+                      'running',
+                      'acknowledge',
+                      'retry',
+                    ].any((key) => input[key] == true) &&
+                    !(input['running'] == true &&
+                        input['acknowledge'] == true &&
+                        input['retry'] == true &&
+                        input['admissionCrash'] == false &&
+                        input['sessionCancel'] == false)))) ||
         input['stop'] is! bool ||
         input['precommit'] is! bool ||
         input['running'] is! bool ||
@@ -319,9 +344,14 @@ Future<void> main() async {
       path.join(support.path, 'fixture-receipts-$nonce'),
     );
     final receipts = CandidateReceiptFiles(root: () async => receiptRoot);
-    final host = NativeGenerationHost(receiptFiles: receipts);
-    AgentSession? selectedSession;
     var receiptPreparations = 0, commandEntries = 0;
+    final host = SignalledFixtureHost(
+      receiptFiles: receipts,
+      runOperation: null,
+      onPrepare: launch == 1 ? null : () => receiptPreparations++,
+      onCommand: launch == 1 ? null : () => commandEntries++,
+    );
+    AgentSession? selectedSession;
     Map<String, Object?>? initialCancellationOutput;
     Future<Map<String, Object?>> outputState() async => {
       'working': digest(records.getString(workingKey)!),
@@ -367,7 +397,7 @@ Future<void> main() async {
     }
 
     Future<Map<String, Object?>?> sessionProof() async {
-      if (!sessionBound) return null;
+      if (!sessionBound || retry) return null;
       final saved = AgentSessionStore(records, project).load('session-$nonce');
       if (saved == null ||
           saved.cancellationRequested != sessionCancel ||
@@ -426,6 +456,137 @@ Future<void> main() async {
         'receiptPreparations': receiptPreparations,
         'commandEntries': commandEntries,
       };
+    }
+
+    Future<String> retryReceiptHash(CandidateVerificationRun run) async {
+      final observed = await receipts.read(run);
+      final expected = operations.take(run.number == 1 ? 3 : 4).toList();
+      if (![1, 2].contains(run.number) ||
+          jsonEncode(
+                observed.map((receipt) => receipt.operation.name).toList(),
+              ) !=
+              jsonEncode(expected)) {
+        throw StateError('Complete retry receipt evidence missing');
+      }
+      for (var index = 0; index < observed.length; index++) {
+        final result = observed[index].result;
+        final stopped = run.number == 1 && index == 2;
+        if (result.exitCode != (stopped ? -1 : 0) ||
+            result.cancelled != stopped ||
+            result.timedOut ||
+            result.outputLimitExceeded) {
+          throw StateError(
+            'Retry receipt result disagrees with the actual fixed checks',
+          );
+        }
+      }
+      final prefix = '${digest(run.dispatchId!)}-';
+      final directory =
+          (await receiptRoot
+                  .list(followLinks: false)
+                  .where(
+                    (entry) =>
+                        entry is Directory &&
+                        path.basename(entry.path).startsWith(prefix),
+                  )
+                  .toList())
+              .single;
+      final evidence = <String, String>{};
+      for (final name in [
+        'context.json',
+        for (final receipt in observed) ...[
+          '${receipt.operation.name}.intent.json',
+          '${receipt.operation.name}.result.json',
+        ],
+      ]) {
+        final file = File(path.join(directory.path, name));
+        if (await FileSystemEntity.isLink(file.path) ||
+            await file.length() > 256 * 1024 ||
+            await file.resolveSymbolicLinks() != file.absolute.path) {
+          throw StateError('Invalid retry receipt fingerprint input');
+        }
+        evidence[name] = await file.readAsString();
+      }
+      return digest(jsonEncode(evidence));
+    }
+
+    Future<Map<String, Object?>?> sessionRetryProof() async {
+      if (!sessionBound || !retry) return null;
+      final saved = AgentSessionStore(records, project).load('session-$nonce');
+      if (saved == null ||
+          saved.cancellationRequested ||
+          ![1, 2].contains(saved.dispatches.length) ||
+          saved.revision != saved.dispatches.length) {
+        throw StateError('Invalid uncancelled retry session');
+      }
+      AgentSessionAdmission(records, project).requireApproval(saved);
+      final journal = checks.load();
+      if (journal.runs.length != saved.dispatches.length) {
+        throw StateError('Retry session/run count changed');
+      }
+      for (var index = 0; index < saved.dispatches.length; index++) {
+        final ref = saved.dispatches[index];
+        if (ref.boardTaskId != 'Tanalyze' ||
+            ref.runNumber != index + 1 ||
+            ref.dispatchId != 'candidate-$projectId-${index + 1}:3' ||
+            journal.runs[index].dispatchId != ref.dispatchId) {
+          throw StateError('Retry session dispatch lineage changed');
+        }
+      }
+      final first = journal.runs.first;
+      final recovery = records.getString(
+        '${CandidateVerificationStore.recoveryPrefix}${first.dispatchId}',
+      );
+      final secondExecution = records.getString(
+        'studio.agentExecution.v1.candidate-$projectId-2',
+      );
+      return {
+        'sessionId': saved.sessionId,
+        'projectId': saved.projectId,
+        'basisSha256': digest(
+          jsonEncode({
+            'sessionId': saved.sessionId,
+            'projectId': saved.projectId,
+            'approval': saved.approval.toJson(),
+            'tasks': saved.tasks.toJson(),
+          }),
+        ),
+        'sessionSha256': digest(records.getString(saved.storageKey)!),
+        'revision': saved.revision,
+        'dispatchCount': saved.dispatches.length,
+        'dispatchIds': saved.dispatches.map((ref) => ref.dispatchId).toList(),
+        'cancellationRequested': saved.cancellationRequested,
+        'journalSha256': digest(records.getString(checks.key)!),
+        'candidateSha256': digest(records.getString(checks.candidateKey)!),
+        'firstRunSha256': digest(jsonEncode(first.toJson())),
+        'firstExecutionSha256': digest(
+          records.getString('studio.agentExecution.v1.candidate-$projectId-1')!,
+        ),
+        'firstReceiptSha256': await retryReceiptHash(first),
+        'stopSha256': digest(
+          records.getString(
+            '${CandidateVerificationStore.stopPrefix}${first.dispatchId}',
+          )!,
+        ),
+        'recoverySha256': recovery == null ? null : digest(recovery),
+        'secondExecutionSha256': secondExecution == null
+            ? null
+            : digest(secondExecution),
+        'secondReceiptSha256': journal.runs.length == 1
+            ? null
+            : await retryReceiptHash(journal.runs.last),
+        'receiptPreparations': receiptPreparations,
+        'commandEntries': commandEntries,
+      };
+    }
+
+    String retryDigest(Map<String, Object?> proof) {
+      final stable = Map<String, Object?>.from(proof)
+        ..remove('receiptPreparations')
+        ..remove('commandEntries');
+      final entries = stable.entries.toList()
+        ..sort((a, b) => a.key.compareTo(b.key));
+      return digest(jsonEncode(Map.fromEntries(entries)));
     }
 
     Future<Map<String, Object?>> admissionState() async => {
@@ -992,6 +1153,8 @@ Future<void> main() async {
             'output': digest(await working.readAsString()),
             'dispatch': run.dispatchId,
             if (sessionBound) 'sessionProof': await sessionProof(),
+            if (sessionBound && retry)
+              'sessionRetryProof': await sessionRetryProof(),
           };
           final before = File(path.join(canonical, 'before.json'));
           await before.create(exclusive: true);
@@ -1022,6 +1185,10 @@ Future<void> main() async {
             },
             sessionBound: sessionBound,
             sessionProof: await sessionProof(),
+            sessionRetryProof: await sessionRetryProof(),
+            beforeActionSha256: sessionBound && retry
+                ? retryDigest((await sessionRetryProof())!)
+                : null,
           );
           runApp(
             MaterialApp(
@@ -1321,6 +1488,14 @@ Future<void> main() async {
         )) {
       throw StateError('Rendering changed retained fixture state.');
     }
+    final retryBeforeAction = await sessionRetryProof();
+    if (retryBeforeAction != null &&
+        retryDigest(retryBeforeAction) !=
+            retryDigest(
+              Map<String, Object?>.from(before['sessionRetryProof'] as Map),
+            )) {
+      throw StateError('Read-only retry reopen changed stage evidence');
+    }
     final actionUnchangedBefore = acknowledged && sameAction();
     final freshConsentBefore =
         acknowledged && consent == false && verifyEnabled == false;
@@ -1364,6 +1539,8 @@ Future<void> main() async {
           'journal': digest(records.getString(checks.key)!),
           'action': digest(records.getString(actionKey)!),
           'execution': digest(records.getString(executionKey)!),
+          if (sessionBound && retry)
+            'sessionRetryProof': await sessionRetryProof(),
         }),
         flush: true,
       );
@@ -1444,6 +1621,8 @@ Future<void> main() async {
               'studio.agentExecution.v1.candidate-$projectId-2',
             )!,
           ),
+          if (sessionBound && retry)
+            'sessionRetryProof': await sessionRetryProof(),
         }),
         flush: true,
       );
@@ -1680,6 +1859,10 @@ Future<void> main() async {
       },
       sessionBound: sessionBound,
       sessionProof: await sessionProof(),
+      sessionRetryProof: await sessionRetryProof(),
+      beforeActionSha256: retryBeforeAction == null
+          ? null
+          : retryDigest(retryBeforeAction),
     );
     controller.dispose();
     workingController?.dispose();
@@ -1702,18 +1885,22 @@ Future<void> report(
   bool admissionCrash = false,
   bool sessionCancel = false,
   Map<String, Object?>? sessionProof,
+  Map<String, Object?>? sessionRetryProof,
+  String? beforeActionSha256,
 }) async {
   final file = File(path.join(root, 'launch-$launch.json'));
   await file.create(exclusive: true);
   await file.writeAsString(
     jsonEncode({
-      'version': 12,
+      'version': 13,
       'launch': launch,
       ...observation,
       'sessionBound': sessionBound,
       'admissionCrash': admissionCrash,
       'sessionCancel': sessionCancel,
       'sessionProof': sessionProof,
+      'sessionRetryProof': sessionRetryProof,
+      'beforeActionSha256': beforeActionSha256,
     }),
     flush: true,
   );
