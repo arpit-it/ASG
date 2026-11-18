@@ -946,3 +946,56 @@ and the actual workspace navigation entry. Browser IAB navigation/missing-approv
 evidence is recorded separately; it does not substitute for actual model or
 multi-task execution acceptance. The broader CE01 scheduler/dispatch linkage and
 chat-driven execution workflow remain pending under #404.
+
+
+### Selected session to verification admission investigation — 18 November 2026
+
+Saved-session management currently carries no selected session into source review.
+Its workspace route returns void; SourceGenerationController.createSourceReview
+and SourceReviewController construct candidate controllers without a session
+binding. SourceCandidateController.verify persists a candidate run/execution via
+CandidateVerificationStore.start, then prepares receipts and enters host.verify.
+AgentSessionStore.observeRun is a separate historical-observation transaction and
+has no controller caller. Existing candidate journals still track every admitted
+run; the missing link is to the selected session, not a missing global journal.
+
+Sixty-three focused session-store/session-controller/candidate-controller tests
+passed in /tmp/asg-404-session-binding-investigation-tests.log. They verify the
+existing boundaries, not session-bound command admission. A later post-command
+observeRun call cannot establish the desired atomic session admission guarantee.
+A failed session write after command entry could leave that session unlinked even
+though the candidate journal is intact. The link must be committed before receipt
+preparation/host entry and guarded throughout the selected review's authorization.
+
+The next coherent increment should offer an explicit Use session for source review
+choice, carrying an immutable project/session/approval/task binding through the
+workspace/build/review/candidate flow. Reopen must not select or dispatch it
+automatically. Unbound existing review behavior remains available; an explicitly
+bound review must never silently drop a stale/cancelled binding or fall back to
+unbound execution. The selected board task must belong to the approved session.
+
+Candidate startup should commit session reference, journal, candidate snapshot
+and execution checkpoint together, comparing exact session and approval/context
+bytes. Use a typed bounded admission interface with fixed validated keys, not an
+unrestricted extra-update callback. AgentSessionStore currently imports the
+candidate store, so adding the reverse dependency without extracting a shared
+validator/typed admission boundary would introduce a service cycle. Existing pure
+session/run models can supply validation while one transaction owns publication.
+
+Authorization must reject changed approval/membership, cancellation, stale or
+corrupt records and disposed reviews before receipt/host entry and before later
+operations. Cancellation remains intent; the already-running command may have
+an unknown exit and its actual evidence must be retained through existing Stop
+and recovery paths. Session checks must not replace Plan approval or confinement.
+Promotion must also compare the bound session in its atomic expected inputs;
+cancellation during preview startup must retain old working output. A cancellation
+after a committed publication cannot undo it or justify automatic rollback.
+
+Acceptance for that increment: explicit context selection and propagation;
+atomic startup failure leaves every record unchanged and host/preparation counts
+zero; concurrent cancellation/stale session refuses admission; later cancellation
+retains actual exits/unknowns; promotion races preserve the correct publication
+boundary; native reopen keeps exact session/run linkage without replay. Cover
+legacy unbound behavior, disposal and no changed working pointer on refusal.
+This remains a bounded existing-verification integration, not a scheduler,
+arbitrary tool framework, automatic task completion or full CE01 acceptance.
