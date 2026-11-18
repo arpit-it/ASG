@@ -2,6 +2,7 @@
 # Copyright 2026 Arpit Sinha
 """Crash/reopen only a verified disposable native candidate fixture; never builds or installs."""
 import argparse
+import hashlib
 import json
 import os
 import re
@@ -52,18 +53,86 @@ def read_session_proof(value, nonce, launch, admission_crash=False, session_canc
     return value
 
 
+def retry_digest(proof):
+    stable = {key: value for key, value in proof.items()
+              if key not in ('receiptPreparations', 'commandEntries')}
+    return hashlib.sha256(json.dumps(stable, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
+
+
+def read_retry_proof(proof, nonce, launch):
+    if type(launch) is not int or launch not in (1, 2, 3, 4):
+        raise ValueError('Invalid retry proof stage')
+    hashes = {'basisSha256', 'sessionSha256', 'journalSha256', 'candidateSha256',
+              'firstRunSha256', 'firstExecutionSha256', 'firstReceiptSha256', 'stopSha256',
+              'recoverySha256', 'secondExecutionSha256', 'secondReceiptSha256'}
+    keys = hashes | {'sessionId', 'projectId', 'revision', 'dispatchCount', 'dispatchIds',
+                     'cancellationRequested', 'receiptPreparations', 'commandEntries'}
+    count = 2 if launch >= 3 else 1
+    if (not isinstance(proof, dict) or set(proof) != keys or type(launch) is not int or
+            launch not in (1, 2, 3, 4) or not isinstance(nonce, str) or
+            re.fullmatch(r'[a-f0-9]{32}', nonce) is None or
+            proof.get('sessionId') != f'session-{nonce}' or proof.get('projectId') != f'restart-{nonce}' or
+            proof.get('cancellationRequested') is not False or
+            proof.get('dispatchIds') != [f'candidate-restart-{nonce}-{number}:3' for number in range(1, count + 1)]):
+        raise ValueError('Bound retry session identity mismatch')
+    counts = {'revision': count, 'dispatchCount': count,
+              'receiptPreparations': int(launch in (1, 3)),
+              'commandEntries': 3 if launch == 1 else 4 if launch == 3 else 0}
+    if any(type(proof.get(key)) is not int or proof[key] != value for key, value in counts.items()):
+        raise ValueError('Bound retry admission or no-replay count mismatch')
+    for key in hashes:
+        absent = (key == 'recoverySha256' and launch == 1) or (key.startswith('second') and launch < 3)
+        if absent:
+            if proof[key] is not None:
+                raise ValueError('Unadmitted retry evidence present')
+        elif not isinstance(proof[key], str) or re.fullmatch(r'[a-f0-9]{64}', proof[key]) is None:
+            raise ValueError('Bound retry record hash missing')
+    return proof
+
+
+def require_retry_transition(previous, current, launch, before_hash):
+    if not isinstance(before_hash, str) or re.fullmatch(r'[a-f0-9]{64}', before_hash) is None:
+        raise ValueError('Before-action retry evidence missing')
+    if previous is None:
+        if launch != 1 or before_hash != retry_digest(current):
+            raise ValueError('Initial retry stage changed')
+        return
+    if before_hash != retry_digest(previous):
+        raise ValueError('Read-only retry reopen changed retained records')
+    immutable = {'sessionId', 'projectId', 'basisSha256', 'cancellationRequested',
+                 'firstReceiptSha256', 'stopSha256'}
+    if launch == 2:
+        if any(current[key] == previous[key] for key in ('journalSha256', 'firstRunSha256', 'firstExecutionSha256')):
+            raise ValueError('Acknowledgement transition missing')
+        immutable |= {'sessionSha256', 'revision', 'dispatchCount', 'dispatchIds',
+                      'candidateSha256', 'secondExecutionSha256', 'secondReceiptSha256'}
+    elif launch == 3:
+        immutable |= {'firstRunSha256', 'firstExecutionSha256', 'recoverySha256'}
+        if current['dispatchIds'][:-1] != previous['dispatchIds']:
+            raise ValueError('Retry rewrote existing session references')
+        if any(current[key] == previous[key] for key in ('sessionSha256', 'journalSha256', 'candidateSha256')):
+            raise ValueError('New retry admission missing')
+    elif launch == 4:
+        if retry_digest(current) != before_hash:
+            raise ValueError('Final read-only retry reopen changed records')
+    else:
+        raise ValueError('Unexpected retry transition')
+    if any(previous[key] != current[key] for key in immutable):
+        raise ValueError('Retry rewrote immutable prior evidence')
+
+
 def read_report(root, launch, nonce, operation='resolve', stop=False, precommit=False, running=False, uncertain=False, acknowledge=False, retry=False, promote=False, promotion_crash=False, session_bound=False, admission_crash=False, session_cancel=False):
     report = root / f'launch-{launch}.json'
     if report.is_symlink() or not report.is_file() or report.stat().st_size > 4096:
         raise ValueError('Invalid candidate report')
     value = json.loads(report.read_text())
-    if (not isinstance(value, dict) or type(value.get('version')) is not int or value['version'] != 12 or
+    if (not isinstance(value, dict) or type(value.get('version')) is not int or value['version'] != 13 or
             type(value.get('launch')) is not int or value['launch'] != launch or value.get('nonce') != nonce or
             value.get('dispatch') != f'candidate-restart-{nonce}-1:3' or
             value.get('sessionBound') is not session_bound or value.get('admissionCrash') is not admission_crash or value.get('sessionCancel') is not session_cancel or
             (session_cancel and (not session_bound or admission_crash)) or
             (admission_crash and not session_bound) or
-            (session_bound and (not stop or operation != 'test' or any((precommit, running, uncertain, acknowledge, retry, promote, promotion_crash)))) or
+            (session_bound and (not stop or operation != 'test' or any((precommit, uncertain, promote, promotion_crash)) or ((running or acknowledge or retry) and not (running and acknowledge and retry and not admission_crash and not session_cancel)))) or
             operation not in OPERATIONS or value.get('operation') != operation or
             value.get('stopRequested') is not stop or value.get('precommit') is not precommit or
             (precommit and not stop) or value.get('running') is not running or
@@ -75,7 +144,18 @@ def read_report(root, launch, nonce, operation='resolve', stop=False, precommit=
             (running and (not stop or precommit or operation != 'test')) or
             value.get('completedOperations') != ([] if admission_crash else ['resolve'] if session_cancel else OPERATIONS[:OPERATIONS.index(operation)])):
         raise ValueError('Candidate report identity mismatch')
-    if session_bound:
+    if session_bound and retry:
+        if value.get('sessionProof') is not None:
+            raise ValueError('Retry cannot reuse one-dispatch session proof')
+        proof = read_retry_proof(value.get('sessionRetryProof'), nonce, launch)
+        before_hash = value.get('beforeActionSha256')
+        if not isinstance(before_hash, str) or re.fullmatch(r'[a-f0-9]{64}', before_hash) is None:
+            raise ValueError('Before-action retry evidence missing')
+        if launch == 1:
+            require_retry_transition(None, proof, launch, before_hash)
+    elif value.get('sessionRetryProof') is not None or value.get('beforeActionSha256') is not None:
+        raise ValueError('Non-retry report contains retry evidence')
+    elif session_bound:
         read_session_proof(value.get('sessionProof'), nonce, launch, admission_crash, session_cancel)
     elif value.get('sessionProof') is not None:
         raise ValueError('Unbound report contains session evidence')
@@ -125,7 +205,7 @@ def read_report(root, launch, nonce, operation='resolve', stop=False, precommit=
 
 
 def observe(bundle, sdk, operation='resolve', stop=False, precommit=False, running=False, uncertain=False, acknowledge=False, retry=False, promote=False, promotion_crash=False, session_bound=False, admission_crash=False, session_cancel=False):
-    if (session_cancel and (not session_bound or admission_crash)) or (admission_crash and not session_bound) or (session_bound and (not stop or operation != 'test' or any((precommit, running, uncertain, acknowledge, retry, promote, promotion_crash)))) or (promotion_crash and not promote) or (promote and not retry) or (retry and not acknowledge) or (acknowledge and (not running or uncertain)) or operation not in OPERATIONS or (uncertain and not running) or (precommit and not stop) or (running and (not stop or precommit or operation != 'test')):
+    if (session_cancel and (not session_bound or admission_crash)) or (admission_crash and not session_bound) or (session_bound and (not stop or operation != 'test' or any((precommit, uncertain, promote, promotion_crash)) or ((running or acknowledge or retry) and not (running and acknowledge and retry and not admission_crash and not session_cancel)))) or (promotion_crash and not promote) or (promote and not retry) or (retry and not acknowledge) or (acknowledge and (not running or uncertain)) or operation not in OPERATIONS or (uncertain and not running) or (precommit and not stop) or (running and (not stop or precommit or operation != 'test')):
         raise ValueError('Fixed crash operation required')
     if sys.platform != 'darwin':
         raise ValueError('Mac fixture only')
@@ -174,7 +254,13 @@ def observe(bundle, sdk, operation='resolve', stop=False, precommit=False, runni
                 if process.poll() is None:
                     process.kill()
                     process.wait(timeout=5)
-    if session_bound:
+    if session_bound and retry:
+        previous = None
+        for launch, report in enumerate(observations, 1):
+            current = report['sessionRetryProof']
+            require_retry_transition(previous, current, launch, report['beforeActionSha256'])
+            previous = current
+    elif session_bound:
         retained = ('sessionId', 'projectId', 'revision', 'dispatchId', 'dispatchCount',
                     'sessionSha256', 'journalSha256', 'candidateSha256', 'executionSha256')
         if session_cancel:
