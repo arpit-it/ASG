@@ -130,6 +130,8 @@ class _SourceCandidateViewState extends State<SourceCandidateView> {
           SelectableText(error),
         if (controller.stopRequestHistoryError case final error?)
           SelectableText(error),
+        if (controller.acknowledgementHistoryError != null)
+          SelectableText(controller.acknowledgementHistoryError!),
         if (controller.receiptHistoryError != null)
           SelectableText(controller.receiptHistoryError!),
         if (controller.historyError != null)
@@ -163,6 +165,11 @@ class _SourceCandidateViewState extends State<SourceCandidateView> {
                         'An unknown exit remains unknown.',
                       ),
                     ],
+                    if (controller.acknowledgementFor(run)
+                        case final acknowledgement?)
+                      SelectableText(
+                        'Operator recovery acknowledgement saved at ${acknowledgement.acknowledgedAt.toLocal()}. This action does not confirm command exit or cleanup.',
+                      ),
                     if (controller.recoveryStatusFor(run) case final recovery?)
                       SelectableText('Recovery: ${recovery.explanation}'),
                     if (controller.stopRequestFor(run) != null)

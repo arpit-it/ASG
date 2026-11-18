@@ -17,6 +17,61 @@ import 'source_candidate_controller_test.dart' show AtomicRecords;
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  test(
+    'recovery action commits atomically and never replaces existing evidence',
+    () async {
+      final records = AtomicRecords();
+      final store = CandidateVerificationStore(records, 'p');
+      final run = await store.start(
+        failure().copy(steps: [], pendingOperation: 'resolve'),
+        () {},
+      );
+      final key =
+          '${CandidateVerificationStore.recoveryPrefix}${run.dispatchId}';
+      final before = Map.of(records.values);
+      records.failCommit = true;
+      await expectLater(store.acknowledgeStopped(run, () {}), throwsStateError);
+      expect(records.values, before);
+      records.failCommit = false;
+      records.values[key] = '{private-corrupt';
+      final corrupt = Map.of(records.values);
+      await expectLater(store.acknowledgeStopped(run, () {}), throwsStateError);
+      expect(records.values, corrupt);
+      records.values.remove(key);
+      await store.acknowledgeStopped(run, () {});
+      final stopped = store.load().runs.single;
+      final action = store.acknowledgementFor(stopped)!;
+      expect(action.matches('p', stopped), isTrue);
+      expect(
+        () => StudioDatabase.validate(
+          '${CandidateVerificationStore.recoveryPrefix}wrong:3',
+          jsonEncode(action.toJson()),
+        ),
+        throwsFormatException,
+      );
+      expect(stopped.snapshot.steps, isEmpty);
+      expect(stopped.snapshot.pendingOperation, 'resolve');
+      expect(records.getString(store.candidateKey), before[store.candidateKey]);
+      expect(
+        jsonDecode(
+          records.getString('studio.agentExecution.v1.candidate-p-1')!,
+        )['phase'],
+        'awaitingApproval',
+      );
+      final saved = Map.of(records.values);
+      await expectLater(store.acknowledgeStopped(run, () {}), throwsStateError);
+      expect(records.values, saved);
+      records.values[key] = '{private-corrupt';
+      try {
+        store.acknowledgementFor(stopped);
+        fail('Expected unreadable evidence');
+      } on FormatException catch (error) {
+        expect(error.source, isNull);
+        expect('$error', isNot(contains('private-corrupt')));
+      }
+    },
+  );
+
   test('Stop intent is immutable and leaves journal, checkpoint and actual exits separate', () async {
     final records = AtomicRecords();
     final store = CandidateVerificationStore(records, 'p');
@@ -395,6 +450,13 @@ void main() {
       expect(authorized, isTrue);
       final stopped = store.load().runs.single;
       expect(stopped.finished, isTrue);
+      expect(store.acknowledgementFor(stopped), isNull);
+      expect(
+        records.values.keys.any(
+          (key) => key.startsWith(CandidateVerificationStore.recoveryPrefix),
+        ),
+        isFalse,
+      );
       expect(stopped.snapshot.pendingOperation, 'resolve');
       expect(stopped.snapshot.steps, isEmpty);
     },
@@ -429,7 +491,7 @@ void main() {
         db,
         await SharedPreferences.getInstance(),
       );
-      final reopened = CandidateVerificationStore(records, 'p');
+      var reopened = CandidateVerificationStore(records, 'p');
       expect(records.getString(store.key), before);
       expect(reopened.load().runs.first.snapshot.steps.last.cancelled, isTrue);
       final first = reopened.load().runs.first;
@@ -451,12 +513,33 @@ void main() {
       expect(reopened.load().runs.last.finished, isTrue);
       expect(reopened.load().runs.last.snapshot.pendingOperation, 'resolve');
       expect(reopened.load().runs.last.snapshot.steps, isEmpty);
+      final acknowledgedRun = reopened.load().runs.last;
+      final actionKey =
+          '${CandidateVerificationStore.recoveryPrefix}${acknowledgedRun.dispatchId}';
+      final actionRaw = records.getString(actionKey);
+      await db.close();
+      db = await databaseFactoryIo.openDatabase(path);
+      records = await StudioDatabase.migrate(
+        db,
+        await SharedPreferences.getInstance(),
+      );
+      reopened = CandidateVerificationStore(records, 'p');
+      expect(records.getString(actionKey), actionRaw);
+      expect(
+        reopened
+            .acknowledgementFor(reopened.load().runs.last)!
+            .matches('p', acknowledgedRun),
+        isTrue,
+      );
       await expectLater(
         reopened.acknowledgeStopped(pendingRun, () {}),
         throwsStateError,
       );
       await reopened.start(failure(), () {});
       expect(reopened.load().runs.length, 3);
+      await StoreRef<String, String>('records')
+          .record(actionKey)
+          .put(db, '{bad-action');
       await StoreRef<String, String>('records')
           .record(store.key)
           .put(db, '{broken');
@@ -467,6 +550,11 @@ void main() {
         await SharedPreferences.getInstance(),
       );
       expect(() => records.getString(store.key), throwsFormatException);
+      expect(() => records.getString(actionKey), throwsFormatException);
+      expect(
+        await StoreRef<String, String>('records').record(actionKey).get(db),
+        '{bad-action',
+      );
       expect(CandidateVerificationStore(records, 'other').load().runs, isEmpty);
       expect(
         await StoreRef<String, String>('records').record(store.key).get(db),
