@@ -133,9 +133,17 @@ final class CandidateReceiptFiles {
       throw StateError('Candidate receipt dispatch already reserved.');
     }
     authorize();
-    // Native createTemp gives each dispatch a private directory; it is retained
-    // for reopening, outside the helper's candidate and scratch profiles.
+    // Temporary-directory defaults vary by host. Establish private permissions
+    // before writing context, outside candidate and scratch profiles.
     final directory = await root.createTemp(_prefix(context.dispatchId));
+    final permissions = await Process.run('/bin/chmod', [
+      '700',
+      directory.path,
+    ]);
+    if (permissions.exitCode != 0 ||
+        (await directory.stat()).mode & 0x3f != 0) {
+      throw StateError('Candidate receipt storage could not be made private.');
+    }
     authorize();
     await File(path.join(directory.path, 'context.json'))
         .writeAsString(jsonEncode(context.toJson()), flush: true);
