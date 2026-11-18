@@ -16233,3 +16233,27 @@ the intent write blocked before database entry; reopen has no fabricated saved
 Stop row/badge and preserves pending observations/working output. Publication,
 fresh exact review, required CI and verified merge remain gates. Interrupted
 transaction durability, running-tool Stop and general CE01 remain pending.
+
+
+Precommit Stop/crash slice delivered in PR #710, merge
+`c4c08d3998655207f4c260f95f0d48d10c3ff708`, required CI44300865417.
+Merged tree0215be155c47aada00c197651e0a0217a9c14418 matched tested source.
+
+CE01 active bounded prerequisite under #404 — running-tool Stop investigation.
+Trace real NativeGenerationHost cancellation ownership, capture and supervisor
+receipt behavior. Identify a disposable actual Flutter command handshake that
+can prove Stop reached the same instance owning the live process, with no new
+unrestricted command authorization. Record root-exit versus descendant-cleanup
+limits and run relevant existing deterministic cancellation/receipt tests.
+Deliver a verifiable fixture design and concrete remaining acceptance; do not
+claim running-tool/native crash acceptance from successful-completion fixtures.
+
+
+Running-tool Stop prerequisite investigation completed locally: per-instance
+process ownership, bounded capture/supervisor settlement and unknown-cleanup
+receipt limits traced; fixed confined Flutter-test marker design recorded in
+AGENT_ENGINE. Existing supervisor21 passed/1 skipped and capture5 passed.
+Fresh review/required CI/merge remain investigation delivery gates. Native
+running-tool cancellation remains pending and must use the same host instance
+for controller Stop and actual runner; no evidence is inferred from prior
+successful-completion crash cases.
