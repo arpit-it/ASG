@@ -772,3 +772,33 @@ output honestly, and separately cover a refused publication preserving the old
 pointer/checkpoint. The preview port/host is an exclusive fixture-owned resource;
 never use the owner's stable app or output. This investigation changes no runtime
 behavior and does not establish actual promotion acceptance or general CE01.
+
+
+### Native retry promotion and fifth launch — 18 November 2026
+
+Protocol9 adds `--promote` to the fixed retry mode. Fourth launch first verifies
+unchanged history/output on read and render. It explicitly invokes production
+SourceCandidateController.promote and SourceGenerationController.promoteCandidate
+with a separate real NativeGenerationHost. A fixture storage wrapper refuses the
+first publication before its atomic transaction, after native preview validation;
+working/previous pointers and the verifying second execution remain exact. This
+is a precommit refusal, not a midtransaction crash/durability claim.
+
+The next explicit attempt permits the real database transaction. It verifies the
+working record equals the ready second-run candidate, the previous record equals
+the seeded old record, only the second execution is completed, and the first
+acknowledgement/Stop/cancelled evidence, candidate journal and source stay intact.
+An actual bounded HTTP request to the tokenized loopback preview returns200 HTML.
+The fixture records separate post-promotion hashes and closes its owned hosts.
+Fifth identical-binary launch checks exact working/previous/execution bytes,
+actual second-run receipts/build fingerprints, both histories and unchecked fresh
+consent. Read/render creates no dispatch or promotion. The report's unchanged
+read/render fields refer to the checks before explicit actions; promotion fields
+record the later publication separately.
+
+Actual five-launch observation passed on this Mac, binary SHA256
+`e7dcbc435607182cbbde0c083bce3fd559616c9c0f68a708c28cf7a74f96c493`;
+evidence /tmp/asg-404-native-promotion-observation.json. Thirteen strict host
+contracts pass. Previous output is seeded, not a previously verified live preview.
+This remains fixture-controller acceptance, not production-main navigation,
+human process inspection, arbitrary cleanup, generalized synthesis or full CE01.
