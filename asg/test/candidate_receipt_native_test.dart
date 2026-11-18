@@ -228,6 +228,43 @@ void main() {
     expect(await working.readAsString(), 'preserved output');
   }, timeout: const Timeout(Duration(seconds: 90)));
 
+  test('publisher crash after side effect leaves completion unknown', () async {
+    final before = jsonEncode(run.toJson());
+    final journal = File('${temporary.path}/interrupted-journal.json');
+    await journal.writeAsString(before);
+    final working = File('${temporary.path}/last-working.txt');
+    await working.writeAsString('preserved output');
+    final directory = await files.prepare(run, () {});
+    final marker = File('${candidate.path}/actual-side-effect.txt');
+    final command =
+        'from pathlib import Path; Path(${jsonEncode(marker.path)}).write_text("once")';
+    final script =
+        'import sys,os; sys.path.insert(0,${jsonEncode(Directory('tools').absolute.path)}); '
+        'import generation_command as g; '
+        'r=g.CompletionReceipt(${jsonEncode(directory)},${jsonEncode(candidate.path)},${jsonEncode(sdk.path)},"resolve"); '
+        'result=g.run(sys.executable,["-c",${jsonEncode(command)}],${jsonEncode(candidate.path)},3); '
+        'assert result["exitCode"]==0; os._exit(19)';
+    final producer = await Process.run('python3', ['-I', '-B', '-c', script]);
+    expect(producer.exitCode, 19);
+    expect(await marker.readAsString(), 'once');
+    expect(await File('$directory/resolve.intent.json').exists(), isTrue);
+    expect(await File('$directory/resolve.result.json').exists(), isFalse);
+    final restored = CandidateVerificationRun.fromJson(
+      jsonDecode(await journal.readAsString()) as Map<String, dynamic>,
+    );
+    expect(
+      await CandidateReceiptFiles(root: () async => root).read(restored),
+      isEmpty,
+    );
+    expect(jsonEncode(restored.toJson()), before);
+    expect(await journal.readAsString(), before);
+    expect(restored.finished, isFalse);
+    expect(restored.snapshot.pendingOperation, 'resolve');
+    expect(await working.readAsString(), 'preserved output');
+    await expectLater(files.prepare(restored, () {}), throwsStateError);
+    expect(await marker.readAsString(), 'once');
+  });
+
   test('actual Python helper receipt survives a new reader without journal changes', () async {
     final before = jsonEncode(run.toJson());
     final directory = await files.prepare(run, () {});
