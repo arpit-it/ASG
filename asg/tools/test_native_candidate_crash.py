@@ -29,7 +29,7 @@ class CandidateCrashTests(unittest.TestCase):
 
     def test_stale_or_unsafe_observations_are_refused(self):
         for changes in ({'nonce': 'b' * 32}, {'dispatch': 'candidate-p-1:4'}, {'dispatch': 'wrong-task:3'}, {'cleanup': 'confirmed'},
-                        {'retainedResolveExit': True}, {'workingUnchanged': False}, {'viewRendered': False}):
+                        {'retainedResolveExit': True}, {'workingUnchanged': False}, {'sourcesUnchanged': False}, {'viewRendered': False}):
             self.report(2, **changes)
             with self.assertRaises(ValueError):
                 fixture.read_report(self.root, 2, self.nonce)

@@ -323,12 +323,12 @@ existing required CI discovery.
 
 The disposable native build and exact final crash/reopen observation passed on
 this Mac with existing dependencies and separate temporary outputs. Bundle
-SHA256: `b10bdd6ee7d5c711729e90db6e4f107c456bc63bf23927cc59358a12240ff1ef`.
+SHA256: `ab1545b3399c9d2fa43b83e420b6ec4eb1c46d0a83c5379560bf234c12669276`.
 First seed validation correctly refused an empty working-source map; the fixture
 was fixed to seed an actual source file/hash. A subsequent view assertion
 required expanding all nested history sections; stage-only diagnostics avoid
 logging record contents. The final binary was rebuilt and rerun after adding
-current-source checks. No production source/runner edits, package installation,
+current-source and post-render unchanged-state checks. Host handshakes bind the exact nonce-derived dispatch, not only its revision. No production source/runner edits, package installation,
 stable app replacement or owner-process termination occurred.
 
 This establishes a bounded actual native crash window after resolve receipt

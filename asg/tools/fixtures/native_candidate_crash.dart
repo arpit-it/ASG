@@ -289,6 +289,21 @@ Future<void> main() async {
         )) {
       throw StateError('Production candidate view did not render.');
     }
+    // Rendering must remain read-only too, including any future view callbacks.
+    if (digest(records.getString(checks.key)!) != before['journal'] ||
+        digest(records.getString(checks.candidateKey)!) !=
+            before['candidate'] ||
+        digest(records.getString(workingKey)!) != before['working'] ||
+        digest(await working.readAsString()) != before['output'] ||
+        !NativeGenerationHost.sameFiles(
+          await NativeGenerationHost.fingerprints(
+            snapshot.directory,
+            source: true,
+          ),
+          snapshot.sources,
+        )) {
+      throw StateError('Rendering changed retained fixture state.');
+    }
     await report(canonical, 2, {
       'nonce': nonce,
       'dispatch': run.dispatchId,
