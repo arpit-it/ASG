@@ -723,3 +723,23 @@ fixture-driven controller acknowledgement after bounded owned-process evidence,
 not a human process-inspection claim, authenticated operator, verified arbitrary
 descendant cleanup, production-main navigation or generalized CE01 acceptance.
 Cleanup remains unknown and those broader limits stay pending under #404/#400.
+
+
+### Native explicitly consented retry — 18 November 2026
+
+Protocol8 adds `--retry` to the fixed running-test acknowledgement mode. On
+launch three, the actual view initially has unchecked consent and disabled
+verification. The fixture explicitly invokes the checkbox callback, then the
+enabled production Verify callback. Only then does it create an excluded-build,
+nonce-bound permit for the original fixed waiting test; source bytes stay equal.
+The distinct second dispatch completes real resolve/analyze/test/build. A fourth
+identical-binary launch verifies its exact saved run/execution, successful actual
+receipts and build outputs, with consent unchecked again and exactly two runs.
+The first run's immutable acknowledgement, Stop and cancelled receipt remain;
+working pointer/output stay unchanged, and promotion is never invoked.
+
+The actual four-launch observation passed with binary SHA256
+`bcc0bd3c00405b8c1a511c86b07d78b38ca268f4c732e2aab70e9af01d8f0659`;
+evidence /tmp/asg-404-native-retry-final-regression.json. Twelve host contracts pass.
+This fixed fixture continuation does not establish human process inspection,
+arbitrary cleanup, production-main navigation or full CE01/general synthesis.

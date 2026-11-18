@@ -17,8 +17,8 @@ class CandidateCrashTests(unittest.TestCase):
         self.nonce = 'a' * 32
 
     def report(self, launch, operation='resolve', **changes):
-        value = {'version': 7, 'launch': launch, 'nonce': self.nonce, 'dispatch': f'candidate-restart-{self.nonce}-1:3'}
-        value.update(acknowledge=False, uncertain=False, publicationFault=False, intentUnchanged=True, running=False, runningMarker=False, runningCancelled=False, precommit=False, stopSignalled=False, stopSaveBlocked=False, savedStopPresent=False, stopRequested=False, stopUnchanged=True, operation=operation, completedOperations=fixture.OPERATIONS[:fixture.OPERATIONS.index(operation)])
+        value = {'version': 8, 'launch': launch, 'nonce': self.nonce, 'dispatch': f'candidate-restart-{self.nonce}-1:3'}
+        value.update(retry=False, acknowledge=False, uncertain=False, publicationFault=False, intentUnchanged=True, running=False, runningMarker=False, runningCancelled=False, precommit=False, stopSignalled=False, stopSaveBlocked=False, savedStopPresent=False, stopRequested=False, stopUnchanged=True, operation=operation, completedOperations=fixture.OPERATIONS[:fixture.OPERATIONS.index(operation)])
         if launch == 1:
             value['readyForCrash'] = True
         else:
@@ -109,6 +109,18 @@ class CandidateCrashTests(unittest.TestCase):
                 fixture.read_report(self.root, 3, self.nonce, operation='test', stop=True, running=True, acknowledge=True)
         self.report(3, operation='test', **common, interrupted=False, executionPhase='awaitingApproval', actionUnchanged=True, freshConsentRequired=True, noNewDispatch=True)
         fixture.read_report(self.root, 3, self.nonce, operation='test', stop=True, running=True, acknowledge=True)
+
+    def test_fresh_retry_requires_new_identity_actual_checks_and_old_evidence(self):
+        common = dict(retry=True, acknowledge=True, stopRequested=True, savedStopPresent=True, running=True, runningCancelled=True, retainedExit=-1, interrupted=False, executionPhase='awaitingApproval', actionUnchanged=True, freshConsentRequired=True, noNewDispatch=True, newDispatch=f'candidate-restart-{self.nonce}-2:3', retryChecksPassed=True, oldEvidencePreserved=True)
+        self.report(3, operation='test', **common, retriedAfterRead=True)
+        fixture.read_report(self.root, 3, self.nonce, operation='test', stop=True, running=True, acknowledge=True, retry=True)
+        for change in ({'newDispatch': f'candidate-restart-{self.nonce}-1:3'}, {'retryChecksPassed': False}, {'oldEvidencePreserved': False}):
+            value = dict(common); value.update(change)
+            self.report(4, operation='test', **value)
+            with self.assertRaises(ValueError):
+                fixture.read_report(self.root, 4, self.nonce, operation='test', stop=True, running=True, acknowledge=True, retry=True)
+        self.report(4, operation='test', **common)
+        fixture.read_report(self.root, 4, self.nonce, operation='test', stop=True, running=True, acknowledge=True, retry=True)
 
     def test_ready_and_recovered_reports_are_distinct(self):
         self.report(1)
