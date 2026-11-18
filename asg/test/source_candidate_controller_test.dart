@@ -15,6 +15,7 @@ import 'package:asg/models/approved_source_proposal.dart';
 import 'package:asg/models/build_plan.dart';
 import 'package:asg/models/candidate_failure.dart';
 import 'package:asg/models/candidate_verification_run.dart';
+import 'package:asg/models/candidate_operation_receipt.dart';
 import 'package:asg/models/source_edit_proposal.dart';
 import 'package:asg/models/source_generation.dart';
 import 'package:asg/services/application_store.dart';
@@ -30,6 +31,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
 import 'package:asg/views/source_candidate_view.dart';
 
+import 'candidate_operation_receipt_test.dart' show receiptJson;
 import 'approved_source_proposer_test.dart' show seed;
 import 'board_mapped_build_plan_test.dart' show boardContent, boardContract;
 import 'planning_conversation_test.dart' show ControlledRecords, project, tick;
@@ -69,6 +71,47 @@ class InterruptedCheckHost extends FixtureHost {
     await progress(project.copy(pendingOperation: 'resolve'));
     stop();
     throw StateError('Command outcome unavailable');
+  }
+}
+
+class ReceiptCheckHost extends InterruptedCheckHost
+    implements CandidateReceiptHost {
+  bool failPreparation = false, failRead = false, mismatch = false;
+  int preparations = 0, reads = 0;
+  CandidateVerificationRun? prepared;
+  Completer<List<CandidateOperationReceipt>>? deferred;
+  Completer<void>? preparation;
+
+  CandidateOperationReceipt receipt(CandidateVerificationRun run) {
+    final data = receiptJson();
+    (data['context'] as Map<String, Object>)['dispatchId'] = mismatch
+        ? 'other:3'
+        : run.dispatchId!;
+    data['operation'] = 'resolve';
+    return CandidateOperationReceipt.fromJson(data);
+  }
+
+  @override
+  Future<void> prepareCandidateReceipts(
+    CandidateVerificationRun run,
+    void Function() authorize,
+  ) async {
+    preparations++;
+    authorize();
+    if (failPreparation) throw StateError('private receipt path');
+    await preparation?.future;
+    authorize();
+    prepared = run;
+  }
+
+  @override
+  Future<List<CandidateOperationReceipt>> readCandidateReceipts(
+    CandidateVerificationRun run,
+  ) async {
+    reads++;
+    if (failRead) throw StateError('private receipt path');
+    if (deferred case final waiting?) return waiting.future;
+    return [receipt(run)];
   }
 }
 
@@ -715,6 +758,213 @@ void main() {
     records.values[key] = 'unreadable';
     expect(candidate.savedExecutionFor(run), isNull);
     expect(records.values[key], 'unreadable');
+  });
+
+  testWidgets(
+    'interrupted receipts display separately without rewriting unknown exits',
+    (tester) async {
+      final initial = candidate.result;
+      final evidence = candidate.evidence;
+      candidate.dispose();
+      final host = ReceiptCheckHost();
+      candidate = SourceCandidateController(
+        project: project,
+        candidate: initial,
+        evidence: evidence,
+        records: records,
+        host: host,
+        publish: (_, _, _) => throw StateError('Unexpected publication'),
+      );
+      host.stop = candidate.cancel;
+      await candidate.verify(approved: true);
+      await tester.pump();
+      final run = candidate.history.single;
+      expect(host.prepared!.dispatchId, run.dispatchId);
+      expect(host.preparations, 1);
+      expect(candidate.receiptsFor(run).single.result.exitCode, -1);
+      expect(run.finished, isFalse);
+      expect(run.snapshot.steps, isEmpty);
+      expect(run.snapshot.pendingOperation, 'resolve');
+      expect(candidate.canPromote, isFalse);
+      final before = Map.of(records.values);
+      tester.view.physicalSize = const Size(320, 900);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      await tester.pumpWidget(
+        MaterialApp(
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(context)
+                .copyWith(textScaler: const TextScaler.linear(2)),
+            child: child ?? const SizedBox(),
+          ),
+          home: Scaffold(
+            body: SingleChildScrollView(
+              child: SourceCandidateView(controller: candidate),
+            ),
+          ),
+        ),
+      );
+      await tester.ensureVisible(find.text('Saved candidate check runs'));
+      await tester.tap(find.text('Saved candidate check runs'));
+      await tester.pumpAndSettle();
+      final label = find.text('Run 1: interrupted or still active');
+      await tester.ensureVisible(label);
+      await tester.tap(label);
+      await tester.pumpAndSettle();
+      expect(
+        find.text('Retained resolve result: exit -1 (cancelled)'),
+        findsOneWidget,
+      );
+      expect(
+        find.text('Cleanup remains unknown in this retained record.'),
+        findsOneWidget,
+      );
+      expect(tester.takeException(), isNull);
+      expect(records.values, before);
+      expect(candidate.canPromote, isFalse);
+    },
+  );
+
+  test(
+    'receipt preparation failure starts no check and preserves working output',
+    () async {
+      final initial = candidate.result;
+      final evidence = candidate.evidence;
+      final workingBefore = records.getString(
+        'studio.generation.v1.${project.id}',
+      );
+      candidate.dispose();
+      final host = ReceiptCheckHost()..failPreparation = true;
+      candidate = SourceCandidateController(
+        project: project,
+        candidate: initial,
+        evidence: evidence,
+        records: records,
+        host: host,
+        publish: (_, _, _) => throw StateError('Unexpected publication'),
+      );
+      await candidate.verify(approved: true);
+      expect(host.prepared, isNull);
+      expect(candidate.history.single.snapshot.pendingOperation, isEmpty);
+      expect(candidate.receiptsFor(candidate.history.single), isEmpty);
+      expect(
+        records.getString('studio.generation.v1.${project.id}'),
+        workingBefore,
+      );
+      expect(candidate.error, isNot(contains('private receipt path')));
+    },
+  );
+
+  for (final close in [false, true]) {
+    test(
+      'pending receipt preparation honors ${close ? 'disposal' : 'Stop'} before commands',
+      () async {
+        final initial = candidate.result;
+        final evidence = candidate.evidence;
+        final workingBefore = records.getString(
+          'studio.generation.v1.${project.id}',
+        );
+        candidate.dispose();
+        final host = ReceiptCheckHost()..preparation = Completer<void>();
+        candidate = SourceCandidateController(
+          project: project,
+          candidate: initial,
+          evidence: evidence,
+          records: records,
+          host: host,
+          publish: (_, _, _) => throw StateError('Unexpected publication'),
+        );
+        final verification = candidate.verify(approved: true);
+        await tick();
+        expect(host.preparations, 1);
+        final before = Map.of(records.values);
+        if (close) {
+          candidate.dispose();
+        } else {
+          candidate.cancel();
+        }
+        host.preparation!.complete();
+        await verification;
+        expect(host.prepared, isNull);
+        expect(
+          records.getString('studio.generation.v1.${project.id}'),
+          workingBefore,
+        );
+        if (close) {
+          expect(records.values, before);
+        } else {
+          expect(candidate.history.single.snapshot.pendingOperation, isEmpty);
+          expect(candidate.history.single.snapshot.steps, isEmpty);
+        }
+      },
+    );
+  }
+
+  test('mismatched receipt reader cannot relabel another dispatch', () async {
+    final initial = candidate.result;
+    final evidence = candidate.evidence;
+    candidate.dispose();
+    final host = ReceiptCheckHost()..mismatch = true;
+    candidate = SourceCandidateController(
+      project: project,
+      candidate: initial,
+      evidence: evidence,
+      records: records,
+      host: host,
+      publish: (_, _, _) => throw StateError('Unexpected publication'),
+    );
+    host.stop = candidate.cancel;
+    await candidate.verify(approved: true);
+    final before = Map.of(records.values);
+    await tick();
+    expect(candidate.receiptHistoryError, isNotNull);
+    expect(candidate.receiptsFor(candidate.history.single), isEmpty);
+    expect(candidate.history.single.finished, isFalse);
+    expect(records.values, before);
+  });
+
+  test('receipt read errors preserve journal and late reads cannot notify disposed controller', () async {
+    final initial = candidate.result;
+    final evidence = candidate.evidence;
+    candidate.dispose();
+    final host = ReceiptCheckHost()..failRead = true;
+    candidate = SourceCandidateController(
+      project: project,
+      candidate: initial,
+      evidence: evidence,
+      records: records,
+      host: host,
+      publish: (_, _, _) => throw StateError('Unexpected publication'),
+    );
+    host.stop = candidate.cancel;
+    await candidate.verify(approved: true);
+    await tick();
+    expect(candidate.receiptHistoryError, isNotNull);
+    expect(
+      candidate.receiptHistoryError,
+      isNot(contains('private receipt path')),
+    );
+    final before = Map.of(records.values);
+    final run = candidate.history.single;
+    candidate.dispose();
+    host.failRead = false;
+    host.deferred = Completer<List<CandidateOperationReceipt>>();
+    candidate = SourceCandidateController(
+      project: project,
+      candidate: run.snapshot,
+      evidence: evidence,
+      records: records,
+      host: host,
+      publish: (_, _, _) => throw StateError('Unexpected publication'),
+    );
+    var notifications = 0;
+    candidate.addListener(() => notifications++);
+    candidate.dispose();
+    host.deferred!.complete([host.receipt(run)]);
+    await tick();
+    expect(notifications, 0);
+    expect(records.values, before);
   });
 
   testWidgets(

@@ -51,6 +51,8 @@ def run(executable, arguments, cwd, timeout, parent_pid=None, environment=None):
                 raise
     try:
         environment = environment if environment is not None else dict(os.environ, FLUTTER_SUPPRESS_ANALYTICS='true', DART_SUPPRESS_ANALYTICS='true', FLUTTER_STORAGE_BASE_URL='http://127.0.0.1:1')
+        if parent_pid and os.getppid() != parent_pid:
+            raise InterruptedError('Generation caller exited before launch')
         process = subprocess.Popen([executable, *arguments], cwd=cwd, env=environment, stdout=subprocess.PIPE,
                                    stderr=subprocess.STDOUT, start_new_session=True)
         def consume():
@@ -402,6 +404,94 @@ def confined_operation(directory, sdk, operation, timeout, parent_pid, test_file
             lock.close()
 
 
+
+class CompletionReceipt:
+    """Opt-in evidence for a trusted caller; never grants replay or cleanup authority."""
+    def __init__(self, directory, project, sdk, operation):
+        self.fd = None
+        directory = Path(directory)
+        if (operation not in OPERATIONS or not directory.is_absolute() or
+                directory.resolve(strict=True) != directory or not directory.is_dir()):
+            raise ValueError('Invalid completion receipt directory')
+        roots = (Path(project).resolve(strict=True), Path(sdk).resolve(strict=True),
+                 Path(os.environ.get('PUB_CACHE', str(Path.home() / '.pub-cache'))).resolve())
+        if directory == Path.home().resolve() or any(directories_overlap(directory, root) for root in roots):
+            raise ValueError('Completion receipts overlap execution roots')
+        self.fd = os.open(directory, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+        try:
+            metadata = os.fstat(self.fd)
+            if metadata.st_uid != os.getuid() or stat.S_IMODE(metadata.st_mode) & 0o077:
+                raise ValueError('Completion receipt directory must be private')
+            self.context = self._context()
+            self.operation = operation
+            self._publish(operation + '.intent.json', {
+                'version': 1, 'context': self.context, 'operation': operation})
+        except BaseException:
+            self.close()
+            raise
+
+    def _context(self):
+        descriptor = os.open('context.json', os.O_RDONLY | os.O_NOFOLLOW, dir_fd=self.fd)
+        with os.fdopen(descriptor, 'rb') as stream:
+            metadata = os.fstat(stream.fileno())
+            if not stat.S_ISREG(metadata.st_mode) or metadata.st_size > 4096:
+                raise ValueError('Invalid completion receipt context')
+            raw = stream.read(4097)
+        if len(raw) > 4096:
+            raise ValueError('Oversized completion receipt context')
+        value = json.loads(raw)
+        if (not isinstance(value, dict) or set(value) != {
+                'version', 'dispatchId', 'sourceFingerprint', 'approvalFingerprint', 'executionFingerprint', 'hostSessionId'} or
+                type(value['version']) is not int or value['version'] != 1 or
+                not isinstance(value['dispatchId'], str) or
+                not re.fullmatch(r'[a-zA-Z0-9_-]{1,128}:[1-9][0-9]*', value['dispatchId']) or
+                not isinstance(value['hostSessionId'], str) or
+                not re.fullmatch(r'[a-zA-Z0-9_-]{1,128}', value['hostSessionId']) or
+                any(not isinstance(value[key], str) or not re.fullmatch('[a-f0-9]{64}', value[key])
+                    for key in ('sourceFingerprint', 'approvalFingerprint', 'executionFingerprint'))):
+            raise ValueError('Invalid completion receipt context')
+        return value
+
+    def _publish(self, name, value):
+        # Atomic, exclusive publication via a file descriptor anchored to the
+        # private directory. An existing intent or result is never replaced.
+        temporary = '.' + name + '-' + os.urandom(16).hex()
+        encoded = json.dumps(value, ensure_ascii=True, separators=(',', ':')).encode('ascii')
+        if len(encoded) > 512 * 1024:
+            raise ValueError('Oversized completion receipt')
+        descriptor = os.open(temporary, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW,
+                             0o600, dir_fd=self.fd)
+        try:
+            with os.fdopen(descriptor, 'wb') as stream:
+                stream.write(encoded)
+                stream.flush()
+                os.fsync(stream.fileno())
+            os.link(temporary, name, src_dir_fd=self.fd, dst_dir_fd=self.fd, follow_symlinks=False)
+            os.fsync(self.fd)
+        finally:
+            os.unlink(temporary, dir_fd=self.fd)
+
+    def publish(self, result):
+        if self.fd is None:
+            raise ValueError('Closed completion receipt')
+        if self._context() != self.context:
+            raise ValueError('Completion receipt context changed')
+        if (not isinstance(result, dict) or set(result) != {
+                'exitCode', 'output', 'timedOut', 'outputLimitExceeded', 'cancelled'} or
+                type(result['exitCode']) is not int or not isinstance(result['output'], str) or
+                len(result['output']) > OUTPUT_LIMIT_BYTES or
+                any(type(result[key]) is not bool for key in ('timedOut', 'outputLimitExceeded', 'cancelled'))):
+            raise ValueError('Invalid completion receipt result')
+        self._publish(self.operation + '.result.json', {
+            'version': 1, 'context': self.context, 'operation': self.operation,
+            'result': result, 'cleanup': 'unknown'})
+
+    def close(self):
+        if self.fd is not None:
+            os.close(self.fd)
+            self.fd = None
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--operation', choices=OPERATIONS, required=True)
@@ -409,6 +499,8 @@ def main():
     parser.add_argument('--confined', action='store_true')
     parser.add_argument('--offline-snapshot-check', action='store_true')
     parser.add_argument('--directory', required=True)
+    parser.add_argument('--completion-receipts')
+    parser.add_argument('--owner-pid', type=int)
     parser.add_argument('--test-file')
     parser.add_argument('--test-name')
     parser.add_argument('--timeout', type=int, choices=[COMMAND_TIMEOUT_SECONDS], default=COMMAND_TIMEOUT_SECONDS)
@@ -418,6 +510,13 @@ def main():
     if targeted and (not args.confined or args.operation != 'test' or
                      args.test_file is None or args.test_name is None):
         parser.error('Named targets require --confined --operation test and both selectors')
+    if args.completion_receipts and (not args.confined or targeted or args.offline_snapshot_check):
+        parser.error('Completion receipts require ordinary confined candidate verification')
+    if args.completion_receipts and args.owner_pid is None:
+        parser.error('Completion receipts require an explicit caller process')
+    parent_pid = args.owner_pid if args.owner_pid is not None else os.getppid()
+    if args.owner_pid is not None and (parent_pid <= 1 or os.getppid() != parent_pid):
+        raise InterruptedError('Generation caller is no longer the current parent')
     directory = Path(args.directory)
     if not directory.is_absolute() or directory.resolve() != directory or not directory.is_dir():
         raise ValueError('Expected a canonical generated project directory')
@@ -431,10 +530,18 @@ def main():
             raise InterruptedError('Snapshot check stopped')
         signal.signal(signal.SIGTERM, stop_setup)
         selectors['offline'] = True
-    result = (confined_operation(directory, args.sdk, args.operation, args.timeout, os.getppid(),
-                                 **selectors)
-              if args.confined else run(str(executable), ['--no-version-check', *OPERATIONS[args.operation]], str(directory), args.timeout, os.getppid()))
-    print(json.dumps(result))
+    receipt = (CompletionReceipt(args.completion_receipts, directory, args.sdk, args.operation)
+               if args.completion_receipts else None)
+    try:
+        result = (confined_operation(directory, args.sdk, args.operation, args.timeout, parent_pid,
+                                     **selectors)
+                  if args.confined else run(str(executable), ['--no-version-check', *OPERATIONS[args.operation]], str(directory), args.timeout, parent_pid))
+        if receipt is not None:
+            receipt.publish(result)
+        print(json.dumps(result))
+    finally:
+        if receipt is not None:
+            receipt.close()
 
 if __name__ == '__main__':
     main()

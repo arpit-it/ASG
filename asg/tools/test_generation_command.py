@@ -97,8 +97,14 @@ class CommandTests(unittest.TestCase):
 
     def test_actual_parent_exit_cancels_helper_and_cleans_descendant(self):
         with tempfile.TemporaryDirectory(prefix='asg-parent-crash-') as directory:
-            root = Path(directory)
-            ready, marker, result_path = [root / name for name in ('ready', 'unexpected', 'result.json')]
+            root = Path(directory).resolve()
+            ready, marker = [root / name for name in ('ready', 'unexpected')]
+            project, sdk, receipts = [root / name for name in ('candidate', 'sdk', 'receipts')]
+            project.mkdir(); sdk.mkdir(); receipts.mkdir(mode=0o700)
+            context = {'version': 1, 'dispatchId': 'candidate-p-1:3', 'sourceFingerprint': 'a' * 64,
+                       'approvalFingerprint': 'b' * 64, 'executionFingerprint': 'c' * 64, 'hostSessionId': 'host-session'}
+            (receipts / 'context.json').write_text(json.dumps(context))
+            result_path = receipts / 'resolve.result.json'
             descendant = ('import time; from pathlib import Path; time.sleep(1); Path('
                           + repr(str(marker)) + ').write_text("unexpected")')
             tool = ('import subprocess,sys,time; from pathlib import Path; '
@@ -109,15 +115,14 @@ class CommandTests(unittest.TestCase):
                 'import sys,os,json; from pathlib import Path\n'
                 'sys.path.insert(0,' + repr(str(Path(__file__).parent)) + ')\n'
                 'import generation_command as g\n'
+                'receipt=g.CompletionReceipt(' + repr(str(receipts)) + ',' + repr(str(project)) + ',' + repr(str(sdk)) + ',"resolve")\n'
                 'result=g.run(sys.executable,["-c",' + repr(tool) + '],'
-                + repr(directory) + ',5,parent_pid=int(sys.argv[1]))\n'
-                'pending=Path(' + repr(str(root / 'pending.json')) + ')\n'
-                'pending.write_text(json.dumps(result))\n'
-                'os.replace(pending,' + repr(str(result_path)) + ')\n')
+                + repr(str(project)) + ',5,parent_pid=int(sys.argv[1]))\n'
+                'receipt.publish(result); receipt.close()\n')
             supervisor = root / 'supervisor.py'
             supervisor.write_text(
                 'import subprocess,sys,os,time; from pathlib import Path\n'
-                'helper=subprocess.Popen([sys.executable,' + repr(str(helper))
+                'helper=subprocess.Popen([sys.executable,"-I","-B",' + repr(str(helper))
                 + ',str(os.getpid())],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)\n'
                 'deadline=time.monotonic()+4\n'
                 'while not Path(' + repr(str(ready)) + ').exists():\n'
@@ -126,20 +131,126 @@ class CommandTests(unittest.TestCase):
                 '    time.sleep(0.01)\n'
                 '# Actual parent death: the owned helper is deliberately not reaped here.\n'
                 'os._exit(0)\n')
-            completed = subprocess.run([sys.executable, str(supervisor)],
+            completed = subprocess.run([sys.executable, '-I', '-B', str(supervisor)],
                                        capture_output=True, text=True, timeout=15)
             self.assertEqual(completed.returncode, 0, completed.stderr)
             deadline = time.monotonic() + 15
             while not result_path.exists() and time.monotonic() < deadline:
                 time.sleep(0.02)
             self.assertTrue(result_path.exists(), 'Owned helper did not finish within its bounded deadline')
-            result = json.loads(result_path.read_text())
+            saved_receipt = json.loads(result_path.read_text())
+            self.assertEqual(saved_receipt['context'], context)
+            self.assertEqual(saved_receipt['cleanup'], 'unknown')
+            result = saved_receipt['result']
             self.assertTrue(result['cancelled'])
             self.assertFalse(result['timedOut'])
             self.assertNotEqual(result['exitCode'], 0)
             self.assertIn('started', result['output'])
             time.sleep(1.1)
             self.assertFalse(marker.exists(), 'Descendant survived parent-loss cleanup')
+
+    def test_lost_parent_before_launch_creates_no_tool_or_exit_result(self):
+        with mock.patch.object(module.os, 'getppid', return_value=456), \
+                mock.patch.object(module.subprocess, 'Popen') as launch:
+            with self.assertRaises(InterruptedError):
+                module.run(sys.executable, ['-c', 'raise SystemExit(0)'], tempfile.gettempdir(), 3, parent_pid=123)
+            launch.assert_not_called()
+
+    def test_completion_receipt_is_exclusive_bounded_and_preserves_actual_result(self):
+        with tempfile.TemporaryDirectory(prefix='asg-receipt-') as temporary:
+            root = Path(temporary).resolve()
+            project, sdk, receipts = [root / name for name in ('candidate', 'sdk', 'receipts')]
+            project.mkdir(); sdk.mkdir(); receipts.mkdir(mode=0o700)
+            context = {'version': 1, 'dispatchId': 'candidate-p-1:3', 'sourceFingerprint': 'a' * 64,
+                       'approvalFingerprint': 'b' * 64, 'executionFingerprint': 'c' * 64, 'hostSessionId': 'host-session'}
+            (receipts / 'context.json').write_text(json.dumps(context))
+            writer = module.CompletionReceipt(receipts, project, sdk, 'resolve')
+            try:
+                self.assertTrue((receipts / 'resolve.intent.json').is_file())
+                with self.assertRaises(FileExistsError):
+                    module.CompletionReceipt(receipts, project, sdk, 'resolve')
+                result = module.run(sys.executable, ['-c', 'print("actual"); raise SystemExit(7)'], project, 3)
+                writer.publish(result)
+                saved = (receipts / 'resolve.result.json').read_bytes()
+                receipt = json.loads(saved)
+                self.assertEqual(receipt['context'], context)
+                self.assertEqual(receipt['result']['exitCode'], 7)
+                self.assertEqual(receipt['result']['output'], 'actual\n')
+                self.assertEqual(receipt['cleanup'], 'unknown')
+                with self.assertRaises(FileExistsError):
+                    writer.publish(result)
+                self.assertEqual((receipts / 'resolve.result.json').read_bytes(), saved)
+            finally:
+                writer.close()
+            with self.assertRaises(ValueError):
+                writer.publish(result)
+            refused = subprocess.run([sys.executable, '-B', str(Path(__file__).with_name('generation_command.py')),
+                                      '--operation', 'test', '--sdk', str(sdk), '--directory', str(project),
+                                      '--completion-receipts', str(receipts)], capture_output=True, text=True, timeout=5)
+            self.assertNotEqual(refused.returncode, 0)
+            self.assertIn('ordinary confined', refused.stderr)
+            self.assertFalse((receipts / 'test.intent.json').exists())
+            wrong_parent = subprocess.run([sys.executable, '-I', '-B', str(Path(__file__).with_name('generation_command.py')),
+                '--operation', 'test', '--confined', '--sdk', str(sdk), '--directory', str(project),
+                '--completion-receipts', str(receipts), '--owner-pid', str(os.getpid() + 1000000)],
+                capture_output=True, text=True, timeout=5)
+            self.assertNotEqual(wrong_parent.returncode, 0)
+            self.assertIn('current parent', wrong_parent.stderr)
+            self.assertFalse((receipts / 'test.intent.json').exists())
+
+            with self.assertRaises(ValueError):
+                module.CompletionReceipt(project, project, sdk, 'resolve')
+            linked = root / 'linked'; linked.symlink_to(receipts)
+            with self.assertRaises(ValueError):
+                module.CompletionReceipt(linked, project, sdk, 'analyze')
+            changed = module.CompletionReceipt(receipts, project, sdk, 'analyze')
+            try:
+                (receipts / 'context.json').write_text(json.dumps(dict(context, dispatchId='different:3')))
+                with self.assertRaises(ValueError):
+                    changed.publish(result)
+                self.assertFalse((receipts / 'analyze.result.json').exists())
+            finally:
+                changed.close()
+            (receipts / 'context.json').unlink()
+            external = root / 'external-context'; external.write_text(json.dumps(context))
+            (receipts / 'context.json').symlink_to(external)
+            with self.assertRaises(OSError):
+                module.CompletionReceipt(receipts, project, sdk, 'test')
+            (receipts / 'context.json').unlink()
+            (receipts / 'context.json').write_text(json.dumps(context))
+            invalid = module.CompletionReceipt(receipts, project, sdk, 'build')
+            try:
+                for bad in (dict(result, output='x' * 65537), dict(result, exitCode=True),
+                            dict(result, output='😀' * 65536)):
+                    with self.assertRaises(ValueError):
+                        invalid.publish(bad)
+                    self.assertFalse((receipts / 'build.result.json').exists())
+            finally:
+                invalid.close()
+            receipts.chmod(0o755)
+            with self.assertRaises(ValueError):
+                module.CompletionReceipt(receipts, project, sdk, 'analyze')
+
+    def test_completion_receipt_survives_broken_stdout_without_inventing_cleanup(self):
+        with tempfile.TemporaryDirectory(prefix='asg-receipt-pipe-') as temporary:
+            root = Path(temporary).resolve()
+            project, sdk, receipts = [root / name for name in ('candidate', 'sdk', 'receipts')]
+            project.mkdir(); sdk.mkdir(); receipts.mkdir(mode=0o700)
+            context = {'version': 1, 'dispatchId': 'candidate-p-1:3', 'sourceFingerprint': 'a' * 64,
+                       'approvalFingerprint': 'b' * 64, 'executionFingerprint': 'c' * 64, 'hostSessionId': 'host-session'}
+            (receipts / 'context.json').write_text(json.dumps(context))
+            script = ('import sys,json; sys.path.insert(0,' + repr(str(Path(__file__).parent)) + '); '
+                      'import generation_command as g; '
+                      'r=g.CompletionReceipt(' + repr(str(receipts)) + ',' + repr(str(project)) + ',' + repr(str(sdk)) + ',"resolve"); '
+                      'result=g.run(sys.executable,["-c","print(123)"],' + repr(str(project)) + ',3); '
+                      'r.publish(result); r.close(); print(json.dumps(result),flush=True)')
+            process = subprocess.Popen([sys.executable, '-I', '-B', '-c', script], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+            process.stdout.close()
+            self.assertNotEqual(process.wait(timeout=8), 0)
+            receipt = json.loads((receipts / 'resolve.result.json').read_text())
+            self.assertEqual(receipt['result']['exitCode'], 0)
+            self.assertEqual(receipt['result']['output'], '123\n')
+            self.assertEqual(receipt['cleanup'], 'unknown')
 
     def test_cli_rejects_policy_output_expansion_before_execution(self):
         with tempfile.TemporaryDirectory() as directory:

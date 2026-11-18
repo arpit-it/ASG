@@ -27,7 +27,7 @@ class CandidateVerificationStore {
           );
   }
 
-  Future<void> start(
+  Future<CandidateVerificationRun> start(
     GeneratedProject snapshot,
     void Function() authorize, {
     String? dispatchId,
@@ -63,6 +63,7 @@ class CandidateVerificationStore {
       execution: execution,
     );
     _owned = run;
+    return run;
   }
 
   Future<void> checkpoint(

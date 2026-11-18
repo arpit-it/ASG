@@ -94,6 +94,73 @@ including private sibling file read/write refusal and inherited restrictions.
 
 These are actual local helper/process fixtures, not Flutter app crash/restart
 acceptance. The fixture-owned result file is not a production durable receipt
-publisher and is not consumed by ASG recovery. App recovery still lacks a trusted
-publisher, host-session binding and an atomic receipt-to-journal reconciliation
-path. Missing evidence remains unknown and cannot authorize replay.
+publisher and is not consumed by ASG recovery. At that fixture revision, app recovery still lacked a trusted publisher,
+host-session binding and an atomic receipt-to-journal reconciliation path. Missing evidence remains unknown and cannot authorize replay.
+
+
+## Confined candidate completion receipts — implementation under #404
+
+The ordinary confined Flutter candidate workflow now prepares a receipt context
+from the journal's saved dispatch before launching its helper. The optional host
+contract leaves unsupported integrations and legacy records unchanged. Native
+preparation creates a private directory beneath application support, outside the
+candidate, SDK and package-cache roots. Context, intents and results remain local;
+no record grants a command, retry, promotion or process-control permission.
+
+The context binds the dispatch ID, recorded source and approval digests, stable
+execution-input digest and a per-verification host-session nonce. Execution inputs
+include the candidate directory, configured SDK/Python, confinement/protocol,
+limits and approved task graph. Those are configured identities, not executable
+binary provenance or current toolchain health. The nonce binds historical records;
+it does not authenticate a currently running process after restart. A prepared
+context cannot be applied to another verification snapshot.
+
+The bundled helper's opt-in protocol is limited to ordinary confined resolve,
+analyze, test and build operations. Named-test and offline-snapshot paths do not
+inherit it. The caller supplies its PID for lineage checks before reservation
+and at the tool launch boundary. This only refuses a lost caller; it is not a
+saved-PID recovery or signalling mechanism. Already dispatched work may finish.
+
+For each operation, the helper reserves an immutable intent before launch and
+publishes the existing bounded command-result schema before stdout delivery.
+Publication uses private, descriptor-relative files with no-follow opens,
+exclusive atomic links and file/directory flushes. Existing intents or results
+are never overwritten. Linked, overlapping, changed, oversized or malformed
+metadata is refused. A missing result never proves that launch did not occur.
+The launch-boundary parent check creates no synthetic exit when it refuses work.
+
+Results retain the helper's existing normalized exit and cancellation/timeout/
+output-limit flags. Cleanup is always recorded as unknown: neither an exit nor a
+receipt proves descendant cessation. A nonzero helper transport exit does not
+become a tool exit in the journal. Delivery failure preserves the interrupted
+operation; a separately retained receipt may still be inspectable.
+
+The native reader verifies the private directory, context, execution inputs,
+operation and matching intent before exposing a result. Reopened history shows
+receipts separately from saved check exits. It never inserts their results into
+the journal or advances execution state. Errors preserve files and history;
+late reads cannot update a disposed or superseded controller. Existing explicit
+recovery, fresh verification consent and last-working protections remain in force.
+
+The trust boundary is the existing inherited candidate confinement profile plus
+app-private storage. It prevents a confined candidate from replacing the receipt
+publisher's files. It does not protect against an unrestricted process acting as
+the same user, and it is not a signed-helper or authenticated remote-worker design.
+The [technical decision](TECHNICAL_DECISIONS.md#confined-candidate-completion-evidence--18-november-2026)
+records this limit. Records are retained; this increment adds no automatic deletion
+or archival/export promise for sidecar receipt files.
+
+Evidence on this Mac: actual confined Flutter resolve and analyze completed and
+were read through a new file reader; Flutter 3.47.6 revision
+`5fc346839b5d0eef006ed8404392afb4dfae428d`, Dart 3.13.5 and Python 3.12.8.
+Controlled helper tests exercise delivery failure, real parent death and broken
+stdout, exclusive publication, parent mismatch, changed context and corrupt paths.
+Widget tests cover separate receipt display at 320px/200% text and unchanged
+unknown exits. This is not a full Flutter app crash/restart acceptance or a claim
+that the whole generated four-operation graph passed in a real app. Inference was
+not needed. Other platform acceptance remains deferred under #400.
+
+Automatic receipt-to-journal reconciliation remains pending. It needs separately
+verified cleanup/ownership evidence, atomic expected-revision checks, current
+approval/input validation and actual app restart cases. The pure recovery model
+must remain conservative when those inputs are absent.

@@ -123,6 +123,8 @@ class _SourceCandidateViewState extends State<SourceCandidateView> {
             'This diagnosis starts no model request or command and changes no files.',
           ),
         ],
+        if (controller.receiptHistoryError != null)
+          SelectableText(controller.receiptHistoryError!),
         if (controller.historyError != null)
           SelectableText(controller.historyError!),
         if (controller.history.isNotEmpty)
@@ -154,9 +156,22 @@ class _SourceCandidateViewState extends State<SourceCandidateView> {
                         'An unknown exit remains unknown.',
                       ),
                     ],
+                    for (final receipt in controller.receiptsFor(run))
+                      ExpansionTile(
+                        title: Text(
+                          'Retained ${receipt.operation.name} result: exit ${receipt.result.exitCode}'
+                          '${receipt.result.cancelled ? ' (cancelled)' : ''}'
+                          '${receipt.result.timedOut ? ' (timeout)' : ''}'
+                          '${receipt.result.outputLimitExceeded ? ' (output limit)' : ''}',
+                        ),
+                        subtitle: const Text(
+                          'Cleanup remains unknown in this retained record.',
+                        ),
+                        children: [SelectableText(receipt.result.output)],
+                      ),
                     if (run.snapshot.pendingOperation.isNotEmpty)
                       Text(
-                        '${run.snapshot.pendingOperation}: dispatched without a saved exit',
+                        '${run.snapshot.pendingOperation}: exit not saved in check history',
                       ),
                     for (final step in run.snapshot.steps)
                       ExpansionTile(
@@ -171,7 +186,9 @@ class _SourceCandidateViewState extends State<SourceCandidateView> {
                     if (run.snapshot.error.isNotEmpty)
                       SelectableText(run.snapshot.error),
                     if (run.snapshot.steps.isEmpty)
-                      const Text('No command exit result was saved.'),
+                      const Text(
+                        'No command exit result was saved in the check history.',
+                      ),
                   ],
                 ),
             ],

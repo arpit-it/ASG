@@ -2,6 +2,8 @@
 // Copyright 2026 Arpit Sinha
 
 import '../models/app_definition.dart';
+import '../models/candidate_verification_run.dart';
+import '../models/candidate_operation_receipt.dart';
 import '../models/generation_capabilities.dart';
 import '../models/generation_toolchain.dart';
 import '../models/project.dart';
@@ -47,4 +49,15 @@ abstract interface class GenerationCapabilitySource {
 /// Optional read-only inspection; does not enable any generation operation.
 abstract interface class GenerationToolchainSource {
   Future<GenerationToolchain> inspectToolchain(String sdk, String python);
+}
+
+/// Optional confined helper evidence; it never reconciles or replays saved work.
+abstract interface class CandidateReceiptHost {
+  Future<void> prepareCandidateReceipts(
+    CandidateVerificationRun run,
+    void Function() authorize,
+  );
+  Future<List<CandidateOperationReceipt>> readCandidateReceipts(
+    CandidateVerificationRun run,
+  );
 }
