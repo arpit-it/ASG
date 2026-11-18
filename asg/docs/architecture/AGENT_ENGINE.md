@@ -165,3 +165,21 @@ Automatic receipt-to-journal reconciliation remains pending. It needs separately
 verified cleanup/ownership evidence, atomic expected-revision checks, current
 approval/input validation and actual app restart cases. The pure recovery model
 must remain conservative when those inputs are absent.
+
+
+### Disposable Flutter producer restart prerequisite — 18 November 2026
+
+The receipt fixture launches a separate Flutter test process using the current
+SDK with dependency resolution disabled. That process prepares the production
+receipt directory and invokes the actual Python receipt publisher, then exits.
+The parent waits for successful process completion before constructing a new
+reader from a serialized interrupted run. It verifies the actual exit/output,
+unknown cleanup, unchanged journal bytes and unchanged last-working sentinel.
+The existing bounded helper supervises the disposable producer with a60-second
+limit; the inner test has a20-second limit. No saved PID is signalled, no
+verification retry is dispatched and no candidate is promoted.
+
+This is an actual separate-process persistence fixture, not a GUI app crash or
+restart test. The producer exits normally after publication. Crashes between
+intent, launch, publication and journal commit, full app UI reopening and
+automatic reconciliation remain separate acceptance under #404.
