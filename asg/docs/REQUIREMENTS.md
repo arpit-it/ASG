@@ -16135,11 +16135,31 @@ and no duplicate side effect. Record real tool versus simulated fixture results
 separately. Full acceptance stays pending until observed on the exact binary.
 
 
-Current bounded crash fixture status: implemented and locally observed, awaiting
-review/required CI/merge. Actual isolated native crash after production resolve
+Bounded resolve crash fixture delivered in PR #706, merge
+`4d8e58bce623eda39c11d1c36cccdbf9fc3c054b`, required CI44273421641. Actual isolated native crash after production resolve
 receipt publication preserves interrupted dispatch/journal/current source and
 working output on same-binary relaunch; production controller and expanded native
 view text were checked with actions disabled. Other lifecycle crash windows, all
 four operations, production-main navigation and generalized CE01 remain pending.
 Evidence and limitations: architecture/AGENT_ENGINE.md, isolated native candidate
 crash/reopen section dated18 November2026.
+
+
+CE01 active bounded task under #404: extend the isolated native crash fixture
+across the full fixed resolve/analyze/test/build sequence. Use production
+verification progress and store checkpoints, actual confined offline operations
+from existing SDK/cache, and preserve earlier completed journal steps while the
+crash-target operation stays pending with a matching retained receipt. For each
+case verify same binary/dispatch, unchanged source/working output, no replay or
+promotion and unknown cleanup. Add only fixed disposable web/test scaffolding;
+no dependency installs, inference or unavailable-platform acceptance. Actual
+per-operation crash/reopen evidence, regression checks and reviewed merge are
+required before this slice is delivered.
+
+
+Fixed verification crash-matrix status: all four native completion-gap cases are
+implemented and locally observed, awaiting final checks/review/merge. Prior
+completed step prefixes0/1/2/3 and receipt prefixes1/2/3/4 survive exact-binary
+app crash/reopen; target remains pending, source/working output unchanged,
+cleanup unknown. See the dated matrix in architecture/AGENT_ENGINE.md. This
+does not close CE01/#404 or establish cancellation/general-session acceptance.

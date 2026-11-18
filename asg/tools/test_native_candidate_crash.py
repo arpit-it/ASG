@@ -16,12 +16,13 @@ class CandidateCrashTests(unittest.TestCase):
         self.root = Path(self.temporary.name).resolve()
         self.nonce = 'a' * 32
 
-    def report(self, launch, **changes):
-        value = {'version': 1, 'launch': launch, 'nonce': self.nonce, 'dispatch': f'candidate-restart-{self.nonce}-1:3'}
+    def report(self, launch, operation='resolve', **changes):
+        value = {'version': 2, 'launch': launch, 'nonce': self.nonce, 'dispatch': f'candidate-restart-{self.nonce}-1:3'}
+        value.update(operation=operation, completedOperations=fixture.OPERATIONS[:fixture.OPERATIONS.index(operation)])
         if launch == 1:
             value['readyForCrash'] = True
         else:
-            value.update(interrupted=True, retainedResolveExit=0, cleanup='unknown',
+            value.update(interrupted=True, retainedExit=0, receiptOperations=fixture.OPERATIONS[:fixture.OPERATIONS.index(operation) + 1], cleanup='unknown',
                          journalUnchanged=True, sourcesUnchanged=True, workingUnchanged=True, viewRendered=True, executionPhase='executing')
         value.update(changes)
         (self.root / f'launch-{launch}.json').write_text(json.dumps(value))
@@ -29,10 +30,21 @@ class CandidateCrashTests(unittest.TestCase):
 
     def test_stale_or_unsafe_observations_are_refused(self):
         for changes in ({'nonce': 'b' * 32}, {'dispatch': 'candidate-p-1:4'}, {'dispatch': 'wrong-task:3'}, {'cleanup': 'confirmed'},
-                        {'retainedResolveExit': True}, {'workingUnchanged': False}, {'sourcesUnchanged': False}, {'viewRendered': False}):
+                        {'retainedExit': True}, {'workingUnchanged': False}, {'sourcesUnchanged': False}, {'viewRendered': False}):
             self.report(2, **changes)
             with self.assertRaises(ValueError):
                 fixture.read_report(self.root, 2, self.nonce)
+
+    def test_each_fixed_operation_requires_exact_completed_prefix_and_receipts(self):
+        for operation in fixture.OPERATIONS:
+            self.report(2, operation=operation)
+            fixture.read_report(self.root, 2, self.nonce, operation)
+            self.report(2, operation=operation, completedOperations=['build'])
+            with self.assertRaises(ValueError):
+                fixture.read_report(self.root, 2, self.nonce, operation)
+            self.report(2, operation=operation, receiptOperations=[])
+            with self.assertRaises(ValueError):
+                fixture.read_report(self.root, 2, self.nonce, operation)
 
     def test_ready_and_recovered_reports_are_distinct(self):
         self.report(1)

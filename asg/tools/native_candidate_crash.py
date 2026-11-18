@@ -13,28 +13,34 @@ import time
 
 from native_restart_probe import inspect_bundle
 
+OPERATIONS = ['resolve', 'analyze', 'test', 'build']
 
-def read_report(root, launch, nonce):
+
+def read_report(root, launch, nonce, operation='resolve'):
     report = root / f'launch-{launch}.json'
     if report.is_symlink() or not report.is_file() or report.stat().st_size > 4096:
         raise ValueError('Invalid candidate report')
     value = json.loads(report.read_text())
-    if (not isinstance(value, dict) or type(value.get('version')) is not int or value['version'] != 1 or
+    if (not isinstance(value, dict) or type(value.get('version')) is not int or value['version'] != 2 or
             type(value.get('launch')) is not int or value['launch'] != launch or value.get('nonce') != nonce or
-            value.get('dispatch') != f'candidate-restart-{nonce}-1:3'):
+            value.get('dispatch') != f'candidate-restart-{nonce}-1:3' or
+            operation not in OPERATIONS or value.get('operation') != operation or
+            value.get('completedOperations') != OPERATIONS[:OPERATIONS.index(operation)]):
         raise ValueError('Candidate report identity mismatch')
     if launch == 1:
         if value.get('readyForCrash') is not True:
             raise ValueError('Crash handshake missing')
-    elif (value.get('interrupted') is not True or type(value.get('retainedResolveExit')) is not int or
-          value['retainedResolveExit'] != 0 or value.get('cleanup') != 'unknown' or
+    elif (value.get('interrupted') is not True or type(value.get('retainedExit')) is not int or
+          value['retainedExit'] != 0 or value.get('receiptOperations') != OPERATIONS[:OPERATIONS.index(operation) + 1] or value.get('cleanup') != 'unknown' or
           any(value.get(key) is not True for key in ('journalUnchanged', 'sourcesUnchanged', 'workingUnchanged', 'viewRendered')) or
           value.get('executionPhase') != 'executing'):
         raise ValueError('Recovery observation mismatch')
     return value
 
 
-def observe(bundle, sdk):
+def observe(bundle, sdk, operation='resolve'):
+    if operation not in OPERATIONS:
+        raise ValueError('Fixed crash operation required')
     if sys.platform != 'darwin':
         raise ValueError('Mac fixture only')
     executable, binary = inspect_bundle(bundle)
@@ -47,12 +53,12 @@ def observe(bundle, sdk):
     for launch in (1, 2):
         if inspect_bundle(bundle) != (executable, binary):
             raise ValueError('Fixture binary changed')
-        (root / 'challenge.json').write_text(json.dumps({'nonce': nonce, 'launch': launch, 'sdk': str(sdk)}))
+        (root / 'challenge.json').write_text(json.dumps({'nonce': nonce, 'launch': launch, 'sdk': str(sdk), 'operation': operation}))
         with (root / f'process-{launch}.log').open('wb') as log:
             process = subprocess.Popen([str(executable)],
                 env={**os.environ, 'ASG_CANDIDATE_CRASH_ROOT': str(root)}, stdout=log, stderr=log)
             try:
-                deadline = time.monotonic() + 35
+                deadline = time.monotonic() + 150
                 while not (root / f'launch-{launch}.json').exists():
                     if process.poll() is not None or time.monotonic() > deadline:
                         raise ValueError('Candidate app handshake failed')
@@ -61,7 +67,7 @@ def observe(bundle, sdk):
                 # publication to finish before parsing; malformed data remains a refusal.
                 while True:
                     try:
-                        value = read_report(root, launch, nonce)
+                        value = read_report(root, launch, nonce, operation)
                         break
                     except (json.JSONDecodeError, UnicodeDecodeError):
                         if time.monotonic() > deadline:
@@ -86,17 +92,24 @@ def observe(bundle, sdk):
         raise ValueError('Recovered dispatch changed')
     if inspect_bundle(bundle) != (executable, binary):
         raise ValueError('Final binary identity changed')
-    return {'bundleSha256': binary, 'controlRoot': str(root), 'observations': observations,
-            'limitation': 'Fixed resolve fixture only; no automatic reconciliation or full multi-operation acceptance.'}
+    return {'operation': operation, 'bundleSha256': binary, 'controlRoot': str(root), 'observations': observations,
+            'limitation': 'Fixed verification completion-gap fixture only; no automatic reconciliation or general lifecycle acceptance.'}
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--bundle', required=True)
     parser.add_argument('--sdk', required=True)
+    parser.add_argument('--operation', choices=OPERATIONS + ['all'], default='resolve')
     args = parser.parse_args()
     try:
-        print(json.dumps(observe(args.bundle, args.sdk)))
+        if args.operation == 'all':
+            observations = [observe(args.bundle, args.sdk, operation) for operation in OPERATIONS]
+            if len({item['bundleSha256'] for item in observations}) != 1:
+                raise ValueError('Matrix binary changed')
+            print(json.dumps({'matrix': observations}))
+        else:
+            print(json.dumps(observe(args.bundle, args.sdk, args.operation)))
     except (ValueError, OSError, subprocess.TimeoutExpired):
         parser.exit(2, 'Candidate crash fixture refused or failed; artifacts retained.\n')
 
