@@ -14767,3 +14767,9 @@ PR #691 merged at 062e39e0bb648f418c52fb65ee44abb83236bc26 after required
 CI44195904483 and fresh review. The verified merged tree matches local tests.
 The stale recovery dialog regression preserves changed saved evidence and
 requires renewed consent. #404 remains open for remaining execution integration.
+
+PR #692 merged at c27ddecebf62e94fd3108d168735656542793fad after required
+CI44207424415 and fresh review. Verified remote main matched the tested tree.
+Matched candidate execution completion commits atomically with working output.
+Publication failure retains the previous checkpoint and working output.
+#404 remains open for broader persistent execution acceptance.
