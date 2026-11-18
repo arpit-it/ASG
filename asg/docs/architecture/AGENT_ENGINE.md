@@ -873,3 +873,39 @@ conditional create/update refusal, approval withdrawal, immutable prior values,
 corrupt-record isolation and real native close/reopen with zero dispatch. It is
 a data/storage prerequisite; controller scheduling, chat/session activity UI and
 full CE01 remain later unmet acceptance, not capabilities delivered by this note.
+
+
+### Approved session data and native storage — 18 November 2026
+
+The first session increment is observational data/storage, with no controller,
+scheduler or chat UI integration. AgentSession freezes session/project identity,
+exact approved Plan, dependency-closed selected task membership, append-only
+existing-run references and cancellation intent. It does not store fabricated
+task completion. Task status/title are authored board data and are excluded from
+this membership snapshot. Bounds are64 tasks (bounded dependency traversal),128
+dispatch references,64KiB UTF8 per approval content/context and256KiB for encoded
+session JSON; boundary and dense-graph/Unicode tests enforce these limits.
+
+AgentSessionStore creates records only for mapped tasks in the current approved
+Plan. Observation requires an exact saved candidate journal run, matching approval
+and Plan task graph, canonical project/run dispatch and saved execution checkpoint.
+The selected task is contextual correlation, not proof that a particular proposal
+was consumed, a task completed or a command exited. This initial version accepts
+the existing canonical candidate-run dispatch format only; it is not a generic
+tool-dispatch schema. Conditional writes compare session revision plus approval,
+project/context and referenced journal/checkpoint bytes; stale/concurrent changes
+refuse without overwriting prior data. Existing journal/checkpoint formats remain.
+
+Cancellation can be recorded even after approval withdrawal because it adds no
+execution authority. It only retains intent and never signals a process or edits
+a referenced checkpoint. Creation and new observations still require current
+approval. Load/reopen is a read, including historical or revoked approval records;
+it never dispatches, reconciles, advances or treats stored references as current
+authority. Scheduling/recovery decisions remain unimplemented in this increment.
+
+Records use studio.agentSession.v1.<projectId>.<sessionId>. StudioDatabase checks
+bounded JSON/key identity and isolates corrupt session records; originals remain
+verbatim. Real native close/reopen tests retain observations/cancellation while
+an existing executing checkpoint remains byte-identical, and corrupt sibling
+session records do not block valid history. No app-crash, live model, UI or broad
+CE01 completion claim follows from these data/storage tests.

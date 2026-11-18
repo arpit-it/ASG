@@ -4,6 +4,7 @@
 import 'dart:convert';
 
 import '../models/agent_execution_checkpoint.dart';
+import '../models/agent_session.dart';
 import '../models/imported_plan.dart';
 import '../models/portable_project_archive.dart';
 
@@ -114,6 +115,7 @@ class StudioDatabase implements ConditionalRecordStorage {
             !record.key.startsWith('studio.candidateStop.v1.') &&
             !record.key.startsWith('studio.candidateRecovery.v1.') &&
             !record.key.startsWith('studio.agentExecution.v1.') &&
+            !record.key.startsWith(AgentSession.prefix) &&
             !record.key.startsWith('studio.repairAttempts.v1.') &&
             !record.key.startsWith('studio.generationPrevious.v1.') &&
             !record.key.startsWith('studio.requirements.v1.') &&
@@ -149,9 +151,18 @@ class StudioDatabase implements ConditionalRecordStorage {
 
   static void validate(String key, String value) {
     if (key == 'studio.lastProject.v1') return;
+    if (key.startsWith(AgentSession.prefix) &&
+        utf8.encode(value).length > AgentSession.maxEncodedBytes) {
+      throw const FormatException('Agent session exceeds its storage bound.');
+    }
     final decoded = jsonDecode(value);
     final source = _SingleRecord(key, value);
-    if (key.startsWith('studio.agentExecution.v1.')) {
+    if (key.startsWith(AgentSession.prefix)) {
+      final session = AgentSession.fromJson(decoded);
+      if (session.storageKey != key) {
+        throw const FormatException('Agent session identity mismatch.');
+      }
+    } else if (key.startsWith('studio.agentExecution.v1.')) {
       final checkpoint = AgentExecutionCheckpoint.fromJson(decoded);
       if (key != 'studio.agentExecution.v1.${checkpoint.taskId}') {
         throw const FormatException('Execution checkpoint identity mismatch.');
