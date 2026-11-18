@@ -2,6 +2,8 @@
 // Copyright 2026 Arpit Sinha
 
 import '../models/agent_session.dart';
+import '../models/agent_session_run_status.dart';
+import '../services/agent_session_run_status_store.dart';
 import '../models/agent_session_binding.dart';
 import '../services/agent_session_admission.dart';
 import '../models/build_plan.dart';
@@ -13,10 +15,19 @@ import 'base_controller.dart';
 
 /// Manages saved observations only; no command/model service is owned here.
 final class AgentSessionController extends BaseController {
-  AgentSessionController(this.store, {String Function()? createSessionId})
-    : _createSessionId = createSessionId ?? _newId;
+  AgentSessionController(
+    this.store, {
+    String Function()? createSessionId,
+    AgentSessionRunStatusStore? runStatusStore,
+  }) : _createSessionId = createSessionId ?? _newId,
+       _runStatusStore =
+           runStatusStore ??
+           AgentSessionRunStatusStore(store.records, store.project.id);
   static String _newId() => 'session-${DateTime.now().microsecondsSinceEpoch}';
   final AgentSessionStore store;
+  final AgentSessionRunStatusStore _runStatusStore;
+  List<AgentSessionRunStatus> _runStatuses = const [];
+  List<AgentSessionRunStatus> get runStatuses => _runStatuses;
   final String Function() _createSessionId;
   List<AgentSession> _sessions = const [];
   List<String> _ids = const [], _unavailableIds = const [];
@@ -90,6 +101,7 @@ final class AgentSessionController extends BaseController {
         _error = 'Selected session could not be refreshed. Its last visible snapshot is retained.';
       }
     }
+    _refreshRunStatuses();
     _approvalError = null;
     try {
       final approval = PlanApprovalStore(store.records)
@@ -110,6 +122,21 @@ final class AgentSessionController extends BaseController {
       _tasks = const [];
       _selectedTaskIds = const {};
       _approvalError = 'Approve the current Plan to create a session. Saved sessions remain available.';
+    }
+  }
+
+  void _refreshRunStatuses() {
+    final selected = _selected;
+    if (selected == null) {
+      _runStatuses = const [];
+      return;
+    }
+    try {
+      _runStatuses = List.unmodifiable(_runStatusStore.load(selected));
+    } catch (_) {
+      _runStatuses = List.unmodifiable(
+        selected.dispatches.map(AgentSessionRunStatus.unavailable),
+      );
     }
   }
 
@@ -152,6 +179,7 @@ final class AgentSessionController extends BaseController {
       final value = store.load(sessionId.trim());
       if (value == null) throw StateError('Not found');
       _selected = value;
+      _refreshRunStatuses();
     } catch (_) {
       _error = 'Session could not be opened. Check the ID and saved records; existing data is retained.';
     }

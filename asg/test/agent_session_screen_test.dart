@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'approved_source_proposer_test.dart' show seed;
+import 'agent_session_store_test.dart' show savedRun, selection;
 import 'planning_conversation_test.dart' show project;
 import 'source_candidate_controller_test.dart' show AtomicRecords;
 
@@ -25,6 +26,60 @@ Future<void> reveal(WidgetTester tester, Finder target, double delta) async {
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  testWidgets(
+    'narrow enlarged saved overview distinguishes unresolved and unavailable evidence',
+    (tester) async {
+      tester.view.physicalSize = const Size(320, 740);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final records = AtomicRecords();
+      await seed(records);
+      final store = AgentSessionStore(records, project);
+      final initial = await store.create('overview-screen', selection(records));
+      final run = await savedRun(records);
+      final session = await store.observeRun(initial, 'Tanalyze', run);
+      final controller = AgentSessionController(store)..open(session.sessionId);
+      final before = Map.of(records.values);
+      await tester.pumpWidget(
+        MaterialApp(
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(context)
+                .copyWith(textScaler: const TextScaler.linear(2)),
+            child: child!,
+          ),
+          home: AgentSessionScreen(
+            controller: controller,
+            projectName: project.name,
+          ),
+        ),
+      );
+      await reveal(
+        tester,
+        find.textContaining('Unresolved operation: resolve'),
+        250,
+      );
+      expect(find.textContaining('checkpoint: executing'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+      expect(records.values, before);
+      records.values.remove(
+        'studio.agentExecution.v1.candidate-${project.id}-1',
+      );
+      controller.load();
+      await tester.pumpAndSettle();
+      await reveal(
+        tester,
+        find.textContaining('Run evidence is unavailable'),
+        250,
+      );
+      expect(
+        find.textContaining('Unresolved operation: resolve'),
+        findsNothing,
+      );
+      expect(tester.takeException(), isNull);
+    },
+  );
+
   testWidgets(
     'explicit use returns selected session without dispatch or storage writes',
     (tester) async {
