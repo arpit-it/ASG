@@ -267,4 +267,32 @@ void main() {
       throwsFormatException,
     );
   });
+  test(
+    'catalog freezes distinct bounded IDs without granting session authority',
+    () {
+      final empty = AgentSessionCatalog.empty('p');
+      final first = empty.adding('s1');
+      expect(empty.sessionIds, isEmpty);
+      expect(first.sessionIds, ['s1']);
+      expect(() => first.sessionIds.clear(), throwsUnsupportedError);
+      expect(() => first.adding('s1'), throwsStateError);
+      final full = AgentSessionCatalog.fromJson({
+        'version': 1,
+        'projectId': 'p',
+        'sessionIds': [for (var i = 0; i < 128; i++) 's$i'],
+      });
+      expect(() => full.adding('extra'), throwsFormatException);
+      expect(
+        () => AgentSessionCatalog.fromJson({...first.toJson(), 'extra': true}),
+        throwsFormatException,
+      );
+      expect(
+        () => AgentSessionCatalog.fromJson({
+          ...first.toJson(),
+          'sessionIds': ['s1', 's1'],
+        }),
+        throwsFormatException,
+      );
+    },
+  );
 }

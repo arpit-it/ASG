@@ -909,3 +909,40 @@ verbatim. Real native close/reopen tests retain observations/cancellation while
 an existing executing checkpoint remains byte-identical, and corrupt sibling
 session records do not block valid history. No app-crash, live model, UI or broad
 CE01 completion claim follows from these data/storage tests.
+
+
+### Workspace saved-session management — 18 November 2026
+
+Flutter project workspaces now expose Saved work sessions through a focused MVC
+screen/controller. Users explicitly select approved mapped tasks and confirm
+saving the selection; prerequisites/dependents stay closed when toggled. The
+screen reopens saved history or a direct session ID and records cancellation
+intent. Missing/revoked approval blocks creation while history stays available.
+No command, inference, automatic resume or task completion is introduced here.
+Saved run references remain contextual observations with the prior limitations.
+
+A bounded per-project catalog uses studio.agentSessions.v1.<projectId>, with128
+unique session IDs and a32KiB encoded limit. New session and catalog publication
+are one conditional transaction; concurrent writers cannot leave an orphan
+session or lose another catalog update. Pre-catalog records remain loadable by
+ID. Explicit Add session to list registers a retained record without changing it
+or requiring execution approval. Corrupt catalog data prevents discovery/new
+creation, but direct ID reading and cancellation intent remain available. Native
+validation isolates corrupt catalogs and preserves original bytes.
+
+Controller APIs own validation, task selection, loading/errors and saved state;
+views own navigation/form consent and text-controller lifetime. Pending writes
+block duplicate actions; a failed save retains visible history and shows a
+recoverable error. Disposal ignores late UI results without pretending an already
+committed write was undone. Missing selected records show a retained-snapshot
+warning. At128 indexed sessions, creation/registration is disabled with an
+explicit limit message, while existing history remains readable. No records are
+automatically deleted or hidden to make space.
+
+Deterministic coverage includes atomic catalog races/failures, pre-catalog
+registration after approval withdrawal, corrupt catalog/native reopen, controller
+persistence ordering/disposal,320px2x create/cancel/reopen and visible save errors,
+and the actual workspace navigation entry. Browser IAB navigation/missing-approval
+evidence is recorded separately; it does not substitute for actual model or
+multi-task execution acceptance. The broader CE01 scheduler/dispatch linkage and
+chat-driven execution workflow remain pending under #404.

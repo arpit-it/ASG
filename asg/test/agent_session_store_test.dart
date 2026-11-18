@@ -78,6 +78,7 @@ void main() {
       }
       expect(records.values.keys.toSet().difference(before.keys.toSet()), {
         observed.storageKey,
+        '${AgentSessionCatalog.prefix}${project.id}',
       });
       final after = Map.of(records.values);
       expect(store.load('s1')!.toJson(), observed.toJson());
@@ -256,12 +257,14 @@ void main() {
       final executionKey = 'studio.agentExecution.v1.candidate-${project.id}-1';
       final originalExecution = native.getString(executionKey);
       final raw = native.getString(observed.storageKey);
+      expect(sessions.sessionIds(), ['s1']);
       await db.close();
       db = await databaseFactoryIo.openDatabase(path);
       native = await StudioDatabase.migrate(db, preferences);
       sessions = AgentSessionStore(native, project);
       expect(sessions.load('s1')!.toJson(), observed.toJson());
       expect(native.getString(observed.storageKey), raw);
+      expect(sessions.sessionIds(), ['s1']);
       expect(native.getString(executionKey), originalExecution);
       final cancelled = await sessions.requestCancellation(observed);
       final recordsStore = StoreRef<String, String>('records');
@@ -279,10 +282,70 @@ void main() {
       expect(sessions.load('s1')!.toJson(), cancelled.toJson());
       expect(sessions.load('s1')!.cancellationRequested, isTrue);
       expect(await recordsStore.record(corruptKey).get(db), '{private-plan');
+      final catalogKey = '${AgentSessionCatalog.prefix}${project.id}';
+      await recordsStore.record(catalogKey).put(db, '{private-catalog');
+      await db.close();
+      db = await databaseFactoryIo.openDatabase(path);
+      native = await StudioDatabase.migrate(db, preferences);
+      sessions = AgentSessionStore(native, project);
+      expect(() => sessions.sessionIds(), throwsFormatException);
+      expect(sessions.load('s1')!.toJson(), cancelled.toJson());
+      expect(await recordsStore.record(catalogKey).get(db), '{private-catalog');
+
       expect(native.getString(executionKey), originalExecution);
     } finally {
       await db.close();
       await root.delete(recursive: true);
     }
+  });
+  test('catalog and session create atomically under failure or concurrent creation', () async {
+    final before = Map.of(records.values);
+    records.failCommit = true;
+    await expectLater(store.create('s1', selection(records)), throwsStateError);
+    expect(records.values, before);
+    records.failCommit = false;
+    final a = store.create('s1', selection(records)),
+        b = store.create('s2', selection(records));
+    final results = await Future.wait([
+      a.then((value) => value.sessionId, onError: (_) => ''),
+      b.then((value) => value.sessionId, onError: (_) => ''),
+    ]);
+    final winner = results.singleWhere((value) => value.isNotEmpty);
+    expect(store.sessionIds(), [winner]);
+    expect(store.load(winner), isNotNull);
+    expect(store.load(winner == 's1' ? 's2' : 's1'), isNull);
+  });
+
+  test(
+    'pre-index record can be explicitly remembered after approval withdrawal',
+    () async {
+      final value = await store.create('s1', selection(records));
+      records.values.remove('${AgentSessionCatalog.prefix}${project.id}');
+      await PlanApprovalStore(records)
+          .save(project, ConversationStore(records).load(project.id), false);
+      expect(store.sessionIds(), isEmpty);
+      expect(store.load('s1')!.toJson(), value.toJson());
+      final before = records.getString(value.storageKey);
+      expect((await store.remember('s1')).toJson(), value.toJson());
+      expect(store.sessionIds(), ['s1']);
+      expect(records.getString(value.storageKey), before);
+      final all = Map.of(records.values);
+      await store.remember('s1');
+      expect(records.values, all);
+    },
+  );
+
+  test('corrupt catalog refuses discovery and new writes without hiding direct records', () async {
+    final value = await store.create('s1', selection(records));
+    final key = '${AgentSessionCatalog.prefix}${project.id}';
+    records.values[key] = '{private-catalog';
+    final before = Map.of(records.values);
+    expect(() => store.sessionIds(), throwsFormatException);
+    expect(store.load('s1')!.toJson(), value.toJson());
+    await expectLater(
+      store.create('s2', selection(records)),
+      throwsFormatException,
+    );
+    expect(records.values, before);
   });
 }

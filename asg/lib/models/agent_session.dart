@@ -280,3 +280,59 @@ final class AgentSession {
     );
   }
 }
+
+/// A bounded discovery index. Session records remain independently readable.
+final class AgentSessionCatalog {
+  AgentSessionCatalog._(this.projectId, List<String> sessionIds)
+    : sessionIds = List.unmodifiable(sessionIds);
+  static const prefix = 'studio.agentSessions.v1.';
+  static const maxSessions = 128;
+  static const maxEncodedBytes = 32 * 1024;
+  final String projectId;
+  final List<String> sessionIds;
+  String get storageKey => '$prefix$projectId';
+
+  factory AgentSessionCatalog.empty(String projectId) =>
+      AgentSessionCatalog.fromJson({
+        'version': 1,
+        'projectId': projectId,
+        'sessionIds': <String>[],
+      });
+
+  factory AgentSessionCatalog.fromJson(Object? value) {
+    if (value is! Map<String, dynamic> ||
+        value.length != 3 ||
+        value['version'] is! int ||
+        value['version'] != 1 ||
+        value['projectId'] is! String ||
+        value['sessionIds'] is! List) {
+      throw const FormatException('Invalid session catalog.');
+    }
+    final projectId = value['projectId'] as String;
+    final ids = value['sessionIds'] as List;
+    if (!AgentSessionTask.validId(projectId) ||
+        ids.length > maxSessions ||
+        ids.any((id) => id is! String || !AgentSessionTask.validId(id)) ||
+        ids.toSet().length != ids.length) {
+      throw const FormatException('Invalid session catalog membership.');
+    }
+    return AgentSessionCatalog._(projectId, ids.cast<String>());
+  }
+
+  AgentSessionCatalog adding(String sessionId) {
+    if (sessionIds.contains(sessionId)) {
+      throw StateError('Session already indexed.');
+    }
+    return AgentSessionCatalog.fromJson({
+      'version': 1,
+      'projectId': projectId,
+      'sessionIds': [...sessionIds, sessionId],
+    });
+  }
+
+  Map<String, Object> toJson() => {
+    'version': 1,
+    'projectId': projectId,
+    'sessionIds': sessionIds.toList(),
+  };
+}

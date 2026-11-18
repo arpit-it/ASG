@@ -116,6 +116,7 @@ class StudioDatabase implements ConditionalRecordStorage {
             !record.key.startsWith('studio.candidateRecovery.v1.') &&
             !record.key.startsWith('studio.agentExecution.v1.') &&
             !record.key.startsWith(AgentSession.prefix) &&
+            !record.key.startsWith(AgentSessionCatalog.prefix) &&
             !record.key.startsWith('studio.repairAttempts.v1.') &&
             !record.key.startsWith('studio.generationPrevious.v1.') &&
             !record.key.startsWith('studio.requirements.v1.') &&
@@ -155,9 +156,18 @@ class StudioDatabase implements ConditionalRecordStorage {
         utf8.encode(value).length > AgentSession.maxEncodedBytes) {
       throw const FormatException('Agent session exceeds its storage bound.');
     }
+    if (key.startsWith(AgentSessionCatalog.prefix) &&
+        utf8.encode(value).length > AgentSessionCatalog.maxEncodedBytes) {
+      throw const FormatException('Session catalog exceeds its storage bound.');
+    }
     final decoded = jsonDecode(value);
     final source = _SingleRecord(key, value);
-    if (key.startsWith(AgentSession.prefix)) {
+    if (key.startsWith(AgentSessionCatalog.prefix)) {
+      final catalog = AgentSessionCatalog.fromJson(decoded);
+      if (catalog.storageKey != key) {
+        throw const FormatException('Session catalog identity mismatch.');
+      }
+    } else if (key.startsWith(AgentSession.prefix)) {
       final session = AgentSession.fromJson(decoded);
       if (session.storageKey != key) {
         throw const FormatException('Agent session identity mismatch.');
