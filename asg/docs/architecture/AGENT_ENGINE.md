@@ -496,3 +496,47 @@ deterministic delay before transaction entry. It does not establish durability
 of a transaction interrupted mid-commit, Stop during a still-running tool,
 descendant cleanup, terminal cancelled execution or generalized CE01 acceptance.
 Those remain pending under #404, with unavailable platforms under #400.
+
+
+### Running-tool Stop prerequisite investigation — 18 November 2026
+
+NativeGenerationHost owns _activeProcess and _activeCaptureCancellation per
+instance. cancelVerification marks that instance cancelled, completes its capture
+cancellation and signals its helper with SIGTERM. The current completion-gap
+fixture invokes the real runner on a separate host and requests Stop only after
+that runner returns, so its twelve cases cannot establish cancellation of a live
+command. The next running-tool case must invoke runFlutterOperation on the same
+verifier instance supplied to SourceCandidateController. The existing operation
+override can start that future and await a bounded marker concurrently; no new
+production hook or arbitrary command adapter is necessary.
+
+A bounded fixture design is a fixed Flutter test which writes a nonce-bound
+started marker under build/ then waits. build/ is excluded from source fingerprints,
+so handshake data cannot masquerade as a source edit. Keep resolve/analyze
+real and checkpointed, start the real confined test on the controller-owned host,
+wait for the marker with a deadline, then call controller.cancel. Require the
+committed Stop row to match the exact pending test dispatch. Await only bounded
+real command settlement, retain any real receipt without fabricating a result if
+completion delivery fails, and hold before the verifier publishes its result.
+Crash/reopen must preserve pending test, prior steps, saved intent, sources and
+working output, with no replay/promotion. Unexpected success, missing handshake,
+wrong dispatch or any unbounded process must refuse evidence.
+
+The capture cancellation path gives the helper three seconds to finish protocol
+delivery; the supervisor attempts group SIGTERM, bounded root wait and SIGKILL,
+then bounded reader completion. This can legitimately end with uncertain helper
+completion delivery. NativeGenerationHost refuses nonzero helper completion when
+receipt delivery is expected; it must not synthesize a cancelled tool exit from
+that refusal. Sidecar receipts independently preserve actual results when present.
+Their schema requires cleanup='unknown': process-group signals and root exit do
+not establish arbitrary descendant cleanup.
+
+Verification on this Mac: existing generation_command fixtures ran22 tests with
+one skip (21 passed), including signal cancellation, parent loss, timeout and
+exclusive retained completion evidence. Dart generation_process_capture_test
+passed all5 tests, including cancellation interrupt and pipe/output limits. Logs:
+/tmp/asg-404-running-tool-stop-command-tests.log and
+/tmp/asg-404-running-tool-stop-capture-tests.log. These are deterministic helper
+and capture tests, not actual native Flutter-test cancellation evidence. The
+proposed running-tool native case and generalized CE01 acceptance remain pending
+under #404; platform-specific unavailable acceptance remains under #400.
