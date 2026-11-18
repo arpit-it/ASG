@@ -4,6 +4,8 @@
 import 'dart:convert';
 
 import '../models/agent_session.dart';
+import '../models/agent_execution_checkpoint.dart';
+import '../models/source_generation.dart';
 import '../models/agent_session_run_status.dart';
 import '../models/build_task.dart';
 import '../models/structured_proposal_json.dart';
@@ -92,6 +94,10 @@ class AgentSessionRunStatusStore {
           tasks == null ||
           execution == null ||
           execution.revision < 3 ||
+          run.finished == execution.requiresReconciliation ||
+          (execution.phase == AgentExecutionPhase.completed &&
+              (run.snapshot.phase != SourceGenerationPhase.ready ||
+                  run.snapshot.pendingOperation.isNotEmpty)) ||
           (!execution.requiresReconciliation && execution.revision < 4) ||
           reference.dispatchId != '$executionId:3' ||
           run.dispatchId != reference.dispatchId ||

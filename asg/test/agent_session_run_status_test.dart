@@ -132,6 +132,45 @@ void main() {
     expect(records.values, before);
   });
 
+  test(
+    'contradictory finished and checkpoint phases cannot look completed',
+    () {
+      final executionKey = 'studio.agentExecution.v1.candidate-${project.id}-1';
+      records.values[executionKey] = jsonEncode({
+        'version': 1,
+        'taskId': 'candidate-${project.id}-1',
+        'revision': 6,
+        'phase': 'completed',
+      });
+      expect(overview.load(session).single.available, isFalse);
+      final journalKey = 'studio.candidateChecks.v1.${project.id}';
+      final journal =
+          jsonDecode(records.values[journalKey]!) as Map<String, dynamic>;
+      final run = (journal['runs'] as List).single;
+      run['finished'] = true;
+      run['snapshot']['phase'] = 'failed';
+      records.values[journalKey] = jsonEncode(journal);
+      expect(overview.load(session).single.available, isFalse);
+      records.values[executionKey] = jsonEncode({
+        'version': 1,
+        'taskId': 'candidate-${project.id}-1',
+        'revision': 3,
+        'phase': 'executing',
+      });
+      expect(overview.load(session).single.available, isFalse);
+      records.values[executionKey] = jsonEncode({
+        'version': 1,
+        'taskId': 'candidate-${project.id}-1',
+        'revision': 4,
+        'phase': 'verifying',
+      });
+      final before = Map.of(records.values);
+      expect(overview.load(session).single.available, isTrue);
+      expect(overview.load(session).single.pendingOperation, 'resolve');
+      expect(records.values, before);
+    },
+  );
+
   test('stale session or wrong project refuses apparently matching run', () {
     final before = Map.of(records.values);
     expect(
