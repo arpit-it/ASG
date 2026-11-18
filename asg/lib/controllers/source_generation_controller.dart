@@ -22,6 +22,10 @@ import '../services/application_store.dart';
 import '../services/plan_approval_store.dart';
 import '../services/generation_input.dart';
 import '../services/folder_picker.dart';
+import '../models/agent_session.dart';
+import '../models/agent_session_binding.dart';
+import '../services/agent_session_admission.dart';
+import '../services/agent_session_store.dart';
 import '../services/source_generation_store.dart';
 import '../services/runtime_setup_store.dart';
 import '../services/requirements_store.dart';
@@ -34,6 +38,7 @@ class SourceGenerationController extends BaseController {
     required this.definition,
     required this.store,
     required GenerationHost host,
+    this.selectedSession,
     this.createRollbackHost = createGenerationHost,
     // Preserve the public injection name while allowing promoted-host ownership.
     // ignore: prefer_initializing_formals
@@ -47,6 +52,7 @@ class SourceGenerationController extends BaseController {
       _historyInvalid = true;
     }
   }
+  final AgentSession? selectedSession;
   final StudioProject project;
   final AppDefinition definition;
   final SourceGenerationStore store;
@@ -247,6 +253,7 @@ class SourceGenerationController extends BaseController {
     return SourceReviewController(
       project: project,
       generated: saved,
+      selectedSession: selectedSession,
       records: store.records,
       publishCandidate: (value, candidateHost, authorize) => promoteCandidate(
         value,
@@ -341,6 +348,55 @@ class SourceGenerationController extends BaseController {
                 .toJson(),
           );
         }
+      }
+      final selected = selectedSession;
+      if (selected != null) {
+        final savedSession = AgentSessionStore(
+          records,
+          project,
+        ).load(selected.sessionId);
+        if (savedSession == null ||
+            savedSession.cancellationRequested ||
+            savedSession.projectId != selected.projectId ||
+            !savedSession.approval.matches(selected.approval) ||
+            jsonEncode(savedSession.tasks.toJson()) !=
+                jsonEncode(selected.tasks.toJson()) ||
+            savedSession.dispatches.length <= selected.dispatches.length ||
+            jsonEncode(
+                  savedSession.dispatches
+                      .take(selected.dispatches.length)
+                      .map((ref) => ref.toJson())
+                      .toList(),
+                ) !=
+                jsonEncode(
+                  selected.dispatches.map((ref) => ref.toJson()).toList(),
+                ) ||
+            journal.runs.isEmpty) {
+          throw StateError(
+            'Selected session no longer matches this candidate.',
+          );
+        }
+        final run = journal.runs.last;
+        final reference = savedSession.dispatches.last;
+        if (!run.finished ||
+            reference.dispatchId != run.dispatchId ||
+            reference.runNumber != run.number ||
+            jsonEncode(run.snapshot.toJson()) !=
+                jsonEncode(candidate.toJson())) {
+          throw StateError(
+            'Selected session has no matching verified candidate.',
+          );
+        }
+        final admission = AgentSessionRunAdmission(
+          records,
+          project,
+          AgentSessionBinding.select(
+            session: savedSession,
+            projectId: project.id,
+            boardTaskId: reference.boardTaskId,
+          ),
+        );
+        expected[savedSession.storageKey] = admission.requireCurrent();
       }
       // Separate host: validating/starting the new preview cannot stop the old one.
       final uri = await candidateHost.startPreview(candidate);

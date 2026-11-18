@@ -181,6 +181,15 @@ class _AgentSessionScreenState extends State<AgentSessionScreen> {
                     onPressed: controller.rememberSelected,
                     child: const Text('Add session to list'),
                   ),
+                FilledButton(
+                  onPressed: controller.busy || selected.cancellationRequested
+                      ? null
+                      : () {
+                          final value = controller.selectForSourceReview();
+                          if (value != null) Navigator.of(context).pop(value);
+                        },
+                  child: const Text('Use session for source review'),
+                ),
                 const Text(
                   'Requesting cancellation records your intent. It does not confirm that any running process has stopped.',
                 ),

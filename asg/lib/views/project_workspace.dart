@@ -15,6 +15,7 @@ import 'portable_archive_screen.dart';
 
 import '../controllers/agent_session_controller.dart';
 import '../services/agent_session_store.dart';
+import '../models/agent_session.dart';
 import 'agent_session_screen.dart';
 
 import '../controllers/requirements_controller.dart';
@@ -166,6 +167,8 @@ class _ProjectWorkspaceState extends State<_FlutterProjectWorkspace> {
     );
   }
 
+  AgentSession? _sourceSession;
+
   Future<void> workSessions() async {
     final records = controller.records;
     if (records is! ConditionalRecordStorage ||
@@ -174,8 +177,8 @@ class _ProjectWorkspaceState extends State<_FlutterProjectWorkspace> {
         controller.hasUnsavedInteractions) {
       return;
     }
-    await Navigator.of(context).push(
-      MaterialPageRoute<void>(
+    final selected = await Navigator.of(context).push<AgentSession>(
+      MaterialPageRoute<AgentSession>(
         builder: (_) => AgentSessionScreen(
           controller: AgentSessionController(
             AgentSessionStore(records, widget.project),
@@ -184,6 +187,9 @@ class _ProjectWorkspaceState extends State<_FlutterProjectWorkspace> {
         ),
       ),
     );
+    if (mounted && selected != null) {
+      setState(() => _sourceSession = selected);
+    }
   }
 
   Future<void> requirements() async {
@@ -250,6 +256,7 @@ class _ProjectWorkspaceState extends State<_FlutterProjectWorkspace> {
           controller: SourceGenerationController(
             project: widget.project,
             definition: definition,
+            selectedSession: _sourceSession,
             store: SourceGenerationStore(records),
             host: createGenerationHost(),
           ),
@@ -292,7 +299,9 @@ class _ProjectWorkspaceState extends State<_FlutterProjectWorkspace> {
               icon: const Icon(Icons.import_export),
             ),
             IconButton(
-              tooltip: 'Saved work sessions',
+              tooltip: _sourceSession == null
+                  ? 'Saved work sessions'
+                  : 'Source review session: ${_sourceSession!.sessionId}',
               onPressed:
                   controller.records is! ConditionalRecordStorage ||
                       controller.busy ||
@@ -302,6 +311,12 @@ class _ProjectWorkspaceState extends State<_FlutterProjectWorkspace> {
                   : workSessions,
               icon: const Icon(Icons.work_history_outlined),
             ),
+            if (_sourceSession != null)
+              IconButton(
+                tooltip: 'Clear source review session',
+                onPressed: () => setState(() => _sourceSession = null),
+                icon: const Icon(Icons.playlist_remove),
+              ),
             IconButton(
               tooltip: 'Requirements and tasks',
               onPressed:

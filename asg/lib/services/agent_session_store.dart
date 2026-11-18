@@ -9,6 +9,7 @@ import '../models/build_plan.dart';
 import '../models/candidate_verification_run.dart';
 import '../models/project.dart';
 import 'agent_execution_checkpoint_store.dart';
+import 'agent_session_admission.dart';
 import 'candidate_verification_store.dart';
 import 'plan_approval_store.dart';
 import 'record_storage.dart';
@@ -82,35 +83,11 @@ final class AgentSessionStore {
     return value;
   }
 
-  Map<String, String?> _approvalRecords() => {
-    for (final key in [
-      'studio.projects.v1',
-      'studio.chat.v1.${project.id}',
-      'studio.requirements.v1.${project.id}',
-      'studio.application.v1.${project.id}',
-      'studio.planApproval.v1.${project.id}',
-    ])
-      key: records.getString(key),
-  };
+  Map<String, String?> _approvalRecords() =>
+      AgentSessionAdmission(records, project).approvalRecords();
 
-  void _authorize(AgentSession value) {
-    final approval = PlanApprovalStore(records).requireCurrentApproval(project);
-    final board = RequirementsStore(records).load(project.id);
-    final plan = BuildPlan.parse(approval.content, board: board);
-    final selected = value.tasks.items.map((item) => item.id).toList();
-    final current = AgentSessionTasks.fromBoardTasks([
-      for (final id in selected)
-        board.tasks.singleWhere((task) => task.id == id),
-    ]);
-    if (value.projectId != project.id ||
-        !value.approval.matches(approval) ||
-        jsonEncode(value.tasks.toJson()) != jsonEncode(current.toJson()) ||
-        selected.any(
-          (id) => !plan.tasks.any((task) => task.boardTaskId == id),
-        )) {
-      throw StateError('Session approval or task membership changed.');
-    }
-  }
+  void _authorize(AgentSession value) =>
+      AgentSessionAdmission(records, project).requireApproval(value);
 
   String _expected(AgentSession expected) {
     final key = _key(expected.sessionId), raw = records.getString(key);

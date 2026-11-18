@@ -34,6 +34,20 @@ void main() {
     if (!controller.isDisposed) controller.dispose();
   });
 
+  test('review selection is explicit, read-only and rejects stale or cancelled context', () async {
+    expect(controller.selectForSourceReview(), isNull);
+    await controller.create(approved: true);
+    final selected = controller.selected!;
+    final before = Map.of(records.values);
+    expect(controller.selectForSourceReview()!.toJson(), selected.toJson());
+    expect(records.values, before);
+    await store.requestCancellation(selected);
+    expect(controller.selectForSourceReview(), isNull);
+    controller.open(selected.sessionId);
+    expect(controller.selectForSourceReview(), isNull);
+    expect(controller.error, isNotNull);
+  });
+
   test(
     'load/open are read-only and explicit create preserves prior records',
     () async {

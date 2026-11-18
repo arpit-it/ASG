@@ -9,6 +9,8 @@ import '../models/candidate_recovery_acknowledgement.dart';
 import '../models/agent_execution_checkpoint.dart';
 import '../models/source_generation.dart';
 import 'record_storage.dart';
+import 'agent_session_admission.dart';
+import '../models/agent_session.dart';
 
 /// Atomic journal and current checkpoint publication; stale writers fail closed.
 class CandidateVerificationStore {
@@ -19,6 +21,8 @@ class CandidateVerificationStore {
   String get candidateKey => 'studio.sourceCandidate.v1.$projectId';
   String? _expectedJournal, _expectedCandidate;
   CandidateVerificationRun? _owned, _session;
+  AgentSession? _admittedSession;
+  AgentSession? get admittedSession => _admittedSession;
   Future<void> _pending = Future<void>.value();
   static const recoveryPrefix = 'studio.candidateRecovery.v1.';
 
@@ -144,15 +148,30 @@ class CandidateVerificationStore {
     GeneratedProject snapshot,
     void Function() authorize, {
     String? dispatchId,
-  }) => _serial(() => _start(snapshot, authorize, dispatchId: dispatchId));
+    AgentSessionRunAdmission? sessionAdmission,
+  }) => _serial(
+    () => _start(
+      snapshot,
+      authorize,
+      dispatchId: dispatchId,
+      sessionAdmission: sessionAdmission,
+    ),
+  );
 
   Future<CandidateVerificationRun> _start(
     GeneratedProject snapshot,
     void Function() authorize, {
     String? dispatchId,
+    AgentSessionRunAdmission? sessionAdmission,
   }) async {
     if (_owned != null) throw StateError('Verification run already reserved.');
     _session = null;
+    _admittedSession = null;
+    if (sessionAdmission != null &&
+        (!identical(sessionAdmission.records, records) ||
+            sessionAdmission.project.id != projectId)) {
+      throw StateError('Session admission belongs to another candidate store.');
+    }
     _expectedJournal = records.getString(key);
     _expectedCandidate = records.getString(candidateKey);
     final journal = load();
@@ -176,12 +195,15 @@ class CandidateVerificationStore {
       finished: false,
       dispatchId: dispatchId ?? execution?.dispatchId,
     );
+    final reservation = sessionAdmission?.prepare(run, execution);
     await _commit(
       [...journal.runs, run],
       snapshot,
       authorize,
       execution: execution,
+      reservation: reservation,
     );
+    _admittedSession = reservation?.next;
     _owned = run;
     _session = run;
     return run;
@@ -297,6 +319,7 @@ class CandidateVerificationStore {
     GeneratedProject snapshot,
     void Function() authorize, {
     AgentExecutionCheckpoint? execution,
+    AgentSessionReservation? reservation,
   }) async {
     final storage = records;
     if (storage is! ConditionalRecordStorage) {
@@ -330,16 +353,25 @@ class CandidateVerificationStore {
     }
     await storage.commitRecords(
       expected: {
+        if (reservation != null) ...{
+          ...reservation.expectedContext,
+          reservation.sessionKey: reservation.expectedSession,
+        },
         key: _expectedJournal,
         candidateKey: _expectedCandidate,
         if (updatedExecution != null) executionKey!: expectedExecution,
       },
       updates: {
+        if (reservation != null)
+          reservation.sessionKey: reservation.updatedSession,
         key: raw,
         candidateKey: candidate,
         ?executionKey: ?updatedExecution,
       },
-      authorize: authorize,
+      authorize: () {
+        authorize();
+        reservation?.requireCurrent();
+      },
     );
     _expectedJournal = raw;
     _expectedCandidate = candidate;

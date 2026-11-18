@@ -4,6 +4,8 @@
 import 'dart:async';
 
 import '../models/agent_execution_checkpoint.dart';
+import '../models/agent_session_binding.dart';
+import '../services/agent_session_admission.dart';
 import '../models/candidate_operation_receipt.dart';
 import '../models/candidate_stop_request.dart';
 import '../models/candidate_recovery_status.dart';
@@ -40,9 +42,13 @@ class SourceCandidateController extends BaseController {
     required this.host,
     required this.publish,
     this.requireWorking,
+    AgentSessionBinding? sessionBinding,
   }) : _result = candidate {
+    _sessionBinding = sessionBinding;
     _refreshHistory();
   }
+  AgentSessionBinding? _sessionBinding;
+  AgentSessionBinding? get sessionBinding => _sessionBinding;
   final StudioProject project;
   final ApprovedSourceProposal evidence;
   final RecordStorage records;
@@ -227,6 +233,15 @@ class SourceCandidateController extends BaseController {
     if (!_result.confined) {
       throw StateError('Unconfined candidate refused.');
     }
+    final binding = _sessionBinding;
+    if (binding != null) {
+      if (binding.boardTaskId != evidence.boardTaskId) {
+        throw StateError(
+          'Selected session task does not match the reviewed proposal.',
+        );
+      }
+      AgentSessionRunAdmission(records, project, binding).requireCurrent();
+    }
     requireWorking?.call();
     ApprovedSourceProposer(records).requireCurrent(project, evidence);
     if (_result.approval == null ||
@@ -300,7 +315,20 @@ class SourceCandidateController extends BaseController {
         pendingOperation: '',
         failedOperation: '',
       );
-      final run = await store.start(initial, _authorize);
+      final binding = _sessionBinding;
+      final run = await store.start(
+        initial,
+        _authorize,
+        sessionAdmission: binding == null
+            ? null
+            : AgentSessionRunAdmission(records, project, binding),
+      );
+      if (binding != null) {
+        _sessionBinding = binding.admitted(
+          store.admittedSession!,
+          run.dispatchId!,
+        );
+      }
       started = true;
       _result = initial;
       if (host case final CandidateReceiptHost receiptHost) {

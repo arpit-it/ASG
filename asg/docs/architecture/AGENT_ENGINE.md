@@ -999,3 +999,34 @@ boundary; native reopen keeps exact session/run linkage without replay. Cover
 legacy unbound behavior, disposal and no changed working pointer on refusal.
 This remains a bounded existing-verification integration, not a scheduler,
 arbitrary tool framework, automatic task completion or full CE01 acceptance.
+
+
+18 November 2026 — selected-session verification admission implementation
+
+The workspace now offers an explicit Use session for source review action and a
+clear-context control. Reopening a session never selects it automatically or
+starts work. Build and review display the chosen session. Current project/Plan,
+frozen membership and exact session snapshot are checked before source capture,
+model requests, candidate copying and candidate effects; invalid selected context
+cannot silently become unbound. Review retains the successfully admitted snapshot
+for explicit retry/repair, while a newly opened Build needs a fresh selection if
+its workspace snapshot is stale. Existing unbound reviews keep their behavior.
+
+AgentSessionRunAdmission validates a typed binding and produces a private-created
+fixed-key reservation. CandidateVerificationStore.start alone consumes it in the
+same conditional transaction as journal, candidate and canonical execution
+checkpoint. Exact session and fixed approval/context bytes are expected inputs;
+the session append commits before receipt preparation or host verification.
+No arbitrary update callback or reverse candidate/session-store import is added.
+The controller adopts the appended snapshot only after that commit. Session
+validation supplements existing consent, confinement, Plan and working guards.
+
+Promotion validates the selected session's immutable basis and latest verified
+run reference, then includes exact current session bytes in its existing expected
+inputs. A cancellation before commit refuses publication and retains the previous
+working output; publication already committed is not rolled back. Session
+cancellation remains intent. Actual running-command observations and unknown exits
+continue through the existing journal/Stop/recovery paths without fabricating
+completion. Native close/reopen tests retain the joint admission without replay.
+This is existing verification integration, not automatic scheduling, arbitrary
+source synthesis, new model permissions, task completion or full CE01 acceptance.

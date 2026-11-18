@@ -142,6 +142,10 @@ class _SourceGenerationScreenState extends State<SourceGenerationScreen> {
         body: ListView(
           padding: const EdgeInsets.all(24),
           children: [
+            if (controller.selectedSession != null)
+              Text(
+                'Source review session: ${controller.selectedSession!.sessionId}. Reopening starts no work.',
+              ),
             const Text(
               'Create an independent Flutter web application',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),

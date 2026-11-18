@@ -2,6 +2,8 @@
 // Copyright 2026 Arpit Sinha
 
 import '../models/agent_session.dart';
+import '../models/agent_session_binding.dart';
+import '../services/agent_session_admission.dart';
 import '../models/build_plan.dart';
 import '../models/requirements_board.dart';
 import '../services/agent_session_store.dart';
@@ -154,6 +156,28 @@ final class AgentSessionController extends BaseController {
       _error = 'Session could not be opened. Check the ID and saved records; existing data is retained.';
     }
     update();
+  }
+
+  /// Explicit navigation selection only; no records or execution are started.
+  AgentSession? selectForSourceReview() {
+    if (_busy || isDisposed || _selected == null) return null;
+    try {
+      final value = _selected!;
+      AgentSessionRunAdmission(
+        store.records,
+        store.project,
+        AgentSessionBinding.select(
+          session: value,
+          projectId: store.project.id,
+          boardTaskId: value.tasks.items.first.id,
+        ),
+      ).requireCurrent();
+      return value;
+    } catch (_) {
+      _error = 'This session cannot be used for source review. Reopen a current, uncancelled session for the approved Plan.';
+      update();
+      return null;
+    }
   }
 
   Future<bool> _save(Future<AgentSession> Function() action) async {
