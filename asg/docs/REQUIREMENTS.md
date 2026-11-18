@@ -16185,3 +16185,27 @@ does not wait for storage.58 focused checks, full1,842 Flutter tests (11 skipped
 analyze/web build and native database reopen/error fixtures passed. Final late-Stop execution matching adds a regression and full1,843 Flutter tests pass (11 skipped). A crash
 before request commit can still lose intent; actual Stop/native-app-crash
 acceptance and generalized recovery remain pending under #404.
+
+
+Durable Stop intent delivered in PR #708, merge
+`7a27cc613b88bf8dd5c887d1ecafbdf9cc1e87f5`, CI44287705248.
+Full1,843 Flutter tests (11 skipped), analyze/web build and exact-revision
+four-case native completion-gap regression passed. CE01/#404 remains open.
+
+CE01 active bounded task under #404 — native Stop/crash observation. Extend the
+isolated fixture to request Stop through the production controller, wait for
+its exact durable intent, then crash the owned disposable app and reopen the
+same binary. Verify the saved request renders against the same dispatch and
+inputs; journal, sources, working output and retained real exits stay unchanged.
+Unknown exit/cleanup stays unknown, with no replay or promotion. Reject missing
+or mismatched intent and changed reopen evidence. Validate host contracts,
+actual native observation, required regressions, fresh review and verified merge.
+
+
+Native committed-Stop crash slice implemented and locally observed for all four
+fixed operations on one isolated binary. Production controller consent/start/Stop
+and persistence paths are used; exact saved intent, prior journal prefixes and
+real retained exits survive app crash/reopen without state mutation or replay.
+Fresh exact review, required CI and verified merge remain delivery gates. Stop
+during a running command, crash before intent commit and generalized CE01 remain
+pending under #404. Evidence: dated AGENT_ENGINE native Stop section.
