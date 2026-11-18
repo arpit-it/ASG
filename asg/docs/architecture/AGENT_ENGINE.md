@@ -199,3 +199,52 @@ This exercises the publication gap with an actual publisher exit, not a Flutter
 GUI crash or a long-lived tool. An absent receipt cannot establish that dispatch
 did not occur, nor supply a failed tool exit. Full app restart and cleanup/
 ownership evidence remain separate requirements under #404.
+
+
+### Mac app-restart isolation prerequisite — 18 November 2026
+
+Native `main.dart` opens the default StudioDatabase before showing the app.
+`database_factory_native.dart` uses application support for `studio-v2.db`;
+StudioDatabase migration also reads legacy SharedPreferences. Completion
+receipts default to the same support domain. The runner's bundle identifier is
+`com.arsinha.asg.asg`. A second directory containing the same bundle must not be
+assumed to have separate records. The installed path-provider macOS source
+appends the bundle identifier to application-support paths; legacy preferences
+use UserDefaults.standard. These observations establish configuration behavior,
+not an executed app isolation test.
+
+A disposable native restart fixture must first build into an exclusive output
+directory with a distinct test bundle identifier and verify the resulting
+Info.plist, executable and support/preference roots before opening storage. It
+must preserve the stable app and owner processes. Use a test-only entrypoint
+with explicit fixture project/candidate data and bounded phase handshakes so a
+supervisor terminates only its live owned process, then relaunches the identical
+test binary against its test records. Do not use an unrestricted environment
+override of production storage roots or a stored PID as cancellation authority.
+The existing project has no integration_test dependency; determine whether a
+disposable entrypoint can provide the fixture without installing packages.
+
+Acceptance needs observed interrupted history and retained receipt output after
+actual application restart, unchanged last working output, no duplicate side
+effect, and separate before/after source and app-binary identity. Receipt
+cleanup remains unknown. Until the build identity, data-root isolation and
+handshake harness are verified, full app crash/restart acceptance stays pending
+under #404. This investigation launched no app and changed no owner data.
+
+Build-settings observation on this Mac: `xcodebuild -showBuildSettings` with
+workspace Runner, Debug configuration, disabled automatic package resolution,
+an exclusive `/tmp/asg-404-isolation-derived` derived-data path and command-line
+`PRODUCT_BUNDLE_IDENTIFIER=com.arsinha.asg.restartfixture` succeeded. Runner
+reported that identifier and a target build directory under the exclusive
+derived-data path. Product name remains Automated Software Generator.app;
+therefore launch must use the explicit verified bundle path, never an app name
+or the installed stable bundle. No tracked runner configuration changed.
+This read-only configuration observation neither built nor launched a binary,
+verified runtime data roots, nor established code-signing or restart behavior.
+
+Next concrete implementation: a disposable test entrypoint and bounded host
+harness using that separate bundle identity. Before allowing any record write,
+the entrypoint must report and validate its actual bundle/support identity and
+fixture paths; the host must verify the built Info.plist and keep phase
+handshakes and owned process handles. Existing production storage defaults and
+application identity must remain unchanged.
