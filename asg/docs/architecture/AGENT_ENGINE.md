@@ -540,3 +540,38 @@ passed all5 tests, including cancellation interrupt and pipe/output limits. Logs
 and capture tests, not actual native Flutter-test cancellation evidence. The
 proposed running-tool native case and generalized CE01 acceptance remain pending
 under #404; platform-specific unavailable acceptance remains under #400.
+
+
+### Actual native running-test Stop — 18 November 2026
+
+Protocol5 adds `--operation test --stop --running`; other operation/precommit
+combinations are refused. A fixed confined Flutter test creates a nonce-bound
+marker under build/ and waits, with a bounded failure deadline. The same verifier
+instance passed to SourceCandidateController starts the actual test runner,
+waits for that marker, calls controller.cancel and waits at most12 seconds for
+settlement. The marker is excluded from source fingerprints; source JSON and
+approval/task mappings remain bound to the same disposable project.
+
+The crash handshake requires real Stop signalling, a committed matching intent,
+prior successful resolve/analyze steps and an actual cancelled test receipt with
+nonzero exit. Missing/uncertain completion delivery refuses this case; it never
+fabricates a result. The operation override holds before journal publication,
+then the host crashes only its live disposable app and reopens the same binary.
+Production controller and expanded read-only view retain the Stop badge and
+actual cancelled receipt, while the journal still has test pending and the
+execution remains executing. Sources, candidate/journal and seeded working
+output remain unchanged before and after rendering; no replay or promotion.
+
+The actual native running-test case passed on this Mac using binary SHA256
+`608d3d1f2106cf18c49898025042effce773a0c248bf025f022f8cd8bf8b1b0a`.
+The retained test result was exit-1/cancelled=true, preceded by real successful
+resolve/analyze receipts. Evidence:
+/tmp/asg-404-native-running-stop-observation.json. Nine host contracts include
+missing live marker and unexpected successful/non-cancelled result refusals.
+
+This establishes one fixed test cancellation with real retained completion
+evidence before an app crash. Cleanup remains unknown; it does not prove
+arbitrary descendant cleanup, uncertain-delivery native recovery, cancellation
+during every operation, interruption inside a database commit, production-main
+navigation or generalized CE01 completion. These remain pending under #404;
+unavailable platforms stay deferred under #400.
