@@ -5,6 +5,7 @@ import 'dart:async';
 
 import '../models/agent_execution_checkpoint.dart';
 import '../models/candidate_operation_receipt.dart';
+import '../models/candidate_stop_request.dart';
 import '../services/agent_execution_checkpoint_store.dart';
 import '../models/approved_source_proposal.dart';
 import '../models/build_plan.dart';
@@ -47,14 +48,39 @@ class SourceCandidateController extends BaseController {
   final CandidatePromotion publish;
   final void Function()? requireWorking;
   CandidateVerificationStore? _activeStore;
+  Future<void> _stopWrite = Future<void>.value();
+  bool _stopSaving = false;
+  String? _stopSaveError, _stopHistoryError;
+  Map<int, CandidateStopRequest> _stopRequests = const {};
+  bool get stopRequestSaving => _stopSaving;
+  String? get stopRequestSaveError => _stopSaveError;
+  String? get stopRequestHistoryError => _stopHistoryError;
+  CandidateStopRequest? stopRequestFor(CandidateVerificationRun run) {
+    final request = _stopRequests[run.number];
+    return request?.matches(project.id, run) == true ? request : null;
+  }
+
   GeneratedProject? _unsavedObservation;
   List<CandidateVerificationRun> _history = const [];
   List<CandidateVerificationRun> get history => _history;
   String? _historyError;
   String? get historyError => _historyError;
   void _refreshHistory() {
+    _stopRequests = const {};
+    _stopHistoryError = null;
     try {
-      _history = CandidateVerificationStore(records, project.id).load().runs;
+      final store = CandidateVerificationStore(records, project.id);
+      _history = store.load().runs;
+      final requests = <int, CandidateStopRequest>{};
+      for (final run in _history) {
+        try {
+          final request = store.stopRequestFor(run);
+          if (request != null) requests[run.number] = request;
+        } catch (_) {
+          _stopHistoryError = 'Saved Stop request evidence is unreadable. Retained records have not been replaced.';
+        }
+      }
+      _stopRequests = Map.unmodifiable(requests);
       _historyError = null;
       unawaited(_refreshReceipts(_history));
     } catch (_) {
@@ -202,12 +228,16 @@ class SourceCandidateController extends BaseController {
     if (!approved || _busy || _transferred || isDisposed) return;
     _busy = true;
     _cancelled = false;
+    _stopSaveError = null;
+    _stopWrite = Future<void>.value();
     _unsavedObservation = null;
     _error = null;
     update();
+    var started = false;
     try {
       _authorize();
       final store = CandidateVerificationStore(records, project.id);
+      _activeStore = store;
       final initial = _result.copy(
         phase: SourceGenerationPhase.verifying,
         checkpointVersion: 1,
@@ -217,7 +247,8 @@ class SourceCandidateController extends BaseController {
         failedOperation: '',
       );
       final run = await store.start(initial, _authorize);
-      _activeStore = store;
+      started = true;
+      _result = initial;
       if (host case final CandidateReceiptHost receiptHost) {
         await receiptHost.prepareCandidateReceipts(run, _authorize);
       }
@@ -243,16 +274,23 @@ class SourceCandidateController extends BaseController {
         try {
           // Recording an observed stop grants no command or promotion authority.
           // CAS still prevents a superseded session from overwriting history.
-          await _activeStore?.checkpoint(
-            _result,
-            () {},
-            finished: _result.pendingOperation.isEmpty,
-          );
+          if (started) {
+            await _activeStore?.checkpoint(
+              _result,
+              () {},
+              finished: _result.pendingOperation.isEmpty,
+            );
+          }
         } catch (_) {
           _error = '$_error Candidate checkpoint could not be saved.';
         }
       }
     } finally {
+      while (true) {
+        final saving = _stopWrite;
+        await saving;
+        if (identical(saving, _stopWrite)) break;
+      }
       _activeStore = null;
       if (!isDisposed) _refreshHistory();
       _busy = false;
@@ -281,9 +319,37 @@ class SourceCandidateController extends BaseController {
 
   void cancel() {
     if (!_busy || _promoting || isDisposed) return;
+    final first = !_cancelled;
     _cancelled = true;
-    host.cancelVerification();
+    final store = _activeStore;
+    if (first && store != null) {
+      _stopSaving = true;
+      _stopWrite = _saveStopRequest(store, DateTime.now().toUtc());
+    }
+    // Signalling the owned runtime must not wait for storage to succeed.
+    try {
+      host.cancelVerification();
+    } catch (_) {
+      _error = 'Stop was requested, but local cancellation could not be signalled. Check runtime activity.';
+    }
     update();
+  }
+
+  Future<void> _saveStopRequest(
+    CandidateVerificationStore store,
+    DateTime requestedAt,
+  ) async {
+    try {
+      await store.requestStop(requestedAt);
+    } catch (_) {
+      _stopSaveError = 'The Stop request could not be saved. Check runtime activity and retained command evidence before retrying.';
+    } finally {
+      _stopSaving = false;
+      if (!isDisposed) {
+        _refreshHistory();
+        update();
+      }
+    }
   }
 
   Future<bool> promote({required bool approved}) async {

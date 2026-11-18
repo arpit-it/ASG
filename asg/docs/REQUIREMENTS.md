@@ -16157,9 +16157,31 @@ per-operation crash/reopen evidence, regression checks and reviewed merge are
 required before this slice is delivered.
 
 
-Fixed verification crash-matrix status: all four native completion-gap cases are
-implemented and locally observed, awaiting final checks/review/merge. Prior
+Fixed verification crash matrix delivered in PR #707, merge
+`7af553fce06be99e525fb19cec3e27c55c07dc4c`, required CI44277950537. Prior
 completed step prefixes0/1/2/3 and receipt prefixes1/2/3/4 survive exact-binary
 app crash/reopen; target remains pending, source/working output unchanged,
 cleanup unknown. See the dated matrix in architecture/AGENT_ENGINE.md. This
 does not close CE01/#404 or establish cancellation/general-session acceptance.
+
+
+CE01 active bounded task under #404 — durable candidate Stop intent. Existing
+Stop signals the live host immediately but records no independent intent before
+verification returns. Retain a typed immutable request bound to the exact
+run/dispatch/input identity in a compatible storage namespace; keep existing
+journal/checkpoint formats. Reopened history must distinguish requested Stop
+from actual exit/cleanup and never replay an uncertain operation. Acceptance:
+responsive cancellation even on persistence failure, ordered concurrent
+progress/Stop writes, stale-run rejection, visible save failures and preserved
+working output/actual exits. Validate model/store/controller/native reopen and
+disposal/write-failure cases plus required regression checks and reviewed merge.
+Do not transition unresolved execution to terminal cancelled merely on request.
+
+
+Durable Stop-intent status: implemented, awaiting native platform regression,
+fresh review/required CI and verified merge. A separate typed record preserves
+request identity without changing journal/checkpoint JSON; runtime signalling
+does not wait for storage.58 focused checks, full1,842 Flutter tests (11 skipped),
+analyze/web build and native database reopen/error fixtures passed. Final late-Stop execution matching adds a regression and full1,843 Flutter tests pass (11 skipped). A crash
+before request commit can still lose intent; actual Stop/native-app-crash
+acceptance and generalized recovery remain pending under #404.

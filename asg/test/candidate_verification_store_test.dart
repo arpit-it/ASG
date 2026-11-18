@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // Copyright 2026 Arpit Sinha
 
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -16,6 +17,247 @@ import 'source_candidate_controller_test.dart' show AtomicRecords;
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  test('Stop intent is immutable and leaves journal, checkpoint and actual exits separate', () async {
+    final records = AtomicRecords();
+    final store = CandidateVerificationStore(records, 'p');
+    final run = await store.start(
+      failure().copy(steps: [], pendingOperation: 'resolve'),
+      () {},
+    );
+    final before = Map<String, String>.of(records.values);
+    final requestedAt = DateTime.now().toUtc();
+    final request = await store.requestStop(requestedAt);
+    expect(request!.matches('p', run), isTrue);
+    for (final entry in before.entries) {
+      expect(records.values[entry.key], entry.value);
+    }
+    expect(records.values.length, before.length + 1);
+    expect(
+      (await store.requestStop(requestedAt.add(const Duration(days: 1))))!
+          .requestedAt,
+      requestedAt,
+    );
+    await store.checkpoint(failure(exitCode: 65), () {}, finished: true);
+    final finalRun = store.load().runs.single;
+    expect(finalRun.snapshot.steps.last.exitCode, 65);
+    expect(finalRun.snapshot.steps.last.cancelled, isFalse);
+    expect(store.stopRequestFor(finalRun)!.requestedAt, requestedAt);
+    expect(
+      () => StudioDatabase.validate(
+        'studio.candidateStop.v1.wrong:3',
+        jsonEncode(request.toJson()),
+      ),
+      throwsFormatException,
+    );
+  });
+
+  test('pending progress orders before Stop intent and failures do not poison the queue', () async {
+    final records = AtomicRecords();
+    final store = CandidateVerificationStore(records, 'p');
+    await store.start(
+      failure().copy(steps: [], pendingOperation: 'resolve'),
+      () {},
+    );
+    final gate = Completer<void>();
+    final entered = Completer<void>();
+    records.beforeCommit = () async {
+      records.beforeCommit = null;
+      entered.complete();
+      await gate.future;
+    };
+    final progress = store.checkpoint(
+      failure(
+        operation: 'resolve',
+        exitCode: 0,
+      ).copy(pendingOperation: 'analyze'),
+      () {},
+    );
+    await entered.future;
+    final stop = store.requestStop(DateTime.now().toUtc());
+    await Future<void>.delayed(Duration.zero);
+    expect(
+      records.values.keys.where(
+        (key) => key.startsWith(CandidateVerificationStore.stopPrefix),
+      ),
+      isEmpty,
+    );
+    gate.complete();
+    await progress;
+    await stop;
+    expect(store.stopRequestFor(store.load().runs.single), isNotNull);
+    final another = CandidateVerificationStore(records, 'other');
+    await another.start(failure(), () {});
+    final before = Map.of(records.values);
+    records.failCommit = true;
+    await expectLater(
+      another.requestStop(DateTime.now().toUtc()),
+      throwsStateError,
+    );
+    expect(records.values, before);
+    records.failCommit = false;
+    expect(await another.requestStop(DateTime.now().toUtc()), isNotNull);
+  });
+
+  test(
+    'superseded sessions and changed inputs cannot attach Stop to another run',
+    () async {
+      final records = AtomicRecords();
+      final old = CandidateVerificationStore(records, 'p');
+      await old.start(failure().copy(steps: [], pendingOperation: ''), () {});
+      final current = CandidateVerificationStore(records, 'p');
+      await current.start(
+        failure().copy(steps: [], pendingOperation: 'resolve'),
+        () {},
+      );
+      final before = Map.of(records.values);
+      await expectLater(
+        old.requestStop(DateTime.now().toUtc()),
+        throwsStateError,
+      );
+      expect(records.values, before);
+      await current.checkpoint(failure().copy(sdk: '/changed'), () {});
+      await expectLater(
+        current.requestStop(DateTime.now().toUtc()),
+        throwsStateError,
+      );
+      expect(
+        records.values.keys.where(
+          (key) => key.startsWith(CandidateVerificationStore.stopPrefix),
+        ),
+        isEmpty,
+      );
+    },
+  );
+
+  test(
+    'reused store does not annotate a previous run when new startup fails',
+    () async {
+      final records = AtomicRecords();
+      final store = CandidateVerificationStore(records, 'p');
+      await store.start(failure(), () {});
+      await store.checkpoint(failure(), () {}, finished: true);
+      final before = Map.of(records.values);
+      records.failCommit = true;
+      await expectLater(store.start(failure(), () {}), throwsStateError);
+      records.failCommit = false;
+      expect(await store.requestStop(DateTime.now().toUtc()), isNull);
+      expect(records.values, before);
+    },
+  );
+
+  test('late Stop cannot attach to another or later execution state', () async {
+    final records = AtomicRecords();
+    final store = CandidateVerificationStore(records, 'p');
+    final run = await store.start(failure(), () {});
+    await store.checkpoint(failure(), () {}, finished: true);
+    final key = 'studio.agentExecution.v1.${run.dispatchId!.split(':').first}';
+    final original = jsonDecode(records.values[key]!) as Map<String, dynamic>;
+    for (final changed in [
+      {...original, 'taskId': 'other-task'},
+      {...original, 'revision': 7},
+    ]) {
+      records.values[key] = jsonEncode(changed);
+      final before = Map.of(records.values);
+      await expectLater(
+        store.requestStop(DateTime.now().toUtc()),
+        throwsStateError,
+      );
+      expect(records.values, before);
+    }
+  });
+
+  test('failed startup has no dispatch to annotate', () async {
+    final records = AtomicRecords()..failCommit = true;
+    final store = CandidateVerificationStore(records, 'p');
+    final starting = expectLater(
+      store.start(failure(), () {}),
+      throwsStateError,
+    );
+    final stop = store.requestStop(DateTime.now().toUtc());
+    await starting;
+    expect(await stop, isNull);
+    expect(records.values, isEmpty);
+  });
+
+  test(
+    'Stop parser errors redact payloads without replacing evidence',
+    () async {
+      final records = AtomicRecords();
+      final store = CandidateVerificationStore(records, 'p');
+      final run = await store.start(failure(), () {});
+      final key = '${CandidateVerificationStore.stopPrefix}${run.dispatchId}';
+      records.values[key] = '{private malformed stop';
+      try {
+        store.stopRequestFor(run);
+        fail('Malformed evidence accepted');
+      } on FormatException catch (error) {
+        expect(error.source, isNull);
+      }
+      expect(records.values[key], '{private malformed stop');
+    },
+  );
+
+  test('native Stop intent reopens and corrupt evidence stays isolated and preserved', () async {
+    SharedPreferences.setMockInitialValues({});
+    final directory = await Directory.systemTemp.createTemp(
+      'asg-stop-intent-db-',
+    );
+    final filename = '${directory.path}/records.db';
+    var db = await databaseFactoryIo.openDatabase(filename);
+    try {
+      var records = await StudioDatabase.migrate(
+        db,
+        await SharedPreferences.getInstance(),
+      );
+      final store = CandidateVerificationStore(records, 'p');
+      final run = await store.start(
+        failure().copy(steps: [], pendingOperation: 'resolve'),
+        () {},
+      );
+      final request = await store.requestStop(DateTime.now().toUtc());
+      final journal = records.getString(store.key);
+      final stopKey =
+          '${CandidateVerificationStore.stopPrefix}${run.dispatchId}';
+      await db.close();
+      db = await databaseFactoryIo.openDatabase(filename);
+      records = await StudioDatabase.migrate(
+        db,
+        await SharedPreferences.getInstance(),
+      );
+      final reopened = CandidateVerificationStore(records, 'p');
+      expect(
+        reopened.stopRequestFor(reopened.load().runs.single)!.toJson(),
+        request!.toJson(),
+      );
+      expect(records.getString(store.key), journal);
+      await expectLater(reopened.start(failure(), () {}), throwsStateError);
+      await StoreRef<String, String>('records')
+          .record(stopKey)
+          .put(db, '{retained corrupt');
+      await db.close();
+      db = await databaseFactoryIo.openDatabase(filename);
+      records = await StudioDatabase.migrate(
+        db,
+        await SharedPreferences.getInstance(),
+      );
+      expect(
+        () => CandidateVerificationStore(records, 'p').stopRequestFor(run),
+        throwsFormatException,
+      );
+      expect(
+        CandidateVerificationStore(records, 'p').load().runs.single.finished,
+        isFalse,
+      );
+      expect(
+        await StoreRef<String, String>('records').record(stopKey).get(db),
+        '{retained corrupt',
+      );
+    } finally {
+      await db.close();
+      await directory.delete(recursive: true);
+    }
+  });
+
   test('atomic reservation/checkpoints retain exit evidence and refuse stale writers', () async {
     final records = AtomicRecords();
     final first = CandidateVerificationStore(records, 'p');
