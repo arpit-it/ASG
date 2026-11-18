@@ -692,3 +692,34 @@ non-mutation and fresh consent. The isolated native target builds, but new audit
 acceptance is database/controller/widget evidence, not a fresh native app-crash
 or production-main navigation observation. Generalized CE01 remains open under
 #404 and unavailable-platform acceptance remains under #400.
+
+
+### Native acknowledgement and third launch — 18 November 2026
+
+Protocol7 adds `--operation test --stop --running --acknowledge` for the fixed
+actual-cancellation fixture. The first app is crashed only after real cancellation
+and committed Stop evidence. The second app verifies unchanged interrupted state
+and rendered evidence, then explicitly invokes production controller
+acknowledgeStopped as a fixture action. It requires the exact new action record,
+a closed journal and awaitingApproval execution, while preserving sources and
+working output. A separate flushed after-ack baseline records the action,
+execution and journal hashes. The second report distinguishes read/paint
+observations from its subsequent acknowledgement transition.
+
+The third process launches the identical binary and verifies exact action and
+execution bytes against that baseline. It retains the prior Stop and actual
+cancelled receipt, displays the saved acknowledgement in the actual expanded
+production view and checks its real checkbox/button widgets with actions enabled:
+consent is false and verification disabled. One saved run and awaitingApproval
+remain; no new dispatch/replay/promotion occurs. Sources, candidate record, seeded
+working output and all read-only state remain unchanged. Only the first owned
+live process handle is deliberately crashed; later apps exit normally.
+
+The actual three-launch observation passed on this Mac with binary SHA256
+`0a2eb178c7902ea1bcf81a0794ad59dacee2dbeb6162adde6fc9f8989d22105f`.
+Evidence: /tmp/asg-404-native-ack-reopen-observation.json. Eleven host contracts
+include changed action/state, reused consent and new-dispatch refusals. This is
+fixture-driven controller acknowledgement after bounded owned-process evidence,
+not a human process-inspection claim, authenticated operator, verified arbitrary
+descendant cleanup, production-main navigation or generalized CE01 acceptance.
+Cleanup remains unknown and those broader limits stay pending under #404/#400.

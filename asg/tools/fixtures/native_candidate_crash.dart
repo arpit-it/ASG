@@ -127,15 +127,19 @@ Future<void> main() async {
     }
     final input = jsonDecode(await challenge.readAsString());
     if (input is! Map<String, dynamic> ||
-        input.length != 8 ||
+        input.length != 9 ||
         input['nonce'] is! String ||
         !RegExp(r'^[a-f0-9]{32}$').hasMatch(input['nonce'] as String) ||
-        ![1, 2].contains(input['launch']) ||
+        ![1, 2, 3].contains(input['launch']) ||
         input['sdk'] is! String ||
         input['stop'] is! bool ||
         input['precommit'] is! bool ||
         input['running'] is! bool ||
         input['uncertain'] is! bool ||
+        input['acknowledge'] is! bool ||
+        (input['launch'] == 3 && input['acknowledge'] != true) ||
+        (input['acknowledge'] == true &&
+            (input['running'] != true || input['uncertain'] == true)) ||
         (input['uncertain'] == true && input['running'] != true) ||
         (input['running'] == true &&
             (input['stop'] != true ||
@@ -153,6 +157,8 @@ Future<void> main() async {
     final precommit = input['precommit'] as bool;
     final running = input['running'] as bool;
     final uncertain = input['uncertain'] as bool;
+    final acknowledge = input['acknowledge'] as bool;
+    final acknowledged = acknowledge && launch == 3;
     final sdk = await Directory(input['sdk'] as String).resolveSymbolicLinks();
     final support = await getApplicationSupportDirectory();
     if (path.basename(support.path) != bundle ||
@@ -524,6 +530,7 @@ Future<void> main() async {
             'precommit': precommit,
             'running': running,
             'uncertain': uncertain,
+            'acknowledge': acknowledge,
 
             'publicationFault': uncertain,
             'runningMarker': running,
@@ -573,7 +580,9 @@ Future<void> main() async {
       throw StateError('Target operation did not reach crash boundary.');
     }
     stage = 'recovery-read';
-    final beforeFile = File(path.join(canonical, 'before.json'));
+    final beforeFile = File(
+      path.join(canonical, acknowledged ? 'after-ack.json' : 'before.json'),
+    );
     final before =
         jsonDecode(await beforeFile.readAsString()) as Map<String, dynamic>;
     final run = checks.load().runs.single;
@@ -600,16 +609,33 @@ Future<void> main() async {
                 controller.stopRequestFor(run) == null;
     }
 
+    bool sameAction() {
+      if (!acknowledged) return true;
+      final actionKey =
+          '${CandidateVerificationStore.recoveryPrefix}${run.dispatchId}';
+      final executionKey =
+          'studio.agentExecution.v1.${run.dispatchId!.split(':').first}';
+      final action = controller.acknowledgementFor(run);
+      final saved = controller.savedExecutionFor(run);
+      return action != null &&
+          action.matches(projectId, run) &&
+          digest(records.getString(actionKey)!) == before['action'] &&
+          digest(records.getString(executionKey)!) == before['execution'] &&
+          saved?.phase.name == 'awaitingApproval' &&
+          checks.load().runs.length == 1;
+    }
+
     final currentSources = await NativeGenerationHost.fingerprints(
       snapshot.directory,
       source: true,
     );
-    if (await retainedIntent(run.dispatchId!) != before['intent'] ||
+    if (!sameAction() ||
+        await retainedIntent(run.dispatchId!) != before['intent'] ||
         !sameStop() ||
         controller.stopRequestHistoryError != null ||
         controller.historyError != null ||
         controller.receiptHistoryError != null ||
-        run.finished ||
+        run.finished != acknowledged ||
         run.snapshot.pendingOperation != operation ||
         run.dispatchId != before['dispatch'] ||
         retained.length != targetIndex + (uncertain ? 0 : 1) ||
@@ -631,7 +657,10 @@ Future<void> main() async {
         run.snapshot.steps.any((step) => !step.succeeded) ||
         controller.canPromote ||
         !NativeGenerationHost.sameFiles(currentSources, snapshot.sources) ||
-        controller.savedExecutionFor(run)?.dispatchId != run.dispatchId ||
+        (acknowledged
+            ? !sameAction()
+            : controller.savedExecutionFor(run)?.dispatchId !=
+                  run.dispatchId) ||
         digest(records.getString(checks.key)!) != before['journal'] ||
         digest(records.getString(checks.candidateKey)!) !=
             before['candidate'] ||
@@ -648,7 +677,7 @@ Future<void> main() async {
             child: SourceCandidateView(
               key: viewKey,
               controller: controller,
-              actionsEnabled: false,
+              actionsEnabled: acknowledged,
             ),
           ),
         ),
@@ -656,11 +685,26 @@ Future<void> main() async {
     );
     await WidgetsBinding.instance.endOfFrame;
     final text = <String>[];
+    bool? consent, verifyEnabled;
     final expansions = <ExpansibleController>[];
     void visit(Element element) {
       final widget = element.widget;
+      if (widget is CheckboxListTile &&
+          widget.title is Text &&
+          (widget.title as Text).data ==
+              'I approve confined candidate verification') {
+        consent = widget.value;
+      }
+      if (widget is FilledButton &&
+          widget.child is Text &&
+          (widget.child as Text).data == 'Verify candidate in sandbox') {
+        verifyEnabled = widget.onPressed != null;
+      }
       if (widget is Expansible) expansions.add(widget.controller);
       if (widget is Text && widget.data != null) text.add(widget.data!);
+      if (widget is SelectableText && widget.data != null) {
+        text.add(widget.data!);
+      }
       element.visitChildElements(visit);
     }
 
@@ -677,7 +721,11 @@ Future<void> main() async {
     viewKey.currentContext!.visitChildElements(visit);
     if ((text.any((value) => value.contains('Saved Stop request.')) !=
             (stop && !precommit)) ||
-        !text.any((value) => value.contains('Candidate checks: verifying')) ||
+        !text.any(
+          (value) => value.contains(
+            'Candidate checks: ${acknowledged ? 'failed' : 'verifying'}',
+          ),
+        ) ||
         (uncertain
             ? text.any((value) => value.contains('Retained $operation result:'))
             : !text.any(
@@ -687,8 +735,19 @@ Future<void> main() async {
               ))) {
       throw StateError('Production candidate view did not render.');
     }
+    if (acknowledged &&
+        (!text.any(
+              (value) => value.startsWith(
+                'Operator recovery acknowledgement saved at',
+              ),
+            ) ||
+            consent != false ||
+            verifyEnabled != false)) {
+      throw StateError('Acknowledgement view or fresh consent mismatch');
+    }
     // Rendering must remain read-only too, including any future view callbacks.
-    if (await retainedIntent(run.dispatchId!) != before['intent'] ||
+    if (!sameAction() ||
+        await retainedIntent(run.dispatchId!) != before['intent'] ||
         !sameStop() ||
         digest(records.getString(checks.key)!) != before['journal'] ||
         digest(records.getString(checks.candidateKey)!) !=
@@ -704,10 +763,62 @@ Future<void> main() async {
         )) {
       throw StateError('Rendering changed retained fixture state.');
     }
-    await report(canonical, 2, {
+    final observedExecutionPhase = controller
+        .savedExecutionFor(run)!
+        .phase
+        .name;
+    var acknowledgedAfterRead = false;
+    if (acknowledge && launch == 2) {
+      stage = 'explicit-fixture-acknowledgement';
+      await controller.acknowledgeStopped(run);
+      final stopped = checks.load().runs.single;
+      final action = controller.acknowledgementFor(stopped);
+      final executionKey =
+          'studio.agentExecution.v1.${run.dispatchId!.split(':').first}';
+      final actionKey =
+          '${CandidateVerificationStore.recoveryPrefix}${run.dispatchId}';
+      if (controller.error != null ||
+          !stopped.finished ||
+          action == null ||
+          controller.savedExecutionFor(stopped)?.phase.name !=
+              'awaitingApproval' ||
+          !NativeGenerationHost.sameFiles(
+            await NativeGenerationHost.fingerprints(
+              snapshot.directory,
+              source: true,
+            ),
+            snapshot.sources,
+          ) ||
+          digest(records.getString(workingKey)!) != before['working'] ||
+          digest(await working.readAsString()) != before['output']) {
+        throw StateError('Explicit fixture acknowledgement failed');
+      }
+      final after = File(path.join(canonical, 'after-ack.json'));
+      await after.create(exclusive: true);
+      await after.writeAsString(
+        jsonEncode({
+          ...before,
+          'journal': digest(records.getString(checks.key)!),
+          'action': digest(records.getString(actionKey)!),
+          'execution': digest(records.getString(executionKey)!),
+        }),
+        flush: true,
+      );
+      acknowledgedAfterRead = true;
+    }
+    await report(canonical, launch, {
       'nonce': nonce,
       'dispatch': run.dispatchId,
-      'interrupted': true,
+      'interrupted': !acknowledged,
+      'acknowledge': acknowledge,
+      'acknowledgedAfterRead': acknowledgedAfterRead,
+      'afterAcknowledgementPhase': acknowledgedAfterRead
+          ? 'awaitingApproval'
+          : null,
+      'actionUnchanged': acknowledged && sameAction(),
+      'freshConsentRequired':
+          acknowledged && consent == false && verifyEnabled == false,
+      'noNewDispatch': checks.load().runs.length == 1,
       'stopRequested': stop,
       'precommit': precommit,
       'running': running,
@@ -731,7 +842,7 @@ Future<void> main() async {
       'sourcesUnchanged': true,
       'workingUnchanged': true,
       'viewRendered': true,
-      'executionPhase': controller.savedExecutionFor(run)!.phase.name,
+      'executionPhase': observedExecutionPhase,
     });
     controller.dispose();
     await host.dispose();
@@ -753,7 +864,7 @@ Future<void> report(
   final file = File(path.join(root, 'launch-$launch.json'));
   await file.create(exclusive: true);
   await file.writeAsString(
-    jsonEncode({'version': 6, 'launch': launch, ...observation}),
+    jsonEncode({'version': 7, 'launch': launch, ...observation}),
     flush: true,
   );
 }

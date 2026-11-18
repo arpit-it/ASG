@@ -16388,3 +16388,31 @@ and isolated, and reopened view remains read-only with fresh consent required.
 native build passed; product acceptance32/inventory9 passed. Actual audit reopen
 evidence is native database/controller/widget coverage, not new app-crash/main
 navigation acceptance. Fresh review/required CI and verified merge remain gates.
+
+
+Durable operator acknowledgement delivered in PR #716, merge
+`5ebb21e87e792c1db85a554ed5d6aec66740e03f`, required CI44332324741,
+verified tested tree9269e8c198b012e406dcc9faf0235628db325249.
+
+CE01 active bounded acceptance task under #404 — native acknowledgement reopen.
+Extend the isolated real running-test cancellation fixture: after its existing
+crash/reopen evidence check, explicitly invoke production controller recovery
+acknowledgement as a fixture action, then restart the same binary a third time.
+Verify immutable action bytes, closed journal/awaitingApproval checkpoint, prior
+Stop and real receipt, unchanged sources/working output and no new dispatch.
+Actual view must display the saved action with fresh verification consent still
+required. Reject wrong/mutated identity, missing action, changed outputs or new
+dispatch. This is fixture-driven controller acknowledgement, not human process
+inspection, verified descendant cleanup or production-main navigation. Run
+actual native observation, host refusals/prior modes and required regressions,
+fresh review and verified merge. General CE01 remains pending.
+
+
+Native acknowledgement third-launch slice implemented and locally observed.
+Actual cancelled-test crash/reopen followed by explicit fixture controller
+acknowledgement retains exact action/awaitingApproval bytes on a third same-
+binary launch; actual view shows saved action with consent unchecked and verify
+disabled. No new dispatch and source/working state unchanged; cleanup unknown.
+Eleven host contracts pass. Prior native modes, final required checks, fresh
+review/CI and verified merge remain delivery gates. This does not establish
+human process inspection or production-main navigation/general CE01.
