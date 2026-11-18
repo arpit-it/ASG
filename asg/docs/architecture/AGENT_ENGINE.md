@@ -1059,3 +1059,42 @@ real observed exits/unknowns and existing prior output. Keep protocol10 observat
 identified as unbound; a new protocol/mode must not relabel them. Broader bound retry,
 promotion/cancellation process cases follow only after this minimal boundary is
 verified. No scheduler, synthetic completion or stable bundle replacement is needed.
+
+
+18 November2026 — native session admission fixture implementation
+
+Protocol11 adds explicit --session-bound for the mapped --operation test --stop
+path only; --admission-crash requires that mode. Running/uncertain/acknowledgment,
+retry/promotion and the older Stop precommit flag are refused in bound mode before
+launch. Existing unbound modes remain explicit sessionBound=false with no proof.
+Protocol10 observations retain their historical identity and are refused by the
+new host; they are not renamed or reused as session-bound acceptance.
+
+The fixture creates an approved full task session after its Plan approval, uses
+the identical controller storage wrapper for typed admission, and checks the fixed
+session/project/board task/reference and exact session/journal/candidate/execution
+hashes. The host validates bounded proof schema, strict integer revisions/counts,
+mode/version/nonce, pre-admission absence and zero effects, and compares retained
+identity/hashes between separately launched apps. Reopen reports zero new receipt
+preparation/command entries; neither opening a view nor reading evidence dispatches.
+The top-level planned dispatch token in the pre-admission handshake is not a saved
+dispatch: its session proof has null dispatchId and zero references/startup records.
+
+An isolated fixture-only storage barrier pauses the combined admission transaction
+before delegating any write. At that boundary session revision0 is unchanged, the
+journal/candidate/execution are absent, no receipts/command marker exists and prior
+working/source hashes match after the owned app is killed and separately reopened.
+The post-admission case uses the production candidate controller and native host,
+observes actual resolve/analyze/test receipts, pauses before the last command result
+reaches its journal checkpoint, records Stop intent, kills only the owned app and
+reopens read-only. Revision1, its one exact reference and all four record hashes
+remain identical. The retained actual test receipt exit0 does not mark the pending
+journal operation or task complete. Prior working output remains unchanged.
+
+The two new observations use binary
+e7322d48e14b7e31bb67459d1d8435dd31388034f288f619e8ebcd926a734c1a
+and /tmp/asg-404-native-session-admission-{precommit,committed}-observation.json.
+This is bounded fixture evidence, not production-main navigation, arbitrary source
+synthesis, generalized scheduling, live inference, another platform, or bound
+session retry/promotion/cancellation-process acceptance. Existing deterministic
+controller tests cover narrower session cancellation and promotion races.

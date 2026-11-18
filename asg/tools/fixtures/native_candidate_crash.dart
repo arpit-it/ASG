@@ -10,6 +10,10 @@ import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:asg/models/candidate_operation_receipt.dart';
+import 'package:asg/models/agent_session.dart';
+import 'package:asg/models/candidate_verification_run.dart';
+import 'package:asg/models/agent_session_binding.dart';
+import 'package:asg/services/agent_session_store.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 
@@ -115,12 +119,56 @@ final class PromotionCommitFault implements ConditionalRecordStorage {
   }
 }
 
+// Pause only the selected-session startup transaction, before any database write.
+final class AdmissionCommitBarrier implements ConditionalRecordStorage {
+  AdmissionCommitBarrier(this.delegate);
+  final ConditionalRecordStorage delegate;
+  Future<void> Function()? onAdmission;
+  @override
+  String? getString(String key) => delegate.getString(key);
+  @override
+  Future<bool> setString(String key, String value) =>
+      delegate.setString(key, value);
+  @override
+  Future<void> commitRecords({
+    required Map<String, String?> expected,
+    required Map<String, String> updates,
+    required void Function() authorize,
+  }) async {
+    if (onAdmission != null &&
+        updates.keys.any((key) => key.startsWith(AgentSession.prefix)) &&
+        updates.keys.any(
+          (key) => key.startsWith('studio.candidateChecks.v1.'),
+        )) {
+      authorize();
+      await onAdmission!();
+      throw StateError('Admission crash barrier must never return');
+    }
+    await delegate.commitRecords(
+      expected: expected,
+      updates: updates,
+      authorize: authorize,
+    );
+  }
+}
+
 final class SignalledFixtureHost extends NativeGenerationHost {
   SignalledFixtureHost({
     required super.receiptFiles,
     required super.runOperation,
     super.loadAsset,
+    this.onPrepare,
   });
+  final void Function()? onPrepare;
+  @override
+  Future<void> prepareCandidateReceipts(
+    CandidateVerificationRun run,
+    void Function() authorize,
+  ) async {
+    onPrepare?.call();
+    await super.prepareCandidateReceipts(run, authorize);
+  }
+
   bool stopSignalled = false;
   @override
   void cancelVerification() {
@@ -166,11 +214,26 @@ Future<void> main() async {
     }
     final input = jsonDecode(await challenge.readAsString());
     if (input is! Map<String, dynamic> ||
-        input.length != 12 ||
+        input.length != 14 ||
         input['nonce'] is! String ||
         !RegExp(r'^[a-f0-9]{32}$').hasMatch(input['nonce'] as String) ||
         ![1, 2, 3, 4, 5].contains(input['launch']) ||
         input['sdk'] is! String ||
+        input['sessionBound'] is! bool ||
+        input['admissionCrash'] is! bool ||
+        (input['admissionCrash'] == true && input['sessionBound'] != true) ||
+        (input['sessionBound'] == true &&
+            (input['stop'] != true ||
+                input['operation'] != 'test' ||
+                [
+                  'precommit',
+                  'running',
+                  'uncertain',
+                  'acknowledge',
+                  'retry',
+                  'promote',
+                  'promotionCrash',
+                ].any((key) => input[key] != false))) ||
         input['stop'] is! bool ||
         input['precommit'] is! bool ||
         input['running'] is! bool ||
@@ -200,6 +263,8 @@ Future<void> main() async {
     final launch = input['launch'] as int;
     final operation = input['operation'] as String;
     final targetIndex = operations.indexOf(operation);
+    final sessionBound = input['sessionBound'] as bool;
+    final admissionCrash = input['admissionCrash'] as bool;
     final stop = input['stop'] as bool;
     final precommit = input['precommit'] as bool;
     final running = input['running'] as bool;
@@ -219,7 +284,12 @@ Future<void> main() async {
     stage = 'database';
     final records = await StudioDatabase.open();
     final barrier = StopCommitBarrier(records);
-    final controllerRecords = precommit && launch == 1 ? barrier : records;
+    final admissionBarrier = AdmissionCommitBarrier(records);
+    final controllerRecords = admissionCrash && launch == 1
+        ? admissionBarrier
+        : precommit && launch == 1
+        ? barrier
+        : records;
     final projectId = 'restart-$nonce';
     final checks = CandidateVerificationStore(records, projectId);
     final workingKey = 'studio.generation.v1.$projectId';
@@ -245,6 +315,117 @@ Future<void> main() async {
     );
     final receipts = CandidateReceiptFiles(root: () async => receiptRoot);
     final host = NativeGenerationHost(receiptFiles: receipts);
+    AgentSession? selectedSession;
+    var receiptPreparations = 0, commandEntries = 0;
+    Future<Map<String, Object?>?> sessionProof() async {
+      if (!sessionBound) return null;
+      final saved = AgentSessionStore(records, project).load('session-$nonce');
+      if (saved == null ||
+          saved.cancellationRequested ||
+          saved.revision != (admissionCrash ? 0 : 1) ||
+          saved.dispatches.length != (admissionCrash ? 0 : 1) ||
+          (!admissionCrash &&
+              (saved.dispatches.single.boardTaskId != 'Tanalyze' ||
+                  saved.dispatches.single.dispatchId !=
+                      'candidate-$projectId-1:3'))) {
+        throw StateError('Session admission evidence mismatch');
+      }
+      final journal = records.getString(checks.key);
+      final currentCandidate = records.getString(checks.candidateKey);
+      final execution = records.getString(
+        'studio.agentExecution.v1.candidate-$projectId-1',
+      );
+      if (admissionCrash &&
+          (journal != null ||
+              currentCandidate != null ||
+              execution != null ||
+              (await receiptRoot.exists() &&
+                  await receiptRoot.list().isEmpty == false))) {
+        throw StateError(
+          'Uncommitted admission left startup records or receipts',
+        );
+      }
+      if (admissionCrash) {
+        for (final operation in operations) {
+          if (await File(path.join(canonical, '$operation-dispatched'))
+              .exists()) {
+            throw StateError('Pre-admission command entry observed');
+          }
+        }
+      }
+      return {
+        'sessionId': saved.sessionId,
+        'projectId': saved.projectId,
+        'revision': saved.revision,
+        'dispatchCount': saved.dispatches.length,
+        'dispatchId': saved.dispatches.isEmpty
+            ? null
+            : saved.dispatches.single.dispatchId,
+        'sessionSha256': digest(records.getString(saved.storageKey)!),
+        'journalSha256': journal == null ? null : digest(journal),
+        'candidateSha256': currentCandidate == null
+            ? null
+            : digest(currentCandidate),
+        'executionSha256': execution == null ? null : digest(execution),
+        'receiptPreparations': receiptPreparations,
+        'commandEntries': commandEntries,
+      };
+    }
+
+    Future<Map<String, Object?>> admissionState() async => {
+      'sessionProof': await sessionProof(),
+      'working': digest(records.getString(workingKey)!),
+      'output': digest(await working.readAsString()),
+      'sources': digest(
+        jsonEncode(
+          await NativeGenerationHost.fingerprints(candidate.path, source: true),
+        ),
+      ),
+    };
+    Future<void> admissionReport({required bool first}) async {
+      final current = await admissionState();
+      final baseline = File(path.join(canonical, 'before-admission.json'));
+      if (first) {
+        await baseline.create(exclusive: true);
+        await baseline.writeAsString(jsonEncode(current), flush: true);
+      } else if (jsonEncode(jsonDecode(await baseline.readAsString())) !=
+          jsonEncode(current)) {
+        throw StateError('Pre-admission reopen changed retained state');
+      }
+      runApp(
+        const MaterialApp(
+          home: Scaffold(body: Text('Disposable session admission: read only')),
+        ),
+      );
+      await WidgetsBinding.instance.endOfFrame;
+      await report(
+        canonical,
+        launch,
+        {
+          'nonce': nonce,
+          'dispatch': 'candidate-$projectId-1:3',
+          'operation': operation,
+          'completedOperations': <String>[],
+          'stopRequested': stop,
+          'precommit': precommit,
+          'running': running,
+          'uncertain': uncertain,
+          'acknowledge': acknowledge,
+          'retry': retry,
+          'promote': promote,
+          'promotionCrash': promotionCrash,
+          'readyForCrash': first,
+          'startupUnchanged': true,
+          'workingUnchanged': true,
+          'sourcesUnchanged': true,
+          'viewRendered': true,
+        },
+        sessionBound: true,
+        admissionCrash: true,
+        sessionProof: await sessionProof(),
+      );
+    }
+
     Future<String?> retainedIntent(String dispatch) async {
       if (!uncertain) return null;
       final directory =
@@ -305,6 +486,13 @@ Future<void> main() async {
           ),
         ),
         records: controllerRecords,
+        sessionBinding: selectedSession == null
+            ? null
+            : AgentSessionBinding.select(
+                session: selectedSession,
+                projectId: projectId,
+                boardTaskId: 'Tanalyze',
+              ),
         host: selectedHost,
         publish: (value, candidateHost, authorize) async {
           if (!promote || launch != 4) {
@@ -314,6 +502,7 @@ Future<void> main() async {
             project: project,
             definition: ApplicationStore(records).load(project).definition,
             store: SourceGenerationStore(publicationFault),
+            selectedSession: selectedSession,
             host: NativeGenerationHost(),
           );
           return publisher.promoteCandidate(
@@ -326,6 +515,20 @@ Future<void> main() async {
       );
     }
 
+    if (sessionBound && launch != 1) {
+      selectedSession = AgentSessionStore(
+        records,
+        project,
+      ).load('session-$nonce');
+      if (selectedSession == null) {
+        throw StateError('Selected session missing on reopen');
+      }
+      if (admissionCrash) {
+        await admissionReport(first: false);
+        await records.database.close();
+        exit(0);
+      }
+    }
     if (launch == 1) {
       if (records.getString(checks.key) != null || await candidate.exists()) {
         throw StateError('Fixture already reserved.');
@@ -418,6 +621,16 @@ Future<void> main() async {
         await ConversationStore(records).save(projectId, messages);
         await approvals.save(project, messages, true);
         approval = approvals.requireCurrentApproval(project);
+        if (sessionBound) {
+          selectedSession = await AgentSessionStore(records, project).create(
+            'session-$nonce',
+            RequirementsStore(records)
+                .load(projectId)
+                .tasks
+                .map((task) => task.id)
+                .toList(),
+          );
+        }
         final input = GenerationInput(
           project,
           ApplicationStore(records).load(project).definition,
@@ -459,6 +672,7 @@ Future<void> main() async {
       late SourceCandidateController runningController;
       late SignalledFixtureHost verifier;
       verifier = SignalledFixtureHost(
+        onPrepare: () => receiptPreparations++,
         loadAsset: (key) async {
           final source = await rootBundle.loadString(key);
           if (!uncertain || key != 'tools/generation_command.py') return source;
@@ -473,6 +687,7 @@ Future<void> main() async {
         },
         receiptFiles: receipts,
         runOperation: (project, currentOperation) async {
+          commandEntries++;
           final run = checks.load().runs.single;
           final receiptDirectory =
               initialDirectory ??
@@ -582,31 +797,38 @@ Future<void> main() async {
             'working': digest(records.getString(workingKey)!),
             'output': digest(await working.readAsString()),
             'dispatch': run.dispatchId,
+            if (sessionBound) 'sessionProof': await sessionProof(),
           };
           final before = File(path.join(canonical, 'before.json'));
           await before.create(exclusive: true);
           await before.writeAsString(jsonEncode(state), flush: true);
-          await report(canonical, 1, {
-            'nonce': nonce,
-            'dispatch': run.dispatchId,
-            'operation': operation,
-            'completedOperations': pending.snapshot.steps
-                .map((step) => step.operation)
-                .toList(),
-            'readyForCrash': true,
-            'stopRequested': stop,
-            'precommit': precommit,
-            'running': running,
-            'uncertain': uncertain,
-            'acknowledge': acknowledge,
-            'retry': retry,
-            'promote': promote,
-            'promotionCrash': promotionCrash,
-            'publicationFault': uncertain,
-            'runningMarker': running,
-            'stopSaveBlocked': barrier.reached,
-            'stopSignalled': verifier.stopSignalled,
-          });
+          await report(
+            canonical,
+            1,
+            {
+              'nonce': nonce,
+              'dispatch': run.dispatchId,
+              'operation': operation,
+              'completedOperations': pending.snapshot.steps
+                  .map((step) => step.operation)
+                  .toList(),
+              'readyForCrash': true,
+              'stopRequested': stop,
+              'precommit': precommit,
+              'running': running,
+              'uncertain': uncertain,
+              'acknowledge': acknowledge,
+              'retry': retry,
+              'promote': promote,
+              'promotionCrash': promotionCrash,
+              'publicationFault': uncertain,
+              'runningMarker': running,
+              'stopSaveBlocked': barrier.reached,
+              'stopSignalled': verifier.stopSignalled,
+            },
+            sessionBound: sessionBound,
+            sessionProof: await sessionProof(),
+          );
           runApp(
             MaterialApp(
               home: Scaffold(
@@ -618,6 +840,12 @@ Future<void> main() async {
           exit(3);
         },
       );
+      if (admissionCrash) {
+        admissionBarrier.onAdmission = () async {
+          await admissionReport(first: true);
+          await Completer<void>().future;
+        };
+      }
       if (stop) {
         runningController = makeController(snapshot, verifier);
         stage = 'controller-authority';
@@ -1198,55 +1426,62 @@ Future<void> main() async {
     if (launch == 5 && !promotionSurvived) {
       throw StateError('Published restart changed');
     }
-    await report(canonical, launch, {
-      'nonce': nonce,
-      'dispatch': run.dispatchId,
-      'interrupted': !acknowledged,
-      'acknowledge': acknowledge,
-      'retry': retry,
-      'promote': promote,
-      'promotionCrash': promotionCrash,
-      'promotedAfterRead': promotedAfterRead,
-      'refusedPublicationPreserved': refusedPublicationPreserved,
-      'promotionSurvived': promotionSurvived,
-      'retriedAfterRead': retriedAfterRead,
-      'newDispatch': newDispatch,
-      'retryChecksPassed':
-          retriedAfterRead ||
-          (launch >= 4 && (promotedAfterRead || await sameRetry())),
-      'oldEvidencePreserved': retriedAfterRead || (launch >= 4 && sameAction()),
-      'acknowledgedAfterRead': acknowledgedAfterRead,
-      'afterAcknowledgementPhase': acknowledgedAfterRead
-          ? 'awaitingApproval'
-          : null,
-      'actionUnchanged': actionUnchangedBefore,
-      'freshConsentRequired': freshConsentBefore,
-      'noNewDispatch': noNewDispatchBefore,
-      'stopRequested': stop,
-      'precommit': precommit,
-      'running': running,
-      'uncertain': uncertain,
-      'intentUnchanged':
-          await retainedIntent(run.dispatchId!) == before['intent'],
-      'runningCancelled':
-          running && !uncertain && retained.last.result.cancelled,
-      'savedStopPresent': controller.stopRequestFor(run) != null,
-      'stopUnchanged': sameStop(),
-      'operation': operation,
-      'completedOperations': run.snapshot.steps
-          .map((step) => step.operation)
-          .toList(),
-      'receiptOperations': retained
-          .map((receipt) => receipt.operation.name)
-          .toList(),
-      'retainedExit': uncertain ? null : retained.last.result.exitCode,
-      'cleanup': 'unknown',
-      'journalUnchanged': true,
-      'sourcesUnchanged': true,
-      'workingUnchanged': true,
-      'viewRendered': true,
-      'executionPhase': observedExecutionPhase,
-    });
+    await report(
+      canonical,
+      launch,
+      {
+        'nonce': nonce,
+        'dispatch': run.dispatchId,
+        'interrupted': !acknowledged,
+        'acknowledge': acknowledge,
+        'retry': retry,
+        'promote': promote,
+        'promotionCrash': promotionCrash,
+        'promotedAfterRead': promotedAfterRead,
+        'refusedPublicationPreserved': refusedPublicationPreserved,
+        'promotionSurvived': promotionSurvived,
+        'retriedAfterRead': retriedAfterRead,
+        'newDispatch': newDispatch,
+        'retryChecksPassed':
+            retriedAfterRead ||
+            (launch >= 4 && (promotedAfterRead || await sameRetry())),
+        'oldEvidencePreserved':
+            retriedAfterRead || (launch >= 4 && sameAction()),
+        'acknowledgedAfterRead': acknowledgedAfterRead,
+        'afterAcknowledgementPhase': acknowledgedAfterRead
+            ? 'awaitingApproval'
+            : null,
+        'actionUnchanged': actionUnchangedBefore,
+        'freshConsentRequired': freshConsentBefore,
+        'noNewDispatch': noNewDispatchBefore,
+        'stopRequested': stop,
+        'precommit': precommit,
+        'running': running,
+        'uncertain': uncertain,
+        'intentUnchanged':
+            await retainedIntent(run.dispatchId!) == before['intent'],
+        'runningCancelled':
+            running && !uncertain && retained.last.result.cancelled,
+        'savedStopPresent': controller.stopRequestFor(run) != null,
+        'stopUnchanged': sameStop(),
+        'operation': operation,
+        'completedOperations': run.snapshot.steps
+            .map((step) => step.operation)
+            .toList(),
+        'receiptOperations': retained
+            .map((receipt) => receipt.operation.name)
+            .toList(),
+        'retainedExit': uncertain ? null : retained.last.result.exitCode,
+        'cleanup': 'unknown',
+        'journalUnchanged': true,
+        'sourcesUnchanged': true,
+        'workingUnchanged': true,
+        'viewRendered': true,
+        'executionPhase': observedExecutionPhase,
+      },
+      sessionBound: sessionBound,
+      sessionProof: await sessionProof(),
+    );
     controller.dispose();
     workingController?.dispose();
     await host.dispose();
@@ -1263,12 +1498,22 @@ Future<void> main() async {
 Future<void> report(
   String root,
   int launch,
-  Map<String, Object?> observation,
-) async {
+  Map<String, Object?> observation, {
+  bool sessionBound = false,
+  bool admissionCrash = false,
+  Map<String, Object?>? sessionProof,
+}) async {
   final file = File(path.join(root, 'launch-$launch.json'));
   await file.create(exclusive: true);
   await file.writeAsString(
-    jsonEncode({'version': 10, 'launch': launch, ...observation}),
+    jsonEncode({
+      'version': 11,
+      'launch': launch,
+      ...observation,
+      'sessionBound': sessionBound,
+      'admissionCrash': admissionCrash,
+      'sessionProof': sessionProof,
+    }),
     flush: true,
   );
 }
