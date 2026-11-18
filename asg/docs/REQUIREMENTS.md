@@ -16284,3 +16284,27 @@ unknown. This bounded case requires a real receipt and refuses uncertain
 delivery rather than fabricating evidence. Existing native mode regressions,
 fresh review/required CI and verified merge remain delivery gates. General
 CE01 and other stated lifecycle limits remain pending under #404.
+
+
+Native running-test Stop delivered in PR #712, merge
+`6ec948fc1de6f0811ed1ab51bdbbb87e57658b42`, CI44309053699, verified tested
+tree d9bde936f17401018c589bd206640a974d0094aa. All13 native cases passed.
+
+CE01 active bounded task under #404 — native uncertain result delivery. Use
+fixture-only asset-loader fault injection at the exact helper result-publication
+boundary after a real running-test Stop. Keep the production helper/allowlist
+unchanged and reject a missing/ambiguous injection anchor. Require real test
+marker, committed matching Stop, retained target intent and absent target result.
+Crash/reopen only the owned disposable app on the same binary, preserving pending
+test, prior actual receipts and unchanged source/working state. Missing exit and
+cleanup stay unknown; no replay/promotion. Reject unexpected result, stale identity
+or mutated reopen evidence. Validate actual native case, prior modes, focused
+contracts and required regressions, fresh review and verified merge.
+
+
+Native uncertain-delivery slice implemented and locally observed. Fixture-only
+helper failure after real running-test Stop retains target intent but no result;
+same-binary app crash/reopen keeps exit unknown, no target result label, exact
+Stop/pending/prior receipt/source/working state and no replay. Ten host contracts
+pass; required regression completion, fresh review/CI and verified merge remain
+delivery gates. Broader CE01 and stated lifecycle limits remain pending.

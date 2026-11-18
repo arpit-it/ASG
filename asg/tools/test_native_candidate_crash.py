@@ -17,8 +17,8 @@ class CandidateCrashTests(unittest.TestCase):
         self.nonce = 'a' * 32
 
     def report(self, launch, operation='resolve', **changes):
-        value = {'version': 5, 'launch': launch, 'nonce': self.nonce, 'dispatch': f'candidate-restart-{self.nonce}-1:3'}
-        value.update(running=False, runningMarker=False, runningCancelled=False, precommit=False, stopSignalled=False, stopSaveBlocked=False, savedStopPresent=False, stopRequested=False, stopUnchanged=True, operation=operation, completedOperations=fixture.OPERATIONS[:fixture.OPERATIONS.index(operation)])
+        value = {'version': 6, 'launch': launch, 'nonce': self.nonce, 'dispatch': f'candidate-restart-{self.nonce}-1:3'}
+        value.update(uncertain=False, publicationFault=False, intentUnchanged=True, running=False, runningMarker=False, runningCancelled=False, precommit=False, stopSignalled=False, stopSaveBlocked=False, savedStopPresent=False, stopRequested=False, stopUnchanged=True, operation=operation, completedOperations=fixture.OPERATIONS[:fixture.OPERATIONS.index(operation)])
         if launch == 1:
             value['readyForCrash'] = True
         else:
@@ -84,6 +84,18 @@ class CandidateCrashTests(unittest.TestCase):
         self.report(2, operation='test', stopRequested=True, savedStopPresent=True, running=True, runningCancelled=False, retainedExit=0)
         with self.assertRaises(ValueError):
             fixture.read_report(self.root, 2, self.nonce, operation='test', stop=True, running=True)
+
+    def test_uncertain_completion_requires_fault_and_no_invented_exit(self):
+        self.report(1, operation='test', stopRequested=True, stopSignalled=True, running=True, runningMarker=True, uncertain=True, publicationFault=True)
+        fixture.read_report(self.root, 1, self.nonce, operation='test', stop=True, running=True, uncertain=True)
+        for changes in ({'retainedExit': -1}, {'runningCancelled': True}, {'intentUnchanged': False}, {'receiptOperations': ['resolve', 'analyze', 'test']}):
+            value = dict(stopRequested=True, savedStopPresent=True, running=True, uncertain=True, retainedExit=None, receiptOperations=['resolve', 'analyze'])
+            value.update(changes)
+            self.report(2, operation='test', **value)
+            with self.assertRaises(ValueError):
+                fixture.read_report(self.root, 2, self.nonce, operation='test', stop=True, running=True, uncertain=True)
+        self.report(2, operation='test', stopRequested=True, savedStopPresent=True, running=True, uncertain=True, retainedExit=None, receiptOperations=['resolve', 'analyze'])
+        fixture.read_report(self.root, 2, self.nonce, operation='test', stop=True, running=True, uncertain=True)
 
     def test_ready_and_recovered_reports_are_distinct(self):
         self.report(1)

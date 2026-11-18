@@ -575,3 +575,35 @@ arbitrary descendant cleanup, uncertain-delivery native recovery, cancellation
 during every operation, interruption inside a database commit, production-main
 navigation or generalized CE01 completion. These remain pending under #404;
 unavailable platforms stay deferred under #400.
+
+
+### Native uncertain test completion delivery — 18 November 2026
+
+Protocol6 adds `--operation test --stop --running --uncertain`. A fixture-only
+asset loader requires exactly one helper `receipt.publish(result)` anchor and
+injects a test-only nonce marker followed by process exit73 immediately before
+that publication. Resolve/analyze and the production helper/allowlist remain
+unchanged. The actual confined test starts and receives Stop through the same
+controller-owned host; the publication marker proves the intended failure point
+was reached. A returned target GenerationStep or unexpected result file refuses
+this case rather than overriding real evidence.
+
+Before the owned app crash, the fixture requires committed exact Stop intent,
+prior successful resolve/analyze receipts, target intent bound to the same
+receipt context/dispatch and no target result. Same-binary reopen hashes the
+exact target intent before/after native view rendering, requires the result to
+stay absent and verifies that no target result label or fabricated exit appears.
+Pending test, earlier steps, sources and working output remain unchanged;
+execution stays executing and cleanup stays unknown. The report's null exit
+and false cancellation-confirmation flag mean missing retained evidence, not
+proof of a particular tool outcome. No retry/reconciliation/promotion occurs.
+
+The actual native case passed on binary SHA256
+`85e6371327604eb5b1c9f2ba1152222dddf41767bdf3d991a93a9d29f1edb0b7`.
+Evidence: /tmp/asg-404-native-uncertain-observation.json. Ten host contracts
+include invented exit/cancellation, unexpected target receipt and changed-intent
+refusals. This is deterministic helper publication failure after a real test Stop,
+followed by app crash/reopen; it does not establish all transport failures, every
+operation's cancellation, arbitrary descendant cleanup, mid-commit durability,
+production-main navigation or generalized CE01 completion. These remain pending
+under #404; unavailable platforms remain deferred under #400.
