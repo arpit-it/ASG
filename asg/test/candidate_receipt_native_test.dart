@@ -21,6 +21,30 @@ void main() {
     );
     return;
   }
+  final producer = Platform.environment['ASG_RECEIPT_PRODUCER'];
+  if (producer != null) {
+    test('disposable receipt producer', () async {
+      final input = jsonDecode(producer) as Map<String, dynamic>;
+      final run = CandidateVerificationRun.fromJson(
+        input['run'] as Map<String, dynamic>,
+      );
+      final files = CandidateReceiptFiles(
+        root: () async => Directory(input['root'] as String),
+      );
+      final directory = await files.prepare(run, () {});
+      final tools = Directory('tools').absolute.path;
+      final script =
+          'import sys; sys.path.insert(0,${jsonEncode(tools)}); '
+          'import generation_command as g; '
+          'r=g.CompletionReceipt(${jsonEncode(directory)},'
+          '${jsonEncode(run.snapshot.directory)},${jsonEncode(run.snapshot.sdk)},"resolve"); '
+          'r.publish(g.run(sys.executable,["-c", "print(123)"],'
+          '${jsonEncode(run.snapshot.directory)},3)); r.close()';
+      final result = await Process.run('python3', ['-I', '-B', '-c', script]);
+      expect(result.exitCode, 0, reason: '${result.stderr}');
+    });
+    return;
+  }
   late Directory temporary, candidate, sdk, root;
   late CandidateVerificationRun run;
   late CandidateReceiptFiles files;
@@ -149,6 +173,60 @@ void main() {
       }
     });
   }
+
+  test('receipt survives disposable Flutter producer process exit', () async {
+    final sdkRoot = Platform.environment['FLUTTER_ROOT'];
+    expect(
+      sdkRoot,
+      isNotNull,
+      reason: 'The existing Flutter test SDK is required.',
+    );
+    final before = jsonEncode(run.toJson());
+    final journal = File('${temporary.path}/journal.json');
+    final working = File('${temporary.path}/last-working.txt');
+    await journal.writeAsString(before);
+    await working.writeAsString('preserved output');
+    final script =
+        'import sys,json; sys.path.insert(0,${jsonEncode(Directory('tools').absolute.path)}); '
+        'import generation_command as g; '
+        'r=g.run(${jsonEncode('$sdkRoot/bin/flutter')},'
+        '["test","--no-pub","--timeout","20s",'
+        '"test/candidate_receipt_native_test.dart",'
+        '"--plain-name","disposable receipt producer"],'
+        '${jsonEncode(Directory.current.path)},60); '
+        'print(json.dumps(r)); sys.exit(0 if r["exitCode"]==0 else 1)';
+    final child = await Process.run(
+      'python3',
+      ['-I', '-B', '-c', script],
+      environment: {
+        'ASG_RECEIPT_PRODUCER': jsonEncode({
+          'run': run.toJson(),
+          'root': root.path,
+        }),
+      },
+    );
+    expect(child.exitCode, 0, reason: '${child.stdout} ${child.stderr}');
+    // Producer has exited; a new service reads the unchanged serialized journal.
+    final restored = CandidateVerificationRun.fromJson(
+      jsonDecode(await journal.readAsString()) as Map<String, dynamic>,
+    );
+    final retained = await CandidateReceiptFiles(root: () async => root)
+        .read(restored);
+    expect(retained.single.result.exitCode, 0);
+    expect(retained.single.result.output, '123\n');
+    final results = await root
+        .list(recursive: true)
+        .where((entry) => entry.path.endsWith('/resolve.result.json'))
+        .toList();
+    final record = jsonDecode(
+      await File(results.single.path).readAsString(),
+    ) as Map<String, dynamic>;
+    expect(record['cleanup'], 'unknown');
+    expect(restored.finished, isFalse);
+    expect(restored.snapshot.pendingOperation, 'resolve');
+    expect(await journal.readAsString(), before);
+    expect(await working.readAsString(), 'preserved output');
+  }, timeout: const Timeout(Duration(seconds: 90)));
 
   test('actual Python helper receipt survives a new reader without journal changes', () async {
     final before = jsonEncode(run.toJson());

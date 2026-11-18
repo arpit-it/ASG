@@ -134,7 +134,7 @@ publication and automatic reconciliation stay pending. Existing four Mac
 confinement fixtures passed and protect private sibling files, but do not
 establish a receipt publisher or authenticate post-restart ownership.
 
-In progress under #404: durable completion receipts for confined
+Delivered in PR #701 (merge `953c6570b2fb47a58826f361a11f9f088fbd7def`, required CI44254752206): durable completion receipts for confined
 candidate checks. Persist helper results before stdout delivery in private storage
 outside candidate/tool/cache/scratch write scope. Bind dispatch, operation,
 recorded source/approval identity, execution configuration and host session;
@@ -146,6 +146,8 @@ host/legacy behavior and last working output. Validate actual parent-loss/broken
 pipe publication, native persistence/reopen, confinement, corruption, failure,
 Stop/disposal and full required checks. App crash/restart and automated
 reconciliation acceptance remain pending until separately verified.
+
+Next bounded investigation under #404: an actual process restart fixture for receipt reading. Verify a separate reader process can inspect retained helper evidence after the original owner ends, while interrupted journals and last working output remain unchanged. No retry, process signal or cleanup inference is authorized. Distinguish this prerequisite from full Flutter app crash/restart acceptance.
 
 Delivered bounded CE01 validation fix under #404: reject saved phase/revision pairs
 below the earliest legal lifecycle transition count and planning revisions other
