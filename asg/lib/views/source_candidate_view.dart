@@ -140,6 +140,20 @@ class _SourceCandidateViewState extends State<SourceCandidateView> {
                     '${run.startedAt.toLocal()}\n${run.snapshot.directory}',
                   ),
                   children: [
+                    if (run.dispatchId != null) ...[
+                      SelectableText('Saved dispatch: ${run.dispatchId}'),
+                      if (controller.savedExecutionFor(run) case final saved?)
+                        SelectableText(
+                          'Saved execution: ${saved.phase.name}\n'
+                          'Task: ${saved.taskId} · revision ${saved.revision}',
+                        )
+                      else
+                        const Text('Saved execution evidence is unavailable.'),
+                      const Text(
+                        'Viewing this record starts no command. '
+                        'An unknown exit remains unknown.',
+                      ),
+                    ],
                     if (run.snapshot.pendingOperation.isNotEmpty)
                       Text(
                         '${run.snapshot.pendingOperation}: dispatched without a saved exit',
