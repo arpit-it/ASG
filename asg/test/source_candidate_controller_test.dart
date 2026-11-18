@@ -1415,65 +1415,156 @@ void main() {
     );
   }
 
-  testWidgets(
-    'recovery dialog preserves dismissal and requires fresh consent',
-    (tester) async {
-      final initial = candidate.result;
-      final evidence = candidate.evidence;
-      candidate.dispose();
-      final host = InterruptedCheckHost();
-      candidate = SourceCandidateController(
-        project: project,
-        candidate: initial,
-        evidence: evidence,
-        records: records,
-        host: host,
-        publish: (value, host, guard) =>
-            throw StateError('Unexpected publication'),
-      );
-      host.stop = candidate.cancel;
-      await candidate.verify(approved: true);
-      final before = candidate.history.single.toJson();
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: SingleChildScrollView(
-              child: ListenableBuilder(
-                listenable: candidate,
-                builder: (_, _) => SourceCandidateView(controller: candidate),
-              ),
+  testWidgets('recovery dialog preserves dismissal and requires fresh consent', (
+    tester,
+  ) async {
+    final initial = candidate.result;
+    final evidence = candidate.evidence;
+    candidate.dispose();
+    final host = InterruptedCheckHost();
+    candidate = SourceCandidateController(
+      project: project,
+      candidate: initial,
+      evidence: evidence,
+      records: records,
+      host: host,
+      publish: (value, host, guard) =>
+          throw StateError('Unexpected publication'),
+    );
+    host.stop = candidate.cancel;
+    await candidate.verify(approved: true);
+    final before = candidate.history.single.toJson();
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: SingleChildScrollView(
+            child: ListenableBuilder(
+              listenable: candidate,
+              builder: (_, _) => SourceCandidateView(controller: candidate),
             ),
           ),
         ),
-      );
-      final resolve = find.widgetWithText(
-        TextButton,
-        'Resolve interrupted verification',
-      );
-      await tester.ensureVisible(resolve);
-      await tester.tap(resolve);
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Keep interrupted'));
-      await tester.pumpAndSettle();
-      expect(candidate.history.single.toJson(), before);
-      final checkbox = find.byType(CheckboxListTile).first;
-      await tester.ensureVisible(checkbox);
-      await tester.tap(checkbox);
-      await tester.pumpAndSettle();
-      expect(tester.widget<CheckboxListTile>(checkbox).value, isTrue);
-      await tester.ensureVisible(resolve);
-      await tester.tap(resolve);
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('I checked the process and changes'));
-      await tester.pumpAndSettle();
-      expect(candidate.history.single.finished, isTrue);
-      expect(candidate.history.single.snapshot.steps, isEmpty);
-      final verify = tester.widget<FilledButton>(
-        find.widgetWithText(FilledButton, 'Verify candidate in sandbox'),
-      );
-      expect(verify.onPressed, isNull);
-    },
-  );
+      ),
+    );
+    final resolve = find.widgetWithText(
+      TextButton,
+      'Resolve interrupted verification',
+    );
+    await tester.ensureVisible(resolve);
+    await tester.tap(resolve);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Keep interrupted'));
+    await tester.pumpAndSettle();
+    expect(candidate.history.single.toJson(), before);
+    final checkbox = find.byType(CheckboxListTile).first;
+    await tester.ensureVisible(checkbox);
+    await tester.tap(checkbox);
+    await tester.pumpAndSettle();
+    expect(tester.widget<CheckboxListTile>(checkbox).value, isTrue);
+    await tester.ensureVisible(resolve);
+    await tester.tap(resolve);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('I checked the process and changes'));
+    await tester.pumpAndSettle();
+    expect(candidate.history.single.finished, isTrue);
+    final acknowledgedRun = candidate.history.single;
+    expect(candidate.acknowledgementFor(acknowledgedRun), isNotNull);
+    expect(candidate.history.single.snapshot.steps, isEmpty);
+    final verify = tester.widget<FilledButton>(
+      find.widgetWithText(FilledButton, 'Verify candidate in sandbox'),
+    );
+    expect(verify.onPressed, isNull);
+    final after = Map.of(records.values);
+    final working = records.getString('studio.generation.v1.${project.id}');
+    candidate.dispose();
+    candidate = SourceCandidateController(
+      project: project,
+      candidate: acknowledgedRun.snapshot,
+      evidence: evidence,
+      records: records,
+      host: FixtureHost(),
+      publish: (_, _, _) => throw StateError('Unexpected publication'),
+    );
+    expect(
+      candidate
+          .acknowledgementFor(candidate.history.single)!
+          .matches(project.id, acknowledgedRun),
+      isTrue,
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: SingleChildScrollView(
+            child: SourceCandidateView(controller: candidate),
+          ),
+        ),
+      ),
+    );
+    await tester.ensureVisible(find.text('Saved candidate check runs'));
+    await tester.tap(find.text('Saved candidate check runs'));
+    await tester.pumpAndSettle();
+    final label = find.text('Run 1: stopped');
+    await tester.ensureVisible(label);
+    await tester.tap(label);
+    await tester.pumpAndSettle();
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is SelectableText &&
+            (widget.data?.startsWith(
+                  'Operator recovery acknowledgement saved at',
+                ) ??
+                false),
+      ),
+      findsOneWidget,
+    );
+    expect(records.values, after);
+    expect(records.getString('studio.generation.v1.${project.id}'), working);
+    expect(tester.takeException(), isNull);
+    final actionKey =
+        '${CandidateVerificationStore.recoveryPrefix}${acknowledgedRun.dispatchId}';
+    records.values[actionKey] = '{private-corrupt-action';
+    final corrupt = Map.of(records.values);
+    candidate.dispose();
+    candidate = SourceCandidateController(
+      project: project,
+      candidate: acknowledgedRun.snapshot,
+      evidence: evidence,
+      records: records,
+      host: FixtureHost(),
+      publish: (_, _, _) => throw StateError('Unexpected publication'),
+    );
+    expect(candidate.historyError, isNull);
+    expect(candidate.history.single.finished, isTrue);
+    expect(candidate.acknowledgementHistoryError, contains('unreadable'));
+    expect(
+      candidate.acknowledgementHistoryError,
+      isNot(contains('private-corrupt-action')),
+    );
+    expect(candidate.acknowledgementFor(candidate.history.single), isNull);
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: SingleChildScrollView(
+            child: SourceCandidateView(controller: candidate),
+          ),
+        ),
+      ),
+    );
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is SelectableText &&
+            (widget.data?.startsWith(
+                  'Saved recovery acknowledgement is unreadable.',
+                ) ??
+                false),
+      ),
+      findsOneWidget,
+    );
+    expect(records.values, corrupt);
+    expect(tester.takeException(), isNull);
+  });
 
   testWidgets('stale recovery dialog preserves changed saved evidence', (
     tester,

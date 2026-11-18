@@ -658,3 +658,37 @@ unavailable evidence, intent-only Stop wording and byte-for-byte dismissal
 preservation. Existing stale-confirmation and fresh-consent regressions remain
 mandatory. This is component-level UI coverage, not production-main navigation
 or generalized CE01 acceptance.
+
+
+### Durable operator recovery acknowledgement — 18 November 2026
+
+Explicit interrupted-candidate acknowledgement now adds an immutable
+`studio.candidateRecovery.v1.<dispatch>` side record in the same conditional
+transaction as the existing journal closure and linked execution transition to
+awaiting approval. Its version1 payload binds project, run number, dispatch,
+original start time, UTC action time and before/after typed-run fingerprints.
+Current journal/checkpoint/candidate formats are unchanged. The after fingerprint
+requires the exact existing failed/finished acknowledgement result, retaining
+pending operation and real steps rather than inventing an exit.
+
+An existing side record, stale journal/execution, missing execution or failed
+transaction leaves prior journal/checkpoint/evidence intact; the side record is
+never overwritten by this action. Legacy unlinked runs preserve their existing
+explicit acknowledgement behavior without inventing a dispatch-bound audit row.
+Native database validation binds the record key to dispatch and isolates corrupt
+records while preserving their bytes. Typed parsing redacts invalid JSON source.
+
+Reopened candidate history shows the saved operator action/time separately from
+retained command exits and Stop intent. Its label says the action does not
+confirm command exit or cleanup. Unreadable acknowledgement evidence is shown
+without blocking valid history or replacing the record. Existing process/change
+inspection, stale-dialog checks and fresh verification consent remain unchanged;
+no action record authenticates an operator or authorizes replay/process control.
+
+Coverage includes exact transition/identity and malformed metadata, atomic failed
+and existing-record refusal, duplicate acknowledgement preservation, real native
+Sembast close/reopen plus corruption isolation, legacy absence, reopened view
+non-mutation and fresh consent. The isolated native target builds, but new audit
+acceptance is database/controller/widget evidence, not a fresh native app-crash
+or production-main navigation observation. Generalized CE01 remains open under
+#404 and unavailable-platform acceptance remains under #400.

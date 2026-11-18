@@ -5,6 +5,7 @@ import 'dart:convert';
 
 import '../models/candidate_verification_run.dart';
 import '../models/candidate_stop_request.dart';
+import '../models/candidate_recovery_acknowledgement.dart';
 import '../models/agent_execution_checkpoint.dart';
 import '../models/source_generation.dart';
 import 'record_storage.dart';
@@ -19,6 +20,31 @@ class CandidateVerificationStore {
   String? _expectedJournal, _expectedCandidate;
   CandidateVerificationRun? _owned, _session;
   Future<void> _pending = Future<void>.value();
+  static const recoveryPrefix = 'studio.candidateRecovery.v1.';
+
+  CandidateRecoveryAcknowledgement? acknowledgementFor(
+    CandidateVerificationRun run,
+  ) {
+    if (run.dispatchId == null) return null;
+    final raw = records.getString('$recoveryPrefix${run.dispatchId}');
+    if (raw == null) return null;
+    try {
+      final acknowledgement = CandidateRecoveryAcknowledgement.fromJson(
+        jsonDecode(raw),
+      );
+      if (!acknowledgement.matches(projectId, run)) {
+        throw const FormatException(
+          'Recovery acknowledgement identity changed.',
+        );
+      }
+      return acknowledgement;
+    } on FormatException {
+      throw const FormatException(
+        'Saved recovery acknowledgement is unreadable.',
+      );
+    }
+  }
+
   static const stopPrefix = 'studio.candidateStop.v1.';
 
   // Progress, Stop intent and terminal observations share one session write order.
@@ -237,9 +263,31 @@ class CandidateVerificationStore {
         saved.advance(AgentExecutionPhase.awaitingApproval).toJson(),
       );
     }
+    final acknowledgement = expected.dispatchId == null
+        ? null
+        : CandidateRecoveryAcknowledgement.create(
+            projectId,
+            expected,
+            stopped,
+            DateTime.now().toUtc(),
+          );
+    final acknowledgementKey = acknowledgement == null
+        ? null
+        : '$recoveryPrefix${acknowledgement.dispatchId}';
+    final acknowledgementRaw = acknowledgement == null
+        ? null
+        : jsonEncode(acknowledgement.toJson());
     await storage.commitRecords(
-      expected: {key: raw, if (reconciled != null) executionKey!: executionRaw},
-      updates: {key: jsonEncode(updated.toJson()), ?executionKey: ?reconciled},
+      expected: {
+        key: raw,
+        if (reconciled != null) executionKey!: executionRaw,
+        ?acknowledgementKey: null,
+      },
+      updates: {
+        key: jsonEncode(updated.toJson()),
+        ?executionKey: ?reconciled,
+        ?acknowledgementKey: ?acknowledgementRaw,
+      },
       authorize: authorize,
     );
   }

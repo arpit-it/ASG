@@ -16359,3 +16359,32 @@ remaining distinct and cleanup never inferred. Full dialog title/content scrolls
 at narrow2x text.44 focused checks pass, including dismissal non-mutation, stale
 confirmation and fresh-consent reset. Required final regressions, fresh review/CI
 and verified merge remain gates; generalized CE01 stays open.
+
+
+Recovery-dialog evidence fix delivered in PR #715, merge
+`b97e90b77b358f116838a1c5a6baa1cce9052589`, required CI44326111793,
+verified tested treec83b70d244eb2e2e81f876fdcf0c649472eb2ce0.
+
+CE01 active bounded task under #404 — durable operator recovery acknowledgement.
+Current acknowledgement closes the interrupted journal and moves its checkpoint
+to awaiting approval, but retains no distinct action record/time; reopened
+history cannot distinguish operator acknowledgement from actual completion. Add
+a typed immutable side record bound to project/run/dispatch, exact before/after
+run identity and UTC acknowledgement time. Commit it atomically with existing
+recovery CAS without changing current journal/checkpoint formats. Reopen shows
+operator acknowledgement separately from real exit and still-unknown cleanup.
+Legacy rows remain readable without inferred action history. Preserve explicit
+inspection, stale/missing-execution refusal and fresh consent; failed/existing
+or corrupt audit writes must not partially reconcile or overwrite bytes. Verify
+model/store/controller/view and native database reopen cases, required checks,
+inventory/build, fresh review and verified merge. General CE01 remains pending.
+
+
+Durable operator acknowledgement implemented with immutable before/after-run
+identity and UTC action time, committed atomically with existing recovery state.
+Legacy records gain no invented history, corrupt audit records stay preserved
+and isolated, and reopened view remains read-only with fresh consent required.
+62 focused and full1,859 Flutter tests (11 skipped), analyze, web and isolated
+native build passed; product acceptance32/inventory9 passed. Actual audit reopen
+evidence is native database/controller/widget coverage, not new app-crash/main
+navigation acceptance. Fresh review/required CI and verified merge remain gates.

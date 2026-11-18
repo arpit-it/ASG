@@ -29,6 +29,7 @@ import 'database_factory.dart';
 import 'model_settings_store.dart';
 import 'record_storage.dart';
 import '../models/candidate_stop_request.dart';
+import '../models/candidate_recovery_acknowledgement.dart';
 import 'inspected_folder_store.dart';
 import 'runtime_setup_store.dart';
 import 'studio_store.dart';
@@ -111,6 +112,7 @@ class StudioDatabase implements ConditionalRecordStorage {
             !record.key.startsWith('studio.sourceCandidate.v1.') &&
             !record.key.startsWith('studio.candidateChecks.v1.') &&
             !record.key.startsWith('studio.candidateStop.v1.') &&
+            !record.key.startsWith('studio.candidateRecovery.v1.') &&
             !record.key.startsWith('studio.agentExecution.v1.') &&
             !record.key.startsWith('studio.repairAttempts.v1.') &&
             !record.key.startsWith('studio.generationPrevious.v1.') &&
@@ -211,6 +213,13 @@ class StudioDatabase implements ConditionalRecordStorage {
       PlanApproval.fromJson(decoded as Map<String, dynamic>);
     } else if (key.startsWith('studio.repairAttempts.v1.')) {
       RepairAttemptJournal.fromJson(decoded as Map<String, dynamic>);
+    } else if (key.startsWith('studio.candidateRecovery.v1.')) {
+      final acknowledgement = CandidateRecoveryAcknowledgement.fromJson(
+        decoded,
+      );
+      if (key != 'studio.candidateRecovery.v1.${acknowledgement.dispatchId}') {
+        throw const FormatException('Recovery acknowledgement key mismatch.');
+      }
     } else if (key.startsWith('studio.candidateStop.v1.')) {
       final request = CandidateStopRequest.fromJson(decoded);
       if (key != 'studio.candidateStop.v1.${request.dispatchId}') {

@@ -7,6 +7,7 @@ import '../models/agent_execution_checkpoint.dart';
 import '../models/candidate_operation_receipt.dart';
 import '../models/candidate_stop_request.dart';
 import '../models/candidate_recovery_status.dart';
+import '../models/candidate_recovery_acknowledgement.dart';
 import '../services/agent_execution_checkpoint_store.dart';
 import '../models/approved_source_proposal.dart';
 import '../models/build_plan.dart';
@@ -62,6 +63,16 @@ class SourceCandidateController extends BaseController {
   }
 
   GeneratedProject? _unsavedObservation;
+  Map<int, CandidateRecoveryAcknowledgement> _acknowledgements = const {};
+  String? _acknowledgementHistoryError;
+  String? get acknowledgementHistoryError => _acknowledgementHistoryError;
+  CandidateRecoveryAcknowledgement? acknowledgementFor(
+    CandidateVerificationRun run,
+  ) {
+    final value = _acknowledgements[run.number];
+    return value?.matches(project.id, run) == true ? value : null;
+  }
+
   List<CandidateVerificationRun> _history = const [];
   List<CandidateVerificationRun> get history => _history;
   String? _historyError;
@@ -69,11 +80,22 @@ class SourceCandidateController extends BaseController {
   void _refreshHistory() {
     _stopRequests = const {};
     _stopHistoryError = null;
+    _acknowledgements = const {};
+    _acknowledgementHistoryError = null;
     try {
       final store = CandidateVerificationStore(records, project.id);
       _history = store.load().runs;
       final requests = <int, CandidateStopRequest>{};
+      final acknowledgements = <int, CandidateRecoveryAcknowledgement>{};
       for (final run in _history) {
+        try {
+          final acknowledgement = store.acknowledgementFor(run);
+          if (acknowledgement != null) {
+            acknowledgements[run.number] = acknowledgement;
+          }
+        } catch (_) {
+          _acknowledgementHistoryError = 'Saved recovery acknowledgement is unreadable. Retained records have not been replaced.';
+        }
         try {
           final request = store.stopRequestFor(run);
           if (request != null) requests[run.number] = request;
@@ -82,6 +104,7 @@ class SourceCandidateController extends BaseController {
         }
       }
       _stopRequests = Map.unmodifiable(requests);
+      _acknowledgements = Map.unmodifiable(acknowledgements);
       _historyError = null;
       unawaited(_refreshReceipts(_history));
     } catch (_) {
