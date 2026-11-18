@@ -24,6 +24,7 @@ import 'package:asg/services/studio_database.dart';
 import 'package:asg/views/source_candidate_view.dart';
 
 const bundle = 'com.arsinha.asg.restartfixture';
+const operations = ['resolve', 'analyze', 'test', 'build'];
 
 String digest(String text) => sha256.convert(utf8.encode(text)).toString();
 
@@ -64,15 +65,18 @@ Future<void> main() async {
     }
     final input = jsonDecode(await challenge.readAsString());
     if (input is! Map<String, dynamic> ||
-        input.length != 3 ||
+        input.length != 4 ||
         input['nonce'] is! String ||
         !RegExp(r'^[a-f0-9]{32}$').hasMatch(input['nonce'] as String) ||
         ![1, 2].contains(input['launch']) ||
-        input['sdk'] is! String) {
+        input['sdk'] is! String ||
+        !operations.contains(input['operation'])) {
       throw StateError('Invalid challenge schema.');
     }
     final nonce = input['nonce'] as String;
     final launch = input['launch'] as int;
+    final operation = input['operation'] as String;
+    final targetIndex = operations.indexOf(operation);
     final sdk = await Directory(input['sdk'] as String).resolveSymbolicLinks();
     final support = await getApplicationSupportDirectory();
     if (path.basename(support.path) != bundle ||
@@ -89,7 +93,7 @@ Future<void> main() async {
     final working = File(path.join(canonical, 'working', 'index.html'));
     final approval = PlanApproval(
       messageIndex: 0,
-      content: 'Disposable offline resolve fixture',
+      content: 'Disposable fixed verification fixture',
       context: nonce,
       approved: true,
       recordedAt: DateTime.utc(2026),
@@ -102,12 +106,22 @@ Future<void> main() async {
       }
       await candidate.create();
       await File(path.join(candidate.path, 'pubspec.yaml')).writeAsString(
-        'name: asg_restart_fixture\nenvironment:\n  sdk: ">=3.3.0 <4.0.0"\ndependencies:\n  flutter:\n    sdk: flutter\n',
+        'name: asg_restart_fixture\nenvironment:\n  sdk: ">=3.3.0 <4.0.0"\ndependencies:\n  flutter:\n    sdk: flutter\ndev_dependencies:\n  flutter_test:\n    sdk: flutter\n',
       );
       final source = File(path.join(candidate.path, 'lib', 'main.dart'));
       await source.parent.create();
       await source.writeAsString(
         "import 'package:flutter/widgets.dart';\nvoid main() => runApp(const SizedBox());\n",
+      );
+      final test = File(path.join(candidate.path, 'test', 'smoke_test.dart'));
+      await test.parent.create();
+      await test.writeAsString(
+        "import 'package:flutter_test/flutter_test.dart';\nvoid main() { test('fixed fixture smoke', () { expect(2 + 2, 4); }); }\n",
+      );
+      final web = File(path.join(candidate.path, 'web', 'index.html'));
+      await web.parent.create();
+      await web.writeAsString(
+        r'<!DOCTYPE html><html><head><base href="$FLUTTER_BASE_HREF"><meta charset="UTF-8"></head><body><script src="flutter_bootstrap.js" async></script></body></html>',
       );
       await working.parent.create();
       await working.writeAsString('previous working output', flush: true);
@@ -137,51 +151,69 @@ Future<void> main() async {
         approval: approval,
         checkpointVersion: 1,
         phase: SourceGenerationPhase.verifying,
-        pendingOperation: 'resolve',
+        pendingOperation: '',
       );
       stage = 'journal-start';
       final run = await checks.start(snapshot, () {});
       final receiptDirectory = await receipts.prepare(run, () {});
-      await File(path.join(canonical, 'resolve-dispatched'))
-          .create(exclusive: true);
-      stage = 'actual-resolve';
-      final step = await host.runFlutterOperation(
+      final verifier = NativeGenerationHost(
+        receiptFiles: receipts,
+        runOperation: (project, currentOperation) async {
+          stage = 'actual-$currentOperation';
+          await File(path.join(canonical, '$currentOperation-dispatched'))
+              .create(exclusive: true);
+          final step = await host.runFlutterOperation(
+            project,
+            currentOperation,
+            receiptDirectory: receiptDirectory,
+          );
+          if (!step.succeeded) {
+            throw StateError('Actual confined operation failed.');
+          }
+          if (currentOperation != operation) return step;
+          final pending = checks.load().runs.single;
+          final saved = await receipts.read(pending);
+          if (pending.snapshot.pendingOperation != operation ||
+              pending.snapshot.steps.length != targetIndex ||
+              saved.length != targetIndex + 1 ||
+              saved.any((receipt) => receipt.result.exitCode != 0)) {
+            throw StateError('Pending operation/receipt prefix mismatch.');
+          }
+          final state = {
+            'journal': digest(records.getString(checks.key)!),
+            'candidate': digest(records.getString(checks.candidateKey)!),
+            'working': digest(records.getString(workingKey)!),
+            'output': digest(await working.readAsString()),
+            'dispatch': run.dispatchId,
+          };
+          final before = File(path.join(canonical, 'before.json'));
+          await before.create(exclusive: true);
+          await before.writeAsString(jsonEncode(state), flush: true);
+          await report(canonical, 1, {
+            'nonce': nonce,
+            'dispatch': run.dispatchId,
+            'operation': operation,
+            'completedOperations': pending.snapshot.steps
+                .map((step) => step.operation)
+                .toList(),
+            'readyForCrash': true,
+          });
+          runApp(
+            MaterialApp(
+              home: Scaffold(
+                body: Text('Disposable $operation: ready for owned crash'),
+              ),
+            ),
+          );
+          await Future<void>.delayed(const Duration(seconds: 45));
+          exit(3);
+        },
+      );
+      await verifier.verify(
         snapshot,
-        'resolve',
-        receiptDirectory: receiptDirectory,
+        (current) => checks.checkpoint(current, () {}),
       );
-      if (step.exitCode != 0) {
-        throw StateError('Actual confined resolve failed.');
-      }
-      final saved = await receipts.read(run);
-      if (saved.length != 1 || saved.single.result.exitCode != 0) {
-        throw StateError('Retained resolve result missing.');
-      }
-      final state = {
-        'journal': digest(records.getString(checks.key)!),
-        'candidate': digest(records.getString(checks.candidateKey)!),
-        'working': digest(records.getString(workingKey)!),
-        'output': digest(await working.readAsString()),
-        'dispatch': run.dispatchId,
-      };
-      final before = File(path.join(canonical, 'before.json'));
-      await before.create(exclusive: true);
-      await before.writeAsString(jsonEncode(state), flush: true);
-      await report(canonical, 1, {
-        'nonce': nonce,
-        'dispatch': run.dispatchId,
-        'readyForCrash': true,
-      });
-      // Host owns this live process. It must terminate it after the durable handshake.
-      runApp(
-        const MaterialApp(
-          home: Scaffold(
-            body: Text('Disposable candidate: ready for owned crash'),
-          ),
-        ),
-      );
-      await Future<void>.delayed(const Duration(seconds: 45));
-      exit(3);
+      throw StateError('Target operation did not reach crash boundary.');
     }
     stage = 'recovery-read';
     final beforeFile = File(path.join(canonical, 'before.json'));
@@ -233,10 +265,17 @@ Future<void> main() async {
     if (controller.historyError != null ||
         controller.receiptHistoryError != null ||
         run.finished ||
-        run.snapshot.pendingOperation != 'resolve' ||
+        run.snapshot.pendingOperation != operation ||
         run.dispatchId != before['dispatch'] ||
-        retained.length != 1 ||
-        retained.single.result.exitCode != 0 ||
+        retained.length != targetIndex + 1 ||
+        retained.any((receipt) => receipt.result.exitCode != 0) ||
+        jsonEncode(
+              retained.map((receipt) => receipt.operation.name).toList(),
+            ) !=
+            jsonEncode(operations.take(targetIndex + 1).toList()) ||
+        jsonEncode(run.snapshot.steps.map((step) => step.operation).toList()) !=
+            jsonEncode(operations.take(targetIndex).toList()) ||
+        run.snapshot.steps.any((step) => !step.succeeded) ||
         controller.canPromote ||
         !NativeGenerationHost.sameFiles(currentSources, snapshot.sources) ||
         controller.savedExecutionFor(run)?.dispatchId != run.dispatchId ||
@@ -285,7 +324,7 @@ Future<void> main() async {
     viewKey.currentContext!.visitChildElements(visit);
     if (!text.any((value) => value.contains('Candidate checks: verifying')) ||
         !text.any(
-          (value) => value.contains('Retained resolve result: exit 0'),
+          (value) => value.contains('Retained $operation result: exit 0'),
         )) {
       throw StateError('Production candidate view did not render.');
     }
@@ -308,7 +347,14 @@ Future<void> main() async {
       'nonce': nonce,
       'dispatch': run.dispatchId,
       'interrupted': true,
-      'retainedResolveExit': retained.single.result.exitCode,
+      'operation': operation,
+      'completedOperations': run.snapshot.steps
+          .map((step) => step.operation)
+          .toList(),
+      'receiptOperations': retained
+          .map((receipt) => receipt.operation.name)
+          .toList(),
+      'retainedExit': retained.last.result.exitCode,
       'cleanup': 'unknown',
       'journalUnchanged': true,
       'sourcesUnchanged': true,
@@ -336,7 +382,7 @@ Future<void> report(
   final file = File(path.join(root, 'launch-$launch.json'));
   await file.create(exclusive: true);
   await file.writeAsString(
-    jsonEncode({'version': 1, 'launch': launch, ...observation}),
+    jsonEncode({'version': 2, 'launch': launch, ...observation}),
     flush: true,
   );
 }

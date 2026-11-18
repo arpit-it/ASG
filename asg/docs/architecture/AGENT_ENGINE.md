@@ -338,3 +338,43 @@ commit and a generalized multi-tool recovery session remain pending under #404.
 The seeded working output is a fixture sentinel, not a new generated-app
 acceptance claim. Execution remains saved as executing with a pending operation;
 reading it grants no new authority.
+
+
+### Fixed verification completion-gap matrix — 18 November 2026
+
+The isolated native fixture now accepts one fixed target operation or `--operation
+all`. Protocol version2 reports the target, exact completed-operation prefix and
+retained-receipt prefix. The entrypoint runs the production NativeGenerationHost
+verifier with its existing test operation hook: each hook invokes the actual
+confined runner, then pauses the selected successful result before returning it
+to the verifier. Production progress callbacks persist all earlier steps and
+the current pending operation through CandidateVerificationStore.checkpoint.
+The fixture uses fixed disposable source, Flutter test and web scaffold; package
+resolution stays offline against the existing SDK/cache. No model synthesis is
+claimed.
+
+| Crash target | Completed journal steps after reopen | Retained receipt prefix |
+| --- | --- | --- |
+| resolve | none | resolve |
+| analyze | resolve | resolve, analyze |
+| test | resolve, analyze | resolve, analyze, test |
+| build | resolve, analyze, test | resolve, analyze, test, build |
+
+All four cases passed on this Mac with the same disposable binary SHA256
+`270b86f1dfc9d07466df00742dd140c9b15d60506d377ac432a83e7f0cfaed15`.
+Each case used an actual app SIGKILL after its durable handshake and relaunched
+the identical binary. The exact target receipt exit was zero, while the target
+remained pending and the journal retained only earlier steps. Actual current
+sources, journal/candidate/seeded-working records and working-output sentinel
+remained unchanged before and after native view rendering. Cleanup remains
+unknown, promotion unavailable, and no replay or reconciliation is invoked.
+The host checks exact nonce-derived dispatch, operation/order, receipt prefix
+and same binary across the matrix. Six explicit host tests include malformed
+completed/receipt prefixes for every target. The earlier version1 resolve-only
+observation remains tied to its own binary.
+
+This covers four fixed successful completion-to-journal crash gaps in a
+test-only isolated startup. It does not establish production-main navigation,
+failed/cancelled operation recovery, cancellation during journal commit, all
+earlier crash phases, trusted descendant cleanup or a generalized agent session.
+Those remain pending under #404; other platforms stay deferred under #400.
