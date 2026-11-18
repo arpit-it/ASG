@@ -14773,3 +14773,5 @@ CI44207424415 and fresh review. Verified remote main matched the tested tree.
 Matched candidate execution completion commits atomically with working output.
 Publication failure retains the previous checkpoint and working output.
 #404 remains open for broader persistent execution acceptance.
+
+PR #693 merged at ffbb6af8b1db055806b1552969cdd21d4a6d813a after CI44217979729 and fresh review. Verified remote tree matched tested source. Native reopen preserves completed execution and promoted working-output data. Claims released. CE01 evidence and remaining acceptance reconciled in REQUIREMENTS.md under #404.
