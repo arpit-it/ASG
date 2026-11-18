@@ -76,6 +76,40 @@ Planning targets in UTC are 30 November 2026 for the runtime foundation, 15 Dece
 | F52–F55 | Commercial connector and delivery acceptance is deferred. CE04, CE17, CE22 and CE34 cover coding-specific contracts, browser checks, extensions and runnable delivery. |
 | F56 | Repository coordination governs development of the product. CE03 applies independent task ownership and the two-writer limit inside the product. |
 
+### CE01 implementation evidence — 18 November 2026
+
+CE01 remains in progress under #404. The candidate verification workflow now
+persists execution identity before dispatch, retains uncertain operations for
+recovery, and commits completion with candidate promotion.
+
+| Delivered slice | Verified merge evidence |
+| --- | --- |
+| Persistent execution checkpoint and restart reconciliation | PR #685, `142252d925e973d55e99d1708fe8c53a9e58f7a9` |
+| Preserve unknown candidate exits as interrupted | PR #686, `424536547637be6cd0ed38b2e9e81d9264792636` |
+| Match recovery acknowledgement to dispatch identity | PR #687, `8f3b01a368b3d3f1c2fc2ea8a56effd1b2ec4be0` |
+| Persist dispatch identity in verification journals | PR #688, `9f01fe68230819d5778db8911c86d721dc46a1a4` |
+| Atomic verification startup, completion and explicit recovery action | PR #689, `51ebcd5db53fe21fd56ae6f6cd324a10f0cf8b38` |
+| Renew verification consent after recovery | PR #690, `083c9c872588ecdfbadd968b404f2f263b90b852` |
+| Reject stale recovery-dialog confirmation | PR #691, `062e39e0bb648f418c52fb65ee44abb83236bc26` |
+| Complete execution atomically with working-output promotion | PR #692, `c27ddecebf62e94fd3108d168735656542793fad` |
+| Native database reopen preserves completed identity and rejects replay | PR #693, `ffbb6af8b1db055806b1552969cdd21d4a6d813a` |
+
+These slices passed their required CI and fresh revision reviews. Deterministic
+coverage includes controller failures, stale writes, recovery dismissal and
+confirmation, consent renewal, failed publication and native database reopening.
+The final regression suite passed 1,770 tests with 10 skipped. Live inference
+acceptance remains tied to separately dated runtime observations.
+
+Recovery currently requires the operator to check that the interrupted process
+has stopped and inspect candidate changes before acknowledging a fresh attempt.
+Automatic process reconciliation, a durable session spanning multiple tool calls,
+and a visible session-level activity/recovery interface remain pending. The next
+eligible CE01 investigation under #404 is to inspect how saved candidate execution
+state can be exposed at reopen without launching or replaying an operation.
+Acceptance requires displaying the saved phase and identity, preserving unknown
+outcomes, and leaving completed executions terminal. CE02 and dependent generalized
+execution work continue to require their documented prerequisite acceptance.
+
 The first P0 implementation under #404 is the CE01 execution checkpoint model. It records a unique task ID and explicit lifecycle transitions, refuses invalid transitions and preserves an interrupted dispatch for reconciliation after reload. Validate round-trip, invalid transitions and interrupted dispatch with deterministic tests. This slice can run alongside read-only repository inventory design. The December prototype then needs scoped inspection and editing, typed dispatch, approved execution and a verified repair loop. The January delegation target depends on scoped contexts, scheduling and cancellation; the beta additionally depends on Git review, rollback and browser evidence.
 
 ## Completion and selection rules
