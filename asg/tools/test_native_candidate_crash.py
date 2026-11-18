@@ -17,7 +17,7 @@ class CandidateCrashTests(unittest.TestCase):
         self.nonce = 'a' * 32
 
     def report(self, launch, **changes):
-        value = {'version': 1, 'launch': launch, 'nonce': self.nonce, 'dispatch': 'candidate-p-1:3'}
+        value = {'version': 1, 'launch': launch, 'nonce': self.nonce, 'dispatch': f'candidate-restart-{self.nonce}-1:3'}
         if launch == 1:
             value['readyForCrash'] = True
         else:
@@ -28,7 +28,7 @@ class CandidateCrashTests(unittest.TestCase):
         return value
 
     def test_stale_or_unsafe_observations_are_refused(self):
-        for changes in ({'nonce': 'b' * 32}, {'dispatch': 'candidate-p-1:4'}, {'cleanup': 'confirmed'},
+        for changes in ({'nonce': 'b' * 32}, {'dispatch': 'candidate-p-1:4'}, {'dispatch': 'wrong-task:3'}, {'cleanup': 'confirmed'},
                         {'retainedResolveExit': True}, {'workingUnchanged': False}, {'viewRendered': False}):
             self.report(2, **changes)
             with self.assertRaises(ValueError):

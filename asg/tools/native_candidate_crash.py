@@ -21,7 +21,7 @@ def read_report(root, launch, nonce):
     value = json.loads(report.read_text())
     if (not isinstance(value, dict) or type(value.get('version')) is not int or value['version'] != 1 or
             type(value.get('launch')) is not int or value['launch'] != launch or value.get('nonce') != nonce or
-            not isinstance(value.get('dispatch'), str) or not value['dispatch'].endswith(':3')):
+            value.get('dispatch') != f'candidate-restart-{nonce}-1:3'):
         raise ValueError('Candidate report identity mismatch')
     if launch == 1:
         if value.get('readyForCrash') is not True:
