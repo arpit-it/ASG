@@ -16112,3 +16112,13 @@ owned-process handshakes and record binary/source identity. Native startup has n
 existing data-root injection; copying the current bundle identity is insufficient.
 See the Mac app-restart isolation investigation in architecture/AGENT_ENGINE.md.
 Full GUI restart acceptance remains pending; no app launch is recorded here.
+
+
+CE01 active bounded implementation under #404: native restart isolation probe
+following PR #704 (merge `dd555f0c29cc17d7e75ebeb841b088e8368da4ba`,
+CI44263831873). Add test-only entrypoint and bounded host harness: refuse the
+stable bundle identity, verify canonical fixture control path and actual native
+support/preferences identities before storage writes, verify built Info.plist
+and executable, and manage only live owned process handles. Use existing local
+Swift package dependencies; do not install packages or replace the stable app.
+Record actual build/probe evidence separately from full app recovery acceptance.
