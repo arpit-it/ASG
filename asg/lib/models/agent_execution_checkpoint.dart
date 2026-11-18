@@ -101,7 +101,20 @@ final class AgentExecutionCheckpoint {
         }
         when value.length == 4 && isValidTaskId(taskId) && revision >= 0) {
       for (final phase in AgentExecutionPhase.values) {
+        final minimumRevision = switch (phase) {
+          AgentExecutionPhase.created => 0,
+          AgentExecutionPhase.planning || AgentExecutionPhase.cancelled => 1,
+          AgentExecutionPhase.awaitingApproval => 2,
+          AgentExecutionPhase.executing => 3,
+          AgentExecutionPhase.recovering || AgentExecutionPhase.verifying => 4,
+          AgentExecutionPhase.reviewing => 5,
+          AgentExecutionPhase.completed => 6,
+        };
+        // A bound is not an authenticated transition history. It rejects
+        // impossible early phases while retaining later recovery/retry loops.
         if (phase.name == phaseName &&
+            revision >= minimumRevision &&
+            (phase != AgentExecutionPhase.planning || revision == 1) &&
             (revision == 0) == (phase == AgentExecutionPhase.created)) {
           return AgentExecutionCheckpoint._(taskId, revision, phase);
         }

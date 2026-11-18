@@ -117,12 +117,19 @@ prerequisite acceptance.
 
 The restart evidence investigation is specified in
 [Agent engine](architecture/AGENT_ENGINE.md#ce01-restart-reconciliation-investigation--18-november-2026).
-The current bounded CE01 implementation under #404 is a pure reconciliation
-decision model (in progress): validated intent/launch/result/cleanup evidence yields
-a conservative explanation and disposition without process, storage or network effects. Test
-missing evidence, stale dispatch, changed host identity, reused PID, uncertain
-cleanup, lost completion and completed terminal state. This prerequisite cannot
+The pure CE01 reconciliation decision model merged in PR #698 as
+`8320b604f6c330e5cd1f6d7b1d1d0564bf94f999` (1,800 Flutter tests passed,
+10 skipped; analyze, web build and required CI passed). It describes conservative
+outcomes for caller-validated evidence without process, storage or network effects. This prerequisite cannot
 claim a trusted receipt publisher, automatic recovery or process control.
+
+Current bounded CE01 validation fix under #404: reject saved phase/revision pairs
+below the earliest legal lifecycle transition count and planning revisions other
+than one. Acceptance: no recovering dispatch zero or premature completed phase;
+legal recovery/retry histories still round-trip; native corrupt records remain
+preserved and unreadable without blocking unrelated records or app startup. This validation does not authenticate receipt publishers
+or reconstruct a full transition trail. Test phase boundaries, legal transition
+paths, native persistence failure and required regressions before merge.
 
 CE01 recovery integrity regression under #404: reject an interrupted run's
 acknowledgement when its linked execution checkpoint is missing. Acceptance:

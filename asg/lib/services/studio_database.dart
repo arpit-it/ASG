@@ -109,6 +109,7 @@ class StudioDatabase implements ConditionalRecordStorage {
             !record.key.startsWith('studio.generation.v1.') &&
             !record.key.startsWith('studio.sourceCandidate.v1.') &&
             !record.key.startsWith('studio.candidateChecks.v1.') &&
+            !record.key.startsWith('studio.agentExecution.v1.') &&
             !record.key.startsWith('studio.repairAttempts.v1.') &&
             !record.key.startsWith('studio.generationPrevious.v1.') &&
             !record.key.startsWith('studio.requirements.v1.') &&
