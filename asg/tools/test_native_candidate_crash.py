@@ -17,8 +17,8 @@ class CandidateCrashTests(unittest.TestCase):
         self.nonce = 'a' * 32
 
     def report(self, launch, operation='resolve', **changes):
-        value = {'version': 9, 'launch': launch, 'nonce': self.nonce, 'dispatch': f'candidate-restart-{self.nonce}-1:3'}
-        value.update(promote=False, retry=False, acknowledge=False, uncertain=False, publicationFault=False, intentUnchanged=True, running=False, runningMarker=False, runningCancelled=False, precommit=False, stopSignalled=False, stopSaveBlocked=False, savedStopPresent=False, stopRequested=False, stopUnchanged=True, operation=operation, completedOperations=fixture.OPERATIONS[:fixture.OPERATIONS.index(operation)])
+        value = {'version': 10, 'launch': launch, 'nonce': self.nonce, 'dispatch': f'candidate-restart-{self.nonce}-1:3'}
+        value.update(promotionCrash=False, promote=False, retry=False, acknowledge=False, uncertain=False, publicationFault=False, intentUnchanged=True, running=False, runningMarker=False, runningCancelled=False, precommit=False, stopSignalled=False, stopSaveBlocked=False, savedStopPresent=False, stopRequested=False, stopUnchanged=True, operation=operation, completedOperations=fixture.OPERATIONS[:fixture.OPERATIONS.index(operation)])
         if launch == 1:
             value['readyForCrash'] = True
         else:
@@ -132,6 +132,16 @@ class CandidateCrashTests(unittest.TestCase):
                 self.report(launch, operation='test', **common, **broken)
                 with self.assertRaises(ValueError):
                     fixture.read_report(self.root, launch, self.nonce, operation='test', stop=True, running=True, acknowledge=True, retry=True, promote=True)
+
+    def test_committed_gap_requires_no_controller_success_before_owned_crash(self):
+        common = dict(promotionCrash=True, promote=True, retry=True, acknowledge=True, stopRequested=True, savedStopPresent=True, running=True, runningCancelled=True, retainedExit=-1, interrupted=False, executionPhase='awaitingApproval', actionUnchanged=True, freshConsentRequired=True, noNewDispatch=True, newDispatch=f'candidate-restart-{self.nonce}-2:3', retryChecksPassed=True, oldEvidencePreserved=True, promotedAfterRead=False, refusedPublicationPreserved=True, commitGapReady=True, controllerSuccessDelivered=False)
+        self.report(4, operation='test', **common)
+        fixture.read_report(self.root, 4, self.nonce, operation='test', stop=True, running=True, acknowledge=True, retry=True, promote=True, promotion_crash=True)
+        for change in [{'commitGapReady': False}, {'controllerSuccessDelivered': True}, {'promotedAfterRead': True}, {'refusedPublicationPreserved': False}]:
+            broken = dict(common); broken.update(change)
+            self.report(4, operation='test', **broken)
+            with self.assertRaises(ValueError):
+                fixture.read_report(self.root, 4, self.nonce, operation='test', stop=True, running=True, acknowledge=True, retry=True, promote=True, promotion_crash=True)
 
     def test_ready_and_recovered_reports_are_distinct(self):
         self.report(1)

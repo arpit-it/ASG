@@ -802,3 +802,32 @@ evidence /tmp/asg-404-native-promotion-observation.json. Thirteen strict host
 contracts pass. Previous output is seeded, not a previously verified live preview.
 This remains fixture-controller acceptance, not production-main navigation,
 human process inspection, arbitrary cleanup, generalized synthesis or full CE01.
+
+
+### Native promotion committed before confirmation — 18 November 2026
+
+Protocol10 adds `--promotion-crash` to the fixed promotion mode. Its fixture-only
+storage wrapper first awaits the real atomic database transaction, then invokes
+an after-publication hook before returning to SourceGenerationController. The
+hook requires the exact new working/previous records and completed second
+execution, unchanged first acknowledgement/Stop/history/source and old output.
+The candidate controller must still be busy/promoting, with promoted false and
+no delivered preview. It flushes the post-commit baseline and nonce-bound report,
+then waits. The host validates that report and crashes only its fourth Popen app
+handle, in addition to the existing first-run crash; no saved PID is used.
+
+Fifth identical-binary launch verifies the exact committed pointers and execution,
+actual receipts/build output, both histories and fresh unchecked consent without
+new dispatch or promotion. This is after-commit/before-controller-confirmation
+acceptance, not a crash inside a transaction, delivered UI success or evidence
+that arbitrary descendants were cleaned up. The crash mode does not claim the
+post-success HTTP check performed by the separate normal-promotion case. Seeded
+previous output, production-main navigation and broader CE01 limits still apply.
+
+The actual crash/reopen observation passed on this Mac, binary SHA256
+`c7145ffb97f58cf4e3f7479c34ffab8d9a69fc511e7664888bfc5ff403bcd963`;
+evidence /tmp/asg-404-native-commit-crash-observation.json. Fourteen host contracts
+include precommit/not-ready, already-delivered controller success and missing
+refusal-preservation report rejections. The unchanged read/render report fields
+refer to the observations before explicit actions; the commit-gap report records
+the subsequent committed-but-unconfirmed boundary separately.
