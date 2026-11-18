@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:asg/models/candidate_operation_receipt.dart';
 import 'package:asg/models/agent_session.dart';
+import 'package:asg/models/agent_execution_checkpoint.dart';
 import 'package:asg/models/candidate_verification_run.dart';
 import 'package:asg/models/agent_session_binding.dart';
 import 'package:asg/services/agent_session_store.dart';
@@ -162,6 +163,14 @@ final class SignalledFixtureHost extends NativeGenerationHost {
     this.onCommand,
   });
   final void Function()? onPrepare, onCommand;
+  Uri? preparedPreview;
+  @override
+  Future<Uri> startPreview(GeneratedProject project) async {
+    final uri = await super.startPreview(project);
+    preparedPreview = uri;
+    return uri;
+  }
+
   @override
   Future<GenerationStep> runFlutterOperation(
     GeneratedProject project,
@@ -247,16 +256,13 @@ Future<void> main() async {
         (input['sessionBound'] == true &&
             (input['stop'] != true ||
                 input['operation'] != 'test' ||
-                [
-                  'precommit',
-                  'uncertain',
-                  'promote',
-                  'promotionCrash',
-                ].any((key) => input[key] != false) ||
+                ['precommit', 'uncertain'].any((key) => input[key] != false) ||
                 ([
                       'running',
                       'acknowledge',
                       'retry',
+                      'promote',
+                      'promotionCrash',
                     ].any((key) => input[key] == true) &&
                     !(input['running'] == true &&
                         input['acknowledge'] == true &&
@@ -351,7 +357,7 @@ Future<void> main() async {
       onPrepare: launch == 1 ? null : () => receiptPreparations++,
       onCommand: launch == 1 ? null : () => commandEntries++,
     );
-    AgentSession? selectedSession;
+    AgentSession? selectedSession, initialSessionSelection;
     Map<String, Object?>? initialCancellationOutput;
     Future<Map<String, Object?>> outputState() async => {
       'working': digest(records.getString(workingKey)!),
@@ -575,6 +581,28 @@ Future<void> main() async {
         'secondReceiptSha256': journal.runs.length == 1
             ? null
             : await retryReceiptHash(journal.runs.last),
+        if (promote) 'workingSha256': digest(records.getString(workingKey)!),
+        if (promote)
+          'previousSha256':
+              records.getString('studio.generationPrevious.v1.$projectId') ==
+                  null
+              ? null
+              : digest(
+                  records.getString('studio.generationPrevious.v1.$projectId')!,
+                ),
+        if (promote)
+          'workingPublished':
+              journal.runs.length == 2 &&
+              jsonEncode(
+                    SourceGenerationStore(records).load(projectId)!.toJson(),
+                  ) ==
+                  jsonEncode(journal.runs.last.snapshot.toJson()),
+        if (promote)
+          'secondExecutionPhase': secondExecution == null
+              ? null
+              : AgentExecutionCheckpoint.fromJson(jsonDecode(secondExecution))
+                    .phase
+                    .name,
         'receiptPreparations': receiptPreparations,
         'commandEntries': commandEntries,
       };
@@ -775,6 +803,9 @@ Future<void> main() async {
       GeneratedProject snapshot,
       NativeGenerationHost selectedHost,
     ) {
+      if (sessionBound && selectedSession == null) {
+        throw StateError('Bound fixture requires its selected session');
+      }
       return SourceCandidateController(
         project: project,
         candidate: snapshot,
@@ -805,11 +836,18 @@ Future<void> main() async {
           if (!promote || launch != 4) {
             throw StateError('Fixture may not promote');
           }
+          if (sessionBound && initialSessionSelection == null) {
+            throw StateError(
+              'Bound publication requires the initial selection basis',
+            );
+          }
           final publisher = workingController ??= SourceGenerationController(
             project: project,
             definition: ApplicationStore(records).load(project).definition,
             store: SourceGenerationStore(publicationFault),
-            selectedSession: selectedSession,
+            selectedSession: sessionBound && promote
+                ? initialSessionSelection
+                : selectedSession,
             host: NativeGenerationHost(),
           );
           return publisher.promoteCandidate(
@@ -829,6 +867,28 @@ Future<void> main() async {
       ).load('session-$nonce');
       if (selectedSession == null) {
         throw StateError('Selected session missing on reopen');
+      }
+      if (promote) {
+        final file = File(path.join(canonical, 'initial-session.json'));
+        if (await FileSystemEntity.isLink(file.path) ||
+            await file.length() > AgentSession.maxEncodedBytes ||
+            await file.resolveSymbolicLinks() != file.absolute.path) {
+          throw StateError('Invalid initial session selection');
+        }
+        final initial = AgentSession.fromJson(
+          jsonDecode(await file.readAsString()),
+        );
+        if (initial.storageKey != selectedSession.storageKey ||
+            initial.revision != 0 ||
+            initial.dispatches.isNotEmpty ||
+            initial.cancellationRequested ||
+            !initial.approval.matches(selectedSession.approval) ||
+            jsonEncode(initial.tasks.toJson()) !=
+                jsonEncode(selectedSession.tasks.toJson())) {
+          throw StateError('Initial session basis changed');
+        }
+        AgentSessionAdmission(records, project).requireApproval(initial);
+        initialSessionSelection = initial;
       }
       if (sessionCancel) {
         final basisFile = File(path.join(canonical, 'admitted-session.json'));
@@ -964,6 +1024,15 @@ Future<void> main() async {
                 .map((task) => task.id)
                 .toList(),
           );
+          if (promote) {
+            initialSessionSelection = selectedSession;
+            final file = File(path.join(canonical, 'initial-session.json'));
+            await file.create(exclusive: true);
+            await file.writeAsString(
+              jsonEncode(selectedSession.toJson()),
+              flush: true,
+            );
+          }
         }
         final input = GenerationInput(
           project,
@@ -1629,7 +1698,9 @@ Future<void> main() async {
       newDispatch = latest.dispatchId;
       retriedAfterRead = true;
     }
-    var promotedAfterRead = false, refusedPublicationPreserved = false;
+    var promotedAfterRead = false,
+        refusedPublicationPreserved = false,
+        previewResponded = false;
     if (promote && launch == 4) {
       stage = 'explicit-native-promotion';
       final oldWorking = records.getString(workingKey)!;
@@ -1637,6 +1708,7 @@ Future<void> main() async {
       final previous = records.getString(previousKey);
       final executionKey = 'studio.agentExecution.v1.candidate-$projectId-2';
       final executionBefore = records.getString(executionKey)!;
+      final refusalProof = await sessionRetryProof();
       Future<void> savePromotionBaseline() async {
         final after = File(path.join(canonical, 'after-promote.json'));
         await after.create(exclusive: true);
@@ -1646,6 +1718,8 @@ Future<void> main() async {
             'working': digest(records.getString(workingKey)!),
             'previous': digest(records.getString(previousKey)!),
             'retryExecution': digest(records.getString(executionKey)!),
+            if (sessionBound && retry)
+              'sessionRetryProof': await sessionRetryProof(),
           }),
           flush: true,
         );
@@ -1662,6 +1736,13 @@ Future<void> main() async {
           !sameAction() ||
           !sameStop()) {
         throw StateError('Refused publication changed durable state');
+      }
+      if (refusalProof != null &&
+          retryDigest(refusalProof) !=
+              retryDigest((await sessionRetryProof())!)) {
+        throw StateError(
+          'Refused publication changed bound session or stage records',
+        );
       }
       refusedPublicationPreserved = true;
       publicationFault.refuse = false;
@@ -1697,57 +1778,90 @@ Future<void> main() async {
               )) {
             throw StateError('Committed publication boundary mismatch');
           }
+          final preview = host.preparedPreview;
+          if (preview == null || preview.host != '127.0.0.1') {
+            throw StateError('Prepared preview missing');
+          }
+          final client = HttpClient();
+          try {
+            final response =
+                await (await client
+                        .getUrl(preview)
+                        .timeout(const Duration(seconds: 5)))
+                    .close()
+                    .timeout(const Duration(seconds: 5));
+            final body = await utf8.decoder
+                .bind(response)
+                .join()
+                .timeout(const Duration(seconds: 5));
+            if (response.statusCode != 200 || !body.contains('<html')) {
+              throw StateError('Committed preview unavailable');
+            }
+            previewResponded = true;
+          } finally {
+            client.close(force: true);
+          }
           await savePromotionBaseline();
-          await report(canonical, launch, {
-            'commitGapReady': true,
-            'controllerSuccessDelivered': false,
-            'nonce': nonce,
-            'dispatch': run.dispatchId,
-            'interrupted': !acknowledged,
-            'acknowledge': acknowledge,
-            'retry': retry,
-            'promote': promote,
-            'promotionCrash': promotionCrash,
-            'promotedAfterRead': promotedAfterRead,
-            'refusedPublicationPreserved': refusedPublicationPreserved,
-            'promotionSurvived': false,
-            'retriedAfterRead': retriedAfterRead,
-            'newDispatch': newDispatch,
-            'retryChecksPassed': true,
-            'oldEvidencePreserved':
-                retriedAfterRead || (launch >= 4 && sameAction()),
-            'acknowledgedAfterRead': acknowledgedAfterRead,
-            'afterAcknowledgementPhase': acknowledgedAfterRead
-                ? 'awaitingApproval'
-                : null,
-            'actionUnchanged': actionUnchangedBefore,
-            'freshConsentRequired': freshConsentBefore,
-            'noNewDispatch': noNewDispatchBefore,
-            'stopRequested': stop,
-            'precommit': precommit,
-            'running': running,
-            'uncertain': uncertain,
-            'intentUnchanged':
-                await retainedIntent(run.dispatchId!) == before['intent'],
-            'runningCancelled':
-                running && !uncertain && retained.last.result.cancelled,
-            'savedStopPresent': controller.stopRequestFor(run) != null,
-            'stopUnchanged': sameStop(),
-            'operation': operation,
-            'completedOperations': run.snapshot.steps
-                .map((step) => step.operation)
-                .toList(),
-            'receiptOperations': retained
-                .map((receipt) => receipt.operation.name)
-                .toList(),
-            'retainedExit': uncertain ? null : retained.last.result.exitCode,
-            'cleanup': 'unknown',
-            'journalUnchanged': true,
-            'sourcesUnchanged': true,
-            'workingUnchanged': true,
-            'viewRendered': true,
-            'executionPhase': observedExecutionPhase,
-          });
+          await report(
+            canonical,
+            launch,
+            {
+              'commitGapReady': true,
+              'previewResponded': previewResponded,
+              'controllerSuccessDelivered': false,
+              'nonce': nonce,
+              'dispatch': run.dispatchId,
+              'interrupted': !acknowledged,
+              'acknowledge': acknowledge,
+              'retry': retry,
+              'promote': promote,
+              'promotionCrash': promotionCrash,
+              'promotedAfterRead': promotedAfterRead,
+              'refusedPublicationPreserved': refusedPublicationPreserved,
+              'promotionSurvived': false,
+              'retriedAfterRead': retriedAfterRead,
+              'newDispatch': newDispatch,
+              'retryChecksPassed': true,
+              'oldEvidencePreserved':
+                  retriedAfterRead || (launch >= 4 && sameAction()),
+              'acknowledgedAfterRead': acknowledgedAfterRead,
+              'afterAcknowledgementPhase': acknowledgedAfterRead
+                  ? 'awaitingApproval'
+                  : null,
+              'actionUnchanged': actionUnchangedBefore,
+              'freshConsentRequired': freshConsentBefore,
+              'noNewDispatch': noNewDispatchBefore,
+              'stopRequested': stop,
+              'precommit': precommit,
+              'running': running,
+              'uncertain': uncertain,
+              'intentUnchanged':
+                  await retainedIntent(run.dispatchId!) == before['intent'],
+              'runningCancelled':
+                  running && !uncertain && retained.last.result.cancelled,
+              'savedStopPresent': controller.stopRequestFor(run) != null,
+              'stopUnchanged': sameStop(),
+              'operation': operation,
+              'completedOperations': run.snapshot.steps
+                  .map((step) => step.operation)
+                  .toList(),
+              'receiptOperations': retained
+                  .map((receipt) => receipt.operation.name)
+                  .toList(),
+              'retainedExit': uncertain ? null : retained.last.result.exitCode,
+              'cleanup': 'unknown',
+              'journalUnchanged': true,
+              'sourcesUnchanged': true,
+              'workingUnchanged': true,
+              'viewRendered': true,
+              'executionPhase': observedExecutionPhase,
+            },
+            sessionBound: sessionBound,
+            sessionRetryProof: await sessionRetryProof(),
+            beforeActionSha256: retryBeforeAction == null
+                ? null
+                : retryDigest(retryBeforeAction),
+          );
           await Completer<void>()
               .future; // Host kills only this owned app handle.
           throw StateError('Commit barrier must not return');
@@ -1789,6 +1903,7 @@ Future<void> main() async {
         if (response.statusCode != 200 || !body.contains('<html')) {
           throw StateError('Promoted native preview unavailable');
         }
+        previewResponded = true;
       } finally {
         client.close(force: true);
       }
@@ -1818,6 +1933,7 @@ Future<void> main() async {
         'promotedAfterRead': promotedAfterRead,
         'refusedPublicationPreserved': refusedPublicationPreserved,
         'promotionSurvived': promotionSurvived,
+        'previewResponded': previewResponded,
         'retriedAfterRead': retriedAfterRead,
         'newDispatch': newDispatch,
         'retryChecksPassed':
@@ -1892,7 +2008,7 @@ Future<void> report(
   await file.create(exclusive: true);
   await file.writeAsString(
     jsonEncode({
-      'version': 13,
+      'version': 14,
       'launch': launch,
       ...observation,
       'sessionBound': sessionBound,

@@ -1189,3 +1189,38 @@ two app handles are created; no retry app launches. All eight actual scenarios
 were rerun with the revised host on the unchanged fixture binary. The reviewed
 observation files use /tmp/asg-404-native-session-retry-reviewed*-observation.json;
 the earlier final-named files do not establish the revised guard-order behavior.
+
+
+18 November2026 — native bound-session publication and committed crash recovery
+
+Protocol14 extends the full bound Stop/acknowledgment/fresh-consent retry path
+with explicit promotion, optionally crashing after the atomic database commit
+but before the production controller reports success. Partial/conflicting modes
+refuse before launch. Historical protocol13 evidence keeps its original identity.
+
+The fixture retains the original approved revision0 selection in a bounded,
+canonical private control file, validates its identity/approval/frozen membership
+on every reopen, and passes that basis to the real publication controller.
+Verification uses the current admitted binding. Missing basis refuses; production
+selection ancestry and cancellation guards are unchanged. This mirrors a retained
+selection across explicit dispatches, rather than substituting the latest binding
+for the selection basis or granting new authority.
+
+Promotion-stage proof adds working/previous pointer hashes, exact second-run
+publication identity and execution phase to the retained session/journal/receipt/
+Stop/recovery proof. Injected precommit refusal must preserve the complete proof.
+Successful promotion changes only working/previous and second execution state;
+the journal, candidate, first audit, both receipt sets and session remain exact.
+The previous pointer equals the prior working pointer. The prepared actual native
+preview responds HTTP200 with HTML, including at the committed crash barrier
+where controller success has not been delivered. Fifth-launch read-only reopen
+retains exact committed records and enters zero SDK commands or preparations;
+it does not start or claim a surviving preview process. All stage transitions
+validate before a subsequent app launch.
+
+Native bound-session promotion final local evidence: protocol14 normal and postcommit-crash five-launch scenarios passed, plus eight prior retry/cancellation/admission/legacy regressions on one binary f4ce541fef4003deaddc35057a38a6ede6b84d13b59a29333563c9787479fcbd. Each new flow retains the initial session-selection basis separately from the current binding; precommit refusal preserves all stage records, actual production promotion serves HTTP200 and commits working/previous pointers with the second completed execution checkpoint. Commit-gap observation occurs before controller success, and the fifth separately launched read-only app preserves exact committed state without new dispatch or rollback. Evidence: /tmp/asg-404-native-session-promotion-{normal,commit-crash,retry,cancellation,admission-precommit,admission-committed,legacy-resolve,legacy-stop,legacy-precommit,legacy-promotion-crash}-observation.json. Host38/probe6/product32/inventory9, fullFlutter1,908/11skip, analyze, explicit fixture Dart analysis and isolated native build passed. Per-stage guards run before subsequent launches. Only owned fixture handles killed; no product guard changes, live inference, stable app replacement, full task completion or cleanup claim. Exact PR review/required CI/verified merge remain gates; full CE01/#404 remains open.
+
+This is bounded real-SDK native fixture evidence, not production-main navigation,
+browser-rendered visual acceptance, live model synthesis, general task-graph
+completion or universal process cleanup. The seeded prior working snapshot is
+a retained output baseline, not evidence of a previously running live app.

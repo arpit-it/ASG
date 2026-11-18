@@ -204,8 +204,69 @@ class CandidateCrashTests(unittest.TestCase):
             with self.subTest(key=key), self.assertRaises(ValueError):
                 fixture.require_retry_transition(previous, changed, 2, fixture.retry_digest(previous))
 
+    def promotion_proof(self, launch):
+        proof = self.retry_proof(min(launch, 4))
+        proof.update(workingSha256=('b' if launch < 4 else 'c') * 64,
+                     previousSha256=None if launch < 4 else 'b' * 64,
+                     workingPublished=launch >= 4,
+                     secondExecutionPhase='completed' if launch >= 4 else 'verifying' if launch == 3 else None)
+        if launch >= 4:
+            proof['secondExecutionSha256'] = 'd' * 64
+        return proof
+
+    def test_bound_publication_changes_only_authorized_state_then_reopens_read_only(self):
+        previous = None
+        for launch in (1, 2, 3, 4, 5):
+            proof = self.promotion_proof(launch)
+            fixture.read_retry_proof(proof, self.nonce, launch, promote=True)
+            fixture.require_retry_transition(previous, proof, launch, fixture.retry_digest(previous or proof), promote=True)
+            previous = proof
+
+    def test_bound_publication_refuses_missing_commit_history_or_rewritten_session(self):
+        previous = self.promotion_proof(3)
+        proof = self.promotion_proof(4)
+        for key, value in [('workingSha256', previous['workingSha256']),
+                           ('previousSha256', 'f' * 64), ('secondExecutionSha256', previous['secondExecutionSha256']),
+                           ('sessionSha256', 'f' * 64), ('firstReceiptSha256', 'f' * 64),
+                           ('journalSha256', 'b' * 64)]:
+            with self.subTest(key=key), self.assertRaises(ValueError):
+                fixture.require_retry_transition(previous, dict(proof, **{key: value}), 4,
+                    fixture.retry_digest(previous), promote=True)
+        for key, value in [('workingPublished', False), ('secondExecutionPhase', 'verifying'),
+                           ('previousSha256', None), ('cancellationRequested', True)]:
+            with self.subTest(key=key), self.assertRaises(ValueError):
+                fixture.read_retry_proof(dict(proof, **{key: value}), self.nonce, 4, promote=True)
+        final = self.promotion_proof(5)
+        final['workingSha256'] = 'f' * 64
+        with self.assertRaises(ValueError):
+            fixture.require_retry_transition(proof, final, 5, fixture.retry_digest(proof), promote=True)
+
+    def test_bound_promotion_reports_require_preview_and_correct_commit_gap_state(self):
+        for crash in (False, True):
+            for launch in (4, 5):
+                proof = self.promotion_proof(launch)
+                fields = dict(sessionBound=True, sessionRetryProof=proof,
+                    beforeActionSha256=fixture.retry_digest(self.promotion_proof(launch - 1)),
+                    promote=True, promotionCrash=crash, retry=True, acknowledge=True,
+                    stopRequested=True, savedStopPresent=True, running=True, runningCancelled=True,
+                    retainedExit=-1, interrupted=False, executionPhase='awaitingApproval',
+                    actionUnchanged=True, freshConsentRequired=True, noNewDispatch=True,
+                    newDispatch=f'candidate-restart-{self.nonce}-2:3', retryChecksPassed=True,
+                    oldEvidencePreserved=True, promotedAfterRead=launch == 4 and not crash,
+                    refusedPublicationPreserved=True, promotionSurvived=launch == 5,
+                    previewResponded=launch == 4, commitGapReady=launch == 4 and crash,
+                    controllerSuccessDelivered=False)
+                self.report(launch, operation='test', **fields)
+                fixture.read_report(self.root, launch, self.nonce, operation='test', stop=True,
+                    running=True, acknowledge=True, retry=True, promote=True, promotion_crash=crash, session_bound=True)
+                altered = dict(fields, previewResponded=launch != 4)
+                self.report(launch, operation='test', **altered)
+                with self.assertRaises(ValueError):
+                    fixture.read_report(self.root, launch, self.nonce, operation='test', stop=True,
+                        running=True, acknowledge=True, retry=True, promote=True, promotion_crash=crash, session_bound=True)
+
     def report(self, launch, operation='resolve', **changes):
-        value = {'version': 13, 'launch': launch, 'nonce': self.nonce, 'dispatch': f'candidate-restart-{self.nonce}-1:3'}
+        value = {'version': 14, 'launch': launch, 'nonce': self.nonce, 'dispatch': f'candidate-restart-{self.nonce}-1:3'}
         value.update(sessionBound=False, admissionCrash=False, sessionCancel=False, sessionProof=None, sessionRetryProof=None, beforeActionSha256=None, promotionCrash=False, promote=False, retry=False, acknowledge=False, uncertain=False, publicationFault=False, intentUnchanged=True, running=False, runningMarker=False, runningCancelled=False, precommit=False, stopSignalled=False, stopSaveBlocked=False, savedStopPresent=False, stopRequested=False, stopUnchanged=True, operation=operation, completedOperations=fixture.OPERATIONS[:fixture.OPERATIONS.index(operation)])
         if launch == 1:
             value['readyForCrash'] = True
@@ -438,7 +499,7 @@ class CandidateCrashTests(unittest.TestCase):
             fixture.read_report(self.root, 2, self.nonce, operation='test', stop=True, session_bound=True)
 
     def test_protocol10_cannot_be_relabelled_as_session_evidence(self):
-        for version in (10, 11, 12):
+        for version in (10, 11, 12, 13):
             self.report(1, version=version)
             with self.subTest(version=version), self.assertRaises(ValueError):
                 fixture.read_report(self.root, 1, self.nonce)
@@ -496,6 +557,21 @@ class CandidateCrashTests(unittest.TestCase):
                     running=True, acknowledge=True, retry=True, session_bound=True)
         self.assertEqual(len(processes), 2)
         self.assertEqual([process.killed for process in processes], [True, False])
+
+    def test_bound_promotion_partial_or_conflicting_modes_launch_nothing(self):
+        common = dict(session_bound=True, stop=True, operation='test')
+        for extras in [dict(promote=True), dict(promote=True, retry=True),
+                       dict(promote=True, retry=True, acknowledge=True),
+                       dict(promote=True, retry=True, acknowledge=True, running=True, session_cancel=True),
+                       dict(promote=True, retry=True, acknowledge=True, running=True, admission_crash=True),
+                       dict(promotion_crash=True, retry=True, acknowledge=True, running=True)]:
+            mode = dict(common, **extras)
+            with self.subTest(mode=mode), mock.patch.object(fixture, 'inspect_bundle') as probe, \
+                    mock.patch.object(fixture.subprocess, 'Popen') as launch:
+                with self.assertRaises(ValueError):
+                    fixture.observe(self.root, self.root, **mode)
+                probe.assert_not_called()
+                launch.assert_not_called()
 
     def test_bundle_preflight_failure_launches_nothing(self):
         with mock.patch.object(fixture.sys, 'platform', 'darwin'), \
