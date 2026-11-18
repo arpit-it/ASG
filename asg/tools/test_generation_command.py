@@ -95,6 +95,52 @@ class CommandTests(unittest.TestCase):
             self.assertNotEqual(result['exitCode'], 0)
             self.assertIn('stopped', result['output'])
 
+    def test_actual_parent_exit_cancels_helper_and_cleans_descendant(self):
+        with tempfile.TemporaryDirectory(prefix='asg-parent-crash-') as directory:
+            root = Path(directory)
+            ready, marker, result_path = [root / name for name in ('ready', 'unexpected', 'result.json')]
+            descendant = ('import time; from pathlib import Path; time.sleep(1); Path('
+                          + repr(str(marker)) + ').write_text("unexpected")')
+            tool = ('import subprocess,sys,time; from pathlib import Path; '
+                    'subprocess.Popen([sys.executable,"-c",' + repr(descendant) + ']); '
+                    'print("started",flush=True); Path(' + repr(str(ready)) + ').touch(); time.sleep(10)')
+            helper = root / 'helper.py'
+            helper.write_text(
+                'import sys,os,json; from pathlib import Path\n'
+                'sys.path.insert(0,' + repr(str(Path(__file__).parent)) + ')\n'
+                'import generation_command as g\n'
+                'result=g.run(sys.executable,["-c",' + repr(tool) + '],'
+                + repr(directory) + ',5,parent_pid=int(sys.argv[1]))\n'
+                'pending=Path(' + repr(str(root / 'pending.json')) + ')\n'
+                'pending.write_text(json.dumps(result))\n'
+                'os.replace(pending,' + repr(str(result_path)) + ')\n')
+            supervisor = root / 'supervisor.py'
+            supervisor.write_text(
+                'import subprocess,sys,os,time; from pathlib import Path\n'
+                'helper=subprocess.Popen([sys.executable,' + repr(str(helper))
+                + ',str(os.getpid())],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)\n'
+                'deadline=time.monotonic()+4\n'
+                'while not Path(' + repr(str(ready)) + ').exists():\n'
+                '    if helper.poll() is not None or time.monotonic()>deadline:\n'
+                '        helper.terminate(); helper.wait(timeout=8); raise SystemExit(2)\n'
+                '    time.sleep(0.01)\n'
+                '# Actual parent death: the owned helper is deliberately not reaped here.\n'
+                'os._exit(0)\n')
+            completed = subprocess.run([sys.executable, str(supervisor)],
+                                       capture_output=True, text=True, timeout=15)
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            deadline = time.monotonic() + 15
+            while not result_path.exists() and time.monotonic() < deadline:
+                time.sleep(0.02)
+            self.assertTrue(result_path.exists(), 'Owned helper did not finish within its bounded deadline')
+            result = json.loads(result_path.read_text())
+            self.assertTrue(result['cancelled'])
+            self.assertFalse(result['timedOut'])
+            self.assertNotEqual(result['exitCode'], 0)
+            self.assertIn('started', result['output'])
+            time.sleep(1.1)
+            self.assertFalse(marker.exists(), 'Descendant survived parent-loss cleanup')
+
     def test_cli_rejects_policy_output_expansion_before_execution(self):
         with tempfile.TemporaryDirectory() as directory:
             for limit in ('0', '65535', '65537', '999999999'):
