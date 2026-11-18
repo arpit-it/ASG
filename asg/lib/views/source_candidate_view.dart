@@ -123,6 +123,11 @@ class _SourceCandidateViewState extends State<SourceCandidateView> {
             'This diagnosis starts no model request or command and changes no files.',
           ),
         ],
+        if (controller.stopRequestSaving) const Text('Saving Stop request…'),
+        if (controller.stopRequestSaveError case final error?)
+          SelectableText(error),
+        if (controller.stopRequestHistoryError case final error?)
+          SelectableText(error),
         if (controller.receiptHistoryError != null)
           SelectableText(controller.receiptHistoryError!),
         if (controller.historyError != null)
@@ -156,6 +161,10 @@ class _SourceCandidateViewState extends State<SourceCandidateView> {
                         'An unknown exit remains unknown.',
                       ),
                     ],
+                    if (controller.stopRequestFor(run) != null)
+                      const Text(
+                        'Saved Stop request. This does not confirm command exit or cleanup.',
+                      ),
                     for (final receipt in controller.receiptsFor(run))
                       ExpansionTile(
                         title: Text(

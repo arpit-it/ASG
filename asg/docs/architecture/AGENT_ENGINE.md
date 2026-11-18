@@ -378,3 +378,34 @@ test-only isolated startup. It does not establish production-main navigation,
 failed/cancelled operation recovery, cancellation during journal commit, all
 earlier crash phases, trusted descendant cleanup or a generalized agent session.
 Those remain pending under #404; other platforms stay deferred under #400.
+
+
+### Candidate Stop intent persistence — 18 November 2026
+
+SourceCandidateController now queues a typed Stop request with its current
+CandidateVerificationStore session and immediately signals the host. An ordered
+store queue prevents overlapping progress from racing the Stop record. The
+write compares exact journal/candidate/execution state and binds the current
+run, dispatch and stable inputs. Startup that never commits has no dispatch to
+annotate. Failed subsequent startup cannot reuse a previous session identity;
+stale writers and changed inputs refuse publication. Actual later exits remain
+untouched, including failed results and successful results observed before a
+late Stop. No execution phase is set to terminal cancelled on request alone.
+
+The new version1 database namespace is independent of the existing journal and
+checkpoint JSON. Corrupt bytes are preserved, parser payloads are redacted and
+other records remain readable on native database reopen. Cached controller
+history exposes retained Stop requests to the view without direct view storage
+access. The view labels a saved request separately from actual exits/cleanup and
+shows pending/save-error states. A save failure still signals the owned runtime;
+missing intent after an uncommitted write remains unknown. Closing the view
+does not discard an already requested observation write or notify it afterward.
+
+Focused validation covers canonical input identity and malformed records;
+ordered progress/Stop, immutable first request, stale session/input rejection,
+failed startup and storage retry; actual native database close/reopen/corrupt
+record preservation; responsive Stop during failed/pending writes and disposal;
+late actual exits, signalling failure, and read-only reopened history display.
+These deterministic/native-storage fixtures do not claim an actual user Stop
+followed by a native app crash; that cancellation-window observation remains
+separate from the already recorded successful-operation crash matrix.

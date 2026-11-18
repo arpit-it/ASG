@@ -19,6 +19,7 @@ import 'package:asg/models/candidate_operation_receipt.dart';
 import 'package:asg/models/source_edit_proposal.dart';
 import 'package:asg/models/source_generation.dart';
 import 'package:asg/services/application_store.dart';
+import 'package:asg/services/candidate_verification_store.dart';
 import 'package:asg/services/conversation_store.dart';
 import 'package:asg/services/generation_input.dart';
 import 'package:asg/services/generation_host.dart';
@@ -71,6 +72,18 @@ class InterruptedCheckHost extends FixtureHost {
     await progress(project.copy(pendingOperation: 'resolve'));
     stop();
     throw StateError('Command outcome unavailable');
+  }
+}
+
+class FailingStopSignalHost extends InterruptedCheckHost {
+  bool failNextSignal = true;
+  @override
+  void cancelVerification() {
+    super.cancelVerification();
+    if (failNextSignal) {
+      failNextSignal = false;
+      throw StateError('private runtime signal failure');
+    }
   }
 }
 
@@ -668,6 +681,271 @@ void main() {
       expect(candidateHost.operations, ['resolve', 'analyze']);
       expect(candidate.canPromote, isFalse);
       expect(workingHost.server, isTrue);
+    },
+  );
+
+  test(
+    'runtime signalling failure does not discard the durable Stop request',
+    () async {
+      final initial = candidate.result;
+      final evidence = candidate.evidence;
+      candidate.dispose();
+      final host = FailingStopSignalHost();
+      candidate = SourceCandidateController(
+        project: project,
+        candidate: initial,
+        evidence: evidence,
+        records: records,
+        host: host,
+        publish: (_, _, _) => throw StateError('Unexpected promotion'),
+      );
+      host.stop = candidate.cancel;
+      await candidate.verify(approved: true);
+      expect(host.cancellations, greaterThanOrEqualTo(1));
+      expect(candidate.stopRequestFor(candidate.history.single), isNotNull);
+      expect(candidate.stopRequestSaveError, isNull);
+      expect(candidate.error, isNot(contains('private runtime')));
+      expect(candidate.history.single.snapshot.steps, isEmpty);
+      expect(candidate.history.single.finished, isFalse);
+    },
+  );
+
+  test(
+    'late Stop retains actual successful exits and a separate request',
+    () async {
+      records.beforeCommit = () async {
+        final journal = CandidateVerificationStore(records, project.id).load();
+        if (journal.runs.isNotEmpty &&
+            journal.runs.last.snapshot.steps.length == 4) {
+          records.beforeCommit = null;
+          candidate.cancel();
+        }
+      };
+      await candidate.verify(approved: true);
+      final run = candidate.history.single;
+      expect(run.snapshot.steps.length, 4);
+      expect(
+        run.snapshot.steps.every(
+          (step) => step.exitCode == 0 && !step.cancelled,
+        ),
+        isTrue,
+      );
+      expect(candidate.stopRequestFor(run), isNotNull);
+      expect(candidate.stopRequestSaveError, isNull);
+      expect(candidate.canPromote, isFalse);
+      expect(candidate.savedExecutionFor(run)!.phase.name, 'verifying');
+    },
+  );
+
+  test(
+    'Stop save failure still signals immediately and retains unknown exits',
+    () async {
+      final initial = candidate.result;
+      final evidence = candidate.evidence;
+      final workingBefore = records.getString(
+        'studio.generation.v1.${project.id}',
+      );
+      candidate.dispose();
+      final host = InterruptedCheckHost();
+      candidate = SourceCandidateController(
+        project: project,
+        candidate: initial,
+        evidence: evidence,
+        records: records,
+        host: host,
+        publish: (_, _, _) => throw StateError('Unexpected promotion'),
+      );
+      host.stop = () {
+        records.failCommit = true;
+        candidate.cancel();
+        expect(host.cancellations, 1);
+        expect(candidate.stopRequestSaving, isTrue);
+      };
+      await candidate.verify(approved: true);
+      records.failCommit = false;
+      expect(candidate.stopRequestSaveError, contains('could not be saved'));
+      expect(candidate.history.single.finished, isFalse);
+      expect(candidate.history.single.snapshot.steps, isEmpty);
+      expect(candidate.stopRequestFor(candidate.history.single), isNull);
+      expect(
+        records.getString('studio.generation.v1.${project.id}'),
+        workingBefore,
+      );
+    },
+  );
+
+  test(
+    'Stop during startup refuses dispatch without inventing a saved request',
+    () async {
+      final gate = Completer<void>();
+      final entered = Completer<void>();
+      records.beforeCommit = () async {
+        records.beforeCommit = null;
+        entered.complete();
+        await gate.future;
+      };
+      final verification = candidate.verify(approved: true);
+      await entered.future;
+      candidate.cancel();
+      expect(candidateHost.cancellations, 1);
+      gate.complete();
+      await verification;
+      expect(candidateHost.verifications, 0);
+      expect(candidate.history, isEmpty);
+      expect(candidate.stopRequestSaveError, isNull);
+      expect(
+        records.values.keys.where(
+          (key) => key.startsWith(CandidateVerificationStore.stopPrefix),
+        ),
+        isEmpty,
+      );
+    },
+  );
+
+  test(
+    'Stop intent persists through disposal while its write is pending',
+    () async {
+      final initial = candidate.result;
+      final evidence = candidate.evidence;
+      candidate.dispose();
+      final host = InterruptedCheckHost();
+      candidate = SourceCandidateController(
+        project: project,
+        candidate: initial,
+        evidence: evidence,
+        records: records,
+        host: host,
+        publish: (_, _, _) => throw StateError('Unexpected promotion'),
+      );
+      final gate = Completer<void>();
+      final entered = Completer<void>();
+      host.stop = () {
+        records.beforeCommit = () async {
+          records.beforeCommit = null;
+          entered.complete();
+          await gate.future;
+        };
+        candidate.cancel();
+        expect(host.cancellations, 1);
+        candidate.dispose();
+      };
+      var notifications = 0;
+      candidate.addListener(() => notifications++);
+      final verification = candidate.verify(approved: true);
+      await entered.future;
+      notifications = 0;
+      gate.complete();
+      await verification;
+      expect(notifications, 0);
+      final store = CandidateVerificationStore(records, project.id);
+      final run = store.load().runs.single;
+      expect(store.stopRequestFor(run), isNotNull);
+      expect(run.finished, isFalse);
+      expect(run.snapshot.pendingOperation, 'resolve');
+      expect(run.snapshot.steps, isEmpty);
+    },
+  );
+
+  testWidgets(
+    'reopened history shows saved Stop separately without mutating journal',
+    (tester) async {
+      final initial = candidate.result;
+      final evidence = candidate.evidence;
+      candidate.dispose();
+      final host = InterruptedCheckHost();
+      candidate = SourceCandidateController(
+        project: project,
+        candidate: initial,
+        evidence: evidence,
+        records: records,
+        host: host,
+        publish: (_, _, _) => throw StateError('Unexpected promotion'),
+      );
+      host.stop = candidate.cancel;
+      await candidate.verify(approved: true);
+      final run = candidate.history.single;
+      final request = candidate.stopRequestFor(run)!;
+      candidate.dispose();
+      candidate = SourceCandidateController(
+        project: project,
+        candidate: run.snapshot,
+        evidence: evidence,
+        records: records,
+        host: FixtureHost(),
+        publish: (_, _, _) => throw StateError('Unexpected promotion'),
+      );
+      expect(
+        candidate.stopRequestFor(candidate.history.single)!.toJson(),
+        request.toJson(),
+      );
+      final before = Map.of(records.values);
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: SingleChildScrollView(
+              child: SourceCandidateView(
+                controller: candidate,
+                actionsEnabled: false,
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('Saved candidate check runs'));
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.textContaining('Run 1:'));
+      await tester.tap(find.textContaining('Run 1:'));
+      await tester.pumpAndSettle();
+      expect(
+        find.text(
+          'Saved Stop request. This does not confirm command exit or cleanup.',
+        ),
+        findsOneWidget,
+      );
+      expect(records.values, before);
+      expect(candidate.canPromote, isFalse);
+      expect(candidate.history.single.snapshot.steps, isEmpty);
+    },
+  );
+
+  test(
+    'corrupt Stop evidence remains separate from valid interrupted history',
+    () async {
+      final initial = candidate.result;
+      final evidence = candidate.evidence;
+      candidate.dispose();
+      final host = InterruptedCheckHost();
+      candidate = SourceCandidateController(
+        project: project,
+        candidate: initial,
+        evidence: evidence,
+        records: records,
+        host: host,
+        publish: (_, _, _) => throw StateError('Unexpected promotion'),
+      );
+      host.stop = candidate.cancel;
+      await candidate.verify(approved: true);
+      final run = candidate.history.single;
+      final key = '${CandidateVerificationStore.stopPrefix}${run.dispatchId}';
+      records.values[key] = '{private damaged stop evidence';
+      candidate.dispose();
+      candidate = SourceCandidateController(
+        project: project,
+        candidate: run.snapshot,
+        evidence: evidence,
+        records: records,
+        host: FixtureHost(),
+        publish: (_, _, _) => throw StateError('Unexpected promotion'),
+      );
+      expect(candidate.historyError, isNull);
+      expect(candidate.stopRequestHistoryError, isNotNull);
+      expect(
+        candidate.stopRequestHistoryError,
+        isNot(contains('private damaged')),
+      );
+      expect(candidate.stopRequestFor(candidate.history.single), isNull);
+      expect(records.values[key], '{private damaged stop evidence');
+      expect(candidate.history.single.finished, isFalse);
     },
   );
 

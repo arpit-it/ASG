@@ -84,3 +84,33 @@ workers, confirmed descendant cleanup and automatic reconciliation require later
 implementation and actual acceptance. Existing stored project JSON stays unchanged;
 receipts use a separate versioned schema. See AGENT_ENGINE.md for the protocol,
 actual Mac evidence and pending app restart acceptance.
+
+
+## Durable candidate Stop intent — 18 November 2026
+
+For CE01/#404, keep requested cancellation separate from execution outcomes.
+Use a typed version1 record at `studio.candidateStop.v1.<dispatchId>`; existing
+candidate journals, execution checkpoints and preference formats are unchanged.
+The record binds project, run number/start time, exact dispatch, first saved
+request time and a hash of stable source/approval/execution inputs. Progress,
+outcome and resolution metadata are not cancellation identity. Repeated saves
+for the same run retain the first record; stale sessions cannot annotate a new
+run. Database validation checks the record/key identity and isolates corrupt
+Stop records without replacing them or blocking unrelated saved data.
+
+The session store serializes startup, progress, Stop intent and terminal
+observations. Stop publication uses expected journal, candidate and execution
+values plus an absent Stop key in the same conditional transaction. Persisting
+an observation needs no new command consent, but grants no execution authority.
+The controller registers this write before signalling its owned host, signals
+immediately without waiting for storage, and waits for registered Stop writes
+before releasing its session. Late requests must match the same task and the verifying revision immediately after that dispatch; pending requests must match the saved executing/recovering dispatch. A previously requested write may finish after
+view disposal, without notifying that disposed controller.
+
+Storage failure must not prevent Stop signalling or invent an exit. The UI
+distinguishes saving, save failure, unreadable history and a retained Stop
+request; actual steps/receipts remain separate. App death before the write
+commits can still lose the intent. Neither a saved request nor a successfully
+sent signal proves root exit, descendant cleanup or terminal cancellation.
+Uncertain operations still require existing explicit recovery and fresh verification consent.
+No automatic receipt reconciliation or archive-format migration is introduced.

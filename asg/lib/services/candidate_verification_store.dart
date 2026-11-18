@@ -4,6 +4,7 @@
 import 'dart:convert';
 
 import '../models/candidate_verification_run.dart';
+import '../models/candidate_stop_request.dart';
 import '../models/agent_execution_checkpoint.dart';
 import '../models/source_generation.dart';
 import 'record_storage.dart';
@@ -16,7 +17,93 @@ class CandidateVerificationStore {
   String get key => 'studio.candidateChecks.v1.$projectId';
   String get candidateKey => 'studio.sourceCandidate.v1.$projectId';
   String? _expectedJournal, _expectedCandidate;
-  CandidateVerificationRun? _owned;
+  CandidateVerificationRun? _owned, _session;
+  Future<void> _pending = Future<void>.value();
+  static const stopPrefix = 'studio.candidateStop.v1.';
+
+  // Progress, Stop intent and terminal observations share one session write order.
+  Future<T> _serial<T>(Future<T> Function() action) {
+    final result = _pending.then((_) => action());
+    _pending = result.then<void>((_) {}, onError: (Object _, StackTrace _) {});
+    return result;
+  }
+
+  CandidateStopRequest? stopRequestFor(CandidateVerificationRun run) {
+    if (run.dispatchId == null) return null;
+    final raw = records.getString('$stopPrefix${run.dispatchId}');
+    if (raw == null) return null;
+    try {
+      final request = CandidateStopRequest.fromJson(jsonDecode(raw));
+      if (!request.matches(projectId, run)) {
+        throw const FormatException('Candidate Stop request identity changed.');
+      }
+      return request;
+    } on FormatException {
+      // Keep corrupt bytes in storage, not in FormatException.source.
+      throw const FormatException(
+        'Saved candidate Stop request is unreadable.',
+      );
+    }
+  }
+
+  Future<CandidateStopRequest?> requestStop(DateTime requestedAt) =>
+      _serial(() async {
+        final session = _session;
+        if (session == null) {
+          return null;
+        } // Startup never committed, so no dispatch exists.
+        final storage = records;
+        if (storage is! ConditionalRecordStorage) {
+          throw StateError('Atomic storage is required.');
+        }
+        final journalRaw = records.getString(key);
+        final current = load().runs.last;
+        final request = CandidateStopRequest.create(
+          projectId,
+          session,
+          requestedAt,
+        );
+        if (journalRaw != _expectedJournal ||
+            records.getString(candidateKey) != _expectedCandidate ||
+            !request.matches(projectId, current)) {
+          throw StateError('Candidate Stop request was superseded.');
+        }
+        final existing = stopRequestFor(current);
+        if (existing != null) return existing;
+        final executionKey =
+            'studio.agentExecution.v1.${request.dispatchId.split(':').first}';
+        final executionRaw = records.getString(executionKey);
+        if (executionRaw == null) {
+          throw StateError('Execution evidence is missing.');
+        }
+        final execution = AgentExecutionCheckpoint.fromJson(
+          jsonDecode(executionRaw),
+        );
+        final dispatch = request.dispatchId.split(':');
+        final matchesExecution =
+            execution.taskId == dispatch.first &&
+            (current.finished
+                ? execution.phase == AgentExecutionPhase.verifying &&
+                      execution.revision == int.parse(dispatch.last) + 1
+                : execution.requiresReconciliation &&
+                      execution.dispatchId == request.dispatchId);
+        if (!matchesExecution) {
+          throw StateError('Execution no longer matches the Stop request.');
+        }
+        await storage.commitRecords(
+          expected: {
+            key: journalRaw,
+            candidateKey: _expectedCandidate,
+            executionKey: executionRaw,
+            '$stopPrefix${request.dispatchId}': null,
+          },
+          updates: {
+            '$stopPrefix${request.dispatchId}': jsonEncode(request.toJson()),
+          },
+          authorize: () {},
+        );
+        return request;
+      });
 
   CandidateVerificationJournal load() {
     final raw = records.getString(key);
@@ -31,8 +118,15 @@ class CandidateVerificationStore {
     GeneratedProject snapshot,
     void Function() authorize, {
     String? dispatchId,
+  }) => _serial(() => _start(snapshot, authorize, dispatchId: dispatchId));
+
+  Future<CandidateVerificationRun> _start(
+    GeneratedProject snapshot,
+    void Function() authorize, {
+    String? dispatchId,
   }) async {
     if (_owned != null) throw StateError('Verification run already reserved.');
+    _session = null;
     _expectedJournal = records.getString(key);
     _expectedCandidate = records.getString(candidateKey);
     final journal = load();
@@ -63,10 +157,17 @@ class CandidateVerificationStore {
       execution: execution,
     );
     _owned = run;
+    _session = run;
     return run;
   }
 
   Future<void> checkpoint(
+    GeneratedProject snapshot,
+    void Function() authorize, {
+    bool finished = false,
+  }) => _serial(() => _checkpoint(snapshot, authorize, finished: finished));
+
+  Future<void> _checkpoint(
     GeneratedProject snapshot,
     void Function() authorize, {
     bool finished = false,
