@@ -639,3 +639,22 @@ Focused coverage includes pure identity/outcome distinctions, native receipt
 projection parity, delayed refresh, stale-input refusal, unreadable-history
 preservation and a320px/2x-text read-only view. General CE01 remains open under
 #404 and unavailable platform acceptance remains deferred under #400.
+
+
+### Recovery confirmation evidence — 18 November 2026
+
+Resolve interrupted verification now captures the exact selected run's read-only
+recovery summary when opening confirmation. A retained actual exit is described
+as retained evidence with unknown runner cleanup; missing or unavailable
+completion remains unknown. The dialog no longer unconditionally calls every
+exit unknown. Process cessation and candidate changes still require explicit
+operator inspection, and confirmation still uses the expected run through the
+existing stale-dispatch/journal guards. Dismissal performs no write; successful
+acknowledgement still clears verification consent. No summary grants authority.
+
+The dialog scrolls its title/content together so inspection text and actions stay
+usable at320px with2x text. Three widget cases cover retained, missing and
+unavailable evidence, intent-only Stop wording and byte-for-byte dismissal
+preservation. Existing stale-confirmation and fresh-consent regressions remain
+mandatory. This is component-level UI coverage, not production-main navigation
+or generalized CE01 acceptance.

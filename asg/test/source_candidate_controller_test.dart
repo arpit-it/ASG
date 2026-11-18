@@ -1322,6 +1322,99 @@ void main() {
     expect(records.values, before);
   });
 
+  for (final state in ['retained', 'missing', 'unavailable']) {
+    testWidgets(
+      'recovery dialog describes $state evidence and dismissal at narrow2x',
+      (tester) async {
+        final initial = candidate.result;
+        final evidence = candidate.evidence;
+        candidate.dispose();
+        final host = ReceiptCheckHost();
+        if (state == 'missing') {
+          host.deferred = Completer<List<CandidateOperationReceipt>>()
+            ..complete([]);
+        }
+        if (state == 'unavailable') host.failRead = true;
+        candidate = SourceCandidateController(
+          project: project,
+          candidate: initial,
+          evidence: evidence,
+          records: records,
+          host: host,
+          publish: (_, _, _) => throw StateError('Unexpected publication'),
+        );
+        host.stop = candidate.cancel;
+        await candidate.verify(approved: true);
+        await tester.pump();
+        final before = Map.of(records.values);
+        tester.view.physicalSize = const Size(320, 900);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+        await tester.pumpWidget(
+          MaterialApp(
+            builder: (context, child) => MediaQuery(
+              data: MediaQuery.of(context)
+                  .copyWith(textScaler: const TextScaler.linear(2)),
+              child: child ?? const SizedBox(),
+            ),
+            home: Scaffold(
+              body: SingleChildScrollView(
+                child: SourceCandidateView(controller: candidate),
+              ),
+            ),
+          ),
+        );
+        final resolve = find.widgetWithText(
+          TextButton,
+          'Resolve interrupted verification',
+        );
+        await tester.ensureVisible(resolve);
+        await tester.tap(resolve);
+        await tester.pumpAndSettle();
+        final dialog = find.byType(AlertDialog);
+        final description = tester
+            .widget<Text>(
+              find.descendant(
+                of: dialog,
+                matching: find.byWidgetPredicate(
+                  (widget) =>
+                      widget is Text &&
+                      (widget.data?.startsWith(
+                            'Check that the previous resolve',
+                          ) ??
+                          false),
+                ),
+              ),
+            )
+            .data!;
+        expect(description, contains('inspect any candidate changes'));
+        expect(description, contains('Confirm only after checking'));
+        if (state == 'retained') {
+          expect(description, contains('retained resolve exit is -1'));
+          expect(description, contains('cleanup remain unknown'));
+          expect(description, isNot(contains('Its exit outcome is unknown')));
+        } else if (state == 'missing') {
+          expect(
+            description,
+            contains('No actual exit was retained for resolve'),
+          );
+        } else {
+          expect(description, contains('completion evidence is unavailable'));
+        }
+        expect(description, contains('Stop request is saved'));
+        expect(tester.takeException(), isNull);
+        await tester.ensureVisible(find.text('Keep interrupted'));
+        await tester.tap(find.text('Keep interrupted'));
+        await tester.pumpAndSettle();
+        expect(records.values, before);
+        expect(candidate.history.single.finished, isFalse);
+        expect(candidate.canPromote, isFalse);
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
+
   testWidgets(
     'recovery dialog preserves dismissal and requires fresh consent',
     (tester) async {

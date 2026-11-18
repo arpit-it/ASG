@@ -57,15 +57,17 @@ class _SourceCandidateViewState extends State<SourceCandidateView> {
                 ? null
                 : () async {
                     final run = controller.history.last;
+                    final recovery = controller.recoveryStatusFor(run);
                     final confirmed = await showDialog<bool>(
                       context: context,
                       builder: (context) => AlertDialog(
+                        scrollable: true,
                         title: const Text('Resolve interrupted verification'),
                         content: Text(
                           'Check that the previous ${run.snapshot.pendingOperation} '
-                          'process has stopped and inspect any candidate changes. '
-                          'Its exit outcome is unknown. Confirm only after checking '
-                          'that a fresh verification can safely run again.',
+                          'process has stopped and inspect any candidate changes.\n\n'
+                          '${recovery?.explanation ?? 'Saved completion evidence is unavailable. The outcome remains unknown.'}\n\n'
+                          'Confirm only after checking that a fresh verification can safely run again.',
                         ),
                         actions: [
                           TextButton(
