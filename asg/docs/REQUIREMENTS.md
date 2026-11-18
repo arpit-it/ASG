@@ -115,6 +115,15 @@ running helper's owned group; they do not prove post-restart process identity.
 CE02 and dependent generalized execution work continue to require their documented
 prerequisite acceptance.
 
+The restart evidence investigation is specified in
+[Agent engine](architecture/AGENT_ENGINE.md#ce01-restart-reconciliation-investigation--18-november-2026).
+The next bounded CE01 implementation under #404 is a pure reconciliation decision
+model: validated intent/launch/result/cleanup evidence yields a conservative
+explanation and disposition without process, storage or network effects. Test
+missing evidence, stale dispatch, changed host identity, reused PID, uncertain
+cleanup, lost completion and completed terminal state. This prerequisite cannot
+claim a trusted receipt publisher, automatic recovery or process control.
+
 CE01 recovery integrity regression under #404: reject an interrupted run's
 acknowledgement when its linked execution checkpoint is missing. Acceptance:
 preserve the journal, candidate and unknown exits; start no new operation; retain
