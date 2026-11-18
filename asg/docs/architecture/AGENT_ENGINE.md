@@ -743,3 +743,32 @@ The actual four-launch observation passed with binary SHA256
 evidence /tmp/asg-404-native-retry-final-regression.json. Twelve host contracts pass.
 This fixed fixture continuation does not establish human process inspection,
 arbitrary cleanup, production-main navigation or full CE01/general synthesis.
+
+
+### Retry promotion boundary investigation — 18 November 2026
+
+PR718 establishes a successful second verification and restart, but deliberately
+injects a publication callback that throws. Its previous-output fixture is a
+seeded file/record, not an actual verified working preview. Existing controller
+coverage passed all44 tests in /tmp/asg-404-retry-promotion-controller.log:
+separate retry rows, preview failure, atomic save failure preserving the old
+pointer and verifying checkpoint, concurrent approval refusal and live-host reuse
+refusal. Those tests use controlled hosts; they do not cover this native app flow.
+
+Production SourceGenerationController.promoteCandidate requires a separate ready
+confined candidate and host, exact expected working record and current approval.
+It starts a separately validated preview, then atomically updates working and
+previous pointers together with only the latest matching execution's transition
+from verifying through reviewing to completed. Failure stops the candidate preview;
+success transfers host ownership and releases the previous host. Native preview
+rechecks source/build fingerprints and binds a tokenized loopback ephemeral port.
+
+A next bounded fixture should use that production publication action and real
+NativeGenerationHost in the isolated fixture namespace, explicitly promote only
+after the second run passes, inspect pointer/previous record and completed second
+checkpoint, preserve first action/Stop/cancelled evidence, then restart identical
+binary to prove no dispatch or promotion replay. It must identify seeded previous
+output honestly, and separately cover a refused publication preserving the old
+pointer/checkpoint. The preview port/host is an exclusive fixture-owned resource;
+never use the owner's stable app or output. This investigation changes no runtime
+behavior and does not establish actual promotion acceptance or general CE01.
