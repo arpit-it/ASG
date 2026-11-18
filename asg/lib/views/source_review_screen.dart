@@ -66,6 +66,10 @@ class _SourceReviewScreenState extends State<SourceReviewScreen>
         body: ListView(
           padding: const EdgeInsets.all(16),
           children: [
+            if (controller.selectedSession != null)
+              Text(
+                'Source review session: ${controller.selectedSession!.sessionId}. Reopening starts no work.',
+              ),
             const Text(
               'Request a local-model replacement for selected recorded Dart files. '
               'Prepare reviewed replacements in a separate folder with explicit consent. '

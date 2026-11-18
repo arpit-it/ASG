@@ -26,6 +26,53 @@ Future<void> reveal(WidgetTester tester, Finder target, double delta) async {
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   testWidgets(
+    'explicit use returns selected session without dispatch or storage writes',
+    (tester) async {
+      final records = AtomicRecords();
+      await seed(records);
+      final controller = AgentSessionController(
+        AgentSessionStore(records, project),
+        createSessionId: () => 'selected-route',
+      );
+      controller.load();
+      await controller.create(approved: true);
+      final before = Map.of(records.values);
+      Object? selected;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Builder(
+            builder: (context) => Scaffold(
+              body: TextButton(
+                onPressed: () async {
+                  selected = await Navigator.of(context).push(
+                    MaterialPageRoute<Object>(
+                      builder: (_) => AgentSessionScreen(
+                        controller: controller,
+                        projectName: project.name,
+                      ),
+                    ),
+                  );
+                },
+                child: const Text('Choose session'),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('Choose session'));
+      await tester.pumpAndSettle();
+      expect(selected, isNull);
+      await reveal(tester, find.text('Use session for source review'), 250);
+      await tester.tap(find.text('Use session for source review'));
+      await tester.pumpAndSettle();
+      expect(selected, isNotNull);
+      expect(records.values, before);
+      expect(find.text('Choose session'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
     '320px enlarged consent/create/cancel and reopen remain explicit',
     (tester) async {
       await tester.binding.setSurfaceSize(const Size(320, 600));

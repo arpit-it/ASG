@@ -8,6 +8,9 @@ import '../models/local_model_config.dart';
 import '../models/model_connection_preset.dart';
 import '../models/build_plan.dart';
 import '../models/project.dart';
+import '../models/agent_session.dart';
+import '../models/agent_session_binding.dart';
+import '../services/agent_session_admission.dart';
 import '../models/plan_approval.dart';
 import '../models/repair_attempt.dart';
 import '../models/requirements_board.dart';
@@ -53,12 +56,14 @@ class SourceReviewController extends BaseController {
     SourceCandidatePreparer? prepareCandidate,
     FolderPicker? folderPicker,
     this.publishCandidate,
+    AgentSession? selectedSession,
     GenerationHost Function()? createCandidateHost,
   }) : _proposer = proposer ?? ApprovedSourceProposer(records),
        _readSnapshot = readSnapshot ?? readSourceReviewSnapshot,
        _prepareCandidate = prepareCandidate ?? prepareSourceCandidate,
        _folderPicker = folderPicker ?? FolderPicker(),
        _createCandidateHost = createCandidateHost ?? createGenerationHost {
+    _selectedSession = selectedSession;
     try {
       _workingRecord = records.getString('studio.generation.v1.${project.id}');
       _workingRecordReadable = true;
@@ -68,6 +73,9 @@ class SourceReviewController extends BaseController {
     refreshApproval();
     refreshPresets();
   }
+
+  AgentSession? _selectedSession;
+  AgentSession? get selectedSession => _selectedSession;
 
   late final String? _workingRecord;
   late final bool _workingRecordReadable;
@@ -98,6 +106,8 @@ class SourceReviewController extends BaseController {
   SourceCandidateController? _candidateSession;
   SourceCandidateController? get candidateSession => _candidateSession;
   void _sessionChanged() {
+    final admitted = _candidateSession?.sessionBinding?.session;
+    if (admitted != null) _selectedSession = admitted;
     // A new candidate action supersedes the preceding review cancellation.
     if (!_repairLoopActive && !_busy && (_candidateSession?.busy ?? false)) {
       _cancelled = false;
@@ -203,13 +213,26 @@ class SourceReviewController extends BaseController {
     _status = 'Preparing separate unverified source candidate…';
     update();
     try {
+      final selected = selectedSession;
+      final binding = selected == null
+          ? null
+          : AgentSessionBinding.select(
+              session: selected,
+              projectId: project.id,
+              boardTaskId: evidence.boardTaskId,
+            );
       void checkActive() {
         if (_cancelled || _loopCancelled || isDisposed) {
           throw StateError('Candidate preparation cancelled.');
         }
         _requireWorking();
         _proposer.requireCurrent(project, evidence);
+        if (binding != null) {
+          AgentSessionRunAdmission(records, project, binding).requireCurrent();
+        }
       }
+
+      checkActive();
 
       final value = await _prepareCandidate(
         project: project,
@@ -242,6 +265,7 @@ class SourceReviewController extends BaseController {
           records: records,
           host: _createCandidateHost(),
           publish: publishCandidate!,
+          sessionBinding: binding,
           requireWorking: () {
             if (_repairLoopActive && _loopCancelled) {
               throw StateError('Automatic repair stopped.');
@@ -565,6 +589,20 @@ class SourceReviewController extends BaseController {
     bool repair = false,
   }) => _request(taskId, selected, repair: repair);
 
+  void _requireSessionTask(String taskId) {
+    final selected = selectedSession;
+    if (selected == null) return;
+    AgentSessionRunAdmission(
+      records,
+      project,
+      AgentSessionBinding.select(
+        session: selected,
+        projectId: project.id,
+        boardTaskId: taskId,
+      ),
+    ).requireCurrent();
+  }
+
   Future<void> _request(
     String taskId,
     List<String> selected, {
@@ -602,6 +640,7 @@ class SourceReviewController extends BaseController {
     late final LocalModelConfig requestConfig;
     try {
       _requireWorking();
+      _requireSessionTask(taskId);
       started = PlanApprovalStore(records).requireCurrentApproval(project);
       requestConfig = config ?? _requestConfig();
     } catch (_) {
@@ -629,6 +668,7 @@ class SourceReviewController extends BaseController {
           throw StateError('Source proposal cancelled.');
         }
         _requireWorking();
+        _requireSessionTask(taskId);
         final current = PlanApprovalStore(records)
             .requireCurrentApproval(project);
         if (!started.matches(current)) {

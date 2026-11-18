@@ -10,6 +10,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:asg/services/agent_execution_checkpoint_store.dart';
 
 import 'package:asg/controllers/source_candidate_controller.dart';
+import 'package:asg/models/agent_session_binding.dart';
+import 'package:asg/services/agent_session_store.dart';
 import 'package:asg/controllers/source_generation_controller.dart';
 import 'package:asg/models/approved_source_proposal.dart';
 import 'package:asg/models/build_plan.dart';
@@ -188,6 +190,160 @@ void main() {
   late SourceGenerationController working;
   late SourceCandidateController candidate;
   late GeneratedProject saved;
+  test(
+    'bound cancellation retains the running command unknown outcome',
+    () async {
+      final sessions = AgentSessionStore(records, project);
+      final selected = await sessions.create(
+        'bound',
+        RequirementsStore(records)
+            .load(project.id)
+            .tasks
+            .map((task) => task.id)
+            .toList(),
+      );
+      final host = InterruptedCheckHost();
+      final bound = SourceCandidateController(
+        project: project,
+        candidate: candidate.result,
+        evidence: candidate.evidence,
+        records: records,
+        host: host,
+        publish: candidate.publish,
+        sessionBinding: AgentSessionBinding.select(
+          session: selected,
+          projectId: project.id,
+          boardTaskId: 'Tanalyze',
+        ),
+      );
+      host.stop = () {
+        unawaited(sessions.requestCancellation(bound.sessionBinding!.session));
+      };
+      await bound.verify(approved: true);
+      expect(sessions.load('bound')!.cancellationRequested, isTrue);
+      final run = CandidateVerificationStore(
+        records,
+        project.id,
+      ).load().runs.single;
+      expect(run.finished, isFalse);
+      expect(run.snapshot.pendingOperation, 'resolve');
+      expect(run.snapshot.steps, isEmpty);
+      expect(bound.canPromote, isFalse);
+      expect(
+        SourceGenerationStore(records).load(project.id)!.directory,
+        saved.directory,
+      );
+      bound.dispose();
+    },
+  );
+
+  for (final cancelAtPreview in [false, true]) {
+    test(
+      'bound verification and promotion cancellation race $cancelAtPreview',
+      () async {
+        final sessions = AgentSessionStore(records, project);
+        final selected = await sessions.create(
+          'bound',
+          RequirementsStore(records)
+              .load(project.id)
+              .tasks
+              .map((task) => task.id)
+              .toList(),
+        );
+        final boundWorking = SourceGenerationController(
+          project: project,
+          definition: ApplicationStore(records).load(project).definition,
+          store: SourceGenerationStore(records),
+          host: FixtureHost(),
+          selectedSession: selected,
+        );
+        final host = FixtureHost();
+        final bound = SourceCandidateController(
+          project: project,
+          candidate: candidate.result,
+          evidence: candidate.evidence,
+          records: records,
+          host: host,
+          publish: (value, candidateHost, authorize) =>
+              boundWorking.promoteCandidate(
+                value,
+                candidateHost,
+                authorize,
+                expectedWorking: saved,
+              ),
+          sessionBinding: AgentSessionBinding.select(
+            session: selected,
+            projectId: project.id,
+            boardTaskId: 'Tanalyze',
+          ),
+        );
+        await bound.verify(approved: true);
+        expect(bound.error, isNull);
+        expect(bound.canPromote, isTrue);
+        expect(
+          bound.sessionBinding!.session.dispatches.single.dispatchId,
+          bound.history.single.dispatchId,
+        );
+        if (cancelAtPreview) {
+          records.beforeCommit = () async {
+            records.beforeCommit = null;
+            await sessions.requestCancellation(sessions.load('bound')!);
+          };
+        }
+        await bound.promote(approved: true);
+        expect(bound.promoted, !cancelAtPreview);
+        expect(
+          SourceGenerationStore(records).load(project.id)!.directory,
+          cancelAtPreview ? saved.directory : bound.result.directory,
+        );
+        bound.dispose();
+        boundWorking.dispose();
+      },
+    );
+  }
+
+  for (final refusal in ['cancelled', 'commit', 'wrong task']) {
+    test(
+      'bound $refusal refuses before receipt preparation or host entry',
+      () async {
+        final sessions = AgentSessionStore(records, project);
+        final selected = await sessions.create(
+          'bound',
+          RequirementsStore(records)
+              .load(project.id)
+              .tasks
+              .map((task) => task.id)
+              .toList(),
+        );
+        final receiptHost = ReceiptCheckHost();
+        final bound = SourceCandidateController(
+          project: project,
+          candidate: candidate.result,
+          evidence: candidate.evidence,
+          records: records,
+          host: receiptHost,
+          publish: candidate.publish,
+          sessionBinding: AgentSessionBinding.select(
+            session: selected,
+            projectId: project.id,
+            boardTaskId: refusal == 'wrong task' ? 'Tresolve' : 'Tanalyze',
+          ),
+        );
+        if (refusal == 'cancelled') {
+          await sessions.requestCancellation(selected);
+        }
+        if (refusal == 'commit') records.failCommit = true;
+        final before = Map.of(records.values);
+        await bound.verify(approved: true);
+        expect(receiptHost.preparations, 0);
+        expect(records.values, before);
+        expect(bound.error, isNotNull);
+        expect(bound.history, isEmpty);
+        bound.dispose();
+      },
+    );
+  }
+
   setUp(() async {
     records = AtomicRecords();
     final contract = boardContract();
