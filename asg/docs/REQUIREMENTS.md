@@ -123,7 +123,18 @@ The pure CE01 reconciliation decision model merged in PR #698 as
 outcomes for caller-validated evidence without process, storage or network effects. This prerequisite cannot
 claim a trusted receipt publisher, automatic recovery or process control.
 
-Current bounded CE01 validation fix under #404: reject saved phase/revision pairs
+Checkpoint phase validation and native record isolation merged in PR #699 as
+`00bafa9eeb432fe335100eb006835fe87ab77189` (1,803 Flutter tests passed,
+10 skipped; required CI passed). The next bounded CE01 prerequisite under #404
+is an actual helper parent-crash fixture: a disposable supervisor exits after a
+tool launch handshake, and the helper must report cancellation/non-success while
+preventing its descendant's delayed write. Keep all fixture processes bounded.
+This verifies helper behavior only; app restart, trusted durable receipt
+publication and automatic reconciliation stay pending. Existing four Mac
+confinement fixtures passed and protect private sibling files, but do not
+establish a receipt publisher or authenticate post-restart ownership.
+
+Delivered bounded CE01 validation fix under #404: reject saved phase/revision pairs
 below the earliest legal lifecycle transition count and planning revisions other
 than one. Acceptance: no recovering dispatch zero or premature completed phase;
 legal recovery/retry histories still round-trip; native corrupt records remain

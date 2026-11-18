@@ -79,3 +79,21 @@ unowned process, unchanged last working output, and preserved unknown exits.
 Real helper/app restart evidence must be recorded separately from simulated
 identity and pure-model fixtures. Other platform acceptance remains deferred
 under #400; no unavailable platform is verified by the Mac design.
+
+
+### Actual helper parent-crash fixture — 18 November 2026
+
+`test_actual_parent_exit_cancels_helper_and_cleans_descendant` starts a disposable
+supervisor, the existing helper and a tool with a delayed-writing descendant.
+After a launch handshake the supervisor calls `os._exit`, leaving the actual
+helper parent relationship changed. The fixture observes cancellation, a
+non-success helper result and absence of the descendant's delayed write. Process
+lifetimes and waiting are bounded. The helper suite now runs 18 cases: 17 passed
+and one skipped on this Mac. The four existing confinement cases also passed,
+including private sibling file read/write refusal and inherited restrictions.
+
+These are actual local helper/process fixtures, not Flutter app crash/restart
+acceptance. The fixture-owned result file is not a production durable receipt
+publisher and is not consumed by ASG recovery. App recovery still lacks a trusted
+publisher, host-session binding and an atomic receipt-to-journal reconciliation
+path. Missing evidence remains unknown and cannot authorize replay.
