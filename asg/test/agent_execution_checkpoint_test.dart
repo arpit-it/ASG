@@ -111,6 +111,31 @@ void main() {
         store.advance(reconciled, AgentExecutionPhase.executing),
         throwsStateError,
       );
+      var completed = await store.advance(
+        reconciled,
+        AgentExecutionPhase.executing,
+        authorize: () {},
+      );
+      completed = await store.advance(completed, AgentExecutionPhase.verifying);
+      completed = await store.advance(completed, AgentExecutionPhase.reviewing);
+      completed = await store.advance(completed, AgentExecutionPhase.completed);
+      await db.close();
+      db = await databaseFactoryIo.openDatabase(path);
+      store = AgentExecutionCheckpointStore(
+        await StudioDatabase.migrate(db, prefs),
+      );
+      final reopened = (await store.reopen('task-1'))!;
+      expect(reopened.toJson(), completed.toJson());
+      expect(reopened.requiresReconciliation, isFalse);
+      await expectLater(
+        store.advance(
+          reopened,
+          AgentExecutionPhase.executing,
+          authorize: () {},
+        ),
+        throwsStateError,
+      );
+      expect(store.load('task-1')!.toJson(), completed.toJson());
     },
   );
 }

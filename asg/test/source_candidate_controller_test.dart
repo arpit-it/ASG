@@ -3,6 +3,11 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
+
+import 'package:sembast/sembast_io.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:asg/services/agent_execution_checkpoint_store.dart';
 
 import 'package:asg/controllers/source_candidate_controller.dart';
 import 'package:asg/controllers/source_generation_controller.dart';
@@ -358,6 +363,47 @@ void main() {
     expect(jsonDecode(records.getString(executionKey)!)['phase'], 'verifying');
     expect(await candidate.promote(approved: true), isTrue);
     expect(jsonDecode(records.getString(executionKey)!)['phase'], 'completed');
+    SharedPreferences.setMockInitialValues({});
+    final folder = await Directory.systemTemp.createTemp(
+      'asg-promoted-reopen-',
+    );
+    try {
+      final path = '${folder.path}/studio.db';
+      var database = await databaseFactoryIo.openDatabase(path);
+      final native = await StudioDatabase.migrate(
+        database,
+        await SharedPreferences.getInstance(),
+      );
+      await native.commitRecords(
+        expected: {for (final key in records.values.keys) key: null},
+        updates: Map<String, String>.from(records.values),
+        authorize: () {},
+      );
+      await database.close();
+      database = await databaseFactoryIo.openDatabase(path);
+      try {
+        final reopened = await StudioDatabase.migrate(
+          database,
+          await SharedPreferences.getInstance(),
+        );
+        expect(
+          SourceGenerationStore(reopened).load(project.id)!.toJson(),
+          candidate.result.toJson(),
+        );
+        final execution = await AgentExecutionCheckpointStore(reopened)
+            .reopen(candidate.history.last.dispatchId!.split(':').first);
+        expect(execution!.phase.name, 'completed');
+        expect(
+          reopened.getString(executionKey),
+          records.getString(executionKey),
+        );
+      } finally {
+        await database.close();
+      }
+    } finally {
+      await folder.delete(recursive: true);
+    }
+
     expect(
       records.getString('studio.generationPrevious.v1.${project.id}'),
       original,
