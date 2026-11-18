@@ -147,7 +147,7 @@ pipe publication, native persistence/reopen, confinement, corruption, failure,
 Stop/disposal and full required checks. App crash/restart and automated
 reconciliation acceptance remain pending until separately verified.
 
-Separate-process receipt fixture merged in PR #702 as `2bda72ed796babb0269a7d55dce18bd8e4ae054d` after CI44257566562. It verifies normal producer exit, not an application crash. Next bounded #404 fixture: actual publisher death after a tool side effect but before receipt publication must retain intent, absent completion, unchanged interrupted journal and last working output, without replay.
+Separate-process receipt fixture merged in PR #702 as `2bda72ed796babb0269a7d55dce18bd8e4ae054d` after CI44257566562. It verifies normal producer exit, not an application crash. Delivered publication-gap fixture in PR #703 (merge `25d33f6fc9bc921fbe3f3f7f4d5d8370c6fba694`, CI44261294390): actual publisher death after a tool side effect but before receipt publication must retain intent, absent completion, unchanged interrupted journal and last working output, without replay.
 
 Delivered process restart prerequisite: an actual process restart fixture for receipt reading. Verify a separate reader process can inspect retained helper evidence after the original owner ends, while interrupted journals and last working output remain unchanged. No retry, process signal or cleanup inference is authorized. Distinguish this prerequisite from full Flutter app crash/restart acceptance.
 
@@ -16102,3 +16102,13 @@ Recorded 2026-11-05T04:47:02.251179+00:00.
 - [x] [#616](https://github.com/arpit-it/ASG/issues/616) Accept a fresh PR review recorded by the implementer. Require passing checks and review evidence for the exact revision and invalidate both after blocking findings.
 
 - [x] [#618](https://github.com/arpit-it/ASG/issues/618) Align the Git and parallel-development guides and repository automation prompt with fresh PR review under AGENTS.md. Preserve revision checks, required CI and protected merge.
+
+
+CE01 next bounded prerequisite under #404 — disposable native app restart isolation:
+inspect bootstrap database, legacy preferences and receipt storage; verify a
+distinct disposable bundle and data roots before launching a crash/restart
+fixture. Acceptance: preserve owner records/stable app/processes, provide bounded
+owned-process handshakes and record binary/source identity. Native startup has no
+existing data-root injection; copying the current bundle identity is insufficient.
+See the Mac app-restart isolation investigation in architecture/AGENT_ENGINE.md.
+Full GUI restart acceptance remains pending; no app launch is recorded here.
