@@ -17,8 +17,8 @@ class CandidateCrashTests(unittest.TestCase):
         self.nonce = 'a' * 32
 
     def report(self, launch, operation='resolve', **changes):
-        value = {'version': 6, 'launch': launch, 'nonce': self.nonce, 'dispatch': f'candidate-restart-{self.nonce}-1:3'}
-        value.update(uncertain=False, publicationFault=False, intentUnchanged=True, running=False, runningMarker=False, runningCancelled=False, precommit=False, stopSignalled=False, stopSaveBlocked=False, savedStopPresent=False, stopRequested=False, stopUnchanged=True, operation=operation, completedOperations=fixture.OPERATIONS[:fixture.OPERATIONS.index(operation)])
+        value = {'version': 7, 'launch': launch, 'nonce': self.nonce, 'dispatch': f'candidate-restart-{self.nonce}-1:3'}
+        value.update(acknowledge=False, uncertain=False, publicationFault=False, intentUnchanged=True, running=False, runningMarker=False, runningCancelled=False, precommit=False, stopSignalled=False, stopSaveBlocked=False, savedStopPresent=False, stopRequested=False, stopUnchanged=True, operation=operation, completedOperations=fixture.OPERATIONS[:fixture.OPERATIONS.index(operation)])
         if launch == 1:
             value['readyForCrash'] = True
         else:
@@ -96,6 +96,19 @@ class CandidateCrashTests(unittest.TestCase):
                 fixture.read_report(self.root, 2, self.nonce, operation='test', stop=True, running=True, uncertain=True)
         self.report(2, operation='test', stopRequested=True, savedStopPresent=True, running=True, uncertain=True, retainedExit=None, receiptOperations=['resolve', 'analyze'])
         fixture.read_report(self.root, 2, self.nonce, operation='test', stop=True, running=True, uncertain=True)
+
+    def test_third_launch_requires_saved_action_fresh_consent_and_no_dispatch(self):
+        common = dict(acknowledge=True, stopRequested=True, savedStopPresent=True, running=True, runningCancelled=True, retainedExit=-1)
+        self.report(2, operation='test', **common, acknowledgedAfterRead=True, afterAcknowledgementPhase='awaitingApproval', noNewDispatch=True)
+        fixture.read_report(self.root, 2, self.nonce, operation='test', stop=True, running=True, acknowledge=True)
+        for changes in ({'actionUnchanged': False}, {'freshConsentRequired': False}, {'noNewDispatch': False}, {'executionPhase': 'executing'}):
+            value = dict(common, interrupted=False, executionPhase='awaitingApproval', actionUnchanged=True, freshConsentRequired=True, noNewDispatch=True)
+            value.update(changes)
+            self.report(3, operation='test', **value)
+            with self.assertRaises(ValueError):
+                fixture.read_report(self.root, 3, self.nonce, operation='test', stop=True, running=True, acknowledge=True)
+        self.report(3, operation='test', **common, interrupted=False, executionPhase='awaitingApproval', actionUnchanged=True, freshConsentRequired=True, noNewDispatch=True)
+        fixture.read_report(self.root, 3, self.nonce, operation='test', stop=True, running=True, acknowledge=True)
 
     def test_ready_and_recovered_reports_are_distinct(self):
         self.report(1)
