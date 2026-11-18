@@ -13,6 +13,10 @@ import 'html_project_workspace.dart';
 import '../controllers/portable_archive_controller.dart';
 import 'portable_archive_screen.dart';
 
+import '../controllers/agent_session_controller.dart';
+import '../services/agent_session_store.dart';
+import 'agent_session_screen.dart';
+
 import '../controllers/requirements_controller.dart';
 import '../services/requirements_store.dart';
 import 'requirements_screen.dart';
@@ -162,6 +166,26 @@ class _ProjectWorkspaceState extends State<_FlutterProjectWorkspace> {
     );
   }
 
+  Future<void> workSessions() async {
+    final records = controller.records;
+    if (records is! ConditionalRecordStorage ||
+        controller.busy ||
+        controller.savingInteractions ||
+        controller.hasUnsavedInteractions) {
+      return;
+    }
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => AgentSessionScreen(
+          controller: AgentSessionController(
+            AgentSessionStore(records, widget.project),
+          ),
+          projectName: widget.project.name,
+        ),
+      ),
+    );
+  }
+
   Future<void> requirements() async {
     final records = controller.records;
     if (records == null ||
@@ -266,6 +290,17 @@ class _ProjectWorkspaceState extends State<_FlutterProjectWorkspace> {
                   ? null
                   : portableRecords,
               icon: const Icon(Icons.import_export),
+            ),
+            IconButton(
+              tooltip: 'Saved work sessions',
+              onPressed:
+                  controller.records is! ConditionalRecordStorage ||
+                      controller.busy ||
+                      controller.savingInteractions ||
+                      controller.hasUnsavedInteractions
+                  ? null
+                  : workSessions,
+              icon: const Icon(Icons.work_history_outlined),
             ),
             IconButton(
               tooltip: 'Requirements and tasks',

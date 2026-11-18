@@ -44,6 +44,44 @@ final class AgentSessionStore {
     }
   }
 
+  String get _catalogKey => '${AgentSessionCatalog.prefix}${project.id}';
+  AgentSessionCatalog _catalog() {
+    try {
+      final raw = records.getString(_catalogKey);
+      if (raw == null) return AgentSessionCatalog.empty(project.id);
+      if (utf8.encode(raw).length > AgentSessionCatalog.maxEncodedBytes) {
+        throw const FormatException();
+      }
+      final catalog = AgentSessionCatalog.fromJson(jsonDecode(raw));
+      if (catalog.storageKey != _catalogKey) throw const FormatException();
+      return catalog;
+    } catch (_) {
+      throw const FormatException('Saved session list is unreadable.');
+    }
+  }
+
+  List<String> sessionIds() => _catalog().sessionIds;
+
+  /// Explicit discovery registration for a previously unindexed record. Does
+  /// not change that record or require execution consent to retain history.
+  Future<AgentSession> remember(String sessionId) async {
+    final value = load(sessionId);
+    if (value == null) throw StateError('Saved session was not found.');
+    final catalog = _catalog();
+    if (catalog.sessionIds.contains(sessionId)) return value;
+    final raw = records.getString(_catalogKey);
+    final next = catalog.adding(sessionId);
+    await records.commitRecords(
+      expected: {
+        _catalogKey: raw,
+        value.storageKey: records.getString(value.storageKey),
+      },
+      updates: {_catalogKey: jsonEncode(next.toJson())},
+      authorize: () {},
+    );
+    return value;
+  }
+
   Map<String, String?> _approvalRecords() => {
     for (final key in [
       'studio.projects.v1',
@@ -106,9 +144,19 @@ final class AgentSessionStore {
       ]),
     );
     _authorize(value);
+    final catalog = _catalog();
+    final catalogRaw = records.getString(_catalogKey);
+    final indexed = catalog.adding(sessionId);
     await records.commitRecords(
-      expected: {_key(sessionId): null, ..._approvalRecords()},
-      updates: {value.storageKey: jsonEncode(value.toJson())},
+      expected: {
+        _key(sessionId): null,
+        _catalogKey: catalogRaw,
+        ..._approvalRecords(),
+      },
+      updates: {
+        value.storageKey: jsonEncode(value.toJson()),
+        _catalogKey: jsonEncode(indexed.toJson()),
+      },
       authorize: () => _authorize(value),
     );
     return value;
