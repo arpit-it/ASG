@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MPL-2.0
 // Copyright 2026 Arpit Sinha
 
+import '../models/agent_execution_checkpoint.dart';
+import '../services/agent_execution_checkpoint_store.dart';
 import '../models/approved_source_proposal.dart';
 import '../models/build_plan.dart';
 import '../models/candidate_failure.dart';
@@ -55,6 +57,27 @@ class SourceCandidateController extends BaseController {
       _historyError =
           'Saved candidate check history is unreadable. '
           'Verification is blocked; retained records have not been replaced.';
+    }
+  }
+
+  /// Reads evidence only. Viewing a saved run never reconciles or replays it.
+  AgentExecutionCheckpoint? savedExecutionFor(CandidateVerificationRun run) {
+    final dispatchId = run.dispatchId;
+    final storage = records;
+    if (dispatchId == null || storage is! ConditionalRecordStorage) return null;
+    try {
+      final parts = dispatchId.split(':');
+      final checkpoint = AgentExecutionCheckpointStore(storage)
+          .load(parts.first);
+      if (checkpoint == null ||
+          checkpoint.revision < int.parse(parts.last) ||
+          (checkpoint.requiresReconciliation &&
+              checkpoint.dispatchId != dispatchId)) {
+        return null;
+      }
+      return checkpoint;
+    } catch (_) {
+      return null;
     }
   }
 

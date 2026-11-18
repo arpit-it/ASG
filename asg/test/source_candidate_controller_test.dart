@@ -14,6 +14,7 @@ import 'package:asg/controllers/source_generation_controller.dart';
 import 'package:asg/models/approved_source_proposal.dart';
 import 'package:asg/models/build_plan.dart';
 import 'package:asg/models/candidate_failure.dart';
+import 'package:asg/models/candidate_verification_run.dart';
 import 'package:asg/models/source_edit_proposal.dart';
 import 'package:asg/models/source_generation.dart';
 import 'package:asg/services/application_store.dart';
@@ -649,10 +650,72 @@ void main() {
       final retained = candidate.history.single;
       expect(retained.finished, isFalse);
       expect(retained.snapshot.pendingOperation, 'resolve');
+      final before = Map<String, String>.of(records.values);
+      expect(candidate.savedExecutionFor(retained)!.phase.name, 'executing');
+      expect(records.values, before);
       expect(retained.snapshot.steps, isEmpty);
       expect(candidate.canPromote, isFalse);
     },
   );
+
+  for (final complete in [false, true]) {
+    testWidgets('saved execution visible without replay: completed=$complete', (
+      tester,
+    ) async {
+      await candidate.verify(approved: true);
+      if (complete) expect(await candidate.promote(approved: true), isTrue);
+      final run = candidate.history.single;
+      final before = Map<String, String>.of(records.values);
+      final calls = candidateHost.verifications;
+      final previous = candidate;
+      candidate = SourceCandidateController(
+        project: project,
+        candidate: previous.result,
+        evidence: previous.evidence,
+        records: records,
+        host: candidateHost,
+        publish: (value, host, guard) => throw StateError('Unexpected replay'),
+      );
+      previous.dispose();
+      final phase = complete ? 'completed' : 'verifying';
+      expect(candidate.savedExecutionFor(run)!.phase.name, phase);
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: SingleChildScrollView(
+              child: SourceCandidateView(controller: candidate),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('Saved candidate check runs'));
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text('Run 1: checks passed'));
+      await tester.tap(find.text('Run 1: checks passed'));
+      await tester.pumpAndSettle();
+      expect(find.text('Saved dispatch: ${run.dispatchId}'), findsOneWidget);
+      expect(find.textContaining('Saved execution: $phase'), findsOneWidget);
+      expect(records.values, before);
+      expect(candidateHost.verifications, calls);
+    });
+  }
+
+  test('missing and corrupt execution evidence remains unavailable', () async {
+    await candidate.verify(approved: true);
+    final run = candidate.history.single;
+    final key = 'studio.agentExecution.v1.${run.dispatchId!.split(':').first}';
+    final legacy = CandidateVerificationRun.fromJson(
+      Map<String, dynamic>.from(run.toJson())..remove('dispatchId'),
+    );
+    expect(candidate.savedExecutionFor(legacy), isNull);
+    final saved = records.values.remove(key)!;
+    expect(candidate.savedExecutionFor(run), isNull);
+    records.values[key] = saved.replaceFirst('"taskId":"', '"taskId":"other-');
+    expect(candidate.savedExecutionFor(run), isNull);
+    records.values[key] = 'unreadable';
+    expect(candidate.savedExecutionFor(run), isNull);
+    expect(records.values[key], 'unreadable');
+  });
 
   testWidgets(
     'recovery dialog preserves dismissal and requires fresh consent',

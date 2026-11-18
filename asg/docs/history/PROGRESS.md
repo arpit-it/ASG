@@ -14775,3 +14775,7 @@ Publication failure retains the previous checkpoint and working output.
 #404 remains open for broader persistent execution acceptance.
 
 PR #693 merged at ffbb6af8b1db055806b1552969cdd21d4a6d813a after CI44217979729 and fresh review. Verified remote tree matched tested source. Native reopen preserves completed execution and promoted working-output data. Claims released. CE01 evidence and remaining acceptance reconciled in REQUIREMENTS.md under #404.
+
+18 November 2026 — CE01 saved candidate execution visibility under #404.
+PR #694 merged at e6612c78e7030f30d2879373bef65f44c0ca820d after CI44224152185 and fresh review; remote tree verified and claims released.
+Candidate history now reads saved execution phase, task identity and dispatch identity without reconciliation, replay or storage mutation. Missing, corrupt and mismatched evidence is unavailable; legacy journals remain readable. Unknown exits remain unknown and completed executions stay terminal. Focused controller/widget tests cover reopen and unchanged records/host calls. Full Flutter regression: 1,773 passed, 10 skipped; analyze passed. Generalized execution and automatic process reconciliation acceptance under #404 remain pending.
