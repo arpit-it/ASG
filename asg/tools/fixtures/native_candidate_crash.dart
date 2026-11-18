@@ -127,16 +127,19 @@ Future<void> main() async {
     }
     final input = jsonDecode(await challenge.readAsString());
     if (input is! Map<String, dynamic> ||
-        input.length != 9 ||
+        input.length != 10 ||
         input['nonce'] is! String ||
         !RegExp(r'^[a-f0-9]{32}$').hasMatch(input['nonce'] as String) ||
-        ![1, 2, 3].contains(input['launch']) ||
+        ![1, 2, 3, 4].contains(input['launch']) ||
         input['sdk'] is! String ||
         input['stop'] is! bool ||
         input['precommit'] is! bool ||
         input['running'] is! bool ||
         input['uncertain'] is! bool ||
         input['acknowledge'] is! bool ||
+        input['retry'] is! bool ||
+        (input['retry'] == true && input['acknowledge'] != true) ||
+        (input['launch'] == 4 && input['retry'] != true) ||
         (input['launch'] == 3 && input['acknowledge'] != true) ||
         (input['acknowledge'] == true &&
             (input['running'] != true || input['uncertain'] == true)) ||
@@ -158,7 +161,8 @@ Future<void> main() async {
     final running = input['running'] as bool;
     final uncertain = input['uncertain'] as bool;
     final acknowledge = input['acknowledge'] as bool;
-    final acknowledged = acknowledge && launch == 3;
+    final retry = input['retry'] as bool;
+    final acknowledged = acknowledge && launch >= 3;
     final sdk = await Directory(input['sdk'] as String).resolveSymbolicLinks();
     final support = await getApplicationSupportDirectory();
     if (path.basename(support.path) != bundle ||
@@ -275,7 +279,7 @@ Future<void> main() async {
       await test.parent.create();
       await test.writeAsString(
         running
-            ? "import 'dart:io'; import 'package:flutter_test/flutter_test.dart'; void main() { test('fixed running fixture', () async { await Directory('build').create(recursive: true); await File('build/running-$nonce').writeAsString('$nonce', flush: true); await Future<void>.delayed(const Duration(seconds: 60)); fail('Stop did not reach running test'); }); }"
+            ? "import 'dart:io'; import 'package:flutter_test/flutter_test.dart'; void main() { test('fixed running fixture', () async { await Directory('build').create(recursive: true); if (await File('build/allow-retry-$nonce').exists()) { expect(await File('build/allow-retry-$nonce').readAsString(), '$nonce'); return; } await File('build/running-$nonce').writeAsString('$nonce', flush: true); await Future<void>.delayed(const Duration(seconds: 60)); fail('Stop did not reach running test'); }); }"
             : "import 'package:flutter_test/flutter_test.dart';\nvoid main() { test('fixed fixture smoke', () { expect(2 + 2, 4); }); }\n",
       );
       final web = File(path.join(candidate.path, 'web', 'index.html'));
@@ -531,7 +535,7 @@ Future<void> main() async {
             'running': running,
             'uncertain': uncertain,
             'acknowledge': acknowledge,
-
+            'retry': retry,
             'publicationFault': uncertain,
             'runningMarker': running,
             'stopSaveBlocked': barrier.reached,
@@ -581,14 +585,24 @@ Future<void> main() async {
     }
     stage = 'recovery-read';
     final beforeFile = File(
-      path.join(canonical, acknowledged ? 'after-ack.json' : 'before.json'),
+      path.join(
+        canonical,
+        launch == 4
+            ? 'after-retry.json'
+            : acknowledged
+            ? 'after-ack.json'
+            : 'before.json',
+      ),
     );
     final before =
         jsonDecode(await beforeFile.readAsString()) as Map<String, dynamic>;
-    final run = checks.load().runs.single;
+    final run = checks.load().runs.first;
     final snapshot = run.snapshot;
     if (stop) approval = snapshot.approval!;
-    final controller = makeController(snapshot, host);
+    final controller = makeController(
+      launch == 4 ? checks.load().runs.last.snapshot : snapshot,
+      host,
+    );
     final deadline = DateTime.now().add(const Duration(seconds: 10));
     while (controller.receiptsFor(run).isEmpty &&
         controller.receiptHistoryError == null &&
@@ -622,14 +636,53 @@ Future<void> main() async {
           digest(records.getString(actionKey)!) == before['action'] &&
           digest(records.getString(executionKey)!) == before['execution'] &&
           saved?.phase.name == 'awaitingApproval' &&
-          checks.load().runs.length == 1;
+          checks.load().runs.length == (launch == 4 ? 2 : 1);
+    }
+
+    Future<bool> sameRetry() async {
+      if (launch != 4) return true;
+      final runs = checks.load().runs;
+      if (runs.length != 2) return false;
+      final latest = runs.last;
+      final executionKey = 'studio.agentExecution.v1.candidate-$projectId-2';
+      final completed = await receipts.read(latest);
+      return latest.dispatchId == 'candidate-$projectId-2:3' &&
+          latest.finished &&
+          latest.snapshot.phase == SourceGenerationPhase.ready &&
+          latest.snapshot.steps.length == 4 &&
+          latest.snapshot.steps.every((step) => step.succeeded) &&
+          jsonEncode(
+                latest.snapshot.steps.map((step) => step.operation).toList(),
+              ) ==
+              jsonEncode(operations) &&
+          digest(jsonEncode(latest.toJson())) == before['retryRun'] &&
+          digest(records.getString(executionKey)!) ==
+              before['retryExecution'] &&
+          controller.savedExecutionFor(latest)?.phase.name == 'verifying' &&
+          completed.length == 4 &&
+          completed.every(
+            (receipt) =>
+                receipt.result.exitCode == 0 && !receipt.result.cancelled,
+          ) &&
+          jsonEncode(
+                completed.map((receipt) => receipt.operation.name).toList(),
+              ) ==
+              jsonEncode(operations) &&
+          NativeGenerationHost.sameFiles(
+            await NativeGenerationHost.fingerprints(
+              path.join(snapshot.directory, 'build', 'web'),
+              source: false,
+            ),
+            latest.snapshot.outputs,
+          );
     }
 
     final currentSources = await NativeGenerationHost.fingerprints(
       snapshot.directory,
       source: true,
     );
-    if (!sameAction() ||
+    if (!await sameRetry() ||
+        !sameAction() ||
         await retainedIntent(run.dispatchId!) != before['intent'] ||
         !sameStop() ||
         controller.stopRequestHistoryError != null ||
@@ -655,7 +708,7 @@ Future<void> main() async {
         jsonEncode(run.snapshot.steps.map((step) => step.operation).toList()) !=
             jsonEncode(operations.take(targetIndex).toList()) ||
         run.snapshot.steps.any((step) => !step.succeeded) ||
-        controller.canPromote ||
+        (launch != 4 && controller.canPromote) ||
         !NativeGenerationHost.sameFiles(currentSources, snapshot.sources) ||
         (acknowledged
             ? !sameAction()
@@ -686,6 +739,8 @@ Future<void> main() async {
     await WidgetsBinding.instance.endOfFrame;
     final text = <String>[];
     bool? consent, verifyEnabled;
+    ValueChanged<bool?>? selectConsent;
+    VoidCallback? startVerification;
     final expansions = <ExpansibleController>[];
     void visit(Element element) {
       final widget = element.widget;
@@ -694,11 +749,13 @@ Future<void> main() async {
           (widget.title as Text).data ==
               'I approve confined candidate verification') {
         consent = widget.value;
+        selectConsent = widget.onChanged;
       }
       if (widget is FilledButton &&
           widget.child is Text &&
           (widget.child as Text).data == 'Verify candidate in sandbox') {
         verifyEnabled = widget.onPressed != null;
+        startVerification = widget.onPressed;
       }
       if (widget is Expansible) expansions.add(widget.controller);
       if (widget is Text && widget.data != null) text.add(widget.data!);
@@ -723,7 +780,11 @@ Future<void> main() async {
             (stop && !precommit)) ||
         !text.any(
           (value) => value.contains(
-            'Candidate checks: ${acknowledged ? 'failed' : 'verifying'}',
+            'Candidate checks: ${launch == 4
+                ? 'ready'
+                : acknowledged
+                ? 'failed'
+                : 'verifying'}',
           ),
         ) ||
         (uncertain
@@ -746,7 +807,8 @@ Future<void> main() async {
       throw StateError('Acknowledgement view or fresh consent mismatch');
     }
     // Rendering must remain read-only too, including any future view callbacks.
-    if (!sameAction() ||
+    if (!await sameRetry() ||
+        !sameAction() ||
         await retainedIntent(run.dispatchId!) != before['intent'] ||
         !sameStop() ||
         digest(records.getString(checks.key)!) != before['journal'] ||
@@ -763,6 +825,11 @@ Future<void> main() async {
         )) {
       throw StateError('Rendering changed retained fixture state.');
     }
+    final actionUnchangedBefore = acknowledged && sameAction();
+    final freshConsentBefore =
+        acknowledged && consent == false && verifyEnabled == false;
+    final noNewDispatchBefore =
+        checks.load().runs.length == (launch == 4 ? 2 : 1);
     final observedExecutionPhase = controller
         .savedExecutionFor(run)!
         .phase
@@ -806,19 +873,105 @@ Future<void> main() async {
       );
       acknowledgedAfterRead = true;
     }
+    var retriedAfterRead = false;
+    String? newDispatch = launch == 4
+        ? checks.load().runs.last.dispatchId
+        : null;
+    if (retry && launch == 3) {
+      stage = 'explicit-fixture-verification-consent';
+      if (!freshConsentBefore ||
+          !noNewDispatchBefore ||
+          selectConsent == null) {
+        throw StateError('Fresh consent was not required');
+      }
+      selectConsent!(true);
+      await WidgetsBinding.instance.endOfFrame;
+      viewKey.currentContext!.visitChildElements(visit);
+      if (consent != true ||
+          verifyEnabled != true ||
+          startVerification == null) {
+        throw StateError('Explicit consent did not enable verification');
+      }
+      final permit = File(
+        path.join(candidate.path, 'build', 'allow-retry-$nonce'),
+      );
+      await permit.create(exclusive: true);
+      await permit.writeAsString(nonce, flush: true);
+      startVerification!();
+      final deadline = DateTime.now().add(const Duration(seconds: 120));
+      while (controller.busy && DateTime.now().isBefore(deadline)) {
+        await Future<void>.delayed(const Duration(milliseconds: 20));
+      }
+      final runs = checks.load().runs;
+      if (controller.busy ||
+          controller.error != null ||
+          runs.length != 2 ||
+          runs.last.dispatchId != 'candidate-$projectId-2:3' ||
+          !runs.last.finished ||
+          runs.last.snapshot.phase != SourceGenerationPhase.ready ||
+          runs.last.snapshot.steps.length != 4 ||
+          runs.last.snapshot.steps.any((step) => !step.succeeded) ||
+          digest(
+                records.getString(
+                  '${CandidateVerificationStore.recoveryPrefix}${run.dispatchId}',
+                )!,
+              ) !=
+              before['action'] ||
+          digest(
+                records.getString(
+                  'studio.agentExecution.v1.${run.dispatchId!.split(':').first}',
+                )!,
+              ) !=
+              before['execution'] ||
+          digest(records.getString(workingKey)!) != before['working'] ||
+          digest(await working.readAsString()) != before['output'] ||
+          !NativeGenerationHost.sameFiles(
+            await NativeGenerationHost.fingerprints(
+              snapshot.directory,
+              source: true,
+            ),
+            snapshot.sources,
+          )) {
+        throw StateError('Explicit fresh verification failed');
+      }
+      final latest = runs.last;
+      final after = File(path.join(canonical, 'after-retry.json'));
+      await after.create(exclusive: true);
+      await after.writeAsString(
+        jsonEncode({
+          ...before,
+          'journal': digest(records.getString(checks.key)!),
+          'candidate': digest(records.getString(checks.candidateKey)!),
+          'retryRun': digest(jsonEncode(latest.toJson())),
+          'retryExecution': digest(
+            records.getString(
+              'studio.agentExecution.v1.candidate-$projectId-2',
+            )!,
+          ),
+        }),
+        flush: true,
+      );
+      newDispatch = latest.dispatchId;
+      retriedAfterRead = true;
+    }
     await report(canonical, launch, {
       'nonce': nonce,
       'dispatch': run.dispatchId,
       'interrupted': !acknowledged,
       'acknowledge': acknowledge,
+      'retry': retry,
+      'retriedAfterRead': retriedAfterRead,
+      'newDispatch': newDispatch,
+      'retryChecksPassed':
+          retriedAfterRead || (launch == 4 && await sameRetry()),
+      'oldEvidencePreserved': retriedAfterRead || (launch == 4 && sameAction()),
       'acknowledgedAfterRead': acknowledgedAfterRead,
       'afterAcknowledgementPhase': acknowledgedAfterRead
           ? 'awaitingApproval'
           : null,
-      'actionUnchanged': acknowledged && sameAction(),
-      'freshConsentRequired':
-          acknowledged && consent == false && verifyEnabled == false,
-      'noNewDispatch': checks.load().runs.length == 1,
+      'actionUnchanged': actionUnchangedBefore,
+      'freshConsentRequired': freshConsentBefore,
+      'noNewDispatch': noNewDispatchBefore,
       'stopRequested': stop,
       'precommit': precommit,
       'running': running,
@@ -864,7 +1017,7 @@ Future<void> report(
   final file = File(path.join(root, 'launch-$launch.json'));
   await file.create(exclusive: true);
   await file.writeAsString(
-    jsonEncode({'version': 7, 'launch': launch, ...observation}),
+    jsonEncode({'version': 8, 'launch': launch, ...observation}),
     flush: true,
   );
 }

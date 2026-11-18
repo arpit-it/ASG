@@ -16416,3 +16416,25 @@ disabled. No new dispatch and source/working state unchanged; cleanup unknown.
 Eleven host contracts pass. Prior native modes, final required checks, fresh
 review/CI and verified merge remain delivery gates. This does not establish
 human process inspection or production-main navigation/general CE01.
+
+
+Native acknowledgement third-launch slice delivered in PR #717, merge
+`42a13c1d1769d8b6d9fb4f54e5723074b52556df`, required CI44338802917,
+verified tested tree0847d8b3b9e5173fe3d3fc05849f3e27350c8e55. All15
+native cases passed; fresh consent remained unchecked with no new dispatch.
+
+CE01 active bounded acceptance task under #404 — explicitly consented native
+retry continuation. Extend the fixed acknowledgement/reopen fixture to select
+the actual view's verification consent explicitly, invoke its production action
+and complete real resolve/analyze/test/build under a distinct second dispatch.
+A fixed nonce-bound build/ permit may let the waiting fixture test succeed only
+after fresh consent, without source changes. Require no dispatch before consent,
+immutable first-run action/Stop/actual cancelled evidence, unchanged working
+pointer/output and no promotion. A fourth identical-binary launch must retain
+both histories and actual successful second-run evidence. Reject automatic or
+duplicate dispatch, wrong identity, changed old evidence/source/output or failed
+checks. This is a fixed fixture continuation, not generalized source synthesis
+or full CE01. Validate actual native flow, prior modes/host refusals and required
+regressions, fresh review and verified merge.
+
+18 November2026 — #404 explicitly consented native retry validation: all16 actual native cases passed on binary bcc0bd3c00405b8c1a511c86b07d78b38ca268f4c732e2aab70e9af01d8f0659. New four-launch observation /tmp/asg-404-native-retry-final-regression.json verifies no dispatch before actual view consent, distinct successful second dispatch, preserved acknowledgement/Stop/cancelled evidence and working output, and fourth-launch exact retained receipts/build outputs with consent false again. Prior15 modes passed in /tmp/asg-404-native-retry-{ack,live,unknown,precommit,committed,nonstop}-regression.json. Twelve host contracts, six probe contracts, explicit fixture analysis, Flutter analyze, full1,859 passed/11 skipped and web build passed. Initial regression caught a generated constant-false analyzer warning; removed that condition, rebuilt and repeated every native case on the final binary. No production-main navigation, human inspection, arbitrary cleanup or general CE01 claim. Fresh review, required CI and verified merge remain gates.
