@@ -14,6 +14,7 @@ import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 
 import 'package:asg/controllers/source_candidate_controller.dart';
+import 'package:asg/controllers/source_generation_controller.dart';
 import 'package:asg/models/approved_source_proposal.dart';
 import 'package:asg/models/plan_approval.dart';
 import 'package:asg/models/build_plan.dart';
@@ -76,6 +77,38 @@ final class StopCommitBarrier implements ConditionalRecordStorage {
   }
 }
 
+// Refuse one publication before its atomic transaction; never changes records.
+final class PromotionCommitFault implements ConditionalRecordStorage {
+  PromotionCommitFault(this.delegate);
+  final ConditionalRecordStorage delegate;
+  bool refuse = true, reached = false;
+  @override
+  String? getString(String key) => delegate.getString(key);
+  @override
+  Future<bool> setString(String key, String value) =>
+      delegate.setString(key, value);
+  @override
+  Future<void> commitRecords({
+    required Map<String, String?> expected,
+    required Map<String, String> updates,
+    required void Function() authorize,
+  }) async {
+    if (refuse &&
+        updates.keys.any(
+          (key) => key.startsWith('studio.generationPrevious.v1.'),
+        )) {
+      authorize();
+      reached = true;
+      throw StateError('Fixture publication refusal');
+    }
+    await delegate.commitRecords(
+      expected: expected,
+      updates: updates,
+      authorize: authorize,
+    );
+  }
+}
+
 final class SignalledFixtureHost extends NativeGenerationHost {
   SignalledFixtureHost({
     required super.receiptFiles,
@@ -127,10 +160,10 @@ Future<void> main() async {
     }
     final input = jsonDecode(await challenge.readAsString());
     if (input is! Map<String, dynamic> ||
-        input.length != 10 ||
+        input.length != 11 ||
         input['nonce'] is! String ||
         !RegExp(r'^[a-f0-9]{32}$').hasMatch(input['nonce'] as String) ||
-        ![1, 2, 3, 4].contains(input['launch']) ||
+        ![1, 2, 3, 4, 5].contains(input['launch']) ||
         input['sdk'] is! String ||
         input['stop'] is! bool ||
         input['precommit'] is! bool ||
@@ -138,6 +171,9 @@ Future<void> main() async {
         input['uncertain'] is! bool ||
         input['acknowledge'] is! bool ||
         input['retry'] is! bool ||
+        input['promote'] is! bool ||
+        (input['promote'] == true && input['retry'] != true) ||
+        (input['launch'] == 5 && input['promote'] != true) ||
         (input['retry'] == true && input['acknowledge'] != true) ||
         (input['launch'] == 4 && input['retry'] != true) ||
         (input['launch'] == 3 && input['acknowledge'] != true) ||
@@ -162,6 +198,7 @@ Future<void> main() async {
     final uncertain = input['uncertain'] as bool;
     final acknowledge = input['acknowledge'] as bool;
     final retry = input['retry'] as bool;
+    final promote = input['promote'] as bool;
     final acknowledged = acknowledge && launch >= 3;
     final sdk = await Directory(input['sdk'] as String).resolveSymbolicLinks();
     final support = await getApplicationSupportDirectory();
@@ -235,6 +272,8 @@ Future<void> main() async {
       return digest(raw);
     }
 
+    final publicationFault = PromotionCommitFault(records);
+    SourceGenerationController? workingController;
     SourceCandidateController makeController(
       GeneratedProject snapshot,
       NativeGenerationHost selectedHost,
@@ -258,7 +297,23 @@ Future<void> main() async {
         ),
         records: controllerRecords,
         host: selectedHost,
-        publish: (_, _, _) => throw StateError('Fixture may not promote'),
+        publish: (value, candidateHost, authorize) async {
+          if (!promote || launch != 4) {
+            throw StateError('Fixture may not promote');
+          }
+          final publisher = workingController ??= SourceGenerationController(
+            project: project,
+            definition: ApplicationStore(records).load(project).definition,
+            store: SourceGenerationStore(publicationFault),
+            host: NativeGenerationHost(),
+          );
+          return publisher.promoteCandidate(
+            value,
+            candidateHost,
+            authorize,
+            expectedWorking: SourceGenerationStore(records).load(projectId)!,
+          );
+        },
       );
     }
 
@@ -536,6 +591,7 @@ Future<void> main() async {
             'uncertain': uncertain,
             'acknowledge': acknowledge,
             'retry': retry,
+            'promote': promote,
             'publicationFault': uncertain,
             'runningMarker': running,
             'stopSaveBlocked': barrier.reached,
@@ -587,7 +643,9 @@ Future<void> main() async {
     final beforeFile = File(
       path.join(
         canonical,
-        launch == 4
+        launch == 5
+            ? 'after-promote.json'
+            : launch == 4
             ? 'after-retry.json'
             : acknowledged
             ? 'after-ack.json'
@@ -600,7 +658,7 @@ Future<void> main() async {
     final snapshot = run.snapshot;
     if (stop) approval = snapshot.approval!;
     final controller = makeController(
-      launch == 4 ? checks.load().runs.last.snapshot : snapshot,
+      launch >= 4 ? checks.load().runs.last.snapshot : snapshot,
       host,
     );
     final deadline = DateTime.now().add(const Duration(seconds: 10));
@@ -636,11 +694,11 @@ Future<void> main() async {
           digest(records.getString(actionKey)!) == before['action'] &&
           digest(records.getString(executionKey)!) == before['execution'] &&
           saved?.phase.name == 'awaitingApproval' &&
-          checks.load().runs.length == (launch == 4 ? 2 : 1);
+          checks.load().runs.length == (launch >= 4 ? 2 : 1);
     }
 
     Future<bool> sameRetry() async {
-      if (launch != 4) return true;
+      if (launch < 4) return true;
       final runs = checks.load().runs;
       if (runs.length != 2) return false;
       final latest = runs.last;
@@ -658,7 +716,8 @@ Future<void> main() async {
           digest(jsonEncode(latest.toJson())) == before['retryRun'] &&
           digest(records.getString(executionKey)!) ==
               before['retryExecution'] &&
-          controller.savedExecutionFor(latest)?.phase.name == 'verifying' &&
+          controller.savedExecutionFor(latest)?.phase.name ==
+              (launch == 5 ? 'completed' : 'verifying') &&
           completed.length == 4 &&
           completed.every(
             (receipt) =>
@@ -708,7 +767,7 @@ Future<void> main() async {
         jsonEncode(run.snapshot.steps.map((step) => step.operation).toList()) !=
             jsonEncode(operations.take(targetIndex).toList()) ||
         run.snapshot.steps.any((step) => !step.succeeded) ||
-        (launch != 4 && controller.canPromote) ||
+        (launch < 4 && controller.canPromote) ||
         !NativeGenerationHost.sameFiles(currentSources, snapshot.sources) ||
         (acknowledged
             ? !sameAction()
@@ -780,7 +839,7 @@ Future<void> main() async {
             (stop && !precommit)) ||
         !text.any(
           (value) => value.contains(
-            'Candidate checks: ${launch == 4
+            'Candidate checks: ${launch >= 4
                 ? 'ready'
                 : acknowledged
                 ? 'failed'
@@ -829,7 +888,7 @@ Future<void> main() async {
     final freshConsentBefore =
         acknowledged && consent == false && verifyEnabled == false;
     final noNewDispatchBefore =
-        checks.load().runs.length == (launch == 4 ? 2 : 1);
+        checks.load().runs.length == (launch >= 4 ? 2 : 1);
     final observedExecutionPhase = controller
         .savedExecutionFor(run)!
         .phase
@@ -874,7 +933,7 @@ Future<void> main() async {
       acknowledgedAfterRead = true;
     }
     var retriedAfterRead = false;
-    String? newDispatch = launch == 4
+    String? newDispatch = launch >= 4
         ? checks.load().runs.last.dispatchId
         : null;
     if (retry && launch == 3) {
@@ -954,17 +1013,104 @@ Future<void> main() async {
       newDispatch = latest.dispatchId;
       retriedAfterRead = true;
     }
+    var promotedAfterRead = false, refusedPublicationPreserved = false;
+    if (promote && launch == 4) {
+      stage = 'explicit-native-promotion';
+      final oldWorking = records.getString(workingKey)!;
+      final previousKey = 'studio.generationPrevious.v1.$projectId';
+      final previous = records.getString(previousKey);
+      final executionKey = 'studio.agentExecution.v1.candidate-$projectId-2';
+      final executionBefore = records.getString(executionKey)!;
+      if (!controller.canPromote ||
+          await controller.promote(approved: true) ||
+          !publicationFault.reached ||
+          controller.promoted ||
+          records.getString(workingKey) != oldWorking ||
+          records.getString(previousKey) != previous ||
+          records.getString(executionKey) != executionBefore ||
+          !await sameRetry() ||
+          !sameAction() ||
+          !sameStop()) {
+        throw StateError('Refused publication changed durable state');
+      }
+      refusedPublicationPreserved = true;
+      publicationFault.refuse = false;
+      if (!await controller.promote(approved: true) ||
+          !controller.promoted ||
+          controller.preview?.host != '127.0.0.1' ||
+          controller.savedExecutionFor(checks.load().runs.last)?.phase.name !=
+              'completed' ||
+          records.getString(previousKey) != oldWorking ||
+          jsonEncode(
+                SourceGenerationStore(records).load(projectId)!.toJson(),
+              ) !=
+              jsonEncode(checks.load().runs.last.snapshot.toJson()) ||
+          !sameAction() ||
+          !sameStop() ||
+          digest(records.getString(checks.key)!) != before['journal'] ||
+          digest(records.getString(checks.candidateKey)!) !=
+              before['candidate'] ||
+          digest(await working.readAsString()) != before['output']) {
+        throw StateError(
+          'Native promotion did not preserve execution identity',
+        );
+      }
+      final client = HttpClient();
+      try {
+        final response =
+            await (await client
+                    .getUrl(controller.preview!)
+                    .timeout(const Duration(seconds: 5)))
+                .close()
+                .timeout(const Duration(seconds: 5));
+        final body = await utf8.decoder
+            .bind(response)
+            .join()
+            .timeout(const Duration(seconds: 5));
+        if (response.statusCode != 200 || !body.contains('<html')) {
+          throw StateError('Promoted native preview unavailable');
+        }
+      } finally {
+        client.close(force: true);
+      }
+      final after = File(path.join(canonical, 'after-promote.json'));
+      await after.create(exclusive: true);
+      await after.writeAsString(
+        jsonEncode({
+          ...before,
+          'working': digest(records.getString(workingKey)!),
+          'previous': digest(records.getString(previousKey)!),
+          'retryExecution': digest(records.getString(executionKey)!),
+        }),
+        flush: true,
+      );
+      promotedAfterRead = true;
+    }
+    final promotionSurvived =
+        launch == 5 &&
+        digest(records.getString('studio.generationPrevious.v1.$projectId')!) ==
+            before['previous'] &&
+        jsonEncode(SourceGenerationStore(records).load(projectId)!.toJson()) ==
+            jsonEncode(checks.load().runs.last.snapshot.toJson());
+    if (launch == 5 && !promotionSurvived) {
+      throw StateError('Published restart changed');
+    }
     await report(canonical, launch, {
       'nonce': nonce,
       'dispatch': run.dispatchId,
       'interrupted': !acknowledged,
       'acknowledge': acknowledge,
       'retry': retry,
+      'promote': promote,
+      'promotedAfterRead': promotedAfterRead,
+      'refusedPublicationPreserved': refusedPublicationPreserved,
+      'promotionSurvived': promotionSurvived,
       'retriedAfterRead': retriedAfterRead,
       'newDispatch': newDispatch,
       'retryChecksPassed':
-          retriedAfterRead || (launch == 4 && await sameRetry()),
-      'oldEvidencePreserved': retriedAfterRead || (launch == 4 && sameAction()),
+          retriedAfterRead ||
+          (launch >= 4 && (promotedAfterRead || await sameRetry())),
+      'oldEvidencePreserved': retriedAfterRead || (launch >= 4 && sameAction()),
       'acknowledgedAfterRead': acknowledgedAfterRead,
       'afterAcknowledgementPhase': acknowledgedAfterRead
           ? 'awaitingApproval'
@@ -998,6 +1144,7 @@ Future<void> main() async {
       'executionPhase': observedExecutionPhase,
     });
     controller.dispose();
+    workingController?.dispose();
     await host.dispose();
     await records.database.close();
     exit(0);
@@ -1017,7 +1164,7 @@ Future<void> report(
   final file = File(path.join(root, 'launch-$launch.json'));
   await file.create(exclusive: true);
   await file.writeAsString(
-    jsonEncode({'version': 8, 'launch': launch, ...observation}),
+    jsonEncode({'version': 9, 'launch': launch, ...observation}),
     flush: true,
   );
 }
