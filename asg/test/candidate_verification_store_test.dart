@@ -98,6 +98,66 @@ void main() {
     },
   );
 
+  test(
+    'missing linked execution refuses recovery and preserves unknown exit',
+    () async {
+      final records = AtomicRecords();
+      final store = CandidateVerificationStore(records, 'p');
+      await store.start(
+        failure().copy(steps: [], pendingOperation: 'resolve'),
+        () {},
+      );
+      final run = store.load().runs.single;
+      final key =
+          'studio.agentExecution.v1.${run.dispatchId!.split(':').first}';
+      records.values.remove(key);
+      final before = Map.of(records.values);
+      var authorized = false;
+      await expectLater(
+        store.acknowledgeStopped(run, () {
+          authorized = true;
+        }),
+        throwsStateError,
+      );
+      expect(authorized, isFalse);
+      expect(records.values, before);
+      expect(store.load().runs.single.finished, isFalse);
+      expect(store.load().runs.single.snapshot.steps, isEmpty);
+      await expectLater(
+        CandidateVerificationStore(records, 'p').start(failure(), () {}),
+        throwsStateError,
+      );
+      expect(records.values, before);
+    },
+  );
+
+  test(
+    'legacy unlinked interruption still requires explicit acknowledgement',
+    () async {
+      final records = AtomicRecords();
+      final store = CandidateVerificationStore(records, 'p');
+      await store.start(
+        failure().copy(steps: [], pendingOperation: 'resolve'),
+        () {},
+      );
+      final journal =
+          jsonDecode(records.values[store.key]!) as Map<String, dynamic>;
+      (journal['runs'] as List).single.remove('dispatchId');
+      records.values[store.key] = jsonEncode(journal);
+      final run = store.load().runs.single;
+      expect(run.dispatchId, isNull);
+      var authorized = false;
+      await store.acknowledgeStopped(run, () {
+        authorized = true;
+      });
+      expect(authorized, isTrue);
+      final stopped = store.load().runs.single;
+      expect(stopped.finished, isTrue);
+      expect(stopped.snapshot.pendingOperation, 'resolve');
+      expect(stopped.snapshot.steps, isEmpty);
+    },
+  );
+
   test('native close/reopen retains stopped and uncertain runs; corruption is isolated', () async {
     SharedPreferences.setMockInitialValues({});
     final folder = await Directory.systemTemp.createTemp('asg-check-journal-');
@@ -115,7 +175,6 @@ void main() {
       await interrupted.start(
         failure().copy(steps: [], pendingOperation: 'resolve'),
         () {},
-        dispatchId: 'task-1:3',
       );
       await interrupted.checkpoint(
         failure().copy(steps: [], pendingOperation: 'resolve'),
@@ -140,7 +199,7 @@ void main() {
       ) as Map<String, dynamic>;
       expect(execution['phase'], 'verifying');
       expect(execution['revision'], 4);
-      expect(reopened.load().runs.last.dispatchId, 'task-1:3');
+      expect(reopened.load().runs.last.dispatchId, 'candidate-p-2:3');
       expect(reopened.load().runs.last.finished, isFalse);
       expect(reopened.load().runs.last.snapshot.pendingOperation, 'resolve');
       await expectLater(reopened.start(failure(), () {}), throwsStateError);

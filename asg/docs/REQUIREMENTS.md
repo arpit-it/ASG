@@ -103,12 +103,25 @@ acceptance remains tied to separately dated runtime observations.
 Recovery currently requires the operator to check that the interrupted process
 has stopped and inspect candidate changes before acknowledging a fresh attempt.
 Automatic process reconciliation, a durable session spanning multiple tool calls,
-and a visible session-level activity/recovery interface remain pending. The next
-eligible CE01 investigation under #404 is to inspect how saved candidate execution
-state can be exposed at reopen without launching or replaying an operation.
-Acceptance requires displaying the saved phase and identity, preserving unknown
-outcomes, and leaving completed executions terminal. CE02 and dependent generalized
-execution work continue to require their documented prerequisite acceptance.
+and a visible session-level activity/recovery interface remain pending. Candidate
+history now displays saved phase, task and dispatch identity without replay or
+record mutation (PR #695, merge `d27a8caccbbb6e36fc233f078ddf26a7ced0e80d`;
+1,773 Flutter tests passed, 10 skipped, analyze/web build and required CI passed).
+The next CE01 prerequisite investigation under #404 defines durable reconciliation
+evidence for restart: distinguish operation intent from actual dispatch, handle
+PID reuse and stale completion, preserve unknown outcomes, and never terminate a
+process based on a saved PID alone. Existing helper cleanup fixtures verify a
+running helper's owned group; they do not prove post-restart process identity.
+CE02 and dependent generalized execution work continue to require their documented
+prerequisite acceptance.
+
+CE01 recovery integrity regression under #404: reject an interrupted run's
+acknowledgement when its linked execution checkpoint is missing. Acceptance:
+preserve the journal, candidate and unknown exits; start no new operation; retain
+valid linked and legacy unlinked recovery. Verify store/controller failures,
+native reopening and required regression checks on this Mac. This bounded fix
+precedes automatic process reconciliation; PID presence alone is insufficient
+restart identity evidence.
 
 The first P0 implementation under #404 is the CE01 execution checkpoint model. It records a unique task ID and explicit lifecycle transitions, refuses invalid transitions and preserves an interrupted dispatch for reconciliation after reload. Validate round-trip, invalid transitions and interrupted dispatch with deterministic tests. This slice can run alongside read-only repository inventory design. The December prototype then needs scoped inspection and editing, typed dispatch, approved execution and a verified repair loop. The January delegation target depends on scoped contexts, scheduling and cancellation; the beta additionally depends on Git review, rollback and browser evidence.
 
