@@ -67,8 +67,9 @@ class AgentSessionRunStatusStore {
         value.length != 3 ||
         value['version'] is! int ||
         ![3, 4].contains(value['version']) ||
-        value['adapter'] != 'flutter-starter')
+        value['adapter'] != 'flutter-starter') {
       return false;
+    }
     final tasks = BuildTask.fromJson(value['tasks']);
     return jsonEncode(tasks.map((task) => task.toJson()).toList()) ==
         jsonEncode(run.snapshot.tasks?.map((task) => task.toJson()).toList());
