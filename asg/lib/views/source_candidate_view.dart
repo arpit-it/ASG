@@ -161,6 +161,8 @@ class _SourceCandidateViewState extends State<SourceCandidateView> {
                         'An unknown exit remains unknown.',
                       ),
                     ],
+                    if (controller.recoveryStatusFor(run) case final recovery?)
+                      SelectableText('Recovery: ${recovery.explanation}'),
                     if (controller.stopRequestFor(run) != null)
                       const Text(
                         'Saved Stop request. This does not confirm command exit or cleanup.',
