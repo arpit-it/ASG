@@ -147,7 +147,9 @@ pipe publication, native persistence/reopen, confinement, corruption, failure,
 Stop/disposal and full required checks. App crash/restart and automated
 reconciliation acceptance remain pending until separately verified.
 
-Next bounded investigation under #404: an actual process restart fixture for receipt reading. Verify a separate reader process can inspect retained helper evidence after the original owner ends, while interrupted journals and last working output remain unchanged. No retry, process signal or cleanup inference is authorized. Distinguish this prerequisite from full Flutter app crash/restart acceptance.
+Separate-process receipt fixture merged in PR #702 as `2bda72ed796babb0269a7d55dce18bd8e4ae054d` after CI44257566562. It verifies normal producer exit, not an application crash. Next bounded #404 fixture: actual publisher death after a tool side effect but before receipt publication must retain intent, absent completion, unchanged interrupted journal and last working output, without replay.
+
+Delivered process restart prerequisite: an actual process restart fixture for receipt reading. Verify a separate reader process can inspect retained helper evidence after the original owner ends, while interrupted journals and last working output remain unchanged. No retry, process signal or cleanup inference is authorized. Distinguish this prerequisite from full Flutter app crash/restart acceptance.
 
 Delivered bounded CE01 validation fix under #404: reject saved phase/revision pairs
 below the earliest legal lifecycle transition count and planning revisions other

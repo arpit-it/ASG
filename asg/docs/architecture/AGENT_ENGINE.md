@@ -183,3 +183,19 @@ This is an actual separate-process persistence fixture, not a GUI app crash or
 restart test. The producer exits normally after publication. Crashes between
 intent, launch, publication and journal commit, full app UI reopening and
 automatic reconciliation remain separate acceptance under #404.
+
+
+### Publisher crash after a tool side effect — 18 November 2026
+
+The bounded fixture reserves a production completion intent, runs an actual
+disposable Python tool that writes a candidate marker, then calls `os._exit(19)`
+in the publisher before `publish`. The marker proves a side effect occurred;
+there is no result receipt. A fresh reader using the persisted interrupted-run
+JSON returns no completion, preserves the pending operation and journal bytes,
+and leaves last-working output unchanged. Preparing the same dispatch again is
+refused. No process-control, retry or reconciliation behavior is introduced.
+
+This exercises the publication gap with an actual publisher exit, not a Flutter
+GUI crash or a long-lived tool. An absent receipt cannot establish that dispatch
+did not occur, nor supply a failed tool exit. Full app restart and cleanup/
+ownership evidence remain separate requirements under #404.
