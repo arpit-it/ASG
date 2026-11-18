@@ -335,54 +335,55 @@ void main() {
     },
   );
 
-  test(
-    'separate consent, candidate evidence, atomic promotion and host ownership',
-    () async {
-      final original = records.getString('studio.generation.v1.${project.id}');
-      await candidate.verify(approved: false);
-      expect(candidateHost.verifications, 0);
-      expect(await candidate.promote(approved: true), isFalse);
-      await candidate.verify(approved: true);
-      expect(candidate.result.phase, SourceGenerationPhase.ready);
-      expect(candidateHost.operations, ['resolve', 'analyze', 'test', 'build']);
-      expect(records.getString('studio.generation.v1.${project.id}'), original);
-      expect(
-        SourceGenerationStore(
-          records,
-          prefix: 'studio.sourceCandidate.v1.',
-        ).load(project.id)!.phase,
-        SourceGenerationPhase.ready,
-      );
-      expect(workingHost.server, isTrue);
-      expect(await candidate.promote(approved: false), isFalse);
-      expect(await candidate.promote(approved: true), isTrue);
-      expect(
-        records.getString('studio.generationPrevious.v1.${project.id}'),
-        original,
-      );
-      expect(
-        SourceGenerationStore(records).load(project.id)!.directory,
-        '/candidate',
-      );
-      final history = SourceGenerationStore(records).history(project.id);
-      expect(history.last.project.directory, '/candidate');
-      expect(history.last.project.phase, SourceGenerationPhase.ready);
-      expect(working.result!.directory, '/candidate');
-      expect(working.preview, isNotNull);
-      expect(await working.verifyAgain(approved: true), isFalse);
-      expect(candidateHost.server, isTrue);
-      expect(
-        SourceGenerationStore(records).load(project.id)!.phase,
-        SourceGenerationPhase.ready,
-      );
-      candidate.dispose();
-      expect(candidateHost.disposed, isFalse);
-      await tick();
-      expect(workingHost.disposed, isTrue);
-      working.dispose();
-      expect(candidateHost.disposed, isTrue);
-    },
-  );
+  test('separate consent, candidate evidence, atomic promotion and host ownership', () async {
+    final original = records.getString('studio.generation.v1.${project.id}');
+    await candidate.verify(approved: false);
+    expect(candidateHost.verifications, 0);
+    expect(await candidate.promote(approved: true), isFalse);
+    await candidate.verify(approved: true);
+    expect(candidate.result.phase, SourceGenerationPhase.ready);
+    expect(candidateHost.operations, ['resolve', 'analyze', 'test', 'build']);
+    expect(records.getString('studio.generation.v1.${project.id}'), original);
+    expect(
+      SourceGenerationStore(
+        records,
+        prefix: 'studio.sourceCandidate.v1.',
+      ).load(project.id)!.phase,
+      SourceGenerationPhase.ready,
+    );
+    expect(workingHost.server, isTrue);
+    expect(await candidate.promote(approved: false), isFalse);
+    final executionKey =
+        'studio.agentExecution.v1.${candidate.history.last.dispatchId!.split(':').first}';
+    expect(jsonDecode(records.getString(executionKey)!)['phase'], 'verifying');
+    expect(await candidate.promote(approved: true), isTrue);
+    expect(jsonDecode(records.getString(executionKey)!)['phase'], 'completed');
+    expect(
+      records.getString('studio.generationPrevious.v1.${project.id}'),
+      original,
+    );
+    expect(
+      SourceGenerationStore(records).load(project.id)!.directory,
+      '/candidate',
+    );
+    final history = SourceGenerationStore(records).history(project.id);
+    expect(history.last.project.directory, '/candidate');
+    expect(history.last.project.phase, SourceGenerationPhase.ready);
+    expect(working.result!.directory, '/candidate');
+    expect(working.preview, isNotNull);
+    expect(await working.verifyAgain(approved: true), isFalse);
+    expect(candidateHost.server, isTrue);
+    expect(
+      SourceGenerationStore(records).load(project.id)!.phase,
+      SourceGenerationPhase.ready,
+    );
+    candidate.dispose();
+    expect(candidateHost.disposed, isFalse);
+    await tick();
+    expect(workingHost.disposed, isTrue);
+    working.dispose();
+    expect(candidateHost.disposed, isTrue);
+  });
 
   test('verification failure, cancel, withdrawal and checkpoint failure keep working preview', () async {
     candidateHost.throwAnalyze = true;
@@ -781,7 +782,12 @@ void main() {
     expect(workingHost.server, isTrue);
     candidateHost.previewGate = null;
     records.failCommit = true;
+    final executionKey =
+        'studio.agentExecution.v1.${candidate.history.last.dispatchId!.split(':').first}';
+    final executionBefore = records.getString(executionKey);
     expect(await candidate.promote(approved: true), isFalse);
+    expect(records.getString(executionKey), executionBefore);
+    expect(jsonDecode(executionBefore!)['phase'], 'verifying');
     expect(candidateHost.server, isFalse);
     expect(workingHost.server, isTrue);
     expect(records.getString('studio.generation.v1.${project.id}'), old);
