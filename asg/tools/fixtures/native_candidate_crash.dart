@@ -82,6 +82,7 @@ final class PromotionCommitFault implements ConditionalRecordStorage {
   PromotionCommitFault(this.delegate);
   final ConditionalRecordStorage delegate;
   bool refuse = true, reached = false;
+  Future<void> Function()? afterPublicationCommit;
   @override
   String? getString(String key) => delegate.getString(key);
   @override
@@ -106,6 +107,11 @@ final class PromotionCommitFault implements ConditionalRecordStorage {
       updates: updates,
       authorize: authorize,
     );
+    if (updates.keys.any(
+      (key) => key.startsWith('studio.generationPrevious.v1.'),
+    )) {
+      await afterPublicationCommit?.call();
+    }
   }
 }
 
@@ -160,7 +166,7 @@ Future<void> main() async {
     }
     final input = jsonDecode(await challenge.readAsString());
     if (input is! Map<String, dynamic> ||
-        input.length != 11 ||
+        input.length != 12 ||
         input['nonce'] is! String ||
         !RegExp(r'^[a-f0-9]{32}$').hasMatch(input['nonce'] as String) ||
         ![1, 2, 3, 4, 5].contains(input['launch']) ||
@@ -172,6 +178,8 @@ Future<void> main() async {
         input['acknowledge'] is! bool ||
         input['retry'] is! bool ||
         input['promote'] is! bool ||
+        input['promotionCrash'] is! bool ||
+        (input['promotionCrash'] == true && input['promote'] != true) ||
         (input['promote'] == true && input['retry'] != true) ||
         (input['launch'] == 5 && input['promote'] != true) ||
         (input['retry'] == true && input['acknowledge'] != true) ||
@@ -199,6 +207,7 @@ Future<void> main() async {
     final acknowledge = input['acknowledge'] as bool;
     final retry = input['retry'] as bool;
     final promote = input['promote'] as bool;
+    final promotionCrash = input['promotionCrash'] as bool;
     final acknowledged = acknowledge && launch >= 3;
     final sdk = await Directory(input['sdk'] as String).resolveSymbolicLinks();
     final support = await getApplicationSupportDirectory();
@@ -592,6 +601,7 @@ Future<void> main() async {
             'acknowledge': acknowledge,
             'retry': retry,
             'promote': promote,
+            'promotionCrash': promotionCrash,
             'publicationFault': uncertain,
             'runningMarker': running,
             'stopSaveBlocked': barrier.reached,
@@ -1021,6 +1031,20 @@ Future<void> main() async {
       final previous = records.getString(previousKey);
       final executionKey = 'studio.agentExecution.v1.candidate-$projectId-2';
       final executionBefore = records.getString(executionKey)!;
+      Future<void> savePromotionBaseline() async {
+        final after = File(path.join(canonical, 'after-promote.json'));
+        await after.create(exclusive: true);
+        await after.writeAsString(
+          jsonEncode({
+            ...before,
+            'working': digest(records.getString(workingKey)!),
+            'previous': digest(records.getString(previousKey)!),
+            'retryExecution': digest(records.getString(executionKey)!),
+          }),
+          flush: true,
+        );
+      }
+
       if (!controller.canPromote ||
           await controller.promote(approved: true) ||
           !publicationFault.reached ||
@@ -1035,6 +1059,95 @@ Future<void> main() async {
       }
       refusedPublicationPreserved = true;
       publicationFault.refuse = false;
+      if (promotionCrash) {
+        publicationFault.afterPublicationCommit = () async {
+          stage = 'after-promotion-commit-before-return';
+          if (controller.promoted ||
+              !controller.busy ||
+              !controller.promoting ||
+              controller.preview != null ||
+              controller
+                      .savedExecutionFor(checks.load().runs.last)
+                      ?.phase
+                      .name !=
+                  'completed' ||
+              records.getString(previousKey) != oldWorking ||
+              jsonEncode(
+                    SourceGenerationStore(records).load(projectId)!.toJson(),
+                  ) !=
+                  jsonEncode(checks.load().runs.last.snapshot.toJson()) ||
+              !sameAction() ||
+              !sameStop() ||
+              digest(records.getString(checks.key)!) != before['journal'] ||
+              digest(records.getString(checks.candidateKey)!) !=
+                  before['candidate'] ||
+              digest(await working.readAsString()) != before['output'] ||
+              !NativeGenerationHost.sameFiles(
+                await NativeGenerationHost.fingerprints(
+                  snapshot.directory,
+                  source: true,
+                ),
+                snapshot.sources,
+              )) {
+            throw StateError('Committed publication boundary mismatch');
+          }
+          await savePromotionBaseline();
+          await report(canonical, launch, {
+            'commitGapReady': true,
+            'controllerSuccessDelivered': false,
+            'nonce': nonce,
+            'dispatch': run.dispatchId,
+            'interrupted': !acknowledged,
+            'acknowledge': acknowledge,
+            'retry': retry,
+            'promote': promote,
+            'promotionCrash': promotionCrash,
+            'promotedAfterRead': promotedAfterRead,
+            'refusedPublicationPreserved': refusedPublicationPreserved,
+            'promotionSurvived': false,
+            'retriedAfterRead': retriedAfterRead,
+            'newDispatch': newDispatch,
+            'retryChecksPassed': true,
+            'oldEvidencePreserved':
+                retriedAfterRead || (launch >= 4 && sameAction()),
+            'acknowledgedAfterRead': acknowledgedAfterRead,
+            'afterAcknowledgementPhase': acknowledgedAfterRead
+                ? 'awaitingApproval'
+                : null,
+            'actionUnchanged': actionUnchangedBefore,
+            'freshConsentRequired': freshConsentBefore,
+            'noNewDispatch': noNewDispatchBefore,
+            'stopRequested': stop,
+            'precommit': precommit,
+            'running': running,
+            'uncertain': uncertain,
+            'intentUnchanged':
+                await retainedIntent(run.dispatchId!) == before['intent'],
+            'runningCancelled':
+                running && !uncertain && retained.last.result.cancelled,
+            'savedStopPresent': controller.stopRequestFor(run) != null,
+            'stopUnchanged': sameStop(),
+            'operation': operation,
+            'completedOperations': run.snapshot.steps
+                .map((step) => step.operation)
+                .toList(),
+            'receiptOperations': retained
+                .map((receipt) => receipt.operation.name)
+                .toList(),
+            'retainedExit': uncertain ? null : retained.last.result.exitCode,
+            'cleanup': 'unknown',
+            'journalUnchanged': true,
+            'sourcesUnchanged': true,
+            'workingUnchanged': true,
+            'viewRendered': true,
+            'executionPhase': observedExecutionPhase,
+          });
+          await Completer<void>()
+              .future; // Host kills only this owned app handle.
+          throw StateError('Commit barrier must not return');
+        };
+      }
+
       if (!await controller.promote(approved: true) ||
           !controller.promoted ||
           controller.preview?.host != '127.0.0.1' ||
@@ -1073,17 +1186,7 @@ Future<void> main() async {
       } finally {
         client.close(force: true);
       }
-      final after = File(path.join(canonical, 'after-promote.json'));
-      await after.create(exclusive: true);
-      await after.writeAsString(
-        jsonEncode({
-          ...before,
-          'working': digest(records.getString(workingKey)!),
-          'previous': digest(records.getString(previousKey)!),
-          'retryExecution': digest(records.getString(executionKey)!),
-        }),
-        flush: true,
-      );
+      await savePromotionBaseline();
       promotedAfterRead = true;
     }
     final promotionSurvived =
@@ -1102,6 +1205,7 @@ Future<void> main() async {
       'acknowledge': acknowledge,
       'retry': retry,
       'promote': promote,
+      'promotionCrash': promotionCrash,
       'promotedAfterRead': promotedAfterRead,
       'refusedPublicationPreserved': refusedPublicationPreserved,
       'promotionSurvived': promotionSurvived,
@@ -1164,7 +1268,7 @@ Future<void> report(
   final file = File(path.join(root, 'launch-$launch.json'));
   await file.create(exclusive: true);
   await file.writeAsString(
-    jsonEncode({'version': 9, 'launch': launch, ...observation}),
+    jsonEncode({'version': 10, 'launch': launch, ...observation}),
     flush: true,
   );
 }
