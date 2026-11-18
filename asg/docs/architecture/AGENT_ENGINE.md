@@ -1030,3 +1030,32 @@ continue through the existing journal/Stop/recovery paths without fabricating
 completion. Native close/reopen tests retain the joint admission without replay.
 This is existing verification integration, not automatic scheduling, arbitrary
 source synthesis, new model permissions, task completion or full CE01 acceptance.
+
+
+18 November2026 — native selected-session admission investigation started
+
+Protocol10's makeController in tools/fixtures/native_candidate_crash.dart passes
+no sessionBinding; its promotion SourceGenerationController passes no selectedSession.
+The host's bounded nonce/dispatch report validation checks existing Stop/recovery,
+retry and promotion evidence but contains no session identity/revision/reference
+assertions. Existing PR726 native database close/reopen proves atomic retention
+in one test process, not an actual killed fixture and separately launched reopen.
+Fourteen deterministic native crash-host tests and24 binding/admission/journal
+tests pass on merged9042809df781d32970a53ccbb1f65d731bbed52d
+(/tmp/asg-404-session-native-admission-host-tests.log and
+/tmp/asg-404-session-native-admission-tests.log). No process kill or live inference
+was run during this investigation; old unbound binaries remain historical evidence.
+
+The smallest next acceptance is an explicit opt-in bound-session mode in the
+existing isolated fixture, initially restricted to the approved mapped Stop/test
+path. Create the session only after the fixture Plan is approved, pass one typed
+binding using the exact controller storage wrapper, and pass its immutable basis
+to promotion. Reports should include bounded session identity/revision and hashes
+of retained session/journal/execution plus exact reference membership; fail closed
+for absent/mismatched/rewritten records, wrong mode/version/nonce, or automatic new
+run on reopen. Test a startup refusal/crash boundary before receipt/host entry and
+a post-admission process kill with separately launched read-only reopen, preserving
+real observed exits/unknowns and existing prior output. Keep protocol10 observations
+identified as unbound; a new protocol/mode must not relabel them. Broader bound retry,
+promotion/cancellation process cases follow only after this minimal boundary is
+verified. No scheduler, synthetic completion or stable bundle replacement is needed.
