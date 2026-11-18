@@ -214,11 +214,15 @@ Future<void> main() async {
     }
     final input = jsonDecode(await challenge.readAsString());
     if (input is! Map<String, dynamic> ||
-        input.length != 14 ||
+        input.length != 15 ||
         input['nonce'] is! String ||
         !RegExp(r'^[a-f0-9]{32}$').hasMatch(input['nonce'] as String) ||
         ![1, 2, 3, 4, 5].contains(input['launch']) ||
         input['sdk'] is! String ||
+        input['sessionCancel'] is! bool ||
+        (input['sessionCancel'] == true &&
+            (input['sessionBound'] != true ||
+                input['admissionCrash'] == true)) ||
         input['sessionBound'] is! bool ||
         input['admissionCrash'] is! bool ||
         (input['admissionCrash'] == true && input['sessionBound'] != true) ||
@@ -263,6 +267,7 @@ Future<void> main() async {
     final launch = input['launch'] as int;
     final operation = input['operation'] as String;
     final targetIndex = operations.indexOf(operation);
+    final sessionCancel = input['sessionCancel'] as bool;
     final sessionBound = input['sessionBound'] as bool;
     final admissionCrash = input['admissionCrash'] as bool;
     final stop = input['stop'] as bool;
@@ -317,12 +322,61 @@ Future<void> main() async {
     final host = NativeGenerationHost(receiptFiles: receipts);
     AgentSession? selectedSession;
     var receiptPreparations = 0, commandEntries = 0;
+    Map<String, Object?>? initialCancellationOutput;
+    Future<Map<String, Object?>> outputState() async => {
+      'working': digest(records.getString(workingKey)!),
+      'output': digest(await working.readAsString()),
+      'workingSource': digest(
+        await File(path.join(working.parent.path, 'lib', 'main.dart'))
+            .readAsString(),
+      ),
+      'sources': digest(
+        jsonEncode(
+          await NativeGenerationHost.fingerprints(candidate.path, source: true),
+        ),
+      ),
+    };
+    Future<String> firstReceiptHash() async {
+      final observed = await receipts.read(checks.load().runs.single);
+      if (observed.length != 1 || observed.single.operation.name != 'resolve') {
+        throw StateError(
+          'Only the validated first receipt may be fingerprinted',
+        );
+      }
+      final directory =
+          (await receiptRoot
+                  .list(followLinks: false)
+                  .where((entry) => entry is Directory)
+                  .toList())
+              .single;
+      final evidence = <String, String>{};
+      for (final name in [
+        'context.json',
+        'resolve.intent.json',
+        'resolve.result.json',
+      ]) {
+        final file = File(path.join(directory.path, name));
+        if (await FileSystemEntity.isLink(file.path) ||
+            await file.length() > 256 * 1024 ||
+            await file.resolveSymbolicLinks() != file.absolute.path) {
+          throw StateError('Invalid first receipt fingerprint input');
+        }
+        evidence[name] = await file.readAsString();
+      }
+      return digest(jsonEncode(evidence));
+    }
+
     Future<Map<String, Object?>?> sessionProof() async {
       if (!sessionBound) return null;
       final saved = AgentSessionStore(records, project).load('session-$nonce');
       if (saved == null ||
-          saved.cancellationRequested ||
-          saved.revision != (admissionCrash ? 0 : 1) ||
+          saved.cancellationRequested != sessionCancel ||
+          saved.revision !=
+              (sessionCancel
+                  ? 2
+                  : admissionCrash
+                  ? 0
+                  : 1) ||
           saved.dispatches.length != (admissionCrash ? 0 : 1) ||
           (!admissionCrash &&
               (saved.dispatches.single.boardTaskId != 'Tanalyze' ||
@@ -367,6 +421,8 @@ Future<void> main() async {
             ? null
             : digest(currentCandidate),
         'executionSha256': execution == null ? null : digest(execution),
+        if (sessionCancel) 'cancellationRequested': saved.cancellationRequested,
+        if (sessionCancel) 'receiptSha256': await firstReceiptHash(),
         'receiptPreparations': receiptPreparations,
         'commandEntries': commandEntries,
       };
@@ -423,6 +479,96 @@ Future<void> main() async {
         sessionBound: true,
         admissionCrash: true,
         sessionProof: await sessionProof(),
+      );
+    }
+
+    Future<void> cancellationReport(
+      SourceCandidateController controller, {
+      required bool first,
+    }) async {
+      final run = checks.load().runs.single;
+      final snapshot = run.snapshot;
+      final retained = await receipts.read(run);
+      if (!run.finished ||
+          snapshot.phase != SourceGenerationPhase.failed ||
+          snapshot.pendingOperation.isNotEmpty ||
+          snapshot.steps.length != 1 ||
+          snapshot.steps.single.operation != 'resolve' ||
+          snapshot.steps.single.exitCode != 0 ||
+          retained.length != 1 ||
+          retained.single.operation.name != 'resolve' ||
+          retained.single.result.exitCode != 0 ||
+          retained.single.result.cancelled ||
+          controller.savedExecutionFor(run)?.phase.name != 'verifying' ||
+          controller.canPromote ||
+          checks.stopRequestFor(run) != null) {
+        throw StateError(
+          'Session cancellation did not retain only the actual first exit',
+        );
+      }
+      for (final operation in operations.skip(1)) {
+        if (await File(path.join(canonical, '$operation-dispatched'))
+            .exists()) {
+          throw StateError(
+            'A later command entered after session cancellation',
+          );
+        }
+      }
+      final proof = (await sessionProof())!;
+      final output = await outputState();
+      final stableProof = Map<String, Object?>.from(proof)
+        ..remove('receiptPreparations')
+        ..remove('commandEntries');
+      final current = {'sessionProof': stableProof, 'outputState': output};
+      final baseline = File(path.join(canonical, 'cancelled-state.json'));
+      if (first) {
+        if (jsonEncode(initialCancellationOutput) != jsonEncode(output)) {
+          throw StateError(
+            'Session cancellation changed source or prior working output',
+          );
+        }
+        await baseline.create(exclusive: true);
+        await baseline.writeAsString(jsonEncode(current), flush: true);
+      } else if (jsonEncode(jsonDecode(await baseline.readAsString())) !=
+          jsonEncode(current)) {
+        throw StateError('Cancelled session reopen changed retained evidence');
+      }
+      runApp(MaterialApp(home: SourceCandidateView(controller: controller)));
+      await WidgetsBinding.instance.endOfFrame;
+      await report(
+        canonical,
+        launch,
+        {
+          'nonce': nonce,
+          'dispatch': run.dispatchId,
+          'operation': operation,
+          'stopRequested': stop,
+          'precommit': precommit,
+          'running': running,
+          'uncertain': uncertain,
+          'acknowledge': acknowledge,
+          'retry': retry,
+          'promote': promote,
+          'promotionCrash': promotionCrash,
+          'completedOperations': ['resolve'],
+          'receiptOperations': ['resolve'],
+          'retainedExit': retained.single.result.exitCode,
+          'runFinished': run.finished,
+          'candidatePhase': snapshot.phase.name,
+          'pendingOperation': snapshot.pendingOperation,
+          'executionPhase': controller.savedExecutionFor(run)!.phase.name,
+          'candidateStopPresent': false,
+          'promotionAllowed': controller.canPromote,
+          'noLaterCommands': true,
+          'workingUnchanged': true,
+          'sourcesUnchanged': true,
+          'cancellationUnchanged': true,
+          'viewRendered': true,
+          'readyForCrash': first,
+        },
+        sessionBound: true,
+        sessionCancel: true,
+        sessionProof: proof,
       );
     }
 
@@ -522,6 +668,33 @@ Future<void> main() async {
       ).load('session-$nonce');
       if (selectedSession == null) {
         throw StateError('Selected session missing on reopen');
+      }
+      if (sessionCancel) {
+        final basisFile = File(path.join(canonical, 'admitted-session.json'));
+        if (await FileSystemEntity.isLink(basisFile.path) ||
+            await basisFile.length() > AgentSession.maxEncodedBytes) {
+          throw StateError('Invalid pre-cancellation binding snapshot');
+        }
+        final basis = AgentSession.fromJson(
+          jsonDecode(await basisFile.readAsString()),
+        );
+        if (basis.storageKey != selectedSession.storageKey ||
+            basis.revision != 1 ||
+            basis.cancellationRequested ||
+            jsonEncode(basis.requestCancellation().toJson()) !=
+                jsonEncode(selectedSession.toJson())) {
+          throw StateError('Pre-cancellation binding identity changed');
+        }
+        selectedSession = basis;
+        final controller = makeController(
+          checks.load().runs.single.snapshot,
+          host,
+        );
+        await cancellationReport(controller, first: false);
+        controller.dispose();
+        await host.dispose();
+        await records.database.close();
+        exit(0);
       }
       if (admissionCrash) {
         await admissionReport(first: false);
@@ -742,6 +915,27 @@ Future<void> main() async {
               throw StateError('Actual confined operation failed.');
             }
           }
+          if (sessionCancel) {
+            if (currentOperation != 'resolve' ||
+                step!.exitCode != 0 ||
+                step.cancelled) {
+              throw StateError(
+                'Only the first actual successful receipt may request session cancellation',
+              );
+            }
+            final admitted = runningController.sessionBinding!.session;
+            final basis = File(path.join(canonical, 'admitted-session.json'));
+            await basis.create(exclusive: true);
+            await basis.writeAsString(
+              jsonEncode(admitted.toJson()),
+              flush: true,
+            );
+            await AgentSessionStore(
+              records,
+              runningController.project,
+            ).requestCancellation(admitted);
+            return step;
+          }
           if (currentOperation != operation) return step!;
           final pending = checks.load().runs.single;
           final saved = await receipts.read(pending);
@@ -866,7 +1060,12 @@ Future<void> main() async {
           throw StateError('Fixture input mismatch');
         }
         stage = 'controller-verification';
+        if (sessionCancel) initialCancellationOutput = await outputState();
         await runningController.verify(approved: true);
+        if (sessionCancel) {
+          await cancellationReport(runningController, first: true);
+          await Completer<void>().future;
+        }
         stage =
             'controller-returned-runs-${checks.load().runs.length}-pending-${runningController.result.pendingOperation}-failed-${runningController.result.failedOperation}';
       } else {
@@ -1501,17 +1700,19 @@ Future<void> report(
   Map<String, Object?> observation, {
   bool sessionBound = false,
   bool admissionCrash = false,
+  bool sessionCancel = false,
   Map<String, Object?>? sessionProof,
 }) async {
   final file = File(path.join(root, 'launch-$launch.json'));
   await file.create(exclusive: true);
   await file.writeAsString(
     jsonEncode({
-      'version': 11,
+      'version': 12,
       'launch': launch,
       ...observation,
       'sessionBound': sessionBound,
       'admissionCrash': admissionCrash,
+      'sessionCancel': sessionCancel,
       'sessionProof': sessionProof,
     }),
     flush: true,
