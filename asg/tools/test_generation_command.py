@@ -231,6 +231,24 @@ class CommandTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 module.CompletionReceipt(receipts, project, sdk, 'analyze')
 
+    def test_completion_receipt_allows_absent_external_cache_but_refuses_descendant_cache(self):
+        with tempfile.TemporaryDirectory(prefix='asg-receipt-cold-cache-') as temporary:
+            root = Path(temporary).resolve()
+            project, sdk, receipts = [root / name for name in ('candidate', 'sdk', 'receipts')]
+            project.mkdir(); sdk.mkdir(); receipts.mkdir(mode=0o700)
+            context = {'version': 1, 'dispatchId': 'candidate-p-1:3', 'sourceFingerprint': 'a' * 64,
+                       'approvalFingerprint': 'b' * 64, 'executionFingerprint': 'c' * 64, 'hostSessionId': 'host-session'}
+            (receipts / 'context.json').write_text(json.dumps(context))
+            absent = root / 'cache-not-created'
+            with mock.patch.dict(os.environ, {'PUB_CACHE': str(absent)}):
+                writer = module.CompletionReceipt(receipts, project, sdk, 'resolve')
+                writer.close()
+            self.assertFalse(absent.exists())
+            with mock.patch.dict(os.environ, {'PUB_CACHE': str(receipts / 'cache-not-created')}):
+                with self.assertRaises(ValueError):
+                    module.CompletionReceipt(receipts, project, sdk, 'analyze')
+            self.assertFalse((receipts / 'analyze.intent.json').exists())
+
     def test_completion_receipt_survives_broken_stdout_without_inventing_cleanup(self):
         with tempfile.TemporaryDirectory(prefix='asg-receipt-pipe-') as temporary:
             root = Path(temporary).resolve()

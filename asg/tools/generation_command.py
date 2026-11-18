@@ -415,7 +415,13 @@ class CompletionReceipt:
             raise ValueError('Invalid completion receipt directory')
         roots = (Path(project).resolve(strict=True), Path(sdk).resolve(strict=True),
                  Path(os.environ.get('PUB_CACHE', str(Path.home() / '.pub-cache'))).resolve())
-        if directory == Path.home().resolve() or any(directories_overlap(directory, root) for root in roots):
+        def overlaps(root):
+            if root.exists():
+                return directories_overlap(directory, root)
+            # Optional caches may be absent. Compare existing ancestors without
+            # provisioning a cache or dropping inode/case-alias checks.
+            return any(directory.samefile(parent) for parent in root.parents if parent.exists())
+        if directory == Path.home().resolve() or any(overlaps(root) for root in roots):
             raise ValueError('Completion receipts overlap execution roots')
         self.fd = os.open(directory, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
         try:
