@@ -16308,3 +16308,31 @@ same-binary app crash/reopen keeps exit unknown, no target result label, exact
 Stop/pending/prior receipt/source/working state and no replay. Ten host contracts
 pass; required regression completion, fresh review/CI and verified merge remain
 delivery gates. Broader CE01 and stated lifecycle limits remain pending.
+
+
+Native uncertain-delivery slice delivered in PR #713, merge
+`b3b7dfe80aacc254360e1e0d1c760d49690374c6`, required CI44314752894,
+verified tested treea59e67925e58f8da7eda70a7271b765c91e62ca8. All14 native
+cases passed; missing target result remains unknown.
+
+CE01 active bounded task under #404 — interrupted-candidate recovery summary.
+Existing history shows checkpoint, receipts and saved Stop separately, while
+the visible session/recovery interface remains pending. Add a typed read-only
+summary for interrupted runs, distinguishing missing completion, an actual
+retained exit with unknown cleanup, saved Stop as intent only and unavailable
+execution identity. Derive from exact matched records; stale/corrupt/unreadable
+evidence stays explicit without an invented exit. Viewing writes nothing and
+grants no replay, reconciliation, process-control or cleanup authority. Preserve
+existing recovery consent. Validate pure model/controller/widget error, refresh,
+legacy/mismatch and narrow-layout cases, required regressions/inventory/build,
+fresh review and verified merge. This does not close generalized CE01.
+
+
+Interrupted-candidate summary implemented with typed read-only reasons and
+controller/view integration. Source/approval/execution receipt fingerprints and
+current run identity are checked; loading, unavailable and missing exits stay
+distinct. A later unreadable journal suppresses a cached exit without replacing
+records. Saved Stop remains intent and cleanup remains unknown.49 focused checks
+pass, including native receipt-projection parity and narrow2x view. Final required
+checks/native regressions, fresh review/CI and verified merge remain gates; no
+new recovery authority or generalized CE01 completion is claimed.

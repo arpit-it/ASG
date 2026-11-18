@@ -6,6 +6,7 @@ import 'dart:async';
 import '../models/agent_execution_checkpoint.dart';
 import '../models/candidate_operation_receipt.dart';
 import '../models/candidate_stop_request.dart';
+import '../models/candidate_recovery_status.dart';
 import '../services/agent_execution_checkpoint_store.dart';
 import '../models/approved_source_proposal.dart';
 import '../models/build_plan.dart';
@@ -94,6 +95,31 @@ class SourceCandidateController extends BaseController {
   String? _receiptHistoryError;
   String? get receiptHistoryError => _receiptHistoryError;
   int _receiptEpoch = 0;
+  bool _receiptsLoading = false, _receiptsReadable = false;
+
+  CandidateRecoveryStatus? recoveryStatusFor(CandidateVerificationRun run) {
+    if (!_history.any(
+      (current) => CandidateRecoveryStatus.sameRun(current, run),
+    )) {
+      return null;
+    }
+    return CandidateRecoveryStatus.inspect(
+      projectId: project.id,
+      run: run,
+      execution: savedExecutionFor(run),
+      receipts: receiptsFor(run),
+      stop: stopRequestFor(run),
+      stopEvidenceUnavailable: _stopHistoryError != null,
+      evidence: _historyError != null
+          ? CandidateRecoveryEvidence.unavailable
+          : _receiptsLoading
+          ? CandidateRecoveryEvidence.loading
+          : _receiptsReadable && _receiptHistoryError == null
+          ? CandidateRecoveryEvidence.readable
+          : CandidateRecoveryEvidence.unavailable,
+    );
+  }
+
   List<CandidateOperationReceipt> receiptsFor(CandidateVerificationRun run) =>
       _receiptHistory[run.number] ?? const [];
 
@@ -102,6 +128,8 @@ class SourceCandidateController extends BaseController {
     final epoch = ++_receiptEpoch;
     _receiptHistory = const {};
     _receiptHistoryError = null;
+    _receiptsReadable = false;
+    _receiptsLoading = reader is CandidateReceiptHost;
     if (reader is! CandidateReceiptHost) return;
     final receiptReader = reader as CandidateReceiptHost;
     final found = <int, List<CandidateOperationReceipt>>{};
@@ -119,10 +147,13 @@ class SourceCandidateController extends BaseController {
       }
       if (!isDisposed && epoch == _receiptEpoch) {
         _receiptHistory = Map.unmodifiable(found);
+        _receiptsLoading = false;
+        _receiptsReadable = true;
         update();
       }
     } catch (_) {
       if (!isDisposed && epoch == _receiptEpoch) {
+        _receiptsLoading = false;
         _receiptHistoryError = 'Saved native completion evidence is unavailable. The check journal is unchanged.';
         update();
       }

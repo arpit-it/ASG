@@ -16,6 +16,7 @@ import 'package:asg/models/build_plan.dart';
 import 'package:asg/models/candidate_failure.dart';
 import 'package:asg/models/candidate_verification_run.dart';
 import 'package:asg/models/candidate_operation_receipt.dart';
+import 'package:asg/models/candidate_recovery_status.dart';
 import 'package:asg/models/source_edit_proposal.dart';
 import 'package:asg/models/source_generation.dart';
 import 'package:asg/services/application_store.dart';
@@ -100,6 +101,11 @@ class ReceiptCheckHost extends InterruptedCheckHost
     (data['context'] as Map<String, Object>)['dispatchId'] = mismatch
         ? 'other:3'
         : run.dispatchId!;
+    final hashes = CandidateRecoveryStatus.fingerprints(run);
+    final context = data['context'] as Map<String, Object>;
+    context['sourceFingerprint'] = hashes['source']!;
+    context['approvalFingerprint'] = hashes['approval']!;
+    context['executionFingerprint'] = hashes['execution']!;
     data['operation'] = 'resolve';
     return CandidateOperationReceipt.fromJson(data);
   }
@@ -1060,6 +1066,11 @@ void main() {
       expect(host.prepared!.dispatchId, run.dispatchId);
       expect(host.preparations, 1);
       expect(candidate.receiptsFor(run).single.result.exitCode, -1);
+      expect(
+        candidate.recoveryStatusFor(run)!.reason,
+        CandidateRecoveryReason.retainedExit,
+      );
+      expect(candidate.recoveryStatusFor(run)!.exitCode, -1);
       expect(run.finished, isFalse);
       expect(run.snapshot.steps, isEmpty);
       expect(run.snapshot.pendingOperation, 'resolve');
@@ -1096,6 +1107,17 @@ void main() {
       );
       expect(
         find.text('Cleanup remains unknown in this retained record.'),
+        findsOneWidget,
+      );
+      expect(
+        find.byWidgetPredicate(
+          (widget) =>
+              widget is SelectableText &&
+              (widget.data?.startsWith(
+                    'Recovery: The retained resolve exit is -1.',
+                  ) ??
+                  false),
+        ),
         findsOneWidget,
       );
       expect(tester.takeException(), isNull);
@@ -1178,6 +1200,61 @@ void main() {
       },
     );
   }
+
+  test(
+    'recovery summary tracks async evidence without writing or stale input',
+    () async {
+      final initial = candidate.result;
+      final evidence = candidate.evidence;
+      candidate.dispose();
+      final host = ReceiptCheckHost()
+        ..deferred = Completer<List<CandidateOperationReceipt>>();
+      candidate = SourceCandidateController(
+        project: project,
+        candidate: initial,
+        evidence: evidence,
+        records: records,
+        host: host,
+        publish: (_, _, _) => throw StateError('Unexpected publication'),
+      );
+      host.stop = candidate.cancel;
+      await candidate.verify(approved: true);
+      final run = candidate.history.single;
+      final before = Map.of(records.values);
+      expect(
+        candidate.recoveryStatusFor(run)!.reason,
+        CandidateRecoveryReason.loading,
+      );
+      host.deferred!.complete([host.receipt(run)]);
+      await tick();
+      expect(
+        candidate.recoveryStatusFor(run)!.reason,
+        CandidateRecoveryReason.retainedExit,
+      );
+      final stale = CandidateVerificationRun(
+        number: run.number,
+        startedAt: run.startedAt,
+        dispatchId: run.dispatchId,
+        finished: run.finished,
+        snapshot: GeneratedProject.fromJson({
+          ...run.snapshot.toJson(),
+          'directory': '/different',
+        }),
+      );
+      expect(candidate.recoveryStatusFor(stale), isNull);
+      expect(records.values, before);
+      final journalKey = 'studio.candidateChecks.v1.${project.id}';
+      records.values[journalKey] = 'unreadable history';
+      await candidate.verify(approved: true);
+      expect(candidate.historyError, isNotNull);
+      expect(
+        candidate.recoveryStatusFor(run)!.reason,
+        CandidateRecoveryReason.evidenceUnavailable,
+      );
+      expect(candidate.recoveryStatusFor(run)!.exitCode, isNull);
+      expect(records.values[journalKey], 'unreadable history');
+    },
+  );
 
   test('mismatched receipt reader cannot relabel another dispatch', () async {
     final initial = candidate.result;

@@ -607,3 +607,35 @@ followed by app crash/reopen; it does not establish all transport failures, ever
 operation's cancellation, arbitrary descendant cleanup, mid-commit durability,
 production-main navigation or generalized CE01 completion. These remain pending
 under #404; unavailable platforms remain deferred under #400.
+
+
+### Read-only interrupted-candidate recovery summary — 18 November 2026
+
+CandidateRecoveryStatus describes each unfinished fixed operation with a pending
+dispatch. It distinguishes unavailable/changed execution identity, loading
+completion evidence, unreadable or mismatched evidence, no retained target exit,
+and an actual retained target exit with runner activity and cleanup still unknown.
+A matching saved Stop is stated separately as intent; unreadable Stop evidence
+stays explicit. Finished/no-pending rows receive no interrupted-run summary.
+
+The pure model compares dispatch plus saved source, approval and execution-input
+fingerprints against every returned receipt and refuses duplicate target results.
+An earlier operation's receipt cannot supply the pending operation's exit. The
+controller only describes a current matching history row, tracks receipt refresh
+loading separately from an empty result and suppresses cached exits if the saved
+journal later becomes unreadable. Epoch/disposal guards still own async refresh.
+A native parity test compares the projection with actual CandidateReceiptFiles
+preparation, preventing a self-confirming test fixture from masking divergence.
+
+SourceCandidateView renders the explanation beside existing detailed saved
+execution/Stop/receipt evidence. Viewing it performs no writes or commands and
+adds no recovery/retry controls. Existing explicit acknowledgement and fresh
+verification consent remain required. No stored formats/keys change. This model
+does not authenticate publishers, verify process ownership or cleanup, or invoke
+the future AgentRecoveryDecision resultReady path. It is a bounded per-run
+interface improvement, not generalized session/reconciliation acceptance.
+
+Focused coverage includes pure identity/outcome distinctions, native receipt
+projection parity, delayed refresh, stale-input refusal, unreadable-history
+preservation and a320px/2x-text read-only view. General CE01 remains open under
+#404 and unavailable platform acceptance remains deferred under #400.
