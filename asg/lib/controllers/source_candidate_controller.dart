@@ -1,7 +1,10 @@
 // SPDX-License-Identifier: MPL-2.0
 // Copyright 2026 Arpit Sinha
 
+import 'dart:async';
+
 import '../models/agent_execution_checkpoint.dart';
+import '../models/candidate_operation_receipt.dart';
 import '../services/agent_execution_checkpoint_store.dart';
 import '../models/approved_source_proposal.dart';
 import '../models/build_plan.dart';
@@ -53,10 +56,50 @@ class SourceCandidateController extends BaseController {
     try {
       _history = CandidateVerificationStore(records, project.id).load().runs;
       _historyError = null;
+      unawaited(_refreshReceipts(_history));
     } catch (_) {
       _historyError =
           'Saved candidate check history is unreadable. '
           'Verification is blocked; retained records have not been replaced.';
+    }
+  }
+
+  Map<int, List<CandidateOperationReceipt>> _receiptHistory = const {};
+  String? _receiptHistoryError;
+  String? get receiptHistoryError => _receiptHistoryError;
+  int _receiptEpoch = 0;
+  List<CandidateOperationReceipt> receiptsFor(CandidateVerificationRun run) =>
+      _receiptHistory[run.number] ?? const [];
+
+  Future<void> _refreshReceipts(List<CandidateVerificationRun> runs) async {
+    final reader = host;
+    final epoch = ++_receiptEpoch;
+    _receiptHistory = const {};
+    _receiptHistoryError = null;
+    if (reader is! CandidateReceiptHost) return;
+    final receiptReader = reader as CandidateReceiptHost;
+    final found = <int, List<CandidateOperationReceipt>>{};
+    try {
+      for (final run in runs.where(
+        (item) => item.snapshot.pendingOperation.isNotEmpty,
+      )) {
+        final receipts = await receiptReader.readCandidateReceipts(run);
+        if (receipts.any(
+          (receipt) => receipt.context.dispatchId != run.dispatchId,
+        )) {
+          throw const FormatException('Mismatched saved completion evidence.');
+        }
+        found[run.number] = List.unmodifiable(receipts);
+      }
+      if (!isDisposed && epoch == _receiptEpoch) {
+        _receiptHistory = Map.unmodifiable(found);
+        update();
+      }
+    } catch (_) {
+      if (!isDisposed && epoch == _receiptEpoch) {
+        _receiptHistoryError = 'Saved native completion evidence is unavailable. The check journal is unchanged.';
+        update();
+      }
     }
   }
 
@@ -173,8 +216,11 @@ class SourceCandidateController extends BaseController {
         pendingOperation: '',
         failedOperation: '',
       );
-      await store.start(initial, _authorize);
+      final run = await store.start(initial, _authorize);
       _activeStore = store;
+      if (host case final CandidateReceiptHost receiptHost) {
+        await receiptHost.prepareCandidateReceipts(run, _authorize);
+      }
       _authorize();
       _result = initial;
       _refreshHistory();

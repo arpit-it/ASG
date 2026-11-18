@@ -23,6 +23,9 @@ import '../models/source_generation.dart';
 import 'flutter_source_template.dart';
 import 'generation_host.dart';
 import 'generation_process_capture.dart';
+import 'candidate_receipt_native.dart';
+import '../models/candidate_verification_run.dart';
+import '../models/candidate_operation_receipt.dart';
 import 'generation_toolchain_native.dart';
 import '../models/generation_toolchain.dart';
 import 'named_test_session.dart';
@@ -35,14 +38,42 @@ class NativeGenerationHost
         ArtifactInspector,
         NamedTestSession,
         GenerationCapabilitySource,
-        GenerationToolchainSource {
+        GenerationToolchainSource,
+        CandidateReceiptHost {
   NativeGenerationHost({
     this.loadAsset = _loadAsset,
+    CandidateReceiptFiles? receiptFiles,
     Future<GenerationStep> Function(GeneratedProject, String)? runOperation,
-  }) : _operationOverride = runOperation;
+  }) : _operationOverride = runOperation,
+       _receiptFiles = receiptFiles ?? CandidateReceiptFiles();
   final Future<String> Function(String) loadAsset;
   final Future<GenerationStep> Function(GeneratedProject, String)?
   _operationOverride;
+  final CandidateReceiptFiles _receiptFiles;
+  String? _preparedReceiptDirectory;
+  CandidateVerificationRun? _preparedReceiptRun;
+
+  @override
+  Future<void> prepareCandidateReceipts(
+    CandidateVerificationRun run,
+    void Function() authorize,
+  ) async {
+    checkOpen();
+    if (_commandRunning) throw StateError('A command is already running.');
+    _preparedReceiptDirectory = null;
+    _preparedReceiptRun = null;
+    final directory = await _receiptFiles.prepare(run, authorize);
+    authorize();
+    checkOpen();
+    _preparedReceiptDirectory = directory;
+    _preparedReceiptRun = run;
+  }
+
+  @override
+  Future<List<CandidateOperationReceipt>> readCandidateReceipts(
+    CandidateVerificationRun run,
+  ) => _receiptFiles.read(run);
+
   bool _closed = false;
   Process? _activeProcess;
   Completer<void>? _activeCaptureCancellation;
@@ -290,6 +321,11 @@ class NativeGenerationHost
   }) async {
     if (_commandRunning) throw StateError('A command is already running.');
     _verificationCancelled = false;
+    final receiptDirectory = _preparedReceiptDirectory;
+    final receiptRun = _preparedReceiptRun;
+    _preparedReceiptDirectory = null;
+    _preparedReceiptRun = null;
+    if (receiptRun != null) _receiptFiles.requireSnapshot(receiptRun, project);
     // Validate even programmatically constructed snapshots before trusting a prefix.
     if (resume) {
       GeneratedProject.fromJson(project.toJson());
@@ -361,6 +397,7 @@ class NativeGenerationHost
                 project,
                 operation,
                 beforeStart: checkpoint,
+                receiptDirectory: receiptDirectory,
               );
       } catch (error) {
         // A runner exception has no trustworthy exit result. Keep completed
@@ -433,11 +470,13 @@ class NativeGenerationHost
     GeneratedProject project,
     String operation, {
     Future<void> Function()? beforeStart,
+    String? receiptDirectory,
   }) async {
     final data = await _runFlutterCommand(
       project,
       operation,
       beforeStart: beforeStart,
+      receiptDirectory: receiptDirectory,
     );
     return data.step(operation);
   }
@@ -484,6 +523,7 @@ class NativeGenerationHost
     String operation, {
     FlutterTestTarget? target,
     Future<void> Function()? beforeStart,
+    String? receiptDirectory,
   }) async {
     if (_commandRunning) throw StateError('A command is already running.');
     _commandRunning = true;
@@ -493,6 +533,7 @@ class NativeGenerationHost
         operation,
         target: target,
         beforeStart: beforeStart,
+        receiptDirectory: receiptDirectory,
       );
     } finally {
       _commandRunning = false;
@@ -505,6 +546,7 @@ class NativeGenerationHost
     String operation, {
     FlutterTestTarget? target,
     Future<void> Function()? beforeStart,
+    String? receiptDirectory,
   }) async {
     checkVerification();
     if (!['resolve', 'analyze', 'test', 'build'].contains(operation)) {
@@ -553,6 +595,12 @@ class NativeGenerationHost
           '--output-limit',
           '${project.limits.outputLimitBytes}',
           if (project.confined) '--confined',
+          if (receiptDirectory != null) ...[
+            '--completion-receipts',
+            receiptDirectory,
+            '--owner-pid',
+            '$pid',
+          ],
           if (target != null) ...[
             '--test-file',
             target.file,
@@ -578,6 +626,11 @@ class NativeGenerationHost
       final out = captured.stdout;
       final error = captured.stderr;
       if (code != 0) {
+        if (receiptDirectory != null) {
+          throw const FormatException(
+            'Candidate helper completion delivery is uncertain.',
+          );
+        }
         if (target != null) {
           throw const FormatException(
             'Named test helper did not return evidence.',

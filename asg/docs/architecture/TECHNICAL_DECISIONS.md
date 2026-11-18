@@ -59,3 +59,28 @@ The stock Flutter device creates its listener internally and accepts the first W
 F12 / [#406](https://github.com/arpit-it/ASG/issues/406): developer-only adapters now exercise the installed unchanged NativeAssetsBuildRunner on a fixed two-package graph and the actual stock FlutterTesterTestDevice start/remoteChannel path. A manifest-bound executable shim admits only expected compiler/hook invocations and confines children; retained gated IPv4/IPv6 servers supply stock IPC before upgrade. Actual bounded Mac fixtures verify eight ordered compile/hook dispatches, hook failure/deadline/invalid output/overflow preventing device start, session rejection, oversized/malformed messages, engine deadline and Stop. Ten portable tests defend dispatch and evidence contracts. Candidate execution remains disabled. Arbitrary graphs/candidates, native toolchain/assets, the full package:test event protocol and raw WebSocket allocation/memory bounds remain unverified. See [the adapter contract](../development/F12_RUNNER_ADAPTERS.md).
 
 The unchanged hook runner receives a trusted manifest-bound executable; there is no arbitrary-command fallback. The stock test device receives confined process management and a retained gated server through its bind seam. Unknown inputs and unsupported operations fail closed. This completes the bounded fixed-graph adapter prerequisite, not application candidate enablement. The stock decoded-message check is not a limit before WebSocket allocation.
+
+
+## Confined candidate completion evidence — 18 November 2026
+
+For CE01/#404, retain bounded helper command results as local sidecar receipts
+before stdout delivery. Bind them to the saved dispatch, operation, source,
+approval, stable execution configuration and host-session nonce. The initial
+publisher is the existing trusted fixed helper, outside the inherited candidate
+write boundary; private application-support directories and exclusive publication
+prevent a confined child from replacing records. Reject unsafe paths and stale or
+corrupt identities instead of overwriting or inferring success.
+
+Keep receipts separate from the transactional candidate journal. A lost pipe or
+helper delivery failure leaves the operation interrupted even if a result file
+was retained. Reading that result supplies historical evidence only. It does not
+authorize retry, complete an execution, promote output or signal a process. The
+caller-PID check is a launch-lineage guard, not durable process ownership proof.
+Cleanup remains unknown and requires the existing separate recovery action.
+
+This boundary does not defend against an unrestricted process running as the same
+user. A session nonce is not receipt authentication. Signed helpers, authenticated
+workers, confirmed descendant cleanup and automatic reconciliation require later
+implementation and actual acceptance. Existing stored project JSON stays unchanged;
+receipts use a separate versioned schema. See AGENT_ENGINE.md for the protocol,
+actual Mac evidence and pending app restart acceptance.

@@ -134,6 +134,19 @@ publication and automatic reconciliation stay pending. Existing four Mac
 confinement fixtures passed and protect private sibling files, but do not
 establish a receipt publisher or authenticate post-restart ownership.
 
+In progress under #404: durable completion receipts for confined
+candidate checks. Persist helper results before stdout delivery in private storage
+outside candidate/tool/cache/scratch write scope. Bind dispatch, operation,
+recorded source/approval identity, execution configuration and host session;
+refuse overwrite, stale
+identity, corrupt or linked paths. Reopened interrupted history may display the
+retained actual exit separately from the journal; cleanup remains unknown and no
+receipt authorizes retry, publication or process control. Preserve unsupported
+host/legacy behavior and last working output. Validate actual parent-loss/broken
+pipe publication, native persistence/reopen, confinement, corruption, failure,
+Stop/disposal and full required checks. App crash/restart and automated
+reconciliation acceptance remain pending until separately verified.
+
 Delivered bounded CE01 validation fix under #404: reject saved phase/revision pairs
 below the earliest legal lifecycle transition count and planning revisions other
 than one. Acceptance: no recovering dispatch zero or premature completed phase;
