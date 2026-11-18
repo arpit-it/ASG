@@ -121,18 +121,19 @@ class CandidateVerificationStore {
       executionKey =
           'studio.agentExecution.v1.${expected.dispatchId!.split(':').first}';
       executionRaw = records.getString(executionKey);
-      if (executionRaw != null) {
-        var saved = AgentExecutionCheckpoint.fromJson(jsonDecode(executionRaw));
-        if (saved.dispatchId != expected.dispatchId) {
-          throw StateError('Interrupted execution changed.');
-        }
-        if (saved.phase == AgentExecutionPhase.executing) {
-          saved = saved.advance(AgentExecutionPhase.recovering);
-        }
-        reconciled = jsonEncode(
-          saved.advance(AgentExecutionPhase.awaitingApproval).toJson(),
-        );
+      if (executionRaw == null) {
+        throw StateError('Interrupted execution evidence is missing.');
       }
+      var saved = AgentExecutionCheckpoint.fromJson(jsonDecode(executionRaw));
+      if (saved.dispatchId != expected.dispatchId) {
+        throw StateError('Interrupted execution changed.');
+      }
+      if (saved.phase == AgentExecutionPhase.executing) {
+        saved = saved.advance(AgentExecutionPhase.recovering);
+      }
+      reconciled = jsonEncode(
+        saved.advance(AgentExecutionPhase.awaitingApproval).toJson(),
+      );
     }
     await storage.commitRecords(
       expected: {key: raw, if (reconciled != null) executionKey!: executionRaw},
