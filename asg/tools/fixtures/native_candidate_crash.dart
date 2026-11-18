@@ -124,13 +124,18 @@ Future<void> main() async {
     }
     final input = jsonDecode(await challenge.readAsString());
     if (input is! Map<String, dynamic> ||
-        input.length != 6 ||
+        input.length != 7 ||
         input['nonce'] is! String ||
         !RegExp(r'^[a-f0-9]{32}$').hasMatch(input['nonce'] as String) ||
         ![1, 2].contains(input['launch']) ||
         input['sdk'] is! String ||
         input['stop'] is! bool ||
         input['precommit'] is! bool ||
+        input['running'] is! bool ||
+        (input['running'] == true &&
+            (input['stop'] != true ||
+                input['precommit'] == true ||
+                input['operation'] != 'test')) ||
         (input['precommit'] == true && input['stop'] != true) ||
         !operations.contains(input['operation'])) {
       throw StateError('Invalid challenge schema.');
@@ -141,6 +146,7 @@ Future<void> main() async {
     final targetIndex = operations.indexOf(operation);
     final stop = input['stop'] as bool;
     final precommit = input['precommit'] as bool;
+    final running = input['running'] as bool;
     final sdk = await Directory(input['sdk'] as String).resolveSymbolicLinks();
     final support = await getApplicationSupportDirectory();
     if (path.basename(support.path) != bundle ||
@@ -220,7 +226,9 @@ Future<void> main() async {
       final test = File(path.join(candidate.path, 'test', 'smoke_test.dart'));
       await test.parent.create();
       await test.writeAsString(
-        "import 'package:flutter_test/flutter_test.dart';\nvoid main() { test('fixed fixture smoke', () { expect(2 + 2, 4); }); }\n",
+        running
+            ? "import 'dart:io'; import 'package:flutter_test/flutter_test.dart'; void main() { test('fixed running fixture', () async { await Directory('build').create(recursive: true); await File('build/running-$nonce').writeAsString('$nonce', flush: true); await Future<void>.delayed(const Duration(seconds: 60)); fail('Stop did not reach running test'); }); }"
+            : "import 'package:flutter_test/flutter_test.dart';\nvoid main() { test('fixed fixture smoke', () { expect(2 + 2, 4); }); }\n",
       );
       final web = File(path.join(candidate.path, 'web', 'index.html'));
       await web.parent.create();
@@ -349,21 +357,60 @@ Future<void> main() async {
           stage = 'actual-$currentOperation';
           await File(path.join(canonical, '$currentOperation-dispatched'))
               .create(exclusive: true);
-          final step = await host.runFlutterOperation(
-            project,
-            currentOperation,
-            receiptDirectory: receiptDirectory,
-          );
-          if (!step.succeeded) {
-            throw StateError('Actual confined operation failed.');
+          GenerationStep? step;
+          if (running && currentOperation == operation) {
+            // Observe errors immediately while waiting for the live test marker.
+            final result = verifier
+                .runFlutterOperation(
+                  project,
+                  currentOperation,
+                  receiptDirectory: receiptDirectory,
+                )
+                .then<GenerationStep?>(
+                  (value) => value,
+                  onError: (Object _, StackTrace _) => null,
+                );
+            final marker = File(
+              path.join(candidate.path, 'build', 'running-$nonce'),
+            );
+            final deadline = DateTime.now().add(const Duration(seconds: 45));
+            while (!await marker.exists() &&
+                DateTime.now().isBefore(deadline)) {
+              await Future<void>.delayed(const Duration(milliseconds: 20));
+            }
+            if (!await marker.exists() ||
+                await FileSystemEntity.isLink(marker.path) ||
+                await marker.readAsString() != nonce) {
+              throw StateError('Running test handshake missing');
+            }
+            runningController.cancel();
+            step = await result.timeout(const Duration(seconds: 12));
+            if (step != null && !step.cancelled) {
+              throw StateError('Running test did not cancel');
+            }
+          } else {
+            step = await host.runFlutterOperation(
+              project,
+              currentOperation,
+              receiptDirectory: receiptDirectory,
+            );
+            if (!step.succeeded) {
+              throw StateError('Actual confined operation failed.');
+            }
           }
-          if (currentOperation != operation) return step;
+          if (currentOperation != operation) return step!;
           final pending = checks.load().runs.single;
           final saved = await receipts.read(pending);
           if (pending.snapshot.pendingOperation != operation ||
               pending.snapshot.steps.length != targetIndex ||
               saved.length != targetIndex + 1 ||
-              saved.any((receipt) => receipt.result.exitCode != 0)) {
+              saved
+                  .take(targetIndex)
+                  .any((receipt) => receipt.result.exitCode != 0) ||
+              (running
+                  ? !saved.last.result.cancelled ||
+                        saved.last.result.exitCode == 0
+                  : saved.last.result.exitCode != 0)) {
             throw StateError('Pending operation/receipt prefix mismatch.');
           }
           if (stop) {
@@ -410,6 +457,8 @@ Future<void> main() async {
             'readyForCrash': true,
             'stopRequested': stop,
             'precommit': precommit,
+            'running': running,
+            'runningMarker': running,
             'stopSaveBlocked': barrier.reached,
             'stopSignalled': verifier.stopSignalled,
           });
@@ -495,7 +544,13 @@ Future<void> main() async {
         run.snapshot.pendingOperation != operation ||
         run.dispatchId != before['dispatch'] ||
         retained.length != targetIndex + 1 ||
-        retained.any((receipt) => receipt.result.exitCode != 0) ||
+        retained
+            .take(targetIndex)
+            .any((receipt) => receipt.result.exitCode != 0) ||
+        (running
+            ? !retained.last.result.cancelled ||
+                  retained.last.result.exitCode == 0
+            : retained.last.result.exitCode != 0) ||
         jsonEncode(
               retained.map((receipt) => receipt.operation.name).toList(),
             ) !=
@@ -553,7 +608,9 @@ Future<void> main() async {
             (stop && !precommit)) ||
         !text.any((value) => value.contains('Candidate checks: verifying')) ||
         !text.any(
-          (value) => value.contains('Retained $operation result: exit 0'),
+          (value) => value.contains(
+            'Retained $operation result: exit ${retained.last.result.exitCode}',
+          ),
         )) {
       throw StateError('Production candidate view did not render.');
     }
@@ -579,6 +636,8 @@ Future<void> main() async {
       'interrupted': true,
       'stopRequested': stop,
       'precommit': precommit,
+      'running': running,
+      'runningCancelled': running && retained.last.result.cancelled,
       'savedStopPresent': controller.stopRequestFor(run) != null,
       'stopUnchanged': sameStop(),
       'operation': operation,
@@ -616,7 +675,7 @@ Future<void> report(
   final file = File(path.join(root, 'launch-$launch.json'));
   await file.create(exclusive: true);
   await file.writeAsString(
-    jsonEncode({'version': 4, 'launch': launch, ...observation}),
+    jsonEncode({'version': 5, 'launch': launch, ...observation}),
     flush: true,
   );
 }

@@ -16257,3 +16257,30 @@ Fresh review/required CI/merge remain investigation delivery gates. Native
 running-tool cancellation remains pending and must use the same host instance
 for controller Stop and actual runner; no evidence is inferred from prior
 successful-completion crash cases.
+
+
+Running-tool Stop prerequisite delivered in PR #711, merge
+`b33ff9aeccc7c0de7cb8a63dba3bab7fbd8d6e1f`, required CI44305212981,
+verified tested tree1e1464862de145938027d0ec5ba5625898a28d10.
+
+CE01 active bounded task under #404 — actual native running-test Stop. Extend
+the isolated fixture with a fixed confined Flutter test that publishes a
+nonce-bound build/ marker and waits. Run and Stop on the same controller-owned
+NativeGenerationHost, require bounded handshake/settlement and committed exact
+Stop intent, then crash only the owned disposable app before journal result
+publication. Reopen same binary with pending test, earlier steps, real retained
+cancelled/uncertain evidence and unchanged sources/working output. Never invent
+exit or descendant cleanup; no replay/promotion. Reject missing/wrong marker,
+unexpected success, stale dispatch or unbounded settlement. Validate actual
+native case, prior native modes, host contracts and required regressions, fresh
+review and verified merge. General CE01 remains pending.
+
+
+Actual native running-test Stop slice implemented and locally observed: same
+controller-owned host runs and cancels a real confined waiting Flutter test,
+retaining actual exit-1/cancelled=true evidence. Crash/reopen keeps committed
+Stop, pending test, prior steps and source/working state unchanged; cleanup
+unknown. This bounded case requires a real receipt and refuses uncertain
+delivery rather than fabricating evidence. Existing native mode regressions,
+fresh review/required CI and verified merge remain delivery gates. General
+CE01 and other stated lifecycle limits remain pending under #404.
