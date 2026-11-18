@@ -289,3 +289,52 @@ inference, owner-record migration, package installation or stable app replacemen
 occurred. Next acceptance requires a bounded fixture of the actual interrupted
 candidate history/receipt workflow using the verified isolated entrypoint, with
 owned-process crash handshakes and unchanged last working output.
+
+
+### Isolated native candidate crash/reopen — 18 November 2026
+
+`tools/fixtures/native_candidate_crash.dart` uses the fixture bundle/private
+control-root preflight, then opens the actual StudioDatabase in that isolated
+support domain. It creates a fixed disposable Flutter source candidate and
+seeded previous-working record/output. CandidateVerificationStore.start commits
+the pending resolve journal, candidate and execution checkpoint atomically. The
+fixture executes an actual confined offline Flutter resolve with the existing
+SDK and production helper/receipt files. It deliberately does not commit the
+returned result to the check journal. Only after durable journal/receipt and
+before-state hashes are available does it report readiness for a host crash.
+
+`tools/native_candidate_crash.py` checks the explicit bundle and unchanged hash,
+starts the app with a private nonce-bound challenge, waits for the bounded
+handshake, then SIGKILLs only the live Popen child it owns and reaps it. It
+relaunches the same executable. The new app process reloads the actual journal
+and production SourceCandidateController/SourceCandidateView with actions
+disabled. The fixture expands the native widget tree and checks the pending
+status and retained resolve exit text after frames render. This is a native
+widget-tree observation, not a screenshot or manual navigation test.
+
+Recovery assertions bind the same dispatch, pending operation and checkpoint;
+compare journal/candidate/working-record bytes by hash, verify actual source
+fingerprints and previous-working output, retain cleanup as unknown and refuse
+promotion. No recovery acknowledgement, verification retry, inference or
+automatic receipt-to-journal reconciliation is invoked. Five local host cases
+exercise stale/unsafe reports, missing handshakes, linked reports, bundle refusal
+and live-owned crash sequencing. These host tests run explicitly outside the
+existing required CI discovery.
+
+The disposable native build and exact final crash/reopen observation passed on
+this Mac with existing dependencies and separate temporary outputs. Bundle
+SHA256: `ab1545b3399c9d2fa43b83e420b6ec4eb1c46d0a83c5379560bf234c12669276`.
+First seed validation correctly refused an empty working-source map; the fixture
+was fixed to seed an actual source file/hash. A subsequent view assertion
+required expanding all nested history sections; stage-only diagnostics avoid
+logging record contents. The final binary was rebuilt and rerun after adding
+current-source and post-render unchanged-state checks. Host handshakes bind the exact nonce-derived dispatch, not only its revision. No production source/runner edits, package installation,
+stable app replacement or owner-process termination occurred.
+
+This establishes a bounded actual native crash window after resolve receipt
+publication and before journal completion. Full production-main navigation,
+crashes at other lifecycle phases, all four fixed operations, cancellation during
+commit and a generalized multi-tool recovery session remain pending under #404.
+The seeded working output is a fixture sentinel, not a new generated-app
+acceptance claim. Execution remains saved as executing with a pending operation;
+reading it grants no new authority.

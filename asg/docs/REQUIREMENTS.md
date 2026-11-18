@@ -16104,7 +16104,7 @@ Recorded 2026-11-05T04:47:02.251179+00:00.
 - [x] [#618](https://github.com/arpit-it/ASG/issues/618) Align the Git and parallel-development guides and repository automation prompt with fresh PR review under AGENTS.md. Preserve revision checks, required CI and protected merge.
 
 
-CE01 next bounded prerequisite under #404 — disposable native app restart isolation:
+CE01 delivered isolation investigation in PR #704 — disposable native app restart isolation:
 inspect bootstrap database, legacy preferences and receipt storage; verify a
 distinct disposable bundle and data roots before launching a crash/restart
 fixture. Acceptance: preserve owner records/stable app/processes, provide bounded
@@ -16114,7 +16114,7 @@ See the Mac app-restart isolation investigation in architecture/AGENT_ENGINE.md.
 Full GUI restart acceptance remains pending; no app launch is recorded here.
 
 
-CE01 active bounded implementation under #404: native restart isolation probe
+CE01 delivered probe in PR #705 (`2ebfd5171505bbdb6c5ac39d2ff51a463e74192f`): native restart isolation probe
 following PR #704 (merge `dd555f0c29cc17d7e75ebeb841b088e8368da4ba`,
 CI44263831873). Add test-only entrypoint and bounded host harness: refuse the
 stable bundle identity, verify canonical fixture control path and actual native
@@ -16122,3 +16122,24 @@ support/preferences identities before storage writes, verify built Info.plist
 and executable, and manage only live owned process handles. Use existing local
 Swift package dependencies; do not install packages or replace the stable app.
 Record actual build/probe evidence separately from full app recovery acceptance.
+
+
+CE01 active next bounded fixture under #404: actual isolated native candidate
+history crash/reopen after PR #705 (merge
+`2ebfd5171505bbdb6c5ac39d2ff51a463e74192f`, CI44267461483). Use a test-only
+entrypoint with verified fixture bundle/control roots, actual StudioDatabase and
+CandidateVerificationStore checkpoints, retained operation evidence and bounded
+owned-process crash handshakes. Reopen production controller/view with actions
+disabled, verify interrupted identity/receipt display, unchanged working output
+and no duplicate side effect. Record real tool versus simulated fixture results
+separately. Full acceptance stays pending until observed on the exact binary.
+
+
+Current bounded crash fixture status: implemented and locally observed, awaiting
+review/required CI/merge. Actual isolated native crash after production resolve
+receipt publication preserves interrupted dispatch/journal/current source and
+working output on same-binary relaunch; production controller and expanded native
+view text were checked with actions disabled. Other lifecycle crash windows, all
+four operations, production-main navigation and generalized CE01 remain pending.
+Evidence and limitations: architecture/AGENT_ENGINE.md, isolated native candidate
+crash/reopen section dated18 November2026.
