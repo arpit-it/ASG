@@ -16,31 +16,34 @@ from native_restart_probe import inspect_bundle
 OPERATIONS = ['resolve', 'analyze', 'test', 'build']
 
 
-def read_report(root, launch, nonce, operation='resolve', stop=False):
+def read_report(root, launch, nonce, operation='resolve', stop=False, precommit=False):
     report = root / f'launch-{launch}.json'
     if report.is_symlink() or not report.is_file() or report.stat().st_size > 4096:
         raise ValueError('Invalid candidate report')
     value = json.loads(report.read_text())
-    if (not isinstance(value, dict) or type(value.get('version')) is not int or value['version'] != 3 or
+    if (not isinstance(value, dict) or type(value.get('version')) is not int or value['version'] != 4 or
             type(value.get('launch')) is not int or value['launch'] != launch or value.get('nonce') != nonce or
             value.get('dispatch') != f'candidate-restart-{nonce}-1:3' or
             operation not in OPERATIONS or value.get('operation') != operation or
-            value.get('stopRequested') is not stop or
+            value.get('stopRequested') is not stop or value.get('precommit') is not precommit or
+            (precommit and not stop) or
             value.get('completedOperations') != OPERATIONS[:OPERATIONS.index(operation)]):
         raise ValueError('Candidate report identity mismatch')
     if launch == 1:
-        if value.get('readyForCrash') is not True:
+        if (value.get('readyForCrash') is not True or value.get('stopSaveBlocked') is not precommit or
+                value.get('stopSignalled') is not stop):
             raise ValueError('Crash handshake missing')
     elif (value.get('interrupted') is not True or type(value.get('retainedExit')) is not int or
           value['retainedExit'] != 0 or value.get('receiptOperations') != OPERATIONS[:OPERATIONS.index(operation) + 1] or value.get('cleanup') != 'unknown' or
           any(value.get(key) is not True for key in ('journalUnchanged', 'sourcesUnchanged', 'workingUnchanged', 'viewRendered')) or
+          value.get('savedStopPresent') is not (stop and not precommit) or
           value.get('executionPhase') != 'executing' or value.get('stopUnchanged') is not True):
         raise ValueError('Recovery observation mismatch')
     return value
 
 
-def observe(bundle, sdk, operation='resolve', stop=False):
-    if operation not in OPERATIONS:
+def observe(bundle, sdk, operation='resolve', stop=False, precommit=False):
+    if operation not in OPERATIONS or (precommit and not stop):
         raise ValueError('Fixed crash operation required')
     if sys.platform != 'darwin':
         raise ValueError('Mac fixture only')
@@ -54,7 +57,7 @@ def observe(bundle, sdk, operation='resolve', stop=False):
     for launch in (1, 2):
         if inspect_bundle(bundle) != (executable, binary):
             raise ValueError('Fixture binary changed')
-        (root / 'challenge.json').write_text(json.dumps({'nonce': nonce, 'launch': launch, 'sdk': str(sdk), 'operation': operation, 'stop': stop}))
+        (root / 'challenge.json').write_text(json.dumps({'nonce': nonce, 'launch': launch, 'sdk': str(sdk), 'operation': operation, 'stop': stop, 'precommit': precommit}))
         with (root / f'process-{launch}.log').open('wb') as log:
             process = subprocess.Popen([str(executable)],
                 env={**os.environ, 'ASG_CANDIDATE_CRASH_ROOT': str(root)}, stdout=log, stderr=log)
@@ -68,7 +71,7 @@ def observe(bundle, sdk, operation='resolve', stop=False):
                 # publication to finish before parsing; malformed data remains a refusal.
                 while True:
                     try:
-                        value = read_report(root, launch, nonce, operation, stop)
+                        value = read_report(root, launch, nonce, operation, stop, precommit)
                         break
                     except (json.JSONDecodeError, UnicodeDecodeError):
                         if time.monotonic() > deadline:
@@ -102,16 +105,17 @@ def main():
     parser.add_argument('--bundle', required=True)
     parser.add_argument('--sdk', required=True)
     parser.add_argument('--stop', action='store_true')
+    parser.add_argument('--precommit', action='store_true')
     parser.add_argument('--operation', choices=OPERATIONS + ['all'], default='resolve')
     args = parser.parse_args()
     try:
         if args.operation == 'all':
-            observations = [observe(args.bundle, args.sdk, operation, args.stop) for operation in OPERATIONS]
+            observations = [observe(args.bundle, args.sdk, operation, args.stop, args.precommit) for operation in OPERATIONS]
             if len({item['bundleSha256'] for item in observations}) != 1:
                 raise ValueError('Matrix binary changed')
             print(json.dumps({'matrix': observations}))
         else:
-            print(json.dumps(observe(args.bundle, args.sdk, args.operation, args.stop)))
+            print(json.dumps(observe(args.bundle, args.sdk, args.operation, args.stop, args.precommit)))
     except (ValueError, OSError, subprocess.TimeoutExpired):
         parser.exit(2, 'Candidate crash fixture refused or failed; artifacts retained.\n')
 
