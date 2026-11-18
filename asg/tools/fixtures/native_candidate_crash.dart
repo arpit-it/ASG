@@ -2,6 +2,7 @@
 // Copyright 2026 Arpit Sinha
 
 // Disposable native fixture; never referenced by production main.dart.
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -31,12 +32,60 @@ import 'package:asg/services/candidate_verification_store.dart';
 import 'package:asg/services/generation_host_native.dart';
 import 'package:asg/services/source_generation_store.dart';
 import 'package:asg/services/studio_database.dart';
+import 'package:asg/services/record_storage.dart';
 import 'package:asg/views/source_candidate_view.dart';
 
 const bundle = 'com.arsinha.asg.restartfixture';
 const operations = ['resolve', 'analyze', 'test', 'build'];
 
 String digest(String text) => sha256.convert(utf8.encode(text)).toString();
+
+// Fixture fault injection stops before the database transaction begins.
+final class StopCommitBarrier implements ConditionalRecordStorage {
+  StopCommitBarrier(this.delegate);
+  final ConditionalRecordStorage delegate;
+  bool reached = false;
+  final pending = Completer<void>();
+  @override
+  String? getString(String key) => delegate.getString(key);
+  @override
+  Future<bool> setString(String key, String value) =>
+      delegate.setString(key, value);
+  @override
+  Future<void> commitRecords({
+    required Map<String, String?> expected,
+    required Map<String, String> updates,
+    required void Function() authorize,
+  }) async {
+    if (updates.keys.any(
+      (key) => key.startsWith(CandidateVerificationStore.stopPrefix),
+    )) {
+      if (updates.length != 1) throw StateError('Unexpected Stop transaction');
+      authorize();
+      reached = true;
+      await pending.future; // Host crashes only this fixture; never released.
+      throw StateError('Fixture Stop barrier must never resume');
+    }
+    await delegate.commitRecords(
+      expected: expected,
+      updates: updates,
+      authorize: authorize,
+    );
+  }
+}
+
+final class SignalledFixtureHost extends NativeGenerationHost {
+  SignalledFixtureHost({
+    required super.receiptFiles,
+    required super.runOperation,
+  });
+  bool stopSignalled = false;
+  @override
+  void cancelVerification() {
+    super.cancelVerification();
+    stopSignalled = true;
+  }
+}
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -75,12 +124,14 @@ Future<void> main() async {
     }
     final input = jsonDecode(await challenge.readAsString());
     if (input is! Map<String, dynamic> ||
-        input.length != 5 ||
+        input.length != 6 ||
         input['nonce'] is! String ||
         !RegExp(r'^[a-f0-9]{32}$').hasMatch(input['nonce'] as String) ||
         ![1, 2].contains(input['launch']) ||
         input['sdk'] is! String ||
         input['stop'] is! bool ||
+        input['precommit'] is! bool ||
+        (input['precommit'] == true && input['stop'] != true) ||
         !operations.contains(input['operation'])) {
       throw StateError('Invalid challenge schema.');
     }
@@ -89,6 +140,7 @@ Future<void> main() async {
     final operation = input['operation'] as String;
     final targetIndex = operations.indexOf(operation);
     final stop = input['stop'] as bool;
+    final precommit = input['precommit'] as bool;
     final sdk = await Directory(input['sdk'] as String).resolveSymbolicLinks();
     final support = await getApplicationSupportDirectory();
     if (path.basename(support.path) != bundle ||
@@ -98,6 +150,8 @@ Future<void> main() async {
     }
     stage = 'database';
     final records = await StudioDatabase.open();
+    final barrier = StopCommitBarrier(records);
+    final controllerRecords = precommit && launch == 1 ? barrier : records;
     final projectId = 'restart-$nonce';
     final checks = CandidateVerificationStore(records, projectId);
     final workingKey = 'studio.generation.v1.$projectId';
@@ -144,7 +198,7 @@ Future<void> main() async {
             originals: {'lib/main.dart': 'old'},
           ),
         ),
-        records: records,
+        records: controllerRecords,
         host: selectedHost,
         publish: (_, _, _) => throw StateError('Fixture may not promote'),
       );
@@ -279,7 +333,8 @@ Future<void> main() async {
           ? null
           : await receipts.prepare(initialRun, () {});
       late SourceCandidateController runningController;
-      final verifier = NativeGenerationHost(
+      late SignalledFixtureHost verifier;
+      verifier = SignalledFixtureHost(
         receiptFiles: receipts,
         runOperation: (project, currentOperation) async {
           final run = checks.load().runs.single;
@@ -314,13 +369,20 @@ Future<void> main() async {
           if (stop) {
             runningController.cancel();
             final deadline = DateTime.now().add(const Duration(seconds: 10));
-            while (runningController.stopRequestSaving &&
+            while ((precommit
+                    ? !barrier.reached
+                    : runningController.stopRequestSaving) &&
                 DateTime.now().isBefore(deadline)) {
               await Future<void>.delayed(const Duration(milliseconds: 10));
             }
-            if (runningController.stopRequestSaving ||
+            if (!verifier.stopSignalled ||
                 runningController.stopRequestSaveError != null ||
-                checks.stopRequestFor(pending) == null) {
+                (precommit
+                    ? !barrier.reached ||
+                          !runningController.stopRequestSaving ||
+                          checks.stopRequestFor(pending) != null
+                    : runningController.stopRequestSaving ||
+                          checks.stopRequestFor(pending) == null)) {
               throw StateError('Durable Stop intent missing.');
             }
           }
@@ -347,6 +409,9 @@ Future<void> main() async {
                 .toList(),
             'readyForCrash': true,
             'stopRequested': stop,
+            'precommit': precommit,
+            'stopSaveBlocked': barrier.reached,
+            'stopSignalled': verifier.stopSignalled,
           });
           runApp(
             MaterialApp(
@@ -409,11 +474,13 @@ Future<void> main() async {
       final raw = records.getString(
         '${CandidateVerificationStore.stopPrefix}${run.dispatchId}',
       );
-      return stop
+      return stop && !precommit
           ? raw != null &&
                 digest(raw) == before['stop'] &&
                 controller.stopRequestFor(run) != null
-          : raw == null && before['stop'] == null;
+          : raw == null &&
+                before['stop'] == null &&
+                controller.stopRequestFor(run) == null;
     }
 
     final currentSources = await NativeGenerationHost.fingerprints(
@@ -482,7 +549,8 @@ Future<void> main() async {
     }
     text.clear();
     viewKey.currentContext!.visitChildElements(visit);
-    if ((stop && !text.any((value) => value.contains('Saved Stop request.'))) ||
+    if ((text.any((value) => value.contains('Saved Stop request.')) !=
+            (stop && !precommit)) ||
         !text.any((value) => value.contains('Candidate checks: verifying')) ||
         !text.any(
           (value) => value.contains('Retained $operation result: exit 0'),
@@ -510,6 +578,8 @@ Future<void> main() async {
       'dispatch': run.dispatchId,
       'interrupted': true,
       'stopRequested': stop,
+      'precommit': precommit,
+      'savedStopPresent': controller.stopRequestFor(run) != null,
       'stopUnchanged': sameStop(),
       'operation': operation,
       'completedOperations': run.snapshot.steps
@@ -546,7 +616,7 @@ Future<void> report(
   final file = File(path.join(root, 'launch-$launch.json'));
   await file.create(exclusive: true);
   await file.writeAsString(
-    jsonEncode({'version': 3, 'launch': launch, ...observation}),
+    jsonEncode({'version': 4, 'launch': launch, ...observation}),
     flush: true,
   );
 }

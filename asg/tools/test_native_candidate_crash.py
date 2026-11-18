@@ -17,8 +17,8 @@ class CandidateCrashTests(unittest.TestCase):
         self.nonce = 'a' * 32
 
     def report(self, launch, operation='resolve', **changes):
-        value = {'version': 3, 'launch': launch, 'nonce': self.nonce, 'dispatch': f'candidate-restart-{self.nonce}-1:3'}
-        value.update(stopRequested=False, stopUnchanged=True, operation=operation, completedOperations=fixture.OPERATIONS[:fixture.OPERATIONS.index(operation)])
+        value = {'version': 4, 'launch': launch, 'nonce': self.nonce, 'dispatch': f'candidate-restart-{self.nonce}-1:3'}
+        value.update(precommit=False, stopSignalled=False, stopSaveBlocked=False, savedStopPresent=False, stopRequested=False, stopUnchanged=True, operation=operation, completedOperations=fixture.OPERATIONS[:fixture.OPERATIONS.index(operation)])
         if launch == 1:
             value['readyForCrash'] = True
         else:
@@ -48,14 +48,30 @@ class CandidateCrashTests(unittest.TestCase):
 
     def test_stop_observation_requires_committed_unchanged_intent(self):
         for launch in (1, 2):
-            self.report(launch, stopRequested=True)
+            self.report(launch, stopRequested=True, stopSignalled=True, savedStopPresent=True)
             fixture.read_report(self.root, launch, self.nonce, stop=True)
             self.report(launch, stopRequested=False)
             with self.assertRaises(ValueError):
                 fixture.read_report(self.root, launch, self.nonce, stop=True)
-        self.report(2, stopRequested=True, stopUnchanged=False)
+        self.report(2, stopRequested=True, savedStopPresent=True, stopUnchanged=False)
         with self.assertRaises(ValueError):
             fixture.read_report(self.root, 2, self.nonce, stop=True)
+
+    def test_precommit_requires_blocked_signal_and_absent_saved_request(self):
+        self.report(1, precommit=True, stopRequested=True, stopSignalled=True, stopSaveBlocked=True)
+        fixture.read_report(self.root, 1, self.nonce, stop=True, precommit=True)
+        for change in ({'stopSaveBlocked': False}, {'stopSignalled': False}):
+            self.report(1, precommit=True, stopRequested=True, stopSignalled=True, stopSaveBlocked=True)
+            value = json.loads((self.root / 'launch-1.json').read_text())
+            value.update(change)
+            (self.root / 'launch-1.json').write_text(json.dumps(value))
+            with self.assertRaises(ValueError):
+                fixture.read_report(self.root, 1, self.nonce, stop=True, precommit=True)
+        self.report(2, precommit=True, stopRequested=True, savedStopPresent=False)
+        fixture.read_report(self.root, 2, self.nonce, stop=True, precommit=True)
+        self.report(2, precommit=True, stopRequested=True, savedStopPresent=True)
+        with self.assertRaises(ValueError):
+            fixture.read_report(self.root, 2, self.nonce, stop=True, precommit=True)
 
     def test_ready_and_recovered_reports_are_distinct(self):
         self.report(1)

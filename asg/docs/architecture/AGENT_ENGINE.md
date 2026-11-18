@@ -468,3 +468,31 @@ Stop bytes matched, actual target exits remained zero, and pending execution
 stayed executing with cleanup unknown. Evidence:
 /tmp/asg-404-native-stop-matrix.json. Seven host contracts include missing Stop
 and changed-intent refusal.
+
+
+### Native Stop before intent commit — 18 November 2026
+
+Protocol4 adds explicit `--stop --precommit` fault injection. A fixture-only
+ConditionalRecordStorage decorator delegates native database reads and all
+non-Stop writes, but holds the single Stop side-record transaction before
+calling the database. The production controller still starts/checkpoints and
+requests Stop. A fixture host records that its real cancellation method returned;
+the crash handshake requires both this signal and the entered save barrier,
+with saving still pending, no save error and no durable Stop row. The barrier
+is never released; the host kills only the live disposable app handle.
+
+Same-binary reopen uses the real database and production controller/view. It
+requires the Stop row and badge to remain absent, while exact pending journal,
+candidate, actual successful receipts, source files and seeded working output
+remain unchanged before and after rendering. There is no invented cancellation
+result, replay, promotion or cleanup confirmation. All four fixed operation
+boundaries passed with binary SHA256
+`fa890d17da510098278d629f21d49ce70a21dda31e8f9390f9aedd4e482bc916`.
+Evidence: /tmp/asg-404-native-stop-precommit-matrix.json. Eight host contracts
+reject missing signal/barrier and an unexpectedly saved request.
+
+This explicitly demonstrates the documented precommit loss window with a
+deterministic delay before transaction entry. It does not establish durability
+of a transaction interrupted mid-commit, Stop during a still-running tool,
+descendant cleanup, terminal cancelled execution or generalized CE01 acceptance.
+Those remain pending under #404, with unavailable platforms under #400.

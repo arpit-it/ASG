@@ -16209,3 +16209,27 @@ real retained exits survive app crash/reopen without state mutation or replay.
 Fresh exact review, required CI and verified merge remain delivery gates. Stop
 during a running command, crash before intent commit and generalized CE01 remain
 pending under #404. Evidence: dated AGENT_ENGINE native Stop section.
+
+
+Native committed-Stop crash slice delivered in PR #709, merge
+`967df28e6496b15b40b24c2e0efe45c3cb9267ca`, CI44296437376, tested merged
+tree d6e34bff8db9c7890d6f05018e2b7b08428836ab. All eight native cases passed.
+
+CE01 active bounded task under #404 — native Stop before intent commit. Use a
+fixture-only storage decorator delaying only Stop side-record commit, retaining
+real native database writes otherwise. Invoke production controller Stop, verify
+immediate signal and blocked intent write, then crash only the owned app. Same
+binary reopen must show no invented saved request/badge, unchanged pending
+journal, actual receipt exits and working/source state; no replay or cleanup
+claim. Reject absent barrier handshake or unexpectedly committed request. Run
+focused contracts, actual native observation and relevant existing cases plus
+required regressions, fresh review and verified merge. This is deterministic
+fault injection before commit, not proof of an interrupted database transaction.
+
+
+Precommit Stop/crash slice implemented and locally observed at all four fixed
+operation boundaries. The fixture confirms actual Stop signalling with only
+the intent write blocked before database entry; reopen has no fabricated saved
+Stop row/badge and preserves pending observations/working output. Publication,
+fresh exact review, required CI and verified merge remain gates. Interrupted
+transaction durability, running-tool Stop and general CE01 remain pending.
