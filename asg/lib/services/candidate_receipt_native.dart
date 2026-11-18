@@ -182,6 +182,8 @@ final class CandidateReceiptFiles {
         throw const FormatException('Oversized saved receipt.');
       }
       return jsonDecode(utf8.decode(bytes));
+    } on FormatException {
+      throw const FormatException('Invalid saved receipt file.');
     } finally {
       await handle.close();
     }

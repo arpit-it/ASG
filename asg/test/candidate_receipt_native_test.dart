@@ -176,7 +176,18 @@ void main() {
     final result = File('$directory/resolve.result.json');
     final raw = await result.readAsString();
     await result.writeAsString('{private incomplete');
-    await expectLater(files.read(run), throwsFormatException);
+    await expectLater(
+      files.read(run),
+      throwsA(
+        isA<FormatException>()
+            .having((error) => error.source, 'source', isNull)
+            .having(
+              (error) => error.toString(),
+              'redacted message',
+              isNot(contains('private incomplete')),
+            ),
+      ),
+    );
     expect(await result.readAsString(), '{private incomplete');
     await result.delete();
     final outside = await File('${temporary.path}/outside').writeAsString(raw);

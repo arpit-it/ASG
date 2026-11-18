@@ -136,7 +136,8 @@ become a tool exit in the journal. Delivery failure preserves the interrupted
 operation; a separately retained receipt may still be inspectable.
 
 The native reader verifies the private directory, context, execution inputs,
-operation and matching intent before exposing a result. Reopened history shows
+operation and matching intent before exposing a result. Malformed file payloads
+are redacted from parsing exceptions. Reopened history shows
 receipts separately from saved check exits. It never inserts their results into
 the journal or advances execution state. Errors preserve files and history;
 late reads cannot update a disposed or superseded controller. Existing explicit
