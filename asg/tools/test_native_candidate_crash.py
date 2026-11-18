@@ -17,8 +17,8 @@ class CandidateCrashTests(unittest.TestCase):
         self.nonce = 'a' * 32
 
     def report(self, launch, operation='resolve', **changes):
-        value = {'version': 2, 'launch': launch, 'nonce': self.nonce, 'dispatch': f'candidate-restart-{self.nonce}-1:3'}
-        value.update(operation=operation, completedOperations=fixture.OPERATIONS[:fixture.OPERATIONS.index(operation)])
+        value = {'version': 3, 'launch': launch, 'nonce': self.nonce, 'dispatch': f'candidate-restart-{self.nonce}-1:3'}
+        value.update(stopRequested=False, stopUnchanged=True, operation=operation, completedOperations=fixture.OPERATIONS[:fixture.OPERATIONS.index(operation)])
         if launch == 1:
             value['readyForCrash'] = True
         else:
@@ -45,6 +45,17 @@ class CandidateCrashTests(unittest.TestCase):
             self.report(2, operation=operation, receiptOperations=[])
             with self.assertRaises(ValueError):
                 fixture.read_report(self.root, 2, self.nonce, operation)
+
+    def test_stop_observation_requires_committed_unchanged_intent(self):
+        for launch in (1, 2):
+            self.report(launch, stopRequested=True)
+            fixture.read_report(self.root, launch, self.nonce, stop=True)
+            self.report(launch, stopRequested=False)
+            with self.assertRaises(ValueError):
+                fixture.read_report(self.root, launch, self.nonce, stop=True)
+        self.report(2, stopRequested=True, stopUnchanged=False)
+        with self.assertRaises(ValueError):
+            fixture.read_report(self.root, 2, self.nonce, stop=True)
 
     def test_ready_and_recovered_reports_are_distinct(self):
         self.report(1)

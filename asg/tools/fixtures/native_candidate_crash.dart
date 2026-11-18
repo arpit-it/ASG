@@ -13,6 +13,16 @@ import 'package:path_provider/path_provider.dart';
 import 'package:asg/controllers/source_candidate_controller.dart';
 import 'package:asg/models/approved_source_proposal.dart';
 import 'package:asg/models/plan_approval.dart';
+import 'package:asg/models/build_plan.dart';
+import 'package:asg/models/chat_message.dart';
+import 'package:asg/models/requirements_board.dart';
+import 'package:asg/services/application_store.dart';
+import 'package:asg/services/approved_source_proposer.dart';
+import 'package:asg/services/conversation_store.dart';
+import 'package:asg/services/generation_input.dart';
+import 'package:asg/services/plan_approval_store.dart';
+import 'package:asg/services/requirements_store.dart';
+import 'package:asg/services/studio_store.dart';
 import 'package:asg/models/project.dart';
 import 'package:asg/models/source_edit_proposal.dart';
 import 'package:asg/models/source_generation.dart';
@@ -65,11 +75,12 @@ Future<void> main() async {
     }
     final input = jsonDecode(await challenge.readAsString());
     if (input is! Map<String, dynamic> ||
-        input.length != 4 ||
+        input.length != 5 ||
         input['nonce'] is! String ||
         !RegExp(r'^[a-f0-9]{32}$').hasMatch(input['nonce'] as String) ||
         ![1, 2].contains(input['launch']) ||
         input['sdk'] is! String ||
+        input['stop'] is! bool ||
         !operations.contains(input['operation'])) {
       throw StateError('Invalid challenge schema.');
     }
@@ -77,6 +88,7 @@ Future<void> main() async {
     final launch = input['launch'] as int;
     final operation = input['operation'] as String;
     final targetIndex = operations.indexOf(operation);
+    final stop = input['stop'] as bool;
     final sdk = await Directory(input['sdk'] as String).resolveSymbolicLinks();
     final support = await getApplicationSupportDirectory();
     if (path.basename(support.path) != bundle ||
@@ -91,15 +103,53 @@ Future<void> main() async {
     final workingKey = 'studio.generation.v1.$projectId';
     final candidate = Directory(path.join(canonical, 'candidate'));
     final working = File(path.join(canonical, 'working', 'index.html'));
-    final approval = PlanApproval(
+    var approval = PlanApproval(
       messageIndex: 0,
       content: 'Disposable fixed verification fixture',
       context: nonce,
       approved: true,
       recordedAt: DateTime.utc(2026),
     );
-    final receipts = CandidateReceiptFiles();
+    final project = StudioProject(
+      id: projectId,
+      name: 'Disposable crash fixture',
+      description: '',
+      type: 'Flutter',
+      platforms: const ['web'],
+      location: candidate.path,
+    );
+    final receiptRoot = Directory(
+      path.join(support.path, 'fixture-receipts-$nonce'),
+    );
+    final receipts = CandidateReceiptFiles(root: () async => receiptRoot);
     final host = NativeGenerationHost(receiptFiles: receipts);
+    SourceCandidateController makeController(
+      GeneratedProject snapshot,
+      NativeGenerationHost selectedHost,
+    ) {
+      return SourceCandidateController(
+        project: project,
+        candidate: snapshot,
+        evidence: ApprovedSourceProposal(
+          projectId: projectId,
+          boardTaskId: stop ? 'Tanalyze' : 'fixture',
+          approval: approval,
+          proposal: SourceEditProposal.parse(
+            {
+              'summary': 'Fixture review only',
+              'changes': [
+                {'path': 'lib/main.dart', 'before': 'old', 'after': 'new'},
+              ],
+            },
+            originals: {'lib/main.dart': 'old'},
+          ),
+        ),
+        records: records,
+        host: selectedHost,
+        publish: (_, _, _) => throw StateError('Fixture may not promote'),
+      );
+    }
+
     if (launch == 1) {
       if (records.getString(checks.key) != null || await candidate.exists()) {
         throw StateError('Fixture already reserved.');
@@ -139,6 +189,70 @@ Future<void> main() async {
           sources: {'lib/main.dart': digest('void main() {}')},
         ),
       );
+      if (stop) {
+        await StudioStore(records)
+            .save([...StudioStore(records).load(), project]);
+        final requirements = RequirementsStore(records);
+        await requirements.save(
+          projectId,
+          requirements.load(projectId),
+          RequirementsBoard(
+            requirements: [
+              ProjectRequirement(
+                id: 'R1',
+                title: 'Fixture',
+                acceptance: 'Fixed verification',
+              ),
+            ],
+            tasks: [
+              for (var i = 0; i < operations.length; i++)
+                DevelopmentTask(
+                  id: 'T${operations[i]}',
+                  requirementId: 'R1',
+                  title: operations[i],
+                  dependencies: i == 0 ? [] : ['T${operations[i - 1]}'],
+                  status: TaskStatus.queued,
+                ),
+            ],
+          ),
+        );
+        final content =
+            '```asg-build\n${jsonEncode({
+              'version': 3,
+              'adapter': 'flutter-starter',
+              'tasks': [
+                for (var i = 0; i < operations.length; i++) {
+                    'id': operations[i],
+                    'operation': operations[i],
+                    'boardTaskId': 'T${operations[i]}',
+                    'dependencies': i == 0 ? <String>[] : [operations[i - 1]],
+                  },
+              ],
+            })}\n```';
+        final approvals = PlanApprovalStore(records);
+        final messages = [
+          ChatMessage(
+            role: 'assistant',
+            content: content,
+            planContext: approvals.contextFor(project),
+          ),
+        ];
+        await ConversationStore(records).save(projectId, messages);
+        await approvals.save(project, messages, true);
+        approval = approvals.requireCurrentApproval(project);
+        final input = GenerationInput(
+          project,
+          ApplicationStore(records).load(project).definition,
+        );
+        for (final entry in {
+          'assets/app.json': input.applicationJson,
+          'asg_project.json': input.metadataJson,
+        }.entries) {
+          final file = File(path.join(candidate.path, entry.key));
+          await file.parent.create(recursive: true);
+          await file.writeAsString(entry.value, flush: true);
+        }
+      }
       final snapshot = GeneratedProject(
         directory: candidate.path,
         sdk: sdk,
@@ -149,16 +263,34 @@ Future<void> main() async {
         ),
         confined: true,
         approval: approval,
+        tasks: stop
+            ? BuildPlan.parse(
+                approval.content,
+                board: RequirementsStore(records).load(projectId),
+              ).tasks
+            : null,
         checkpointVersion: 1,
         phase: SourceGenerationPhase.verifying,
         pendingOperation: '',
       );
       stage = 'journal-start';
-      final run = await checks.start(snapshot, () {});
-      final receiptDirectory = await receipts.prepare(run, () {});
+      final initialRun = stop ? null : await checks.start(snapshot, () {});
+      final initialDirectory = initialRun == null
+          ? null
+          : await receipts.prepare(initialRun, () {});
+      late SourceCandidateController runningController;
       final verifier = NativeGenerationHost(
         receiptFiles: receipts,
         runOperation: (project, currentOperation) async {
+          final run = checks.load().runs.single;
+          final receiptDirectory =
+              initialDirectory ??
+              (await receiptRoot
+                      .list(followLinks: false)
+                      .where((entry) => entry is Directory)
+                      .toList())
+                  .single
+                  .path;
           stage = 'actual-$currentOperation';
           await File(path.join(canonical, '$currentOperation-dispatched'))
               .create(exclusive: true);
@@ -179,7 +311,24 @@ Future<void> main() async {
               saved.any((receipt) => receipt.result.exitCode != 0)) {
             throw StateError('Pending operation/receipt prefix mismatch.');
           }
+          if (stop) {
+            runningController.cancel();
+            final deadline = DateTime.now().add(const Duration(seconds: 10));
+            while (runningController.stopRequestSaving &&
+                DateTime.now().isBefore(deadline)) {
+              await Future<void>.delayed(const Duration(milliseconds: 10));
+            }
+            if (runningController.stopRequestSaving ||
+                runningController.stopRequestSaveError != null ||
+                checks.stopRequestFor(pending) == null) {
+              throw StateError('Durable Stop intent missing.');
+            }
+          }
+          final stopRaw = records.getString(
+            '${CandidateVerificationStore.stopPrefix}${run.dispatchId}',
+          );
           final state = {
+            'stop': stopRaw == null ? null : digest(stopRaw),
             'journal': digest(records.getString(checks.key)!),
             'candidate': digest(records.getString(checks.candidateKey)!),
             'working': digest(records.getString(workingKey)!),
@@ -197,6 +346,7 @@ Future<void> main() async {
                 .map((step) => step.operation)
                 .toList(),
             'readyForCrash': true,
+            'stopRequested': stop,
           });
           runApp(
             MaterialApp(
@@ -209,10 +359,35 @@ Future<void> main() async {
           exit(3);
         },
       );
-      await verifier.verify(
-        snapshot,
-        (current) => checks.checkpoint(current, () {}),
-      );
+      if (stop) {
+        runningController = makeController(snapshot, verifier);
+        stage = 'controller-authority';
+        ApprovedSourceProposer(records)
+            .requireCurrent(project, runningController.evidence);
+        stage = 'controller-inputs';
+        if (!BuildPlan.parse(
+          approval.content,
+          board: RequirementsStore(records).load(projectId),
+        ).matchesTasks(snapshot.tasks)) {
+          throw StateError('Fixture task mismatch');
+        }
+        if (GenerationInput(
+              project,
+              ApplicationStore(records).load(project).definition,
+            ).compare(snapshot) !=
+            GeneratedSnapshotStatus.current) {
+          throw StateError('Fixture input mismatch');
+        }
+        stage = 'controller-verification';
+        await runningController.verify(approved: true);
+        stage =
+            'controller-returned-runs-${checks.load().runs.length}-pending-${runningController.result.pendingOperation}-failed-${runningController.result.failedOperation}';
+      } else {
+        await verifier.verify(
+          snapshot,
+          (current) => checks.checkpoint(current, () {}),
+        );
+      }
       throw StateError('Target operation did not reach crash boundary.');
     }
     stage = 'recovery-read';
@@ -221,36 +396,8 @@ Future<void> main() async {
         jsonDecode(await beforeFile.readAsString()) as Map<String, dynamic>;
     final run = checks.load().runs.single;
     final snapshot = run.snapshot;
-    final project = StudioProject(
-      id: projectId,
-      name: 'Disposable crash fixture',
-      description: '',
-      type: 'Flutter',
-      platforms: const ['web'],
-      location: candidate.path,
-    );
-    stage = 'recovery-controller';
-    final controller = SourceCandidateController(
-      project: project,
-      candidate: snapshot,
-      evidence: ApprovedSourceProposal(
-        projectId: projectId,
-        boardTaskId: 'fixture',
-        approval: approval,
-        proposal: SourceEditProposal.parse(
-          {
-            'summary': 'Fixture review only',
-            'changes': [
-              {'path': 'lib/main.dart', 'before': 'old', 'after': 'new'},
-            ],
-          },
-          originals: {'lib/main.dart': 'old'},
-        ),
-      ),
-      records: records,
-      host: host,
-      publish: (_, _, _) => throw StateError('Fixture may not promote'),
-    );
+    if (stop) approval = snapshot.approval!;
+    final controller = makeController(snapshot, host);
     final deadline = DateTime.now().add(const Duration(seconds: 10));
     while (controller.receiptsFor(run).isEmpty &&
         controller.receiptHistoryError == null &&
@@ -258,11 +405,24 @@ Future<void> main() async {
       await Future<void>.delayed(const Duration(milliseconds: 20));
     }
     final retained = controller.receiptsFor(run);
+    bool sameStop() {
+      final raw = records.getString(
+        '${CandidateVerificationStore.stopPrefix}${run.dispatchId}',
+      );
+      return stop
+          ? raw != null &&
+                digest(raw) == before['stop'] &&
+                controller.stopRequestFor(run) != null
+          : raw == null && before['stop'] == null;
+    }
+
     final currentSources = await NativeGenerationHost.fingerprints(
       snapshot.directory,
       source: true,
     );
-    if (controller.historyError != null ||
+    if (!sameStop() ||
+        controller.stopRequestHistoryError != null ||
+        controller.historyError != null ||
         controller.receiptHistoryError != null ||
         run.finished ||
         run.snapshot.pendingOperation != operation ||
@@ -322,14 +482,16 @@ Future<void> main() async {
     }
     text.clear();
     viewKey.currentContext!.visitChildElements(visit);
-    if (!text.any((value) => value.contains('Candidate checks: verifying')) ||
+    if ((stop && !text.any((value) => value.contains('Saved Stop request.'))) ||
+        !text.any((value) => value.contains('Candidate checks: verifying')) ||
         !text.any(
           (value) => value.contains('Retained $operation result: exit 0'),
         )) {
       throw StateError('Production candidate view did not render.');
     }
     // Rendering must remain read-only too, including any future view callbacks.
-    if (digest(records.getString(checks.key)!) != before['journal'] ||
+    if (!sameStop() ||
+        digest(records.getString(checks.key)!) != before['journal'] ||
         digest(records.getString(checks.candidateKey)!) !=
             before['candidate'] ||
         digest(records.getString(workingKey)!) != before['working'] ||
@@ -347,6 +509,8 @@ Future<void> main() async {
       'nonce': nonce,
       'dispatch': run.dispatchId,
       'interrupted': true,
+      'stopRequested': stop,
+      'stopUnchanged': sameStop(),
       'operation': operation,
       'completedOperations': run.snapshot.steps
           .map((step) => step.operation)
@@ -382,7 +546,7 @@ Future<void> report(
   final file = File(path.join(root, 'launch-$launch.json'));
   await file.create(exclusive: true);
   await file.writeAsString(
-    jsonEncode({'version': 2, 'launch': launch, ...observation}),
+    jsonEncode({'version': 3, 'launch': launch, ...observation}),
     flush: true,
   );
 }

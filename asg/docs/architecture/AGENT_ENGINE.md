@@ -409,3 +409,62 @@ late actual exits, signalling failure, and read-only reopened history display.
 These deterministic/native-storage fixtures do not claim an actual user Stop
 followed by a native app crash; that cancellation-window observation remains
 separate from the already recorded successful-operation crash matrix.
+
+
+### Native Stop crash fixture prerequisite — 18 November 2026
+
+The existing completion-gap fixture owns CandidateVerificationStore.start and
+passes checkpoints directly to NativeGenerationHost.verify. It therefore cannot
+establish SourceCandidateController.cancel behavior. The next bounded case must
+construct the production controller before verify and use its receipt preparation
+and checkpoint callbacks. The existing operation override can call the actual
+confined runner, retain a successful receipt, then hold before returning the
+result. At that boundary invoke controller.cancel, wait for stopRequestSaving to
+clear, reject stopRequestSaveError or absent/mismatched durable request, and only
+then publish the crash handshake. Read the exact pending run from storage; do
+not start a second store session. A second preparation correctly refuses an already reserved dispatch. The fixture
+uses a nonce-specific receipt root and its sole controller-prepared directory;
+it must never reserve the same dispatch twice.
+
+The host kills only its own live disposable app handle. Reopen must verify the
+request fingerprint, immutable record bytes and production view badge alongside
+existing unchanged source/journal/working and receipt evidence. This chosen
+boundary tests Stop after a real successful operation and before journal result
+publication; it does not establish termination during a running command or
+descendant cleanup. No new production hook is needed. Implementation and actual
+native observation remain pending; existing six host contracts pass.
+
+
+### Committed Stop intent with native app crash — 18 November 2026
+
+The protocol3 disposable fixture accepts an explicit Stop case. It seeds a
+nonce-specific project, board-mapped fixed Plan, saved conversation/approval and
+real project input JSON, then runs SourceCandidateController.verify. The actual
+confined runner uses the controller-prepared receipt directory in a nonce-specific
+fixture root. After a real successful operation returns its retained receipt,
+the override holds its result before journal publication, calls controller.cancel
+and waits for its durable intent. A second reservation is deliberately avoided:
+receipt preparation refuses duplicate dispatches. Missing/save-error/mismatched
+intent refuses the crash handshake.
+
+The host kills only its own live disposable app and relaunches the exact binary.
+Reopen uses the production controller and expanded view with actions disabled.
+It checks immutable Stop record bytes and matching run/input identity, the saved
+Stop badge, actual receipt exits, pending journal and unchanged sources/working
+output before and after rendering. No replay, reconciliation or promotion occurs;
+cleanup remains unknown. The initial resolve Stop/crash/reopen passed with binary
+SHA25642cac220434697802370236a862cd146469e71d1c72de1f08490b32b17ebb65c.
+
+This case requests Stop after an actual successful tool result exists but before
+its journal observation. It does not verify Stop during a still-running command,
+a crash before intent commit, cancellation terminalization, descendant cleanup,
+production-main navigation or general agent-session recovery. These remain
+pending under #404; unavailable platforms stay under #400.
+
+The complete Stop matrix subsequently passed for resolve/analyze/test/build on
+the same SHA25642cac220434697802370236a862cd146469e71d1c72de1f08490b32b17ebb65c
+binary: completed journal prefixes0/1/2/3 and receipt prefixes1/2/3/4 were retained,
+Stop bytes matched, actual target exits remained zero, and pending execution
+stayed executing with cleanup unknown. Evidence:
+/tmp/asg-404-native-stop-matrix.json. Seven host contracts include missing Stop
+and changed-intent refusal.
