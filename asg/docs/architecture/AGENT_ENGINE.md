@@ -248,3 +248,44 @@ the entrypoint must report and validate its actual bundle/support identity and
 fixture paths; the host must verify the built Info.plist and keep phase
 handshakes and owned process handles. Existing production storage defaults and
 application identity must remain unchanged.
+
+
+### Disposable native persistence probe — 18 November 2026
+
+`tools/fixtures/native_restart_probe.dart` is a separate test entrypoint, never
+called by production main. It reads the built bundle identifier before asking
+for application support or preferences, requires exactly
+`com.arsinha.asg.restartfixture`, and accepts only a canonical private temporary
+control directory and bounded challenge. It then verifies the native support
+directory identity, writes a nonce-specific test sentinel/preference, and exits.
+A second launch checks both values without replacing them. Reports are
+exclusive, nonce-bound and versioned. Errors do not reveal private record data.
+
+`tools/native_restart_probe.py` inspects an explicit canonical bundle path and
+hashes its files/links, refusing the stable identity, escaped executable and
+external links. Inspection alone never launches. `--run` uses bounded live child
+handles for two launches, verifies reports and unchanged bundle identity, then
+reads only the nonce-specific key in the explicit fixture preference domain.
+Artifacts remain available for inspection; it never builds, installs, downloads,
+replaces the stable app, clears preferences or signals a stored PID. Six local
+harness cases cover identity/path refusal, binary changes and handshake/domain
+validation. These new host tests are run explicitly; existing required CI does
+not automatically discover all new Python files.
+
+On this Mac the first direct Xcode build lacked generated Flutter file lists.
+The existing SDK's config-only command with `--no-pub`, Debug and the test target
+created those ignored files without tracked runner edits. The subsequent build
+used an exclusive temporary derived-data/output location, fixture identifier,
+explicit test target, disabled automatic package resolution and disabled code
+signing. It succeeded using existing local dependencies. The verified bundle
+SHA256 was `93291aa7b514dc2b6fdd3064683fa37943617653a14ad0253564c54b43ab8d7f`.
+The final host run completed two native launches of that unchanged bundle,
+reported the fixture support directory and recovered the nonce preference. A
+read of the explicit fixture defaults domain independently matched the nonce.
+
+This is an actual native process persistence/isolation observation, not a
+production StudioDatabase, candidate-history GUI or application crash test. No
+inference, owner-record migration, package installation or stable app replacement
+occurred. Next acceptance requires a bounded fixture of the actual interrupted
+candidate history/receipt workflow using the verified isolated entrypoint, with
+owned-process crash handshakes and unchanged last working output.
