@@ -16336,3 +16336,26 @@ records. Saved Stop remains intent and cleanup remains unknown.49 focused checks
 pass, including native receipt-projection parity and narrow2x view. Final required
 checks/native regressions, fresh review/CI and verified merge remain gates; no
 new recovery authority or generalized CE01 completion is claimed.
+
+
+Interrupted-candidate recovery summary delivered in PR #714, merge
+`c07c7b82f7c82ee487ef1439be3a0a4d14e5fe25`, required CI44320697814,
+verified tested tree211db21ae8b465dd55a317f16832478e79610b48.
+
+CE01 active bounded regression under #404 — recovery-dialog evidence. The
+existing confirmation still says every interrupted exit is unknown even when
+the new matched summary retains an actual exit. Use the exact selected run's
+read-only summary in that dialog, retaining explicit process/change inspection
+and fresh verification consent. Missing/loading/unreadable evidence stays
+unknown; an actual exit never implies cleanup. Dismissal writes nothing and
+stale confirmation remains rejected by existing dispatch guards. Verify retained
+versus missing evidence, dismissal/staleness and narrow2x layout, required
+regressions/inventory/build, fresh review and verified merge.
+
+
+Recovery-dialog evidence fix implemented: selected-run summary replaces the
+unconditional unknown-exit sentence, with retained/missing/unavailable cases
+remaining distinct and cleanup never inferred. Full dialog title/content scrolls
+at narrow2x text.44 focused checks pass, including dismissal non-mutation, stale
+confirmation and fresh-consent reset. Required final regressions, fresh review/CI
+and verified merge remain gates; generalized CE01 stays open.
