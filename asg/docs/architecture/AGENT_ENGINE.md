@@ -831,3 +831,45 @@ include precommit/not-ready, already-delivered controller success and missing
 refusal-preservation report rejections. The unchanged read/render report fields
 refer to the observations before explicit actions; the commit-gap report records
 the subsequent committed-but-unconfirmed boundary separately.
+
+
+### Persistent session boundary investigation — 18 November 2026
+
+The accepted native candidate lifecycle does not persist a multi-task session.
+AgentExecutionCheckpoint stores only taskId/revision/phase. CandidateVerificationStore
+creates a new candidate-project-run execution for each verification and atomically
+binds that individual run. RequirementsBoard persists task/dependency/status data,
+but it is authored project planning data rather than an execution-session ledger.
+SourceReviewController has durable repair-category budgets, yet active-loop,
+cancellation and current candidate ownership are controller-local. These existing
+records must not be relabelled as a resumed multi-task agent session.
+
+Nineteen focused checkpoint/journal tests passed in
+/tmp/asg-404-session-investigation-tests.log, including native completed checkpoint
+reopen/replay refusal and stopped/uncertain journal corruption isolation. They
+verify the existing per-dispatch boundary only. StudioDatabase explicitly validates
+and isolates execution/recovery record prefixes; a session namespace would need
+its own validator and close/reopen tests, not merely a generic string write.
+
+The next bounded implementation should add a typed immutable session envelope
+and conditional storage, with its own version/revision and project/session IDs,
+exact approved-plan snapshot, frozen selected task/dependency membership and
+references to existing candidate task/dispatch identities. Validate duplicate or
+unknown members, dependency cycles and mismatched task/dispatch/project bindings;
+apply measured size/count bounds and strict JSON validation. Preserve existing
+checkpoint/journal keys and schemas. Native loading must validate key/identity and
+isolate corrupt session records while retaining original bytes.
+
+Creation/update requires an exact expected revision and current bound approval;
+stale/concurrent writes must fail without changing prior records. Reads/reopen
+must produce no command/model request, no automatic dispatch or advancement and
+no fabricated completion. A saved active dispatch is an interrupted observation
+until existing reconciliation evidence is explicitly validated. Cancellation is
+retained session intent, never proof that a command exited. Session membership
+and progress records cannot expand existing execution or promotion authority.
+
+Acceptance for that first increment is typed roundtrip/invalid-binding tests,
+conditional create/update refusal, approval withdrawal, immutable prior values,
+corrupt-record isolation and real native close/reopen with zero dispatch. It is
+a data/storage prerequisite; controller scheduling, chat/session activity UI and
+full CE01 remain later unmet acceptance, not capabilities delivered by this note.
