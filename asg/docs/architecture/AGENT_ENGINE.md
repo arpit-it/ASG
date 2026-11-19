@@ -1900,3 +1900,82 @@ commit-before-controller-return crash and separate read-only reopen. Refused
 publication must preserve the entire prior proof. Historical protocol19/binary
 observations remain distinct. Full CE01 task acceptance/lifecycle and broader F20
 acceptance remain open; publication never sets board TaskStatus.done.
+
+
+### Published task acceptance-evidence applicability — 19 November 2026
+
+Existing criterion evidence has a reproducible identity, but it is not the
+publication fingerprint. RequirementRunIdentity.savedRunSha256 hashes sorted source
+and fixed input manifests plus the saved Plan approval hash. Publication's
+verifiedRunSha256 hashes CandidateVerificationRun, including dispatch, UTC time and
+snapshot. Correlate these domains through the exact retained run and its source/
+input/approval values; do not compare them as interchangeable hashes.
+
+RequirementCheckReportStore currently reads the project's current saved generation
+and board. It constructs RequirementRunIdentity from saved sources and approval,
+compares fixed input payloads with today's application definition, and requires
+current Plan approval and matching approved task graph before savedInputsCurrent
+is true. Its results include the full current authored requirement and checks.
+The report does not accept an arbitrary historical publication as its target.
+Currentness is about saved records; it is not live file/artifact inspection.
+
+Named and manual observations retain one latest value per requirement/check. Each
+binds requirementSha256 and that savedRunSha256. Report.directCheck also requires
+the exact authored check declaration and target. New observations can replace
+these values; they are not an immutable session task-acceptance archive.
+RequirementNamedTestRunner rechecks selected snapshot identity and confined source/
+artifacts around an explicitly selected named test, dispatches once, then saves
+conditionally. These protections must remain separate from a read-only review.
+Opening a review must not construct a test session or call that runner/inspector.
+
+criterionVerifiedAgainstChecks is deliberately narrower than general acceptance:
+only a nonempty, unique allMappedNamedTests rule with authored automated targets,
+exact requirement/criterion definitions and current saved passes qualifies. Manual
+observations remain self-reported; advisory results, generic operations, unmapped
+criteria, the free-form acceptance block and prose semantics remain unverified.
+No criterion set may pass vacuously because it is empty. Existing board done and
+session publication are not substitutes for this rule evidence.
+
+The missing concrete prerequisite is a read-only publication-to-task evidence
+review. An exact selected publication binds a frozen session task ID and
+requirementId, but AgentSessionScreen has no entry that validates that identity
+against the current report and presents only the corresponding authored criteria.
+Opening the existing full report screen would also expose test/manual-write
+operations and would silently target today's generation rather than the selected
+publication unless explicit applicability checks were added.
+
+Implement one dedicated read-only service/controller/view, with a saved-session
+entry for the exact publication/reference. Validate publication through its
+existing store; require current working raw fingerprint to equal the publication's
+publishedWorkingSha256 and the typed saved project to equal that verified run.
+Derive expected RequirementRunIdentity from the run's source/input/approval and
+compare it to the report's identity. Require report.savedInputsCurrent, matching
+frozen approval/task graph and exact selected task→requirement membership before
+presenting criteria as applicable to that publication. Never find a replacement by
+latest observation, session, run or publication. A later working publication,
+changed Plan/board/input, missing/corrupt/foreign records or unavailable identity
+must retain the independent historical publication while marking review
+applicability unavailable. Do not retarget the route to another generation.
+
+Present only that requirement's authored criterion rules, exact saved check facts,
+manual/advisory distinctions and unverified prose coverage. Missing rules/mappings
+must be visible, with no aggregate Task complete verdict. Session withdrawal can
+leave read-only matching facts inspectable but cannot grant actions or dependency
+readiness. Use a dedicated path with no model/SDK/preparation/preview/inspection,
+manual-observation writes, test-session creation or board mutation. Revalidate
+before exposing a refreshed snapshot; disposal cannot publish late state.
+
+This bridge does not yet justify a durable completion transition. A later explicit
+completion policy would need a bounded immutable evidence envelope binding exact
+criterion/requirement/check values to the publication, scoped user consent,
+prerequisite decisions and cancellation/approval guards in a joint transaction.
+The current latest-observation stores cannot reconstruct such history after
+replacement. Do not implement that policy by guessing or mutating board status.
+
+Validate exact current applicability and independently altered publication/run/
+checkpoint/session/working/approval/requirements/inputs, replaced named/manual
+observations, missing/unmapped/manual/advisory criteria, withdrawal and disposal;
+prove zero writes and zero host/runner construction. Add narrow/high-text widgets
+and labelled IAB production-screen checks. Existing report/criterion/manual/named/
+publication60 tests and named-runner/artifact/session/admission39 tests passed.
+This investigation changes no runtime code, record formats, verdicts or authority.
