@@ -515,6 +515,50 @@ Future<void> main() async {
       return digest(await fault.readAsString());
     }
 
+    Map<String, Object?> taskHistoryProof(
+      AgentSession saved,
+      CandidateVerificationRun run,
+    ) {
+      final rawHistory = records.getString(
+        AgentTaskHistoryStore(records, projectId).keyFor(run.number),
+      );
+      final history = AgentTaskHistoryStore(records, projectId).load(run);
+      final status = AgentSessionRunStatusStore(records, projectId)
+          .load(saved)
+          .singleWhere((value) => value.reference.runNumber == run.number);
+      final projected = status.taskHistory;
+      if (rawHistory == null ||
+          history == null ||
+          !status.available ||
+          projected == null ||
+          jsonEncode(history.reference.toJson()) !=
+              jsonEncode(
+                saved.dispatches
+                    .singleWhere((ref) => ref.runNumber == run.number)
+                    .toJson(),
+              ) ||
+          jsonEncode(history.toJson()) != rawHistory ||
+          jsonEncode(projected.toJson()) != rawHistory) {
+        throw StateError('Task history identity or projection mismatch');
+      }
+      return {
+        'sha256': digest(rawHistory),
+        'projectionSha256': digest(jsonEncode(projected.toJson())),
+        'events': [
+          for (final event in history.observations)
+            [
+              event.kind.name,
+              event.operation?.name,
+              event.exitCode,
+              event.cancelled,
+            ],
+        ],
+        'withdrawalSequence': history.withdrawalSequence,
+        'pendingOperation': history.pendingOperation?.name,
+        'finished': history.finished,
+      };
+    }
+
     Future<Map<String, Object?>?> sessionProof() async {
       if (!sessionBound || retry) return null;
       final saved = AgentSessionStore(records, project).load('session-$nonce');
@@ -545,39 +589,7 @@ Future<void> main() async {
           throw StateError('Uncommitted admission left task history');
         }
       } else {
-        final run = checks.load().runs.single;
-        final history = AgentTaskHistoryStore(records, projectId).load(run);
-        final status = AgentSessionRunStatusStore(
-          records,
-          projectId,
-        ).load(saved).single;
-        final projected = status.taskHistory;
-        if (rawHistory == null ||
-            history == null ||
-            !status.available ||
-            projected == null ||
-            jsonEncode(history.reference.toJson()) !=
-                jsonEncode(saved.dispatches.single.toJson()) ||
-            jsonEncode(history.toJson()) != rawHistory ||
-            jsonEncode(projected.toJson()) != rawHistory) {
-          throw StateError('Task history identity or projection mismatch');
-        }
-        historyProof = {
-          'sha256': digest(rawHistory),
-          'projectionSha256': digest(jsonEncode(projected.toJson())),
-          'events': [
-            for (final event in history.observations)
-              [
-                event.kind.name,
-                event.operation?.name,
-                event.exitCode,
-                event.cancelled,
-              ],
-          ],
-          'withdrawalSequence': history.withdrawalSequence,
-          'pendingOperation': history.pendingOperation?.name,
-          'finished': history.finished,
-        };
+        historyProof = taskHistoryProof(saved, checks.load().runs.single);
       }
       final journal = records.getString(checks.key);
       final currentCandidate = records.getString(checks.candidateKey);
@@ -705,6 +717,21 @@ Future<void> main() async {
           throw StateError('Retry session dispatch lineage changed');
         }
       }
+      if (journal.runs.length == 1 &&
+          records.getString(
+                AgentTaskHistoryStore(records, projectId).keyFor(2),
+              ) !=
+              null) {
+        throw StateError('Unadmitted second task history present');
+      }
+      final histories = [
+        for (final run in journal.runs)
+          {
+            'runNumber': run.number,
+            'dispatchId': run.dispatchId,
+            ...taskHistoryProof(saved, run),
+          },
+      ];
       final first = journal.runs.first;
       final recovery = records.getString(
         '${CandidateVerificationStore.recoveryPrefix}${first.dispatchId}',
@@ -715,6 +742,7 @@ Future<void> main() async {
       return {
         'sessionId': saved.sessionId,
         'projectId': saved.projectId,
+        'taskHistories': histories,
         'basisSha256': digest(
           jsonEncode({
             'sessionId': saved.sessionId,
@@ -778,9 +806,16 @@ Future<void> main() async {
       final stable = Map<String, Object?>.from(proof)
         ..remove('receiptPreparations')
         ..remove('commandEntries');
-      final entries = stable.entries.toList()
-        ..sort((a, b) => a.key.compareTo(b.key));
-      return digest(jsonEncode(Map.fromEntries(entries)));
+      Object? canonical(Object? value) {
+        if (value is Map<String, Object?>) {
+          final keys = value.keys.toList()..sort();
+          return {for (final key in keys) key: canonical(value[key])};
+        }
+        if (value is List) return value.map(canonical).toList();
+        return value;
+      }
+
+      return digest(jsonEncode(canonical(stable)));
     }
 
     Future<Map<String, Object?>> admissionState() async => {
@@ -2343,7 +2378,7 @@ Future<void> report(
   await file.create(exclusive: true);
   await file.writeAsString(
     jsonEncode({
-      'version': 17,
+      'version': 18,
       'launch': launch,
       ...observation,
       'sessionBound': sessionBound,

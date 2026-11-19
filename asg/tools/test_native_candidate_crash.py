@@ -299,6 +299,16 @@ class CandidateCrashTests(unittest.TestCase):
             recoverySha256=None if launch == 1 else '8' * 64,
             secondExecutionSha256=None if count == 1 else '9' * 64,
             secondReceiptSha256=None if count == 1 else 'a' * 64)
+        first = dict(self.history_proof(), runNumber=1, dispatchId=proof['dispatchIds'][0])
+        proof['taskHistories'] = [first]
+        if count == 2:
+            events = [['admitted', None, None, None]]
+            for operation in fixture.OPERATIONS:
+                events += [['pending', operation, None, None], ['result', operation, 0, False]]
+            events += [['finished', None, None, None]]
+            proof['taskHistories'].append(dict(sha256='c' * 64, projectionSha256='c' * 64,
+                events=events, withdrawalSequence=None, pendingOperation=None, finished=True,
+                runNumber=2, dispatchId=proof['dispatchIds'][1]))
         return proof
 
     def test_bound_retry_proof_tracks_explicit_actions_and_read_only_reopens(self):
@@ -328,6 +338,55 @@ class CandidateCrashTests(unittest.TestCase):
         final['journalSha256'] = 'b' * 64
         with self.assertRaises(ValueError):
             fixture.require_retry_transition(proof, final, 4, fixture.retry_digest(proof))
+
+    def test_retry_histories_refuse_swapped_runs_or_invented_first_completion(self):
+        proof = self.retry_proof(3)
+        for mutate in [
+            lambda p: p['taskHistories'].reverse(),
+            lambda p: p['taskHistories'][0].update(finished=True, pendingOperation=None),
+            lambda p: p['taskHistories'][0].update(dispatchId=p['dispatchIds'][1]),
+            lambda p: p['taskHistories'][1].update(runNumber=True),
+            lambda p: p['taskHistories'][1].update(projectionSha256='b' * 64),
+            lambda p: p['taskHistories'][1].update(finished=False),
+            lambda p: p['taskHistories'][1]['events'][2].__setitem__(2, False),
+            lambda p: p['taskHistories'][1].update(extra='foreign'),
+            lambda p: p['taskHistories'].pop(),
+        ]:
+            changed = json.loads(json.dumps(proof))
+            mutate(changed)
+            with self.assertRaises(ValueError):
+                fixture.read_retry_proof(changed, self.nonce, 3)
+        orphan = self.retry_proof(1)
+        orphan['taskHistories'].append(proof['taskHistories'][1])
+        with self.assertRaises(ValueError):
+            fixture.read_retry_proof(orphan, self.nonce, 1)
+
+    def test_retry_cannot_rewrite_first_history_even_with_self_consistent_hashes(self):
+        for stage in (2, 3, 4):
+            previous = self.retry_proof(stage - 1)
+            changed = self.retry_proof(stage)
+            changed['taskHistories'][0].update(sha256='1' * 64, projectionSha256='1' * 64)
+            fixture.read_retry_proof(changed, self.nonce, stage)
+            with self.assertRaises(ValueError):
+                fixture.require_retry_transition(previous, changed, stage, fixture.retry_digest(previous))
+
+    def test_nested_retry_before_action_digest_is_key_order_independent(self):
+        proof = self.retry_proof(3)
+        changed = json.loads(json.dumps(proof))
+        changed['taskHistories'] = [dict(reversed(list(h.items()))) for h in changed['taskHistories']]
+        self.assertEqual(fixture.retry_digest(proof), fixture.retry_digest(changed))
+        changed['taskHistories'][0]['sha256'] = '0' * 64
+        self.assertNotEqual(fixture.retry_digest(proof), fixture.retry_digest(changed))
+
+    def test_native_report_size_remains_bounded_before_parse(self):
+        (self.root / 'launch-1.json').write_text(' ' * 8193)
+        with self.assertRaises(ValueError):
+            fixture.read_report(self.root, 1, self.nonce)
+
+    def test_retry_proof_requires_both_retained_task_histories(self):
+        # Existing single-dispatch history proof does not cover retry stages.
+        with self.assertRaises(ValueError):
+            fixture.read_retry_proof({k: v for k, v in self.retry_proof(1).items() if k != 'taskHistories'}, self.nonce, 1)
 
     def test_bound_retry_reports_require_full_mode_and_stage_proof(self):
         previous = None
@@ -429,7 +488,7 @@ class CandidateCrashTests(unittest.TestCase):
                         running=True, acknowledge=True, retry=True, promote=True, promotion_crash=crash, session_bound=True)
 
     def report(self, launch, operation='resolve', **changes):
-        value = {'version': 17, 'launch': launch, 'nonce': self.nonce, 'dispatch': f'candidate-restart-{self.nonce}-1:3'}
+        value = {'version': 18, 'launch': launch, 'nonce': self.nonce, 'dispatch': f'candidate-restart-{self.nonce}-1:3'}
         value.update(sessionBound=False, admissionCrash=False, sessionCancel=False, sessionCancelActive=False, sessionCancelUnknown=False, sessionProof=None, sessionRetryProof=None, beforeActionSha256=None, promotionCrash=False, promote=False, retry=False, acknowledge=False, uncertain=False, publicationFault=False, intentUnchanged=True, running=False, runningMarker=False, runningCancelled=False, precommit=False, stopSignalled=False, stopSaveBlocked=False, savedStopPresent=False, stopRequested=False, stopUnchanged=True, operation=operation, completedOperations=fixture.OPERATIONS[:fixture.OPERATIONS.index(operation)])
         if launch == 1:
             value['readyForCrash'] = True
@@ -662,7 +721,7 @@ class CandidateCrashTests(unittest.TestCase):
             fixture.read_report(self.root, 2, self.nonce, operation='test', stop=True, session_bound=True)
 
     def test_protocol10_cannot_be_relabelled_as_session_evidence(self):
-        for version in (10, 11, 12, 13, 14, 15, 16):
+        for version in (10, 11, 12, 13, 14, 15, 16, 17):
             self.report(1, version=version)
             with self.subTest(version=version), self.assertRaises(ValueError):
                 fixture.read_report(self.root, 1, self.nonce)

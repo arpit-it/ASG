@@ -1627,3 +1627,28 @@ This extends single-dispatch proof only: the separate multi-run retry/promotion
 proof retains its existing scope and does not yet fingerprint both task histories.
 There is no scheduler, automatic replay, receipt publisher authentication,
 new inference or generalized CE01 acceptance.
+
+
+### Native multi-run task-history proof — 19 November 2026
+
+Disposable protocol18 includes one or two taskHistories in the bound retry
+proof. Each entry binds runNumber and dispatchId, exact retained history bytes
+and the typed saved-session projection. The first history preserves its pending
+test/unknown outcome through explicit acknowledgment, fresh-consent retry and
+promotion; acknowledgment does not invent a result or finish that history.
+A second history must be absent before admission, then contain the four actual
+fixed operations and verification-finished observation for its own run. These
+observations still do not establish requirement-task completion.
+
+The host validates exact bounded event rows, result types, per-run identity and
+history count. Every later transition preserves the first entry; promotion and
+final read-only reopen preserve both. Before-action fingerprints include nested
+history maps using recursive canonical key ordering in Dart and Python. A new
+protocol rejects earlier versions; the report cap is 8KiB to fit two bounded
+histories. The native fixture rejects an orphan second history before admission
+and requires raw history, selected session/reference and projection equality.
+Existing receipt/source/output guards and zero new command/preparation counters
+on read-only launches remain mandatory. Prior protocol/binary observations are
+not relabelled. This is fixed isolated-fixture evidence, not a production
+saved-session recovery navigation path, automatic replay, receipt authentication,
+new model execution or generalized CE01 acceptance.
