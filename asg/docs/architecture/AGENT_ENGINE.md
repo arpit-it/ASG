@@ -2151,3 +2151,70 @@ loading: returned facts are published only while the controller is alive, and a
 disposed controller performs no subsequent evidence read. A failing-then-passing
 regression proves that boundary. Full2,018 tests and fresh IAB/native process probes
 pass on the corrected source; earlier observations remain separately historical.
+
+
+### Session-level retained-decision overview — 19 November 2026 investigation
+
+The current AgentSessionRunStatus/Store carries each selected dispatch's correlated
+candidate, execution, task history and publication, but no authored-check decision.
+The session view therefore cannot distinguish recorded decision, absent decision
+and unavailable proof without opening each published run. A later run of the same
+task must not inherit an earlier decision or hide it behind a guessed latest run.
+The smallest coherent outcome is per-reference retained-decision facts in this
+existing overview, with no aggregate task Done/readiness or new action authority.
+
+Historical AgentTaskDecisionStore.load and its recursive proof helpers use only
+project ID; current project metadata, working generation, approval and latest check
+observations are needed by selection/confirmation, not history loading. Extract a
+read-only AgentTaskDecisionHistoryStore taking RecordStorage plus project ID,
+sharing the existing strict decode, exact publication/run/checkpoint/content and
+frozen prerequisite validation with the decision writer. Keeping the reader beside
+the writer in the existing service file can reuse private read-set/proof helpers;
+do not invent a synthetic StudioProject or duplicate a weaker verifier. The writer
+continues using its typed current project and exact consent/CAS transaction. The
+overview must construct only the reader, not a host or confirmation service.
+
+Add a typed decision state (absent, recorded, unavailable) and optional immutable
+decision to each AgentSessionRunStatus. Absent is valid only for an exact validated
+session/reference with a genuinely missing decision key. Existing/unknown malformed,
+foreign, changed or incomplete proof is unavailable, never absent or backfilled.
+An unavailable run/session binding cannot assert absence. Retained decision failures
+must not erase independently valid run, task-history or publication facts. Validate
+the composed overview against a consistent record read-set and reject reentrant
+changes rather than mixing a publication from one snapshot with a decision from
+another. The overview's current ConditionalRecordStorage requirement comes from
+execution-checkpoint reads; a narrow typed read path or fail-closed read adapter
+must preserve all existing checkpoint identity checks without exposing write work.
+
+Render every recorded run/reference in its saved order with the exact task/run,
+limited authored-check mode and confirmation time. Distinguish no saved decision
+from unavailable decision proof. Keep the existing exact-publication review route
+and show that these are historical contracts, not prose/live-file/current-artifact
+compatibility or dependent-execution verdicts. Replaced named observations, rotated
+working output or revoked current approval must not erase a matching retained
+history. Withdrawal/growing sessions use the existing frozen graph/approval and
+publication-prefix checks. Multiple publications of one task remain separate.
+
+The existing review navigation does not await its child route; a new summary would
+otherwise stay stale after an explicit decision. The view should capture the exact
+selected session ID, await the child route, check mounted, then request a dedicated
+controller history refresh for that same selection. The controller checks disposal,
+busy state and unchanged selected ID, reads that explicit session and refreshes run
+facts only. Do not call the broad load/resetSelection path, switch to the latest
+session, recreate task choices, consult current approval or grant work. If the
+selected record is missing/corrupt, retain the last visible session snapshot with a
+sanitized error and mark new decision facts unavailable instead of showing stale
+facts as freshly valid. Disposal during reads or a late route return after another
+selection must publish no late result and perform no unintended selection change.
+
+The next implementation combines this reader boundary, typed per-run state,
+controller refresh and production view in one increment. Regression coverage must
+include recorded/absent/corrupt/foreign/missing proof, two publications of one task,
+withdrawn/growing sessions, replaced latest observations/current approval/working,
+zero writes/host effects, consistent reads, unchanged confirmation/CAS behavior,
+scoped return refresh, task-choice preservation, failure sanitation and disposal.
+Use narrow/high-text widgets and labelled IAB for the actual overview→confirmation
+→return flow. Recheck native retained decision/reopen behavior if shared proof code
+changes, relevant builds, full regression checks and required CI. No migration,
+backfill, current semantic acceptance, scheduler or board-status update is needed.
+This investigation changes documentation only and claims no new UI/runtime outcome.
