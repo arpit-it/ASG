@@ -800,6 +800,14 @@ class SourceReviewController extends BaseController {
                 projectId: project.id,
                 boardTaskId: taskId,
               ),
+        repairSessionBinding: !repair || selectedSession == null
+            ? null
+            : AgentSessionBinding.select(
+                session: selectedSession!,
+                projectId: project.id,
+                boardTaskId: taskId,
+              ),
+        repairWorkingRecord: repair ? _workingRecord : null,
         requestWorkingRecord: repair ? null : _workingRecord,
         authorizeSession: repair || selectedSession == null
             ? null

@@ -15679,3 +15679,54 @@ Investigation is locally complete, docs-only: probes2/focused81 pass, no model, 
 app/runtime/schema or installed-app behavior changed. No live inference or wider
 CE01/platform acceptance claimed. Publication, fresh review, required CI and verified
 merge remain gates before this next implementation is admitted.
+
+
+19 November2026 — PR758 verified merged4f591c705ab46eb3562aa29aabfb4c9702ef039a,
+exacttreef17a7ed70f5de4bf7b0f41df12908d94db44e4d4 matches all3 tested docs.
+Fresh exactreview290112185/based7ca07a found no blockers; requiredCI44605758334
+both jobs/all steps SUCCESS, conversations empty. Plugin PR/main/fetchedorigin/tree/
+issue404OPEN verified. Probes2/focused81/product32/inventory9 pass. Investigation
+only; no runtime/schema/model/SDK/platform behavior changed. Coordinator merged/
+outcome_verified recorded before integration/writer release; owner edits/processes
+preserved. Immediately claimed404-repair-return-context from verified main.
+
+CE01 next bounded implementation under #404: 404-repair-return-context. Deliver
+typed fixed-key durable reserve/proposed-outcome guarding for approval inputs,
+exact failed candidate/journal, raw working record (or explicit legacy absence)
+and selected session when supplied. Successful write precedes returned evidence;
+failed terminal writes remain unresolved and do not receive fallback rewrites.
+Preserve legacy formats/read access, consumed repair budget, truthful local outcomes,
+current source/approval, Stop/recovery and last working output. Native race/refusal/
+reopen/budget tests, full local checks/builds, fresh review/required CI/verifiedmerge
+remain gates. Exact repair-attempt references and candidate companions stay pending
+until this prerequisite is verified; no second independent writer is ready.
+
+
+CE01 repair return-context implementation checkpoint under #404:
+RepairRequestContext captures immutable fixed-key approval inputs, exact failed
+run/candidate bytes, exact current working record including null legacy absence,
+and supplied selected-session raw bytes. Production repair reservation/proposed
+outcome include that read-set in durable CAS with current authorization; returned
+evidence follows the successful write. Failed terminal commits receive no fallback
+rewrite, leaving reserved budget consumed and unresolved. Local failure/cancellation
+remain journal observations rather than new authority; old v1 formats are unchanged.
+SourceReviewController supplies current repair session/working context separately
+from initial-request origin; no repair lineage or source restoration is fabricated.
+
+Permanent native matrix12 passes: five separately committed approval/failure/
+candidate/working/session races before reservation and before return, injected
+outcome-commit failure with exactly one terminal attempt, and selected legacy
+working absence preserved without creating a record. Reopen retains unresolved
+budget; no tool starts. An overly strict draft required a non-null working record
+for selected repairs; corrected before publication, added the legacy regression
+and repeated affected checks/builds. Final fullFlutter2099 passed/11 existing skips;
+format537 unchanged, clean analysis, web/macOSdebugcompile, product32/inventory9
+pass. Logs:/tmp/asg-repair-context-{native2,full2,analyze2,format2,web2,macos2,
+product,inventory}.log. Native app compiled only, not installed/launched/replaced.
+No live inference, model/SDK installs, owner-process changes or deployment.
+
+This is locally validated implementation, not a delivered merge. Publication, fresh
+exact PR review, required CI and verified remote merge remain pending; retain the
+404-repair-return-context claim and resume this owned work first. Umbrella404/CE01
+stay open, and dependent exact repair-attempt lineage remains ineligible until this
+prerequisite merges. No independent second task is ready.

@@ -2848,3 +2848,33 @@ Investigation is locally complete, docs-only: probes2/focused81 pass, no model, 
 app/runtime/schema or installed-app behavior changed. No live inference or wider
 CE01/platform acceptance claimed. Publication, fresh review, required CI and verified
 merge remain gates before this next implementation is admitted.
+
+
+CE01 repair return-context implementation checkpoint under #404:
+RepairRequestContext captures immutable fixed-key approval inputs, exact failed
+run/candidate bytes, exact current working record including null legacy absence,
+and supplied selected-session raw bytes. Production repair reservation/proposed
+outcome include that read-set in durable CAS with current authorization; returned
+evidence follows the successful write. Failed terminal commits receive no fallback
+rewrite, leaving reserved budget consumed and unresolved. Local failure/cancellation
+remain journal observations rather than new authority; old v1 formats are unchanged.
+SourceReviewController supplies current repair session/working context separately
+from initial-request origin; no repair lineage or source restoration is fabricated.
+
+Permanent native matrix12 passes: five separately committed approval/failure/
+candidate/working/session races before reservation and before return, injected
+outcome-commit failure with exactly one terminal attempt, and selected legacy
+working absence preserved without creating a record. Reopen retains unresolved
+budget; no tool starts. An overly strict draft required a non-null working record
+for selected repairs; corrected before publication, added the legacy regression
+and repeated affected checks/builds. Final fullFlutter2099 passed/11 existing skips;
+format537 unchanged, clean analysis, web/macOSdebugcompile, product32/inventory9
+pass. Logs:/tmp/asg-repair-context-{native2,full2,analyze2,format2,web2,macos2,
+product,inventory}.log. Native app compiled only, not installed/launched/replaced.
+No live inference, model/SDK installs, owner-process changes or deployment.
+
+This is locally validated implementation, not a delivered merge. Publication, fresh
+exact PR review, required CI and verified remote merge remain pending; retain the
+404-repair-return-context claim and resume this owned work first. Umbrella404/CE01
+stay open, and dependent exact repair-attempt lineage remains ineligible until this
+prerequisite merges. No independent second task is ready.
