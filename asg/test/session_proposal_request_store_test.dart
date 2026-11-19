@@ -167,6 +167,12 @@ void main() {
     );
     expect(authorized, 1);
     final value = store.load().requests.single;
+    expect(store.returnedOrigin, isNotNull);
+    store.returnedOrigin!.requireRequest(value);
+    expect(
+      store.referenced(store.returnedOrigin!.reference).toJson(),
+      value.toJson(),
+    );
     expect(value.status, SessionProposalRequestStatus.returnedValidated);
     expect(
       value.returnedSha256.values.single,
@@ -191,6 +197,7 @@ void main() {
       throwsStateError,
     );
     expect(records.values[store.key], reserved);
+    expect(store.returnedOrigin, isNull);
     expect(
       SessionProposalRequestStore(
         records,

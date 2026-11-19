@@ -127,6 +127,7 @@ void main() {
       expect(evidence.proposal.changes.single.before, originals.values.single);
       service.requireCurrent(project, evidence);
       expect(records.writes, writes);
+      expect(evidence.initialRequestOrigin, isNull);
       await PlanApprovalStore(records)
           .save(project, ConversationStore(records).load(project.id), false);
       expect(() => service.requireCurrent(project, evidence), throwsStateError);
@@ -332,7 +333,15 @@ void main() {
     await provider.stream.close();
     final value = await pending;
     expect(value.proposal.changes, hasLength(1));
+    final origin = value.initialRequestOrigin!;
+    expect(origin.reference.number, 1);
+    expect(
+      origin.requestSessionRecord,
+      before[context.binding.session.storageKey],
+    );
     final observation = history.load().requests.single;
+    origin.requireRequest(observation);
+    expect(history.referenced(origin.reference).toJson(), observation.toJson());
     expect(observation.status, SessionProposalRequestStatus.returnedValidated);
     expect(
       observation.returnedSha256.values.single,

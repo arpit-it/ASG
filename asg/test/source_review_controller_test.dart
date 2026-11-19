@@ -186,109 +186,122 @@ void main() {
     if (!controller.isDisposed) controller.dispose();
   });
 
-  test(
-    'production bound preparation and admission retains reopen context',
-    () async {
-      controller.dispose();
-      final approval = PlanApprovalStore(records).load(project.id)!;
-      final board = RequirementsStore(records).load(project.id);
-      final input = GenerationInput(
-        project,
-        ApplicationStore(records).load(project).definition,
-      );
-      final working = GeneratedProject(
-        directory: '/working-reopen',
-        sdk: '/sdk',
-        python: 'python3',
-        confined: true,
-        approval: approval,
-        tasks: BuildPlan.parse(approval.content, board: board).tasks,
-        sources: {
-          ...input.fingerprints,
-          'lib/main.dart': sha256
-              .convert(utf8.encode(originals['lib/main.dart']!))
-              .toString(),
-        },
-        outputs: {'index.html': 'a' * 64, 'main.dart.js': 'b' * 64},
-        steps: [
-          for (final task in BuildPlan.parse(
-            approval.content,
-            board: board,
-          ).tasks)
-            GenerationStep(
-              operation: task.operation.name,
-              exitCode: 0,
-              output: 'fixture',
-            ),
-        ],
-        phase: SourceGenerationPhase.ready,
-      );
-      await SourceGenerationStore(records).save(project.id, working);
-      final selected = await AgentSessionStore(
+  test('production bound preparation and admission retains reopen context', () async {
+    controller.dispose();
+    final approval = PlanApprovalStore(records).load(project.id)!;
+    final board = RequirementsStore(records).load(project.id);
+    final input = GenerationInput(
+      project,
+      ApplicationStore(records).load(project).definition,
+    );
+    final working = GeneratedProject(
+      directory: '/working-reopen',
+      sdk: '/sdk',
+      python: 'python3',
+      confined: true,
+      approval: approval,
+      tasks: BuildPlan.parse(approval.content, board: board).tasks,
+      sources: {
+        ...input.fingerprints,
+        'lib/main.dart': sha256
+            .convert(utf8.encode(originals['lib/main.dart']!))
+            .toString(),
+      },
+      outputs: {'index.html': 'a' * 64, 'main.dart.js': 'b' * 64},
+      steps: [
+        for (final task in BuildPlan.parse(
+          approval.content,
+          board: board,
+        ).tasks)
+          GenerationStep(
+            operation: task.operation.name,
+            exitCode: 0,
+            output: 'fixture',
+          ),
+      ],
+      phase: SourceGenerationPhase.ready,
+    );
+    await SourceGenerationStore(records).save(project.id, working);
+    final selected = await AgentSessionStore(
+      records,
+      project,
+    ).create('reopen-context', board.tasks.map((task) => task.id).toList());
+    var preparations = 0;
+    controller = SourceReviewController(
+      project: project,
+      generated: working,
+      records: records,
+      selectedSession: selected,
+      proposer: ApprovedSourceProposer(
         records,
-        project,
-      ).create('reopen-context', board.tasks.map((task) => task.id).toList());
-      controller = SourceReviewController(
-        project: project,
-        generated: working,
-        records: records,
-        selectedSession: selected,
-        proposer: ApprovedSourceProposer(
-          records,
-          proposer: SourceEditProposer(createProvider: (_) => provider),
-        ),
-        readSnapshot: (_, _) async => originals,
-        folderPicker: CandidateFolderPicker(),
-        createCandidateHost: () => IntentCheckHost(),
-        publishCandidate: (_, _, _) async => Uri.parse('http://127.0.0.1:9000'),
-        prepareCandidate:
-            ({
-              required project,
-              required generated,
-              required evidence,
-              required records,
-              required parent,
-              required checkActive,
-            }) async {
-              checkActive();
-              return GeneratedProject(
-                directory: '/candidate-reopen',
-                sdk: working.sdk,
-                python: working.python,
-                confined: true,
-                approval: evidence.approval,
-                tasks: working.tasks,
-                sourceRequest: evidence.modelRequest,
-                sources: {
-                  ...working.sources,
-                  'lib/main.dart': sha256
-                      .convert(
-                        utf8.encode(evidence.proposal.changes.single.after),
-                      )
-                      .toString(),
-                },
-              );
-            },
-      );
-      final request = controller.request('Tanalyze', ['lib/main.dart']);
-      await tick();
-      provider.stream.add(response());
-      unawaited(provider.stream.close());
-      await request;
-      expect(controller.proposal, isNotNull);
-      await controller.selectCandidateParent();
-      await controller.prepareCandidate();
-      expect(controller.error, isNull);
-      final candidate = controller.candidateSession!;
-      await candidate.verify(approved: true);
-      expect(candidate.error, isNull);
-      expect(candidate.history.single.finished, isTrue);
-      expect(
-        records.getString('studio.candidateReopen.v1.${project.id}.1'),
-        isNotNull,
-      );
-    },
-  );
+        proposer: SourceEditProposer(createProvider: (_) => provider),
+      ),
+      readSnapshot: (_, _) async => originals,
+      folderPicker: CandidateFolderPicker(),
+      createCandidateHost: () => IntentCheckHost(),
+      publishCandidate: (_, _, _) async => Uri.parse('http://127.0.0.1:9000'),
+      prepareCandidate:
+          ({
+            required project,
+            required generated,
+            required evidence,
+            required records,
+            required parent,
+            required checkActive,
+          }) async {
+            checkActive();
+            preparations++;
+            return GeneratedProject(
+              directory: '/candidate-reopen',
+              sdk: working.sdk,
+              python: working.python,
+              confined: true,
+              approval: evidence.approval,
+              tasks: working.tasks,
+              sourceRequest: evidence.modelRequest,
+              sources: {
+                ...working.sources,
+                'lib/main.dart': sha256
+                    .convert(
+                      utf8.encode(evidence.proposal.changes.single.after),
+                    )
+                    .toString(),
+              },
+            );
+          },
+    );
+    final request = controller.request('Tanalyze', ['lib/main.dart']);
+    await tick();
+    provider.stream.add(response());
+    unawaited(provider.stream.close());
+    await request;
+    expect(controller.proposal, isNotNull);
+    final origin = controller.proposal!.initialRequestOrigin;
+    expect(origin, isNotNull);
+    await controller.selectCandidateParent();
+    final requestKey =
+        'studio.sessionProposalRequests.v1.${project.id}.${selected.sessionId}';
+    final requestRaw = records.values[requestKey]!;
+    records.values[requestKey] = '{private changed request';
+    final beforeRefusal = Map.of(records.values);
+    await controller.prepareCandidate();
+    expect(controller.error, isNotNull);
+    expect(controller.candidate, isNull);
+    expect(preparations, 0);
+    expect(records.values, beforeRefusal);
+    records.values[requestKey] = requestRaw;
+    await controller.prepareCandidate();
+    expect(controller.error, isNull);
+    final candidate = controller.candidateSession!;
+    expect(candidate.evidence.initialRequestOrigin, same(origin));
+    await candidate.verify(approved: true);
+    expect(candidate.error, isNull);
+    expect(candidate.history.single.finished, isTrue);
+    expect(
+      records.getString('studio.candidateReopen.v1.${project.id}.1'),
+      isNotNull,
+    );
+  });
 
   const privateFailure = 'private-prompt token=private-token /private/path';
   void expectPrivateFailure() {
@@ -1017,6 +1030,7 @@ void main() {
     await provider.stream.close();
     await pending;
     expect(controller.proposal!.repairRun, isNotNull);
+    expect(controller.proposal!.initialRequestOrigin, isNull);
     expect(captures, ['/saved', '/candidates/copy-1']);
     final reviewed = controller.proposal;
     final failedCandidate = controller.candidate;
@@ -1064,6 +1078,7 @@ void main() {
     expect(controller.proposal!.modelRequest!.model, 'Qwen3.8-27B-4bit');
     expect(controller.proposal!.modelRequest!.outputTokens, 4096);
     expect(controller.proposal!.repairRun, isNull);
+    expect(controller.proposal!.initialRequestOrigin, isNull);
     // New candidate verification must not depend on the previous latest journal.
     await controller.candidateSession!.verify(approved: true);
     expect(controller.candidateSession!.error, isNull);
@@ -1278,6 +1293,7 @@ void main() {
       await controller.candidateSession!.verify(approved: true);
       await respond(repair: true);
       expect(controller.proposal!.repairRun, isNotNull);
+      expect(controller.proposal!.initialRequestOrigin, isNull);
       await controller.applyReviewedRepair(approved: true);
       expect(copies, 1); // No parent selected for this diff.
       await controller.selectCandidateParent();

@@ -17020,3 +17020,55 @@ recovery authority and source guards remain intact. Probes3 pass; focused100 and
 product32/inventory9 remain unchanged-source evidence. This is a future-contract
 fix, not a runtime change. Review_changes recorded; old4710e23f review and CI44593857931
 cannot authorize revised docs. Fresh review and final-revision CI remain mandatory.
+
+
+19 November2026 — PR756 verified merged89f200eaa07d5510ad73039a6e9fa49b9ae51eea,
+exacttree471914564016480411f46aae4b339acf2b968221 matches all3 tested docs.
+Fresh revisedreviewa28784cf/base92625ca0 and revisedCI44595520637 bothSUCCESS,
+conversations empty; plugin PR/main/fetchedorigin/issue404OPEN verified. The original
+single-snapshot retry design was corrected before merge; probes3/focused100/
+retryguards89/product32/inventory9 pass. Investigation only: no runtime/schema/
+model/SDK/platform behavior changed. Coordinator merged/outcome_verified recorded
+before integration/writer release; owner dirty root edits and processes preserved.
+Immediately claimed404-initial-request-candidate-lineage from verified main.
+
+CE01 explicit initial request-to-candidate lineage implementation started under#404.
+Follow corrected PR756 contract: bounded terminal-entry reference and immutable raw
+request origin, separate current pre-admission raw session, prefix/revision and one
+new admission append proof; versioned4MiB companion atomically committed at startup
+with unchanged strict v1 contexts. Propagate through actual preparation/retry/reopen,
+keep identical proposals' identities distinct, refuse changed/foreign/unresolved
+proof and preserve old unbound/repair/legacy behavior, consent/Stop/recovery and last
+working output. Independent read-only history shows exact request/run or unavailable
+provenance without latest/hash inference or new authority. Begin strict reference/
+origin/companion models and adverse tests, then transactional integration and UI;
+full relevant local/IAB/native/check/review/CI/verifiedmerge remain gates. This is
+one coherent owned implementation; no second independent task is ready.
+
+
+CE01 initial request candidate lineage — local implementation and validation.
+The exact returned metadata-entry reference and original raw session now survive
+production preparation, atomic candidate admission, saved reopen and explicit retry.
+The separate versioned companion retains original plus immediate pre-admission raw
+session bytes and exact context digest; strict existing v1 context formats remain.
+Startup compares request journal, absent companion and existing session/approval/
+working/read-set in the same transaction. Preparation refuses changed request proof
+before source-copy effects. Distinct identical returns do not retarget an older
+reference. Real repair/unbound/legacy evidence acquires no inferred initial origin.
+Independent session history shows the exact request/run and preparation-only limits;
+unavailable optional lineage preserves other facts, without current approval or
+working-output requirements, replay, source restore or new execution permission.
+Native DB stale-adapter refusal, byte-preserving reopen/corruption isolation and
+actual Stop/acknowledgment/reopen/retry regressions pass. Production narrow320px/
+2x-text UI and labelled IAB pass. IAB finalJS128b3d2e56ec522c0f9a7461d208bb3614c270546a5ec5bb7b4c51b780f85332
+shows request1/run4/supplied-lineage-model; zero writes/inspections/execution attempts,
+records unchanged after reload/return. A misleading fixture run1 label was corrected
+and rebuilt/rechecked before publication; no product lineage identity defect found.
+Production web, fixture web and macOS debug compilation pass; native application
+was not launched/installed/replaced. Format535 clean, analysis and fixture analysis
+clean; product32/inventory9 pass. Full final-suite result is recorded separately.
+No live inference, install/download, SDK execution of supplied source, deployment or
+broader platform/CE01 completion is claimed. Exact fresh review, required final CI
+and verified merge remain delivery gates; umbrella404 stays OPEN.
+
+Final local suite: 2087 tests passed,11 existing skips; format535 unchanged and clean analysis. All29 changed paths match the active literal claim. Verified plugin main and fetched origin/main both89f200eaa07d5510ad73039a6e9fa49b9ae51eea; no open PRs before publication. Required remote checks and fresh exact PR review remain pending.

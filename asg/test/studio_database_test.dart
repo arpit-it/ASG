@@ -10,10 +10,51 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:sembast/sembast_io.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'candidate_request_lineage_test.dart' show lineageFixture;
+
+import 'package:asg/services/candidate_request_lineage_store.dart';
+
 import 'session_proposal_request_test.dart' show requestMetadata;
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  test('native reopen isolates corrupt optional lineage and preserves other records', () async {
+    final f = await lineageFixture();
+    final root = await Directory.systemTemp.createTemp(
+      'asg-lineage-corruption-',
+    );
+    SharedPreferences.setMockInitialValues({});
+    final preferences = await SharedPreferences.getInstance();
+    var db = await databaseFactoryIo.openDatabase('${root.path}/records.db');
+    final key = f.lineage.storageKey;
+    const corrupt = '{private invalid lineage';
+    try {
+      final initial = await StudioDatabase.migrate(db, preferences);
+      await initial.setString(key, f.lineage.encode());
+      await initial.setString('studio.lastProject.v1', 'unrelated');
+      final persisted = StoreRef<String, String>('records');
+      await persisted.record(key).put(db, corrupt);
+      await db.close();
+      db = await databaseFactoryIo.openDatabase('${root.path}/records.db');
+      final reopened = await StudioDatabase.migrate(db, preferences);
+      expect(reopened.getString('studio.lastProject.v1'), 'unrelated');
+      expect(
+        () => CandidateRequestLineageStore(
+          reopened,
+          f.request.projectId,
+        ).load(f.run),
+        throwsFormatException,
+      );
+      expect(await persisted.record(key).get(db), corrupt);
+      expect(
+        () => StudioDatabase.validate('$key.extra', f.lineage.encode()),
+        throwsFormatException,
+      );
+    } finally {
+      await db.close();
+      await root.delete(recursive: true);
+    }
+  });
   test(
     'database validates bounded canonical journal and exact storage identity',
     () {
