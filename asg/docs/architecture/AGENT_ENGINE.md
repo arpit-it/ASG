@@ -2024,3 +2024,76 @@ uses deterministic publication/named/manual observations, not actual SDK tests;
 IAB verified scope/reload/withdrawal/legacy behavior and zero effects. Production
 web and an isolated macOS app compile; no new native UI/process-crash/live-model
 acceptance is claimed by this read-only review increment.
+
+
+### Explicit authored-check completion decision — 19 November 2026 investigation
+
+The existing report already supplies the narrow policy predicate:
+`requirementVerifiedAgainstChecks` requires a current successful saved generation,
+an exact authored requirement, nonempty criteria, and every criterion verified by
+its nonempty `allMappedNamedTests` mapping. Reuse that predicate rather than
+aggregating display labels or accepting a convenient subset of criteria. A mixed
+manual/advisory/unmapped criterion set cannot produce this decision. The
+free-form acceptance block and live files remain unverified even when all
+explicit named-test contracts pass. The publication alone is never acceptance.
+
+The concrete missing outcome is an explicit, durable user decision named
+`completedAgainstAuthoredChecks`, with a bounded immutable evidence envelope.
+PublishedTaskEvidence deliberately contains display strings only and must not be
+parsed back into authority. A separate typed selection must capture canonical
+criterion definitions/mappings/rules, exact requirement content/hash, scoped named
+observations and targets/results, report source/input/approval identity, and exact
+publication/run/checkpoint/session/task bindings. Include explicit consent to this
+limited claim and decision time; preserve the distinction between supplied saved
+observations and a newly executed SDK test. No model judgment or free-form prose
+can supply the predicate. Bounds, strict decoding and exact key/payload agreement
+are required; do not embed the entire unrelated report or raw private paths.
+
+One expected-absent decision record per selected session/publication is the
+publication point. The store must first obtain and revalidate a fresh typed
+selection using the existing exact published-task applicability checks. The
+confirmation action must bind the exact displayed selection, not reload and
+silently save changed evidence. CommitRecords compares the full relevant read
+set, including selected session, publication, candidate journal, execution
+checkpoint, working output, approval/project/application/board/conversation,
+named/manual observations, and any generation history read by the report.
+Re-evaluate consent/disposal/cancellation in the transaction authorization callback.
+Only the decision record is updated; session v1, working/previous output, check
+observations and manual board status stay unchanged. Failed comparison, withdrawn
+session, disposal or denied consent publishes nothing. An identical retained
+record may be shown as already saved; conflicting content is never overwritten.
+A later publication gets its own decision, preserving older decision bytes.
+
+Prerequisites need an explicitly selected, retained decision for each frozen
+session task dependency, bound to the same session/project/approval/frozen graph
+and exact prerequisite task/requirement contract. Verify that decision's retained
+publication/run/checkpoint and frozen named-test evidence; reject absent, foreign,
+malformed or unsupported decisions. Do not guess the latest run or use manual
+board Done as a substitute. A prerequisite's older published working output need
+not equal the dependent's current working output: these are historical decisions
+against authored contracts, not proof of current artifact compatibility. Expose
+that limitation. The dependent decision itself still requires its selected
+publication to match current working output and current approved graph. This
+bounded slice grants no dependent dispatch or scheduler readiness authority.
+
+Historical decisions must remain readable when observations are replaced, working
+output rotates, the session grows or cancellation is requested. Show immutable
+saved facts separately from whether a new decision is currently applicable;
+withdrawal forbids new decisions but does not erase prior evidence. Legacy absence
+is explicit and never backfilled. A retained decision must validate its own
+frozen evidence and publication/session prefix without relying on the current
+latest observation to reconstruct the past. New database validation and isolated
+corrupt-record handling are necessary; existing transactional storage can publish
+one record atomically and requires no new storage engine or session migration.
+
+The next coherent implementation is this explicit decision model/store/controller,
+confirmation and read-only history on the existing published-task route. It must
+cover strict/bounded serialization, all-rule versus mixed/empty/stale/failed
+refusal, exact displayed-selection CAS, altered inputs/prerequisites/withdrawal,
+disposal and denied consent, duplicate/conflicting decisions, replaced observations,
+rotated output, restart persistence and narrow/high-text UI. Native reopen and
+commit-before-return crash checks must demonstrate absent-or-complete decision
+bytes without replay or stable-app replacement; labelled IAB must distinguish
+supplied check observations from real SDK execution. Existing broad checks and
+required CI remain mandatory. This investigation creates no decision record,
+execution authority, task-status transition, model/SDK call or semantic acceptance.
