@@ -1781,3 +1781,77 @@ also inspect the production recovery controller on separate app launches while
 retaining context fingerprints. Neither observation history nor an acknowledgment
 is task completion, process cleanup or authority for automatic replay. General
 session scheduling, task lifecycle and broader CE01/F20 acceptance remain open.
+
+
+### Session task lifecycle and publication boundary — 19 November 2026
+
+The saved session is deliberately observational. AgentSession freezes the selected
+dependency-closed task graph, approval, append-only dispatch references and
+cancellation intent. Its revision is the number of dispatches plus the optional
+cancellation transition; adding lifecycle states inside that existing format
+would invalidate current binding, history and recovery assumptions.
+AgentSessionBinding validates membership and exact append-only admission. It does
+not prove dependencies completed or assign tool authority. A candidate run checks
+the approved operation graph, which can include several board tasks; its selected
+boardTaskId is context, not proof that every criterion for that task was met.
+
+There is already completion evidence, but its scope matters:
+
+- AgentTaskHistory retains admitted/pending/result/interrupted/finished operation
+  observations. Finished and exit0 are not task acceptance or publication.
+- SourceGenerationController.promoteCandidate requires an exact finished ready
+  candidate, current Plan, original working output and the matching saved session.
+  Its final conditional transaction advances the matching execution checkpoint
+  through reviewing/completed and writes current/previous generation. Starting a
+  preview precedes that transaction; the transaction is the publication point.
+  A crash after commit can leave a durable completed execution even when no
+  controller success was returned. Do not describe this as missing all completion
+  evidence, and never infer absence of publication from a missing UI response.
+- RequirementsBoard already has manual queued/inProgress/blocked/done task status.
+  It enforces prerequisite done ordering; RequirementsController reopens dependent
+  tasks after scope/prerequisite changes. Board edits advance its revision, which
+  is part of PlanApprovalStore.contextFor. Silently changing this board during
+  promotion would invalidate the approved input. Manual done is not a retained
+  session acceptance verdict or authority for another dispatch.
+- Requirements have mapped named/manual/advisory acceptance checks and criteria.
+  Their evidence rules remain separate. Generic verification success does not
+  establish every criterion and must not fabricate a completed task.
+
+The concrete missing prerequisite is an immutable per-run session publication
+outcome: the promotion transaction CAS-checks the session but stores no explicit
+record binding that selected task/reference to the exact before/after working
+identity and completed execution. Current/previous generation are rotating
+project records. A later promotion can replace both without providing a dedicated
+session publication envelope. Existing read-only run status can display completed
+execution but has no separately bound publication outcome to validate or render.
+
+The next coherent increment should capture that narrower fact. At an explicitly
+approved bound promotion, construct bounded typed publication evidence binding
+project/session/task graph/approval/reference/run/dispatch, verified candidate
+fingerprint, original working fingerprint, published working fingerprint and the
+exact execution before/after identities. Publish it with expected absence in the
+same final transaction as working/previous generation and completed execution.
+Keep session v1/history/context bytes unchanged. A failed transaction publishes
+none of these updates; a commit-before-return crash retains all. A new run uses a
+new immutable record, never overwriting an earlier publication. Legacy/unbound
+absence remains unavailable; no backfill from today's files or latest run.
+
+Add a read-only validated projection in the saved-session UI labelled Published
+candidate, explicitly separate from Task complete and criterion acceptance.
+Historical publication stays visible after later runs or session withdrawal when
+its exact retained binding validates; it grants no retry, dependency readiness or
+execution authority. Missing/corrupt/foreign proof preserves independent history.
+Do not call a prerequisite task completed merely because it has a publication.
+General task lifecycle/dependency advancement still needs explicit scoped
+acceptance evidence and a separately defined completion transition.
+
+Validate strict shape/bounds and foreign identity; transaction failure and session/
+approval/working races; first-record immutability across retry/later publication;
+actual native database reopen; zero-write read-only projection; narrow/enlarged UI
+and labelled IAB fixture. Preserve existing Stop/unknown/acknowledgment/retry and
+last-output guards, native promotion/crash checks and required CI. This
+investigation changes no runtime code, records, authority or model behavior.
+Evidence: existing session/history/admission/promotion100 tests plus acceptance/
+criterion/manual/recovery54 tests passed on the Mac. Initial attempted read used
+a nonexistent development_task.dart; DevelopmentTask is actually defined in
+requirements_board.dart, and the trace above uses that source.
