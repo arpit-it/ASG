@@ -2613,41 +2613,52 @@ review, not replay, restored source, semantic completion or new execution permis
 Reference contract: version1, project/session IDs, exact request number and SHA256
 of that terminal request's canonical metadata entry. Bound it to1KiB and existing
 identifier/request-number limits. Produce it only after successful returned-outcome
-persistence, attach it to returned ApprovedSourceProposal and retain it across initial
-preparation normalization. Never look it up by latest request, timing or matching
-proposal content. A pure typed constructor is not authority; services validate the
+persistence, attach it to returned ApprovedSourceProposal with the exact original
+raw request-session snapshot in a bounded immutable origin bundle, and retain that
+bundle across initial preparation normalization and candidate reopen/retry. The small
+reference DTO stays separate from the raw snapshot. Never look it up by latest
+request, timing or matching proposal content. A pure typed constructor is not authority; services validate the
 exact retained request and captured flow before writes. Distinct valid identical
 responses remain distinct references. This is an application-recorded relationship,
 not authenticated external causation or proof of a server's loaded weights.
 
 Proposed companion key: studio.candidateRequestLineage.v1.<project>.<run>. Retain
 version, project/run/dispatch identity, the typed request reference, exact original
-selected-session raw record and SHA256 of the exact stored CandidateReopenContext
-bytes. Bound raw session UTF-8 to AgentSession.maxEncodedBytes (256KiB), the reference
-to1KiB and the entire canonical companion to2MiB, allowing JSON string escaping.
-No extra source bodies, endpoint, credential, raw error or transport transcript is
-needed; existing reviewed source remains in its existing context. Validate the raw
-session with its actual decoder and hash those exact bytes. Do not replace them
-with canonical typed projections merely to reproduce a recorded digest.
+request-session raw record, exact raw session immediately before this candidate
+admission, and SHA256 of the exact stored CandidateReopenContext bytes. Bound EACH
+raw session UTF-8 to AgentSession.maxEncodedBytes (256KiB), the reference to1KiB and
+the entire canonical companion to4MiB, allowing JSON string escaping of both raw
+snapshots. The two snapshots may coincide for first admission; retries must not
+replace the request origin with a later admitted session. No extra source bodies,
+endpoint, credential, raw error or transport transcript is needed; existing reviewed
+source remains in its existing context. Validate each raw session with its actual
+decoder and hash exact original request bytes. Do not replace those bytes with
+canonical typed projections merely to reproduce a recorded digest.
 
 Before preparation/startup, the reference reader must require the exact canonical
 returnedValidated entry; matching project/session/task, requirement/approval identity,
 working raw digest, selected source subset fingerprints and exact proposed changed
 replacement fingerprints/model provenance. The source map covers all captured input,
 while returned paths must match the proposal's changed subset; no unchanged selected
-input may disappear from validation. Require the exact original selected raw session
-hash and current session/approval/working/cancellation checks. Preserve full existing
-explicit candidate consent, source inspection, execution policy and Stop guards.
+input may disappear from validation. Require the original raw request-session hash.
+The current pre-admission session must retain the same project/session/approval/task
+graph, be uncancelled, contain the original dispatches as an exact prefix and have
+revision growth equal to its appended dispatch count. Perform all existing current
+session/approval/working/cancellation checks as well. The origin is not required to
+be only one append before EVERY later retry. Preserve full existing explicit
+candidate consent, source inspection, execution policy and Stop guards.
 An initial reference must never be inherited by a real-failure repair response or
 fabricated for legacy/unbound proposals. Those retain their existing separate paths
 and explicit unavailable initial-lineage facts.
 
 Construct the companion only after the actual run and admitted context are known.
-Parse the retained original raw session, select the exact task, then validate
-AgentSessionBinding.admitted against context.session/dispatch. Context.requireRun
-must match run/dispatch/start/prepared identity. In the same existing startup CAS,
-compare the current request journal bytes, original selected session and other
-existing approval/working/read-set, require the companion key absent, and publish
+Parse the exact pre-admission raw session, select the task and validate its ONE
+new append with AgentSessionBinding.admitted against context.session/dispatch.
+Separately validate the original request-session snapshot and its exact prefix/
+revision relationship to that pre-admission snapshot. Context.requireRun must match
+run/dispatch/start/prepared identity. In the same existing startup CAS, compare the
+current request journal bytes, current pre-admission session and other existing
+approval/working/read-set, require the companion key absent, and publish
 companion/context/candidate/session/journal/checkpoint/task history atomically.
 Use typed fixed-key reservation inputs, never arbitrary transaction maps supplied
 by a view. Any changed proof/record, invalid reference, failure or cancellation
@@ -2657,8 +2668,9 @@ still cause refusal and a fresh explicit check.
 
 Historical projection: read only the explicitly referenced request entry and exact
 companion/context/run/selection proof under a consistent read-set. Verify the
-recorded context byte digest and one-append selected-to-admitted relation, then show
-exact session/task/request/run and source/model facts with preparation-only limits.
+recorded context byte digest, request-origin-to-pre-admission prefix/revision proof
+and one-append pre-admission-to-admitted relation, then show exact session/task/
+request/run and source/model facts with preparation-only limits.
 Do not call loadLatest, require current working/approval for a historical observation,
 or choose a newer matching request. Missing/corrupt/foreign/changed optional proof
 makes initial lineage unavailable independently of existing candidate history.
@@ -2673,9 +2685,13 @@ growth never changes the selected reference; wrong project/session/task/status,
 request entry digest, model, raw working, selected input or changed output fails;
 unresolved/failed/cancelled records cannot form returned lineage. Include noncanonical
 but valid original raw-session bytes to prevent projection-hash substitution, exact
-one-append revision/dispatch validation, native separately committed stale-record
-races, atomic startup refusal and companion absence/corruption. Test initial copy
-preservation versus repair/unbound/legacy absence, partial reader errors/lifecycle,
+prefix/revision and one-append admission validation, native separately committed
+stale-record races, atomic startup refusal and companion absence/corruption. Explicit
+Stop/acknowledgment/retry and reopen must retain the initial reference/origin while
+using the later current pre-admission session, with no fresh model request or lost
+existing retry authority. Never reconstruct the origin raw bytes from the old v1
+context's typed previous-session reconstruction. Test initial copy preservation
+versus repair/unbound/legacy absence, partial reader errors/lifecycle,
 narrow/high-text production UI and labelled IAB. Native DB reopen must preserve all
 bytes without replay; relevant fresh builds/full checks, exact PR review, required
 CI and verified merge gate delivery. No live inference is needed for these deterministic
@@ -2691,3 +2707,18 @@ validating the future one-append lineage. Both probes pass on verified PR755 mai
 focused100/product32/inventory9 pass. This completes the investigation boundary
 locally only; the proposed reference/companion remain unimplemented until a reviewed
 merge admits that next task. No runtime, schema, live-model or SDK change occurred.
+
+
+Premerge review correction — a third supplied probe verifies the retry distinction.
+After two valid session admissions, AgentSessionBinding.admitted correctly rejects
+using the request-origin session as if it were exactly one append before the second
+admitted session, while the immediately preceding admission snapshot succeeds.
+SourceCandidateController updates its binding after each run; saved candidate reopen
+reconstructs a typed previous session solely for its existing recovery flow. Neither
+is a substitute for original raw request bytes. The corrected companion therefore
+retains TWO raw snapshots (origin and current admission), validates their prefix/
+revision relationship, then validates one new append from admission to admitted.
+The proposed encoded bound is4MiB, replacing the unimplemented single-snapshot2MiB
+proposal. The immutable origin bundle must survive live retry and reopen.
+This corrects a future contract before merge; no product behavior/schema was changed.
+All3 probes pass; previous PR756 revision/review/CI cannot authorize this revision.

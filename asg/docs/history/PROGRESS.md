@@ -15494,3 +15494,18 @@ are preserved; no runtime/schema/live-model/SDK/UI/platform change. Findings and
 one bounded companion-record implementation acceptance are recorded in AGENT_ENGINE.md
 and this sole task queue. Publish/review/requiredCI/verifiedmerge remain gates before
 reference propagation, startup CAS companion or historical UI implementation.
+
+
+PR756 premerge contract correction: source trace and a third supplied probe show
+that verification retry adds another session dispatch. A single snapshot cannot
+both equal the original request session and be exactly one append before every
+later admitted session. Corrected future companion to retain request-origin raw
+AND current pre-admission raw, validate same identity/approval/graph and exact
+prefix/revision growth, then validate one append to admitted context. Each raw is
+bounded256KiB; proposed companion4MiB accounts for escaping both. Carry bounded
+origin bundle through preparation and actual retry/reopen; do not reconstruct raw
+origin from legacy typed previous-session reconstruction. Existing retry/Stop/
+recovery authority and source guards remain intact. Probes3 pass; focused100 and
+product32/inventory9 remain unchanged-source evidence. This is a future-contract
+fix, not a runtime change. Review_changes recorded; old4710e23f review and CI44593857931
+cannot authorize revised docs. Fresh review and final-revision CI remain mandatory.
