@@ -3,6 +3,10 @@
 
 import 'dart:convert';
 
+import '../models/agent_session_binding.dart';
+import '../models/session_proposal_request.dart';
+import 'agent_session_admission.dart';
+import 'session_proposal_request_store.dart';
 import '../models/repair_attempt.dart';
 import '../models/model_request_provenance.dart';
 import 'repair_attempt_store.dart';
@@ -92,9 +96,19 @@ class ApprovedSourceProposer {
     required LocalModelConfig config,
     required Map<String, String> originals,
     GeneratedProject? repairCandidate,
+    AgentSessionBinding? sessionBinding,
+    String? requestWorkingRecord,
+    void Function()? authorizeSession,
   }) async {
     if (_active) {
       throw StateError('An approved source proposal is already active.');
+    }
+    if (sessionBinding != null &&
+        (repairCandidate != null ||
+            requestWorkingRecord == null ||
+            authorizeSession == null ||
+            sessionBinding.boardTaskId != boardTaskId)) {
+      throw StateError('Complete initial session request context is required.');
     }
     final approval = PlanApprovalStore(records).requireCurrentApproval(project);
     final task = _task(project, boardTaskId);
@@ -114,6 +128,23 @@ class ApprovedSourceProposer {
       outputTokens: SourceEditProposer.outputTokens,
     );
     modelRequest.validate();
+    final instruction = jsonEncode({
+      'task': task.toJson(),
+      'requirement': requirement.toJson(),
+      'requirementsRevision': board.revision,
+      if (repairRun != null) 'failedCheck': repairDiagnostics(repairRun),
+    });
+    final snapshot = Map<String, String>.unmodifiable(originals);
+    if (sessionBinding != null) {
+      SourceEditProposer.validateInput(instruction, snapshot);
+    }
+    final initial = sessionBinding == null
+        ? null
+        : SessionProposalRequestStore(
+            records,
+            project.id,
+            sessionBinding.session.sessionId,
+          );
     _active = true;
     _cancelled = false;
     final attempts = repairRun == null
@@ -121,6 +152,20 @@ class ApprovedSourceProposer {
         : RepairAttemptStore(records, project.id);
     void authorizeRequest() {
       if (_cancelled) throw StateError('Source proposal cancelled.');
+      if (sessionBinding != null) {
+        authorizeSession!();
+        AgentSessionRunAdmission(
+          records,
+          project,
+          sessionBinding,
+        ).requireCurrent();
+        if (records.getString('studio.generation.v1.${project.id}') !=
+            requestWorkingRecord) {
+          throw StateError(
+            'Working build changed during initial source request.',
+          );
+        }
+      }
       final current = PlanApprovalStore(records)
           .requireCurrentApproval(project);
       if (!approval.matches(current)) {
@@ -139,6 +184,16 @@ class ApprovedSourceProposer {
     }
 
     try {
+      if (initial != null) {
+        await initial.reserve(
+          project: project,
+          binding: sessionBinding!,
+          workingRecord: requestWorkingRecord!,
+          originals: snapshot,
+          modelRequest: modelRequest,
+          authorize: authorizeRequest,
+        );
+      }
       if (repairRun != null) {
         await attempts!.reserve(
           repairRun,
@@ -150,13 +205,8 @@ class ApprovedSourceProposer {
       // Saved task/acceptance text is the instruction, not caller-supplied prose.
       final proposal = await _proposer.propose(
         config: config,
-        instruction: jsonEncode({
-          'task': task.toJson(),
-          'requirement': requirement.toJson(),
-          'requirementsRevision': board.revision,
-          if (repairRun != null) 'failedCheck': repairDiagnostics(repairRun),
-        }),
-        originals: originals,
+        instruction: instruction,
+        originals: snapshot,
       );
       if (_cancelled) throw StateError('Source proposal cancelled.');
       final evidence = ApprovedSourceProposal(
@@ -169,11 +219,23 @@ class ApprovedSourceProposer {
       );
       // Includes changes while the provider was finishing transport cleanup.
       requireCurrent(project, evidence);
+      if (initial != null) authorizeRequest();
       await attempts?.finish(RepairAttemptStatus.proposed, proposal: proposal);
+      await initial?.finish(
+        SessionProposalRequestStatus.returnedValidated,
+        proposal: proposal,
+        authorizeReturn: authorizeRequest,
+      );
       if (_cancelled) throw StateError('Source proposal cancelled.');
+      if (initial != null) authorizeRequest();
       requireCurrent(project, evidence);
       return evidence;
     } catch (error) {
+      await initial?.finish(
+        _cancelled
+            ? SessionProposalRequestStatus.cancelledLocally
+            : SessionProposalRequestStatus.failedLocally,
+      );
       await attempts?.finish(
         _cancelled ? RepairAttemptStatus.cancelled : RepairAttemptStatus.failed,
       );

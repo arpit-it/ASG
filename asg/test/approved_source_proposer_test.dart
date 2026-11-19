@@ -4,6 +4,11 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:asg/models/agent_session_binding.dart';
+import 'package:asg/models/session_proposal_request.dart';
+import 'package:asg/models/source_generation.dart';
+import 'package:asg/services/agent_session_store.dart';
+import 'package:asg/services/session_proposal_request_store.dart';
 import 'package:asg/models/build_plan.dart';
 import 'package:asg/models/chat_message.dart';
 import 'package:asg/models/local_model_config.dart';
@@ -19,6 +24,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'board_mapped_build_plan_test.dart' show boardContent, mappedBoard;
 import 'planning_conversation_test.dart' show ControlledRecords, project, tick;
 import 'source_edit_proposer_test.dart' show FakeProvider;
+import 'source_candidate_controller_test.dart' show AtomicRecords;
+import 'agent_session_store_test.dart' show selection;
 
 const originals = {'lib/main.dart': 'void main() {}'};
 String response() => jsonEncode({
@@ -58,6 +65,36 @@ ApprovedSourceProposer serviceFor(
   records,
   proposer: SourceEditProposer(createProvider: (_) => provider),
 );
+
+Future<({AgentSessionBinding binding, String working})> initialContext(
+  AtomicRecords records,
+) async {
+  await seed(records);
+  final session = await AgentSessionStore(
+    records,
+    project,
+  ).create('initial-request', selection(records));
+  final working = jsonEncode(
+    GeneratedProject(
+      directory: '/working',
+      sdk: '/sdk',
+      python: 'python3',
+      sources: {
+        for (final e in originals.entries)
+          e.key: SessionProposalRequestStore.fingerprint(e.value),
+      },
+    ).toJson(),
+  );
+  await records.setString('studio.generation.v1.${project.id}', working);
+  return (
+    binding: AgentSessionBinding.select(
+      session: session,
+      projectId: project.id,
+      boardTaskId: 'Tanalyze',
+    ),
+    working: working,
+  );
+}
 
 void main() {
   test(
@@ -256,4 +293,227 @@ void main() {
       expect(calls, 1);
     },
   );
+  test('selected initial request reserves before provider creation and persists only returned fingerprints', () async {
+    final records = AtomicRecords();
+    final context = await initialContext(records);
+    final history = SessionProposalRequestStore(
+      records,
+      project.id,
+      'initial-request',
+    );
+    final before = Map.of(records.values);
+    final provider = FakeProvider();
+    var calls = 0;
+    final service = ApprovedSourceProposer(
+      records,
+      proposer: SourceEditProposer(
+        createProvider: (_) {
+          calls++;
+          expect(
+            history.load().requests.single.status,
+            SessionProposalRequestStatus.reserved,
+          );
+          return provider;
+        },
+      ),
+    );
+    final pending = service.propose(
+      project: project,
+      boardTaskId: 'Tanalyze',
+      config: const LocalModelConfig(),
+      originals: originals,
+      sessionBinding: context.binding,
+      requestWorkingRecord: context.working,
+      authorizeSession: () {},
+    );
+    await tick();
+    expect(calls, 1);
+    provider.stream.add(response());
+    await provider.stream.close();
+    final value = await pending;
+    expect(value.proposal.changes, hasLength(1));
+    final observation = history.load().requests.single;
+    expect(observation.status, SessionProposalRequestStatus.returnedValidated);
+    expect(
+      observation.returnedSha256.values.single,
+      SessionProposalRequestStore.fingerprint(
+        value.proposal.changes.single.after,
+      ),
+    );
+    expect(Map.of(records.values)..remove(history.key), before);
+    expect(records.values[history.key], isNot(contains('print(')));
+    expect(
+      records.values.keys.any(
+        (key) => key.startsWith('studio.repairAttempts.'),
+      ),
+      isFalse,
+    );
+  });
+  test('initial invalid input and failed/stale/cancelled reservation enter no provider', () async {
+    for (final kind in [
+      'bounds',
+      'source',
+      'commit',
+      'session',
+      'working',
+      'cancel',
+    ]) {
+      final records = AtomicRecords();
+      final context = await initialContext(records);
+      final history = SessionProposalRequestStore(
+        records,
+        project.id,
+        'initial-request',
+      );
+      var calls = 0;
+      final service = ApprovedSourceProposer(
+        records,
+        proposer: SourceEditProposer(
+          createProvider: (_) {
+            calls++;
+            return FakeProvider();
+          },
+        ),
+      );
+      records.failCommit = kind == 'commit';
+      if (kind == 'session' || kind == 'working') {
+        records.beforeCommit = () async {
+          if (kind == 'session') {
+            records.values[context.binding.session.storageKey] = jsonEncode(
+              context.binding.session.requestCancellation().toJson(),
+            );
+          }
+          if (kind == 'working') {
+            records.values['studio.generation.v1.${project.id}'] =
+                '${context.working} ';
+          }
+        };
+      }
+      await expectLater(
+        service.propose(
+          project: project,
+          boardTaskId: 'Tanalyze',
+          config: const LocalModelConfig(),
+          originals: kind == 'bounds'
+              ? {'../main.dart': 'source'}
+              : kind == 'source'
+              ? {'lib/main.dart': 'changed'}
+              : originals,
+          sessionBinding: context.binding,
+          requestWorkingRecord: context.working,
+          authorizeSession: kind == 'cancel'
+              ? () {
+                  throw StateError('cancelled');
+                }
+              : () {},
+        ),
+        throwsA(anyOf(isA<StateError>(), isA<FormatException>())),
+      );
+      expect(calls, 0, reason: kind);
+      expect(records.values.containsKey(history.key), isFalse, reason: kind);
+    }
+  });
+  test('withdrawal, cleanup failure, Stop and failed outcome write preserve truthful request history', () async {
+    for (final kind in ['withdraw', 'cleanup', 'cancel', 'outcome']) {
+      final records = AtomicRecords();
+      final context = await initialContext(records);
+      final history = SessionProposalRequestStore(
+        records,
+        project.id,
+        'initial-request',
+      );
+      final provider = FakeProvider()..cleanup = Completer<void>();
+      final service = serviceFor(records, provider);
+      final rejected = expectLater(
+        service.propose(
+          project: project,
+          boardTaskId: 'Tanalyze',
+          config: const LocalModelConfig(),
+          originals: originals,
+          sessionBinding: context.binding,
+          requestWorkingRecord: context.working,
+          authorizeSession: () {},
+        ),
+        throwsStateError,
+      );
+      await tick();
+      provider.stream.add(response());
+      await provider.stream.close();
+      await tick();
+      Future<void>? cancelled;
+      if (kind == 'withdraw') {
+        await AgentSessionStore(
+          records,
+          project,
+        ).requestCancellation(context.binding.session);
+      }
+      if (kind == 'outcome') records.failCommit = true;
+      if (kind == 'cancel') cancelled = service.cancel();
+      if (kind == 'cleanup') {
+        provider.cleanup!.completeError(
+          StateError('private cleanup failure token=secret'),
+        );
+      } else {
+        provider.cleanup!.complete();
+      }
+      await cancelled;
+      await rejected;
+      final observed = history.load().requests.single;
+      expect(
+        observed.status,
+        kind == 'outcome'
+            ? SessionProposalRequestStatus.reserved
+            : kind == 'cancel'
+            ? SessionProposalRequestStatus.cancelledLocally
+            : SessionProposalRequestStatus.failedLocally,
+        reason: kind,
+      );
+      expect(observed.returnedSha256, isEmpty);
+      expect(records.values[history.key], isNot(contains('secret')));
+      expect(
+        records.values['studio.generation.v1.${project.id}'],
+        context.working,
+      );
+    }
+  });
+  test('current session changing inside returned-outcome commit retains unresolved intent and suppresses result', () async {
+    final records = AtomicRecords();
+    final context = await initialContext(records);
+    final history = SessionProposalRequestStore(
+      records,
+      project.id,
+      'initial-request',
+    );
+    var commits = 0;
+    records.beforeCommit = () async {
+      if (++commits == 2) {
+        records.values[context.binding.session.storageKey] = jsonEncode(
+          context.binding.session.requestCancellation().toJson(),
+        );
+      }
+    };
+    final provider = FakeProvider();
+    final service = serviceFor(records, provider);
+    final rejected = expectLater(
+      service.propose(
+        project: project,
+        boardTaskId: 'Tanalyze',
+        config: const LocalModelConfig(),
+        originals: originals,
+        sessionBinding: context.binding,
+        requestWorkingRecord: context.working,
+        authorizeSession: () {},
+      ),
+      throwsStateError,
+    );
+    await tick();
+    provider.stream.add(response());
+    await provider.stream.close();
+    await rejected;
+    expect(
+      history.load().requests.single.status,
+      SessionProposalRequestStatus.reserved,
+    );
+    expect(commits, 2);
+  });
 }

@@ -5,6 +5,8 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:asg/controllers/source_review_controller.dart';
+import 'package:asg/models/session_proposal_request.dart';
+import 'package:asg/services/session_proposal_request_store.dart';
 import 'package:asg/services/agent_session_store.dart';
 import 'package:crypto/crypto.dart';
 import 'package:asg/controllers/source_candidate_controller.dart';
@@ -30,7 +32,8 @@ import 'package:asg/views/source_review_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'approved_source_proposer_test.dart' show seed, originals, response;
+import 'approved_source_proposer_test.dart'
+    show seed, originals, response, initialContext;
 import 'planning_conversation_test.dart' show project, tick;
 import 'source_candidate_controller_test.dart'
     show AtomicRecords, FailedCheckHost, IntentCheckHost;
@@ -1978,4 +1981,190 @@ void main() {
       await tester.pumpWidget(const SizedBox());
     },
   );
+  test('selected session history reload never restores a proposal and survives withdrawal', () async {
+    controller.dispose();
+    final context = await initialContext(records);
+    final working = SourceGenerationStore(records).load(project.id)!;
+    controller = SourceReviewController(
+      project: project,
+      generated: working,
+      records: records,
+      selectedSession: context.binding.session,
+      proposer: ApprovedSourceProposer(
+        records,
+        proposer: SourceEditProposer(createProvider: (_) => provider),
+      ),
+      readSnapshot: (_, _) async => originals,
+    );
+    final pending = controller.request('Tanalyze', ['lib/main.dart']);
+    await tick();
+    expect(
+      SessionProposalRequestStore(
+        records,
+        project.id,
+        'initial-request',
+      ).load().requests.single.status,
+      SessionProposalRequestStatus.reserved,
+    );
+    provider.stream.add(response());
+    await provider.stream.close();
+    await pending;
+    expect(controller.proposal, isNotNull);
+    expect(
+      controller.requestHistory.single.status,
+      SessionProposalRequestStatus.returnedValidated,
+    );
+    controller.dispose();
+    await AgentSessionStore(
+      records,
+      project,
+    ).requestCancellation(context.binding.session);
+    final saved = Map.of(records.values);
+    var entered = 0;
+    controller = SourceReviewController(
+      project: project,
+      generated: working,
+      records: records,
+      selectedSession: AgentSessionStore(
+        records,
+        project,
+      ).load('initial-request'),
+      proposer: ApprovedSourceProposer(
+        records,
+        proposer: SourceEditProposer(
+          createProvider: (_) {
+            entered++;
+            return provider;
+          },
+        ),
+      ),
+      readSnapshot: (_, _) async {
+        throw StateError('No source capture expected');
+      },
+    );
+    controller.refreshRequestHistory();
+    expect(
+      controller.requestHistory.single.status,
+      SessionProposalRequestStatus.returnedValidated,
+    );
+    expect(controller.proposal, isNull);
+    await controller.request('Tanalyze', ['lib/main.dart']);
+    expect(entered, 0);
+    expect(records.values, saved);
+  });
+  test('independent history errors preserve current proposal and retry without another request', () async {
+    controller.dispose();
+    final context = await initialContext(records);
+    var failHistory = false;
+    controller = SourceReviewController(
+      project: project,
+      generated: SourceGenerationStore(records).load(project.id)!,
+      records: records,
+      selectedSession: context.binding.session,
+      proposer: ApprovedSourceProposer(
+        records,
+        proposer: SourceEditProposer(createProvider: (_) => provider),
+      ),
+      readSnapshot: (_, _) async => originals,
+      readRequestHistory: (id) {
+        if (failHistory) throw StateError('private token=secret /private/path');
+        return SessionProposalRequestStore(
+          records,
+          project.id,
+          id,
+        ).load().requests;
+      },
+    );
+    final pending = controller.request('Tanalyze', ['lib/main.dart']);
+    await tick();
+    provider.stream.add(response());
+    await provider.stream.close();
+    await pending;
+    final proposal = controller.proposal;
+    final retained = controller.requestHistory;
+    final saved = Map.of(records.values);
+    failHistory = true;
+    controller.refreshRequestHistory();
+    expect(controller.proposal, same(proposal));
+    expect(controller.error, isNull);
+    expect(controller.requestHistory, same(retained));
+    expect(controller.requestHistoryError, contains('could not be read'));
+    expect(controller.requestHistoryError, isNot(contains('secret')));
+    failHistory = false;
+    controller.refreshRequestHistory();
+    expect(controller.requestHistoryError, isNull);
+    expect(controller.requestHistory.single.toJson(), retained.single.toJson());
+    expect(records.values, saved);
+  });
+  test(
+    'dispose and nested reload suppress late independent history publication',
+    () async {
+      for (final kind in ['dispose', 'nested']) {
+        if (!controller.isDisposed) controller.dispose();
+        records = PrivateFailureRecords();
+        final context = await initialContext(records);
+        var action = false;
+        controller = SourceReviewController(
+          project: project,
+          generated: SourceGenerationStore(records).load(project.id)!,
+          records: records,
+          selectedSession: context.binding.session,
+          readRequestHistory: (_) {
+            if (action) {
+              action = false;
+              if (kind == 'dispose') {
+                controller.dispose();
+              } else {
+                controller.refreshRequestHistory();
+              }
+              throw StateError('private late read error');
+            }
+            return const [];
+          },
+        );
+        var updates = 0;
+        controller.addListener(() => updates++);
+        action = true;
+        controller.refreshRequestHistory();
+        expect(controller.requestHistoryError, isNull, reason: kind);
+        expect(updates, kind == 'dispose' ? 0 : 1, reason: kind);
+      }
+    },
+  );
+  test('selected session disposal during response cleanup records local cancellation without late proposal', () async {
+    controller.dispose();
+    final context = await initialContext(records);
+    provider.cleanup = Completer<void>();
+    controller = SourceReviewController(
+      project: project,
+      generated: SourceGenerationStore(records).load(project.id)!,
+      records: records,
+      selectedSession: context.binding.session,
+      proposer: ApprovedSourceProposer(
+        records,
+        proposer: SourceEditProposer(createProvider: (_) => provider),
+      ),
+      readSnapshot: (_, _) async => originals,
+    );
+    final pending = controller.request('Tanalyze', ['lib/main.dart']);
+    await tick();
+    provider.stream.add(response());
+    await provider.stream.close();
+    await tick();
+    var updates = 0;
+    controller.addListener(() => updates++);
+    controller.dispose();
+    provider.cleanup!.complete();
+    await pending;
+    expect(updates, 0);
+    expect(controller.proposal, isNull);
+    expect(
+      SessionProposalRequestStore(
+        records,
+        project.id,
+        'initial-request',
+      ).load().requests.single.status,
+      SessionProposalRequestStatus.cancelledLocally,
+    );
+  });
 }

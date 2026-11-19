@@ -15312,3 +15312,116 @@ Only three claimed documentation files changed; no production code, stored recor
 live inference, SDK/native/UI behavior or platform acceptance changed. The bounded
 follow-up acceptance is recorded above and in AGENT_ENGINE.md; publication, fresh
 exact review, required CI and verified merge remain before dependent implementation.
+
+
+19 November 2026 — PR754 verified merged b27e9e75fb459d06a6fa5e786649ff6aca5abdb2,
+exact tree42dbb38db1dc65514e948e1cd80fdd7158c7d729 matching all3 tested docs.
+Fresh review5fc2c842/baseb710756 found no blockers; required CI44583060884 both
+SUCCESS and conversations empty. Plugin PR/main/fetchedorigin and issue404OPEN
+verified. Investigation baseline84/guards41/cleanup probe1/product32/inventory9 pass;
+no runtime/schema/live/platform change. Recorded merged/outcome_verified before
+releasing integration and writer ownership. Owner dirty IDE/history edits preserved.
+Immediately claimed404-session-proposal-request-history from verified main.
+
+CE01 selected-session initial request history implementation started under #404,
+following the PR754 boundary in AGENT_ENGINE.md. Acceptance: bounded canonical new
+metadata-only journal; exact session/task/approval/raw working/source/model identity
+and atomic before-provider reservation; truthful reserved/unresolved/returnedValidated/
+failedLocally/cancelledLocally outcomes; independent read-only reopen history with
+no replay/proposal restoration/repair-budget reinterpretation. Storage/conflict/stale
+selection must prevent provider entry; response/cleanup/cancel/disposal and outcome
+write races retain uncertainty and last working output. Add strict model/store,
+actual native database reopen, controller/lifecycle and narrow UI checks, labelled
+IAB and required local/CI/review/merge gates. No second independent task is ready;
+this is one coherent owned implementation, not delivered functionality yet.
+
+
+CE01 request-history implementation checkpoint: strict metadata model5 tests pass.
+Store/CAS/native reopen regressions are added and currently expose the expected
+unsupported new database record guard (7store failures; 6combined passes) before
+any transport integration. The test initially used a nonexistent cancel alias;
+corrected to requestCancellation. Existing database validation must explicitly
+register the new bounded decoder and isolate corrupt history on reopen. Freeze
+this local checkpoint, then transfer the same implementation to an expanded
+exclusive contract including studio_database.dart and its regression test. This
+is a scope correction within #404, not a second feature or delivered acceptance;
+no source request pipeline or live inference has changed yet.
+
+
+CE01 request-history persistence foundation now passes110 focused Flutter tests,
+including existing initial/repair/source-review/session admission, architecture and
+transactional storage regressions. New strict metadata/journal/store tests cover
+immutable canonical records, bounded counts/bytes, exact key/session/source/model
+identity, stale-input/CAS conflicts, simultaneous reservation (one winner), failed
+outcome persistence remaining unresolved, cancellation after withdrawal and actual
+native database reopen. Database explicitly validates the new key and preserves
+corrupt-history bytes while isolating its read error from unrelated records.
+Initial7 unsupported-key failures and a test cancellation API typo were corrected;
+a command referenced the not-yet-created studio_database_test before its explicit
+integration tests were added. Final110 pass, clean Flutter analyze and formatting;
+/tmp/asg-404-session-proposal-request-history-{model,store,foundation,analyze}.log.
+Frozen local checkpoint5fed991 preserves the original scope; its released claim was
+replaced by expanded404-session-proposal-history-persistence, including database
+integration, with the same coherent #404 outcome/branch and PR754 dependency. No
+second writer, completed implementation or source transport/UI acceptance claimed.
+Next on this owned task: connect reservation/outcome ordering to selected-session
+initial transport, add late-session/cleanup/disposal/provider-entry regressions,
+independent read-only production history and fixtures, then full required validation,
+fresh exact review/CI/verified merge. Existing owner processes and dirty root edits
+remain untouched; no live inference/download/install/stable replacement performed.
+
+
+CE01 selected-session initial request history is connected locally: shared bounded
+preflight precedes provider entry; exact selected session/approval/raw working/source
+intent is reserved first; response/cleanup/current context gates and durable outcome
+writes precede current proposal publication. Unbound requests and real-failure repair
+history/budgets remain separate. Independent production history has read-only reload,
+truthful outcome/uncertainty labels, no replacement restoration and sanitized
+error/retry/disposal/reentry handling. Initial transport/lifecycle/UI74 tests passed;
+a reused session ID in the new lifecycle fixture and a helper insertion matching
+fixture source text were corrected before successful reruns. An automatic brace
+fixer also inserted an unrelated hooks dependency despite its requested code filter;
+that single insertion was removed immediately, manifest/lockfile verified identical,
+and no install/download was performed.
+
+Prepublication review reproduced one native durable-context gap: the initial returned
+outcome CAS compared only journal bytes while its callback could see an older cached
+session. The new test separately commits session withdrawal in the actual database;
+expected refusal failed on the old implementation. Return CAS now includes the exact
+reserved context; that native test plus transport/controller/UI83 pass. Backward
+outcome time normalization was removed; invalid timestamp leaves intent unresolved.
+First full local checks2067pass/11existing skips/format528/analyze and production
+web/macOS builds passed before this guard correction. Fresh full checks/builds are
+being repeated for the corrected source. Earlier IAB9136 JSade71169 shows four supplied
+states, read-only zero-write reopen, explicit request5 returned, cleanup request6 failed,
+failed outcome write request7 unresolved, independent read error/recovery and retained
+history/refused request after explicit withdrawal. Before withdrawal: originals true,
+5journal commits/3supplied providers/3captures/0unexpected writes/0SDK-preview; final
+7explicit fixture controls include withdrawal, so original non-journal equality becomes
+false as expected. This is pre-guard-correction supplied evidence, not final revision
+or live inference acceptance. Fresh final-source browser evidence remains pending.
+
+
+CE01 request-history final local validation after durable-context correction:
+fullFlutter2067passed/11existing skips; format528unchanged; clean Flutter analyze
+and explicit fixture Dart analyze; production web/final supplied fixture web and
+production macOS debug compile pass. Native candidate host56/product32/inventory9
+pass; separate native restart CLI6 pass. Actual native DB tests retain unresolved
+intent across reopen, isolate corrupt history and reject a separately committed
+session change despite stale adapter cache. Inventory changes only current runtime
+comparison digest and new source paths; historical identities/observations unchanged.
+Logs:/tmp/asg-404-session-proposal-request-history-{full-tests,format,analyze,fixture-analyze,
+production-web,final-fixture-web,native-build,native-host,product,inventory}.log.
+Fresh final-source IAB9137 shows all4 supplied setup states, a new explicit request5
+returned at2026-11-19T18:41:47.876Z (started18:41:47.873Z), then actual close/reopen
+and reload retain that history without restoring proposal or new effects. Final
+originals true/2journal commits/1supplied provider/1capture/0unexpected writes/
+0SDK-preview/0fixture controls. Final JS729699e949d1951be386c95ad85394891ab5415da05f475ceb4a22e68b4a7e08;
+/tmp/asg-404-session-proposal-request-history-final-iab-observation.json. Native
+production debug binaryabcde09cff8974b68a3667ccbffa4a642d955e2a6b16474b57f15bf30bc4cc20 compiled only;
+no installed/stable replacement or native launch claimed. Earlier9136 adverse UI
+observations remain tied to their pre-correction revision; final native/adverse
+regressions and final-source browser smoke are distinguished. No live inference,
+model install/download, SDK execution of supplied source or broadened platform/
+CE01 acceptance claimed. Exact PR review/required CI/verified merge still gate
+completion; umbrella404 remains OPEN and this implementation retains ownership.
