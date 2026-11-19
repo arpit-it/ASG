@@ -1312,3 +1312,46 @@ specific unknown-running-outcome controller regression1 and completion-receipt
 fixtures3 passed. Logs are /tmp/asg-404-session-cancellation-running-investigation-
 {baseline,unknown,receipts}.log. No new native observation, inference, device
 support, cleanup or fullCE01 acceptance is claimed by this investigation.
+
+
+### CE01 native active-test session withdrawal — 19 November 2026
+
+Protocol15 adds --session-cancel-active only with the complete existing
+--operation test --stop --session-bound --session-cancel slice. It must not use
+--running, which still denotes the separate Candidate Stop fixture, or any
+acknowledgment/retry/promotion/pre-admission fault mode. The fixed harness's
+--stop switch selects the mapped approved fixture setup; actual Stop evidence
+remains candidateStopPresent=false and stopSignalled=false in this cancellation
+slice. Old protocol14 observations keep their original identities.
+
+The fixed native test writes a nonce marker, then waits at a bounded nonce
+release-file barrier. The fixture verifies matching test intent/context and no
+test result before calling production requestCancellation on the admitted
+revision1 snapshot. It requires revision2 cancellation with one unchanged
+reference and unchanged pending-test journal/executing checkpoint, still no
+result, no Stop record and no host cancellation signal. The fixture records
+before/after session fingerprints and the actual intent/context/marker ancestry
+in a bounded canonical private boundary file before releasing the test.
+
+After release it awaits real test exit0 without cancelled=true. Production
+observation persistence retains resolve/analyze/test results after withdrawal;
+the next authority check refuses Build. The resulting failed candidate/finished
+journal/verifying checkpoint is a saved refusal after three real results, not
+Plan completion. A session proof fingerprints the full three-receipt set and
+active boundary. Reading that boundary revalidates exact intent/context/marker,
+admitted basis and cancelled-session bytes rather than trusting a phase label.
+
+The host kills only its owned app handle after terminal observations. The second
+separately launched app reopens cancelled history read-only; raw durable and
+receipt fingerprints must match, source/working state stays unchanged, and
+preparations/command entries are zero. The host refuses malformed/missing active
+boundary, wrong receipt prefix, nonzero or bool test exits, host Stop signals and
+partial/conflicting modes before launch. The old after-resolve cancellation
+mode cannot be relabelled using the running Candidate Stop flag.
+
+This proves natural late completion after persisted session withdrawal. It does
+not establish process termination on session cancellation, crash while the test
+itself remains alive, general cleanup, automatic reconciliation/retry, arbitrary
+model synthesis or full CE01. No production permissions or runtime code change.
+
+Native active-session withdrawal final local validation: protocol15 --session-cancel-active new two-launch scenario and ten earlier normal/commit-crash/retry/after-exit-cancellation/admission-precommit/admission-committed/legacy-resolve/legacy-stop/legacy-precommit/legacy-promotion-crash scenarios all passed on binaryafac45ce843d198bb7b5ed00e77af298a4e9712cf937032e491f5a1d47fd0e52. New proof records rev2 cancellation before test result, validates unchanged pre-exit intent/context/marker/admitted-basis ancestry, preserves actual exit0 and complete resolve/analyze/test receipts, refuses Build/promotion and retains failed candidate/finished journal/verifying checkpoint. Owned-app crash then separate read-only reopen preserves exact durable/receipt/source/working evidence with preparations1/0 and commands3/0; no Candidate Stop or host cancellation signal. Evidence /tmp/asg-404-native-session-cancellation-running-{active,normal,commit-crash,retry,cancellation,admission-precommit,admission-committed,legacy-resolve,legacy-stop,legacy-precommit,legacy-promotion-crash}-observation.json. Host41/probe6/product32/inventory9, fullFlutter1,918/11skip/analyze, final fixture Dart analysis and rebuilt isolated native bundle passed. No new live inference, stable app replacement, process-termination/general cleanup or fullCE01 claim. Fresh exact PR review/required CI/verified merge remain gates.

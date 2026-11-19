@@ -120,6 +120,51 @@ class CandidateCrashTests(unittest.TestCase):
                     fixture.read_report(self.root, launch, self.nonce, operation='test', stop=True,
                                         session_bound=True, session_cancel=True)
 
+    def test_active_cancellation_requires_three_actual_receipts_and_boundary_hash(self):
+        for launch in (1, 2):
+            proof = self.session_proof(launch)
+            proof.update(revision=2, cancellationRequested=True, receiptSha256='f' * 64,
+                activeBoundarySha256='a' * 64, commandEntries=3 if launch == 1 else 0)
+            fixture.read_session_proof(proof, self.nonce, launch,
+                session_cancel=True, session_cancel_active=True)
+            fields = dict(sessionBound=True, sessionCancel=True, sessionCancelActive=True,
+                stopRequested=True, sessionProof=proof, completedOperations=fixture.OPERATIONS[:3],
+                receiptOperations=fixture.OPERATIONS[:3], runFinished=True,
+                candidatePhase='failed', pendingOperation='', executionPhase='verifying',
+                retainedExit=0, actualTestExit=0, activeBeforeExit=True, runningMarker=True,
+                stopSignalled=False, promotionAllowed=False, candidateStopPresent=False,
+                noLaterCommands=True, workingUnchanged=True, sourcesUnchanged=True,
+                cancellationUnchanged=True, viewRendered=True)
+            self.report(launch, operation='test', **fields)
+            fixture.read_report(self.root, launch, self.nonce, operation='test', stop=True,
+                session_bound=True, session_cancel=True, session_cancel_active=True)
+            for key, value in [('activeBeforeExit', False), ('actualTestExit', True),
+                               ('actualTestExit', -1), ('stopSignalled', True),
+                               ('receiptOperations', ['resolve']), ('runningMarker', False)]:
+                self.report(launch, operation='test', **dict(fields, **{key: value}))
+                with self.subTest(key=key), self.assertRaises(ValueError):
+                    fixture.read_report(self.root, launch, self.nonce, operation='test', stop=True,
+                        session_bound=True, session_cancel=True, session_cancel_active=True)
+            for key, value in [('commandEntries', 1 if launch == 1 else 1), ('activeBoundarySha256', None)]:
+                with self.subTest(key=key), self.assertRaises(ValueError):
+                    fixture.read_session_proof(dict(proof, **{key: value}), self.nonce, launch,
+                        session_cancel=True, session_cancel_active=True)
+            with self.assertRaises(ValueError):
+                fixture.read_session_proof(proof, self.nonce, launch, session_cancel=True)
+
+    def test_active_cancel_incomplete_or_conflicting_modes_launch_nothing(self):
+        for mode in [dict(session_cancel_active=True),
+                     dict(session_cancel_active=True, session_cancel=True),
+                     dict(session_cancel_active=True, session_cancel=True, session_bound=True, stop=True, operation='resolve'),
+                     dict(session_cancel_active=True, session_cancel=True, session_bound=True, stop=True, operation='test', running=True),
+                     dict(session_cancel_active=True, session_cancel=True, session_bound=True, stop=True, operation='test', admission_crash=True)]:
+            with self.subTest(mode=mode), mock.patch.object(fixture, 'inspect_bundle') as probe, \
+                    mock.patch.object(fixture.subprocess, 'Popen') as launch:
+                with self.assertRaises(ValueError):
+                    fixture.observe(self.root, self.root, **mode)
+                probe.assert_not_called()
+                launch.assert_not_called()
+
     def retry_proof(self, launch):
         count = 2 if launch >= 3 else 1
         proof = dict(sessionId=f'session-{self.nonce}', projectId=f'restart-{self.nonce}',
@@ -266,8 +311,8 @@ class CandidateCrashTests(unittest.TestCase):
                         running=True, acknowledge=True, retry=True, promote=True, promotion_crash=crash, session_bound=True)
 
     def report(self, launch, operation='resolve', **changes):
-        value = {'version': 14, 'launch': launch, 'nonce': self.nonce, 'dispatch': f'candidate-restart-{self.nonce}-1:3'}
-        value.update(sessionBound=False, admissionCrash=False, sessionCancel=False, sessionProof=None, sessionRetryProof=None, beforeActionSha256=None, promotionCrash=False, promote=False, retry=False, acknowledge=False, uncertain=False, publicationFault=False, intentUnchanged=True, running=False, runningMarker=False, runningCancelled=False, precommit=False, stopSignalled=False, stopSaveBlocked=False, savedStopPresent=False, stopRequested=False, stopUnchanged=True, operation=operation, completedOperations=fixture.OPERATIONS[:fixture.OPERATIONS.index(operation)])
+        value = {'version': 15, 'launch': launch, 'nonce': self.nonce, 'dispatch': f'candidate-restart-{self.nonce}-1:3'}
+        value.update(sessionBound=False, admissionCrash=False, sessionCancel=False, sessionCancelActive=False, sessionProof=None, sessionRetryProof=None, beforeActionSha256=None, promotionCrash=False, promote=False, retry=False, acknowledge=False, uncertain=False, publicationFault=False, intentUnchanged=True, running=False, runningMarker=False, runningCancelled=False, precommit=False, stopSignalled=False, stopSaveBlocked=False, savedStopPresent=False, stopRequested=False, stopUnchanged=True, operation=operation, completedOperations=fixture.OPERATIONS[:fixture.OPERATIONS.index(operation)])
         if launch == 1:
             value['readyForCrash'] = True
         else:
@@ -499,7 +544,7 @@ class CandidateCrashTests(unittest.TestCase):
             fixture.read_report(self.root, 2, self.nonce, operation='test', stop=True, session_bound=True)
 
     def test_protocol10_cannot_be_relabelled_as_session_evidence(self):
-        for version in (10, 11, 12, 13):
+        for version in (10, 11, 12, 13, 14):
             self.report(1, version=version)
             with self.subTest(version=version), self.assertRaises(ValueError):
                 fixture.read_report(self.root, 1, self.nonce)
@@ -572,6 +617,15 @@ class CandidateCrashTests(unittest.TestCase):
                     fixture.observe(self.root, self.root, **mode)
                 probe.assert_not_called()
                 launch.assert_not_called()
+
+    def test_running_stop_cannot_relabel_after_exit_session_cancellation(self):
+        with mock.patch.object(fixture, 'inspect_bundle') as probe, \
+                mock.patch.object(fixture.subprocess, 'Popen') as launch:
+            with self.assertRaises(ValueError):
+                fixture.observe(self.root, self.root, operation='test', stop=True,
+                    running=True, session_bound=True, session_cancel=True)
+            probe.assert_not_called()
+            launch.assert_not_called()
 
     def test_bundle_preflight_failure_launches_nothing(self):
         with mock.patch.object(fixture.sys, 'platform', 'darwin'), \
