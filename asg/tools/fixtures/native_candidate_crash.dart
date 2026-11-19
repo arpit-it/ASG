@@ -241,11 +241,14 @@ Future<void> main() async {
     }
     final input = jsonDecode(await challenge.readAsString());
     if (input is! Map<String, dynamic> ||
-        input.length != 15 ||
+        input.length != 16 ||
         input['nonce'] is! String ||
         !RegExp(r'^[a-f0-9]{32}$').hasMatch(input['nonce'] as String) ||
         ![1, 2, 3, 4, 5].contains(input['launch']) ||
         input['sdk'] is! String ||
+        input['sessionCancelActive'] is! bool ||
+        (input['sessionCancelActive'] == true &&
+            input['sessionCancel'] != true) ||
         input['sessionCancel'] is! bool ||
         (input['sessionCancel'] == true &&
             (input['sessionBound'] != true ||
@@ -299,6 +302,7 @@ Future<void> main() async {
     final operation = input['operation'] as String;
     final targetIndex = operations.indexOf(operation);
     final sessionCancel = input['sessionCancel'] as bool;
+    final sessionCancelActive = input['sessionCancelActive'] as bool;
     final sessionBound = input['sessionBound'] as bool;
     final admissionCrash = input['admissionCrash'] as bool;
     final stop = input['stop'] as bool;
@@ -374,7 +378,14 @@ Future<void> main() async {
     };
     Future<String> firstReceiptHash() async {
       final observed = await receipts.read(checks.load().runs.single);
-      if (observed.length != 1 || observed.single.operation.name != 'resolve') {
+      final expected = sessionCancelActive
+          ? operations.take(3).toList()
+          : ['resolve'];
+      if (jsonEncode(observed.map((item) => item.operation.name).toList()) !=
+              jsonEncode(expected) ||
+          observed.any(
+            (item) => item.result.exitCode != 0 || item.result.cancelled,
+          )) {
         throw StateError(
           'Only the validated first receipt may be fingerprinted',
         );
@@ -388,8 +399,10 @@ Future<void> main() async {
       final evidence = <String, String>{};
       for (final name in [
         'context.json',
-        'resolve.intent.json',
-        'resolve.result.json',
+        for (final operation in expected) ...[
+          '$operation.intent.json',
+          '$operation.result.json',
+        ],
       ]) {
         final file = File(path.join(directory.path, name));
         if (await FileSystemEntity.isLink(file.path) ||
@@ -400,6 +413,73 @@ Future<void> main() async {
         evidence[name] = await file.readAsString();
       }
       return digest(jsonEncode(evidence));
+    }
+
+    Future<String> activeBoundaryHash() async {
+      final file = File(path.join(canonical, 'active-cancellation.json'));
+      if (await FileSystemEntity.isLink(file.path) ||
+          await file.length() > 65536 ||
+          await file.resolveSymbolicLinks() != file.absolute.path) {
+        throw StateError('Invalid active cancellation boundary');
+      }
+      final raw = await file.readAsString();
+      final value = jsonDecode(raw);
+      if (value is! Map ||
+          value['nonce'] != nonce ||
+          value['dispatch'] != 'candidate-$projectId-1:3' ||
+          value['beforeRevision'] != 1 ||
+          value['afterRevision'] != 2 ||
+          value['activeBeforeExit'] != true) {
+        throw StateError('Active cancellation boundary identity mismatch');
+      }
+      const hashes = [
+        'intentSha256',
+        'contextSha256',
+        'markerSha256',
+        'sessionBeforeSha256',
+        'sessionAfterSha256',
+        'journalSha256',
+        'executionSha256',
+      ];
+      if (value.length != 12 ||
+          hashes.any(
+            (key) =>
+                value[key] is! String ||
+                !RegExp(r'^[a-f0-9]{64}$').hasMatch(value[key] as String),
+          )) {
+        throw StateError('Incomplete active cancellation fingerprints');
+      }
+      final directory =
+          (await receiptRoot
+                  .list(followLinks: false)
+                  .where((entry) => entry is Directory)
+                  .toList())
+              .single;
+      final inputs = {
+        'intentSha256': File(path.join(directory.path, 'test.intent.json')),
+        'contextSha256': File(path.join(directory.path, 'context.json')),
+        'markerSha256': File(
+          path.join(candidate.path, 'build', 'running-$nonce'),
+        ),
+        'sessionBeforeSha256': File(
+          path.join(canonical, 'admitted-session.json'),
+        ),
+      };
+      for (final entry in inputs.entries) {
+        if (await FileSystemEntity.isLink(entry.value.path) ||
+            await entry.value.length() > 256 * 1024 ||
+            await entry.value.resolveSymbolicLinks() !=
+                entry.value.absolute.path ||
+            digest(await entry.value.readAsString()) != value[entry.key]) {
+          throw StateError('Active cancellation ancestry changed');
+        }
+      }
+      final saved = AgentSessionStore(records, project).load('session-$nonce')!;
+      if (digest(records.getString(saved.storageKey)!) !=
+          value['sessionAfterSha256']) {
+        throw StateError('Withdrawn session identity changed');
+      }
+      return digest(raw);
     }
 
     Future<Map<String, Object?>?> sessionProof() async {
@@ -459,6 +539,8 @@ Future<void> main() async {
         'executionSha256': execution == null ? null : digest(execution),
         if (sessionCancel) 'cancellationRequested': saved.cancellationRequested,
         if (sessionCancel) 'receiptSha256': await firstReceiptHash(),
+        if (sessionCancelActive)
+          'activeBoundarySha256': await activeBoundaryHash(),
         'receiptPreparations': receiptPreparations,
         'commandEntries': commandEntries,
       };
@@ -678,16 +760,20 @@ Future<void> main() async {
       final run = checks.load().runs.single;
       final snapshot = run.snapshot;
       final retained = await receipts.read(run);
+      final expected = sessionCancelActive
+          ? operations.take(3).toList()
+          : ['resolve'];
       if (!run.finished ||
           snapshot.phase != SourceGenerationPhase.failed ||
           snapshot.pendingOperation.isNotEmpty ||
-          snapshot.steps.length != 1 ||
-          snapshot.steps.single.operation != 'resolve' ||
-          snapshot.steps.single.exitCode != 0 ||
-          retained.length != 1 ||
-          retained.single.operation.name != 'resolve' ||
-          retained.single.result.exitCode != 0 ||
-          retained.single.result.cancelled ||
+          jsonEncode(snapshot.steps.map((item) => item.operation).toList()) !=
+              jsonEncode(expected) ||
+          snapshot.steps.any((item) => item.exitCode != 0 || item.cancelled) ||
+          jsonEncode(retained.map((item) => item.operation.name).toList()) !=
+              jsonEncode(expected) ||
+          retained.any(
+            (item) => item.result.exitCode != 0 || item.result.cancelled,
+          ) ||
           controller.savedExecutionFor(run)?.phase.name != 'verifying' ||
           controller.canPromote ||
           checks.stopRequestFor(run) != null) {
@@ -695,7 +781,7 @@ Future<void> main() async {
           'Session cancellation did not retain only the actual first exit',
         );
       }
-      for (final operation in operations.skip(1)) {
+      for (final operation in operations.skip(expected.length)) {
         if (await File(path.join(canonical, '$operation-dispatched'))
             .exists()) {
           throw StateError(
@@ -739,9 +825,15 @@ Future<void> main() async {
           'retry': retry,
           'promote': promote,
           'promotionCrash': promotionCrash,
-          'completedOperations': ['resolve'],
-          'receiptOperations': ['resolve'],
-          'retainedExit': retained.single.result.exitCode,
+          'completedOperations': expected,
+          'receiptOperations': expected,
+          'retainedExit': retained.last.result.exitCode,
+          if (sessionCancelActive) ...{
+            'activeBeforeExit': true,
+            'runningMarker': true,
+            'stopSignalled': false,
+            'actualTestExit': retained.last.result.exitCode,
+          },
           'runFinished': run.finished,
           'candidatePhase': snapshot.phase.name,
           'pendingOperation': snapshot.pendingOperation,
@@ -757,6 +849,7 @@ Future<void> main() async {
         },
         sessionBound: true,
         sessionCancel: true,
+        sessionCancelActive: sessionCancelActive,
         sessionProof: proof,
       );
     }
@@ -939,7 +1032,9 @@ Future<void> main() async {
       final test = File(path.join(candidate.path, 'test', 'smoke_test.dart'));
       await test.parent.create();
       await test.writeAsString(
-        running
+        sessionCancelActive
+            ? "import 'dart:io'; import 'package:flutter_test/flutter_test.dart'; void main() { test('fixed active withdrawal', () async { await Directory('build').create(recursive: true); await File('build/running-$nonce').writeAsString('$nonce', flush: true); final release = File('build/release-session-$nonce'); final end = DateTime.now().add(const Duration(seconds: 60)); while (!await release.exists() && DateTime.now().isBefore(end)) { await Future<void>.delayed(const Duration(milliseconds: 20)); } expect(await release.readAsString(), '$nonce'); }); }"
+            : running
             ? "import 'dart:io'; import 'package:flutter_test/flutter_test.dart'; void main() { test('fixed running fixture', () async { await Directory('build').create(recursive: true); if (await File('build/allow-retry-$nonce').exists()) { expect(await File('build/allow-retry-$nonce').readAsString(), '$nonce'); return; } await File('build/running-$nonce').writeAsString('$nonce', flush: true); await Future<void>.delayed(const Duration(seconds: 60)); fail('Stop did not reach running test'); }); }"
             : "import 'package:flutter_test/flutter_test.dart';\nvoid main() { test('fixed fixture smoke', () { expect(2 + 2, 4); }); }\n",
       );
@@ -1104,7 +1199,130 @@ Future<void> main() async {
           await File(path.join(canonical, '$currentOperation-dispatched'))
               .create(exclusive: true);
           GenerationStep? step;
-          if (running && currentOperation == operation) {
+          if (sessionCancelActive && currentOperation == 'test') {
+            final result = verifier
+                .runFlutterOperation(
+                  project,
+                  currentOperation,
+                  receiptDirectory: receiptDirectory,
+                )
+                .then<GenerationStep?>(
+                  (value) => value,
+                  onError: (Object _, StackTrace _) => null,
+                );
+            final marker = File(
+              path.join(candidate.path, 'build', 'running-$nonce'),
+            );
+            final deadline = DateTime.now().add(const Duration(seconds: 45));
+            while (!await marker.exists() &&
+                DateTime.now().isBefore(deadline)) {
+              await Future<void>.delayed(const Duration(milliseconds: 20));
+            }
+            final intent = File(
+              path.join(receiptDirectory, 'test.intent.json'),
+            );
+            final completion = File(
+              path.join(receiptDirectory, 'test.result.json'),
+            );
+            final context = File(path.join(receiptDirectory, 'context.json'));
+            if (!await marker.exists() ||
+                await FileSystemEntity.isLink(marker.path) ||
+                await marker.readAsString() != nonce ||
+                !await intent.exists() ||
+                await FileSystemEntity.isLink(intent.path) ||
+                await completion.exists()) {
+              throw StateError('Active test marker/intent boundary missing');
+            }
+            final intentRaw = await intent.readAsString();
+            final contextRaw = await context.readAsString();
+            final intentValue = jsonDecode(intentRaw);
+            if (intentValue is! Map ||
+                intentValue['operation'] != 'test' ||
+                jsonEncode(intentValue['context']) !=
+                    jsonEncode(jsonDecode(contextRaw))) {
+              throw StateError('Active test intent identity mismatch');
+            }
+            final pending = checks.load().runs.single;
+            final admitted = runningController.sessionBinding!.session;
+            final executionKey =
+                'studio.agentExecution.v1.candidate-$projectId-1';
+            final journalBefore = records.getString(checks.key)!;
+            final executionBefore = records.getString(executionKey)!;
+            if (pending.finished ||
+                pending.snapshot.pendingOperation != 'test' ||
+                pending.snapshot.steps.length != 2 ||
+                admitted.revision != 1 ||
+                verifier.stopSignalled ||
+                checks.stopRequestFor(pending) != null ||
+                AgentExecutionCheckpoint.fromJson(jsonDecode(executionBefore))
+                        .phase !=
+                    AgentExecutionPhase.executing) {
+              throw StateError('Active cancellation startup state mismatch');
+            }
+            final basis = File(path.join(canonical, 'admitted-session.json'));
+            await basis.create(exclusive: true);
+            await basis.writeAsString(
+              jsonEncode(admitted.toJson()),
+              flush: true,
+            );
+            final cancelled = await AgentSessionStore(
+              records,
+              runningController.project,
+            ).requestCancellation(admitted);
+            if (await completion.exists() ||
+                !cancelled.cancellationRequested ||
+                cancelled.revision != 2 ||
+                records.getString(checks.key) != journalBefore ||
+                records.getString(executionKey) != executionBefore ||
+                verifier.stopSignalled ||
+                checks.stopRequestFor(pending) != null) {
+              throw StateError(
+                'Session withdrawal did not precede actual exit',
+              );
+            }
+            final boundary = File(
+              path.join(canonical, 'active-cancellation.json'),
+            );
+            await boundary.create(exclusive: true);
+            await boundary.writeAsString(
+              jsonEncode({
+                'nonce': nonce,
+                'dispatch': pending.dispatchId,
+                'beforeRevision': admitted.revision,
+                'afterRevision': cancelled.revision,
+                'activeBeforeExit': true,
+                'intentSha256': digest(intentRaw),
+                'contextSha256': digest(contextRaw),
+                'markerSha256': digest(await marker.readAsString()),
+                'sessionBeforeSha256': digest(jsonEncode(admitted.toJson())),
+                'sessionAfterSha256': digest(
+                  records.getString(cancelled.storageKey)!,
+                ),
+                'journalSha256': digest(journalBefore),
+                'executionSha256': digest(executionBefore),
+              }),
+              flush: true,
+            );
+            final release = File(
+              path.join(candidate.path, 'build', 'release-session-$nonce'),
+            );
+            // The running test must never observe an empty/partially written permit.
+            final stagedRelease = File('${release.path}.pending');
+            await stagedRelease.create(exclusive: true);
+            await stagedRelease.writeAsString(nonce, flush: true);
+            if (await FileSystemEntity.type(release.path, followLinks: false) !=
+                FileSystemEntityType.notFound) {
+              throw StateError('Unexpected active test release');
+            }
+            await stagedRelease.rename(release.path);
+            step = await result.timeout(const Duration(seconds: 20));
+            if (step == null ||
+                step.exitCode != 0 ||
+                step.cancelled ||
+                verifier.stopSignalled) {
+              throw StateError('Actual late test completion missing');
+            }
+          } else if (running && currentOperation == operation) {
             // Observe errors immediately while waiting for the live test marker.
             final result = verifier
                 .runFlutterOperation(
@@ -1145,7 +1363,7 @@ Future<void> main() async {
               throw StateError('Actual confined operation failed.');
             }
           }
-          if (sessionCancel) {
+          if (sessionCancel && !sessionCancelActive) {
             if (currentOperation != 'resolve' ||
                 step!.exitCode != 0 ||
                 step.cancelled) {
@@ -1166,6 +1384,7 @@ Future<void> main() async {
             ).requestCancellation(admitted);
             return step;
           }
+          if (sessionCancelActive) return step!;
           if (currentOperation != operation) return step!;
           final pending = checks.load().runs.single;
           final saved = await receipts.read(pending);
@@ -2000,6 +2219,7 @@ Future<void> report(
   bool sessionBound = false,
   bool admissionCrash = false,
   bool sessionCancel = false,
+  bool sessionCancelActive = false,
   Map<String, Object?>? sessionProof,
   Map<String, Object?>? sessionRetryProof,
   String? beforeActionSha256,
@@ -2008,12 +2228,13 @@ Future<void> report(
   await file.create(exclusive: true);
   await file.writeAsString(
     jsonEncode({
-      'version': 14,
+      'version': 15,
       'launch': launch,
       ...observation,
       'sessionBound': sessionBound,
       'admissionCrash': admissionCrash,
       'sessionCancel': sessionCancel,
+      'sessionCancelActive': sessionCancelActive,
       'sessionProof': sessionProof,
       'sessionRetryProof': sessionRetryProof,
       'beforeActionSha256': beforeActionSha256,
