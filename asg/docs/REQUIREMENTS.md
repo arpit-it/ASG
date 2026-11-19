@@ -17733,7 +17733,15 @@ new linkage before copying rather than inventing/restoring a working record.
 A synchronous checkActive callback can recheck captured in-process state but is not
 proof that another native adapter left durable metadata unchanged. Await the typed
 read-only conditional guard before the preparer starts; revalidate after awaited
-work and before startup. A race after a prior check cannot make filesystem copy and
+work and before startup. That guard must compare not only origin/repair-journal
+bytes but EVERY captured current preparation context key: approval inputs, exact
+selected-session raw bytes, exact working raw bytes, saved candidate/failure journal
+and source-candidate bytes from the existing fixed repair context. Validation in a
+cached authorize callback is not a durable comparison of those keys. A metadata-only
+conditional comparison cannot detect a separately withdrawn approval or changed
+working/session/failure record. Keep this guard typed and fixed-key; no caller may
+supply an arbitrary comparison scope. Recovery retries without new source copying
+still use their existing current-consent/source checks and the full startup CAS. A race after a prior check cannot make filesystem copy and
 storage one atomic operation: if a separate unverified candidate was already copied,
 retain its path under existing cancellation/recovery behavior while refusing startup
 or further effects. Never claim zero copied files for a race discovered after copy
@@ -17814,3 +17822,11 @@ checks pass. Exact publication/review/CI/verified merge follow separately. No re
 preparation guard, runtime/schema change or stronger historical proof is delivered
 by this contract alone. Only after its verified merge should the next implementation
 be claimed and started; preserve F23-last and the marketplace/deployment gates.
+
+
+Fresh pre-merge contract review found and corrected one ambiguity: durable
+preparation validation must compare the entire captured current authorization/source
+context as well as repair metadata. The native probe demonstrates stale-cache risk;
+the acceptance matrix requires separate-adapter approval/session/working/failure
+refusals before preparation. This clarification adds no runtime behavior. Re-review
+the forward revised PR head and rerun mandatory CI; prior-head review is invalid.
