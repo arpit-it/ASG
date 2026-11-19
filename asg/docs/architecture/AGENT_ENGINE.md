@@ -2756,3 +2756,95 @@ Legacy, unbound, repair and unavailable proof remain without an inferred initial
 No existing strict v1 basis/context/request schema or current consent, source, Stop,
 acknowledgment, repair or promotion boundary is weakened. Deterministic supplied
 fixtures remain distinct from live model observations and external authenticity.
+
+
+### Repair-request candidate lineage investigation
+
+Started after verified PR757 under #404. Initial-return origin is intentionally
+absent on actual repairs. Trace whether RepairAttemptStore attempt numbers survive
+the returned failed-run evidence and preparation normalization; test two identical
+repair returns without latest/content/time inference. This is a prerequisite
+investigation, not a repair reference, replay or expanded execution authority.
+
+
+CE01 repair-request lineage investigation checkpoint on verified PR757 main:
+Disposable probe /tmp/asg-404-repair-lineage-probe_test.dart passes1 case using
+two actual ApprovedSourceProposer repair requests and supplied identity providers
+only. RepairAttemptStore retains proposed attempts1/2 for the same exact failed
+run and identical proposal/model facts. ApprovedSourceProposal.repairRun values
+are identical and carry no attempt number; initialRequestOrigin is correctly null.
+A pure capture following production preparation normalization yields byte-identical
+v1 CandidateReopenBasis records with only task/approval/proposal/responseModel/
+modelRequest evidence fields. This probe does not execute the actual preparer or
+a candidate host; the production normalization boundary is separately source-traced.
+Working/latest failed candidate/session records stay unchanged; only the bounded
+repair journal changes, and no execution checkpoint is created. The first disposable
+probe used an unsupported directory copy parameter; corrected to the actual typed
+decoder before the passing run. Focused existing repair/proposer/preparation/context
+regressions81 pass. Logs:/tmp/asg-404-repair-lineage-{probe,baseline}.log.
+
+Concrete remaining design work: distinguish an exact terminal repair attempt from
+its failed-run identity and preserve that identity through actual preparation/reopen.
+The existing repair reservation/outcome journal must remain budget-consuming and
+independent of initial-request origin; its current journal-only transaction and
+retained fields need examination before defining current session/working/source
+read-set and historical proof. No latest/content/time matching, initial-reference
+inheritance or automatic repair replay is allowed. A bounded explicit repair record
+contract and adverse acceptance examples remain pending before implementation.
+This is ongoing docs-only investigation under the retained claim, not a delivered
+repair reference or a new ready task. Owner processes and unrelated edits preserved.
+
+
+Repair-lineage investigation result — two supplied probes pass on verified
+PR757 main. The second uses the actual production proposer and two StudioDatabase
+adapters over one disposable native database. After repair reservation/provider
+entry, the second adapter withdraws Plan approval durably. The first retains an old
+snapshot; requireCurrent checks that snapshot and RepairAttemptStore.finish compares
+only repair-journal bytes. It records proposed and returns repair evidence; reopening
+the DB confirms withdrawn approval alongside proposed metadata. Working source is
+unchanged and no execution checkpoint/tool is created. This establishes a missing
+durable return-context comparison, not proof of executed or accepted repair.
+
+The native probe initially used a ControlledRecords-only helper; corrected to the
+production proposer constructor before both probes passed. The earlier ambiguity
+probe remains a pure normalization/basis capture after actual supplied repairs,
+not an actual preparation-host run. Existing focused repair/proposer/preparation/
+context regressions81 pass. Native source capture separately verifies each selected
+file against the failed snapshot's recorded fingerprint; those capture bytes and
+manifest facts must remain distinct from current storage approval and write authority.
+
+Next eligible prerequisite under the same CE01/#404 umbrella is one bounded
+implementation: durable repair return-context guarding. Before transport, capture a
+typed fixed-key context of current approval inputs, exact latest failed journal and
+candidate records, current working record (including explicit legacy absence), and
+selected session when supplied by the production selected-session flow. Preserve
+the existing terminal-failure/current-approval/source checks. Bind the repair budget
+reservation and successful proposed outcome to that context in the durable CAS;
+repeat current authorization at transaction time, not just cached checks. Do not
+accept arbitrary view-supplied expected/update maps. Preserve existing v1 repair
+journal format and budget semantics, including all consumed reserved interruptions.
+
+A failed successful-outcome commit must stay unresolved/reserved, with one terminal
+write attempt; do not catch it and overwrite uncertainty as failed/cancelled. Local
+failure/cancellation may retain truthful journal-only observations after context
+changes, grants no proposal/command permission and never refunds the request. A
+successful write must precede exposure of returned evidence. Real cleanup failure,
+withdrawal, changed failed run/candidate/working/session, disposal and cancellation
+remain distinct adverse cases. Preserve legacy read access and separate unbound
+behavior without falsely claiming selected-session binding where none was captured.
+
+Implementation acceptance: native separately committed approval, failure/candidate,
+working and supplied-session races reject reserve or proposed return before transport
+or exposure as appropriate; no partial journal/context/candidate/working writes or
+tool starts. Inject outcome-write failure and prove no fallback terminal rewrite;
+reserved budget remains consumed across reopen. Retain existing repair-budget,
+model-provenance, category limits, Stop/ack/retry, preparation and promotion tests.
+Use full Flutter/analyze/format/relevant builds and required CI/fresh exact review/
+verified merge. This prerequisite must merge before adding any exact repair-attempt
+reference or candidate companion. Candidate lineage remains a later concrete gap
+under this sole queue, not an inferred link from existing legacy repair records.
+
+Investigation is locally complete, docs-only: probes2/focused81 pass, no model, SDK,
+app/runtime/schema or installed-app behavior changed. No live inference or wider
+CE01/platform acceptance claimed. Publication, fresh review, required CI and verified
+merge remain gates before this next implementation is admitted.
