@@ -11,6 +11,9 @@ import 'package:asg/models/chat_message.dart';
 import 'package:asg/models/requirements_board.dart';
 import 'package:asg/models/named_flutter_test_result.dart';
 import 'package:asg/services/conversation_store.dart';
+import 'package:asg/models/agent_task_decision.dart';
+import 'package:asg/services/record_storage.dart';
+import 'package:asg/services/studio_database.dart';
 import 'package:asg/services/requirement_check_report_store.dart';
 import 'package:asg/models/agent_session_publication.dart';
 import 'package:asg/models/agent_execution_checkpoint.dart';
@@ -82,8 +85,105 @@ class ReopenFixtureHost
   }
 }
 
+/// The optional decision fixture permits only the production single-record CAS.
+class DecisionFixtureRecords implements ConditionalRecordStorage {
+  DecisionFixtureRecords(this.source);
+  final TaskHistoryFixtureRecords source;
+  int decisionCommits = 0, unexpectedWrites = 0;
+  @override
+  String? getString(String key) => source.getString(key);
+  @override
+  Future<bool> setString(String key, String value) async {
+    unexpectedWrites++;
+    throw StateError('Only an explicit decision transaction is supplied.');
+  }
+
+  @override
+  Future<void> commitRecords({
+    required Map<String, String?> expected,
+    required Map<String, String> updates,
+    required void Function() authorize,
+  }) async {
+    if (updates.length != 1 ||
+        !updates.keys.single.startsWith(AgentTaskDecision.prefix) ||
+        !expected.containsKey(updates.keys.single) ||
+        expected[updates.keys.single] != null ||
+        source.values.containsKey(updates.keys.single)) {
+      unexpectedWrites++;
+      throw StateError('Unexpected fixture write.');
+    }
+    if (expected.entries.any((e) => source.getString(e.key) != e.value)) {
+      throw StateError('Fixture evidence changed.');
+    }
+    for (final e in updates.entries) {
+      StudioDatabase.validate(e.key, e.value);
+    }
+    authorize();
+    source.values.addAll(updates);
+    decisionCommits++;
+  }
+}
+
 class CandidateReopenFixture {
-  CandidateReopenFixture._(this.records, this.baseline);
+  CandidateReopenFixture._(this.records, this.baseline, this.decisionMode)
+    : decisionRecords = DecisionFixtureRecords(records);
+  final bool decisionMode;
+  final DecisionFixtureRecords decisionRecords;
+  int fixtureMutations = 0;
+  ConditionalRecordStorage get uiRecords =>
+      decisionMode ? decisionRecords : records;
+  bool get originalRecordsUnchanged =>
+      jsonEncode({
+        for (final e in records.values.entries)
+          if (!e.key.startsWith(AgentTaskDecision.prefix)) e.key: e.value,
+      }) ==
+      baseline;
+  int get retainedDecisions => records.values.keys
+      .where((key) => key.startsWith(AgentTaskDecision.prefix))
+      .length;
+  Future<void> replaceNamedObservation() async {
+    records.readOnly = false;
+    try {
+      final report = RequirementCheckReportStore(records);
+      final current = report.load(TaskHistoryFixture.project);
+      final target = current.results.first.requirement.checks.first.target!;
+      await report.recordNamedTestResult(
+        TaskHistoryFixture.project,
+        current,
+        'R1',
+        'Auto',
+        NamedFlutterTestResult.fromCommand({
+          'exitCode': 1,
+          'timedOut': false,
+          'cancelled': false,
+          'outputLimitExceeded': false,
+          'targetedTest': {
+            'file': target.file,
+            'name': target.name,
+            'status': 'notPassed',
+            'reason': 'commandFailed',
+          },
+        }, target),
+        DateTime.utc(2026, 2),
+        authorized: () => true,
+      );
+      fixtureMutations++;
+    } finally {
+      records.readOnly = true;
+    }
+  }
+
+  Future<void> withdrawPublishedSession() async {
+    records.readOnly = false;
+    try {
+      final sessions = AgentSessionStore(records, TaskHistoryFixture.project);
+      await sessions.requestCancellation(sessions.load('published')!);
+      fixtureMutations++;
+    } finally {
+      records.readOnly = true;
+    }
+  }
+
   final TaskHistoryFixtureRecords records;
   final String baseline;
   final hosts = <ReopenFixtureHost>[];
@@ -98,7 +198,9 @@ class CandidateReopenFixture {
   int get effectAttempts =>
       hosts.fold(0, (sum, host) => sum + host.effectAttempts);
 
-  static Future<CandidateReopenFixture> create() async {
+  static Future<CandidateReopenFixture> create({
+    bool decisionMode = false,
+  }) async {
     final old = await TaskHistoryFixture.create();
     final records = old.records..readOnly = false;
     const project = TaskHistoryFixture.project;
@@ -144,20 +246,23 @@ class CandidateReopenFixture {
                 checkIds: ['Auto'],
                 verificationRule: CriterionVerificationRule.allMappedNamedTests,
               ),
-              AcceptanceCriterionDefinition(
-                id: 'AC2',
-                text: 'Manual fixture criterion',
-                checkIds: ['Manual'],
-              ),
-              AcceptanceCriterionDefinition(
-                id: 'AC3',
-                text: 'Unmapped fixture criterion',
-              ),
-              AcceptanceCriterionDefinition(
-                id: 'AC4',
-                text: 'Advisory fixture criterion',
-                checkIds: ['Advice'],
-              ),
+              if (!decisionMode)
+                AcceptanceCriterionDefinition(
+                  id: 'AC2',
+                  text: 'Manual fixture criterion',
+                  checkIds: ['Manual'],
+                ),
+              if (!decisionMode)
+                AcceptanceCriterionDefinition(
+                  id: 'AC3',
+                  text: 'Unmapped fixture criterion',
+                ),
+              if (!decisionMode)
+                AcceptanceCriterionDefinition(
+                  id: 'AC4',
+                  text: 'Advisory fixture criterion',
+                  checkIds: ['Advice'],
+                ),
             ],
           ),
           ProjectRequirement(
@@ -382,16 +487,22 @@ class CandidateReopenFixture {
       DateTime.utc(2026),
       authorized: () => true,
     );
-    await sessions.requestCancellation(admitted);
+    if (!decisionMode) await sessions.requestCancellation(admitted);
     records.readOnly = true;
     records.writeAttempts = 0;
-    return CandidateReopenFixture._(records, jsonEncode(records.values));
+    return CandidateReopenFixture._(
+      records,
+      jsonEncode(records.values),
+      decisionMode,
+    );
   }
 }
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final fixture = await CandidateReopenFixture.create();
+  final fixture = await CandidateReopenFixture.create(
+    decisionMode: const bool.fromEnvironment('ASG_TASK_DECISION_FIXTURE'),
+  );
   runApp(MaterialApp(home: _FixtureHome(fixture)));
 }
 
@@ -405,17 +516,57 @@ class _FixtureHome extends StatefulWidget {
 class _FixtureHomeState extends State<_FixtureHome> {
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Published-task evidence UI fixture')),
+    appBar: AppBar(
+      title: Text(
+        widget.fixture.decisionMode
+            ? 'Authored-check decision UI fixture'
+            : 'Published-task evidence UI fixture',
+      ),
+    ),
     body: ListView(
       padding: const EdgeInsets.all(16),
       children: [
         const Text(
-          'Deterministic in-memory publication, named-test and manual observations. No SDK, files, model or preview runs. Records refuse writes after setup.',
+          'Deterministic in-memory publication, named-test and manual observations. No SDK, files, model or preview runs. Default records refuse writes after setup; the labelled decision fixture permits only explicit decision records.',
         ),
         Text(
           'Write attempts after setup: ${widget.fixture.records.writeAttempts}',
         ),
         Text('Records unchanged: ${widget.fixture.unchanged}'),
+        if (widget.fixture.decisionMode) ...[
+          const Text(
+            'Decision fixture: only explicit one-record decision transactions are permitted. Named-test observations are supplied, not new SDK execution.',
+          ),
+          Text(
+            'Original records unchanged: ${widget.fixture.originalRecordsUnchanged}',
+          ),
+          Text(
+            'Decision commits: ${widget.fixture.decisionRecords.decisionCommits}',
+          ),
+          Text('Retained decisions: ${widget.fixture.retainedDecisions}'),
+          Text(
+            'Unexpected writes: ${widget.fixture.decisionRecords.unexpectedWrites}',
+          ),
+          Text(
+            'Explicit fixture evidence mutations: ${widget.fixture.fixtureMutations}',
+          ),
+          OutlinedButton(
+            onPressed: () async {
+              await widget.fixture.replaceNamedObservation();
+              if (mounted) setState(() {});
+            },
+            child: const Text(
+              'Replace supplied named observation with failure',
+            ),
+          ),
+          OutlinedButton(
+            onPressed: () async {
+              await widget.fixture.withdrawPublishedSession();
+              if (mounted) setState(() {});
+            },
+            child: const Text('Withdraw supplied published session'),
+          ),
+        ],
         Text('Supplied source inspections: ${widget.fixture.inspections}'),
         Text(
           'Command/model/preview attempts: ${widget.fixture.effectAttempts}',
@@ -424,7 +575,7 @@ class _FixtureHomeState extends State<_FixtureHome> {
           onPressed: () async {
             final controller = AgentSessionController(
               AgentSessionStore(
-                widget.fixture.records,
+                widget.fixture.uiRecords,
                 TaskHistoryFixture.project,
               ),
               createRecoveryHost: widget.fixture.createHost,

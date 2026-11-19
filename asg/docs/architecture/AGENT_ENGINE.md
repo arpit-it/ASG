@@ -2097,3 +2097,50 @@ bytes without replay or stable-app replacement; labelled IAB must distinguish
 supplied check observations from real SDK execution. Existing broad checks and
 required CI remain mandatory. This investigation creates no decision record,
 execution authority, task-status transition, model/SDK call or semantic acceptance.
+
+
+### Authored-check decision implementation checkpoint — 19 November 2026
+
+AgentTaskDecisionEvidence freezes strict typed requirement/rules, scoped passed
+named observations, content identity and exact AgentSessionPublication. A decision
+adds explicit limited consent and its UTC confirmation time, using a versioned
+bounded schema. It records historical completion against authored checks only;
+prose, live files, current compatibility and dependency dispatch remain outside
+its claim. Scoped evidence owns immutable encoded values and returns copies.
+
+AgentTaskDecisionStore.select performs existing exact current publication/working/
+Plan/session applicability checks, then reuses requirementVerifiedAgainstChecks.
+A private RecordStorage wrapper captures and compares every read, including each
+explicitly selected prerequisite decision and its retained proof. No selection
+writes. confirm accepts only that store's frozen selection and explicit consent,
+then conditionally publishes one expected-absent record; consent/lifecycle is
+checked again inside transaction authorization. It updates no board, session,
+working output or check observations. Identical repeat confirmation returns the
+retained record; conflicting proof refuses without rewriting it.
+
+Historical load independently validates retained publication/run/checkpoint and
+frozen named-test identity, recursively checking bounded earlier-run prerequisite
+references in the same frozen session. It does not use current working output,
+Plan or replaceable named/manual observations to reconstruct history. New
+selection still requires current working identity and exact current requirement
+content for prerequisites. Production storage performs strict key/payload
+validation and isolates corrupt decisions on reopen without discarding bytes.
+
+PublishedTaskEvidenceController owns explicit prerequisite choice, consent,
+confirmation state, epoch/lifecycle guards and sanitized failures. The view keeps
+read-only reload separate from the optional limited decision, shows retained
+criterion/named-test facts even when current review is unavailable, and exposes no
+execution or board-status action. The full deterministic suite and native database
+unit reopen pass. Labelled IAB and isolated native process-crash acceptance remain
+pending; no new device/process/browser/live-model outcome is claimed yet.
+
+
+Decision acceptance now includes labelled IAB confirmation/reload, frozen pass versus
+replaced latest failure, and withdrawal with no new controls. The decision-only
+fixture permits only the exact one-record expected-absence transaction; unrelated
+writes are refused. Separate native protocol21 exercises a disposable root-scoped
+database through precommit and postcommit-before-return process kills, then exact
+reopen and withdrawal without replay. Its publication/named-test facts are supplied,
+not newly executed SDK tests. Protocol20 publication smoke still passes on the same
+isolated binary. These observations establish local bounded behavior, not semantic
+acceptance, arbitrary execution, live inference or unavailable-platform support.

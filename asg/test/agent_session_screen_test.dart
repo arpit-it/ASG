@@ -31,6 +31,44 @@ Future<void> reveal(WidgetTester tester, Finder target, double delta) async {
 }
 
 void main() {
+  test('labelled decision fixture permits one scoped decision and retains it after supplied evidence changes', () async {
+    final f = await CandidateReopenFixture.create(decisionMode: true);
+    final parent = AgentSessionController(
+      AgentSessionStore(f.uiRecords, TaskHistoryFixture.project),
+    )..open('published');
+    final number = parent.selected!.dispatches.last.runNumber;
+    final c = parent.createPublishedTaskEvidence(number)!..load();
+    expect(c.canConsent, isTrue);
+    expect(await c.confirm(), isFalse);
+    expect(f.decisionRecords.decisionCommits, 0);
+    c.setConsent(true);
+    expect(await c.confirm(), isTrue);
+    final fingerprint = c.decision!.fingerprint;
+    expect(f.decisionRecords.decisionCommits, 1);
+    expect(f.originalRecordsUnchanged, isTrue);
+    expect(f.retainedDecisions, 1);
+    c.load();
+    expect(c.decision!.fingerprint, fingerprint);
+    expect(f.decisionRecords.decisionCommits, 1);
+    await f.replaceNamedObservation();
+    c.load();
+    expect(c.decision!.fingerprint, fingerprint);
+    expect(c.evidence!.criteria.first.verdict, contains('not verified'));
+    await f.withdrawPublishedSession();
+    parent.open('published');
+    final withdrawn = parent.createPublishedTaskEvidence(number)!..load();
+    expect(withdrawn.decision!.fingerprint, fingerprint);
+    expect(withdrawn.canConsent, isFalse);
+    expect(f.fixtureMutations, 2);
+    expect(f.decisionRecords.unexpectedWrites, 0);
+    expect(f.records.writeAttempts, 0);
+    expect(f.inspections, 0);
+    expect(f.effectAttempts, 0);
+    withdrawn.dispose();
+    c.dispose();
+    parent.dispose();
+  });
+
   TestWidgetsFlutterBinding.ensureInitialized();
   test(
     'labelled supplied publication fixture retains read-only projected history',

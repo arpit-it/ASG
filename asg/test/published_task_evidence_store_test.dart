@@ -40,7 +40,11 @@ typedef EvidenceFixture = ({
   AgentSession session,
   CandidateVerificationRun run,
 });
-Future<EvidenceFixture> evidenceFixture({bool withRules = true}) async {
+Future<EvidenceFixture> evidenceFixture({
+  bool withRules = true,
+  bool allAuthoredRules = false,
+  String taskId = 'Tanalyze',
+}) async {
   if (!withRules) {
     final f = await publishedFixture();
     return (records: f.fixture.records, session: f.session, run: f.run);
@@ -82,20 +86,23 @@ Future<EvidenceFixture> evidenceFixture({bool withRules = true}) async {
               checkIds: ['Auto'],
               verificationRule: CriterionVerificationRule.allMappedNamedTests,
             ),
-            AcceptanceCriterionDefinition(
-              id: 'AC2',
-              text: 'Manual criterion',
-              checkIds: ['Manual'],
-            ),
-            AcceptanceCriterionDefinition(
-              id: 'AC3',
-              text: 'Unmapped criterion',
-            ),
-            AcceptanceCriterionDefinition(
-              id: 'AC4',
-              text: 'Advisory criterion',
-              checkIds: ['Advice'],
-            ),
+            if (!allAuthoredRules)
+              AcceptanceCriterionDefinition(
+                id: 'AC2',
+                text: 'Manual criterion',
+                checkIds: ['Manual'],
+              ),
+            if (!allAuthoredRules)
+              AcceptanceCriterionDefinition(
+                id: 'AC3',
+                text: 'Unmapped criterion',
+              ),
+            if (!allAuthoredRules)
+              AcceptanceCriterionDefinition(
+                id: 'AC4',
+                text: 'Advisory criterion',
+                checkIds: ['Advice'],
+              ),
           ],
         ),
         ProjectRequirement(
@@ -132,7 +139,7 @@ Future<EvidenceFixture> evidenceFixture({bool withRules = true}) async {
   });
   final evidence = ApprovedSourceProposal(
     projectId: project.id,
-    boardTaskId: 'Tanalyze',
+    boardTaskId: taskId,
     approval: approval,
     proposal: old.basis.evidence.proposal,
     modelRequest: old.basis.evidence.modelRequest,
@@ -166,7 +173,7 @@ Future<EvidenceFixture> evidenceFixture({bool withRules = true}) async {
     sessionBinding: AgentSessionBinding.select(
       session: selected,
       projectId: project.id,
-      boardTaskId: 'Tanalyze',
+      boardTaskId: taskId,
     ),
     publish: (value, host, authorize) => owner.promoteCandidate(
       value,

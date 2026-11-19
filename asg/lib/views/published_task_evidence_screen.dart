@@ -41,7 +41,7 @@ class _PublishedTaskEvidenceScreenState
       actions: [
         IconButton(
           tooltip: 'Reload saved evidence',
-          onPressed: controller.load,
+          onPressed: controller.busy ? null : controller.load,
           icon: const Icon(Icons.refresh),
         ),
       ],
@@ -55,10 +55,84 @@ class _PublishedTaskEvidenceScreenState
         const Text(
           'Saved check facts do not establish live files, prose coverage, task completion or dependency readiness.',
         ),
+        if (controller.decision case final decision?) ...[
+          const Text('Retained authored-check completion decision'),
+          Text(
+            'Session ${decision.evidence.publication.session.sessionId} · run ${decision.evidence.publication.runNumber} · task ${decision.evidence.publication.reference.boardTaskId}',
+          ),
+          Text(
+            'Confirmed at ${decision.confirmedAt.toUtc().toIso8601String()}',
+          ),
+          const Text(
+            'Completed against all authored named-test contracts at the saved revision. Historical decision only: prose, live files, current compatibility and dependent execution remain unverified. Board status is unchanged.',
+          ),
+          Text(
+            '${decision.evidence.requirement.id}: ${decision.evidence.requirement.title}',
+          ),
+          for (final criterion in decision.evidence.requirement.criteria)
+            Text(
+              '${criterion.id}: ${criterion.text} — saved authored named-test rule passed',
+            ),
+          for (final observation in decision.evidence.observations)
+            Text(
+              'Saved check ${observation.checkId}: ${observation.result.target.file} — ${observation.result.target.name}; named target passed at ${observation.observedAt.toUtc().toIso8601String()}',
+            ),
+          for (final prerequisite in decision.evidence.prerequisites)
+            Text(
+              'Selected historical prerequisite ${prerequisite.taskId}: run ${prerequisite.runNumber}',
+            ),
+        ],
+        if (controller.decisionError case final error?) Text(error),
+        if (controller.evidence != null &&
+            controller.decision == null &&
+            !controller.selectedSession.cancellationRequested) ...[
+          const Text('Optional explicit decision against authored checks'),
+          const Text(
+            'This saves a historical decision only. It does not change board status, verify prose or current files, or authorize dependent execution. Prerequisite decisions describe their saved contracts, not current artifact compatibility.',
+          ),
+          for (final entry in controller.prerequisiteOptions.entries) ...[
+            Text('Select retained prerequisite decision for ${entry.key}'),
+            if (entry.value.isEmpty)
+              const Text('No applicable retained decision is available.'),
+            DropdownButton<int>(
+              isExpanded: true,
+              hint: const Text('Choose an exact saved run'),
+              value: controller.prerequisiteSelection(entry.key),
+              items: [
+                for (final number in entry.value)
+                  DropdownMenuItem(
+                    value: number,
+                    child: Text('Published run $number'),
+                  ),
+              ],
+              onChanged: controller.busy
+                  ? null
+                  : (value) => controller.choosePrerequisite(entry.key, value),
+            ),
+          ],
+          if (controller.canConsent)
+            CheckboxListTile(
+              contentPadding: EdgeInsets.zero,
+              value: controller.consent,
+              title: const Text(
+                'I confirm completion only against all authored named-test contracts and the selected historical prerequisites.',
+              ),
+              onChanged: (value) => controller.setConsent(value ?? false),
+            ),
+          OutlinedButton(
+            onPressed: controller.canConfirm ? controller.confirm : null,
+            child: const Text('Record authored-check completion decision'),
+          ),
+          if (controller.busy)
+            OutlinedButton(
+              onPressed: controller.cancelConfirmation,
+              child: const Text('Withdraw pending confirmation'),
+            ),
+        ],
         if (controller.error case final error?) ...[
           Text(error),
           OutlinedButton(
-            onPressed: controller.load,
+            onPressed: controller.busy ? null : controller.load,
             child: const Text('Retry saved evidence review'),
           ),
         ],
