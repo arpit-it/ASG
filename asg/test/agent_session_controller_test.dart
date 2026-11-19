@@ -11,6 +11,7 @@ import 'package:asg/services/plan_approval_store.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'approved_source_proposer_test.dart' show seed;
+import 'agent_session_store_test.dart' show savedRun;
 import 'planning_conversation_test.dart' show project;
 import 'source_candidate_controller_test.dart' show AtomicRecords;
 
@@ -32,6 +33,30 @@ void main() {
   });
   tearDown(() {
     if (!controller.isDisposed) controller.dispose();
+  });
+
+  test('overview refreshes selected history without dispatch and clears on another session', () async {
+    await controller.create(approved: true);
+    final initial = controller.selected!;
+    final run = await savedRun(records);
+    await store.observeRun(initial, 'Tanalyze', run);
+    final before = Map.of(records.values);
+    controller.open(initial.sessionId);
+    expect(controller.runStatuses.single.available, isTrue);
+    expect(controller.runStatuses.single.pendingOperation, 'resolve');
+    controller.load();
+    expect(records.values, before);
+    expect(() => controller.runStatuses.clear(), throwsUnsupportedError);
+    await controller.create(approved: true);
+    expect(controller.runStatuses, isEmpty);
+    controller.open(initial.sessionId);
+    records.values.remove('studio.agentExecution.v1.candidate-${project.id}-1');
+    controller.load();
+    expect(controller.runStatuses.single.available, isFalse);
+    final count = controller.runStatuses.length;
+    controller.dispose();
+    controller.open(controller.selected!.sessionId);
+    expect(controller.runStatuses.length, count);
   });
 
   test('review selection is explicit, read-only and rejects stale or cancelled context', () async {

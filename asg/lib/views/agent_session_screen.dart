@@ -176,6 +176,27 @@ class _AgentSessionScreenState extends State<AgentSessionScreen> {
                 ),
                 for (final task in selected.tasks.items)
                   Text('${task.id} (${task.requirementId})'),
+                if (selected.dispatches.isEmpty)
+                  const Text('No recorded runs for this session.'),
+                for (final status in controller.runStatuses)
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: Text(
+                      'Run ${status.reference.runNumber} — ${status.reference.boardTaskId}',
+                    ),
+                    subtitle: status.available
+                        ? Text(
+                            'Recorded candidate: ${status.sourcePhase!.name}; checkpoint: ${status.executionPhase!.name}. '
+                            '${status.pendingOperation?.isNotEmpty == true ? 'Unresolved operation: ${status.pendingOperation}. Its outcome is unknown.' : 'No unresolved operation is recorded.'}',
+                          )
+                        : const Text(
+                            'Run evidence is unavailable or does not match this session. Saved data is retained.',
+                          ),
+                  ),
+                if (selected.dispatches.isNotEmpty)
+                  const Text(
+                    'These are saved observations, not live process status or proof that a selected task completed.',
+                  ),
                 if (controller.canRemember)
                   OutlinedButton(
                     onPressed: controller.rememberSelected,

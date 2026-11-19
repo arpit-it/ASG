@@ -1224,3 +1224,27 @@ This is bounded real-SDK native fixture evidence, not production-main navigation
 browser-rendered visual acceptance, live model synthesis, general task-graph
 completion or universal process cleanup. The seeded prior working snapshot is
 a retained output baseline, not evidence of a previously running live app.
+
+
+18 November2026 — saved-session recorded run overview
+
+AgentSessionRunStatusStore joins ordered references to the saved journal and
+checkpoint using load only. It never calls execution reopen, which would mutate
+executing to recovering. It verifies the saved selection is still exact, then
+correlates canonical project/run/dispatch identity, approved wire graph and selected
+board-task IDs. The saved Plan graph is compared without consulting today's board
+or reauthorizing the old Plan; revoked/cancelled history stays readable. The full
+historical board is not retained, so this does not independently reconstruct its
+requirement/dependency metadata or prove original dispatch admission.
+
+Typed status data reaches AgentSessionController through an injectable service.
+Opening/reloading a selection refreshes rows without writes; unavailable evidence
+has no usable phase. A bad checkpoint affects its own row; a malformed journal
+makes its referenced rows unavailable while preserving all raw bytes. The screen
+shows recorded candidate/checkpoint phases and explicit unresolved operations.
+These facts are never aggregated into task/session completion or actual external
+exit, live preview or process cleanup. No new actions or authority are introduced.
+
+Saved-session overview implemented locally: typed read-only status projection, injectable service, selected-session controller refresh and per-run screen rows. Exact persisted session/run/dispatch/checkpoint identities, approval snapshot, approved wire graph and selected board-task IDs are correlated; stale/missing/corrupt records yield unavailable without writes. Ordered references preserve valid rows when another checkpoint is missing. Pending operations remain unresolved, checkpoint phase is a recorded fact rather than external exit/task completion. Full historical requirements-board contents are not retained, so this is correlation to the saved selection and approved graph, not independent reconstruction of historical board requirement/dependency metadata or proof of original admission/proposal consumption.
+
+Validation: focused22 before the final two graph/order tests; final fullFlutter1,917 passed/11 existing skips, analyze clean and web build passed. New tests cover read-only byte retention, revoked/cancelled history, corrupt/foreign/missing/replayed checkpoint, journal/approval/graph mismatch, ordered partial availability, controller reload/selection/disposal and 320px text-scale2 rendering. Existing baseline25 passed. Evidence /tmp/asg-404-session-run-overview-{focused,final-tests,final-analyze,web}.log. IAB createBrowserTab(http://127.0.0.1:9127) timed out waiting for webview attachment; inventory then showed no IAB tabs. CUA outcome recorded, no Chrome fallback or hidden browser data seeding. Browser acceptance remains pending; publish only draft, no merge/full CE01 claim until acceptance and exact final review/required CI pass. Temporary preview belongs to this task; owner app/model processes untouched. No live inference required or claimed.
