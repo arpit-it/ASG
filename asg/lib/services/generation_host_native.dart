@@ -39,7 +39,8 @@ class NativeGenerationHost
         NamedTestSession,
         GenerationCapabilitySource,
         GenerationToolchainSource,
-        CandidateReceiptHost {
+        CandidateReceiptHost,
+        CandidateSourceInspectionHost {
   NativeGenerationHost({
     this.loadAsset = _loadAsset,
     CandidateReceiptFiles? receiptFiles,
@@ -263,6 +264,7 @@ class NativeGenerationHost
 
   static bool sameFiles(Map<String, String> a, Map<String, String> b) =>
       a.length == b.length && a.entries.every((e) => b[e.key] == e.value);
+  @override
   Future<void> checkSources(GeneratedProject project) async {
     checkOpen();
     if (!sameFiles(

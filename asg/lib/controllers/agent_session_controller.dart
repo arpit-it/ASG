@@ -12,6 +12,9 @@ import '../services/agent_session_store.dart';
 import '../services/plan_approval_store.dart';
 import '../services/requirements_store.dart';
 import 'base_controller.dart';
+import 'saved_candidate_recovery_controller.dart';
+import '../services/candidate_reopen_context_store.dart';
+import '../services/generation_host.dart';
 
 /// Manages saved observations only; no command/model service is owned here.
 final class AgentSessionController extends BaseController {
@@ -19,12 +22,14 @@ final class AgentSessionController extends BaseController {
     this.store, {
     String Function()? createSessionId,
     AgentSessionRunStatusStore? runStatusStore,
+    this.createRecoveryHost,
   }) : _createSessionId = createSessionId ?? _newId,
        _runStatusStore =
            runStatusStore ??
            AgentSessionRunStatusStore(store.records, store.project.id);
   static String _newId() => 'session-${DateTime.now().microsecondsSinceEpoch}';
   final AgentSessionStore store;
+  final GenerationHost Function()? createRecoveryHost;
   final AgentSessionRunStatusStore _runStatusStore;
   List<AgentSessionRunStatus> _runStatuses = const [];
   List<AgentSessionRunStatus> get runStatuses => _runStatuses;
@@ -243,6 +248,38 @@ final class AgentSessionController extends BaseController {
     final value = _selected;
     if (!canRemember || value == null) return false;
     return _save(() => store.remember(value.sessionId));
+  }
+
+  bool canOpenCandidate(int runNumber) {
+    final value = _selected;
+    if (_busy ||
+        isDisposed ||
+        value == null ||
+        value.cancellationRequested ||
+        value.dispatches.isEmpty ||
+        value.dispatches.last.runNumber != runNumber) {
+      return false;
+    }
+    try {
+      CandidateReopenContextStore(
+        store.records,
+        store.project,
+      ).loadLatest(value, runNumber);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  SavedCandidateRecoveryController? createCandidateRecovery(int runNumber) {
+    if (!canOpenCandidate(runNumber)) return null;
+    return SavedCandidateRecoveryController(
+      project: store.project,
+      records: store.records,
+      selectedSession: _selected!,
+      runNumber: runNumber,
+      createHost: createRecoveryHost,
+    );
   }
 
   Future<bool> requestCancellation() async {

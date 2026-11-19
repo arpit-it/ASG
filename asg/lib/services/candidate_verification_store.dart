@@ -4,6 +4,7 @@
 import 'dart:convert';
 
 import '../models/candidate_verification_run.dart';
+import '../models/candidate_reopen_context.dart';
 import '../models/candidate_stop_request.dart';
 import '../models/candidate_recovery_acknowledgement.dart';
 import '../models/agent_execution_checkpoint.dart';
@@ -26,6 +27,8 @@ class CandidateVerificationStore {
   AgentSession? _admittedSession;
   AgentTaskHistory? _taskHistory;
   String? _expectedTaskHistory;
+  CandidateReopenContext? _reopenContext;
+  String? _expectedReopenContext;
   AgentSession? get admittedSession => _admittedSession;
   Future<void> _pending = Future<void>.value();
   static const recoveryPrefix = 'studio.candidateRecovery.v1.';
@@ -153,12 +156,14 @@ class CandidateVerificationStore {
     void Function() authorize, {
     String? dispatchId,
     AgentSessionRunAdmission? sessionAdmission,
+    CandidateReopenBasis? reopenBasis,
   }) => _serial(
     () => _start(
       snapshot,
       authorize,
       dispatchId: dispatchId,
       sessionAdmission: sessionAdmission,
+      reopenBasis: reopenBasis,
     ),
   );
 
@@ -167,12 +172,21 @@ class CandidateVerificationStore {
     void Function() authorize, {
     String? dispatchId,
     AgentSessionRunAdmission? sessionAdmission,
+    CandidateReopenBasis? reopenBasis,
   }) async {
     if (_owned != null) throw StateError('Verification run already reserved.');
     _session = null;
     _admittedSession = null;
     _taskHistory = null;
     _expectedTaskHistory = null;
+    _reopenContext = null;
+    _expectedReopenContext = null;
+    if (reopenBasis != null &&
+        (sessionAdmission == null || reopenBasis.projectId != projectId)) {
+      throw StateError(
+        'Candidate reopen context requires matching bound admission.',
+      );
+    }
     if (sessionAdmission != null &&
         (!identical(sessionAdmission.records, records) ||
             sessionAdmission.project.id != projectId)) {
@@ -208,6 +222,9 @@ class CandidateVerificationStore {
       authorize,
       execution: execution,
       reservation: reservation,
+      reopenContext: reopenBasis == null
+          ? null
+          : CandidateReopenContext.bind(reopenBasis, reservation!.next, run),
     );
     _admittedSession = reservation?.next;
     _owned = run;
@@ -302,12 +319,23 @@ class CandidateVerificationStore {
     final acknowledgementKey = acknowledgement == null
         ? null
         : '$recoveryPrefix${acknowledgement.dispatchId}';
+    final reopenKey =
+        '${CandidateReopenContext.prefix}$projectId.${expected.number}';
+    final reopenRaw = records.getString(reopenKey);
+    if (reopenRaw != null) {
+      final savedContext = CandidateReopenContext.decode(reopenRaw);
+      if (savedContext.storageKey != reopenKey) {
+        throw const FormatException('Candidate context key changed.');
+      }
+      savedContext.requireRun(expected);
+    }
     final acknowledgementRaw = acknowledgement == null
         ? null
         : jsonEncode(acknowledgement.toJson());
     await storage.commitRecords(
       expected: {
         key: raw,
+        reopenKey: reopenRaw,
         if (reconciled != null) executionKey!: executionRaw,
         ?acknowledgementKey: null,
       },
@@ -326,6 +354,7 @@ class CandidateVerificationStore {
     void Function() authorize, {
     AgentExecutionCheckpoint? execution,
     AgentSessionReservation? reservation,
+    CandidateReopenContext? reopenContext,
   }) async {
     final storage = records;
     if (storage is! ConditionalRecordStorage) {
@@ -381,8 +410,26 @@ class CandidateVerificationStore {
       ).keyFor(runs.last.number);
       historyRaw = jsonEncode(nextHistory.toJson());
     }
+    final retainedContext = reopenContext ?? _reopenContext;
+    final contextKey = retainedContext?.storageKey;
+    final contextRaw = reopenContext == null
+        ? _expectedReopenContext
+        : jsonEncode(reopenContext.toJson());
+    String? workingRaw;
+    if (retainedContext != null) {
+      retainedContext.requireRun(runs.last);
+      if (reopenContext != null) {
+        workingRaw = records.getString('studio.generation.v1.$projectId');
+        if (workingRaw == null ||
+            !retainedContext.basis.matchesWorkingRecord(workingRaw)) {
+          throw StateError('Original working record changed before admission.');
+        }
+      }
+    }
     await storage.commitRecords(
       expected: {
+        ?contextKey: _expectedReopenContext,
+        'studio.generation.v1.$projectId': ?workingRaw,
         ?historyKey: _expectedTaskHistory,
         ?historySessionKey: sessionRaw,
         if (reservation != null) ...{
@@ -394,6 +441,7 @@ class CandidateVerificationStore {
         if (updatedExecution != null) executionKey!: expectedExecution,
       },
       updates: {
+        if (reopenContext != null) contextKey!: contextRaw!,
         ?historyKey: historyRaw!,
         if (reservation != null)
           reservation.sessionKey: reservation.updatedSession,
@@ -410,5 +458,7 @@ class CandidateVerificationStore {
     _expectedCandidate = candidate;
     _taskHistory = nextHistory;
     _expectedTaskHistory = historyRaw;
+    _reopenContext = retainedContext;
+    _expectedReopenContext = contextRaw;
   }
 }

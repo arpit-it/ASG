@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import '../controllers/agent_session_controller.dart';
 import 'agent_task_history_view.dart';
+import 'saved_candidate_recovery_screen.dart';
 
 class AgentSessionScreen extends StatefulWidget {
   const AgentSessionScreen({
@@ -199,6 +200,33 @@ class _AgentSessionScreenState extends State<AgentSessionScreen> {
                       ),
                       if (status.available)
                         AgentTaskHistoryView(history: status.taskHistory),
+                      OutlinedButton(
+                        key: ValueKey(
+                          'open-saved-candidate-${status.reference.runNumber}',
+                        ),
+                        onPressed:
+                            controller.canOpenCandidate(
+                              status.reference.runNumber,
+                            )
+                            ? () {
+                                final recovery = controller
+                                    .createCandidateRecovery(
+                                      status.reference.runNumber,
+                                    );
+                                if (recovery != null) {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute<void>(
+                                      builder: (_) =>
+                                          SavedCandidateRecoveryScreen(
+                                            controller: recovery,
+                                          ),
+                                    ),
+                                  );
+                                }
+                              }
+                            : null,
+                        child: const Text('Open saved candidate'),
+                      ),
                     ],
                   ),
                 if (selected.dispatches.isNotEmpty)

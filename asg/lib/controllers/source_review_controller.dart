@@ -4,6 +4,7 @@
 import 'dart:async';
 
 import '../models/approved_source_proposal.dart';
+import '../models/candidate_reopen_context.dart';
 import '../models/local_model_config.dart';
 import '../models/model_connection_preset.dart';
 import '../models/build_plan.dart';
@@ -256,6 +257,20 @@ class SourceReviewController extends BaseController {
       );
       _proposal = candidateEvidence;
       if (publishCandidate != null) {
+        final reopenBasis = binding == null
+            ? null
+            : CandidateReopenBasis.capture(
+                projectId: project.id,
+                workingRecord:
+                    _workingRecord ??
+                    (throw StateError(
+                      'Original working record is unavailable.',
+                    )),
+                working: generated,
+                sourceBase: _proposalSource ?? generated,
+                prepared: value,
+                evidence: candidateEvidence,
+              );
         _candidateSession?.removeListener(_sessionChanged);
         _candidateSession?.dispose();
         _candidateSession = SourceCandidateController(
@@ -266,6 +281,7 @@ class SourceReviewController extends BaseController {
           host: _createCandidateHost(),
           publish: publishCandidate!,
           sessionBinding: binding,
+          reopenBasis: reopenBasis,
           requireWorking: () {
             if (_repairLoopActive && _loopCancelled) {
               throw StateError('Automatic repair stopped.');

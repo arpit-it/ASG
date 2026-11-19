@@ -22,7 +22,7 @@ def read_session_proof(value, nonce, launch, admission_crash=False, session_canc
     """Validate fixed session evidence; this never authorizes or launches work."""
     keys = {'sessionId', 'projectId', 'revision', 'dispatchId', 'dispatchCount',
             'sessionSha256', 'journalSha256', 'candidateSha256', 'executionSha256',
-            'receiptPreparations', 'commandEntries', 'taskHistory'}
+            'receiptPreparations', 'commandEntries', 'taskHistory', 'reopenContextSha256', 'reopenEntryChecked', 'reopenEntryAvailable'}
     if session_cancel:
         keys |= {'cancellationRequested', 'receiptSha256'}
     if session_cancel_active:
@@ -47,11 +47,14 @@ def read_session_proof(value, nonce, launch, admission_crash=False, session_canc
             for key, count in expected_counts.items()) or
             value.get('dispatchId') != (f'candidate-restart-{nonce}-1:3' if admitted else None)):
         raise ValueError('Session admission or no-replay evidence mismatch')
+    if (value.get('reopenEntryChecked') is not (launch == 2) or
+            value.get('reopenEntryAvailable') is not (launch == 2 and admitted and not session_cancel)):
+        raise ValueError('Production reopen entry observation mismatch')
     if session_cancel_unknown and value.get('testResultPresent') is not False:
         raise ValueError('Unknown test result was replaced by completion evidence')
     if session_cancel and value.get('cancellationRequested') is not True:
         raise ValueError('Session cancellation intent missing')
-    for key in ('sessionSha256', 'journalSha256', 'candidateSha256', 'executionSha256') + (('receiptSha256',) if session_cancel else ()) + (('activeBoundarySha256',) if session_cancel_active else ()) + (('publicationFaultSha256',) if session_cancel_unknown else ()):
+    for key in ('sessionSha256', 'journalSha256', 'candidateSha256', 'executionSha256', 'reopenContextSha256') + (('receiptSha256',) if session_cancel else ()) + (('activeBoundarySha256',) if session_cancel_active else ()) + (('publicationFaultSha256',) if session_cancel_unknown else ()):
         fingerprint = value.get(key)
         if key != 'sessionSha256' and not admitted:
             if fingerprint is not None:
@@ -95,7 +98,7 @@ def read_task_history(proof, admitted, cancelled=False, active=False, unknown=Fa
 
 def retry_digest(proof):
     stable = {key: value for key, value in proof.items()
-              if key not in ('receiptPreparations', 'commandEntries')}
+              if key not in ('receiptPreparations', 'commandEntries', 'reopenEntryChecked', 'reopenEntryAvailable')}
     return hashlib.sha256(json.dumps(stable, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
 
 
@@ -107,7 +110,7 @@ def read_retry_proof(proof, nonce, launch, promote=False):
               'firstRunSha256', 'firstExecutionSha256', 'firstReceiptSha256', 'stopSha256',
               'recoverySha256', 'secondExecutionSha256', 'secondReceiptSha256'}
     keys = hashes | {'sessionId', 'projectId', 'revision', 'dispatchCount', 'dispatchIds',
-                     'cancellationRequested', 'receiptPreparations', 'commandEntries', 'taskHistories'}
+                     'cancellationRequested', 'receiptPreparations', 'commandEntries', 'taskHistories', 'reopenEntryChecked', 'reopenEntryAvailable'}
     if promote:
         keys |= {'workingSha256', 'previousSha256', 'workingPublished', 'secondExecutionPhase'}
     count = 2 if launch >= 3 else 1
@@ -130,6 +133,9 @@ def read_retry_proof(proof, nonce, launch, promote=False):
                 raise ValueError('Unadmitted retry evidence present')
         elif not isinstance(proof[key], str) or re.fullmatch(r'[a-f0-9]{64}', proof[key]) is None:
             raise ValueError('Bound retry record hash missing')
+    if (proof.get('reopenEntryChecked') is not (launch != 1) or
+            proof.get('reopenEntryAvailable') is not (launch != 1 and not (promote and launch == 5))):
+        raise ValueError('Retry production reopen entry mismatch')
     histories = proof.get('taskHistories')
     if not isinstance(histories, list) or len(histories) != count:
         raise ValueError('Retry task histories missing')
@@ -137,7 +143,9 @@ def read_retry_proof(proof, nonce, launch, promote=False):
         if (not isinstance(history, dict) or type(history.get('runNumber')) is not int or
                 history['runNumber'] != number or history.get('dispatchId') != proof['dispatchIds'][number - 1]):
             raise ValueError('Retry task history identity mismatch')
-        observed = {key: value for key, value in history.items() if key not in ('runNumber', 'dispatchId')}
+        if not isinstance(history.get('reopenSha256'), str) or re.fullmatch(r'[a-f0-9]{64}', history['reopenSha256']) is None:
+            raise ValueError('Retry reopen context fingerprint missing')
+        observed = {key: value for key, value in history.items() if key not in ('runNumber', 'dispatchId', 'reopenSha256')}
         if number == 1:
             read_task_history(observed, True)
         else:
@@ -200,7 +208,7 @@ def require_retry_transition(previous, current, launch, before_hash, promote=Fal
                 current['secondExecutionSha256'] == previous['secondExecutionSha256']):
             raise ValueError('Bound publication transition missing')
         immutable |= set(current) - {'workingSha256', 'previousSha256', 'workingPublished',
-            'secondExecutionSha256', 'secondExecutionPhase', 'receiptPreparations', 'commandEntries'}
+            'secondExecutionSha256', 'secondExecutionPhase', 'receiptPreparations', 'commandEntries', 'reopenEntryChecked', 'reopenEntryAvailable'}
     elif launch == 4 or (launch == 5 and promote):
         if retry_digest(current) != before_hash:
             raise ValueError('Final read-only retry reopen changed records')
@@ -215,7 +223,7 @@ def read_report(root, launch, nonce, operation='resolve', stop=False, precommit=
     if report.is_symlink() or not report.is_file() or report.stat().st_size > 8192:
         raise ValueError('Invalid candidate report')
     value = json.loads(report.read_text())
-    if (not isinstance(value, dict) or type(value.get('version')) is not int or value['version'] != 18 or
+    if (not isinstance(value, dict) or type(value.get('version')) is not int or value['version'] != 19 or
             type(value.get('launch')) is not int or value['launch'] != launch or value.get('nonce') != nonce or
             value.get('dispatch') != f'candidate-restart-{nonce}-1:3' or
             value.get('sessionBound') is not session_bound or value.get('admissionCrash') is not admission_crash or value.get('sessionCancel') is not session_cancel or value.get('sessionCancelActive') is not session_cancel_active or value.get('sessionCancelUnknown') is not session_cancel_unknown or
@@ -372,7 +380,7 @@ def observe(bundle, sdk, operation='resolve', stop=False, precommit=False, runni
             previous = current
     elif session_bound:
         retained = ('sessionId', 'projectId', 'revision', 'dispatchId', 'dispatchCount',
-                    'sessionSha256', 'journalSha256', 'candidateSha256', 'executionSha256', 'taskHistory')
+                    'sessionSha256', 'journalSha256', 'candidateSha256', 'executionSha256', 'taskHistory', 'reopenContextSha256')
         if session_cancel:
             retained += ('receiptSha256', 'cancellationRequested')
         if session_cancel_active:
