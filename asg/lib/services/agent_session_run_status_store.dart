@@ -14,6 +14,8 @@ import '../models/candidate_verification_run.dart';
 import 'agent_execution_checkpoint_store.dart';
 import 'record_storage.dart';
 import 'agent_task_history_store.dart';
+import 'agent_session_publication_store.dart';
+import '../models/agent_session_publication.dart';
 
 /// Reads retained history only. Does not reopen/reconcile checkpoints or require
 /// current execution approval, so revoked and cancelled history stays readable.
@@ -131,6 +133,15 @@ class AgentSessionRunStatusStore {
       } catch (_) {
         // Missing/corrupt task history must not erase independent saved facts.
       }
+      AgentSessionPublication? publication;
+      try {
+        publication = AgentSessionPublicationStore(
+          records,
+          projectId,
+        ).load(session: session, run: run, execution: execution);
+      } catch (_) {
+        // Publication failure must not erase independent saved run/history facts.
+      }
       return AgentSessionRunStatus.recorded(
         reference: reference,
         sourcePhase: run.snapshot.phase,
@@ -138,6 +149,7 @@ class AgentSessionRunStatusStore {
         pendingOperation: run.snapshot.pendingOperation,
         finished: run.finished,
         taskHistory: taskHistory,
+        publication: publication,
       );
     } catch (_) {
       return AgentSessionRunStatus.unavailable(reference);

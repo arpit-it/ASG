@@ -364,7 +364,10 @@ void main() {
     ).loadLatest(candidate.sessionBinding!.session, 2);
     expect(latest.runNumber, 2);
     expect(c.actionsEnabled, isTrue);
+    final publicationKey = 'studio.agentSessionPublication.v1.${project.id}.2';
+    expect(f.records.getString(publicationKey), isNull);
     expect(await candidate.promote(approved: true), isTrue);
+    expect(f.records.getString(publicationKey), isNotNull);
     expect(
       f.records.getString('studio.generationPrevious.v1.${project.id}'),
       working,
@@ -410,6 +413,10 @@ void main() {
       isNull,
     );
     expect(hosts.last.server, isFalse);
+    expect(
+      f.records.getString('studio.agentSessionPublication.v1.${project.id}.2'),
+      isNull,
+    );
     c.dispose();
   });
 

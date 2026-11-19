@@ -23,6 +23,7 @@ import '../services/plan_approval_store.dart';
 import '../services/generation_input.dart';
 import '../services/folder_picker.dart';
 import '../models/agent_session.dart';
+import '../models/agent_session_publication.dart';
 import '../models/agent_session_binding.dart';
 import '../services/agent_session_admission.dart';
 import '../services/agent_session_store.dart';
@@ -350,6 +351,7 @@ class SourceGenerationController extends BaseController {
         }
       }
       final selected = selectedSession;
+      AgentSession? publicationSession;
       if (selected != null) {
         final savedSession = AgentSessionStore(
           records,
@@ -397,15 +399,47 @@ class SourceGenerationController extends BaseController {
           ),
         );
         expected[savedSession.storageKey] = admission.requireCurrent();
+        publicationSession = savedSession;
       }
       // Separate host: validating/starting the new preview cannot stop the old one.
       final uri = await candidateHost.startPreview(candidate);
       check();
+      final publishedWorking = store.encodeUpdate(project.id, candidate);
+      final publicationUpdates = <String, String>{};
+      if (publicationSession != null) {
+        final run = journal.runs.last;
+        final executionKey =
+            'studio.agentExecution.v1.${run.dispatchId!.split(':').first}';
+        final before = expected[executionKey];
+        final after = executionUpdates[executionKey];
+        if (before == null || after == null) {
+          throw StateError(
+            'Bound publication requires a matching execution transition.',
+          );
+        }
+        final publication = AgentSessionPublication.capture(
+          session: publicationSession,
+          run: run,
+          originalWorkingRecord: old,
+          publishedWorkingRecord: publishedWorking,
+          executionBefore: AgentExecutionCheckpoint.fromJson(
+            jsonDecode(before),
+          ),
+        );
+        if (jsonEncode(publication.executionAfter.toJson()) != after) {
+          throw StateError('Publication execution identity changed.');
+        }
+        expected[publication.storageKey] = null;
+        publicationUpdates[publication.storageKey] = jsonEncode(
+          publication.toJson(),
+        );
+      }
       await records.commitRecords(
         expected: expected,
         updates: {
           ...executionUpdates,
-          generationKey: store.encodeUpdate(project.id, candidate),
+          ...publicationUpdates,
+          generationKey: publishedWorking,
           'studio.generationPrevious.v1.${project.id}': old,
         },
         authorize: check,

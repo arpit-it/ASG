@@ -456,9 +456,35 @@ class CandidateCrashTests(unittest.TestCase):
                      previousSha256=None if launch < 4 else 'b' * 64,
                      workingPublished=launch >= 4,
                      secondExecutionPhase='completed' if launch >= 4 else 'verifying' if launch == 3 else None)
+        proof['publication'] = None if launch < 4 else dict(
+            runNumber=2, boardTaskId='Tanalyze', dispatchId=proof['dispatchIds'][-1],
+            sha256='e' * 64, projectionSha256='e' * 64,
+            originalWorkingSha256=proof['previousSha256'], publishedWorkingSha256=proof['workingSha256'])
         if launch >= 4:
             proof['secondExecutionSha256'] = 'd' * 64
         return proof
+
+    def test_publication_outcome_requires_exact_identity_and_current_record_fingerprints(self):
+        proof = self.promotion_proof(4)
+        fixture.read_retry_proof(proof, self.nonce, 4, promote=True)
+        for key, replacement in [('runNumber', True), ('runNumber', 1),
+                                 ('boardTaskId', 'foreign'), ('dispatchId', 'other:3'),
+                                 ('sha256', None), ('projectionSha256', 'a' * 64),
+                                 ('originalWorkingSha256', 'a' * 64), ('publishedWorkingSha256', 'a' * 64)]:
+            changed = json.loads(json.dumps(proof))
+            changed['publication'][key] = replacement
+            with self.subTest(key=key), self.assertRaises(ValueError):
+                fixture.read_retry_proof(changed, self.nonce, 4, promote=True)
+        for replacement in (None, {}, dict(proof['publication'], extra=True)):
+            with self.assertRaises(ValueError):
+                fixture.read_retry_proof(dict(proof, publication=replacement), self.nonce, 4, promote=True)
+        with self.assertRaises(ValueError):
+            fixture.read_retry_proof(dict(self.promotion_proof(3), publication=proof['publication']), self.nonce, 3, promote=True)
+        changed = self.promotion_proof(5)
+        changed['publication'] = dict(changed['publication'], sha256='f' * 64, projectionSha256='f' * 64)
+        fixture.read_retry_proof(changed, self.nonce, 5, promote=True)
+        with self.assertRaises(ValueError):
+            fixture.require_retry_transition(proof, changed, 5, fixture.retry_digest(proof), promote=True)
 
     def test_bound_publication_changes_only_authorized_state_then_reopens_read_only(self):
         previous = None
@@ -512,7 +538,7 @@ class CandidateCrashTests(unittest.TestCase):
                         running=True, acknowledge=True, retry=True, promote=True, promotion_crash=crash, session_bound=True)
 
     def report(self, launch, operation='resolve', **changes):
-        value = {'version': 19, 'launch': launch, 'nonce': self.nonce, 'dispatch': f'candidate-restart-{self.nonce}-1:3'}
+        value = {'version': 20, 'launch': launch, 'nonce': self.nonce, 'dispatch': f'candidate-restart-{self.nonce}-1:3'}
         value.update(sessionBound=False, admissionCrash=False, sessionCancel=False, sessionCancelActive=False, sessionCancelUnknown=False, sessionProof=None, sessionRetryProof=None, beforeActionSha256=None, promotionCrash=False, promote=False, retry=False, acknowledge=False, uncertain=False, publicationFault=False, intentUnchanged=True, running=False, runningMarker=False, runningCancelled=False, precommit=False, stopSignalled=False, stopSaveBlocked=False, savedStopPresent=False, stopRequested=False, stopUnchanged=True, operation=operation, completedOperations=fixture.OPERATIONS[:fixture.OPERATIONS.index(operation)])
         if launch == 1:
             value['readyForCrash'] = True
@@ -745,7 +771,7 @@ class CandidateCrashTests(unittest.TestCase):
             fixture.read_report(self.root, 2, self.nonce, operation='test', stop=True, session_bound=True)
 
     def test_protocol10_cannot_be_relabelled_as_session_evidence(self):
-        for version in (10, 11, 12, 13, 14, 15, 16, 17, 18):
+        for version in (10, 11, 12, 13, 14, 15, 16, 17, 18, 19):
             self.report(1, version=version)
             with self.subTest(version=version), self.assertRaises(ValueError):
                 fixture.read_report(self.root, 1, self.nonce)

@@ -7,6 +7,8 @@ import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:asg/controllers/agent_session_controller.dart';
 import 'package:asg/models/agent_session_binding.dart';
+import 'package:asg/models/agent_session_publication.dart';
+import 'package:asg/models/agent_execution_checkpoint.dart';
 import 'package:asg/models/approved_source_proposal.dart';
 import 'package:asg/models/app_definition.dart';
 import 'package:asg/models/build_plan.dart';
@@ -191,6 +193,84 @@ class CandidateReopenFixture {
       run.snapshot.copy(pendingOperation: 'resolve'),
       () {},
     );
+    // These are supplied deterministic observations, not SDK/promotion execution.
+    await journal.acknowledgeStopped(journal.load().runs.last, () {});
+    final publicationSelection = await sessions.create(
+      'published',
+      board.tasks.map((task) => task.id).toList(),
+    );
+    final publicationJournal = CandidateVerificationStore(records, project.id);
+    final publicationRun = await publicationJournal.start(
+      prepared.copy(phase: SourceGenerationPhase.verifying),
+      () {},
+      reopenBasis: basis,
+      sessionAdmission: AgentSessionRunAdmission(
+        records,
+        project,
+        AgentSessionBinding.select(
+          session: publicationSelection,
+          projectId: project.id,
+          boardTaskId: 'Tresolve',
+        ),
+      ),
+    );
+    var supplied = publicationRun.snapshot;
+    for (final task in tasks) {
+      await publicationJournal.checkpoint(
+        supplied.copy(pendingOperation: task.operation.name),
+        () {},
+      );
+      supplied = supplied.copy(
+        pendingOperation: '',
+        steps: [
+          ...supplied.steps,
+          GenerationStep(
+            operation: task.operation.name,
+            exitCode: 0,
+            output: 'supplied fixture value; no SDK was run',
+          ),
+        ],
+      );
+      await publicationJournal.checkpoint(supplied, () {});
+    }
+    supplied = supplied.copy(
+      phase: SourceGenerationPhase.ready,
+      outputs: working.outputs,
+    );
+    await publicationJournal.checkpoint(supplied, () {}, finished: true);
+    final finished = publicationJournal.load().runs.last;
+    final admitted = publicationJournal.admittedSession!;
+    final workingKey = 'studio.generation.v1.${project.id}';
+    final executionKey =
+        'studio.agentExecution.v1.candidate-${project.id}-${finished.number}';
+    final originalWorking = records.getString(workingKey)!;
+    final publishedWorking = SourceGenerationStore(records)
+        .encodeUpdate(project.id, supplied);
+    final publication = AgentSessionPublication.capture(
+      session: admitted,
+      run: finished,
+      originalWorkingRecord: originalWorking,
+      publishedWorkingRecord: publishedWorking,
+      executionBefore: AgentExecutionCheckpoint.fromJson(
+        jsonDecode(records.getString(executionKey)!),
+      ),
+    );
+    await records.commitRecords(
+      expected: {
+        workingKey: originalWorking,
+        publication.storageKey: null,
+        executionKey: records.getString(executionKey),
+        admitted.storageKey: records.getString(admitted.storageKey),
+      },
+      updates: {
+        workingKey: publishedWorking,
+        'studio.generationPrevious.v1.${project.id}': originalWorking,
+        executionKey: jsonEncode(publication.executionAfter.toJson()),
+        publication.storageKey: jsonEncode(publication.toJson()),
+      },
+      authorize: () {},
+    );
+    await sessions.requestCancellation(admitted);
     records.readOnly = true;
     records.writeAttempts = 0;
     return CandidateReopenFixture._(records, jsonEncode(records.values));
@@ -213,7 +293,7 @@ class _FixtureHome extends StatefulWidget {
 class _FixtureHomeState extends State<_FixtureHome> {
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Saved-candidate recovery UI fixture')),
+    appBar: AppBar(title: const Text('Saved publication history UI fixture')),
     body: ListView(
       padding: const EdgeInsets.all(16),
       children: [
@@ -238,18 +318,18 @@ class _FixtureHomeState extends State<_FixtureHome> {
               createRecoveryHost: widget.fixture.createHost,
             );
             controller.load();
-            controller.open('recoverable');
+            controller.open('published');
             await Navigator.of(context).push(
               MaterialPageRoute<void>(
                 builder: (_) => AgentSessionScreen(
                   controller: controller,
-                  projectName: 'Recovery fixture — production screens',
+                  projectName: 'Publication fixture — production screens',
                 ),
               ),
             );
             if (mounted) setState(() {});
           },
-          child: const Text('Open saved-session recovery fixture'),
+          child: const Text('Open saved publication history fixture'),
         ),
       ],
     ),

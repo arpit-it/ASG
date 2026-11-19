@@ -112,7 +112,7 @@ def read_retry_proof(proof, nonce, launch, promote=False):
     keys = hashes | {'sessionId', 'projectId', 'revision', 'dispatchCount', 'dispatchIds',
                      'cancellationRequested', 'receiptPreparations', 'commandEntries', 'taskHistories', 'reopenEntryChecked', 'reopenEntryAvailable'}
     if promote:
-        keys |= {'workingSha256', 'previousSha256', 'workingPublished', 'secondExecutionPhase'}
+        keys |= {'workingSha256', 'previousSha256', 'workingPublished', 'secondExecutionPhase', 'publication'}
     count = 2 if launch >= 3 else 1
     if (not isinstance(proof, dict) or set(proof) != keys or type(launch) is not int or
             launch not in stages or not isinstance(nonce, str) or
@@ -165,6 +165,22 @@ def read_retry_proof(proof, nonce, launch, promote=False):
         phase = 'completed' if published else 'verifying' if launch == 3 else None
         if proof.get('workingPublished') is not published or proof.get('secondExecutionPhase') != phase:
             raise ValueError('Bound publication state mismatch')
+        publication = proof.get('publication')
+        if not published:
+            if publication is not None:
+                raise ValueError('Publication outcome existed before promotion')
+        elif (not isinstance(publication, dict) or set(publication) != {
+                'runNumber', 'boardTaskId', 'dispatchId', 'sha256', 'projectionSha256',
+                'originalWorkingSha256', 'publishedWorkingSha256'} or
+                type(publication.get('runNumber')) is not int or publication['runNumber'] != 2 or
+                publication.get('boardTaskId') != 'Tanalyze' or
+                publication.get('dispatchId') != proof['dispatchIds'][-1] or
+                not isinstance(publication.get('sha256'), str) or
+                re.fullmatch(r'[a-f0-9]{64}', publication['sha256']) is None or
+                publication.get('projectionSha256') != publication['sha256'] or
+                publication.get('originalWorkingSha256') != proof['previousSha256'] or
+                publication.get('publishedWorkingSha256') != proof['workingSha256']):
+            raise ValueError('Bound publication outcome identity mismatch')
         for key in ('workingSha256', 'previousSha256'):
             if key == 'previousSha256' and not published:
                 if proof[key] is not None:
@@ -208,7 +224,7 @@ def require_retry_transition(previous, current, launch, before_hash, promote=Fal
                 current['secondExecutionSha256'] == previous['secondExecutionSha256']):
             raise ValueError('Bound publication transition missing')
         immutable |= set(current) - {'workingSha256', 'previousSha256', 'workingPublished',
-            'secondExecutionSha256', 'secondExecutionPhase', 'receiptPreparations', 'commandEntries', 'reopenEntryChecked', 'reopenEntryAvailable'}
+            'secondExecutionSha256', 'secondExecutionPhase', 'publication', 'receiptPreparations', 'commandEntries', 'reopenEntryChecked', 'reopenEntryAvailable'}
     elif launch == 4 or (launch == 5 and promote):
         if retry_digest(current) != before_hash:
             raise ValueError('Final read-only retry reopen changed records')
@@ -223,7 +239,7 @@ def read_report(root, launch, nonce, operation='resolve', stop=False, precommit=
     if report.is_symlink() or not report.is_file() or report.stat().st_size > 8192:
         raise ValueError('Invalid candidate report')
     value = json.loads(report.read_text())
-    if (not isinstance(value, dict) or type(value.get('version')) is not int or value['version'] != 19 or
+    if (not isinstance(value, dict) or type(value.get('version')) is not int or value['version'] != 20 or
             type(value.get('launch')) is not int or value['launch'] != launch or value.get('nonce') != nonce or
             value.get('dispatch') != f'candidate-restart-{nonce}-1:3' or
             value.get('sessionBound') is not session_bound or value.get('admissionCrash') is not admission_crash or value.get('sessionCancel') is not session_cancel or value.get('sessionCancelActive') is not session_cancel_active or value.get('sessionCancelUnknown') is not session_cancel_unknown or
