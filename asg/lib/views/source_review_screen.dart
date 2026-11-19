@@ -9,6 +9,7 @@ import 'source_diff_view.dart';
 import 'source_connection_view.dart';
 import 'source_candidate_view.dart';
 import 'repair_history_view.dart';
+import 'source_request_history.dart';
 
 class SourceReviewScreen extends StatefulWidget {
   const SourceReviewScreen({super.key, required this.controller});
@@ -214,6 +215,12 @@ class _SourceReviewScreenState extends State<SourceReviewScreen>
             ],
             if (controller.repairBlockedReason != null)
               Text(controller.repairBlockedReason!),
+            SourceRequestHistory(
+              sessionId: controller.selectedSession?.sessionId,
+              requests: controller.requestHistory,
+              error: controller.requestHistoryError,
+              onReload: controller.refreshRequestHistory,
+            ),
             RepairHistoryView(
               attempts: controller.repairHistory,
               error: controller.repairHistoryError,

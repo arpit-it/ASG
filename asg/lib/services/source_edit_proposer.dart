@@ -24,13 +24,8 @@ class SourceEditProposer {
   ModelProvider? _provider;
   bool _active = false, _cancelled = false;
 
-  Future<SourceEditProposal> propose({
-    required LocalModelConfig config,
-    required String instruction,
-    required Map<String, String> originals,
-  }) async {
-    if (_active) throw StateError('A source proposal is already active.');
-    final snapshot = Map<String, String>.unmodifiable(originals);
+  /// Shared preflight; callers can validate before reserving durable intent.
+  static void validateInput(String instruction, Map<String, String> snapshot) {
     if (instruction.trim().isEmpty ||
         instruction.length > 8000 ||
         snapshot.isEmpty ||
@@ -43,6 +38,16 @@ class SourceEditProposer {
         jsonEncode(snapshot).length > SourceEditProposal.maxResponse) {
       throw const FormatException('Invalid source proposal input bounds.');
     }
+  }
+
+  Future<SourceEditProposal> propose({
+    required LocalModelConfig config,
+    required String instruction,
+    required Map<String, String> originals,
+  }) async {
+    if (_active) throw StateError('A source proposal is already active.');
+    final snapshot = Map<String, String>.unmodifiable(originals);
+    validateInput(instruction, snapshot);
     _active = true;
     _cancelled = false;
     late SourceEditProposal result;

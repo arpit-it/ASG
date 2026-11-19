@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "claim": "separate-historical-observations-only",
   "manifestSha256": "0505c640aa4a9170a73946648bd6205062942bcc3a2a37704e7a37fa0cbcbe1c",
-  "comparisonRuntimeSha256": "a2cfd0a0eae6581535d11a8d1cd783c90715c72be9501280d72b5a004996d71e",
+  "comparisonRuntimeSha256": "f581ecfa5ed23f2513862bb08b08f1b944a0e875a6c5e55c341c3905ddf3d2fd",
   "limitations": [
     "No combined identity, current pass, support verdict or authenticated observation.",
     "Recorded source hashes do not prove bundle equivalence or unaffected behavior.",
@@ -697,6 +697,7 @@
           "lib/models/published_task_evidence.dart",
           "lib/models/runtime_capabilities.dart",
           "lib/models/self_snapshot_operation.dart",
+          "lib/models/session_proposal_request.dart",
           "lib/models/snapshot_preparation_failure.dart",
           "lib/models/snapshot_recovery_inventory.dart",
           "lib/services/agent_execution_checkpoint_store.dart",
@@ -752,6 +753,7 @@
           "lib/services/self_snapshot.dart",
           "lib/services/self_snapshot_native.dart",
           "lib/services/self_snapshot_stub.dart",
+          "lib/services/session_proposal_request_store.dart",
           "lib/views/agent_session_screen.dart",
           "lib/views/agent_task_history_view.dart",
           "lib/views/ask_screen.dart",
@@ -779,7 +781,8 @@
           "lib/views/runtime_capability_panel.dart",
           "lib/views/saved_candidate_recovery_screen.dart",
           "lib/views/self_snapshot_screen.dart",
-          "lib/views/source_connection_view.dart"
+          "lib/views/source_connection_view.dart",
+          "lib/views/source_request_history.dart"
         ]
       }
     },
@@ -1102,6 +1105,7 @@
           "lib/models/published_task_evidence.dart",
           "lib/models/runtime_capabilities.dart",
           "lib/models/self_snapshot_operation.dart",
+          "lib/models/session_proposal_request.dart",
           "lib/models/snapshot_preparation_failure.dart",
           "lib/models/snapshot_recovery_inventory.dart",
           "lib/services/agent_execution_checkpoint_store.dart",
@@ -1157,6 +1161,7 @@
           "lib/services/self_snapshot.dart",
           "lib/services/self_snapshot_native.dart",
           "lib/services/self_snapshot_stub.dart",
+          "lib/services/session_proposal_request_store.dart",
           "lib/views/agent_session_screen.dart",
           "lib/views/agent_task_history_view.dart",
           "lib/views/ask_screen.dart",
@@ -1184,7 +1189,8 @@
           "lib/views/runtime_capability_panel.dart",
           "lib/views/saved_candidate_recovery_screen.dart",
           "lib/views/self_snapshot_screen.dart",
-          "lib/views/source_connection_view.dart"
+          "lib/views/source_connection_view.dart",
+          "lib/views/source_request_history.dart"
         ]
       }
     },
@@ -1476,6 +1482,7 @@
           "lib/models/published_task_evidence.dart",
           "lib/models/runtime_capabilities.dart",
           "lib/models/self_snapshot_operation.dart",
+          "lib/models/session_proposal_request.dart",
           "lib/models/snapshot_preparation_failure.dart",
           "lib/models/snapshot_recovery_inventory.dart",
           "lib/services/agent_execution_checkpoint_store.dart",
@@ -1531,6 +1538,7 @@
           "lib/services/self_snapshot.dart",
           "lib/services/self_snapshot_native.dart",
           "lib/services/self_snapshot_stub.dart",
+          "lib/services/session_proposal_request_store.dart",
           "lib/views/agent_session_screen.dart",
           "lib/views/agent_task_history_view.dart",
           "lib/views/ask_screen.dart",
@@ -1558,7 +1566,8 @@
           "lib/views/runtime_capability_panel.dart",
           "lib/views/saved_candidate_recovery_screen.dart",
           "lib/views/self_snapshot_screen.dart",
-          "lib/views/source_connection_view.dart"
+          "lib/views/source_connection_view.dart",
+          "lib/views/source_request_history.dart"
         ]
       }
     },
@@ -1777,6 +1786,7 @@
           "lib/models/published_task_evidence.dart",
           "lib/models/runtime_capabilities.dart",
           "lib/models/self_snapshot_operation.dart",
+          "lib/models/session_proposal_request.dart",
           "lib/models/snapshot_preparation_failure.dart",
           "lib/models/snapshot_recovery_inventory.dart",
           "lib/services/agent_execution_checkpoint_store.dart",
@@ -1832,6 +1842,7 @@
           "lib/services/self_snapshot.dart",
           "lib/services/self_snapshot_native.dart",
           "lib/services/self_snapshot_stub.dart",
+          "lib/services/session_proposal_request_store.dart",
           "lib/views/agent_session_screen.dart",
           "lib/views/agent_task_history_view.dart",
           "lib/views/ask_screen.dart",
@@ -1859,7 +1870,8 @@
           "lib/views/runtime_capability_panel.dart",
           "lib/views/saved_candidate_recovery_screen.dart",
           "lib/views/self_snapshot_screen.dart",
-          "lib/views/source_connection_view.dart"
+          "lib/views/source_connection_view.dart",
+          "lib/views/source_request_history.dart"
         ]
       }
     },
@@ -2321,6 +2333,7 @@
           "lib/models/published_task_evidence.dart",
           "lib/models/runtime_capabilities.dart",
           "lib/models/self_snapshot_operation.dart",
+          "lib/models/session_proposal_request.dart",
           "lib/models/snapshot_preparation_failure.dart",
           "lib/models/snapshot_recovery_inventory.dart",
           "lib/services/agent_execution_checkpoint_store.dart",
@@ -2376,6 +2389,7 @@
           "lib/services/self_snapshot.dart",
           "lib/services/self_snapshot_native.dart",
           "lib/services/self_snapshot_stub.dart",
+          "lib/services/session_proposal_request_store.dart",
           "lib/views/agent_session_screen.dart",
           "lib/views/agent_task_history_view.dart",
           "lib/views/ask_screen.dart",
@@ -2403,7 +2417,8 @@
           "lib/views/runtime_capability_panel.dart",
           "lib/views/saved_candidate_recovery_screen.dart",
           "lib/views/self_snapshot_screen.dart",
-          "lib/views/source_connection_view.dart"
+          "lib/views/source_connection_view.dart",
+          "lib/views/source_request_history.dart"
         ]
       }
     },
@@ -2614,6 +2629,7 @@
           "lib/models/published_task_evidence.dart",
           "lib/models/runtime_capabilities.dart",
           "lib/models/self_snapshot_operation.dart",
+          "lib/models/session_proposal_request.dart",
           "lib/models/snapshot_preparation_failure.dart",
           "lib/models/snapshot_recovery_inventory.dart",
           "lib/services/agent_execution_checkpoint_store.dart",
@@ -2669,6 +2685,7 @@
           "lib/services/self_snapshot.dart",
           "lib/services/self_snapshot_native.dart",
           "lib/services/self_snapshot_stub.dart",
+          "lib/services/session_proposal_request_store.dart",
           "lib/views/agent_session_screen.dart",
           "lib/views/agent_task_history_view.dart",
           "lib/views/ask_screen.dart",
@@ -2696,7 +2713,8 @@
           "lib/views/runtime_capability_panel.dart",
           "lib/views/saved_candidate_recovery_screen.dart",
           "lib/views/self_snapshot_screen.dart",
-          "lib/views/source_connection_view.dart"
+          "lib/views/source_connection_view.dart",
+          "lib/views/source_request_history.dart"
         ]
       }
     },
@@ -2880,6 +2898,7 @@
           "lib/models/published_task_evidence.dart",
           "lib/models/runtime_capabilities.dart",
           "lib/models/self_snapshot_operation.dart",
+          "lib/models/session_proposal_request.dart",
           "lib/models/snapshot_preparation_failure.dart",
           "lib/models/snapshot_recovery_inventory.dart",
           "lib/services/agent_execution_checkpoint_store.dart",
@@ -2935,6 +2954,7 @@
           "lib/services/self_snapshot.dart",
           "lib/services/self_snapshot_native.dart",
           "lib/services/self_snapshot_stub.dart",
+          "lib/services/session_proposal_request_store.dart",
           "lib/views/agent_session_screen.dart",
           "lib/views/agent_task_history_view.dart",
           "lib/views/ask_screen.dart",
@@ -2962,7 +2982,8 @@
           "lib/views/runtime_capability_panel.dart",
           "lib/views/saved_candidate_recovery_screen.dart",
           "lib/views/self_snapshot_screen.dart",
-          "lib/views/source_connection_view.dart"
+          "lib/views/source_connection_view.dart",
+          "lib/views/source_request_history.dart"
         ]
       }
     },
@@ -3173,6 +3194,7 @@
           "lib/models/published_task_evidence.dart",
           "lib/models/runtime_capabilities.dart",
           "lib/models/self_snapshot_operation.dart",
+          "lib/models/session_proposal_request.dart",
           "lib/models/snapshot_preparation_failure.dart",
           "lib/models/snapshot_recovery_inventory.dart",
           "lib/services/agent_execution_checkpoint_store.dart",
@@ -3228,6 +3250,7 @@
           "lib/services/self_snapshot.dart",
           "lib/services/self_snapshot_native.dart",
           "lib/services/self_snapshot_stub.dart",
+          "lib/services/session_proposal_request_store.dart",
           "lib/views/agent_session_screen.dart",
           "lib/views/agent_task_history_view.dart",
           "lib/views/ask_screen.dart",
@@ -3255,7 +3278,8 @@
           "lib/views/runtime_capability_panel.dart",
           "lib/views/saved_candidate_recovery_screen.dart",
           "lib/views/self_snapshot_screen.dart",
-          "lib/views/source_connection_view.dart"
+          "lib/views/source_connection_view.dart",
+          "lib/views/source_request_history.dart"
         ]
       }
     },
@@ -3466,6 +3490,7 @@
           "lib/models/published_task_evidence.dart",
           "lib/models/runtime_capabilities.dart",
           "lib/models/self_snapshot_operation.dart",
+          "lib/models/session_proposal_request.dart",
           "lib/models/snapshot_preparation_failure.dart",
           "lib/models/snapshot_recovery_inventory.dart",
           "lib/services/agent_execution_checkpoint_store.dart",
@@ -3521,6 +3546,7 @@
           "lib/services/self_snapshot.dart",
           "lib/services/self_snapshot_native.dart",
           "lib/services/self_snapshot_stub.dart",
+          "lib/services/session_proposal_request_store.dart",
           "lib/views/agent_session_screen.dart",
           "lib/views/agent_task_history_view.dart",
           "lib/views/ask_screen.dart",
@@ -3548,7 +3574,8 @@
           "lib/views/runtime_capability_panel.dart",
           "lib/views/saved_candidate_recovery_screen.dart",
           "lib/views/self_snapshot_screen.dart",
-          "lib/views/source_connection_view.dart"
+          "lib/views/source_connection_view.dart",
+          "lib/views/source_request_history.dart"
         ]
       }
     },
@@ -3759,6 +3786,7 @@
           "lib/models/published_task_evidence.dart",
           "lib/models/runtime_capabilities.dart",
           "lib/models/self_snapshot_operation.dart",
+          "lib/models/session_proposal_request.dart",
           "lib/models/snapshot_preparation_failure.dart",
           "lib/models/snapshot_recovery_inventory.dart",
           "lib/services/agent_execution_checkpoint_store.dart",
@@ -3814,6 +3842,7 @@
           "lib/services/self_snapshot.dart",
           "lib/services/self_snapshot_native.dart",
           "lib/services/self_snapshot_stub.dart",
+          "lib/services/session_proposal_request_store.dart",
           "lib/views/agent_session_screen.dart",
           "lib/views/agent_task_history_view.dart",
           "lib/views/ask_screen.dart",
@@ -3841,7 +3870,8 @@
           "lib/views/runtime_capability_panel.dart",
           "lib/views/saved_candidate_recovery_screen.dart",
           "lib/views/self_snapshot_screen.dart",
-          "lib/views/source_connection_view.dart"
+          "lib/views/source_connection_view.dart",
+          "lib/views/source_request_history.dart"
         ]
       }
     },
@@ -4052,6 +4082,7 @@
           "lib/models/published_task_evidence.dart",
           "lib/models/runtime_capabilities.dart",
           "lib/models/self_snapshot_operation.dart",
+          "lib/models/session_proposal_request.dart",
           "lib/models/snapshot_preparation_failure.dart",
           "lib/models/snapshot_recovery_inventory.dart",
           "lib/services/agent_execution_checkpoint_store.dart",
@@ -4107,6 +4138,7 @@
           "lib/services/self_snapshot.dart",
           "lib/services/self_snapshot_native.dart",
           "lib/services/self_snapshot_stub.dart",
+          "lib/services/session_proposal_request_store.dart",
           "lib/views/agent_session_screen.dart",
           "lib/views/agent_task_history_view.dart",
           "lib/views/ask_screen.dart",
@@ -4134,7 +4166,8 @@
           "lib/views/runtime_capability_panel.dart",
           "lib/views/saved_candidate_recovery_screen.dart",
           "lib/views/self_snapshot_screen.dart",
-          "lib/views/source_connection_view.dart"
+          "lib/views/source_connection_view.dart",
+          "lib/views/source_request_history.dart"
         ]
       }
     },
@@ -4336,6 +4369,7 @@
           "lib/models/published_task_evidence.dart",
           "lib/models/runtime_capabilities.dart",
           "lib/models/self_snapshot_operation.dart",
+          "lib/models/session_proposal_request.dart",
           "lib/models/snapshot_preparation_failure.dart",
           "lib/models/snapshot_recovery_inventory.dart",
           "lib/services/agent_execution_checkpoint_store.dart",
@@ -4389,6 +4423,7 @@
           "lib/services/self_snapshot.dart",
           "lib/services/self_snapshot_native.dart",
           "lib/services/self_snapshot_stub.dart",
+          "lib/services/session_proposal_request_store.dart",
           "lib/views/agent_session_screen.dart",
           "lib/views/agent_task_history_view.dart",
           "lib/views/candidate_file_review_dialog.dart",
@@ -4415,7 +4450,8 @@
           "lib/views/runtime_capability_panel.dart",
           "lib/views/saved_candidate_recovery_screen.dart",
           "lib/views/self_snapshot_screen.dart",
-          "lib/views/source_connection_view.dart"
+          "lib/views/source_connection_view.dart",
+          "lib/views/source_request_history.dart"
         ]
       }
     },
@@ -4616,6 +4652,7 @@
           "lib/models/published_task_evidence.dart",
           "lib/models/runtime_capabilities.dart",
           "lib/models/self_snapshot_operation.dart",
+          "lib/models/session_proposal_request.dart",
           "lib/models/snapshot_preparation_failure.dart",
           "lib/models/snapshot_recovery_inventory.dart",
           "lib/services/agent_execution_checkpoint_store.dart",
@@ -4669,6 +4706,7 @@
           "lib/services/self_snapshot.dart",
           "lib/services/self_snapshot_native.dart",
           "lib/services/self_snapshot_stub.dart",
+          "lib/services/session_proposal_request_store.dart",
           "lib/views/agent_session_screen.dart",
           "lib/views/agent_task_history_view.dart",
           "lib/views/candidate_file_review_dialog.dart",
@@ -4695,7 +4733,8 @@
           "lib/views/runtime_capability_panel.dart",
           "lib/views/saved_candidate_recovery_screen.dart",
           "lib/views/self_snapshot_screen.dart",
-          "lib/views/source_connection_view.dart"
+          "lib/views/source_connection_view.dart",
+          "lib/views/source_request_history.dart"
         ]
       }
     },
@@ -4896,6 +4935,7 @@
           "lib/models/published_task_evidence.dart",
           "lib/models/runtime_capabilities.dart",
           "lib/models/self_snapshot_operation.dart",
+          "lib/models/session_proposal_request.dart",
           "lib/models/snapshot_preparation_failure.dart",
           "lib/models/snapshot_recovery_inventory.dart",
           "lib/services/agent_execution_checkpoint_store.dart",
@@ -4949,6 +4989,7 @@
           "lib/services/self_snapshot.dart",
           "lib/services/self_snapshot_native.dart",
           "lib/services/self_snapshot_stub.dart",
+          "lib/services/session_proposal_request_store.dart",
           "lib/views/agent_session_screen.dart",
           "lib/views/agent_task_history_view.dart",
           "lib/views/candidate_file_review_dialog.dart",
@@ -4975,7 +5016,8 @@
           "lib/views/runtime_capability_panel.dart",
           "lib/views/saved_candidate_recovery_screen.dart",
           "lib/views/self_snapshot_screen.dart",
-          "lib/views/source_connection_view.dart"
+          "lib/views/source_connection_view.dart",
+          "lib/views/source_request_history.dart"
         ]
       }
     },
@@ -5217,6 +5259,7 @@
           "lib/models/published_task_evidence.dart",
           "lib/models/runtime_capabilities.dart",
           "lib/models/self_snapshot_operation.dart",
+          "lib/models/session_proposal_request.dart",
           "lib/models/snapshot_preparation_failure.dart",
           "lib/models/snapshot_recovery_inventory.dart",
           "lib/services/agent_execution_checkpoint_store.dart",
@@ -5272,6 +5315,7 @@
           "lib/services/self_snapshot.dart",
           "lib/services/self_snapshot_native.dart",
           "lib/services/self_snapshot_stub.dart",
+          "lib/services/session_proposal_request_store.dart",
           "lib/views/agent_session_screen.dart",
           "lib/views/agent_task_history_view.dart",
           "lib/views/ask_screen.dart",
@@ -5299,7 +5343,8 @@
           "lib/views/runtime_capability_panel.dart",
           "lib/views/saved_candidate_recovery_screen.dart",
           "lib/views/self_snapshot_screen.dart",
-          "lib/views/source_connection_view.dart"
+          "lib/views/source_connection_view.dart",
+          "lib/views/source_request_history.dart"
         ]
       }
     },
@@ -5561,6 +5606,7 @@
           "lib/models/published_task_evidence.dart",
           "lib/models/runtime_capabilities.dart",
           "lib/models/self_snapshot_operation.dart",
+          "lib/models/session_proposal_request.dart",
           "lib/models/snapshot_preparation_failure.dart",
           "lib/models/snapshot_recovery_inventory.dart",
           "lib/services/agent_execution_checkpoint_store.dart",
@@ -5616,6 +5662,7 @@
           "lib/services/self_snapshot.dart",
           "lib/services/self_snapshot_native.dart",
           "lib/services/self_snapshot_stub.dart",
+          "lib/services/session_proposal_request_store.dart",
           "lib/views/agent_session_screen.dart",
           "lib/views/agent_task_history_view.dart",
           "lib/views/ask_screen.dart",
@@ -5643,7 +5690,8 @@
           "lib/views/runtime_capability_panel.dart",
           "lib/views/saved_candidate_recovery_screen.dart",
           "lib/views/self_snapshot_screen.dart",
-          "lib/views/source_connection_view.dart"
+          "lib/views/source_connection_view.dart",
+          "lib/views/source_request_history.dart"
         ]
       }
     }

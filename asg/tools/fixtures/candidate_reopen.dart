@@ -3,6 +3,15 @@
 
 import 'dart:convert';
 
+import 'package:asg/controllers/source_review_controller.dart';
+import 'package:asg/models/local_model_config.dart';
+import 'package:asg/models/session_proposal_request.dart';
+import 'package:asg/services/approved_source_proposer.dart';
+import 'package:asg/services/source_edit_proposer.dart';
+import 'package:asg/services/model_provider.dart';
+import 'package:asg/services/session_proposal_request_store.dart';
+import 'package:asg/views/source_review_screen.dart';
+
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:asg/controllers/agent_session_controller.dart';
@@ -693,6 +702,14 @@ class CandidateReopenFixture {
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  if (const bool.fromEnvironment('ASG_REQUEST_HISTORY_FIXTURE')) {
+    runApp(
+      MaterialApp(
+        home: _RequestFixtureHome(await RequestHistoryFixture.create()),
+      ),
+    );
+    return;
+  }
   final fixture = await CandidateReopenFixture.create(
     decisionMode: const bool.fromEnvironment('ASG_TASK_DECISION_FIXTURE'),
     preparationMode: const bool.fromEnvironment('ASG_PREPARATION_FIXTURE'),
@@ -808,6 +825,335 @@ class _FixtureHomeState extends State<_FixtureHome> {
             if (mounted) setState(() {});
           },
           child: const Text('Open saved publication history fixture'),
+        ),
+      ],
+    ),
+  );
+}
+
+/// An explicit supplied-request fixture, separate from all live model evidence.
+class RequestHistoryFixtureRecords implements ConditionalRecordStorage {
+  RequestHistoryFixtureRecords(this.source, this.journalKey);
+  final TaskHistoryFixtureRecords source;
+  final String journalKey;
+  int commits = 0, unexpectedWrites = 0;
+  bool failRead = false, failOutcome = false;
+  @override
+  String? getString(String key) {
+    if (failRead && key == journalKey) {
+      throw StateError('Supplied private history read error');
+    }
+    return source.getString(key);
+  }
+
+  @override
+  Future<bool> setString(String key, String value) async {
+    unexpectedWrites++;
+    throw StateError(
+      'Only explicit request journal transactions are supplied.',
+    );
+  }
+
+  @override
+  Future<void> commitRecords({
+    required Map<String, String?> expected,
+    required Map<String, String> updates,
+    required void Function() authorize,
+  }) async {
+    if (updates.length != 1 ||
+        !updates.containsKey(journalKey) ||
+        !expected.containsKey(journalKey)) {
+      unexpectedWrites++;
+      throw StateError('Unexpected supplied fixture transaction.');
+    }
+    final next = SessionProposalRequestStore.decode(
+      journalKey,
+      updates[journalKey]!,
+    );
+    if (failOutcome &&
+        next.requests.last.status != SessionProposalRequestStatus.reserved) {
+      throw StateError('Supplied outcome persistence failure');
+    }
+    source.readOnly = false;
+    try {
+      await source.commitRecords(
+        expected: expected,
+        updates: updates,
+        authorize: authorize,
+      );
+      commits++;
+    } finally {
+      source.readOnly = true;
+    }
+  }
+}
+
+class _SuppliedRequestProvider
+    implements ModelProvider, ModelResponseIdentityProvider {
+  _SuppliedRequestProvider(this.model, {required this.failCleanup});
+  final String model;
+  final bool failCleanup;
+  @override
+  String get completedResponseModel => model;
+  @override
+  Stream<String> generate(String prompt) => Stream.value(
+    jsonEncode({
+      'summary': 'Supplied fixture replacement for review only',
+      'changes': [
+        {
+          'path': 'lib/main.dart',
+          'before': RequestHistoryFixture.before,
+          'after': RequestHistoryFixture.after,
+        },
+      ],
+    }),
+  );
+  @override
+  Future<void> cancel() async {
+    if (failCleanup) throw StateError('Supplied transport cleanup failure');
+  }
+}
+
+class RequestHistoryFixture {
+  RequestHistoryFixture._(this.records, this.originalBaseline);
+  final RequestHistoryFixtureRecords records;
+  final String originalBaseline;
+  static const before = 'void main() { /* supplied request original */ }';
+  static const after = 'void main() { /* supplied request replacement */ }';
+  static const sessionId = 'request-history';
+  final host = ReopenFixtureHost();
+  int providerCreations = 0, sourceCaptures = 0, fixtureControls = 0;
+  bool failCleanup = false;
+  bool get originalsUnchanged =>
+      jsonEncode({
+        for (final e in records.source.values.entries)
+          if (e.key != records.journalKey) e.key: e.value,
+      }) ==
+      originalBaseline;
+  static Future<RequestHistoryFixture> create() async {
+    final base = await TaskHistoryFixture.create();
+    final raw = base.records..readOnly = false;
+    const project = TaskHistoryFixture.project;
+    final approval = PlanApprovalStore(raw).requireCurrentApproval(project);
+    final board = RequirementsStore(raw).load(project.id);
+    await SourceGenerationStore(raw).save(
+      project.id,
+      GeneratedProject(
+        directory: '/fixture/request-working',
+        sdk: '/fixture/sdk',
+        python: 'fixture-python',
+        confined: true,
+        approval: approval,
+        tasks: BuildPlan.parse(approval.content, board: board).tasks,
+        sources: {
+          ...GenerationInput(
+            project,
+            ApplicationStore(raw).load(project).definition,
+          ).fingerprints,
+          'lib/main.dart': SessionProposalRequestStore.fingerprint(before),
+        },
+      ),
+    );
+    final selected = await AgentSessionStore(
+      raw,
+      project,
+    ).create(sessionId, board.tasks.map((t) => t.id).toList());
+    final binding = AgentSessionBinding.select(
+      session: selected,
+      projectId: project.id,
+      boardTaskId: 'Tresolve',
+    );
+    final working = raw.getString('studio.generation.v1.${project.id}')!;
+    for (final status in SessionProposalRequestStatus.values) {
+      final store = SessionProposalRequestStore(raw, project.id, sessionId);
+      await store.reserve(
+        project: project,
+        binding: binding,
+        workingRecord: working,
+        originals: const {'lib/main.dart': before},
+        modelRequest: const ModelRequestProvenance(
+          model: 'supplied-request-model',
+          outputTokens: 4096,
+        ),
+        authorize: () {},
+      );
+      if (status != SessionProposalRequestStatus.reserved) {
+        await store.finish(
+          status,
+          proposal: status == SessionProposalRequestStatus.returnedValidated
+              ? SourceEditProposal.parse(
+                  {
+                    'summary': 'Supplied setup return, not live model output',
+                    'changes': [
+                      {
+                        'path': 'lib/main.dart',
+                        'before': before,
+                        'after': after,
+                      },
+                    ],
+                  },
+                  originals: const {'lib/main.dart': before},
+                  responseModel: 'supplied-request-model',
+                )
+              : null,
+          authorizeReturn:
+              status == SessionProposalRequestStatus.returnedValidated
+              ? () {}
+              : null,
+        );
+      }
+    }
+    final key = SessionProposalRequestStore(raw, project.id, sessionId).key;
+    final baseline = jsonEncode({
+      for (final e in raw.values.entries)
+        if (e.key != key) e.key: e.value,
+    });
+    raw.readOnly = true;
+    raw.writeAttempts = 0;
+    return RequestHistoryFixture._(
+      RequestHistoryFixtureRecords(raw, key),
+      baseline,
+    );
+  }
+
+  Future<void> withdraw() async {
+    records.source.readOnly = false;
+    try {
+      final store = AgentSessionStore(
+        records.source,
+        TaskHistoryFixture.project,
+      );
+      await store.requestCancellation(store.load(sessionId)!);
+      fixtureControls++;
+    } finally {
+      records.source.readOnly = true;
+    }
+  }
+
+  SourceReviewController controller() => SourceReviewController(
+    project: TaskHistoryFixture.project,
+    generated: SourceGenerationStore(records)
+        .load(TaskHistoryFixture.project.id)!,
+    records: records,
+    selectedSession: AgentSessionStore(
+      records,
+      TaskHistoryFixture.project,
+    ).load(sessionId),
+    proposer: ApprovedSourceProposer(
+      records,
+      proposer: SourceEditProposer(
+        createProvider: (LocalModelConfig config) {
+          final history = SessionProposalRequestStore(
+            records,
+            TaskHistoryFixture.project.id,
+            sessionId,
+          ).load();
+          if (history.requests.last.status !=
+              SessionProposalRequestStatus.reserved) {
+            throw StateError('Intent must precede supplied provider creation');
+          }
+          providerCreations++;
+          return _SuppliedRequestProvider(
+            config.model,
+            failCleanup: failCleanup,
+          );
+        },
+      ),
+    ),
+    readSnapshot: (_, paths) async {
+      sourceCaptures++;
+      if (paths.length != 1 || paths.single != 'lib/main.dart') {
+        throw StateError('Only supplied source capture exists');
+      }
+      return const {'lib/main.dart': before};
+    },
+    createCandidateHost: () => host,
+  );
+}
+
+class _RequestFixtureHome extends StatefulWidget {
+  const _RequestFixtureHome(this.fixture);
+  final RequestHistoryFixture fixture;
+  @override
+  State<_RequestFixtureHome> createState() => _RequestFixtureHomeState();
+}
+
+class _RequestFixtureHomeState extends State<_RequestFixtureHome> {
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(title: const Text('Initial request history UI fixture')),
+    body: ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        const Text(
+          'Supplied in-memory fixture: four request outcomes are seeded without transport. '
+          'Explicit production requests use a deterministic supplied provider and source capture, never HTTP, MLX, SDK, files or preview. '
+          'Reopening is read-only. This is not live inference evidence.',
+        ),
+        Text(
+          'Original non-journal records unchanged: ${widget.fixture.originalsUnchanged}',
+        ),
+        Text('Journal commits after setup: ${widget.fixture.records.commits}'),
+        Text(
+          'Supplied provider creations: ${widget.fixture.providerCreations}',
+        ),
+        Text('Supplied source captures: ${widget.fixture.sourceCaptures}'),
+        Text('Unexpected writes: ${widget.fixture.records.unexpectedWrites}'),
+        Text('SDK/preview attempts: ${widget.fixture.host.effectAttempts}'),
+        Text('Explicit fixture controls: ${widget.fixture.fixtureControls}'),
+        FilledButton(
+          onPressed: () async {
+            await Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) =>
+                    SourceReviewScreen(controller: widget.fixture.controller()),
+              ),
+            );
+            if (mounted) setState(() {});
+          },
+          child: const Text('Open initial request history fixture'),
+        ),
+        OutlinedButton(
+          onPressed: () {
+            setState(() {
+              widget.fixture.failCleanup = !widget.fixture.failCleanup;
+              widget.fixture.fixtureControls++;
+            });
+          },
+          child: Text(
+            'Supplied cleanup failure: ${widget.fixture.failCleanup}',
+          ),
+        ),
+        OutlinedButton(
+          onPressed: () {
+            setState(() {
+              widget.fixture.records.failOutcome =
+                  !widget.fixture.records.failOutcome;
+              widget.fixture.fixtureControls++;
+            });
+          },
+          child: Text(
+            'Supplied outcome-write failure: ${widget.fixture.records.failOutcome}',
+          ),
+        ),
+        OutlinedButton(
+          onPressed: () {
+            setState(() {
+              widget.fixture.records.failRead =
+                  !widget.fixture.records.failRead;
+              widget.fixture.fixtureControls++;
+            });
+          },
+          child: Text(
+            'Supplied history read failure: ${widget.fixture.records.failRead}',
+          ),
+        ),
+        OutlinedButton(
+          onPressed: () async {
+            await widget.fixture.withdraw();
+            if (mounted) setState(() {});
+          },
+          child: const Text('Withdraw supplied request session'),
         ),
       ],
     ),

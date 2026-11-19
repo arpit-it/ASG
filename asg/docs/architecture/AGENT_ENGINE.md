@@ -2514,3 +2514,57 @@ fixtures and fresh appropriate native persistence/build evidence, plus all manda
 local checks, exact PR review, required CI and verified merge. Live inference, if
 later needed, requires the prescribed exact runtime/model identity and exclusive
 worker; these supplied probes do not satisfy live acceptance.
+
+
+### Selected-session initial request history implementation — 19 November 2026
+
+SessionProposalRequest and its canonical journal retain metadata only. The new
+studio.sessionProposalRequests.v1.<project>.<session> record allows at most32
+numbered requests and256KiB of encoded UTF-8. It stores exact session/approval/raw
+working and selected-source fingerprints, task/requirement revision, model/4096
+ceiling and local timestamps. Returned observations retain only changed-source
+fingerprints and optional matching reported model identity. No endpoint, credential,
+source replacement, prompt transcript or raw error is stored. Strict decoding binds
+the key, rejects unknown/noncanonical/malformed facts and isolates corrupt request
+history during native database reopen without replacing it or unrelated records.
+Missing history initializes only through the first expected-absent reservation.
+
+SessionProposalRequestStore reserves through the existing conditional database
+transaction with exact approval-context/session/raw-working/journal read-set and
+controller cancellation/disposal/selection authorization. Captured source text must
+match the recorded working source fingerprints. Input preflight and reservation
+complete before provider creation. Unbound initial review retains its legacy path;
+real-failure repair requests retain their separate existing reservation/budget.
+The controller explicitly supplies selected-session context for initial requests,
+rechecks it after transport and suppresses stale current proposal presentation.
+The proposer awaits parsing/model validation and cleanup before observing return.
+
+Returned outcomes additionally compare the original durable context inside their
+transaction, rather than trusting an adapter's cached session. A prepublication
+native database regression separately updated a session behind that cache and
+exposed the initial journal-only return CAS. The strengthened read-set rejects it,
+retains unresolved intent and survives native reopen. Local failed/cancelled outcomes
+need only the exact owned reservation, so withdrawal cannot prohibit recording an
+observation. One failed terminal-write attempt leaves the reservation unresolved;
+it is not rewritten as a different successful outcome by a fallback. Backward
+outcome timestamps fail validation rather than being fabricated or normalized.
+No observation proves the model server received, completed or stopped a request.
+
+SourceRequestHistory renders reserved/unresolved, returnedValidated, failedLocally
+and cancelledLocally facts independently of current approval or current proposal.
+It makes no acceptance/execution claim and offers reload only. Reopening never
+restores source or starts requests. SourceReviewController injects its reader,
+retains last observed facts on sanitized errors, retries without transport and guards
+disposal/nested reload/selection changes. Subsequent candidate preparation/admission
+and promotion retain their existing explicit consent/current-context checks.
+This implements bounded request history, not a scheduler, replay engine, execution
+budget, proposal restoration or general source-generation acceptance.
+
+The labelled ASG_REQUEST_HISTORY_FIXTURE supplies four setup outcomes, then allows
+only production initial-journal transactions against deterministic source/provider
+responses. Its counters separate setup, explicit requests, fault controls, withdrawal
+and unexpected effects. It invokes no HTTP/model/MLX/SDK/files/preview. Native tests
+use a real disposable database to exercise persistence and stale-adapter conflicts;
+widget tests cover320px/two-times text and truthful empty/unbound/unavailable states.
+Final builds/browser evidence, exact PR review, required CI and verified merge remain
+recorded separately before declaring delivery.

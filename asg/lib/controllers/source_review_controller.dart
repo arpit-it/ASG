@@ -14,6 +14,8 @@ import '../models/agent_session_binding.dart';
 import '../services/agent_session_admission.dart';
 import '../models/plan_approval.dart';
 import '../models/repair_attempt.dart';
+import '../models/session_proposal_request.dart';
+import '../services/session_proposal_request_store.dart';
 import '../models/requirements_board.dart';
 import '../models/source_edit_proposal.dart';
 import '../models/source_generation.dart';
@@ -31,6 +33,10 @@ import '../services/repair_attempt_store.dart';
 import '../services/requirements_store.dart';
 import '../services/source_review_snapshot.dart';
 import 'base_controller.dart';
+
+typedef SessionRequestHistoryReader = List<SessionProposalRequest> Function(
+  String sessionId,
+);
 
 typedef SourceSnapshotReader = Future<Map<String, String>> Function(
   GeneratedProject project,
@@ -54,6 +60,7 @@ class SourceReviewController extends BaseController {
     required this.records,
     ApprovedSourceProposer? proposer,
     SourceSnapshotReader? readSnapshot,
+    SessionRequestHistoryReader? readRequestHistory,
     SourceCandidatePreparer? prepareCandidate,
     FolderPicker? folderPicker,
     this.publishCandidate,
@@ -61,6 +68,13 @@ class SourceReviewController extends BaseController {
     GenerationHost Function()? createCandidateHost,
   }) : _proposer = proposer ?? ApprovedSourceProposer(records),
        _readSnapshot = readSnapshot ?? readSourceReviewSnapshot,
+       _readRequestHistory =
+           readRequestHistory ??
+           ((sessionId) => SessionProposalRequestStore(
+             records,
+             project.id,
+             sessionId,
+           ).load().requests),
        _prepareCandidate = prepareCandidate ?? prepareSourceCandidate,
        _folderPicker = folderPicker ?? FolderPicker(),
        _createCandidateHost = createCandidateHost ?? createGenerationHost {
@@ -73,6 +87,7 @@ class SourceReviewController extends BaseController {
     }
     refreshApproval();
     refreshPresets();
+    refreshRequestHistory();
   }
 
   AgentSession? _selectedSession;
@@ -379,6 +394,7 @@ class SourceReviewController extends BaseController {
     if (value == null) return null;
     try {
       _requireWorking();
+      _requireSessionTask(value.boardTaskId);
       _proposer.requireCurrent(project, value);
       return value;
     } catch (_) {
@@ -387,6 +403,48 @@ class SourceReviewController extends BaseController {
   }
 
   bool get stale => !promoted && _proposal != null && proposal == null;
+
+  final SessionRequestHistoryReader _readRequestHistory;
+  List<SessionProposalRequest> _requestHistory = const [];
+  List<SessionProposalRequest> get requestHistory => _requestHistory;
+  String? _requestHistoryError;
+  String? get requestHistoryError => _requestHistoryError;
+  int _historyEpoch = 0;
+
+  /// Observations only: reload neither requests source nor restores a proposal.
+  void refreshRequestHistory() {
+    if (isDisposed) return;
+    final epoch = ++_historyEpoch;
+    final selected = selectedSession;
+    if (selected == null) return;
+    try {
+      final values = List<SessionProposalRequest>.unmodifiable(
+        _readRequestHistory(selected.sessionId),
+      );
+      if (isDisposed ||
+          epoch != _historyEpoch ||
+          !identical(selected, selectedSession)) {
+        return;
+      }
+      if (values.any(
+        (r) => r.projectId != project.id || r.sessionId != selected.sessionId,
+      )) {
+        throw StateError('Request history selection changed.');
+      }
+      _requestHistory = values;
+      _requestHistoryError = null;
+    } catch (_) {
+      if (isDisposed ||
+          epoch != _historyEpoch ||
+          !identical(selected, selectedSession)) {
+        return;
+      }
+      _requestHistoryError =
+          'Saved initial request history could not be read. Restore local storage access and reload. '
+          'Last observed history and working output are retained; no request was replayed.';
+    }
+    update();
+  }
 
   List<RepairAttempt> get repairHistory {
     try {
@@ -713,8 +771,20 @@ class SourceReviewController extends BaseController {
         config: requestConfig,
         originals: originals,
         repairCandidate: repairCandidate,
+        sessionBinding: repair || selectedSession == null
+            ? null
+            : AgentSessionBinding.select(
+                session: selectedSession!,
+                projectId: project.id,
+                boardTaskId: taskId,
+              ),
+        requestWorkingRecord: repair ? null : _workingRecord,
+        authorizeSession: repair || selectedSession == null
+            ? null
+            : authorizeRequest,
       );
       if (_cancelled || isDisposed) return;
+      authorizeRequest();
       _proposer.requireCurrent(project, value);
       _requireWorking();
       _proposal = value;
@@ -727,6 +797,7 @@ class SourceReviewController extends BaseController {
       }
     } finally {
       _busy = false;
+      refreshRequestHistory();
       if (_cancelled) _status = 'Review cancelled. No files changed.';
       update();
     }
