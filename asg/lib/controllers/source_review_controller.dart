@@ -180,6 +180,20 @@ class SourceReviewController extends BaseController {
   GeneratedProject? _proposalSource;
   GeneratedProject? get candidate => _candidateSession?.result ?? _candidate;
 
+  /// A returned repair copy can outlive a refused admission. Keep its path
+  /// separate from the earlier session result and its verification authority.
+  String? get retainedRepairCopyDirectory {
+    final copied = _candidate;
+    final session = _candidateSession;
+    if (_busy ||
+        copied == null ||
+        session == null ||
+        copied.directory == session.result.directory) {
+      return null;
+    }
+    return copied.directory;
+  }
+
   Future<void> selectCandidateParent() async {
     if (busy || isDisposed || !candidateSupported || proposal == null) return;
     _busy = true;

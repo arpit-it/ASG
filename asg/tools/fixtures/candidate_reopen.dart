@@ -747,6 +747,10 @@ class CandidateReopenFixture {
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  if (const bool.fromEnvironment('ASG_RETAINED_REPAIR_COPY_FIXTURE')) {
+    runApp(MaterialApp(home: await retainedRepairCopyFixtureHome()));
+    return;
+  }
   if (const bool.fromEnvironment('ASG_REPAIR_LINEAGE_FIXTURE')) {
     runApp(
       MaterialApp(home: await selectedRepairFixtureHome(lineageMode: true)),
@@ -1497,6 +1501,95 @@ Future<Widget> selectedRepairFixtureHome({bool lineageMode = false}) async {
                   ? 'Open repair candidate lineage'
                   : 'Open selected repair history',
             ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+/// Supplied read-only UI projection. Actual copy refusal is covered separately
+/// by controller regressions; this fixture never copies source or admits a run.
+class _RetainedRepairCopyProjection extends SourceReviewController {
+  _RetainedRepairCopyProjection({
+    required super.generated,
+    required super.records,
+    required this.previous,
+    required super.proposer,
+    required super.readSnapshot,
+    required super.createCandidateHost,
+  }) : super(project: TaskHistoryFixture.project);
+  final GeneratedProject previous;
+  @override
+  GeneratedProject get candidate => previous;
+  @override
+  String get retainedRepairCopyDirectory => '/fixture/retained-repair-copy';
+}
+
+Future<Widget> retainedRepairCopyFixtureHome() async {
+  final supplied = await RequestHistoryFixture.create();
+  final records = supplied.records.source;
+  const project = TaskHistoryFixture.project;
+  final saved = SourceGenerationStore(records).load(project.id)!;
+  final working = GeneratedProject.fromJson({
+    ...saved.toJson(),
+    'directory': '/fixture/working-output',
+  });
+  final previous = GeneratedProject.fromJson({
+    ...saved.copy(phase: SourceGenerationPhase.failed).toJson(),
+    'directory': '/fixture/previous-failed-candidate',
+  });
+  final before = jsonEncode(records.values);
+  final host = ReopenFixtureHost();
+  var captures = 0, providers = 0;
+  records.writeAttempts = 0;
+  return StatefulBuilder(
+    builder: (context, refresh) => Scaffold(
+      appBar: AppBar(title: const Text('Retained repair copy UI fixture')),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          const Text(
+            'Supplied read-only path projection for the production source-review screen. '
+            'Actual refusal ordering is checked separately in controller tests. '
+            'No source copy, new run, model, SDK or preview is supplied.',
+          ),
+          Text(
+            'Writes: ${records.writeAttempts} · Captures: $captures · Providers: $providers · '
+            'Inspections: ${host.inspections} · Tools: ${host.effectAttempts}',
+          ),
+          Text('Records unchanged: ${before == jsonEncode(records.values)}'),
+          OutlinedButton(
+            onPressed: () async {
+              final controller = _RetainedRepairCopyProjection(
+                generated: working,
+                records: records,
+                previous: previous,
+                proposer: ApprovedSourceProposer(
+                  records,
+                  proposer: SourceEditProposer(
+                    createProvider: (_) {
+                      providers++;
+                      throw StateError(
+                        'No model supplied for this read-only fixture.',
+                      );
+                    },
+                  ),
+                ),
+                readSnapshot: (_, _) async {
+                  captures++;
+                  throw StateError('No source capture supplied.');
+                },
+                createCandidateHost: () => host,
+              );
+              await Navigator.of(context).push<void>(
+                MaterialPageRoute(
+                  builder: (_) => SourceReviewScreen(controller: controller),
+                ),
+              );
+              if (context.mounted) refresh(() {});
+            },
+            child: const Text('Open retained repair copy view'),
           ),
         ],
       ),

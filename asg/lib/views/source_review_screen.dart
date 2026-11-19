@@ -145,6 +145,16 @@ class _SourceReviewScreenState extends State<SourceReviewScreen>
               ),
               SelectableText(controller.candidate!.directory),
             ],
+            if (controller.retainedRepairCopyDirectory case final path?) ...[
+              const Text(
+                'Unverified repair copy retained after preparation stopped',
+              ),
+              SelectableText(path),
+              const Text(
+                'This copy has no new check results. '
+                'The results below still belong to the earlier folder.',
+              ),
+            ],
             if (controller.candidateSession != null &&
                 (!controller.reviewBusy || controller.candidateSession!.busy))
               SourceCandidateView(

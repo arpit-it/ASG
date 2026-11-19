@@ -18052,3 +18052,111 @@ Revised full Flutter2172 passed/11 existing skips, analysis clean; logs:
 Production/fixture/runtime inputs unchanged from the passing web/macOS/IAB/product/
 inventory evidence. Commit the three-path forward review fix, reacquire integration
 for its exact final identity, publish without force and rerun required CI.
+
+
+20 November2026 — PR763 verified merged9207c1861e2938a8f71fb9f5b71cf56ef8bf38e1,
+exacttree455a1deb8806f69dfa940020c3af4fb59dbe1bca matches all21 final published files.
+Fresh revised review6fc817e4709b2e861408c6929552536fa8f2ece6/baseac352a2e inspected
+all21 patches, including the forward four equal-return/different-task regressions;
+one coverage rework resolved, no blocking findings. Required revisedCI44636490198
+Flutter135956369701/Python135956370166 both SUCCESS, every returned mandatory step
+SUCCESS, no review conversations and unchanged head/base/main rechecked before the
+protected expected-head merge. PluginPR/main/issue404OPEN and fetchedmain/tree match.
+Full2172/11existing skips, analyze/format550/web/macOScompile/product32/inventory9
+and fresh IAB9140 passed within the stated supplied-fixture bounds. No actual live
+inference, SDK verification, stable replacement or deployment claimed. PR attachment
+attempt hit the existing chat limit100; merge/review verification was unaffected.
+Coordinator merged/outcome_verified recorded before integration/writer release.
+Delivered bounded NEW selected repair-to-candidate proof, durable preparation guard,
+atomic companion startup, read-only history and explicit recovery/retry reference.
+FullF20/CE01/umbrella404 and deferred400 remain open. Task/CI timing stays coordinator
+and manual observation rather than provider timing; no escaped defect observed.
+
+Immediately claimed next bounded F20 track404-retained-repair-copy under existing
+umbrella404, from verified merge9207c186 in the reused registered worktree. No second
+independent task is ready. The sole queue remains REQUIREMENTS.md. New acceptance:
+after a completed repair copy is refused by a later current-state check, expose its
+exact retained directory separately from the prior candidate session's directory and
+verification controls. Do not relabel/rebind the old run or grant execution/promotion
+for the new unverified copy. Successful replacement must avoid duplicate copy paths;
+before-copy refusal/cancellation/disposal and working/source/journal records stay
+unchanged. Add controller+production-screen narrow/high-text regressions, then full
+format/analyze/Flutter/web/macOScompile/product/inventory and fresh relevant IAB,
+exact final review/requiredCI/verifiedmerge before marking this bounded fix Done.
+
+Concrete evidence: private supplied probe /tmp/asg404-retained-copy-probe_test.dart
+SHA25632b9b1d905aa719281d42aafb79b211848e562f18c43bd9bfa37536c968f712d passes
+(log same-prefix -probe.log). Actual controller receives a second preparer return,
+then the injected origin change refuses startup; its public candidate getter still
+returns the old copy1 directory because the prior session takes precedence over the
+retained copy2. Production SourceReviewScreen renders only that public getter. This
+is a retained-path visibility gap, not working-file replacement or an execution
+permission failure. Probe used supplied paths/host/provider, no real copy/SDK/model.
+Fix scope is a separate read-only path projection and truthful presentation; keep the
+existing old session result and authority intact. Approval/Stop/recovery and last
+working outputs remain preserved. New execution contract owns9 literal paths.
+
+
+404-retained-repair-copy local implementation started: SourceReviewController now
+exposes only a separate directory string when a returned copy differs from the
+retained prior session result and preparation is no longer active. The existing
+candidate getter/session/verification authority remain unchanged. Production source
+review labels the second path as an unverified repair copy retained after preparation
+stopped and explains that it was not admitted to a new verification run; the old run
+still refers to its original folder. No new buttons, replay, writes, promotion,
+startup or source restoration are introduced by this path projection.
+
+Actual controller success/before-copy/after-copy/cancel/dispose cases assert that
+only the post-copy refusal exposes copy2 while public candidate/session still refer
+to copy1. Production screen projection/layout regression at320px/2x text shows
+working, prior-candidate and refused-copy paths separately. Test setup was corrected
+to scroll the actual outer ListView and let the screen own controller disposal;
+production behavior was not weakened to satisfy the test. Focused controller/screen/
+architecture76 pass, clean analysis and focused formatting. Logs:
+/tmp/asg404-retained-copy-final-focused.log,
+/tmp/asg404-retained-copy-final-analyze.log,
+/tmp/asg404-retained-copy-final-format.log. No actual copy/SDK/model ran.
+
+Remaining owned work: fresh relevant browser observation, inventory regeneration,
+full regression/web/isolated macOS compile/product/inventory, exact scoped publication
+and fresh final PR review/requiredCI/verifiedmerge. This new fix is dirty, uncommitted
+and unpublished; keep its lease active and resume it first. FullF20/CE01/umbrella404
+and deferred400 stay open; F23-last/marketplace/deployment gates remain. Primary
+owner3IDE/3canonical-doc edits and owner-started processes remain untouched.
+
+
+404-retained-repair-copy final local acceptance — all9 scoped files.
+The final UI guidance uses plain language: "This copy has no new check results.
+The results below still belong to the earlier folder." It appears only for a
+separate returned copy after preparation is no longer active; it exposes a path,
+not another run, restored proposal or execution/promotion permission. Existing
+candidate/session result and controls remain on their original directory. This
+slice preserves an in-memory retained-copy path; it does not add durable orphan-copy
+history or automatic cleanup/recovery. No changed wire format or new storage write.
+
+Focused77 passed (actual controller adverse paths, production320px/2x text view and
+new browser fixture initialization); full final2174 passed/11 existing skips,
+production and fixture analysis clean, format550 files. Production web and isolated
+macOS debug compilation pass; no native app launched/installed. Product32/inventory9
+pass and comparison inventory regenerated for exact final runtime. Logs:
+/tmp/asg404-copy-fixture-test.log,/tmp/asg404-copy-full-test2.log,
+/tmp/asg404-copy-final-analyze2.log,/tmp/asg404-copy-fixture-analyze2.log,
+/tmp/asg404-copy-final-format2.log,/tmp/asg404-copy-web-build2.log,
+/tmp/asg404-copy-macos-build2.log,/tmp/asg404-copy-product2.log,
+/tmp/asg404-copy-inventory2.log. Initial full2174/builds passed; the plain-language
+text refinement was then retested/rebuilt rather than reusing the earlier bundle.
+
+Fresh final IAB9141 observation of separately labelled
+ASG_RETAINED_REPAIR_COPY_FIXTURE shows working/previous-candidate/new-copy paths
+independently in production SourceReviewScreen, truthful unverified-copy guidance
+and no copy-specific check/promotion controls. Open/return leaves all records
+unchanged and writes/captures/providers/inspections/tools0. Artifact:
+/tmp/asg404-copy-iab-observation2.json; this is a supplied detached read-only UI
+projection, not actual copy/refusal/native execution. Actual controller regressions
+separately prove refusal ordering and the path projection. Older fixtures and their
+identities remain unchanged. Final bundle SHA256: 80802aa696963323d7c0703fba8e50d67c81e6bbf59fb784869bd558a3b24fc4.
+
+Local diff/failure-order review passes. Exact scoped commit, serialized publication,
+fresh final PR review, requiredCI and protected verifiedmerge remain mandatory.
+FullF20/CE01/umbrella404 and deferred400 remain open. No actual model inference,
+source restoration, stable app replacement, owner-process stop or deployment done.

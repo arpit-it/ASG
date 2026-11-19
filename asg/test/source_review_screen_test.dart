@@ -2,14 +2,110 @@
 // Copyright 2026 Arpit Sinha
 
 import 'package:asg/models/session_proposal_request.dart';
+import 'package:asg/controllers/source_review_controller.dart';
+import 'package:asg/models/source_generation.dart';
+import 'package:asg/views/source_review_screen.dart';
+
+import 'approved_source_proposer_test.dart' show seed;
+import 'planning_conversation_test.dart' show project;
+import 'source_candidate_controller_test.dart' show AtomicRecords;
+
 import 'package:asg/views/source_request_history.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'session_proposal_request_test.dart' show requestMetadata;
-import '../tools/fixtures/candidate_reopen.dart' show selectedRepairFixtureHome;
+import '../tools/fixtures/candidate_reopen.dart'
+    show selectedRepairFixtureHome, retainedRepairCopyFixtureHome;
+
+class RetainedCopyReviewProjection extends SourceReviewController {
+  RetainedCopyReviewProjection(AtomicRecords records)
+    : super(
+        project: project,
+        records: records,
+        generated: GeneratedProject(
+          directory: '/working/retained',
+          sdk: '',
+          python: '',
+          sources: const {},
+        ),
+      );
+  @override
+  GeneratedProject get candidate => GeneratedProject(
+    directory: '/candidate/previous-failed',
+    sdk: '',
+    python: '',
+    sources: const {},
+  );
+  @override
+  String get retainedRepairCopyDirectory => '/candidate/copied-after-refusal';
+}
 
 void main() {
+  testWidgets('retained repair copy browser fixture initializes read-only', (
+    tester,
+  ) async {
+    final home = await retainedRepairCopyFixtureHome();
+    await tester.pumpWidget(MaterialApp(home: home));
+    await tester.pumpAndSettle();
+    expect(find.text('Retained repair copy UI fixture'), findsOneWidget);
+    expect(find.textContaining('Writes: 0'), findsOneWidget);
+    expect(find.text('Records unchanged: true'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets(
+    'narrow enlarged source review separates refused repair copy from old candidate',
+    (tester) async {
+      tester.view.physicalSize = const Size(320, 1000);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final records = AtomicRecords();
+      await seed(records);
+      final controller = RetainedCopyReviewProjection(records);
+      await tester.pumpWidget(
+        MaterialApp(
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(context)
+                .copyWith(textScaler: TextScaler.linear(2)),
+            child: child!,
+          ),
+          home: SourceReviewScreen(controller: controller),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.scrollUntilVisible(
+        find.text('/working/retained'),
+        300,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(find.text('/working/retained'), findsOneWidget);
+      await tester.scrollUntilVisible(
+        find.text('/candidate/previous-failed'),
+        300,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(find.text('/candidate/previous-failed'), findsOneWidget);
+      await tester.scrollUntilVisible(
+        find.text('/candidate/copied-after-refusal'),
+        300,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(find.text('/candidate/copied-after-refusal'), findsOneWidget);
+      expect(
+        find.text('Unverified repair copy retained after preparation stopped'),
+        findsOneWidget,
+      );
+      expect(
+        find.textContaining('This copy has no new check results'),
+        findsOneWidget,
+      );
+      expect(find.text('Promote retained copy'), findsNothing);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
   testWidgets('selected repair browser fixture initializes with zero effects', (
     tester,
   ) async {
