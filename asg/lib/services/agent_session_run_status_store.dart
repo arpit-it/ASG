@@ -4,6 +4,7 @@
 import 'dart:convert';
 
 import '../models/agent_session.dart';
+import '../models/agent_task_history.dart';
 import '../models/agent_execution_checkpoint.dart';
 import '../models/source_generation.dart';
 import '../models/agent_session_run_status.dart';
@@ -12,6 +13,7 @@ import '../models/structured_proposal_json.dart';
 import '../models/candidate_verification_run.dart';
 import 'agent_execution_checkpoint_store.dart';
 import 'record_storage.dart';
+import 'agent_task_history_store.dart';
 
 /// Reads retained history only. Does not reopen/reconcile checkpoints or require
 /// current execution approval, so revoked and cancelled history stays readable.
@@ -114,12 +116,28 @@ class AgentSessionRunStatusStore {
               execution.dispatchId != reference.dispatchId)) {
         throw const FormatException();
       }
+      AgentTaskHistory? taskHistory;
+      try {
+        final retained = AgentTaskHistoryStore(records, projectId).load(run);
+        if (retained != null &&
+            retained.session.sessionId == session.sessionId &&
+            retained.session.projectId == session.projectId &&
+            jsonEncode(retained.reference.toJson()) ==
+                jsonEncode(reference.toJson()) &&
+            jsonEncode(retained.session.tasks.toJson()) ==
+                jsonEncode(session.tasks.toJson())) {
+          taskHistory = retained;
+        }
+      } catch (_) {
+        // Missing/corrupt task history must not erase independent saved facts.
+      }
       return AgentSessionRunStatus.recorded(
         reference: reference,
         sourcePhase: run.snapshot.phase,
         executionPhase: execution.phase,
         pendingOperation: run.snapshot.pendingOperation,
         finished: run.finished,
+        taskHistory: taskHistory,
       );
     } catch (_) {
       return AgentSessionRunStatus.unavailable(reference);

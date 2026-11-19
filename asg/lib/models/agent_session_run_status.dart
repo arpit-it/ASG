@@ -3,6 +3,7 @@
 
 import 'agent_execution_checkpoint.dart';
 import 'agent_session.dart';
+import 'agent_task_history.dart';
 import 'source_generation.dart';
 
 /// Correlated saved facts, never proof of external exit or task completion.
@@ -11,7 +12,8 @@ final class AgentSessionRunStatus {
     : sourcePhase = null,
       executionPhase = null,
       pendingOperation = null,
-      finished = null;
+      finished = null,
+      taskHistory = null;
 
   const AgentSessionRunStatus.recorded({
     required this.reference,
@@ -19,6 +21,7 @@ final class AgentSessionRunStatus {
     required this.executionPhase,
     required this.pendingOperation,
     required this.finished,
+    this.taskHistory,
   });
 
   final AgentSessionDispatch reference;
@@ -26,5 +29,6 @@ final class AgentSessionRunStatus {
   final AgentExecutionPhase? executionPhase;
   final String? pendingOperation;
   final bool? finished;
+  final AgentTaskHistory? taskHistory;
   bool get available => sourcePhase != null && executionPhase != null;
 }

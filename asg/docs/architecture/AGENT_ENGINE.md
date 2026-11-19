@@ -1556,3 +1556,47 @@ receipts retain their original revision/protocol identities.
 
 No task completion, scheduler, automatic process reconciliation, receipt-publisher
 authentication, user-interface history display or full CE01 acceptance is claimed.
+
+
+### CE01 read-only saved task observations — 19 November 2026
+
+AgentSessionRunStatusStore now includes validated task history only after its
+independent run/checkpoint checks pass. History must match the selected session,
+project, reference and frozen task selection. Missing, corrupt, legacy or foreign
+history leaves the base run facts available with null task details; no recovery,
+reconciliation, approval renewal or write is attempted. History errors do not
+expose retained bytes. AgentSessionController keeps its existing read-only
+load/open/selection/disposal behavior; the status model carries immutable data.
+
+AgentTaskHistoryView renders an expandable ordered event list, human-readable
+operation labels, retained actual exit fields, interrupted unknown outcomes and
+the independently recorded session withdrawal boundary. A remaining pending
+operation says that no result is saved. Verification-attempt finished is never
+labelled task completion. Source/approval contents and command output are not
+rendered. The existing saved-run facts remain visible when details are unavailable.
+The focused view owns rendering only and performs no storage or application action.
+
+Tests cover foreign/corrupt/missing histories, revoked/cancelled contexts, controller
+selection/refresh/disposal, ordered unknown and late-result rows, private output
+omission, zero writes, and320px layout with text scale2. Full Flutter1,952 passed
+with11 existing skips; analyze, production web build, explicit fixture analysis,
+fixture web build and product32/inventory9 passed.
+
+The IAB check used tools/fixtures/agent_session_task_history.dart, a labelled
+in-memory fixture using the production screen/controller/projection. Setup uses
+typed stores and supplied deterministic result values; it creates no host/model
+or process. After setup, writes are refused and counted. Opening/expanding unknown
+and late-result sessions, opening legacy history, reloading, attempting a missing
+ID and returning showed write attempts0 and unchanged records. Unknown history
+retained resolve exit0 and a separate interrupted test; late-result history showed
+its saved test exit0 and verification-finished row; legacy details were explicitly
+unavailable while its saved run facts stayed visible. Cancellation controls were
+disabled for the cancelled fixture sessions. Screenshots were visually inspected
+in IAB; narrow/high-text evidence is from widget tests, not a browser viewport claim.
+
+Evidence /tmp/asg-404-session-task-history-overview-iab-observation.json; fixture
+main.dart.js67d9f56dfd0e862e8a9cd058ed985aea23f2aab46d2d75aea5f11f787910b24f,
+production buildd4b8d84bf42b0bc8fcc779f37d7a22e4998520f2f3ca6c4d061f365faa9ee018.
+This is read-only fixture UI acceptance, not production end-to-end coding, actual
+Flutter execution, app-crash recovery, process cleanup, inference or full CE01.
+Historical native binaries/observations remain tied to their original identities.
