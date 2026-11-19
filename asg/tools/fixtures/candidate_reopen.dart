@@ -12,6 +12,7 @@ import 'package:asg/models/requirements_board.dart';
 import 'package:asg/models/named_flutter_test_result.dart';
 import 'package:asg/services/conversation_store.dart';
 import 'package:asg/models/agent_task_decision.dart';
+import 'package:asg/services/agent_task_decision_store.dart';
 import 'package:asg/services/record_storage.dart';
 import 'package:asg/services/studio_database.dart';
 import 'package:asg/services/requirement_check_report_store.dart';
@@ -125,8 +126,18 @@ class DecisionFixtureRecords implements ConditionalRecordStorage {
 }
 
 class CandidateReopenFixture {
-  CandidateReopenFixture._(this.records, this.baseline, this.decisionMode)
-    : decisionRecords = DecisionFixtureRecords(records);
+  CandidateReopenFixture._(
+    this.records,
+    this.baseline,
+    this.decisionMode, {
+    this.preparationMode = false,
+  }) : decisionRecords = DecisionFixtureRecords(records),
+       originalBaseline = jsonEncode({
+         for (final e in records.values.entries)
+           if (!e.key.startsWith(AgentTaskDecision.prefix)) e.key: e.value,
+       });
+  final bool preparationMode;
+  final String originalBaseline;
   final bool decisionMode;
   final DecisionFixtureRecords decisionRecords;
   int fixtureMutations = 0;
@@ -137,7 +148,7 @@ class CandidateReopenFixture {
         for (final e in records.values.entries)
           if (!e.key.startsWith(AgentTaskDecision.prefix)) e.key: e.value,
       }) ==
-      baseline;
+      originalBaseline;
   int get retainedDecisions => records.values.keys
       .where((key) => key.startsWith(AgentTaskDecision.prefix))
       .length;
@@ -184,6 +195,32 @@ class CandidateReopenFixture {
     }
   }
 
+  void mutatePreparation({required bool remove}) {
+    if (!preparationMode) throw StateError('Preparation fixture required.');
+    final session = AgentSessionStore(
+      records,
+      TaskHistoryFixture.project,
+    ).load('published')!;
+    final key =
+        '${CandidateReopenContext.prefix}${TaskHistoryFixture.project.id}.${session.dispatches.last.runNumber}';
+    final saved = (jsonDecode(baseline) as Map)[key] as String;
+    if (remove) {
+      records.values.remove(key);
+    } else {
+      final value = jsonDecode(saved);
+      const alternate =
+          'void main() { /* supplied different reviewed base */ }';
+      value['basis']['sourceBase']['sources']['lib/main.dart'] = sha256
+          .convert(utf8.encode(alternate))
+          .toString();
+      value['basis']['evidence']['proposal']['changes'][0]['before'] =
+          alternate;
+      CandidateReopenContext.decode(jsonEncode(value));
+      records.values[key] = jsonEncode(value);
+    }
+    fixtureMutations++;
+  }
+
   final TaskHistoryFixtureRecords records;
   final String baseline;
   final hosts = <ReopenFixtureHost>[];
@@ -200,7 +237,9 @@ class CandidateReopenFixture {
 
   static Future<CandidateReopenFixture> create({
     bool decisionMode = false,
+    bool preparationMode = false,
   }) async {
+    decisionMode = decisionMode || preparationMode;
     final old = await TaskHistoryFixture.create();
     final records = old.records..readOnly = false;
     const project = TaskHistoryFixture.project;
@@ -487,6 +526,159 @@ class CandidateReopenFixture {
       DateTime.utc(2026),
       authorized: () => true,
     );
+    if (preparationMode) {
+      // Supplied setup facts only: no verification host or SDK/model is called.
+      final decisions = AgentTaskDecisionStore(records, project);
+      final rootSession = sessions.load('published')!;
+      final rootNumber = rootSession.dispatches.last.runNumber;
+      await decisions.confirm(
+        decisions.select(rootSession, rootNumber),
+        consent: true,
+        authorized: () => true,
+      );
+      const dependentAfter = '$after\n// supplied dependent preparation';
+      final dependentEvidence = ApprovedSourceProposal(
+        projectId: project.id,
+        boardTaskId: 'Tanalyze',
+        approval: approval,
+        modelRequest: request,
+        proposal: SourceEditProposal.parse(
+          {
+            'summary': 'Supplied dependent review',
+            'changes': [
+              {
+                'path': 'lib/main.dart',
+                'before': after,
+                'after': dependentAfter,
+              },
+            ],
+          },
+          originals: {'lib/main.dart': after},
+          responseModel: request.responseModel,
+        ),
+      );
+      final dependentPrepared = GeneratedProject.fromJson({
+        ...supplied.toJson(),
+        'directory': '/fixture/dependent-candidate',
+        'phase': SourceGenerationPhase.generated.name,
+        'steps': <Object>[],
+        'outputs': <String, String>{},
+        'sources': {...supplied.sources, 'lib/main.dart': hash(dependentAfter)},
+      });
+      final dependentBasis = CandidateReopenBasis.capture(
+        projectId: project.id,
+        workingRecord: records.getString(workingKey)!,
+        working: supplied,
+        sourceBase: supplied,
+        prepared: dependentPrepared,
+        evidence: dependentEvidence,
+      );
+      final prerequisiteSession = sessions.load('published')!;
+      final dependentPublicationJournal = CandidateVerificationStore(
+        records,
+        project.id,
+      );
+      final dependentPublicationRun = await dependentPublicationJournal.start(
+        dependentPrepared.copy(phase: SourceGenerationPhase.verifying),
+        () {},
+        reopenBasis: dependentBasis,
+        sessionAdmission: AgentSessionRunAdmission(
+          records,
+          project,
+          AgentSessionBinding.select(
+            session: prerequisiteSession,
+            projectId: project.id,
+            boardTaskId: 'Tanalyze',
+          ),
+        ),
+      );
+      var dependentSupplied = dependentPublicationRun.snapshot;
+      for (final task in tasks) {
+        await dependentPublicationJournal.checkpoint(
+          dependentSupplied.copy(pendingOperation: task.operation.name),
+          () {},
+        );
+        dependentSupplied = dependentSupplied.copy(
+          pendingOperation: '',
+          steps: [
+            ...dependentSupplied.steps,
+            GenerationStep(
+              operation: task.operation.name,
+              exitCode: 0,
+              output: 'dependentSupplied fixture value; no SDK was run',
+            ),
+          ],
+        );
+        await dependentPublicationJournal.checkpoint(dependentSupplied, () {});
+      }
+      dependentSupplied = dependentSupplied.copy(
+        phase: SourceGenerationPhase.ready,
+        outputs: working.outputs,
+      );
+      await dependentPublicationJournal.checkpoint(
+        dependentSupplied,
+        () {},
+        finished: true,
+      );
+      final dependentFinished = dependentPublicationJournal.load().runs.last;
+      final dependentAdmitted = dependentPublicationJournal.admittedSession!;
+      final dependentWorkingKey = 'studio.generation.v1.${project.id}';
+      final dependentExecutionKey =
+          'studio.agentExecution.v1.candidate-${project.id}-${dependentFinished.number}';
+      final dependentOriginalWorking = records.getString(dependentWorkingKey)!;
+      final dependentPublishedWorking = SourceGenerationStore(records)
+          .encodeUpdate(project.id, dependentSupplied);
+      final dependentPublication = AgentSessionPublication.capture(
+        session: dependentAdmitted,
+        run: dependentFinished,
+        originalWorkingRecord: dependentOriginalWorking,
+        publishedWorkingRecord: dependentPublishedWorking,
+        executionBefore: AgentExecutionCheckpoint.fromJson(
+          jsonDecode(records.getString(dependentExecutionKey)!),
+        ),
+      );
+      await records.commitRecords(
+        expected: {
+          dependentWorkingKey: dependentOriginalWorking,
+          dependentPublication.storageKey: null,
+          dependentExecutionKey: records.getString(dependentExecutionKey),
+          dependentAdmitted.storageKey: records.getString(
+            dependentAdmitted.storageKey,
+          ),
+        },
+        updates: {
+          dependentWorkingKey: dependentPublishedWorking,
+          'studio.generationPrevious.v1.${project.id}':
+              dependentOriginalWorking,
+          dependentExecutionKey: jsonEncode(
+            dependentPublication.executionAfter.toJson(),
+          ),
+          dependentPublication.storageKey: jsonEncode(
+            dependentPublication.toJson(),
+          ),
+        },
+        authorize: () {},
+      );
+
+      await report.recordNamedTestResult(
+        project,
+        report.load(project),
+        first.id,
+        'Auto',
+        suppliedNamedResult,
+        DateTime.utc(2026, 3),
+        authorized: () => true,
+      );
+      await decisions.confirm(
+        decisions.select(
+          dependentAdmitted,
+          dependentFinished.number,
+          prerequisites: {'Tresolve': rootNumber},
+        ),
+        consent: true,
+        authorized: () => true,
+      );
+    }
     if (!decisionMode) await sessions.requestCancellation(admitted);
     records.readOnly = true;
     records.writeAttempts = 0;
@@ -494,6 +686,7 @@ class CandidateReopenFixture {
       records,
       jsonEncode(records.values),
       decisionMode,
+      preparationMode: preparationMode,
     );
   }
 }
@@ -502,6 +695,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final fixture = await CandidateReopenFixture.create(
     decisionMode: const bool.fromEnvironment('ASG_TASK_DECISION_FIXTURE'),
+    preparationMode: const bool.fromEnvironment('ASG_PREPARATION_FIXTURE'),
   );
   runApp(MaterialApp(home: _FixtureHome(fixture)));
 }
@@ -518,7 +712,9 @@ class _FixtureHomeState extends State<_FixtureHome> {
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
       title: Text(
-        widget.fixture.decisionMode
+        widget.fixture.preparationMode
+            ? 'Prerequisite preparation UI fixture'
+            : widget.fixture.decisionMode
             ? 'Authored-check decision UI fixture'
             : 'Published-task evidence UI fixture',
       ),
@@ -533,6 +729,25 @@ class _FixtureHomeState extends State<_FixtureHome> {
           'Write attempts after setup: ${widget.fixture.records.writeAttempts}',
         ),
         Text('Records unchanged: ${widget.fixture.unchanged}'),
+        if (widget.fixture.preparationMode) ...[
+          const Text(
+            'Two historical decisions and their publication/check facts were supplied during setup. Opening the production review performs no writes or execution.',
+          ),
+          OutlinedButton(
+            onPressed: () {
+              widget.fixture.mutatePreparation(remove: false);
+              setState(() {});
+            },
+            child: const Text('Supply a different reviewed preparation base'),
+          ),
+          OutlinedButton(
+            onPressed: () {
+              widget.fixture.mutatePreparation(remove: true);
+              setState(() {});
+            },
+            child: const Text('Remove supplied preparation context'),
+          ),
+        ],
         if (widget.fixture.decisionMode) ...[
           const Text(
             'Decision fixture: only explicit one-record decision transactions are permitted. Named-test observations are supplied, not new SDK execution.',

@@ -10,6 +10,8 @@ import '../models/agent_session.dart';
 import '../models/agent_session_publication.dart';
 import '../models/agent_task_decision.dart';
 import '../models/candidate_verification_run.dart';
+import '../models/candidate_reopen_context.dart';
+import '../models/prerequisite_preparation_evidence.dart';
 import '../models/project.dart';
 import '../models/requirement_check_report.dart';
 import 'agent_session_publication_store.dart';
@@ -300,5 +302,90 @@ class AgentTaskDecisionHistoryStore {
       throw const FormatException('Retained publication is unavailable.');
     }
     return value;
+  }
+}
+
+/// Historical preparation facts for explicitly retained prerequisite references.
+/// No latest-candidate/current-approval reader, host or writer is constructed.
+class AgentPrerequisitePreparationStore {
+  AgentPrerequisitePreparationStore(this.records, this.projectId);
+  final RecordStorage records;
+  final String projectId;
+
+  PrerequisitePreparationReview? load(AgentSession session, int number) {
+    final reads = _DecisionReads(records);
+    final history = AgentTaskDecisionHistoryStore(reads, projectId);
+    final decision = history.load(session, number);
+    if (decision == null) {
+      reads.requireUnchanged();
+      return null;
+    }
+    final refs = decision.evidence.prerequisites;
+    CandidateReopenContext? context;
+    if (refs.isNotEmpty) {
+      try {
+        final key = '${CandidateReopenContext.prefix}$projectId.$number';
+        final raw = reads.getString(key);
+        if (raw == null) throw const FormatException();
+        final value = CandidateReopenContext.decode(raw);
+        final run = history._run(reads, number);
+        final publication = decision.evidence.publication;
+        value.requireRun(run);
+        if (value.storageKey != key ||
+            raw != jsonEncode(value.toJson()) ||
+            !_same(value.session.toJson(), publication.session.toJson()) ||
+            value.basis.workingSha256 != publication.originalWorkingSha256) {
+          throw const FormatException('Preparation context changed.');
+        }
+        context = value;
+      } catch (_) {
+        // Optional context failure cannot erase the retained decision.
+      }
+    }
+    final edges = <PrerequisitePreparationEvidence>[];
+    for (final ref in refs) {
+      var state = PrerequisitePreparationState.unavailable;
+      try {
+        if (context != null) {
+          final prior = history._read(reads, session, ref.runNumber, {});
+          final run = history._run(reads, ref.runNumber);
+          if (prior == null ||
+              prior.fingerprint != ref.sha256 ||
+              prior.evidence.publication.reference.boardTaskId != ref.taskId) {
+            throw const FormatException('Prerequisite identity changed.');
+          }
+          final basis = context.basis;
+          final sources = run.snapshot.sources;
+          final reviewed = basis.sourceBase.sources;
+          // Raw working digests include build-history metadata, which typed
+          // snapshots intentionally omit. Preserve the recorded digest link and
+          // independently compare the validated typed snapshots; never hash a
+          // projection and call it the original working record.
+          final sameWorking = _same(
+            basis.working.toJson(),
+            run.snapshot.toJson(),
+          );
+          final sameSources =
+              sources.length == reviewed.length &&
+              sources.entries.every((e) => reviewed[e.key] == e.value);
+          state =
+              basis.workingSha256 ==
+                      prior.evidence.publication.publishedWorkingSha256 &&
+                  sameWorking &&
+                  sameSources
+              ? PrerequisitePreparationState.directRecordedLink
+              : PrerequisitePreparationState.noDirectMatch;
+        }
+      } catch (_) {
+        // Preserve other independently proven edges and the historical decision.
+      }
+      edges.add(PrerequisitePreparationEvidence(ref, state));
+    }
+    reads.requireUnchanged();
+    return PrerequisitePreparationReview(
+      decisionSha256: decision.fingerprint,
+      runNumber: number,
+      prerequisites: edges,
+    );
   }
 }

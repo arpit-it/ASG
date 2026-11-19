@@ -4,6 +4,7 @@
 import '../models/agent_session.dart';
 import '../models/agent_task_decision.dart';
 import '../models/published_task_evidence.dart';
+import '../models/prerequisite_preparation_evidence.dart';
 import '../services/agent_task_decision_store.dart';
 import '../services/published_task_evidence_store.dart';
 import 'base_controller.dart';
@@ -15,12 +16,21 @@ class PublishedTaskEvidenceController extends BaseController {
     this.selectedSession,
     this.runNumber, {
     AgentTaskDecisionStore? decisions,
+    AgentPrerequisitePreparationStore? preparation,
   }) : decisions =
-           decisions ?? AgentTaskDecisionStore(store.records, store.project);
+           decisions ?? AgentTaskDecisionStore(store.records, store.project),
+       preparation =
+           preparation ??
+           AgentPrerequisitePreparationStore(store.records, store.project.id);
   final PublishedTaskEvidenceStore store;
   final AgentSession selectedSession;
   final int runNumber;
   final AgentTaskDecisionStore decisions;
+  final AgentPrerequisitePreparationStore preparation;
+  PrerequisitePreparationReview? _preparationReview;
+  String? _preparationError;
+  PrerequisitePreparationReview? get preparationReview => _preparationReview;
+  String? get preparationError => _preparationError;
   PublishedTaskEvidence? _evidence;
   String? _error, _decisionError;
   AgentTaskDecision? _decision;
@@ -43,7 +53,9 @@ class PublishedTaskEvidenceController extends BaseController {
 
   void load() {
     if (isDisposed || _busy) return;
-    _epoch++;
+    final epoch = ++_epoch;
+    _preparationReview = null;
+    _preparationError = null;
     _evidence = null;
     _error = null;
     _decision = null;
@@ -54,18 +66,18 @@ class PublishedTaskEvidenceController extends BaseController {
     _options = {};
     try {
       final value = decisions.load(selectedSession, runNumber);
-      if (!isDisposed) _decision = value;
+      if (!isDisposed && epoch == _epoch) _decision = value;
     } catch (_) {
-      if (!isDisposed) _decisionError = 'Retained decision proof is unavailable. Existing records are preserved.';
+      if (!isDisposed && epoch == _epoch) _decisionError = 'Retained decision proof is unavailable. Existing records are preserved.';
     }
-    if (isDisposed) return;
+    if (isDisposed || epoch != _epoch) return;
     try {
       final value = store.load(selectedSession, runNumber);
-      if (!isDisposed) _evidence = value;
+      if (!isDisposed && epoch == _epoch) _evidence = value;
     } catch (_) {
-      if (!isDisposed) _error = 'Published task evidence is unavailable for this saved selection. Check its publication, working output, session, Plan and saved inputs. Existing history is retained; another run is not selected automatically.';
+      if (!isDisposed && epoch == _epoch) _error = 'Published task evidence is unavailable for this saved selection. Check its publication, working output, session, Plan and saved inputs. Existing history is retained; another run is not selected automatically.';
     }
-    if (isDisposed) return;
+    if (isDisposed || epoch != _epoch) return;
     if (_evidence != null &&
         _decision == null &&
         !selectedSession.cancellationRequested) {
@@ -83,14 +95,36 @@ class PublishedTaskEvidenceController extends BaseController {
                   ref.runNumber,
             ]),
         };
-        if (isDisposed) return;
+        if (isDisposed || epoch != _epoch) return;
         _options = options;
         _select();
       } catch (_) {
-        if (!isDisposed) _decisionError = 'Completion decision is unavailable. Reload exact saved evidence and prerequisite decisions.';
+        if (!isDisposed && epoch == _epoch) _decisionError = 'Completion decision is unavailable. Reload exact saved evidence and prerequisite decisions.';
       }
     }
+    if (_decision case final retained?) _loadPreparation(retained, epoch);
+    if (isDisposed || epoch != _epoch) return;
     update();
+  }
+
+  void _loadPreparation(AgentTaskDecision decision, int epoch) {
+    if (isDisposed || epoch != _epoch) return;
+    _preparationReview = null;
+    _preparationError = null;
+    try {
+      final value = preparation.load(selectedSession, runNumber);
+      if (isDisposed || epoch != _epoch) return;
+      if (value == null ||
+          value.decisionSha256 != decision.fingerprint ||
+          value.runNumber != runNumber) {
+        throw StateError('Retained decision changed.');
+      }
+      _preparationReview = value;
+    } catch (_) {
+      if (!isDisposed && epoch == _epoch) {
+        _preparationError = 'Recorded preparation provenance is unavailable. The retained authored-check decision remains separate; reload saved evidence to retry.';
+      }
+    }
   }
 
   bool _hasDecision(int number) {
@@ -170,7 +204,8 @@ class PublishedTaskEvidenceController extends BaseController {
       _selection = null;
       _consent = false;
       _decisionError = null;
-      return true;
+      _loadPreparation(value, epoch);
+      return !isDisposed && epoch == _epoch;
     } catch (_) {
       if (!isDisposed && epoch == _epoch) {
         _selection = null;

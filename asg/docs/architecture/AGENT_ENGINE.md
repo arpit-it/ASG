@@ -2358,3 +2358,52 @@ narrow/high-text rendering and labelled actual IAB proof with no effects. Shared
 historical decoder changes require fresh relevant native reopen regression/builds;
 full required local checks, exact review, required CI and verified merge remain gates.
 This completes the investigation boundary only, not this future implementation.
+
+
+Implementation correction — 19 November 2026: SourceGenerationStore.encodeUpdate
+stores buildHistoryVersion/buildHistory beside GeneratedProject fields. The raw
+published/original working digests cover that complete record. CandidateReopenBasis
+retains its digest and typed working snapshot, whose toJson intentionally omits
+history metadata. Re-hashing the typed projection cannot independently reproduce
+the raw digest, as the new positive fixture regressions demonstrate. Preserve the
+three recorded raw-digest equalities, and independently compare canonical validated
+basis.working.toJson with the exact prerequisite run.snapshot.toJson plus the full
+reviewed source map. Existing publication proof binds the exact run/checkpoint and
+its jointly recorded working digest. Do not reconstruct omitted history or weaken
+its persistence schema. This is a statement about the jointly retained records and
+typed snapshots, not authenticated raw bytes or external/current file identity.
+A typed working mismatch is no direct match; malformed/inconsistent record binding
+remains unavailable. No raw snapshot digest is presented as raw working identity.
+
+
+### Read-only preparation review implementation — 19 November 2026
+
+PrerequisitePreparationReview is a detached immutable projection with exact
+retained references and per-edge direct/no-direct/unavailable facts. The historical
+AgentPrerequisitePreparationStore shares the strict decision reader, validates the
+bounded canonical dependent context against its completed publication/session/run,
+compares recorded raw working digests and independently validated typed snapshots
+and full reviewed source maps, then checks its complete read-set. It never invokes
+the current candidate loader, approval, host, inspection or any write. Missing
+optional context preserves independently retained historical authored-check proof.
+Each stored edge is evaluated separately; no latest result or transitive/aggregate
+readiness predicate exists. Root decisions have an explicit no-prerequisites state.
+
+The production evidence controller injects this reader, checks exact decision/run
+identity, sanitizes independent preparation errors, retries on reload and guards
+late/disposed/nested reload results. Successful confirmation still publishes only
+its existing decision CAS; preparation failure cannot roll back or rewrite it.
+The view shows exact task/run, readable fact labels and historical limits alongside
+the unchanged authored-check decision. Current evidence/applicability remains separate.
+
+Regression coverage includes the metadata-digest correction above, valid differing
+reviewed bases, typed working mismatch, missing/corrupt/noncanonical/foreign context,
+changed reads, multiple prerequisite edges with different states, growing/withdrawn
+sessions/current working rotation, actual native database close/reopen, controller
+error/disposal/reentry and 320px/two-times-text production rendering. The labelled
+preparation fixture supplies two exact decisions/publications/check observations
+during setup; it runs no SDK, model or preview. Explicit fixture actions change only
+its reviewed base or remove optional context and withdrawal intent. Fresh IAB verifies
+all three production fact states with unchanged decision/time and no new write or
+execution authority. Full checks and required CI/exact review/verified merge gate
+delivery; this review does not establish semantic compatibility or dependent execution.

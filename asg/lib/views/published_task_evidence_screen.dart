@@ -3,6 +3,8 @@
 
 import 'package:flutter/material.dart';
 
+import '../models/prerequisite_preparation_evidence.dart';
+
 import '../controllers/published_task_evidence_controller.dart';
 
 class PublishedTaskEvidenceScreen extends StatefulWidget {
@@ -81,6 +83,27 @@ class _PublishedTaskEvidenceScreenState
             Text(
               'Selected historical prerequisite ${prerequisite.taskId}: run ${prerequisite.runNumber}',
             ),
+        ],
+        if (controller.decision != null) ...[
+          const Text('Recorded preparation provenance'),
+          const Text(
+            'Exact saved preparation facts only. These do not prove current files, behavior, dependency readiness or permission to execute.',
+          ),
+          if (controller.preparationReview case final review?) ...[
+            if (review.prerequisites.isEmpty)
+              const Text(
+                'This retained decision has no historical prerequisites.',
+              ),
+            for (final edge in review.prerequisites)
+              Text(
+                'Prerequisite ${edge.reference.taskId}, run ${edge.reference.runNumber}: ${switch (edge.state) {
+                  PrerequisitePreparationState.directRecordedLink => 'Recorded working base and reviewed source map match this prerequisite publication.',
+                  PrerequisitePreparationState.noDirectMatch => 'No direct recorded preparation match. This does not establish whether earlier behavior was retained.',
+                  PrerequisitePreparationState.unavailable => 'Preparation proof is unavailable. Existing historical decision is retained.',
+                }}',
+              ),
+          ],
+          if (controller.preparationError case final error?) Text(error),
         ],
         if (controller.decisionError case final error?) Text(error),
         if (controller.evidence != null &&
