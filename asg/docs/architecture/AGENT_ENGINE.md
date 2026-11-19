@@ -1248,3 +1248,67 @@ exit, live preview or process cleanup. No new actions or authority are introduce
 Saved-session overview implemented locally: typed read-only status projection, injectable service, selected-session controller refresh and per-run screen rows. Exact persisted session/run/dispatch/checkpoint identities, approval snapshot, approved wire graph and selected board-task IDs are correlated; stale/missing/corrupt records yield unavailable without writes. Ordered references preserve valid rows when another checkpoint is missing. Pending operations remain unresolved, checkpoint phase is a recorded fact rather than external exit/task completion. Full historical requirements-board contents are not retained, so this is correlation to the saved selection and approved graph, not independent reconstruction of historical board requirement/dependency metadata or proof of original admission/proposal consumption.
 
 Validation: focused22 before the final two graph/order tests; final fullFlutter1,917 passed/11 existing skips, analyze clean and web build passed. New tests cover read-only byte retention, revoked/cancelled history, corrupt/foreign/missing/replayed checkpoint, journal/approval/graph mismatch, ordered partial availability, controller reload/selection/disposal and 320px text-scale2 rendering. Existing baseline25 passed. Evidence /tmp/asg-404-session-run-overview-{focused,final-tests,final-analyze,web}.log. IAB createBrowserTab(http://127.0.0.1:9127) timed out waiting for webview attachment; inventory then showed no IAB tabs. CUA outcome recorded, no Chrome fallback or hidden browser data seeding. Browser acceptance remains pending; publish only draft, no merge/full CE01 claim until acceptance and exact final review/required CI pass. Temporary preview belongs to this task; owner app/model processes untouched. No live inference required or claimed.
+
+
+### CE01 active-command session cancellation investigation — 19 November 2026
+
+The existing native cancellation observation is after-exit evidence: the
+sessionCancel branch waits for resolve exit0 and its actual receipt before
+requesting cancellation. It cannot establish withdrawal during a command.
+The running-test branch is a different mechanism: after its nonce marker it
+calls SourceCandidateController.cancel(), signalling Candidate Stop/host
+cancellation. Combining those results would falsely turn session intent into
+process termination evidence.
+
+Production ordering is suitable for a narrower native proof without product
+changes. Candidate startup atomically appends session admission and execution
+identity. NativeGenerationHost.verify writes a pending-operation checkpoint
+through beforeStart before Process.start. generation_command.py creates the
+exclusive operation intent receipt before confined execution and publishes the
+actual result after it. SourceCandidateController._progress retains real
+observations after withdrawal, but requires current session authority for the
+next pending dispatch. AgentSessionStore.requestCancellation persists intent;
+it does not call the host cancellation flag or fabricate an exit.
+
+Next bounded fixture outcome, under #404 after this investigation merges:
+
+1. Admit one approved bound session and actual resolve/analyze/test sequence.
+   Fixed test source writes a nonce running marker and waits for a bounded,
+   nonce-scoped release file established at fixture construction time. This is
+   a disposable test barrier, not a source edit during execution.
+2. At the marker require the matching test intent and absence of test result;
+   retain journal pendingOperation=test, executing checkpoint, one session ref
+   and current/previous working hashes. A missing/late/malformed marker fails
+   closed before cancellation or release.
+3. Request only AgentSessionStore cancellation against the admitted snapshot.
+   Require revision2/cancellationRequested=true, immutable approval/task/ref,
+   no Candidate Stop record and no host cancel signal. Do not call candidate
+   cancel, report actual termination, or acquire any additional permissions.
+4. Release the fixed test and await its actual exit/validated result receipt.
+   Require three command entries (resolve/analyze/test), no Build entry, real
+   test exit0 without cancelled=true, retained actual receipts/first reference,
+   failed candidate after authority refusal, finished journal and verifying
+   execution checkpoint. These terminal observations do not complete the Plan.
+5. Kill only the owned app handle after those observations. A separately
+   launched read-only app must retain exact session/cancellation/journal/
+   checkpoint/receipts/source/working hashes, enter zero SDK commands or receipt
+   preparations, refuse promotion/consent revival and perform no retry.
+
+Use a new explicit host/fixture mode and protocol version, rejecting partial or
+conflicting Stop/acknowledgment/retry/promotion/admission options before probing
+or launching. Keep old after-resolve cancellation and running Candidate Stop
+observations labelled with their original identities. Validate each report and
+stage before later launches. Compare the actual complete receipt set and raw
+record hashes, not journal labels alone. Natural late exit is the bounded new
+native acceptance; crash while the command itself is still alive and general
+cleanup/reconciliation remain pending unless separately established.
+
+Evidence inspected: generation_host_native.dart verify/beforeStart/dispatch;
+generation_command.py CompletionReceipt and confined execution; candidate
+controller _authorize/_progress/verify; native fixture running handshake,
+nonce test source, sessionCancel after-resolve branch and host cancel flag.
+Existing focused source-candidate/session-store baseline61 passed; current
+specific unknown-running-outcome controller regression1 and completion-receipt
+fixtures3 passed. Logs are /tmp/asg-404-session-cancellation-running-investigation-
+{baseline,unknown,receipts}.log. No new native observation, inference, device
+support, cleanup or fullCE01 acceptance is claimed by this investigation.
