@@ -5,6 +5,7 @@ import 'package:asg/services/agent_execution_checkpoint_store.dart';
 import 'package:asg/models/build_plan.dart';
 import 'package:asg/models/source_generation.dart';
 import 'package:asg/services/agent_session_store.dart';
+import 'package:asg/services/agent_task_history_store.dart';
 import 'package:asg/services/candidate_verification_store.dart';
 import 'package:asg/services/plan_approval_store.dart';
 import 'package:asg/services/requirements_store.dart';
@@ -57,6 +58,11 @@ void main() {
         ),
       );
       final admitted = native.getString(initial.storageKey);
+      final historyKey = AgentTaskHistoryStore(
+        native,
+        project.id,
+      ).keyFor(run.number);
+      final history = native.getString(historyKey);
       final candidate = native.getString(journal.candidateKey);
       final executionKey = 'studio.agentExecution.v1.candidate-${project.id}-1';
       final execution = native.getString(executionKey);
@@ -66,6 +72,22 @@ void main() {
       expect(native.getString(initial.storageKey), admitted);
       expect(native.getString(journal.candidateKey), candidate);
       expect(native.getString(executionKey), execution);
+      expect(native.getString(historyKey), history);
+      expect(
+        AgentTaskHistoryStore(
+          native,
+          project.id,
+        ).load(run)!.pendingOperation?.name,
+        'resolve',
+      );
+      expect(
+        native.getString(
+          'studio.agentTaskHistory.v1.${project.id}.${run.number}',
+        ),
+        isNotNull,
+        reason:
+            'Bound admission must retain task history across native reopen.',
+      );
       expect(
         CandidateVerificationStore(
           native,

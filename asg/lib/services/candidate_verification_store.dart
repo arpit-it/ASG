@@ -9,6 +9,8 @@ import '../models/candidate_recovery_acknowledgement.dart';
 import '../models/agent_execution_checkpoint.dart';
 import '../models/source_generation.dart';
 import 'record_storage.dart';
+import 'agent_task_history_store.dart';
+import '../models/agent_task_history.dart';
 import 'agent_session_admission.dart';
 import '../models/agent_session.dart';
 
@@ -22,6 +24,8 @@ class CandidateVerificationStore {
   String? _expectedJournal, _expectedCandidate;
   CandidateVerificationRun? _owned, _session;
   AgentSession? _admittedSession;
+  AgentTaskHistory? _taskHistory;
+  String? _expectedTaskHistory;
   AgentSession? get admittedSession => _admittedSession;
   Future<void> _pending = Future<void>.value();
   static const recoveryPrefix = 'studio.candidateRecovery.v1.';
@@ -167,6 +171,8 @@ class CandidateVerificationStore {
     if (_owned != null) throw StateError('Verification run already reserved.');
     _session = null;
     _admittedSession = null;
+    _taskHistory = null;
+    _expectedTaskHistory = null;
     if (sessionAdmission != null &&
         (!identical(sessionAdmission.records, records) ||
             sessionAdmission.project.id != projectId)) {
@@ -351,8 +357,34 @@ class CandidateVerificationStore {
         );
       }
     }
+    String? historyKey, historyRaw, sessionRaw, historySessionKey;
+    AgentTaskHistory? nextHistory;
+    if (reservation != null) {
+      nextHistory = AgentTaskHistoryStore.start(reservation.next, runs.last);
+    } else if (_taskHistory != null) {
+      final saved = records.getString(_taskHistory!.session.storageKey);
+      if (saved == null) throw StateError('Admitted task session is missing.');
+      sessionRaw = saved;
+      historySessionKey = _taskHistory!.session.storageKey;
+      final current = AgentSession.fromJson(jsonDecode(saved));
+      nextHistory = AgentTaskHistoryStore.advance(
+        _taskHistory!,
+        _owned!,
+        runs.last,
+        current,
+      );
+    }
+    if (nextHistory != null) {
+      historyKey = AgentTaskHistoryStore(
+        records,
+        projectId,
+      ).keyFor(runs.last.number);
+      historyRaw = jsonEncode(nextHistory.toJson());
+    }
     await storage.commitRecords(
       expected: {
+        ?historyKey: _expectedTaskHistory,
+        ?historySessionKey: sessionRaw,
         if (reservation != null) ...{
           ...reservation.expectedContext,
           reservation.sessionKey: reservation.expectedSession,
@@ -362,6 +394,7 @@ class CandidateVerificationStore {
         if (updatedExecution != null) executionKey!: expectedExecution,
       },
       updates: {
+        ?historyKey: historyRaw!,
         if (reservation != null)
           reservation.sessionKey: reservation.updatedSession,
         key: raw,
@@ -375,5 +408,7 @@ class CandidateVerificationStore {
     );
     _expectedJournal = raw;
     _expectedCandidate = candidate;
+    _taskHistory = nextHistory;
+    _expectedTaskHistory = historyRaw;
   }
 }

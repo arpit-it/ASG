@@ -95,10 +95,15 @@ final class AgentTaskHistory {
     this.reference,
     List<AgentTaskObservation> observations,
     this.withdrawalSequence,
-  ) : observations = List.unmodifiable(observations);
+    this.version,
+    List<BuildOperation> operationOrder,
+  ) : observations = List.unmodifiable(observations),
+      operationOrder = List.unmodifiable(operationOrder);
 
   static const maxObservations = 16;
   static const maxEncodedBytes = AgentSession.maxEncodedBytes + 8192;
+  final int version;
+  final List<BuildOperation> operationOrder;
   final AgentSession session;
   final AgentSessionDispatch reference;
   final List<AgentTaskObservation> observations;
@@ -109,6 +114,7 @@ final class AgentTaskHistory {
   factory AgentTaskHistory.start({
     required AgentSession session,
     required AgentSessionDispatch reference,
+    List<BuildOperation>? operationOrder,
   }) {
     if (session.cancellationRequested) {
       throw const FormatException(
@@ -116,7 +122,9 @@ final class AgentTaskHistory {
       );
     }
     return AgentTaskHistory.fromJson({
-      'version': 1,
+      'version': operationOrder == null ? 1 : 2,
+      if (operationOrder != null)
+        'operationOrder': operationOrder.map((item) => item.name).toList(),
       'session': session.toJson(),
       'reference': reference.toJson(),
       'withdrawalSequence': null,
@@ -136,7 +144,8 @@ final class AgentTaskHistory {
     Object? value, {
     required AgentSession currentSession,
   }) {
-    const keys = {
+    final keys = {
+      if (value is Map && value['version'] == 2) 'operationOrder',
       'version',
       'session',
       'reference',
@@ -147,7 +156,7 @@ final class AgentTaskHistory {
         value.length != keys.length ||
         !keys.every(value.containsKey) ||
         value['version'] is! int ||
-        value['version'] != 1 ||
+        ![1, 2].contains(value['version']) ||
         value['observations'] is! List ||
         (value['observations'] as List).isEmpty ||
         (value['observations'] as List).length > maxObservations ||
@@ -167,6 +176,27 @@ final class AgentTaskHistory {
     } catch (_) {
       throw const FormatException('Invalid or oversized task history JSON.');
     }
+    final version = data['version'] as int;
+    final rawOrder = version == 1
+        ? BuildOperation.values.map((item) => item.name).toList()
+        : data['operationOrder'];
+    if (rawOrder is! List ||
+        rawOrder.length != 4 ||
+        rawOrder.toSet().length != 4 ||
+        rawOrder.first != 'resolve' ||
+        rawOrder.last != 'build' ||
+        rawOrder.any(
+          (item) =>
+              item is! String ||
+              !BuildOperation.values.any((op) => op.name == item),
+        )) {
+      throw const FormatException('Invalid approved operation order.');
+    }
+    final order = rawOrder
+        .map(
+          (name) => BuildOperation.values.singleWhere((op) => op.name == name),
+        )
+        .toList();
     final basis = AgentSession.fromJson(data['session']);
     final reference = AgentSessionDispatch.fromJson(data['reference']);
     if (basis.cancellationRequested ||
@@ -215,8 +245,8 @@ final class AgentTaskHistory {
           if (pending != null ||
               failed ||
               interrupted ||
-              nextOperation >= BuildOperation.values.length ||
-              observation.operation != BuildOperation.values[nextOperation] ||
+              nextOperation >= order.length ||
+              observation.operation != order[nextOperation] ||
               (withdrawal != null && index >= withdrawal)) {
             throw const FormatException('Operation cannot become pending.');
           }
@@ -248,7 +278,14 @@ final class AgentTaskHistory {
           finished = true;
       }
     }
-    return AgentTaskHistory._(basis, reference, observations, withdrawal);
+    return AgentTaskHistory._(
+      basis,
+      reference,
+      observations,
+      withdrawal,
+      version,
+      order,
+    );
   }
 
   /// A caller-supplied current snapshot is required for every new observation.
@@ -295,7 +332,9 @@ final class AgentTaskHistory {
   );
 
   Map<String, Object?> toJson() => {
-    'version': 1,
+    'version': version,
+    if (version == 2)
+      'operationOrder': operationOrder.map((item) => item.name).toList(),
     'session': session.toJson(),
     'reference': reference.toJson(),
     'withdrawalSequence': withdrawalSequence,

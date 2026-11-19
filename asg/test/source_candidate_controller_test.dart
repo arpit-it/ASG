@@ -12,6 +12,7 @@ import 'package:asg/services/agent_execution_checkpoint_store.dart';
 import 'package:asg/controllers/source_candidate_controller.dart';
 import 'package:asg/models/agent_session_binding.dart';
 import 'package:asg/services/agent_session_store.dart';
+import 'package:asg/services/agent_task_history_store.dart';
 import 'package:asg/controllers/source_generation_controller.dart';
 import 'package:asg/models/approved_source_proposal.dart';
 import 'package:asg/models/build_plan.dart';
@@ -136,6 +137,48 @@ class ReceiptCheckHost extends InterruptedCheckHost
   }
 }
 
+/// Emits the same intent-before-result protocol as the native bound runner.
+class IntentCheckHost extends FixtureHost {
+  Future<void> Function(String)? beforeResult;
+  @override
+  Future<GeneratedProject> verify(
+    GeneratedProject project,
+    GenerationProgress progress, {
+    bool resume = false,
+  }) async {
+    verifications++;
+    var current = project.copy(
+      phase: SourceGenerationPhase.verifying,
+      steps: [],
+      checkpointVersion: 1,
+    );
+    for (final task in project.tasks!) {
+      current = current.copy(pendingOperation: task.operation.name);
+      await progress(current);
+      operations.add(task.operation.name);
+      await beforeResult?.call(task.operation.name);
+      current = current.copy(
+        pendingOperation: '',
+        steps: [
+          ...current.steps,
+          GenerationStep(
+            operation: task.operation.name,
+            exitCode: 0,
+            output: 'fixture',
+          ),
+        ],
+      );
+      await progress(current);
+    }
+    current = current.copy(
+      phase: SourceGenerationPhase.ready,
+      outputs: {'index.html': '0' * 64, 'main.dart.js': '0' * 64},
+    );
+    await progress(current);
+    return current;
+  }
+}
+
 class FailedCheckHost extends FixtureHost {
   void Function()? beforeFailure;
   @override
@@ -228,12 +271,108 @@ void main() {
       expect(run.finished, isFalse);
       expect(run.snapshot.pendingOperation, 'resolve');
       expect(run.snapshot.steps, isEmpty);
+      final history = AgentTaskHistoryStore(records, project.id).load(run)!;
+      expect(history.pendingOperation?.name, 'resolve');
+      expect(history.observations.last.kind.name, 'interrupted');
+      expect(history.observations.last.exitCode, isNull);
+      expect(history.withdrawalSequence, isNotNull);
       expect(bound.canPromote, isFalse);
       expect(
         SourceGenerationStore(records).load(project.id)!.directory,
         saved.directory,
       );
       bound.dispose();
+    },
+  );
+
+  test('bound late actual result is durable after withdrawal with no later command', () async {
+    final sessions = AgentSessionStore(records, project);
+    final selected = await sessions.create(
+      'late-history',
+      RequirementsStore(records)
+          .load(project.id)
+          .tasks
+          .map((task) => task.id)
+          .toList(),
+    );
+    final host = IntentCheckHost();
+    final bound = SourceCandidateController(
+      project: project,
+      candidate: candidate.result,
+      evidence: candidate.evidence,
+      records: records,
+      host: host,
+      publish: candidate.publish,
+      sessionBinding: AgentSessionBinding.select(
+        session: selected,
+        projectId: project.id,
+        boardTaskId: 'Tanalyze',
+      ),
+    );
+    host.beforeResult = (_) async {
+      await sessions.requestCancellation(bound.sessionBinding!.session);
+    };
+    await bound.verify(approved: true);
+    final run = CandidateVerificationStore(
+      records,
+      project.id,
+    ).load().runs.single;
+    final history = AgentTaskHistoryStore(records, project.id).load(run)!;
+    expect(host.operations, ['resolve']);
+    expect(history.results.single.exitCode, 0);
+    expect(history.results.single.cancelled, isFalse);
+    expect(history.finished, isTrue);
+    expect(history.withdrawalSequence, isNotNull);
+    expect(run.snapshot.phase, SourceGenerationPhase.failed);
+    expect(bound.canPromote, isFalse);
+    expect(
+      SourceGenerationStore(records).load(project.id)!.directory,
+      saved.directory,
+    );
+    bound.dispose();
+  });
+
+  test(
+    'bound disposal retains pending history and starts no later command',
+    () async {
+      final sessions = AgentSessionStore(records, project);
+      final selected = await sessions.create(
+        'disposed-history',
+        RequirementsStore(records)
+            .load(project.id)
+            .tasks
+            .map((task) => task.id)
+            .toList(),
+      );
+      final host = InterruptedCheckHost();
+      final bound = SourceCandidateController(
+        project: project,
+        candidate: candidate.result,
+        evidence: candidate.evidence,
+        records: records,
+        host: host,
+        publish: candidate.publish,
+        sessionBinding: AgentSessionBinding.select(
+          session: selected,
+          projectId: project.id,
+          boardTaskId: 'Tanalyze',
+        ),
+      );
+      host.stop = bound.dispose;
+      await bound.verify(approved: true);
+      final run = CandidateVerificationStore(
+        records,
+        project.id,
+      ).load().runs.single;
+      final history = AgentTaskHistoryStore(records, project.id).load(run)!;
+      expect(history.pendingOperation?.name, 'resolve');
+      expect(history.results, isEmpty);
+      expect(history.finished, isFalse);
+      expect(host.operations, isEmpty);
+      expect(
+        SourceGenerationStore(records).load(project.id)!.directory,
+        saved.directory,
+      );
     },
   );
 
@@ -257,7 +396,7 @@ void main() {
           host: FixtureHost(),
           selectedSession: selected,
         );
-        final host = FixtureHost();
+        final host = IntentCheckHost();
         final bound = SourceCandidateController(
           project: project,
           candidate: candidate.result,

@@ -19,6 +19,7 @@ import '../models/project.dart';
 import '../models/plan_approval.dart';
 import '../models/source_generation.dart';
 import 'application_store.dart';
+import 'agent_task_history_store.dart';
 import 'ask_store.dart';
 import 'manual_check_observation_store.dart';
 import 'named_check_observation_store.dart';
@@ -152,6 +153,10 @@ class StudioDatabase implements ConditionalRecordStorage {
 
   static void validate(String key, String value) {
     if (key == 'studio.lastProject.v1') return;
+    if (key.startsWith(AgentTaskHistoryStore.prefix)) {
+      AgentTaskHistoryStore.decode(key, value);
+      return;
+    }
     if (key.startsWith(AgentSession.prefix) &&
         utf8.encode(value).length > AgentSession.maxEncodedBytes) {
       throw const FormatException('Agent session exceeds its storage bound.');

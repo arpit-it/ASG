@@ -435,4 +435,55 @@ void main() {
       expect(original.toJson(), before);
     },
   );
+  test(
+    'v2 preserves approved test-before-analysis order while v1 stays canonical',
+    () {
+      final session = basis();
+      var h = AgentTaskHistory.start(
+        session: session,
+        reference: session.dispatches.last,
+        operationOrder: [
+          BuildOperation.resolve,
+          BuildOperation.test,
+          BuildOperation.analyze,
+          BuildOperation.build,
+        ],
+      );
+      for (final op in h.operationOrder) {
+        h = add(h, session, 'pending', op.name);
+        h = add(h, session, 'result', op.name, 0, false);
+      }
+      expect(h.version, 2);
+      expect(
+        AgentTaskHistory.fromJson(h.toJson(), currentSession: session).toJson(),
+        h.toJson(),
+      );
+      expect(() => h.operationOrder.clear(), throwsUnsupportedError);
+      final legacy = start(session);
+      expect(legacy.version, 1);
+      expect(legacy.toJson().containsKey('operationOrder'), isFalse);
+      expect(
+        AgentTaskHistory.fromJson(
+          legacy.toJson(),
+          currentSession: session,
+        ).toJson(),
+        legacy.toJson(),
+      );
+      for (final order in [
+        <String>[],
+        ['resolve', 'test', 'test', 'build'],
+        ['test', 'resolve', 'analyze', 'build'],
+        ['resolve', 'analyze', 'build', 'test'],
+        ['resolve', 'shell', 'analyze', 'build'],
+      ]) {
+        expect(
+          () => AgentTaskHistory.fromJson({
+            ...h.toJson(),
+            'operationOrder': order,
+          }, currentSession: session),
+          throwsFormatException,
+        );
+      }
+    },
+  );
 }
