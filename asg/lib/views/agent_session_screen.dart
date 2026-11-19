@@ -3,6 +3,8 @@
 
 import 'package:flutter/material.dart';
 
+import '../models/agent_session_run_status.dart';
+
 import '../controllers/agent_session_controller.dart';
 import 'agent_task_history_view.dart';
 import 'saved_candidate_recovery_screen.dart';
@@ -204,6 +206,22 @@ class _AgentSessionScreenState extends State<AgentSessionScreen> {
                           'Published candidate for ${publication.reference.boardTaskId}. '
                           'Publication is recorded separately from task completion and acceptance criteria.',
                         ),
+                      if (status.decision case final decision?)
+                        Text(
+                          'Recorded authored-check decision for ${status.reference.boardTaskId} at run ${status.reference.runNumber}. '
+                          'Mode: completedAgainstAuthoredChecks; confirmed ${decision.confirmedAt.toIso8601String()}. '
+                          'Historical authored checks only; this does not establish current applicability or general task completion.',
+                        ),
+                      if (status.decisionState ==
+                          AgentSessionDecisionState.absent)
+                        const Text(
+                          'No authored-check decision is recorded for this run.',
+                        ),
+                      if (status.decisionState ==
+                          AgentSessionDecisionState.unavailable)
+                        const Text(
+                          'Authored-check decision evidence is unavailable. Saved data is retained.',
+                        ),
                       if (status.publication != null)
                         OutlinedButton(
                           key: ValueKey(
@@ -213,19 +231,31 @@ class _AgentSessionScreenState extends State<AgentSessionScreen> {
                               controller.canReviewPublishedTask(
                                 status.reference.runNumber,
                               )
-                              ? () {
-                                  final review = controller
+                              ? () async {
+                                  final reviewedSessionId = selected.sessionId;
+                                  final reviewOwner = controller;
+                                  final review = reviewOwner
                                       .createPublishedTaskEvidence(
                                         status.reference.runNumber,
                                       );
                                   if (review != null) {
-                                    Navigator.of(context).push(
+                                    await Navigator.of(context).push(
                                       MaterialPageRoute<void>(
                                         builder: (_) =>
                                             PublishedTaskEvidenceScreen(
                                               controller: review,
                                             ),
                                       ),
+                                    );
+                                    if (!mounted ||
+                                        !identical(
+                                          widget.controller,
+                                          reviewOwner,
+                                        )) {
+                                      return;
+                                    }
+                                    reviewOwner.refreshSelectedHistory(
+                                      reviewedSessionId,
                                     );
                                   }
                                 }

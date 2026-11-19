@@ -5,6 +5,8 @@ import 'dart:convert';
 
 import 'package:asg/models/agent_execution_checkpoint.dart';
 import 'package:asg/models/agent_session.dart';
+import 'package:asg/models/agent_session_run_status.dart';
+import 'package:asg/services/agent_task_decision_store.dart';
 import 'package:asg/services/agent_session_store.dart';
 import 'package:asg/services/agent_session_run_status_store.dart';
 import 'package:asg/services/agent_task_history_store.dart';
@@ -14,7 +16,18 @@ import 'package:flutter_test/flutter_test.dart';
 import 'agent_session_store_test.dart' show savedRun, selection;
 import 'approved_source_proposer_test.dart' show seed;
 import 'planning_conversation_test.dart' show project;
+import 'published_task_evidence_store_test.dart' show evidenceFixture;
 import 'source_candidate_controller_test.dart' show AtomicRecords;
+
+class ChangingStatusRecords extends AtomicRecords {
+  void Function(String)? afterRead;
+  @override
+  String? getString(String key) {
+    final value = super.getString(key);
+    afterRead?.call(key);
+    return value;
+  }
+}
 
 void main() {
   late AtomicRecords records;
@@ -29,6 +42,56 @@ void main() {
     session = await store.observeRun(initial, 'Tanalyze', run);
     overview = AgentSessionRunStatusStore(records, project.id);
   });
+
+  test('exact decision absence, retained proof and corrupt proof are separate from publication', () async {
+    final f = await evidenceFixture(allAuthoredRules: true, taskId: 'Tresolve');
+    final reader = AgentSessionRunStatusStore(f.records, project.id);
+    expect(
+      reader.load(f.session).last.decisionState,
+      AgentSessionDecisionState.absent,
+    );
+    final writer = AgentTaskDecisionStore(f.records, project);
+    final decision = await writer.confirm(
+      writer.select(f.session, f.run.number),
+      consent: true,
+      authorized: () => true,
+    );
+    var status = reader.load(f.session).last;
+    expect(status.decisionState, AgentSessionDecisionState.recorded);
+    expect(status.decision?.fingerprint, decision.fingerprint);
+    expect(status.publication, isNotNull);
+    f.records.values[decision.storageKey] = '{private malformed evidence';
+    final before = Map.of(f.records.values);
+    status = reader.load(f.session).last;
+    expect(status.available, isTrue);
+    expect(status.publication, isNotNull);
+    expect(status.decision, isNull);
+    expect(status.decisionState, AgentSessionDecisionState.unavailable);
+    expect(f.records.values, before);
+  });
+
+  test(
+    'record change during composed decision read cannot publish mixed facts',
+    () async {
+      final f = await evidenceFixture(
+        allAuthoredRules: true,
+        taskId: 'Tresolve',
+      );
+      final changing = ChangingStatusRecords()..values.addAll(f.records.values);
+      changing.afterRead = (key) {
+        if (key.startsWith('studio.agentTaskDecision.')) {
+          changing.values[f.session.storageKey] = '{}';
+        }
+      };
+      final status = AgentSessionRunStatusStore(
+        changing,
+        project.id,
+      ).load(f.session).last;
+      expect(status.available, isFalse);
+      expect(status.publication, isNull);
+      expect(status.decisionState, AgentSessionDecisionState.unavailable);
+    },
+  );
 
   test('read keeps pending execution unresolved and every byte unchanged', () {
     final before = Map.of(records.values);

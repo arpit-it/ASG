@@ -30,12 +30,15 @@ import 'candidate_reopen_context_test.dart' show reopenAfter, reopenHash;
 import 'saved_candidate_recovery_controller_test.dart'
     show ReopenInspectionHost;
 
-Future<EvidenceFixture> dependentPublication(EvidenceFixture first) async {
+Future<EvidenceFixture> dependentPublication(
+  EvidenceFixture first, {
+  String taskId = 'Tanalyze',
+}) async {
   final records = first.records;
   final afterText = '$reopenAfter\n// dependent reviewed candidate';
   final evidence = ApprovedSourceProposal(
     projectId: project.id,
-    boardTaskId: 'Tanalyze',
+    boardTaskId: taskId,
     approval: first.session.approval,
     modelRequest: first.run.snapshot.sourceRequest,
     proposal: SourceEditProposal.parse(
@@ -88,7 +91,7 @@ Future<EvidenceFixture> dependentPublication(EvidenceFixture first) async {
     sessionBinding: AgentSessionBinding.select(
       session: first.session,
       projectId: project.id,
-      boardTaskId: 'Tanalyze',
+      boardTaskId: taskId,
     ),
     publish: (value, host, authorize) => owner.promoteCandidate(
       value,

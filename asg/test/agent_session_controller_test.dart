@@ -6,6 +6,8 @@ import 'dart:convert';
 
 import 'package:asg/controllers/agent_session_controller.dart';
 import 'package:asg/models/agent_session.dart';
+import 'package:asg/models/agent_session_run_status.dart';
+import 'package:asg/services/agent_session_run_status_store.dart';
 import 'package:asg/services/agent_session_store.dart';
 import 'package:asg/services/agent_task_history_store.dart';
 import 'package:asg/services/conversation_store.dart';
@@ -16,6 +18,17 @@ import 'approved_source_proposer_test.dart' show seed;
 import 'agent_session_store_test.dart' show savedRun;
 import 'planning_conversation_test.dart' show project;
 import 'source_candidate_controller_test.dart' show AtomicRecords;
+
+class CallbackStatusStore extends AgentSessionRunStatusStore {
+  CallbackStatusStore(super.records, super.projectId);
+  void Function()? onLoad;
+  @override
+  List<AgentSessionRunStatus> load(AgentSession session) {
+    final result = super.load(session);
+    onLoad?.call();
+    return result;
+  }
+}
 
 void main() {
   late AtomicRecords records;
@@ -35,6 +48,58 @@ void main() {
   });
   tearDown(() {
     if (!controller.isDisposed) controller.dispose();
+  });
+
+  test('scoped history refresh preserves choices and approval state; failed reload retains snapshot', () async {
+    await controller.create(approved: true);
+    final selected = controller.selected!;
+    controller.toggleTask('Tbuild', false);
+    final choices = Set.of(controller.selectedTaskIds);
+    final tasks = controller.tasks;
+    final approvalError = controller.approvalError;
+    records.values.remove('studio.planApproval.v1.${project.id}');
+    final before = Map.of(records.values);
+    controller.refreshSelectedHistory(selected.sessionId);
+    expect(controller.selected!.sessionId, selected.sessionId);
+    expect(controller.selectedTaskIds, choices);
+    expect(controller.tasks, same(tasks));
+    expect(controller.approvalError, approvalError);
+    expect(records.values, before);
+    final snapshot = controller.selected;
+    records.values[selected.storageKey] = '{private malformed';
+    controller.refreshSelectedHistory(selected.sessionId);
+    expect(controller.selected, same(snapshot));
+    expect(controller.error, contains('new history is unavailable'));
+    expect(controller.error, isNot(contains('private')));
+    controller.refreshSelectedHistory('another-session');
+    expect(controller.selected, same(snapshot));
+    controller.dispose();
+    controller.refreshSelectedHistory(selected.sessionId);
+    expect(controller.selected, same(snapshot));
+  });
+
+  test('scoped refresh suppresses disposal or another selection during synchronous loading', () async {
+    await controller.create(approved: true);
+    final first = controller.selected!;
+    await controller.create(approved: true);
+    final second = controller.selected!;
+    final statuses = CallbackStatusStore(records, project.id);
+    final other = AgentSessionController(store, runStatusStore: statuses)
+      ..open(first.sessionId);
+    var notices = 0;
+    other.addListener(() => notices++);
+    statuses.onLoad = () {
+      statuses.onLoad = null;
+      other.open(second.sessionId);
+    };
+    other.refreshSelectedHistory(first.sessionId);
+    expect(other.selected!.sessionId, second.sessionId);
+    expect(notices, 1);
+    final retained = other.selected;
+    statuses.onLoad = other.dispose;
+    other.refreshSelectedHistory(second.sessionId);
+    expect(other.selected, same(retained));
+    expect(notices, 1);
   });
 
   test('overview refreshes selected history without dispatch and clears on another session', () async {

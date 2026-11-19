@@ -89,7 +89,10 @@ class AgentTaskDecisionStore {
     final reads = _DecisionReads(records);
     // Existing read-only applicability checks bind current working, Plan and graph.
     PublishedTaskEvidenceStore(reads, project).load(session, number);
-    final publication = _publication(reads, session, number);
+    final publication = AgentTaskDecisionHistoryStore(
+      reads,
+      project.id,
+    )._publication(reads, session, number);
     final task = session.tasks.items.singleWhere(
       (t) => t.id == publication.reference.boardTaskId,
     );
@@ -101,7 +104,10 @@ class AgentTaskDecisionStore {
     final refs = <AgentTaskDecisionReference>[];
     final visited = <int, AgentTaskDecision>{};
     for (final id in task.dependencies) {
-      final decision = _read(reads, session, prerequisites[id]!, visited);
+      final decision = AgentTaskDecisionHistoryStore(
+        reads,
+        project.id,
+      )._read(reads, session, prerequisites[id]!, visited);
       if (decision == null ||
           decision.evidence.publication.reference.boardTaskId != id ||
           !_same(
@@ -185,9 +191,31 @@ class AgentTaskDecisionStore {
     return decision;
   }
 
+  /// Historical loading shares the project-ID-only proof reader.
+  AgentTaskDecision? load(AgentSession session, int number) =>
+      AgentTaskDecisionHistoryStore(records, project.id).load(session, number);
+}
+
+/// Strict retained decision history, independent of current project inputs.
+/// Reads only; missing records are never backfilled and no host is constructed.
+class AgentTaskDecisionHistoryStore {
+  AgentTaskDecisionHistoryStore(this.records, this.projectId);
+  final RecordStorage records;
+  final String projectId;
+
   /// Historical loading never consults current working/Plan/check observations.
   AgentTaskDecision? load(AgentSession session, int number) {
     final reads = _DecisionReads(records);
+    final raw = reads.getString(session.storageKey);
+    if (session.projectId != projectId ||
+        raw == null ||
+        utf8.encode(raw).length > AgentSession.maxEncodedBytes ||
+        raw != jsonEncode(session.toJson()) ||
+        jsonEncode(AgentSession.fromJson(jsonDecode(raw)).toJson()) != raw ||
+        session.dispatches.where((ref) => ref.runNumber == number).length !=
+            1) {
+      throw const FormatException('Decision session or reference changed.');
+    }
     final value = _read(reads, session, number, {});
     reads.requireUnchanged();
     return value;
@@ -204,11 +232,11 @@ class AgentTaskDecisionStore {
       throw const FormatException('Decision history exceeds its bound.');
     }
     final raw = reads.getString(
-      AgentTaskDecision.keyFor(project.id, session.sessionId, number),
+      AgentTaskDecision.keyFor(projectId, session.sessionId, number),
     );
     if (raw == null) return null;
-    final decision = decode(
-      AgentTaskDecision.keyFor(project.id, session.sessionId, number),
+    final decision = AgentTaskDecisionStore.decode(
+      AgentTaskDecision.keyFor(projectId, session.sessionId, number),
       raw,
     );
     final publication = _publication(reads, session, number);
@@ -241,7 +269,7 @@ class AgentTaskDecisionStore {
 
   CandidateVerificationRun _run(RecordStorage reads, int number) =>
       CandidateVerificationJournal.fromJson(
-        jsonDecode(reads.getString('studio.candidateChecks.v1.${project.id}')!)
+        jsonDecode(reads.getString('studio.candidateChecks.v1.$projectId')!)
             as Map<String, dynamic>,
       ).runs.singleWhere((run) => run.number == number);
 
@@ -250,7 +278,7 @@ class AgentTaskDecisionStore {
     AgentSession session,
     int number,
   ) {
-    if (session.projectId != project.id) {
+    if (session.projectId != projectId) {
       throw const FormatException('Foreign decision session.');
     }
     final run = _run(reads, number);
@@ -266,7 +294,7 @@ class AgentTaskDecisionStore {
     );
     final value = AgentSessionPublicationStore(
       reads,
-      project.id,
+      projectId,
     ).load(session: session, run: run, execution: execution);
     if (value == null) {
       throw const FormatException('Retained publication is unavailable.');
