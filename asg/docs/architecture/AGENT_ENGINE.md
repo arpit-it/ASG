@@ -2407,3 +2407,110 @@ its reviewed base or remove optional context and withdrawal intent. Fresh IAB ve
 all three production fact states with unchanged decision/time and no new write or
 execution authority. Full checks and required CI/exact review/verified merge gate
 delivery; this review does not establish semantic compatibility or dependent execution.
+
+
+### Session-bound initial proposal intent — 19 November 2026 investigation
+
+In progress under #404. Initial and repair proposals share the bounded
+SourceEditProposer transport, but ApprovedSourceProposer only reserves durable
+RepairAttemptStore history when repairRun is present. Its initial branch keeps
+active/cancelled state in memory and returns ApprovedSourceProposal. The source
+review controller holds proposal/source in memory until explicit candidate
+preparation/admission; its later CandidateReopenContext is not an initial model
+request journal. Repair history already binds a failed candidate and consumes its
+budget before transport, and must not be repurposed with an invented failure.
+
+Trace the current pre-capture/pre-provider working/session/task/approval checks,
+async response and provider cleanup boundaries, Stop/disposal and selected-session
+withdrawal. Define the smallest bounded session request reservation/outcome/reopen
+contract with exact recorded identities, atomic intent before provider entry and
+truthful crash/transport uncertainty. A reservation cannot prove the server saw a
+request or stopped; a returned structured proposal is not review acceptance or
+permission to edit/execute. Preserve repair budget/history and last working output;
+never replay an uncertain initial request automatically or store credentials in
+project records. Existing deterministic initial/repair/source-review/session84
+regressions pass; no live inference or runtime change is established by this work.
+Next: specify concrete races, persistence outcomes and one implementation boundary.
+
+
+Investigation boundary — 19 November 2026: SourceEditProposer parses a bounded
+response and checks reported model identity before its finally block awaits provider
+cancel/cleanup. A cleanup exception prevents that parsed result from reaching
+ApprovedSourceProposer. Cancellation during cleanup also prevents return. Thus a
+caller-visible failure does not establish no response, no request, or stopped server
+inference. The disposable cleanup-failure probe supplies valid structured source,
+observes provider entry, then throws during cleanup: the initial caller fails and
+record writes remain exactly unchanged before entry and after failure. Existing
+successful initial-proposal tests independently assert the same no-write behavior.
+This is deterministic supplied evidence, not a live inference observation.
+
+SourceReviewController rechecks working/session/task/approval after bounded source
+capture and immediately before calling the proposer. ApprovedSourceProposer checks
+approval/task and response evidence after transport, but accepts no selected-session
+binding. The controller's immediate response publication path does not recheck the
+selected session; subsequent candidate preparation/admission does. This is a gap
+in request observation/current response presentation, not proof that withdrawn
+sessions can execute. CandidateReopenContext is created later at candidate startup;
+it cannot reconstruct whether a previous initial provider request was attempted.
+
+The next coherent implementation is an explicit selected-session initial-request
+journal and read-only request history, under #404. Limit it to initial proposals
+with an explicitly selected saved session/task; keep legacy unbound initial review
+and the existing real-failure repair journal semantics unchanged and labelled.
+Use a new versioned bounded typed record, not RepairAttempt with a fabricated
+failure, and no migration/reinterpretation of existing keys. Define strict size/count
+limits, canonical serialization and exhaustion behavior before writing code: full
+history fails closed before transport rather than silently dropping uncertain intent.
+Do not add a scheduler, retries, model execution authority or budget-refund behavior.
+
+Reserve after bounded source capture/input preflight and before creating/entering
+the provider. One conditional record transaction must compare the exact saved
+session/task selection/admission, current requirements/board and approval identity,
+raw recorded working identity, selected source text fingerprints and journal prior
+bytes. Recheck controller cancellation/disposal and current selection inside that
+reservation authorization. Reuse the existing conditional storage contract; storage
+failure/conflict or invalid input starts no provider. A final synchronous admission
+check before provider entry handles cancellation after reservation by recording local
+cancellation with transport outcome unconfirmed. The record means intent was saved;
+it cannot prove a server received a request, even if a local provider was entered.
+Source changes outside recorded snapshots require their existing inspection/admission
+checks; no journal hash establishes current external-file identity.
+
+Bind a monotonically assigned request identity to project, exact session selection,
+task/requirement revision, approval, raw working digest and selected full source-map
+fingerprints, request model and output ceiling. Keep raw working digests distinct
+from typed historyless projections. Store no endpoint URL, credential, provider raw
+error, prompt transcript or full source replacement. A returned outcome may retain
+bounded structural facts (summary/path/digests and observed matching response model),
+not recoverable executable proposal bytes. This deliberately delivers request
+history rather than proposal restoration. Reopening shows historical facts only;
+a new explicit request/review under fresh current guards is required to obtain or
+prepare source. No returned fact substitutes for candidate proof or authored checks.
+
+The typed local outcomes should distinguish reserved/unresolved, returnedValidated,
+failedLocally and cancelledLocally. Every terminal observation refers to the exact
+owned reservation and is committed conditionally without needing current execution
+approval: observing history grants no execution. ReturnedValidated is recorded only
+after successful parsing, model check, cleanup and current session/working/approval
+checks. Stale/cancelled/cleanup-error paths cannot be labelled returnedValidated.
+Failed/cancelled outcomes explicitly leave remote completion/stop unconfirmed.
+If outcome persistence fails, preserve the original reservation as unresolved, report
+a sanitized persistence error, and do not expose the result as durably returned.
+Never rewrite another request or turn an unresolved reservation into failed/stopped
+on reopen. No automatic replay, resume, inferred refund or active-server claim.
+Keep the last working output and existing repair history untouched in every path.
+
+Required implementation examples: reserve failure/conflict and invalid source cause
+zero provider calls; cancellation/withdrawal/approval or working rotation during
+capture/reservation/response/cleanup suppress late current result; a crash immediately
+after reserve reopens unresolved without transport; valid response plus cleanup error
+reopens a truthful local failure or unresolved if its outcome write failed; outcome
+CAS races cannot overwrite another request; successful return records exact model
+and source digests but neither candidate nor execution; corrupt/oversized journals and a full journal fail safely; a missing
+journal initializes only through the first expected-absent reservation; native database close/reopen retains exact
+facts without writes. Cover controller disposal/reentry, sanitized independent history
+errors/retry and narrow/high-text production rendering. Add labelled supplied IAB
+fixtures and fresh appropriate native persistence/build evidence, plus all mandatory
+local checks, exact PR review, required CI and verified merge. Live inference, if
+later needed, requires the prescribed exact runtime/model identity and exclusive
+worker; these supplied probes do not satisfy live acceptance.
