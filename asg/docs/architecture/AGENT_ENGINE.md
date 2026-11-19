@@ -2218,3 +2218,33 @@ Use narrow/high-text widgets and labelled IAB for the actual overview→confirma
 changes, relevant builds, full regression checks and required CI. No migration,
 backfill, current semantic acceptance, scheduler or board-status update is needed.
 This investigation changes documentation only and claims no new UI/runtime outcome.
+
+
+### Session decision overview implementation — 19 November 2026
+
+AgentTaskDecisionHistoryStore now shares the writer's strict retained proof path,
+using only RecordStorage and project ID. Missing decisions require an exact saved
+session/reference; no current project, approval, working output or check observation
+is needed for history. AgentSessionRunStatus carries typed absent/recorded/unavailable
+state plus immutable decision proof. The status loader captures a consistent complete
+read-set through a write-refusing adapter. Decision-only corruption preserves valid
+run/publication facts; changed composed records invalidate the result.
+
+The production overview shows each saved task/run separately with limited decision
+mode and confirmation time. Returning from the exact evidence review awaits the
+route, guards its captured controller/mounted state and refreshes only the still
+selected session. Task choices and current approval state are preserved. Reentrant
+selection/disposal suppresses publication; a failed reload retains the last snapshot
+with sanitized error and unavailable fresh facts. No board, session, working-output
+or observation writes, execution, backfill or dependency authority are added.
+
+Coverage includes two publications of the same task through growth/withdrawal,
+rotated working/current approval, corrupt proof, read races, exact absence and
+actual confirmation→return navigation. Narrow 320px/two-times-text widgets retain
+readable historical limits after changed supplied evidence and withdrawal. Fresh
+labelled IAB verifies the actual overview updates on return with one decision,
+unchanged original records and zero unexpected writes/inspection/effects, then
+retains the same decision after two explicit fixture mutations. Native protocol21
+five-process persistence/crash/reopen and protocol20 five-launch bound publication
+smoke pass on the new isolated binary. These establish their bounded fixture/Mac
+behaviors, not general CE01, semantic acceptance or unavailable-platform behavior.

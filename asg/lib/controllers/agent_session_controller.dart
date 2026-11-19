@@ -147,6 +147,32 @@ final class AgentSessionController extends BaseController {
     }
   }
 
+  /// Refresh only the still-selected history after child review; preserve choices.
+  void refreshSelectedHistory(String sessionId) {
+    final previous = _selected;
+    if (_busy || isDisposed || previous?.sessionId != sessionId) return;
+    bool current() => !isDisposed && !_busy && identical(_selected, previous);
+    try {
+      final value = store.load(sessionId);
+      if (!current()) return;
+      if (value == null) throw StateError('Selected session missing');
+      final statuses = List<AgentSessionRunStatus>.unmodifiable(
+        _runStatusStore.load(value),
+      );
+      if (!current()) return;
+      _selected = value;
+      _runStatuses = statuses;
+      _error = null;
+    } catch (_) {
+      if (!current()) return;
+      _runStatuses = List.unmodifiable(
+        previous!.dispatches.map(AgentSessionRunStatus.unavailable),
+      );
+      _error = 'Selected session could not be refreshed. Its last visible snapshot is retained; new history is unavailable.';
+    }
+    update();
+  }
+
   /// Select dependencies together; removing a prerequisite also removes dependents.
   void toggleTask(String id, bool selected) {
     if (_busy || isDisposed || !_tasks.any((task) => task.id == id)) return;

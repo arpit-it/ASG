@@ -5,7 +5,11 @@ import 'agent_execution_checkpoint.dart';
 import 'agent_session.dart';
 import 'agent_session_publication.dart';
 import 'agent_task_history.dart';
+import 'agent_task_decision.dart';
 import 'source_generation.dart';
+
+/// Historical confirmation state for this exact saved reference.
+enum AgentSessionDecisionState { absent, recorded, unavailable }
 
 /// Correlated saved facts, never proof of external exit or task completion.
 final class AgentSessionRunStatus {
@@ -15,7 +19,9 @@ final class AgentSessionRunStatus {
       pendingOperation = null,
       finished = null,
       taskHistory = null,
-      publication = null;
+      publication = null,
+      decision = null,
+      decisionState = AgentSessionDecisionState.unavailable;
 
   const AgentSessionRunStatus.recorded({
     required this.reference,
@@ -25,6 +31,8 @@ final class AgentSessionRunStatus {
     required this.finished,
     this.taskHistory,
     this.publication,
+    this.decision,
+    this.decisionState = AgentSessionDecisionState.unavailable,
   });
 
   final AgentSessionDispatch reference;
@@ -34,6 +42,8 @@ final class AgentSessionRunStatus {
   final bool? finished;
   final AgentTaskHistory? taskHistory;
   final AgentSessionPublication? publication;
+  final AgentTaskDecision? decision;
+  final AgentSessionDecisionState decisionState;
   bool get available => sourcePhase != null && executionPhase != null;
   bool get publicationUnavailable =>
       available &&

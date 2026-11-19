@@ -31,6 +31,105 @@ Future<void> reveal(WidgetTester tester, Finder target, double delta) async {
 }
 
 void main() {
+  testWidgets(
+    'overview shows exact retained authored-check decision separately from publication',
+    (tester) async {
+      final f = await CandidateReopenFixture.create(decisionMode: true);
+      final parent = AgentSessionController(
+        AgentSessionStore(f.uiRecords, TaskHistoryFixture.project),
+      )..open('published');
+      final number = parent.selected!.dispatches.last.runNumber;
+      final review = parent.createPublishedTaskEvidence(number)!..load();
+      review.setConsent(true);
+      expect(await review.confirm(), isTrue);
+      expect(review.decision, isNotNull);
+      review.dispose();
+      await f.replaceNamedObservation();
+      await f.withdrawPublishedSession();
+      parent.open('published');
+      tester.view.physicalSize = const Size(320, 700);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      expect(f.retainedDecisions, 1);
+      expect(f.fixtureMutations, 2);
+      await tester.pumpWidget(
+        MaterialApp(
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(context)
+                .copyWith(textScaler: const TextScaler.linear(2)),
+            child: child!,
+          ),
+          home: AgentSessionScreen(
+            controller: parent,
+            projectName: 'Decision overview regression',
+          ),
+        ),
+      );
+      await reveal(
+        tester,
+        find.textContaining('Published candidate for Tresolve.'),
+        250,
+      );
+      expect(
+        find.textContaining(
+          'Recorded authored-check decision for Tresolve at run $number',
+        ),
+        findsOneWidget,
+      );
+      expect(f.decisionRecords.decisionCommits, 1);
+      expect(f.decisionRecords.unexpectedWrites, 0);
+      expect(f.inspections, 0);
+      expect(f.effectAttempts, 0);
+      await tester.pumpWidget(const SizedBox());
+    },
+  );
+
+  testWidgets(
+    'return from actual decision confirmation refreshes only the selected overview',
+    (tester) async {
+      final f = await CandidateReopenFixture.create(decisionMode: true);
+      final parent = AgentSessionController(
+        AgentSessionStore(f.uiRecords, TaskHistoryFixture.project),
+      )..open('published');
+      final number = parent.selected!.dispatches.last.runNumber;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: AgentSessionScreen(
+            controller: parent,
+            projectName: 'Return regression',
+          ),
+        ),
+      );
+      final choices = Set.of(parent.selectedTaskIds);
+      final review = find.byKey(ValueKey('review-published-task-$number'));
+      await reveal(tester, review, 250);
+      await tester.tap(review);
+      await tester.pumpAndSettle();
+      await reveal(tester, find.byType(CheckboxListTile), 250);
+      await tester.tap(find.byType(CheckboxListTile));
+      await tester.pumpAndSettle();
+      final save = find.text('Record authored-check completion decision');
+      await reveal(tester, save, 200);
+      await tester.tap(save);
+      await tester.pumpAndSettle();
+      expect(f.retainedDecisions, 1);
+      await tester.pageBack();
+      await tester.pumpAndSettle();
+      final summary = find.textContaining(
+        'Recorded authored-check decision for Tresolve at run $number',
+      );
+      await reveal(tester, summary, 200);
+      expect(summary, findsOneWidget);
+      expect(parent.selectedTaskIds, choices);
+      expect(f.decisionRecords.decisionCommits, 1);
+      expect(f.decisionRecords.unexpectedWrites, 0);
+      expect(f.inspections, 0);
+      expect(f.effectAttempts, 0);
+      await tester.pumpWidget(const SizedBox());
+    },
+  );
+
   test('labelled decision fixture permits one scoped decision and retains it after supplied evidence changes', () async {
     final f = await CandidateReopenFixture.create(decisionMode: true);
     final parent = AgentSessionController(

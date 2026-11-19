@@ -12,6 +12,8 @@ import '../models/build_task.dart';
 import '../models/structured_proposal_json.dart';
 import '../models/candidate_verification_run.dart';
 import 'agent_execution_checkpoint_store.dart';
+import 'agent_task_decision_store.dart';
+import '../models/agent_task_decision.dart';
 import 'record_storage.dart';
 import 'agent_task_history_store.dart';
 import 'agent_session_publication_store.dart';
@@ -25,6 +27,19 @@ class AgentSessionRunStatusStore {
   final String projectId;
 
   List<AgentSessionRunStatus> load(AgentSession session) {
+    final reads = _StatusReads(records);
+    final result = AgentSessionRunStatusStore(reads, projectId)._load(session);
+    try {
+      reads.requireUnchanged();
+      return result;
+    } catch (_) {
+      return List.unmodifiable(
+        session.dispatches.map(AgentSessionRunStatus.unavailable),
+      );
+    }
+  }
+
+  List<AgentSessionRunStatus> _load(AgentSession session) {
     CandidateVerificationJournal? journal;
     try {
       final raw = records.getString(session.storageKey);
@@ -142,6 +157,19 @@ class AgentSessionRunStatusStore {
       } catch (_) {
         // Publication failure must not erase independent saved run/history facts.
       }
+      AgentTaskDecision? decision;
+      var decisionState = AgentSessionDecisionState.unavailable;
+      try {
+        decision = AgentTaskDecisionHistoryStore(
+          records,
+          projectId,
+        ).load(session, reference.runNumber);
+        decisionState = decision == null
+            ? AgentSessionDecisionState.absent
+            : AgentSessionDecisionState.recorded;
+      } catch (_) {
+        // Decision-only proof failure preserves independent retained facts.
+      }
       return AgentSessionRunStatus.recorded(
         reference: reference,
         sourcePhase: run.snapshot.phase,
@@ -150,9 +178,49 @@ class AgentSessionRunStatusStore {
         finished: run.finished,
         taskHistory: taskHistory,
         publication: publication,
+        decision: decision,
+        decisionState: decisionState,
       );
     } catch (_) {
       return AgentSessionRunStatus.unavailable(reference);
     }
   }
+}
+
+/// Read-only adapter captures the complete composed snapshot. Conditional writes
+/// are deliberately unavailable, including checkpoint reopen/reconciliation.
+final class _StatusReads implements ConditionalRecordStorage {
+  _StatusReads(this.source);
+  final RecordStorage source;
+  final Map<String, String?> expected = {};
+  bool changed = false;
+
+  @override
+  String? getString(String key) {
+    final value = source.getString(key);
+    if (expected.containsKey(key) && expected[key] != value) {
+      changed = true;
+      throw StateError('Saved history changed.');
+    }
+    expected[key] = value;
+    return value;
+  }
+
+  void requireUnchanged() {
+    if (changed ||
+        expected.entries.any((e) => source.getString(e.key) != e.value)) {
+      throw StateError('Saved history changed.');
+    }
+  }
+
+  @override
+  Future<bool> setString(String key, String value) =>
+      throw StateError('History is read-only.');
+
+  @override
+  Future<void> commitRecords({
+    required Map<String, String?> expected,
+    required Map<String, String> updates,
+    required void Function() authorize,
+  }) => throw StateError('History is read-only.');
 }
