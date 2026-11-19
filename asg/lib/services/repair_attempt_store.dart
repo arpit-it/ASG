@@ -9,6 +9,8 @@ import '../models/model_request_provenance.dart';
 import '../models/source_edit_proposal.dart';
 import 'record_storage.dart';
 import 'repair_request_context.dart';
+import 'selected_repair_request_store.dart';
+import '../models/selected_repair_request.dart';
 
 /// Reserve before transport. Crashes and cancellations never refund the budget.
 class RepairAttemptStore {
@@ -18,6 +20,9 @@ class RepairAttemptStore {
   String get key => 'studio.repairAttempts.v1.$projectId';
   RepairAttempt? _owned;
   RepairRequestContext? _context;
+  SelectedRepairRequest? _origin;
+  SelectedRepairRequestReference? _returnedReference;
+  SelectedRepairRequestReference? get returnedReference => _returnedReference;
   bool _outcomeWriteAttempted = false;
   bool get outcomeWriteAttempted => _outcomeWriteAttempted;
 
@@ -35,7 +40,12 @@ class RepairAttemptStore {
     void Function() authorize, {
     ModelRequestProvenance? modelRequest,
     RepairRequestContext? context,
+    SelectedRepairRequestCapture? selectedRequest,
   }) async {
+    if (selectedRequest != null &&
+        !identical(selectedRequest.context, context)) {
+      throw StateError('Selected repair capture does not match its context.');
+    }
     if (_owned != null) throw StateError('Repair request already reserved.');
     if (context != null &&
         (!identical(context.records, records) ||
@@ -66,12 +76,17 @@ class RepairAttemptStore {
       failure: failure,
       status: RepairAttemptStatus.reserved,
     );
+    final origin = selectedRequest?.prepare(attempt);
     await _commit(
       expected,
       [...journal.attempts, attempt],
       authorize,
       context: context,
+      origin: origin,
+      createOrigin: origin != null,
     );
+    _origin = origin;
+    _returnedReference = null;
     _context = context;
     _outcomeWriteAttempted = false;
     _owned = attempt;
@@ -115,6 +130,13 @@ class RepairAttemptStore {
       status: status,
       proposal: proposal,
     );
+    final origin = proposal == null ? null : _origin;
+    final reference = origin == null
+        ? null
+        : SelectedRepairRequestReference.forProposed(
+            origin,
+            attempts[owned.number - 1],
+          );
     // Observing an outcome grants no execution or proposal publication authority.
     _outcomeWriteAttempted = true;
     await _commit(
@@ -122,7 +144,9 @@ class RepairAttemptStore {
       attempts,
       proposal == null ? () {} : (authorizeReturn ?? () {}),
       context: proposal == null ? null : _context,
+      origin: origin,
     );
+    _returnedReference = reference;
     _owned = null;
   }
 
@@ -131,6 +155,8 @@ class RepairAttemptStore {
     List<RepairAttempt> attempts,
     void Function() authorize, {
     RepairRequestContext? context,
+    SelectedRepairRequest? origin,
+    bool createOrigin = false,
   }) async {
     final storage = records;
     if (storage is! ConditionalRecordStorage) {
@@ -139,8 +165,16 @@ class RepairAttemptStore {
     final raw = jsonEncode(RepairAttemptJournal(attempts).toJson());
     RepairAttemptJournal.fromJson(jsonDecode(raw) as Map<String, dynamic>);
     await storage.commitRecords(
-      expected: {...?context?.expected, key: expected},
-      updates: {key: raw},
+      expected: {
+        ...?context?.expected,
+        key: expected,
+        if (origin != null)
+          origin.storageKey: createOrigin ? null : origin.encode(),
+      },
+      updates: {
+        key: raw,
+        if (origin != null && createOrigin) origin.storageKey: origin.encode(),
+      },
       authorize: () {
         authorize();
         context?.requireCurrent();

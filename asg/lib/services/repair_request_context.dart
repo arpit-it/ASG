@@ -69,6 +69,10 @@ final class RepairRequestContext {
   final AgentSessionRunAdmission? _session;
   final Map<String, String?> expected;
   String get projectId => project.id;
+  AgentSessionBinding? get selectedSessionBinding => _session?.binding;
+  String? get selectedSessionRecord =>
+      expected[_session?.binding.session.storageKey];
+  String? get workingRecord => expected['studio.generation.v1.$projectId'];
 
   bool matchesFailure(CandidateVerificationRun failure) =>
       jsonEncode(failure.toJson()) == _failureRecord;

@@ -3,6 +3,12 @@
 
 import 'dart:convert';
 
+import 'package:asg/models/candidate_verification_run.dart';
+import 'package:asg/models/repair_attempt.dart';
+import 'package:asg/services/repair_attempt_store.dart';
+import 'package:asg/services/repair_request_context.dart';
+import 'package:asg/services/selected_repair_request_store.dart';
+
 import 'package:asg/controllers/source_review_controller.dart';
 import 'package:asg/models/local_model_config.dart';
 import 'package:asg/models/session_proposal_request.dart';
@@ -31,6 +37,7 @@ import 'package:asg/models/agent_execution_checkpoint.dart';
 import 'package:asg/models/approved_source_proposal.dart';
 import 'package:asg/models/app_definition.dart';
 import 'package:asg/models/build_plan.dart';
+import 'package:asg/models/build_task.dart';
 import 'package:asg/models/candidate_reopen_context.dart';
 import 'package:asg/models/model_request_provenance.dart';
 import 'package:asg/models/project.dart';
@@ -739,6 +746,10 @@ class CandidateReopenFixture {
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  if (const bool.fromEnvironment('ASG_SELECTED_REPAIR_FIXTURE')) {
+    runApp(MaterialApp(home: await selectedRepairFixtureHome()));
+    return;
+  }
   if (const bool.fromEnvironment('ASG_REQUEST_HISTORY_FIXTURE')) {
     runApp(
       MaterialApp(
@@ -1200,6 +1211,167 @@ class _RequestFixtureHomeState extends State<_RequestFixtureHome> {
           child: const Text('Withdraw supplied request session'),
         ),
       ],
+    ),
+  );
+}
+
+/// New supplied observations, separate from all historical fixture identities.
+Future<Widget> selectedRepairFixtureHome() async {
+  final supplied = await RequestHistoryFixture.create();
+  final records = supplied.records.source..readOnly = false;
+  const project = TaskHistoryFixture.project;
+  final working = SourceGenerationStore(records).load(project.id)!;
+  final failed = working.copy(
+    phase: SourceGenerationPhase.failed,
+    checkpointVersion: 1,
+    outputs: {},
+    steps: [
+      for (final task in (working.tasks ?? BuildTask.starter).takeWhile(
+        (task) => task.operation.name != 'analyze',
+      ))
+        GenerationStep(
+          operation: task.operation.name,
+          exitCode: 0,
+          output: 'Supplied prerequisite; no SDK ran.',
+        ),
+      const GenerationStep(
+        operation: 'analyze',
+        exitCode: 1,
+        output: 'Supplied diagnostic; no SDK ran.',
+      ),
+    ],
+  );
+  final failure = CandidateVerificationRun(
+    number: 1,
+    startedAt: DateTime.utc(2026),
+    snapshot: failed,
+    finished: true,
+  );
+  await records.setString(
+    'studio.sourceCandidate.v1.${project.id}',
+    jsonEncode(failed.toJson()),
+  );
+  await records.setString(
+    'studio.candidateChecks.v1.${project.id}',
+    jsonEncode(CandidateVerificationJournal([failure]).toJson()),
+  );
+  final session = AgentSessionStore(
+    records,
+    project,
+  ).load(RequestHistoryFixture.sessionId)!;
+  for (final status in [
+    RepairAttemptStatus.proposed,
+    RepairAttemptStatus.cancelled,
+    RepairAttemptStatus.reserved,
+  ]) {
+    final context = RepairRequestContext.capture(
+      records: records,
+      project: project,
+      failure: failure,
+      sessionBinding: AgentSessionBinding.select(
+        session: session,
+        projectId: project.id,
+        boardTaskId: 'Tresolve',
+      ),
+    );
+    const model = ModelRequestProvenance(
+      model: 'supplied-repair-history-model',
+      outputTokens: 4096,
+    );
+    final store = RepairAttemptStore(records, project.id);
+    await store.reserve(
+      failure,
+      () {},
+      context: context,
+      modelRequest: model,
+      selectedRequest: SelectedRepairRequestCapture(
+        context: context,
+        originals: const {'lib/main.dart': RequestHistoryFixture.before},
+        modelRequest: model,
+      ),
+    );
+    if (status != RepairAttemptStatus.reserved) {
+      await store.finish(
+        status,
+        authorizeReturn: () {},
+        proposal: status == RepairAttemptStatus.proposed
+            ? SourceEditProposal.parse(
+                {
+                  'summary': 'Supplied repair observation',
+                  'changes': [
+                    {
+                      'path': 'lib/main.dart',
+                      'before': RequestHistoryFixture.before,
+                      'after': RequestHistoryFixture.after,
+                    },
+                  ],
+                },
+                originals: const {
+                  'lib/main.dart': RequestHistoryFixture.before,
+                },
+                responseModel: 'supplied-repair-history-response',
+              )
+            : null,
+      );
+    }
+  }
+  records.readOnly = true;
+  records.writeAttempts = 0;
+  final baseline = jsonEncode(records.values);
+  final host = ReopenFixtureHost();
+  var captures = 0, providers = 0;
+  return StatefulBuilder(
+    builder: (context, refresh) => Scaffold(
+      appBar: AppBar(
+        title: const Text('Selected repair provenance UI fixture'),
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          const Text(
+            'Three supplied repair observations: proposed, cancelled locally, '
+            'and unresolved. Requested task Tresolve differs from failed operation analyze. '
+            'No live inference, source capture, SDK or preview ran. Historical fixture identities are unchanged.',
+          ),
+          Text(
+            'Writes after setup: ${records.writeAttempts} · Captures: $captures · '
+            'Providers: $providers · Inspections: ${host.inspections} · Tools: ${host.effectAttempts}',
+          ),
+          Text('Records unchanged: ${baseline == jsonEncode(records.values)}'),
+          OutlinedButton(
+            onPressed: () async {
+              final controller = SourceReviewController(
+                project: project,
+                generated: working,
+                records: records,
+                selectedSession: session,
+                readSnapshot: (_, _) async {
+                  captures++;
+                  throw StateError('No source capture supplied.');
+                },
+                proposer: ApprovedSourceProposer(
+                  records,
+                  proposer: SourceEditProposer(
+                    createProvider: (_) {
+                      providers++;
+                      throw StateError('No provider supplied.');
+                    },
+                  ),
+                ),
+                createCandidateHost: () => host,
+              );
+              await Navigator.of(context).push<void>(
+                MaterialPageRoute(
+                  builder: (_) => SourceReviewScreen(controller: controller),
+                ),
+              );
+              controller.dispose();
+              if (context.mounted) refresh(() {});
+            },
+            child: const Text('Open selected repair history'),
+          ),
+        ],
+      ),
     ),
   );
 }
