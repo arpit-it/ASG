@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import '../controllers/agent_session_controller.dart';
 import 'agent_task_history_view.dart';
 import 'saved_candidate_recovery_screen.dart';
+import 'published_task_evidence_screen.dart';
 
 class AgentSessionScreen extends StatefulWidget {
   const AgentSessionScreen({
@@ -202,6 +203,34 @@ class _AgentSessionScreenState extends State<AgentSessionScreen> {
                         Text(
                           'Published candidate for ${publication.reference.boardTaskId}. '
                           'Publication is recorded separately from task completion and acceptance criteria.',
+                        ),
+                      if (status.publication != null)
+                        OutlinedButton(
+                          key: ValueKey(
+                            'review-published-task-${status.reference.runNumber}',
+                          ),
+                          onPressed:
+                              controller.canReviewPublishedTask(
+                                status.reference.runNumber,
+                              )
+                              ? () {
+                                  final review = controller
+                                      .createPublishedTaskEvidence(
+                                        status.reference.runNumber,
+                                      );
+                                  if (review != null) {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute<void>(
+                                        builder: (_) =>
+                                            PublishedTaskEvidenceScreen(
+                                              controller: review,
+                                            ),
+                                      ),
+                                    );
+                                  }
+                                }
+                              : null,
+                          child: const Text('Review published task evidence'),
                         ),
                       if (status.publicationUnavailable)
                         const Text(

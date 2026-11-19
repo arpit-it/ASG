@@ -7,6 +7,11 @@ import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:asg/controllers/agent_session_controller.dart';
 import 'package:asg/models/agent_session_binding.dart';
+import 'package:asg/models/chat_message.dart';
+import 'package:asg/models/requirements_board.dart';
+import 'package:asg/models/named_flutter_test_result.dart';
+import 'package:asg/services/conversation_store.dart';
+import 'package:asg/services/requirement_check_report_store.dart';
 import 'package:asg/models/agent_session_publication.dart';
 import 'package:asg/models/agent_execution_checkpoint.dart';
 import 'package:asg/models/approved_source_proposal.dart';
@@ -97,8 +102,84 @@ class CandidateReopenFixture {
     final old = await TaskHistoryFixture.create();
     final records = old.records..readOnly = false;
     const project = TaskHistoryFixture.project;
-    final approval = PlanApprovalStore(records).load(project.id)!;
-    final board = RequirementsStore(records).load(project.id);
+    final requirements = RequirementsStore(records);
+    final initialBoard = requirements.load(project.id);
+    final originalApproval = PlanApprovalStore(records).load(project.id)!;
+    const target = FlutterTestTarget(
+      file: 'test/app_test.dart',
+      name: 'opens app',
+    );
+    final first = initialBoard.requirements.first;
+    final board = await requirements.save(
+      project.id,
+      initialBoard,
+      RequirementsBoard(
+        requirements: [
+          ProjectRequirement(
+            id: first.id,
+            title: first.title,
+            acceptance: first.acceptance,
+            checks: const [
+              AcceptanceCheckDefinition(
+                id: 'Auto',
+                type: AcceptanceCheckType.automated,
+                expectation: 'Supplied exact named-test observation',
+                target: target,
+              ),
+              AcceptanceCheckDefinition(
+                id: 'Manual',
+                type: AcceptanceCheckType.manual,
+                expectation: 'Supplied human observation',
+              ),
+              AcceptanceCheckDefinition(
+                id: 'Advice',
+                type: AcceptanceCheckType.advisory,
+                expectation: 'Advisory only',
+              ),
+            ],
+            criteria: [
+              AcceptanceCriterionDefinition(
+                id: 'AC1',
+                text: 'Supplied authored named-test rule',
+                checkIds: ['Auto'],
+                verificationRule: CriterionVerificationRule.allMappedNamedTests,
+              ),
+              AcceptanceCriterionDefinition(
+                id: 'AC2',
+                text: 'Manual fixture criterion',
+                checkIds: ['Manual'],
+              ),
+              AcceptanceCriterionDefinition(
+                id: 'AC3',
+                text: 'Unmapped fixture criterion',
+              ),
+              AcceptanceCriterionDefinition(
+                id: 'AC4',
+                text: 'Advisory fixture criterion',
+                checkIds: ['Advice'],
+              ),
+            ],
+          ),
+          ProjectRequirement(
+            id: 'Other',
+            title: 'Unrelated fixture requirement',
+            acceptance: 'Excluded from the selected task review',
+          ),
+        ],
+        tasks: initialBoard.tasks,
+      ),
+    );
+    final approvals = PlanApprovalStore(records);
+    final messages = [
+      ChatMessage(
+        role: 'assistant',
+        content: originalApproval.content,
+        planContext: approvals.contextFor(project),
+      ),
+    ];
+    await ConversationStore(records).save(project.id, messages);
+    await approvals.save(project, messages, true);
+    final approval = approvals.requireCurrentApproval(project);
     final tasks = BuildPlan.parse(approval.content, board: board).tasks;
     const before = 'void main() { /* saved original */ }';
     const after = 'void main() { /* reviewed fixture change */ }';
@@ -270,6 +351,37 @@ class CandidateReopenFixture {
       },
       authorize: () {},
     );
+    final report = RequirementCheckReportStore(records);
+    final suppliedNamedResult = NamedFlutterTestResult.fromCommand({
+      'exitCode': 0,
+      'timedOut': false,
+      'cancelled': false,
+      'outputLimitExceeded': false,
+      'targetedTest': {
+        'file': target.file,
+        'name': target.name,
+        'status': 'passed',
+        'reason': 'executedExactTest',
+      },
+    }, target);
+    await report.recordNamedTestResult(
+      project,
+      report.load(project),
+      first.id,
+      'Auto',
+      suppliedNamedResult,
+      DateTime.utc(2026),
+      authorized: () => true,
+    );
+    await report.recordManualObservation(
+      project,
+      report.load(project),
+      first.id,
+      'Manual',
+      true,
+      DateTime.utc(2026),
+      authorized: () => true,
+    );
     await sessions.requestCancellation(admitted);
     records.readOnly = true;
     records.writeAttempts = 0;
@@ -293,12 +405,12 @@ class _FixtureHome extends StatefulWidget {
 class _FixtureHomeState extends State<_FixtureHome> {
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Saved publication history UI fixture')),
+    appBar: AppBar(title: const Text('Published-task evidence UI fixture')),
     body: ListView(
       padding: const EdgeInsets.all(16),
       children: [
         const Text(
-          'Deterministic in-memory data and supplied source inspection. No SDK, files, model or preview runs. Records refuse writes after setup.',
+          'Deterministic in-memory publication, named-test and manual observations. No SDK, files, model or preview runs. Records refuse writes after setup.',
         ),
         Text(
           'Write attempts after setup: ${widget.fixture.records.writeAttempts}',

@@ -42,10 +42,51 @@ void main() {
       controller.open('published');
       expect(controller.selected!.cancellationRequested, isTrue);
       expect(controller.runStatuses.last.publication, isNotNull);
+      final review = controller.createPublishedTaskEvidence(
+        controller.runStatuses.last.reference.runNumber,
+      )!;
+      review.load();
+      expect(review.error, isNull);
+      expect(review.evidence!.criteria, hasLength(4));
+      expect(
+        review.evidence!.criteria.first.verdict,
+        contains('verified against authored named tests'),
+      );
+      review.dispose();
       expect(f.records.writeAttempts, 0);
       expect(f.unchanged, isTrue);
       expect(f.effectAttempts, 0);
       controller.dispose();
+    },
+  );
+
+  testWidgets(
+    'published task has an explicit read-only acceptance evidence review entry',
+    (tester) async {
+      final f = await publishedFixture();
+      final controller = AgentSessionController(
+        AgentSessionStore(f.fixture.records, project),
+      )..open(f.session.sessionId);
+      final before = Map.of(f.fixture.records.values);
+      await tester.pumpWidget(
+        MaterialApp(
+          home: AgentSessionScreen(
+            controller: controller,
+            projectName: project.name,
+          ),
+        ),
+      );
+      await reveal(
+        tester,
+        find.textContaining('Published candidate for Tanalyze'),
+        250,
+      );
+      expect(
+        find.widgetWithText(OutlinedButton, 'Review published task evidence'),
+        findsOneWidget,
+      );
+      expect(f.fixture.records.values, before);
+      await tester.pumpWidget(const SizedBox());
     },
   );
 
