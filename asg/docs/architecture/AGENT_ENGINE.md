@@ -1388,3 +1388,70 @@ result. This bounded fault proves refusal to invent a test outcome, not general
 process cleanup, automatic recovery or full CE01 acceptance.
 
 CE01 unknown-result cancellation final local validation: protocol16 binarye5e71ec300c02b77b17d6155e6e051849f99299d40083d04371f4f11cb2db92a passed13 isolated native observations (two unknown-result plus11 relevant prior modes). Raw incomplete intent, actual resolve/analyze results, revision2 cancellation/one reference and failed unfinished pending-test/executing state survived separate read-only reopen, counters1/0 preparations and3/0 commands, null test exit/cleanup unknown. Host44/probe6/product32/inventory9, explicit fixture Dart analysis, isolated macOS build, final Flutter analyze and full1,918 passed/11 existing skips. Evidence /tmp/asg-404-native-session-cancellation-unknown-{first,repeat,active,normal,commit-crash,retry,cancellation,admission-precommit,admission-committed,legacy-resolve,legacy-stop,legacy-precommit,legacy-promotion-crash}-observation.json and final-{analyze,tests}.log. No new live inference, stable app replacement, generalized cleanup or fullCE01 claim. Fresh exact PR review/required CI/verified merge remain gates.
+
+
+### CE01 per-task transition investigation — 19 November 2026
+
+Inspected source at verified main d41efada (PR735). This is an investigation,
+not implementation or acceptance of a persistent autonomous loop.
+
+| Existing record or boundary | What it establishes | What it cannot establish |
+| --- | --- | --- |
+| AgentSessionTask / AgentSessionTasks | Frozen dependency-closed task membership and requirement IDs | Authored board status, runtime progress or completion |
+| AgentSessionDispatch / AgentSession.observe | Append-only candidate run reference in one selected task context | Tool entry, successful result, task completion or dependency readiness |
+| AgentSessionRunAdmission.prepare | Current approval and membership checked; session reference joins candidate startup transaction | Execution of a single board task; the candidate still verifies the whole fixed Plan |
+| CandidateVerificationStore.start / checkpoint / _commit | Atomic candidate/journal/execution startup and later snapshots | A per-task transition timeline; session reference currently changes only at admission |
+| AgentSessionStore.requestCancellation | Durable session withdrawal, one revision increment, retained history | Child process termination, command exit or cleanup |
+| AgentSessionRunStatusStore | Read-only correlation of saved run/checkpoint facts, including unknown pending operations | Original admission proof or new execution authority |
+| AgentSessionController.selectForSourceReview | Uses the first selected task to validate navigation, then returns the whole selected session | Selection of the actual proposal task or task scheduling |
+| SourceReviewController source review | Binds the proposal evidence boardTaskId to session membership; candidate authorization compares that ID again | Completion of that task or scheduling a dependent task |
+
+Concrete missing datum: there is no typed per-task sequence explaining admitted
+verification, pending operation, actual observed operation result, interrupted
+unknown outcome and finished verification. The existing version1 session has
+eight exact fields; its revision is admissions plus optional cancellation. Adding
+transition fields there silently would break its validation and reinterpret
+historical references. Board task status/title edits must remain separate from
+execution evidence. A successful fixed whole-Plan check or working promotion is
+not sufficient evidence that a particular requirement task is complete.
+
+The next bounded prerequisite is a pure typed transition model, before storage
+integration. It describes observations in a selected task context, not arbitrary
+instructions. Keep the existing AgentSession schema unchanged. The model must:
+
+- Bind one immutable project/session/task and one candidate run/dispatch identity
+  to a versioned, bounded, immutable sequence. Resolve membership from a supplied
+  frozen session snapshot; reject another session, task, run or malformed ID.
+- Admit only fixed observation kinds: verification admitted, operation pending,
+  operation result observed, verification interrupted with unknown outcome, and
+  verification finished. Session cancellation is an independently supplied
+  withdrawal fact, never an observed command result or a fabricated exit.
+- Validate fixed resolve/analyze/test/build ordering. Pending comes before its
+  matching result; actual result retains exit and cancellation facts separately.
+  An incomplete intent cannot become exit0, exit73 or cancelled=true merely
+  because a helper failed. No free-form operation or executable content.
+- Require an admitted prefix, contiguous sequence numbers and bounded operation
+  data; reject duplicate, missing, reordered or contradictory observations.
+  Interruption retains the pending operation and actual earlier results.
+  A finished verification has no unknown pending operation. Failure may finish
+  with observed results; finished does not mean ready or task completed.
+- Permit a genuinely observed pending-command result after session withdrawal,
+  while refusing any new pending operation under withdrawal. The caller must
+  validate receipt provenance; this pure model cannot authenticate supplied facts.
+- Remain inert: no clock, file/network/process/plugin/storage access, scheduling,
+  task completion, dependency unlocking, approval renewal or replay. Serialization
+  is deterministic; invalid input leaves existing values unchanged.
+
+Acceptance examples for that prerequisite are recorded only in REQUIREMENTS.md.
+The model can be tested on this Mac with deterministic inputs and architecture
+checks. Native atomic persistence and UI integration remain unmet boundaries;
+this investigation does not claim either, nor declare a new independent queue.
+Existing session receipts and native observations keep their original source,
+model, protocol and host identities. No live inference is needed for this work.
+
+Storage integration must later preserve the existing candidate startup CAS and
+observation-after-withdrawal ordering. It must not perform an independent history
+write that succeeds while candidate startup fails, or require fresh execution
+authority merely to retain an actual result. This is a constraint on integration,
+not permission to implement or execute it here. Process reconciliation remains
+operator-confirmed; a saved PID or event never authorizes termination.
