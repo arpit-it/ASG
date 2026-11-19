@@ -15,6 +15,8 @@ import 'package:asg/models/agent_execution_checkpoint.dart';
 import 'package:asg/models/candidate_verification_run.dart';
 import 'package:asg/models/agent_session_binding.dart';
 import 'package:asg/services/agent_session_store.dart';
+import 'package:asg/services/agent_task_history_store.dart';
+import 'package:asg/services/agent_session_run_status_store.dart';
 import 'package:asg/services/agent_session_admission.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
@@ -531,6 +533,52 @@ Future<void> main() async {
                       'candidate-$projectId-1:3'))) {
         throw StateError('Session admission evidence mismatch');
       }
+      final historyKey = AgentTaskHistoryStore(records, projectId).keyFor(1);
+      final rawHistory = records.getString(historyKey);
+      Map<String, Object?>? historyProof;
+      if (admissionCrash) {
+        if (rawHistory != null ||
+            AgentSessionRunStatusStore(
+              records,
+              projectId,
+            ).load(saved).isNotEmpty) {
+          throw StateError('Uncommitted admission left task history');
+        }
+      } else {
+        final run = checks.load().runs.single;
+        final history = AgentTaskHistoryStore(records, projectId).load(run);
+        final status = AgentSessionRunStatusStore(
+          records,
+          projectId,
+        ).load(saved).single;
+        final projected = status.taskHistory;
+        if (rawHistory == null ||
+            history == null ||
+            !status.available ||
+            projected == null ||
+            jsonEncode(history.reference.toJson()) !=
+                jsonEncode(saved.dispatches.single.toJson()) ||
+            jsonEncode(history.toJson()) != rawHistory ||
+            jsonEncode(projected.toJson()) != rawHistory) {
+          throw StateError('Task history identity or projection mismatch');
+        }
+        historyProof = {
+          'sha256': digest(rawHistory),
+          'projectionSha256': digest(jsonEncode(projected.toJson())),
+          'events': [
+            for (final event in history.observations)
+              [
+                event.kind.name,
+                event.operation?.name,
+                event.exitCode,
+                event.cancelled,
+              ],
+          ],
+          'withdrawalSequence': history.withdrawalSequence,
+          'pendingOperation': history.pendingOperation?.name,
+          'finished': history.finished,
+        };
+      }
       final journal = records.getString(checks.key);
       final currentCandidate = records.getString(checks.candidateKey);
       final execution = records.getString(
@@ -555,6 +603,7 @@ Future<void> main() async {
         }
       }
       return {
+        'taskHistory': historyProof,
         'sessionId': saved.sessionId,
         'projectId': saved.projectId,
         'revision': saved.revision,
@@ -2294,7 +2343,7 @@ Future<void> report(
   await file.create(exclusive: true);
   await file.writeAsString(
     jsonEncode({
-      'version': 16,
+      'version': 17,
       'launch': launch,
       ...observation,
       'sessionBound': sessionBound,
