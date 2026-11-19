@@ -142,6 +142,100 @@ void main() {
   test('new supplied repair-lineage browser fixture initializes', () async {
     await selectedRepairFixtureHome(lineageMode: true);
   });
+  for (final secondTask in ['Tanalyze', 'Ttest']) {
+    for (final selected in [1, 2]) {
+      test(
+        'equal returns preserve explicit selected origin $selected after journal growth ($secondTask)',
+        () async {
+          final f = await repairPreparationFixture();
+          final provider = SuppliedRepairContextProvider();
+          final pending =
+              ApprovedSourceProposer(
+                f.records,
+                proposer: SourceEditProposer(createProvider: (_) => provider),
+              ).propose(
+                project: project,
+                boardTaskId: secondTask,
+                config: const LocalModelConfig(model: 'supplied-repair-model'),
+                originals: const {'lib/main.dart': reopenBefore},
+                repairCandidate: f.failed,
+                repairSessionBinding: AgentSessionBinding.select(
+                  session: f.session,
+                  projectId: project.id,
+                  boardTaskId: secondTask,
+                ),
+                repairWorkingRecord: f.working,
+              );
+          await provider.entered.future;
+          provider.stream.add(suppliedRepairResponse());
+          unawaited(provider.stream.close());
+          final second = await pending;
+          expect(second.repairRequestReference!.attemptNumber, 2);
+          expect(second.proposal.summary, f.evidence.proposal.summary);
+          final evidence = selected == 1 ? f.evidence : second;
+          final basis = repairBasis((
+            records: f.records,
+            session: f.session,
+            failed: f.failed,
+            evidence: evidence,
+            working: f.working,
+          ));
+          final repairs = f.records.getString(
+            'studio.repairAttempts.v1.${project.id}',
+          );
+          await CandidateRepairLineageStore(
+            f.records,
+            project.id,
+          ).requirePreparation(
+            project: project,
+            admission: AgentSessionRunAdmission(
+              f.records,
+              project,
+              AgentSessionBinding.select(
+                session: f.session,
+                projectId: project.id,
+                boardTaskId: evidence.boardTaskId,
+              ),
+            ),
+            evidence: evidence,
+            sourceBase: f.failed,
+            workingRecord: f.working,
+            authorize: () {},
+          );
+          final journal = CandidateVerificationStore(f.records, project.id);
+          final run = await journal.start(
+            basis.prepared.copy(phase: SourceGenerationPhase.verifying),
+            () {},
+            reopenBasis: basis,
+            repairRequestReference: evidence.repairRequestReference,
+            sessionAdmission: AgentSessionRunAdmission(
+              f.records,
+              project,
+              AgentSessionBinding.select(
+                session: f.session,
+                projectId: project.id,
+                boardTaskId: evidence.boardTaskId,
+              ),
+            ),
+          );
+          final proof = CandidateRepairLineageStore(
+            f.records,
+            project.id,
+          ).load(run)!;
+          expect(proof.origin.attemptNumber, selected);
+          expect(proof.origin.boardTaskId, evidence.boardTaskId);
+          expect(
+            proof.lineage.repairRequestReference.encode(),
+            evidence.repairRequestReference!.encode(),
+          );
+          expect(
+            f.records.getString('studio.repairAttempts.v1.${project.id}'),
+            repairs,
+          );
+        },
+      );
+    }
+  }
   for (final outcome in [
     'success',
     'failed-write',

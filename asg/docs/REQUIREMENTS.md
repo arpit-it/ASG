@@ -18031,3 +18031,24 @@ view diffs and failure ordering locally. No source transport/model guard, existi
 wire schema, required workflow, approval limit or working output was weakened.
 Prepare exact scoped commit and serialized publication; fresh exact remote PR review
 and required CI/verified merge remain mandatory. No Done/merged claim yet.
+
+
+Fresh PR763 review found an acceptance-coverage gap before approval: linked startup
+needed direct actual-proposer regressions selecting an older explicit repair after
+an equal later validated return. Added four cases: same versus differing requested
+task (Tanalyze/Ttest), selecting attempt1 versus attempt2 after two equal returned
+proposals. Each awaits the durable preparation guard, performs actual atomic startup,
+loads independent historical proof, preserves the selected exact reference/task and
+leaves the whole current repair journal byte-identical. This proves current journal
+growth is allowed without latest/content guessing. Store28 pass: prior24 plus4
+supplied proposer/preparation/startup/history cases, not4 additional native cases.
+Log:/tmp/asg-repair-review-growth-test.log. Production/fixture source and inventory
+are unchanged by this forward test fix; published history is not rewritten. Old-head
+CI/review cannot approve the revised head. Fresh revised diff review and requiredCI
+must finish before merge; umbrella404 remains open.
+
+Revised full Flutter2172 passed/11 existing skips, analysis clean; logs:
+/tmp/asg-repair-revised-full-test.log and /tmp/asg-repair-revised-analyze.log.
+Production/fixture/runtime inputs unchanged from the passing web/macOS/IAB/product/
+inventory evidence. Commit the three-path forward review fix, reacquire integration
+for its exact final identity, publish without force and rerun required CI.
