@@ -33,9 +33,11 @@ import 'saved_candidate_recovery_controller_test.dart'
 Future<EvidenceFixture> dependentPublication(
   EvidenceFixture first, {
   String taskId = 'Tanalyze',
+  String beforeText = reopenAfter,
+  String directory = '/dependent-candidate',
 }) async {
   final records = first.records;
-  final afterText = '$reopenAfter\n// dependent reviewed candidate';
+  final afterText = '$beforeText\n// dependent reviewed candidate';
   final evidence = ApprovedSourceProposal(
     projectId: project.id,
     boardTaskId: taskId,
@@ -45,16 +47,16 @@ Future<EvidenceFixture> dependentPublication(
       {
         'summary': 'Dependent reviewed candidate',
         'changes': [
-          {'path': 'lib/main.dart', 'before': reopenAfter, 'after': afterText},
+          {'path': 'lib/main.dart', 'before': beforeText, 'after': afterText},
         ],
       },
-      originals: {'lib/main.dart': reopenAfter},
+      originals: {'lib/main.dart': beforeText},
       responseModel: first.run.snapshot.sourceRequest?.responseModel,
     ),
   );
   final prepared = GeneratedProject.fromJson({
     ...first.run.snapshot.toJson(),
-    'directory': '/dependent-candidate',
+    'directory': directory,
     'phase': SourceGenerationPhase.generated.name,
     'sources': {
       ...first.run.snapshot.sources,

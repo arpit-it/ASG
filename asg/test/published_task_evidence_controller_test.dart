@@ -6,6 +6,7 @@ import 'dart:async';
 import 'package:asg/controllers/published_task_evidence_controller.dart';
 import 'package:asg/models/agent_session.dart';
 import 'package:asg/models/published_task_evidence.dart';
+import 'package:asg/models/prerequisite_preparation_evidence.dart';
 import 'package:asg/services/published_task_evidence_store.dart';
 import 'package:asg/services/record_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -37,7 +38,100 @@ class ControlledDecisionStore extends AgentTaskDecisionStore {
       action?.call() ?? super.load(session, number);
 }
 
+class ControlledPreparationStore extends AgentPrerequisitePreparationStore {
+  ControlledPreparationStore(RecordStorage records)
+    : super(records, project.id);
+  PrerequisitePreparationReview? Function()? action;
+  @override
+  PrerequisitePreparationReview? load(AgentSession session, int number) =>
+      action == null ? super.load(session, number) : action!();
+}
+
 void main() {
+  test('preparation-only failure preserves the historical decision, sanitizes errors and retries read-only', () async {
+    final f = await evidenceFixture(allAuthoredRules: true, taskId: 'Tresolve');
+    final decisions = AgentTaskDecisionStore(f.records, project);
+    final retained = await decisions.confirm(
+      decisions.select(f.session, f.run.number),
+      consent: true,
+      authorized: () => true,
+    );
+    final preparation = ControlledPreparationStore(f.records)
+      ..action = () => throw StateError('private /secret source');
+    final c = PublishedTaskEvidenceController(
+      PublishedTaskEvidenceStore(f.records, project),
+      f.session,
+      f.run.number,
+      preparation: preparation,
+    );
+    final before = Map.of(f.records.values);
+    c.load();
+    expect(c.decision?.fingerprint, retained.fingerprint);
+    expect(c.evidence, isNotNull);
+    expect(c.preparationReview, isNull);
+    expect(c.preparationError, contains('unavailable'));
+    expect(c.preparationError, isNot(contains('secret')));
+    preparation.action = null;
+    c.load();
+    expect(c.preparationReview!.prerequisites, isEmpty);
+    expect(c.preparationError, isNull);
+    expect(f.records.values, before);
+    c.dispose();
+  });
+
+  test(
+    'preparation load suppresses disposal and stale outer reload publication',
+    () async {
+      final f = await evidenceFixture(
+        allAuthoredRules: true,
+        taskId: 'Tresolve',
+      );
+      final decisions = AgentTaskDecisionStore(f.records, project);
+      await decisions.confirm(
+        decisions.select(f.session, f.run.number),
+        consent: true,
+        authorized: () => true,
+      );
+      final preparation = ControlledPreparationStore(f.records);
+      final c = PublishedTaskEvidenceController(
+        PublishedTaskEvidenceStore(f.records, project),
+        f.session,
+        f.run.number,
+        preparation: preparation,
+      );
+      var notifications = 0;
+      c.addListener(() => notifications++);
+      preparation.action = () {
+        preparation.action = null;
+        c.load();
+        return PrerequisitePreparationReview(
+          decisionSha256: 'stale',
+          runNumber: f.run.number,
+          prerequisites: [],
+        );
+      };
+      c.load();
+      expect(notifications, 1);
+      expect(c.preparationReview!.decisionSha256, c.decision!.fingerprint);
+      final other = PublishedTaskEvidenceController(
+        PublishedTaskEvidenceStore(f.records, project),
+        f.session,
+        f.run.number,
+        preparation: preparation,
+      );
+      var disposedNotices = 0;
+      other.addListener(() => disposedNotices++);
+      preparation.action = () {
+        other.dispose();
+        return c.preparationReview;
+      };
+      other.load();
+      expect(other.preparationReview, isNull);
+      expect(disposedNotices, 0);
+      c.dispose();
+    },
+  );
+
   test('disposal during retained-history load suppresses late decision and further reads', () async {
     final f = await evidenceFixture(allAuthoredRules: true, taskId: 'Tresolve');
     final decisions = ControlledDecisionStore(f.records);
