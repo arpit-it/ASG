@@ -7,6 +7,8 @@ import 'package:asg/models/agent_execution_checkpoint.dart';
 import 'package:asg/models/agent_session.dart';
 import 'package:asg/services/agent_session_store.dart';
 import 'package:asg/services/agent_session_run_status_store.dart';
+import 'package:asg/services/agent_task_history_store.dart';
+import 'package:asg/services/candidate_verification_store.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'agent_session_store_test.dart' show savedRun, selection;
@@ -214,6 +216,91 @@ void main() {
         expect(overview.load(session).single.available, isFalse);
         expect(records.values, before);
       }
+    },
+  );
+  test(
+    'validated retained task observations are projected without record writes',
+    () {
+      final run = CandidateVerificationStore(
+        records,
+        project.id,
+      ).load().runs.single;
+      final history = AgentTaskHistoryStore.start(session, run);
+      final histories = AgentTaskHistoryStore(records, project.id);
+      records.values[histories.keyFor(run.number)] = jsonEncode(
+        history.toJson(),
+      );
+      final before = Map.of(records.values);
+      final status = overview.load(session).single;
+      expect(status.available, isTrue);
+      expect(status.taskHistory, isNotNull);
+      expect(status.taskHistory!.observations.map((item) => item.kind.name), [
+        'admitted',
+        'pending',
+      ]);
+      expect(status.taskHistory!.pendingOperation?.name, 'resolve');
+      expect(records.values, before);
+    },
+  );
+  test(
+    'missing corrupt and foreign task history retain independent run facts',
+    () async {
+      final run = CandidateVerificationStore(
+        records,
+        project.id,
+      ).load().runs.single;
+      final histories = AgentTaskHistoryStore(records, project.id);
+      expect(overview.load(session).single.taskHistory, isNull);
+      records.values[histories.keyFor(run.number)] = '{private-history-token';
+      var before = Map.of(records.values);
+      var status = overview.load(session).single;
+      expect(status.available, isTrue);
+      expect(status.pendingOperation, 'resolve');
+      expect(status.taskHistory, isNull);
+      expect(records.values, before);
+      final sessions = AgentSessionStore(records, project);
+      final other = await sessions.create(
+        'foreign-history',
+        selection(records),
+      );
+      final foreign = await sessions.observeRun(other, 'Tanalyze', run);
+      records.values[histories.keyFor(run.number)] = jsonEncode(
+        AgentTaskHistoryStore.start(foreign, run).toJson(),
+      );
+      before = Map.of(records.values);
+      status = overview.load(session).single;
+      expect(status.available, isTrue);
+      expect(status.taskHistory, isNull);
+      expect(records.values, before);
+    },
+  );
+
+  test(
+    'cancelled and revoked history stays readable without renewed approval',
+    () async {
+      final run = CandidateVerificationStore(
+        records,
+        project.id,
+      ).load().runs.single;
+      final history = AgentTaskHistoryStore.start(session, run);
+      session = await AgentSessionStore(
+        records,
+        project,
+      ).requestCancellation(session);
+      final withdrawn = history.observeWithdrawal(currentSession: session);
+      records.values[AgentTaskHistoryStore(
+        records,
+        project.id,
+      ).keyFor(run.number)] = jsonEncode(
+        withdrawn.toJson(),
+      );
+      records.values.remove('studio.planApproval.v1.${project.id}');
+      final before = Map.of(records.values);
+      final status = overview.load(session).single;
+      expect(status.available, isTrue);
+      expect(status.taskHistory!.withdrawalSequence, 2);
+      expect(status.taskHistory!.results, isEmpty);
+      expect(records.values, before);
     },
   );
 }

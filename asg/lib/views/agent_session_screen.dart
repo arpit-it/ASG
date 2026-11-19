@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 
 import '../controllers/agent_session_controller.dart';
+import 'agent_task_history_view.dart';
 
 class AgentSessionScreen extends StatefulWidget {
   const AgentSessionScreen({
@@ -179,19 +180,26 @@ class _AgentSessionScreenState extends State<AgentSessionScreen> {
                 if (selected.dispatches.isEmpty)
                   const Text('No recorded runs for this session.'),
                 for (final status in controller.runStatuses)
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: Text(
-                      'Run ${status.reference.runNumber} — ${status.reference.boardTaskId}',
-                    ),
-                    subtitle: status.available
-                        ? Text(
-                            'Recorded candidate: ${status.sourcePhase!.name}; checkpoint: ${status.executionPhase!.name}. '
-                            '${status.pendingOperation?.isNotEmpty == true ? 'Unresolved operation: ${status.pendingOperation}. Its outcome is unknown.' : 'No unresolved operation is recorded.'}',
-                          )
-                        : const Text(
-                            'Run evidence is unavailable or does not match this session. Saved data is retained.',
-                          ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        title: Text(
+                          'Run ${status.reference.runNumber} — ${status.reference.boardTaskId}',
+                        ),
+                        subtitle: status.available
+                            ? Text(
+                                'Recorded candidate: ${status.sourcePhase!.name}; checkpoint: ${status.executionPhase!.name}. '
+                                '${status.pendingOperation?.isNotEmpty == true ? 'Unresolved operation: ${status.pendingOperation}. Its outcome is unknown.' : 'No unresolved operation is recorded.'}',
+                              )
+                            : const Text(
+                                'Run evidence is unavailable or does not match this session. Saved data is retained.',
+                              ),
+                      ),
+                      if (status.available)
+                        AgentTaskHistoryView(history: status.taskHistory),
+                    ],
                   ),
                 if (selected.dispatches.isNotEmpty)
                   const Text(

@@ -2,10 +2,12 @@
 // Copyright 2026 Arpit Sinha
 
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:asg/controllers/agent_session_controller.dart';
 import 'package:asg/models/agent_session.dart';
 import 'package:asg/services/agent_session_store.dart';
+import 'package:asg/services/agent_task_history_store.dart';
 import 'package:asg/services/conversation_store.dart';
 import 'package:asg/services/plan_approval_store.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -39,11 +41,16 @@ void main() {
     await controller.create(approved: true);
     final initial = controller.selected!;
     final run = await savedRun(records);
-    await store.observeRun(initial, 'Tanalyze', run);
+    final observed = await store.observeRun(initial, 'Tanalyze', run);
+    final histories = AgentTaskHistoryStore(records, project.id);
+    records.values[histories.keyFor(run.number)] = jsonEncode(
+      AgentTaskHistoryStore.start(observed, run).toJson(),
+    );
     final before = Map.of(records.values);
     controller.open(initial.sessionId);
     expect(controller.runStatuses.single.available, isTrue);
     expect(controller.runStatuses.single.pendingOperation, 'resolve');
+    expect(controller.runStatuses.single.taskHistory!.observations.length, 2);
     controller.load();
     expect(records.values, before);
     expect(() => controller.runStatuses.clear(), throwsUnsupportedError);
@@ -230,6 +237,38 @@ void main() {
       expect(await controller.create(approved: true), isFalse);
       controller.open('capacity-0');
       expect(controller.selected!.sessionId, 'capacity-0');
+      expect(records.values, before);
+    },
+  );
+  test(
+    'history errors clear only task details and disposed reads notify nobody',
+    () async {
+      await controller.create(approved: true);
+      final run = await savedRun(records);
+      final selected = await store.observeRun(
+        controller.selected!,
+        'Tanalyze',
+        run,
+      );
+      final histories = AgentTaskHistoryStore(records, project.id);
+      records.values[histories.keyFor(run.number)] = jsonEncode(
+        AgentTaskHistoryStore.start(selected, run).toJson(),
+      );
+      controller.open(selected.sessionId);
+      expect(controller.runStatuses.single.taskHistory, isNotNull);
+      records.values[histories.keyFor(run.number)] = '{private-history-token';
+      final before = Map.of(records.values);
+      controller.load();
+      expect(controller.runStatuses.single.available, isTrue);
+      expect(controller.runStatuses.single.taskHistory, isNull);
+      expect(controller.error, isNull);
+      expect(records.values, before);
+      var notifications = 0;
+      controller.addListener(() => notifications++);
+      controller.dispose();
+      controller.load();
+      controller.open(selected.sessionId);
+      expect(notifications, 0);
       expect(records.values, before);
     },
   );

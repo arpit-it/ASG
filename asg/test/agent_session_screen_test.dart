@@ -3,6 +3,10 @@
 
 import 'package:asg/controllers/agent_session_controller.dart';
 import 'package:asg/services/agent_session_store.dart';
+import 'package:asg/services/agent_task_history_store.dart';
+
+import '../tools/fixtures/agent_session_task_history.dart';
+
 import 'package:asg/services/conversation_store.dart';
 import 'package:asg/services/plan_approval_store.dart';
 import 'package:asg/views/agent_session_screen.dart';
@@ -301,6 +305,117 @@ void main() {
       records.failCommit = false;
       await tester.pumpAndSettle();
       expect(records.values, before);
+      expect(tester.takeException(), isNull);
+    },
+  );
+  for (final id in ['unknown', 'late-result']) {
+    testWidgets(
+      '320px enlarged task observations are truthful and read-only: $id',
+      (tester) async {
+        tester.view.physicalSize = const Size(320, 740);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+        final fixture = await TaskHistoryFixture.create();
+        final controller = AgentSessionController(
+          AgentSessionStore(fixture.records, TaskHistoryFixture.project),
+        )..open(id);
+        final count = id == 'unknown' ? 5 : 6;
+        await tester.pumpWidget(
+          MaterialApp(
+            builder: (context, child) => MediaQuery(
+              data: MediaQuery.of(context)
+                  .copyWith(textScaler: const TextScaler.linear(2)),
+              child: child!,
+            ),
+            home: AgentSessionScreen(
+              controller: controller,
+              projectName: TaskHistoryFixture.project.name,
+            ),
+          ),
+        );
+        await reveal(tester, find.text('Task observations ($count)'), 250);
+        await tester.tap(find.text('Task observations ($count)'));
+        await tester.pumpAndSettle();
+        expect(find.text('1. Verification admitted'), findsOneWidget);
+        expect(
+          find.text('3. Resolve dependencies — recorded exit 0'),
+          findsOneWidget,
+        );
+        expect(find.text('Session withdrawal recorded'), findsOneWidget);
+        final finalText = id == 'unknown'
+            ? 'Run tests has no saved result. Its outcome is unknown.'
+            : '6. Verification attempt finished';
+        await reveal(tester, find.text(finalText), 220);
+        expect(find.text(finalText).hitTestable(), findsOneWidget);
+        expect(
+          tester.getTopLeft(find.text('Session withdrawal recorded')).dy,
+          lessThan(
+            tester
+                .getTopLeft(
+                  find.text(
+                    id == 'unknown'
+                        ? '5. Run tests — interrupted; outcome unknown'
+                        : '5. Run tests — recorded exit 0',
+                  ),
+                )
+                .dy,
+          ),
+        );
+        expect(find.textContaining('fixture-result-private'), findsNothing);
+        expect(find.textContaining('```asg-build'), findsNothing);
+        expect(find.textContaining('Build Flutter web — intent'), findsNothing);
+        expect(fixture.records.writeAttempts, 0);
+        expect(fixture.unchanged, isTrue);
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
+
+  testWidgets(
+    'legacy and corrupt task details do not erase retained run facts',
+    (tester) async {
+      final fixture = await TaskHistoryFixture.create();
+      final store = AgentSessionStore(
+        fixture.records,
+        TaskHistoryFixture.project,
+      );
+      final controller = AgentSessionController(store)..open('legacy');
+      await tester.pumpWidget(
+        MaterialApp(
+          home: AgentSessionScreen(
+            controller: controller,
+            projectName: 'Fixture',
+          ),
+        ),
+      );
+      await reveal(
+        tester,
+        find.text('Task observations are unavailable for this saved run.'),
+        250,
+      );
+      expect(find.textContaining('Unresolved operation: test'), findsOneWidget);
+      controller.open('unknown');
+      await tester.pumpAndSettle();
+      await reveal(tester, find.text('Task observations (5)'), 250);
+      fixture.records.values[AgentTaskHistoryStore(
+            fixture.records,
+            TaskHistoryFixture.project.id,
+          ).keyFor(1)] =
+          '{private-history-token';
+      final before = Map.of(fixture.records.values);
+      controller.load();
+      await tester.pumpAndSettle();
+      await reveal(
+        tester,
+        find.text('Task observations are unavailable for this saved run.'),
+        250,
+      );
+      expect(find.textContaining('Unresolved operation: test'), findsOneWidget);
+      expect(find.textContaining('private-history-token'), findsNothing);
+      expect(find.text('Task observations (5)'), findsNothing);
+      expect(fixture.records.values, before);
+      expect(fixture.records.writeAttempts, 0);
       expect(tester.takeException(), isNull);
     },
   );
