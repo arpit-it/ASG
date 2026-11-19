@@ -107,7 +107,7 @@ def read_retry_proof(proof, nonce, launch, promote=False):
               'firstRunSha256', 'firstExecutionSha256', 'firstReceiptSha256', 'stopSha256',
               'recoverySha256', 'secondExecutionSha256', 'secondReceiptSha256'}
     keys = hashes | {'sessionId', 'projectId', 'revision', 'dispatchCount', 'dispatchIds',
-                     'cancellationRequested', 'receiptPreparations', 'commandEntries'}
+                     'cancellationRequested', 'receiptPreparations', 'commandEntries', 'taskHistories'}
     if promote:
         keys |= {'workingSha256', 'previousSha256', 'workingPublished', 'secondExecutionPhase'}
     count = 2 if launch >= 3 else 1
@@ -130,6 +130,28 @@ def read_retry_proof(proof, nonce, launch, promote=False):
                 raise ValueError('Unadmitted retry evidence present')
         elif not isinstance(proof[key], str) or re.fullmatch(r'[a-f0-9]{64}', proof[key]) is None:
             raise ValueError('Bound retry record hash missing')
+    histories = proof.get('taskHistories')
+    if not isinstance(histories, list) or len(histories) != count:
+        raise ValueError('Retry task histories missing')
+    for number, history in enumerate(histories, 1):
+        if (not isinstance(history, dict) or type(history.get('runNumber')) is not int or
+                history['runNumber'] != number or history.get('dispatchId') != proof['dispatchIds'][number - 1]):
+            raise ValueError('Retry task history identity mismatch')
+        observed = {key: value for key, value in history.items() if key not in ('runNumber', 'dispatchId')}
+        if number == 1:
+            read_task_history(observed, True)
+        else:
+            expected = [['admitted', None, None, None]]
+            for operation in OPERATIONS:
+                expected += [['pending', operation, None, None], ['result', operation, 0, False]]
+            expected += [['finished', None, None, None]]
+            if (set(observed) != {'sha256', 'projectionSha256', 'events', 'withdrawalSequence', 'pendingOperation', 'finished'} or
+                    not isinstance(observed.get('sha256'), str) or re.fullmatch(r'[a-f0-9]{64}', observed['sha256']) is None or
+                    observed.get('projectionSha256') != observed['sha256'] or
+                    observed.get('withdrawalSequence') is not None or observed.get('pendingOperation') is not None or
+                    observed.get('finished') is not True or
+                    json.dumps(observed.get('events'), separators=(',', ':')) != json.dumps(expected, separators=(',', ':'))):
+                raise ValueError('Retry completed task history mismatch')
     if promote:
         published = launch >= 4
         phase = 'completed' if published else 'verifying' if launch == 3 else None
@@ -153,13 +175,15 @@ def require_retry_transition(previous, current, launch, before_hash, promote=Fal
         return
     if before_hash != retry_digest(previous):
         raise ValueError('Read-only retry reopen changed retained records')
+    if current['taskHistories'][0] != previous['taskHistories'][0]:
+        raise ValueError('Retry rewrote first task history')
     immutable = {'sessionId', 'projectId', 'basisSha256', 'cancellationRequested',
                  'firstReceiptSha256', 'stopSha256'}
     if launch == 2:
         if any(current[key] == previous[key] for key in ('journalSha256', 'firstRunSha256', 'firstExecutionSha256')):
             raise ValueError('Acknowledgement transition missing')
         immutable |= {'sessionSha256', 'revision', 'dispatchCount', 'dispatchIds',
-                      'candidateSha256', 'secondExecutionSha256', 'secondReceiptSha256'}
+                      'candidateSha256', 'secondExecutionSha256', 'secondReceiptSha256', 'taskHistories'}
         if promote:
             immutable |= {'workingSha256', 'previousSha256', 'workingPublished', 'secondExecutionPhase'}
     elif launch == 3:
@@ -188,10 +212,10 @@ def require_retry_transition(previous, current, launch, before_hash, promote=Fal
 
 def read_report(root, launch, nonce, operation='resolve', stop=False, precommit=False, running=False, uncertain=False, acknowledge=False, retry=False, promote=False, promotion_crash=False, session_bound=False, admission_crash=False, session_cancel=False, session_cancel_active=False, session_cancel_unknown=False):
     report = root / f'launch-{launch}.json'
-    if report.is_symlink() or not report.is_file() or report.stat().st_size > 4096:
+    if report.is_symlink() or not report.is_file() or report.stat().st_size > 8192:
         raise ValueError('Invalid candidate report')
     value = json.loads(report.read_text())
-    if (not isinstance(value, dict) or type(value.get('version')) is not int or value['version'] != 17 or
+    if (not isinstance(value, dict) or type(value.get('version')) is not int or value['version'] != 18 or
             type(value.get('launch')) is not int or value['launch'] != launch or value.get('nonce') != nonce or
             value.get('dispatch') != f'candidate-restart-{nonce}-1:3' or
             value.get('sessionBound') is not session_bound or value.get('admissionCrash') is not admission_crash or value.get('sessionCancel') is not session_cancel or value.get('sessionCancelActive') is not session_cancel_active or value.get('sessionCancelUnknown') is not session_cancel_unknown or
