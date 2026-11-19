@@ -22,7 +22,7 @@ def read_session_proof(value, nonce, launch, admission_crash=False, session_canc
     """Validate fixed session evidence; this never authorizes or launches work."""
     keys = {'sessionId', 'projectId', 'revision', 'dispatchId', 'dispatchCount',
             'sessionSha256', 'journalSha256', 'candidateSha256', 'executionSha256',
-            'receiptPreparations', 'commandEntries'}
+            'receiptPreparations', 'commandEntries', 'taskHistory'}
     if session_cancel:
         keys |= {'cancellationRequested', 'receiptSha256'}
     if session_cancel_active:
@@ -58,7 +58,39 @@ def read_session_proof(value, nonce, launch, admission_crash=False, session_canc
                 raise ValueError('Uncommitted startup record was retained')
         elif not isinstance(fingerprint, str) or re.fullmatch(r'[a-f0-9]{64}', fingerprint) is None:
             raise ValueError('Session record fingerprint missing')
+    read_task_history(value['taskHistory'], admitted, session_cancel, session_cancel_active, session_cancel_unknown)
     return value
+
+
+def read_task_history(proof, admitted, cancelled=False, active=False, unknown=False):
+    """Validate fixed observation rows, never interpret them as task completion."""
+    if not admitted:
+        if proof is not None:
+            raise ValueError('Unadmitted task history present')
+        return
+    keys = {'sha256', 'projectionSha256', 'events', 'withdrawalSequence', 'pendingOperation', 'finished'}
+    if not isinstance(proof, dict) or set(proof) != keys:
+        raise ValueError('Task history proof missing')
+    fingerprint = proof.get('sha256')
+    if (not isinstance(fingerprint, str) or re.fullmatch(r'[a-f0-9]{64}', fingerprint) is None or
+            proof.get('projectionSha256') != fingerprint):
+        raise ValueError('Task history projection mismatch')
+    events = [['admitted', None, None, None]]
+    for operation in OPERATIONS[:1 if cancelled and not active else 2]:
+        events += [['pending', operation, None, None], ['result', operation, 0, False]]
+    if not cancelled or active:
+        events += [['pending', 'test', None, None]]
+    if cancelled:
+        events += ([['interrupted', 'test', None, None]] if unknown else
+                   ([['result', 'test', 0, False]] if active else []) + [['finished', None, None, None]])
+    # JSON comparison keeps booleans distinct from integer exits/sequences.
+    if json.dumps(proof.get('events'), separators=(',', ':')) != json.dumps(events, separators=(',', ':')):
+        raise ValueError('Task history event sequence mismatch')
+    boundary = 6 if active else 2 if cancelled else None
+    if (type(proof.get('withdrawalSequence')) is not type(boundary) or proof['withdrawalSequence'] != boundary or
+            proof.get('pendingOperation') != ('test' if not cancelled or unknown else None) or
+            proof.get('finished') is not (cancelled and not unknown)):
+        raise ValueError('Task history unknown or withdrawal mismatch')
 
 
 def retry_digest(proof):
@@ -159,7 +191,7 @@ def read_report(root, launch, nonce, operation='resolve', stop=False, precommit=
     if report.is_symlink() or not report.is_file() or report.stat().st_size > 4096:
         raise ValueError('Invalid candidate report')
     value = json.loads(report.read_text())
-    if (not isinstance(value, dict) or type(value.get('version')) is not int or value['version'] != 16 or
+    if (not isinstance(value, dict) or type(value.get('version')) is not int or value['version'] != 17 or
             type(value.get('launch')) is not int or value['launch'] != launch or value.get('nonce') != nonce or
             value.get('dispatch') != f'candidate-restart-{nonce}-1:3' or
             value.get('sessionBound') is not session_bound or value.get('admissionCrash') is not admission_crash or value.get('sessionCancel') is not session_cancel or value.get('sessionCancelActive') is not session_cancel_active or value.get('sessionCancelUnknown') is not session_cancel_unknown or
@@ -316,7 +348,7 @@ def observe(bundle, sdk, operation='resolve', stop=False, precommit=False, runni
             previous = current
     elif session_bound:
         retained = ('sessionId', 'projectId', 'revision', 'dispatchId', 'dispatchCount',
-                    'sessionSha256', 'journalSha256', 'candidateSha256', 'executionSha256')
+                    'sessionSha256', 'journalSha256', 'candidateSha256', 'executionSha256', 'taskHistory')
         if session_cancel:
             retained += ('receiptSha256', 'cancellationRequested')
         if session_cancel_active:

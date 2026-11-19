@@ -1600,3 +1600,30 @@ production buildd4b8d84bf42b0bc8fcc779f37d7a22e4998520f2f3ca6c4d061f365faa9ee018
 This is read-only fixture UI acceptance, not production end-to-end coding, actual
 Flutter execution, app-crash recovery, process cleanup, inference or full CE01.
 Historical native binaries/observations remain tied to their original identities.
+
+
+### Native saved task-history proof — 19 November 2026
+
+Disposable crash fixture protocol17 adds taskHistory to the single-dispatch
+session proof. Before accepting a report and before the next native launch, the
+host requires bounded exact event rows, typed actual exits/cancellation values,
+withdrawal boundary, unknown pending operation and verification-finished state.
+The fixture loads history through AgentTaskHistoryStore and the same
+AgentSessionRunStatusStore used by saved-session views. Both serialized typed
+histories must equal the retained raw record and selected dispatch, with equal
+SHA-256 fingerprints before the owned app crash and after a separately launched
+read-only reopen. Pre-admission proof instead requires absent history and no
+projected runs. Missing/foreign/altered history or projection refuses evidence;
+no loader reconciles, dispatches or writes records.
+
+The fixed cases distinguish actual late test exit0 after session withdrawal
+from a publication fault retaining test intent/interrupted/unknown without a
+result. Helper exit73 and a private fault marker remain distinct from actual
+Flutter test exit and process cleanup. Verification-finished is not task
+completion. Existing receipt, source, last-working-output and zero-reopen-effect
+guards remain mandatory. Protocol16 and earlier observations retain their
+original binaries and scopes; protocol17 rejects those old report versions.
+This extends single-dispatch proof only: the separate multi-run retry/promotion
+proof retains its existing scope and does not yet fingerprint both task histories.
+There is no scheduler, automatic replay, receipt publisher authentication,
+new inference or generalized CE01 acceptance.
