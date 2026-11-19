@@ -1652,3 +1652,89 @@ on read-only launches remain mandatory. Prior protocol/binary observations are
 not relabelled. This is fixed isolated-fixture evidence, not a production
 saved-session recovery navigation path, automatic replay, receipt authentication,
 new model execution or generalized CE01 acceptance.
+
+
+### Production saved-session recovery entry investigation — 19 November 2026
+
+The native crash fixtures reconstruct their supplied ApprovedSourceProposal and
+candidate-controller dependencies. Production does not yet provide that route:
+AgentSessionScreen renders saved runs and task observations, and its source-review
+action returns a session to ProjectWorkspace. SourceReviewController creates a
+SourceCandidateController only after preparing a new candidate. Reopening that
+route does not restore the prior in-memory proposal/candidate controller.
+Successful fixed-fixture restart evidence must not be presented as an existing
+production recorded-run recovery entry.
+
+Retained records provide useful but incomplete context:
+
+- CandidateVerificationRun stores number, time, GeneratedProject snapshot,
+  finished and dispatchId. Its snapshot includes approval, tasks, source hashes,
+  configuration and source-request provenance; it does not encode the reviewed
+  SourceEditProposal before/after text or the original working-record identity.
+- AgentSession and AgentTaskHistory bind approval/task selection, admitted run
+  reference and observations. They do not grant execution authority or reconstruct
+  a missing reviewed proposal. CandidateReceiptContext binds dispatch, source,
+  approval, execution and host session; it is observation evidence only.
+- ApprovedSourceProposal is an in-memory review object with project/task,
+  approval, bounded proposal changes, optional repair run and request provenance.
+  prepareSourceCandidate returns a prepared GeneratedProject rather than this
+  envelope or its source-base snapshot. SourceReviewController intentionally
+  creates candidateEvidence without repairRun after preparation; retain those
+  actual semantics rather than reauthorizing against an invented failed run.
+- RepairAttempt records can contain proposed changes and request provenance
+  against a failed run. That is not an unambiguous binding to every later prepared
+  candidate. Never select the latest repair attempt as recovery authority.
+- SourceReviewController captures the exact raw working record at construction
+  and rechecks it through requireWorking. SourceGenerationController promotion
+  also compares expected working state, current approval and session CAS, and
+  publishes generation/previous/execution records atomically. Capture the original
+  working identity; taking a new baseline at reopen would erase this guard.
+
+The next coherent product increment is explicit reopening of the latest recorded
+bound candidate for a selected session, using a new immutable local reopen
+context. Capture its basis during reviewed preparation: full bounded reviewed
+proposal and model provenance, exact source-base and prepared-candidate identity,
+original working snapshot and exact raw working-record fingerprint. Freeze the
+actual prepared evidence; do not send a new model request or re-prepare a copy.
+At verification admission, bind this basis to the exact project/session/task/run/
+dispatch and publish it in the existing startup CAS with journal, current
+candidate, execution, session reference and history, before receipt preparation
+or host entry. Require expected absence and bounded prefix validation in
+StudioDatabase. Context is immutable across checkpoints and acknowledgment;
+a new explicitly consented run gets a separate reference. New production bound
+admissions must not silently skip context after a publication failure. Existing
+legacy/unbound rows remain retained and unavailable for this entry, with no
+backfill from current files, latest repair attempts or task histories.
+
+A read-only loader must match the selected session/reference, latest journal run,
+current candidate and all stable source/configuration/approval fields; decode the
+proposal with its original texts, preserve response-model provenance, and enforce
+an explicit encoded size bound before parsing. Opening starts no model request,
+preparation, command, preview, reconciliation, acknowledgment or storage write.
+Older/superseded runs, missing/corrupt/foreign context and stale/cancelled authority
+keep their existing history visible but grant no recovery action or unbound
+fallback. The scoped initial entry is latest matching bound run only; general
+historical candidate selection is outside it.
+
+The UI should use a dedicated controller/view with owned fresh hosts and existing
+candidate recovery controls. Recreate requireWorking from the captured original
+fingerprint, then repeat current approval/input/session/source guards at every
+explicit action. Reuse the existing acknowledgment, fresh-consent verification,
+Stop, receipt and separate promotion workflows; do not interpret opening as
+resume, fabricate an exit, complete a task, or change the publication point.
+Promotion continues through SourceGenerationController with a separate candidate
+host and atomic previous-output preservation. Dispose only owned hosts/listeners;
+async opening or disposal cannot publish a controller or write after closure.
+
+Validation must cover model bounds/unknown fields/identity/provenance, failed
+startup CAS and zero host entry, immutable context on checkpoint/acknowledgment,
+actual native DB close/reopen byte retention, stale/foreign/latest-run and working
+record refusal, changed approval/cancellation, async disposal, legacy unavailable
+and no-effect opening. Add controller/widget tests and IAB navigation on a clearly
+labelled deterministic production-screen fixture, narrow/high-text layouts and
+existing recovery-control guards. Run required analyze/full tests/relevant builds,
+product/inventory checks, fresh exact review and CI. New actual native crash/entry
+behavior needs its own current-binary evidence; protocol18 observations remain
+historical. No live inference is necessary for the context/navigation slice.
+This investigation changes no application code, storage or authority, and does
+not complete production recovery navigation, general CE01/F20 or platform gates.
