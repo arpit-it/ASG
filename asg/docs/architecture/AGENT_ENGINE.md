@@ -1357,3 +1357,34 @@ model synthesis or full CE01. No production permissions or runtime code change.
 Native active-session withdrawal final local validation: protocol15 --session-cancel-active new two-launch scenario and ten earlier normal/commit-crash/retry/after-exit-cancellation/admission-precommit/admission-committed/legacy-resolve/legacy-stop/legacy-precommit/legacy-promotion-crash scenarios all passed on binaryafac45ce843d198bb7b5ed00e77af298a4e9712cf937032e491f5a1d47fd0e52. New proof records rev2 cancellation before test result, validates unchanged pre-exit intent/context/marker/admitted-basis ancestry, preserves actual exit0 and complete resolve/analyze/test receipts, refuses Build/promotion and retains failed candidate/finished journal/verifying checkpoint. Owned-app crash then separate read-only reopen preserves exact durable/receipt/source/working evidence with preparations1/0 and commands3/0; no Candidate Stop or host cancellation signal. Evidence /tmp/asg-404-native-session-cancellation-running-{active,normal,commit-crash,retry,cancellation,admission-precommit,admission-committed,legacy-resolve,legacy-stop,legacy-precommit,legacy-promotion-crash}-observation.json. Host41/probe6/product32/inventory9, fullFlutter1,918/11skip/analyze, final fixture Dart analysis and rebuilt isolated native bundle passed. No new live inference, stable app replacement, process-termination/general cleanup or fullCE01 claim. Fresh exact PR review/required CI/verified merge remain gates.
 
 PR734 reviewed correction final local evidence: fully flushed release permit now publishes by same-directory atomic rename, preventing the active test from seeing an empty file. Rebuilt binaryf1b88525686ccc078a7f93427e62f25f938311b9b9e027712698e3f2bc4f7d34 passed12 native observations: reviewed-{active,active-repeat,normal-retry,commit-crash,retry,cancellation,admission-precommit,admission-committed,legacy-resolve,legacy-stop,legacy-precommit,legacy-promotion-crash}-observation.json under /tmp/asg-404-native-session-cancellation-running-. Original reviewed-normal attempt remains refused/uncertain and preserved (control asg-candidate-crash-0pt7uhpp; later validated cancelled receipt, cleanup unknown); it is not counted as acceptance or a zero-flake claim. Initial afac45ce observations are historical and superseded for revised source. Final fixture Dart analysis/rebuilt isolated native bundle and host41/probe6/product32/inventory9 pass; core lib/test inputs unchanged from1918/11skip/analyze run. Required new-head CI must rerun all mandated checks. One blocking fresh-review release-publication race fixed; fresh revised review/CI/verified merge still required.
+
+
+### CE01 cancelled active test with unpublished result — 19 November 2026
+
+Protocol16 adds --session-cancel-unknown only with the complete
+--operation test --stop --session-bound --session-cancel --session-cancel-active
+mode. All prior report versions retain their historical identities and are
+refused by the current observer. The new mode cannot combine with Candidate
+Stop, acknowledgment, retry, promotion or pre-admission faults.
+
+After the existing actual test marker/intent and revision2 session withdrawal
+boundary, the fixed private helper exits before publishing test.result.json.
+The nonce fault marker proves this injected publication boundary only; helper
+exit73 is not a validated Flutter exit, command cleanup or termination proof.
+The candidate retains actual resolve/analyze exit0 receipts and the incomplete
+test intent. It remains failed and unfinished with pendingOperation=test and an
+executing checkpoint. Both retainedExit and actualTestExit are explicitly null,
+cleanup is unknown, and no acknowledgment, Candidate Stop, host cancellation
+signal, Build or promotion is present.
+
+The fixture fingerprints the actual receipt prefix plus raw incomplete intent,
+requires the test result path to be absent (including no dangling link), and
+retains the nonce fault fingerprint independently. After the observer kills only
+its owned app, a separately launched read-only reopen must retain identical
+session/journal/candidate/checkpoint/receipt/source/working evidence. Its receipt
+preparations and command entries must both remain zero. The first launch has one
+receipt preparation and three command entries; command entry is not a completed
+result. This bounded fault proves refusal to invent a test outcome, not general
+process cleanup, automatic recovery or full CE01 acceptance.
+
+CE01 unknown-result cancellation final local validation: protocol16 binarye5e71ec300c02b77b17d6155e6e051849f99299d40083d04371f4f11cb2db92a passed13 isolated native observations (two unknown-result plus11 relevant prior modes). Raw incomplete intent, actual resolve/analyze results, revision2 cancellation/one reference and failed unfinished pending-test/executing state survived separate read-only reopen, counters1/0 preparations and3/0 commands, null test exit/cleanup unknown. Host44/probe6/product32/inventory9, explicit fixture Dart analysis, isolated macOS build, final Flutter analyze and full1,918 passed/11 existing skips. Evidence /tmp/asg-404-native-session-cancellation-unknown-{first,repeat,active,normal,commit-crash,retry,cancellation,admission-precommit,admission-committed,legacy-resolve,legacy-stop,legacy-precommit,legacy-promotion-crash}-observation.json and final-{analyze,tests}.log. No new live inference, stable app replacement, generalized cleanup or fullCE01 claim. Fresh exact PR review/required CI/verified merge remain gates.
