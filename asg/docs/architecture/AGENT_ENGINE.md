@@ -3058,3 +3058,209 @@ Keep404-selected-repair-provenance claimed and resume this owned implementation
 first. No new provenance feature is published or marked Done at this checkpoint.
 
 Selected repair provenance is now implemented locally under #404: typed capture, atomic absent-origin reservation and exact-origin proposed-return CAS, optional returned reference, consistent bounded historical projection and independent controller/view. Existing strict candidate formats and legacy/unbound behavior are unchanged. Local acceptance is recorded in REQUIREMENTS.md; publication, fresh review, required CI and verified merge remain pending. Historical references are observations and grant no source restoration, acceptance or execution authority.
+
+PR761 request-origin/history prerequisite verified merged2c88042857f987f4ad19ab7273de702757c4bec0 after CI44623419448 and exact review. Next claimed F20/CE01 investigation is exact repair-to-candidate lineage: trace current normalization and strict basis/context; prove distinct explicit repair origins versus equal candidate capture before specifying a separate optional companion. Initial-request lineage and all legacy formats/authority stay unchanged. See REQUIREMENTS.md for scope and acceptance.
+
+
+F20/CE01 repair-to-candidate lineage investigation checkpoint on verified PR761:
+Two actual supplied-proposer probes pass. Each returned repair now has a persisted
+canonical origin and a valid exact returned reference. Probe1 requests Tanalyze vs
+Ttest against the same supplied failed analyze run/output: origin/task IDs differ,
+references differ, and normalized candidate bases keep their own task difference.
+A retained task ID still does not identify the exact repair request/attempt.
+
+Probe2 requests Tanalyze twice against the same full failed-source manifest and
+identical validated output, selecting main-only vs also unchanged lib/extra.dart.
+Actual provider prompts differ; PR761 origins correctly retain both distinct selected
+maps and references. Legacy attempt facts excluding ordinal/time remain identical.
+The current preparation normalization drops repairRequestReference; pure strictv1
+CandidateReopenBasis bytes remain identical and contain neither a repair reference
+nor origin digest. Thus new request history fixes request intent but does not yet
+supply exact candidate historical linkage. No order/time/latest/content guess can
+recover that missing relation. Pure basis capture mirrors production normalization;
+no actual preparer/filesystem/source capture/SDK/host/model transport was invoked.
+
+Only two explicit origin keys and the existing repair journal change during each
+probe; original working/candidate/session records remain byte-identical and no
+execution checkpoint is created. Initial-request origin stays null for real repairs.
+Probes:/tmp/asg-404-repair-candidate-lineage-probe_test.dart; both pass in same-prefix
+-probe.log. Focused44 selected-origin/storage/native-context/candidate-basis/store/
+initial-lineage regressions pass; same-prefix -baseline.log. These supplied proofs
+do not establish prepared-folder execution, accepted repair or task completion.
+
+Read-only tracing also confirms existing CandidateRequestLineageStore and startup/
+recovery hooks are initial-request-specific. Their reservation, two raw session
+snapshots and fixed context identity must not be repurposed by fabricating an
+initial origin. Remaining owned work: map repair preparation consent and selected
+session revisions through candidate admission/retry/recovery, then specify one
+bounded separate repair companion with exact request+origin+context/run identity,
+atomic absent-key startup and independent consistent historical reads. Preserve
+strict old formats, optional corruption isolation, legacy absence, budgets and
+current source/approval/Stop/recovery. No runtime/schema change in this investigation.
+Keep404-repair-candidate-lineage-investigation active; review/CI/verified merge of
+its eventual contract is required before dependent implementation. No independent
+second task is ready; fullF20/CE01/umbrella404 acceptance remains open.
+
+F20/CE01 repair-to-candidate investigation result and bounded next contract — PR761.
+All three probes pass, including a native durable-read guard probe and the two
+supplied-proposer cases. Extended probe2 through the ACTUAL existing atomic
+candidate startup transaction, without invoking a preparer, source inspection, host,
+receipt or SDK. Startup appends run2 and one selected-session dispatch, persists the
+strict reopen context/execution intent and preserves the two valid repair origins/
+references. The persisted context still has no repair reference; neither an initial
+nor repair companion is written. This distinguishes real startup-record behavior
+from the earlier pure-basis observation. Startup intent is not command execution.
+Logs:/tmp/asg-404-repair-candidate-lineage-final-probes.log; focused44 pass. No new
+runtime behavior is implemented by this documentation investigation.
+
+The additional native probe stores valid origin/attempt records, opens two actual
+StudioDatabase adapters and replaces the origin through the second supplied adapter.
+The first adapter still reads its cached old origin; pure reference/attempt checks
+against that cache pass. A read-only commitRecords comparison with the exact fixed
+origin/journal keys and NO updates correctly refuses the stale durable record and
+leaves origin/journal bytes unchanged by the guard. Thus metadata-only cached checks
+cannot establish durable freshness before preparation copies source. This is a
+prerequisite for the new lineage feature, not a claim of existing source authority
+or an authenticated external cause. The new service must use a typed asynchronous
+fixed-key read-only conditional guard before first copy and full durable startup CAS;
+no generic caller-chosen comparison map or new execution grant is introduced.
+
+Preparation currently checks working bytes, proposal/approval, selected session and
+initial origin when present; repair origin is not yet an input to that optional
+initial guard. Normalization removes repairRun deliberately because a prepared
+candidate will replace latest-failure evidence. Keep that removal; preserve an
+explicit repairRequestReference separately in memory for new linked candidates.
+SourceCandidateController currently forwards only initialRequestOrigin into startup.
+CandidateVerificationStore already commits journal/candidate/session/execution/task
+history/reopen context together before host entry. Extend that existing transaction
+with a separate typed repair reservation; never append a companion in a later write.
+Existing initial-request lineage and its strict schema remain independent.
+
+The next coherent implementation, 404-repair-candidate-lineage under existing#404,
+records and reviews exact repair-request-to-candidate linkage for NEW bound repairs.
+It becomes eligible only after this contract's exact review/required CI/verified
+merge. No new queue or duplicate issue; fullF20/CE01 remains open.
+
+Use an optional canonical version1 companion key
+studio.candidateRepairLineage.v1.<project>.<run>. Fields: version, projectId,
+runNumber, dispatchId, repairRequestReference (the explicit PR761 returned DTO),
+admissionSessionRecord (exact raw PRE-admission selected session), contextSha256
+(SHA256 of exact saved canonical reopen context bytes). Bound companion to2MiB UTF-8,
+admission raw session to256KiB, reference to1KiB; use existing ID/dispatch validation,
+strict exact shapes/duplicate/version/canonical encodings and positive JSON-safe
+run identities <=9007199254740991. Preserve older journal/context readability rather
+than imposing new limits retroactively. No prompt, replacement source bodies,
+endpoint, credential, transcript or raw errors in the new companion.
+
+The referenced immutable PR761 origin already retains original raw request-session
+bytes. Read that origin by reference.projectId/attemptNumber and require exact
+originSha256; do NOT copy/reconstruct the origin or its raw session in the companion.
+Read the exact proposed repair attempt by ordinal, require canonical terminal
+attemptSha256, origin.requireAttempt, reserved reconstruction and proposed status.
+Reference plus hash validation records an app relationship, not authenticated cause
+or permission. Both request origin and later admission session are needed; they
+may differ after earlier dispatches. Compare same project/session/approval/tasks,
+uncancelled admission, exact preserved dispatch prefix and revision increase equal
+to appended dispatch count. Then require exactly ONE new admission via the existing
+AgentSessionBinding.admitted relation to the context session/run/dispatch. Never
+reconstruct either raw snapshot from a typed re-encoding or by stripping dispatches.
+
+Before preparation copies source, a new bound proposal carrying repair reference
+must resolve and jointly validate the exact stored proposed attempt and immutable
+origin against that reviewed proposal, selected session extension, current approval,
+original raw working hash and failed source base. Require all selected original
+input hashes, including unchanged selected files, match that failed source manifest;
+match requested task/requirement and the entire canonical proposal summary/changes,
+requested settings and observed response model (unknown stays unknown). The repair
+journal parser does not restore proposal.responseModel; use retained modelRequest
+provenance for observed identity and compare candidate proposal identity separately.
+Reject a conflicting initial origin, foreign/malformed reference or missing referenced record,
+changed source/model/task/working or lost raw origin before source copy. Legacy/
+unbound proposals without new reference keep their existing behavior. A request
+with explicit absent working bytes can remain valid request history, but cannot
+claim a bound candidate context requiring exact present working identity; fail that
+new linkage before copying rather than inventing/restoring a working record.
+A synchronous checkActive callback can recheck captured in-process state but is not
+proof that another native adapter left durable metadata unchanged. Await the typed
+read-only conditional guard before the preparer starts; revalidate after awaited
+work and before startup. A race after a prior check cannot make filesystem copy and
+storage one atomic operation: if a separate unverified candidate was already copied,
+retain its path under existing cancellation/recovery behavior while refusing startup
+or further effects. Never claim zero copied files for a race discovered after copy
+began, and never overwrite/restore the working output.
+
+Normalize repairRun away while retaining only the explicit repair pointer; do not
+extend strictv1 CandidateReopenBasis/Context, RepairAttempt/Journal or initial-lineage
+wire formats. Revalidate this pointer before startup against the normalized basis:
+basis.sourceBase equals the retained failed-run snapshot; basis.workingSha256 equals
+origin.workingSha256; task/approval/model/proposal and every selected before hash
+match. Existing context validation remains responsible for prepared-source identity
+and the admitted run. A matching latest proposal or equal candidate content never
+substitutes for the explicit pointer. Reject simultaneous initial and repair origins
+at new preparation/admission; never fabricate an initial origin for a repair.
+
+Prepare a private typed fixed-key reservation capturing exact current repair-journal
+raw bytes, immutable origin raw bytes, and absent new companion key. Combine those
+expectations with every existing startup read-set member (working/approval/session,
+reopen context/journal/candidate/execution/task history) in the same commitRecords
+transaction, with existing authorization/current checks plus exact repair proof.
+Require absent-key immutability and no partial update on serialization, identity,
+size, storage or stale-adapter failure. Start no host/receipt/tool before successful
+commit. Referenced journal growth is permitted when the exact entry still matches;
+never freeze an unrelated old whole journal from request time, but compare the
+captured current whole journal atomically during this startup. Concurrent append or
+origin replacement during that transaction fails closed and requires fresh capture.
+No budget refund or repair-origin rewrite. Existing one-terminal-write uncertainty,
+Stop, cleanup acknowledgement and current execution recovery remain unchanged.
+
+Historical review must use a consistent exact read-set of companion, saved context,
+candidate journal/run, repair journal/attempt and immutable repair origin. Check
+fixed key identities, both referenced hashes, failed/source/working/proposal/model
+relations and the two session snapshots/single admission. Do not require CURRENT
+approval/working state, latest matching candidate/request or a live session. Expose
+recorded request task/requirement/all selected paths/hashes, attempted failure and
+requested/observed model, linked run/dispatch with explicit observational limits.
+Proposed is not repaired; startup is not a command receipt or task completion.
+Missing/corrupt/foreign/inconsistent optional proof makes stronger linkage unavailable
+without erasing valid session, run, source, receipt, budget or initial history facts.
+Never silently choose between conflicting initial/repair companions or infer a
+missing relationship. Reload performs no model request, source inspection/copy,
+replay, verification or restoration of a proposal. Keep errors/retry/disposal and
+bounded projections independent, with truthful omission/count labels if aggregated.
+
+During existing explicit native recovery, preserve a repair pointer only after a
+successful consistent exact optional load and revalidation around existing awaited
+source inspections. Retain the original request origin and capture the actual new
+pre-admission raw session for a newly consented retry/run; never derive it from the
+post-admission typed projection. The new run receives a new immutable companion
+with the SAME exact referenced repair origin/attempt and its own run/context/dispatch.
+Missing optional legacy proof can retain existing bare recovery behavior but cannot
+publish stronger lineage. Fresh consent, current source/approval/working checks,
+Stop/reconciliation/cleanup and retry guards remain mandatory; no request replay,
+source restoration, running-process adoption or additional execution authority.
+
+Acceptance: actual supplied selected repairs for distinct tasks/subsets and repeated
+equal returns preserve the correct explicit origin through preparation, atomic
+startup, native cold reopen, later history growth and a fresh-consent retry. Include
+formatted original/admission raw sessions with different bytes/revisions; valid
+prefix extensions versus replaced tasks/approval/prefix/revision/cancellation;
+requested-only/observed/unknown model identity; unchanged selected inputs; matching
+complete proposal; wrong task/requirement/working/source/terminal/origin/context/
+run/dispatch/reference; malformed/duplicate/version/size/safe-integer bounds.
+Exercise real native separate stale adapters for origin/repair journal/session/
+working changes before preparation/admission, immutable-slot races and transaction
+failures: zero startup/host effects on refusal, no partial records, consumed repair
+budget unchanged. Cover optional missing/corrupt/foreign proof preserving other
+history/recovery, cancellation/disposal during awaited inspections, independent
+read-only reload/error/retry, initial/repair conflict rejection, narrow/high-text UI
+and a fresh separately labelled IAB fixture with zero reload effects. Require full
+format/analyze/Flutter/relevant web+isolated macOS compile/product/inventory checks,
+exact fresh PR review, both required CI jobs and verified protected merge. Supplied
+fixtures suffice for these boundaries; unavailable-platform acceptance stays#400.
+
+Investigation locally complete: three probes (including actual atomic startup and
+native durable-read refusal), focused44, product32/inventory9 and documentation diff
+checks pass. Exact publication/review/CI/verified merge follow separately. No repair companion,
+preparation guard, runtime/schema change or stronger historical proof is delivered
+by this contract alone. Only after its verified merge should the next implementation
+be claimed and started; preserve F23-last and the marketplace/deployment gates.
