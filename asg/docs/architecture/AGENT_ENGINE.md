@@ -1979,3 +1979,48 @@ prove zero writes and zero host/runner construction. Add narrow/high-text widget
 and labelled IAB production-screen checks. Existing report/criterion/manual/named/
 publication60 tests and named-runner/artifact/session/admission39 tests passed.
 This investigation changes no runtime code, record formats, verdicts or authority.
+
+
+### Exact published-task evidence review — 19 November 2026 implementation
+
+PublishedTaskEvidenceStore reads records through RecordStorage only. It resolves
+one supplied session/reference/run, validates the existing publication and
+completed checkpoint, and requires the current working raw fingerprint to equal
+that publication's published output. It revalidates current frozen session
+approval/task membership, derives RequirementRunIdentity from the retained run's
+source/input/approval values, and compares that identity and typed saved project
+with RequirementCheckReportStore's current report. Report.savedInputsCurrent must
+be true. A later working record cannot retarget the selected publication even
+when its source/input identity happens to match.
+
+The service snapshots relevant session/journal/checkpoint/publication/working,
+project/requirements/application/approval/conversation and named/manual observation
+records before loading, then compares exact bytes before returning. Reentrant
+changes cannot publish a mixed projection. It never writes or constructs a host,
+named-test runner, model provider or artifact inspector. A missing, foreign,
+corrupt, stale or changed selection returns a sanitized unavailable result and
+preserves independent historical publication. It does not guess another run.
+
+PublishedTaskEvidence contains only immutable display facts for the selected
+frozen task's requirement, not the entire report or private snapshot fingerprint.
+Authored criterion rules and direct named/manual/advisory facts remain distinct;
+there is no aggregate task-completion or dependency-readiness property. Empty
+criteria and mappings are visibly unverified. Replacing a named observation
+changes a newly loaded projection without mutating the previous display snapshot.
+
+AgentSessionScreen offers Review published task evidence for a valid publication.
+The dedicated controller/view owns a synchronous saved-record projection only,
+provides read-only reload/retry and clears stale data on failure. Disposed
+controllers cannot load or publish late results. Matching withdrawn session facts
+remain inspectable but grant no execution/manual-write/board-change controls.
+Current files are not inspected and prose semantics remain unverified.
+
+Regression coverage includes exact authored contracts, manual/advisory/unmapped
+facts, separate requirement scoping, read-only storage, independently altered
+identities, valid later working output, foreign publication, replaced/stale named
+results, reentrant changes, sanitized errors and disposal. The production route
+and stale/retry rendering pass at320px and2x text. The supplied browser fixture
+uses deterministic publication/named/manual observations, not actual SDK tests;
+IAB verified scope/reload/withdrawal/legacy behavior and zero effects. Production
+web and an isolated macOS app compile; no new native UI/process-crash/live-model
+acceptance is claimed by this read-only review increment.

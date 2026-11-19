@@ -12,6 +12,8 @@ import '../services/agent_session_store.dart';
 import '../services/plan_approval_store.dart';
 import '../services/requirements_store.dart';
 import 'base_controller.dart';
+import 'published_task_evidence_controller.dart';
+import '../services/published_task_evidence_store.dart';
 import 'saved_candidate_recovery_controller.dart';
 import '../services/candidate_reopen_context_store.dart';
 import '../services/generation_host.dart';
@@ -279,6 +281,29 @@ final class AgentSessionController extends BaseController {
       selectedSession: _selected!,
       runNumber: runNumber,
       createHost: createRecoveryHost,
+    );
+  }
+
+  bool canReviewPublishedTask(int runNumber) {
+    final value = _selected;
+    if (_busy || isDisposed || value == null) return false;
+    try {
+      return _runStatusStore
+              .load(value)
+              .singleWhere((status) => status.reference.runNumber == runNumber)
+              .publication !=
+          null;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  PublishedTaskEvidenceController? createPublishedTaskEvidence(int runNumber) {
+    if (!canReviewPublishedTask(runNumber)) return null;
+    return PublishedTaskEvidenceController(
+      PublishedTaskEvidenceStore(store.records, store.project),
+      _selected!,
+      runNumber,
     );
   }
 
