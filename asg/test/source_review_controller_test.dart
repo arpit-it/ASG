@@ -334,6 +334,20 @@ void main() {
           gate.complete();
         }
         await applied;
+        expect(
+          controller.retainedRepairCopyDirectory,
+          kind == 'after-copy' ? '/supplied/controller-copy-2' : isNull,
+        );
+        if (kind == 'after-copy') {
+          expect(
+            controller.candidate!.directory,
+            '/supplied/controller-copy-1',
+          );
+          expect(
+            controller.candidateSession!.result.directory,
+            '/supplied/controller-copy-1',
+          );
+        }
         final journal = CandidateVerificationStore(records, project.id).load();
         if (kind == 'success') {
           expect(controller.error, isNull);
