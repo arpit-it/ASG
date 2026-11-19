@@ -15096,3 +15096,7 @@ CE01 task-transition prerequisite investigation final findings, 19 November2026:
 Next eligible task: the typed per-task verification transition model scoped in REQUIREMENTS.md; wait for this investigation merge before claiming implementation.
 
 Task-transition investigation final validation:47 focused session/model/store/admission/binding/status/controller regressions passed on unchanged production source; product32/inventory9 passed. Evidence /tmp/asg-404-session-task-transitions-investigation-final-tests.log. Three documentation paths only; all required CI still mandatory on the exact PR revision. No native/model/browser acceptance is claimed for this documentation investigation.
+
+PR736 fresh review correction: first selected task is used only by saved-session navigation validation; SourceReviewController binds evidence.boardTaskId for actual source review, SourceCandidateController rechecks equality, and promotion reuses the retained run reference. Corrected the architecture table to avoid implying that navigation chooses the executable proposal task. This is documentation clarification, not a production defect or authority change. Revised-head focused review/checks and required CI remain gates.
+
+PR736 revised local validation:106 focused session plus source-review controller tests passed (/tmp/asg-404-session-task-transitions-investigation-revised-tests.log). Reviewed proposal evidence binding separately from navigation validation and preserved production semantics. Documentation-only revision; required CI must run for revised head.

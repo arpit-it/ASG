@@ -1403,7 +1403,8 @@ not implementation or acceptance of a persistent autonomous loop.
 | CandidateVerificationStore.start / checkpoint / _commit | Atomic candidate/journal/execution startup and later snapshots | A per-task transition timeline; session reference currently changes only at admission |
 | AgentSessionStore.requestCancellation | Durable session withdrawal, one revision increment, retained history | Child process termination, command exit or cleanup |
 | AgentSessionRunStatusStore | Read-only correlation of saved run/checkpoint facts, including unknown pending operations | Original admission proof or new execution authority |
-| AgentSessionController.selectForSourceReview | Current first selected task supplies explicit review context | Task scheduling or user selection of a next executable task |
+| AgentSessionController.selectForSourceReview | Uses the first selected task to validate navigation, then returns the whole selected session | Selection of the actual proposal task or task scheduling |
+| SourceReviewController source review | Binds the proposal evidence boardTaskId to session membership; candidate authorization compares that ID again | Completion of that task or scheduling a dependent task |
 
 Concrete missing datum: there is no typed per-task sequence explaining admitted
 verification, pending operation, actual observed operation result, interrupted
