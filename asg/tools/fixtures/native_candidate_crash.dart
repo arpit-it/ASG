@@ -1306,8 +1306,15 @@ Future<void> main() async {
             final release = File(
               path.join(candidate.path, 'build', 'release-session-$nonce'),
             );
-            await release.create(exclusive: true);
-            await release.writeAsString(nonce, flush: true);
+            // The running test must never observe an empty/partially written permit.
+            final stagedRelease = File('${release.path}.pending');
+            await stagedRelease.create(exclusive: true);
+            await stagedRelease.writeAsString(nonce, flush: true);
+            if (await FileSystemEntity.type(release.path, followLinks: false) !=
+                FileSystemEntityType.notFound) {
+              throw StateError('Unexpected active test release');
+            }
+            await stagedRelease.rename(release.path);
             step = await result.timeout(const Duration(seconds: 20));
             if (step == null ||
                 step.exitCode != 0 ||
