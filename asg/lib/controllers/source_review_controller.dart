@@ -4,6 +4,8 @@
 import 'dart:async';
 
 import '../models/approved_source_proposal.dart';
+import '../models/selected_repair_request.dart';
+import '../services/selected_repair_request_store.dart';
 import '../models/candidate_reopen_context.dart';
 import '../models/local_model_config.dart';
 import '../models/model_connection_preset.dart';
@@ -62,6 +64,7 @@ class SourceReviewController extends BaseController {
     ApprovedSourceProposer? proposer,
     SourceSnapshotReader? readSnapshot,
     SessionRequestHistoryReader? readRequestHistory,
+    SelectedRepairHistory Function(String)? readSelectedRepairHistory,
     SourceCandidatePreparer? prepareCandidate,
     FolderPicker? folderPicker,
     this.publishCandidate,
@@ -76,6 +79,9 @@ class SourceReviewController extends BaseController {
              project.id,
              sessionId,
            ).load().requests),
+       _readSelectedRepairHistory =
+           readSelectedRepairHistory ??
+           SelectedRepairRequestStore(records, project.id).load,
        _prepareCandidate = prepareCandidate ?? prepareSourceCandidate,
        _folderPicker = folderPicker ?? FolderPicker(),
        _createCandidateHost = createCandidateHost ?? createGenerationHost {
@@ -89,6 +95,7 @@ class SourceReviewController extends BaseController {
     refreshApproval();
     refreshPresets();
     refreshRequestHistory();
+    refreshSelectedRepairHistory();
   }
 
   AgentSession? _selectedSession;
@@ -468,6 +475,49 @@ class SourceReviewController extends BaseController {
     update();
   }
 
+  final SelectedRepairHistory Function(String) _readSelectedRepairHistory;
+  SelectedRepairHistory? _selectedRepairHistory;
+  SelectedRepairHistory? get selectedRepairHistory => _selectedRepairHistory;
+  String? _selectedRepairHistoryError;
+  String? get selectedRepairHistoryError => _selectedRepairHistoryError;
+  int _repairHistoryEpoch = 0;
+
+  /// Read-only reload remains independent of proposal success and execution.
+  void refreshSelectedRepairHistory() {
+    if (isDisposed) return;
+    final selected = selectedSession;
+    if (selected == null) return;
+    final epoch = ++_repairHistoryEpoch;
+    try {
+      final page = _readSelectedRepairHistory(selected.sessionId);
+      if (isDisposed ||
+          epoch != _repairHistoryEpoch ||
+          !identical(selected, selectedSession)) {
+        return;
+      }
+      if (page.entries.any(
+        (entry) =>
+            entry.origin != null &&
+            (entry.origin!.projectId != project.id ||
+                entry.origin!.requestSession.sessionId != selected.sessionId),
+      )) {
+        throw StateError('Repair history selection changed.');
+      }
+      _selectedRepairHistory = page;
+      _selectedRepairHistoryError = null;
+    } catch (_) {
+      if (isDisposed ||
+          epoch != _repairHistoryEpoch ||
+          !identical(selected, selectedSession)) {
+        return;
+      }
+      _selectedRepairHistoryError =
+          'Saved selected repair history could not be read. Reload to retry. '
+          'Last observed history and working output are retained.';
+    }
+    update();
+  }
+
   List<RepairAttempt> get repairHistory {
     try {
       return RepairAttemptStore(records, project.id).load().attempts;
@@ -828,6 +878,7 @@ class SourceReviewController extends BaseController {
     } finally {
       _busy = false;
       refreshRequestHistory();
+      refreshSelectedRepairHistory();
       if (_cancelled) _status = 'Review cancelled. No files changed.';
       update();
     }

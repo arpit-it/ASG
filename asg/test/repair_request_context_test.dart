@@ -9,6 +9,7 @@ import 'package:asg/models/agent_session_binding.dart';
 import 'package:asg/models/candidate_verification_run.dart';
 import 'package:asg/models/local_model_config.dart';
 import 'package:asg/models/repair_attempt.dart';
+import 'package:asg/models/selected_repair_request.dart';
 import 'package:asg/models/source_generation.dart';
 import 'package:asg/services/agent_session_store.dart';
 import 'package:asg/services/approved_source_proposer.dart';
@@ -16,6 +17,7 @@ import 'package:asg/services/conversation_store.dart';
 import 'package:asg/services/model_provider.dart';
 import 'package:asg/services/plan_approval_store.dart';
 import 'package:asg/services/repair_attempt_store.dart';
+import 'package:asg/services/selected_repair_request_store.dart';
 import 'package:asg/services/source_edit_proposer.dart';
 import 'package:asg/services/studio_database.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -88,12 +90,145 @@ void main() {
     final evidence = await pending;
     expect(evidence.repairRun, isNotNull);
     expect(evidence.initialRequestOrigin, isNull);
+    expect(evidence.repairRequestReference, isNotNull);
+    final savedOrigin = SelectedRepairRequest.decode(
+      f.records.getString('${SelectedRepairRequest.prefix}${project.id}.1')!,
+    );
+    expect(savedOrigin.workingSha256, isNull);
+    evidence.repairRequestReference!.requireMatch(
+      savedOrigin,
+      RepairAttemptStore(f.records, project.id).load().attempts.single,
+    );
     expect(f.records.getString(workingKey), isNull);
     expect(
       RepairAttemptStore(f.records, project.id).load().attempts.single.status,
       RepairAttemptStatus.proposed,
     );
   });
+  for (final requestedTask in ['Tanalyze', 'Ttest']) {
+    for (final includeExtra in [false, true]) {
+      test(
+        'native selected repair $requestedTask extra=$includeExtra survives close and reopen',
+        () async {
+          final f = await reopenFixture();
+          final failed = GeneratedProject.fromJson({
+            ...f.basis.sourceBase
+                .copy(
+                  phase: SourceGenerationPhase.failed,
+                  checkpointVersion: 1,
+                  steps: boundFailure(f.records).steps,
+                  outputs: {},
+                )
+                .toJson(),
+            'directory': '/supplied-failed-candidate',
+            'sources': {
+              ...f.basis.sourceBase.sources,
+              'lib/extra.dart': SelectedRepairRequest.fingerprint(
+                'const extra = 1;',
+              ),
+            },
+          });
+          await saveFailure(f.records, failed);
+          final workingKey = 'studio.generation.v1.${project.id}';
+          final root = await Directory.systemTemp.createTemp(
+            'asg-repair-origin-',
+          );
+          SharedPreferences.setMockInitialValues({});
+          final prefs = await SharedPreferences.getInstance();
+          var db = await databaseFactoryIo.openDatabase(
+            '${root.path}/records.db',
+          );
+          try {
+            final records = await StudioDatabase.migrate(db, prefs);
+            for (final entry in f.records.values.entries) {
+              await records.setString(entry.key, entry.value);
+            }
+            final originalWorking = records.getString(workingKey);
+            final originalSession = records.getString(f.session.storageKey);
+            final provider = SuppliedRepairContextProvider();
+            final service = ApprovedSourceProposer(
+              records,
+              proposer: SourceEditProposer(createProvider: (_) => provider),
+            );
+            final pending = service.propose(
+              project: project,
+              boardTaskId: requestedTask,
+              config: const LocalModelConfig(model: 'supplied-repair-model'),
+              originals: {
+                'lib/main.dart': reopenBefore,
+                if (includeExtra) 'lib/extra.dart': 'const extra = 1;',
+              },
+              repairCandidate: failed,
+              repairSessionBinding: AgentSessionBinding.select(
+                session: f.session,
+                projectId: project.id,
+                boardTaskId: requestedTask,
+              ),
+            );
+            await provider.entered.future;
+            provider.stream.add(suppliedRepairResponse());
+            unawaited(provider.stream.close());
+            final evidence = await pending;
+            expect(evidence.repairRun, isNotNull);
+            expect(evidence.initialRequestOrigin, isNull);
+            final reference = evidence.repairRequestReference!;
+            final key = '${SelectedRepairRequest.prefix}${project.id}.1';
+            final rawOrigin = records.getString(key)!;
+            await db.close();
+            db = await databaseFactoryIo.openDatabase(
+              '${root.path}/records.db',
+            );
+            final reopened = await StudioDatabase.migrate(db, prefs);
+            expect(reopened.getString(key), rawOrigin);
+            final origin = SelectedRepairRequest.decode(rawOrigin);
+            reference.requireMatch(
+              origin,
+              RepairAttemptStore(reopened, project.id).load().attempts.single,
+            );
+            expect(origin.boardTaskId, requestedTask);
+            expect(origin.sourceSha256.keys.toSet(), {
+              'lib/main.dart',
+              if (includeExtra) 'lib/extra.dart',
+            });
+            expect(origin.modelRequest.model, 'supplied-repair-model');
+            expect(origin.requestSessionRecord, originalSession);
+            expect(reopened.getString(workingKey), originalWorking);
+            expect(reopened.getString(f.session.storageKey), originalSession);
+            // Optional corrupted bytes remain isolated on a fresh native reopen.
+            await StoreRef<String, String>('records')
+                .record(key)
+                .put(db, 'private unreadable origin bytes');
+            await db.close();
+            db = await databaseFactoryIo.openDatabase(
+              '${root.path}/records.db',
+            );
+            final damaged = await StudioDatabase.migrate(db, prefs);
+            expect(() => damaged.getString(key), throwsFormatException);
+            final bare = SelectedRepairRequestStore(
+              damaged,
+              project.id,
+            ).load(f.session.sessionId).entries.single;
+            expect(bare.origin, isNull);
+            expect(bare.reference, isNull);
+            expect(bare.attempt.status, RepairAttemptStatus.proposed);
+            expect(damaged.getString(workingKey), originalWorking);
+            expect(damaged.getString(f.session.storageKey), originalSession);
+
+            expect(
+              RepairAttemptStore(
+                reopened,
+                project.id,
+              ).load().attempts.single.status,
+              RepairAttemptStatus.proposed,
+            );
+          } finally {
+            await db.close();
+            await root.delete(recursive: true);
+          }
+        },
+      );
+    }
+  }
   for (final changed in [
     'approval',
     'failure',

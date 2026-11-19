@@ -3028,3 +3028,33 @@ separately. No new origin schema, returned reference or stronger repair lineage 
 implemented by this docs-only change. Umbrella404/CE01 remain open; only this single
 provenance prerequisite becomes implementation-eligible after the investigation's
 verified merge. No independent second task is ready.
+
+
+CE01 selected repair provenance implementation foundation checkpoint:
+Added pure SelectedRepairRequest and SelectedRepairRequestReference models, not yet
+connected to production persistence or UI. They enforce canonical strict shapes,
+duplicate/version/UTF-8 and JSON-safe integer bounds, sorted immutable selected
+hashes, original raw session membership/approval and requested-only model settings.
+Joint attempt validation checks exact reserved reconstruction, failed-run digest,
+model, mapped task and ALL selected input hashes; returned references bind terminal
+entry plus exact origin digest and reject reserved/local failure/cancellation.
+Constructing these DTOs is not authority or proof that a commit happened. The store
+will produce them only after the atomic successful outcome in the remaining work.
+
+Focused19 tests pass (6 new model/adverse/privacy cases,12 existing native context
+guards and architecture checks); clean Flutter analysis and formatting. New fixtures
+exercise actual existing reservation/outcome stores with supplied pure data but
+explicitly confirm no origin record is persisted yet. Tests cover formatted raw
+session identity, requested/response version separation, valid-task retargeting
+refusal via origin hash, unchanged selected-input proof, malformed/duplicate/size/
+integer data and sanitized JSON errors without retained private bytes. Logs:
+/tmp/asg-selected-repair-model-{test2,analyze2,format2}.log. No live inference, model/
+SDK effects, source restoration or execution authority.
+
+Next: typed atomic origin reservation/proposed-return integration, native persistence/
+stale/corruption cases and independent read-only history/controller/UI/IAB. Full
+local regression/builds, exact review/required CI/verified merge remain pending.
+Keep404-selected-repair-provenance claimed and resume this owned implementation
+first. No new provenance feature is published or marked Done at this checkpoint.
+
+Selected repair provenance is now implemented locally under #404: typed capture, atomic absent-origin reservation and exact-origin proposed-return CAS, optional returned reference, consistent bounded historical projection and independent controller/view. Existing strict candidate formats and legacy/unbound behavior are unchanged. Local acceptance is recorded in REQUIREMENTS.md; publication, fresh review, required CI and verified merge remain pending. Historical references are observations and grant no source restoration, acceptance or execution authority.

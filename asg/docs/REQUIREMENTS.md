@@ -17405,3 +17405,166 @@ separately. No new origin schema, returned reference or stronger repair lineage 
 implemented by this docs-only change. Umbrella404/CE01 remain open; only this single
 provenance prerequisite becomes implementation-eligible after the investigation's
 verified merge. No independent second task is ready.
+
+
+19 November2026 — PR760 verified merged c89a108d570b3a49be937e660509c01910ffa86b,
+exacttree3ac17854353fa05865e98d89667118d771e9323c matches3 tested docs. Fresh
+review45fcb41a/basea8ddcdef found no blockers; requiredCI44612875036 both jobs/all
+mandatory steps SUCCESS, threads empty. Plugin PR/main/fetchedorigin/tree and
+issue404OPEN verified. Probes3/focused93/product32/inventory9 pass. Investigation
+only; no runtime/schema/model/SDK/platform behavior changed. Coordinator merged/
+outcome_verified recorded before integration/writer release. Owner dirty edits/
+processes preserved. Immediately claimed404-selected-repair-provenance from main.
+
+CE01 selected repair-request provenance implementation started under #404. Follow
+the verified PR760 bounded origin/reference/history contract: strict metadata-only
+2MiB origin with exact256KiB raw selected session and all captured input hashes;
+explicit1KiB returned reference, safe project-global sequence, reserved/terminal
+binding with explicit requested-only model reconstruction. Atomic reserve/return
+read-set, immutable absent-key admission and write-once uncertainty remain mandatory.
+Preserve old formats, bare legacy/unbound unknown provenance, budgets, current
+source/approval/Stop/recovery and last working output. Independent read-only history
+is not a restored proposal or execution grant. Begin pure strict models and adverse
+fixtures, then transactional integration and UI. Full checks/builds/IAB/fresh review/
+requiredCI/verifiedmerge remain gates; no repair-candidate companion in this scope.
+No independent second task is ready; umbrella404/CE01 stay open.
+
+
+CE01 selected repair provenance implementation foundation checkpoint:
+Added pure SelectedRepairRequest and SelectedRepairRequestReference models, not yet
+connected to production persistence or UI. They enforce canonical strict shapes,
+duplicate/version/UTF-8 and JSON-safe integer bounds, sorted immutable selected
+hashes, original raw session membership/approval and requested-only model settings.
+Joint attempt validation checks exact reserved reconstruction, failed-run digest,
+model, mapped task and ALL selected input hashes; returned references bind terminal
+entry plus exact origin digest and reject reserved/local failure/cancellation.
+Constructing these DTOs is not authority or proof that a commit happened. The store
+will produce them only after the atomic successful outcome in the remaining work.
+
+Focused19 tests pass (6 new model/adverse/privacy cases,12 existing native context
+guards and architecture checks); clean Flutter analysis and formatting. New fixtures
+exercise actual existing reservation/outcome stores with supplied pure data but
+explicitly confirm no origin record is persisted yet. Tests cover formatted raw
+session identity, requested/response version separation, valid-task retargeting
+refusal via origin hash, unchanged selected-input proof, malformed/duplicate/size/
+integer data and sanitized JSON errors without retained private bytes. Logs:
+/tmp/asg-selected-repair-model-{test2,analyze2,format2}.log. No live inference, model/
+SDK effects, source restoration or execution authority.
+
+Next: typed atomic origin reservation/proposed-return integration, native persistence/
+stale/corruption cases and independent read-only history/controller/UI/IAB. Full
+local regression/builds, exact review/required CI/verified merge remain pending.
+Keep404-selected-repair-provenance claimed and resume this owned implementation
+first. No new provenance feature is published or marked Done at this checkpoint.
+
+### Selected-repair provenance: atomic storage checkpoint (19 November 2026)
+
+Owned #404 / CE01 track 404-selected-repair-provenance continues, unmerged.
+Added typed selected-input capture against the fixed repair context. The actual
+reservation ordinal/time now determine the immutable origin; origin and budget
+reservation commit together under an absent-slot comparison. Proposed returns
+compare the exact origin bytes alongside the existing context/journal read set,
+and expose a reference only after successful persistence. Local non-proposed
+outcomes retain the existing journal-only behavior. Registered strict optional
+origin decoding in StudioDatabase, including key identity and isolated corruption.
+Legacy journal formats and unbound callers remain unchanged.
+
+Focused33 checks pass: four new atomic cases (successful reserve/return, occupied
+origin, changed origin, mismatched selected input), six pure model cases and
+existing repair-budget/native-context/architecture regressions. A first test run
+correctly exposed missing database record registration; added registration and
+reran the focused suite successfully. Flutter analysis is clean. Evidence:
+/tmp/asg-selected-repair-atomic-test2.log and
+/tmp/asg-selected-repair-atomic-analyze2.log. Supplied fixtures only; no live model,
+SDK command execution, app replacement or source restoration.
+
+Next owned work: connect capture/reference to the actual selected repair proposer,
+add native reopen/storage-failure/corruption coverage, then independent bounded
+read-only history and UI. Full regression/platform builds, fresh PR review,
+required CI and verified merge remain pending. Claim remains active; no Done mark.
+
+### Selected-repair provenance: proposer and history checkpoint (19 November 2026)
+
+Continued owned #404 / CE01 track 404-selected-repair-provenance against unchanged
+remote main c89a108d570b3a49be937e660509c01910ffa86b, issue404 open, no open PRs.
+Actual selected repair proposals now validate selected inputs before transport,
+atomically capture their origin through the existing fixed context, and return a
+reference only after the proposed outcome commits. The reference is optional review
+evidence; strict old candidate basis/context formats and unbound behavior remain.
+Native successful close/reopen retains exact origin/session/working bytes and a
+jointly valid proposed reference; explicit absent working output remains absent.
+Existing native stale-context and unresolved outcome regressions pass with this
+integration active. No source restoration, execution or acceptance authority added.
+
+Added a consistent-read bounded historical projection (newest32 project attempts,
+explicit older-project omission count). Valid other-session origins are excluded;
+missing/corrupt optional origins retain bare attempt facts without inferred intent.
+Historical reads work after current session/working removal. Added independent
+controller error/retry, retained-observation, nested reload and disposal handling,
+and a focused read-only view with truthful unresolved/proposed limits. Narrow320px
+and2xtext rendering/reload test passes without overflow. Reload has no replay or
+source/tool action. Two analysis brace findings were fixed; a new native test setup
+syntax error was corrected before the passing rerun.
+
+Focused93 tests pass, including native persistence/stale races, storage/model cases,
+new history lifecycle and UI plus existing source-review regressions. Clean analysis
+and diff check. Logs:/tmp/asg-selected-repair-ui-test2.log,
+/tmp/asg-selected-repair-ui-analyze2.log; proposer/native36 earlier focused checks
+/tmp/asg-selected-repair-proposer-test3.log. These are supplied-provider fixtures,
+not live inference or SDK execution. Owner-started processes are unchanged.
+
+Remaining acceptance: distinct requested task/captured-scope native matrix, optional
+native corruption/metadata write failures/immutable-slot race and omission-limit
+coverage; fresh separately labelled IAB fixture; full regression/build/product/
+inventory, exact PR review/required CI and verified merge. Resume this active claim;
+no new independent task is eligible and no Done mark or publication is claimed.
+
+### Selected-repair provenance: local acceptance checkpoint (19 November 2026)
+
+Continued owned #404 / CE01 on unchanged main c89a108d570b3a49be937e660509c01910ffa86b;
+plugin issue404 stays open, no open PR, one active writer and no integration lock.
+Added failed reservation/return write and immutable-slot race coverage: metadata and
+budget are never partially reserved, unresolved returns remain reserved/consumed,
+and a later local fallback cannot rewrite them. Added a valid35-attempt historical
+journal spanning distinct approvals: reader displays newest32 with explicit3 older
+project attempts omitted, leaves all35 saved entries and their budgets unchanged.
+
+Expanded actual native successful proposal/close/reopen to four task/scope cases:
+Tanalyze/Ttest each with main-only or also unchanged lib/extra.dart. Exact origin,
+requested task/all selected hashes, raw session/working and returned reference
+survive. Fresh native reopen after optional metadata corruption preserves bare
+proposed journal/budget, session and working records; stronger origin is unavailable.
+All16 native cases and8 storage/omission cases pass separately. Supplied providers
+only; no live inference, source restoration, model download or SDK command execution.
+
+Added separately labelled ASG_SELECTED_REPAIR_FIXTURE in the existing fixture entry.
+Three atomic supplied observations use requested task Tresolve versus failed analyze,
+requested supplied-repair-history-model and observed supplied-repair-history-response.
+Initial fixture startup skipped prerequisite resolve and was correctly refused by
+existing verification-order validation. Corrected supplied prerequisite history,
+added permanent zero-effects startup regression, retested and rebuilt before IAB.
+This was fixture setup, not weakened validation or product authority. First tool
+suite invocation used the wrong Python import directory; corrected and reran. The
+inventory regeneration check initially identified expected source drift; regenerated
+canonical inventory without promoting historical acceptance.
+
+Fresh IAB9139 confirmed production selected repair history with task/requirement,
+selected path/hash, requested/observed models and reserved/cancelled/proposed limits.
+Reload and return leave all counters0 (writes/captures/providers/inspections/tools)
+and records unchanged true. Built JS SHA256
+ d839940148e78a2ee9caed186cc678b0f67a0d66ccf0536f24d29ff1599e97d4.
+Observation:/tmp/asg-selected-repair-iab-observation.json. Browser work completed;
+owned temporary HTTP fixture session74830 remains available. No owner process stopped.
+
+Final local validation: fullFlutter2121 pass/11 existing explicit skips; clean Flutter
+and fixture analysis, format544 files0changes, production web and isolated macOSdebug
+compile (not launched/installed), fixtureweb/Wasm dry-run, product32+inventory9 PASS.
+Logs:/tmp/asg-selected-repair-full2.log, -analyze3.log, -fixture-analyze2.log,
+-format2.log, -web.log, -macos.log, -fixture-build2.log,
+-product-inventory3.log (all same /tmp/asg-selected-repair prefix).
+Primary owner checkout retains its3IDE and3canonical doc edits; untouched.
+
+Next: fresh exact complete diff/acceptance review, serialized plugin publication,
+required CI and verified merge; then record outcome/release and immediately select
+the next eligible prerequisite under #404. This feature remains unmerged and its
+claim active; fullCE01/umbrella404 and unavailable-platform400 acceptance stay open.

@@ -6,6 +6,7 @@ import 'dart:convert';
 
 import 'package:asg/controllers/source_review_controller.dart';
 import 'package:asg/models/session_proposal_request.dart';
+import 'package:asg/models/selected_repair_request.dart';
 import 'package:asg/services/session_proposal_request_store.dart';
 import 'package:asg/services/agent_session_store.dart';
 import 'package:crypto/crypto.dart';
@@ -2143,6 +2144,69 @@ void main() {
         action = true;
         controller.refreshRequestHistory();
         expect(controller.requestHistoryError, isNull, reason: kind);
+        expect(updates, kind == 'dispose' ? 0 : 1, reason: kind);
+      }
+    },
+  );
+  test('selected repair history errors retain observations and retry without effects', () async {
+    controller.dispose();
+    final context = await initialContext(records);
+    var failRead = false;
+    final page = SelectedRepairHistory([], omittedProjectAttempts: 7);
+    controller = SourceReviewController(
+      project: project,
+      generated: SourceGenerationStore(records).load(project.id)!,
+      records: records,
+      selectedSession: context.binding.session,
+      readSelectedRepairHistory: (_) {
+        if (failRead) throw StateError('private retained error');
+        return page;
+      },
+    );
+    final before = Map<String, String>.of(records.values);
+    expect(controller.selectedRepairHistory, same(page));
+    failRead = true;
+    controller.refreshSelectedRepairHistory();
+    expect(controller.selectedRepairHistory, same(page));
+    expect(controller.selectedRepairHistoryError, isNot(contains('private')));
+    expect(controller.selectedRepairHistoryError, isNotNull);
+    failRead = false;
+    controller.refreshSelectedRepairHistory();
+    expect(controller.selectedRepairHistoryError, isNull);
+    expect(controller.proposal, isNull);
+    expect(records.values, before);
+  });
+  test(
+    'selected repair history disposal and nested reload suppress late errors',
+    () async {
+      for (final kind in ['dispose', 'nested']) {
+        if (!controller.isDisposed) controller.dispose();
+        records = PrivateFailureRecords();
+        final context = await initialContext(records);
+        var action = false;
+        controller = SourceReviewController(
+          project: project,
+          generated: SourceGenerationStore(records).load(project.id)!,
+          records: records,
+          selectedSession: context.binding.session,
+          readSelectedRepairHistory: (_) {
+            if (action) {
+              action = false;
+              if (kind == 'dispose') {
+                controller.dispose();
+              } else {
+                controller.refreshSelectedRepairHistory();
+              }
+              throw StateError('private late repair history');
+            }
+            return SelectedRepairHistory([], omittedProjectAttempts: 0);
+          },
+        );
+        var updates = 0;
+        controller.addListener(() => updates++);
+        action = true;
+        controller.refreshSelectedRepairHistory();
+        expect(controller.selectedRepairHistoryError, isNull, reason: kind);
         expect(updates, kind == 'dispose' ? 0 : 1, reason: kind);
       }
     },

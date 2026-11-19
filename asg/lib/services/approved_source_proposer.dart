@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MPL-2.0
 // Copyright 2026 Arpit Sinha
 
+import 'selected_repair_request_store.dart';
+
 import 'dart:convert';
 
 import '../models/agent_session_binding.dart';
@@ -143,7 +145,7 @@ class ApprovedSourceProposer {
       if (repairRun != null) 'failedCheck': repairDiagnostics(repairRun),
     });
     final snapshot = Map<String, String>.unmodifiable(originals);
-    if (sessionBinding != null) {
+    if (sessionBinding != null || repairSessionBinding != null) {
       SourceEditProposer.validateInput(instruction, snapshot);
     }
     final initial = sessionBinding == null
@@ -203,17 +205,25 @@ class ApprovedSourceProposer {
         );
       }
       if (repairRun != null) {
+        final context = RepairRequestContext.capture(
+          records: records,
+          project: project,
+          failure: repairRun,
+          sessionBinding: repairSessionBinding,
+          workingRecord: repairWorkingRecord,
+        );
         await attempts!.reserve(
           repairRun,
           authorizeRequest,
           modelRequest: modelRequest,
-          context: RepairRequestContext.capture(
-            records: records,
-            project: project,
-            failure: repairRun,
-            sessionBinding: repairSessionBinding,
-            workingRecord: repairWorkingRecord,
-          ),
+          context: context,
+          selectedRequest: repairSessionBinding == null
+              ? null
+              : SelectedRepairRequestCapture(
+                  context: context,
+                  originals: snapshot,
+                  modelRequest: modelRequest,
+                ),
         );
       }
       authorizeRequest();
@@ -248,7 +258,21 @@ class ApprovedSourceProposer {
       if (_cancelled) throw StateError('Source proposal cancelled.');
       if (initial != null) authorizeRequest();
       requireCurrent(project, evidence);
-      if (initial == null) return evidence;
+      if (initial == null) {
+        final reference = attempts?.returnedReference;
+        if (repairSessionBinding != null && reference == null) {
+          throw StateError('Selected repair return was not persisted.');
+        }
+        return ApprovedSourceProposal(
+          projectId: evidence.projectId,
+          boardTaskId: evidence.boardTaskId,
+          approval: evidence.approval,
+          proposal: evidence.proposal,
+          modelRequest: evidence.modelRequest,
+          repairRun: evidence.repairRun,
+          repairRequestReference: reference,
+        );
+      }
       final origin = initial.returnedOrigin;
       if (origin == null) {
         throw StateError('Initial return origin was not persisted.');

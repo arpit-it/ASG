@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MPL-2.0
 // Copyright 2026 Arpit Sinha
 
+import 'selected_repair_request_view.dart';
+
 import 'package:flutter/material.dart';
 
 import '../controllers/source_review_controller.dart';
@@ -220,6 +222,12 @@ class _SourceReviewScreenState extends State<SourceReviewScreen>
               requests: controller.requestHistory,
               error: controller.requestHistoryError,
               onReload: controller.refreshRequestHistory,
+            ),
+            SelectedRepairRequestView(
+              sessionId: controller.selectedSession?.sessionId,
+              history: controller.selectedRepairHistory,
+              error: controller.selectedRepairHistoryError,
+              onReload: controller.refreshSelectedRepairHistory,
             ),
             RepairHistoryView(
               attempts: controller.repairHistory,

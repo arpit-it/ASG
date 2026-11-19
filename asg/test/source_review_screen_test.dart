@@ -7,8 +7,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'session_proposal_request_test.dart' show requestMetadata;
+import '../tools/fixtures/candidate_reopen.dart' show selectedRepairFixtureHome;
 
 void main() {
+  testWidgets('selected repair browser fixture initializes with zero effects', (
+    tester,
+  ) async {
+    final home = await selectedRepairFixtureHome();
+    await tester.pumpWidget(MaterialApp(home: home));
+    await tester.pumpAndSettle();
+    expect(find.text('Selected repair provenance UI fixture'), findsOneWidget);
+    expect(find.text('Records unchanged: true'), findsOneWidget);
+    expect(find.textContaining('Writes after setup: 0'), findsOneWidget);
+    expect(find.textContaining('Providers: 0'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
   testWidgets(
     'narrow two-times-text history distinguishes all outcomes and has no replay action',
     (tester) async {
