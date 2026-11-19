@@ -152,6 +152,80 @@ class CandidateCrashTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 fixture.read_session_proof(proof, self.nonce, launch, session_cancel=True)
 
+    def test_unknown_cancellation_retains_prefix_and_refuses_invented_test_exit(self):
+        mode = dict(session_bound=True, session_cancel=True,
+                    session_cancel_active=True, session_cancel_unknown=True)
+        for launch in (1, 2):
+            proof = self.session_proof(launch)
+            proof.update(revision=2, cancellationRequested=True, receiptSha256='f' * 64,
+                activeBoundarySha256='a' * 64, publicationFaultSha256='b' * 64,
+                testResultPresent=False, commandEntries=3 if launch == 1 else 0)
+            fields = dict(sessionBound=True, sessionCancel=True, sessionCancelActive=True,
+                sessionCancelUnknown=True, stopRequested=True, sessionProof=proof,
+                completedOperations=fixture.OPERATIONS[:2], receiptOperations=fixture.OPERATIONS[:2],
+                runFinished=False, candidatePhase='failed', pendingOperation='test',
+                failedOperation='test', executionPhase='executing', retainedExit=None,
+                actualTestExit=None, activeBeforeExit=True, runningMarker=True,
+                stopSignalled=False, promotionAllowed=False, candidateStopPresent=False,
+                noLaterCommands=True, workingUnchanged=True, sourcesUnchanged=True,
+                cancellationUnchanged=True, viewRendered=True, privateFaultObserved=True,
+                cleanup='unknown', acknowledgementPresent=False)
+            self.report(launch, operation='test', **fields)
+            fixture.read_report(self.root, launch, self.nonce, operation='test', stop=True, **mode)
+            for key, value in [('actualTestExit', 0), ('actualTestExit', 73),
+                               ('retainedExit', 0), ('privateFaultObserved', False),
+                               ('cleanup', 'complete'), ('acknowledgementPresent', True),
+                               ('runFinished', True), ('pendingOperation', ''),
+                               ('failedOperation', ''), ('executionPhase', 'verifying'),
+                               ('completedOperations', fixture.OPERATIONS[:3]),
+                               ('receiptOperations', fixture.OPERATIONS[:3])]:
+                self.report(launch, operation='test', **dict(fields, **{key: value}))
+                with self.subTest(launch=launch, key=key), self.assertRaises(ValueError):
+                    fixture.read_report(self.root, launch, self.nonce, operation='test', stop=True, **mode)
+            for key in ('actualTestExit', 'retainedExit', 'acknowledgementPresent'):
+                missing = dict(fields)
+                del missing[key]
+                self.report(launch, operation='test', **missing)
+                with self.subTest(missing=key), self.assertRaises(ValueError):
+                    fixture.read_report(self.root, launch, self.nonce, operation='test', stop=True, **mode)
+            for key, value in [('testResultPresent', True), ('testResultPresent', 0),
+                               ('publicationFaultSha256', None), ('commandEntries', 1)]:
+                with self.subTest(proof=key), self.assertRaises(ValueError):
+                    fixture.read_session_proof(dict(proof, **{key: value}), self.nonce, launch,
+                        session_cancel=True, session_cancel_active=True, session_cancel_unknown=True)
+
+    def test_unknown_cancellation_incomplete_modes_launch_nothing(self):
+        for mode in [dict(session_cancel_unknown=True),
+                     dict(session_cancel_unknown=True, session_cancel=True),
+                     dict(session_cancel_unknown=True, session_cancel_active=True),
+                     dict(session_cancel_unknown=1),
+                     dict(session_cancel_unknown=True, session_cancel_active=True,
+                          session_cancel=True, session_bound=True, operation='test', stop=True,
+                          uncertain=True)]:
+            with self.subTest(mode=mode), mock.patch.object(fixture, 'inspect_bundle') as probe, \
+                    mock.patch.object(fixture.subprocess, 'Popen') as launch:
+                with self.assertRaises(ValueError):
+                    fixture.observe(self.root, self.root, **mode)
+                probe.assert_not_called()
+                launch.assert_not_called()
+
+    def test_active_completed_mode_cannot_relabel_unknown_test_result(self):
+        proof = self.session_proof(1)
+        proof.update(revision=2, cancellationRequested=True, receiptSha256='f' * 64,
+            activeBoundarySha256='a' * 64, commandEntries=3)
+        self.report(1, operation='test', sessionBound=True, sessionCancel=True,
+            sessionCancelActive=True, stopRequested=True, sessionProof=proof,
+            completedOperations=fixture.OPERATIONS[:3], receiptOperations=fixture.OPERATIONS[:2],
+            runFinished=False, candidatePhase='failed', pendingOperation='test',
+            executionPhase='executing', retainedExit=None, actualTestExit=None,
+            activeBeforeExit=True, runningMarker=True, stopSignalled=False,
+            promotionAllowed=False, candidateStopPresent=False, noLaterCommands=True,
+            workingUnchanged=True, sourcesUnchanged=True, cancellationUnchanged=True,
+            viewRendered=True)
+        with self.assertRaises(ValueError):
+            fixture.read_report(self.root, 1, self.nonce, operation='test', stop=True,
+                session_bound=True, session_cancel=True, session_cancel_active=True)
+
     def test_active_cancel_incomplete_or_conflicting_modes_launch_nothing(self):
         for mode in [dict(session_cancel_active=True),
                      dict(session_cancel_active=True, session_cancel=True),
@@ -311,8 +385,8 @@ class CandidateCrashTests(unittest.TestCase):
                         running=True, acknowledge=True, retry=True, promote=True, promotion_crash=crash, session_bound=True)
 
     def report(self, launch, operation='resolve', **changes):
-        value = {'version': 15, 'launch': launch, 'nonce': self.nonce, 'dispatch': f'candidate-restart-{self.nonce}-1:3'}
-        value.update(sessionBound=False, admissionCrash=False, sessionCancel=False, sessionCancelActive=False, sessionProof=None, sessionRetryProof=None, beforeActionSha256=None, promotionCrash=False, promote=False, retry=False, acknowledge=False, uncertain=False, publicationFault=False, intentUnchanged=True, running=False, runningMarker=False, runningCancelled=False, precommit=False, stopSignalled=False, stopSaveBlocked=False, savedStopPresent=False, stopRequested=False, stopUnchanged=True, operation=operation, completedOperations=fixture.OPERATIONS[:fixture.OPERATIONS.index(operation)])
+        value = {'version': 16, 'launch': launch, 'nonce': self.nonce, 'dispatch': f'candidate-restart-{self.nonce}-1:3'}
+        value.update(sessionBound=False, admissionCrash=False, sessionCancel=False, sessionCancelActive=False, sessionCancelUnknown=False, sessionProof=None, sessionRetryProof=None, beforeActionSha256=None, promotionCrash=False, promote=False, retry=False, acknowledge=False, uncertain=False, publicationFault=False, intentUnchanged=True, running=False, runningMarker=False, runningCancelled=False, precommit=False, stopSignalled=False, stopSaveBlocked=False, savedStopPresent=False, stopRequested=False, stopUnchanged=True, operation=operation, completedOperations=fixture.OPERATIONS[:fixture.OPERATIONS.index(operation)])
         if launch == 1:
             value['readyForCrash'] = True
         else:
@@ -544,7 +618,7 @@ class CandidateCrashTests(unittest.TestCase):
             fixture.read_report(self.root, 2, self.nonce, operation='test', stop=True, session_bound=True)
 
     def test_protocol10_cannot_be_relabelled_as_session_evidence(self):
-        for version in (10, 11, 12, 13, 14):
+        for version in (10, 11, 12, 13, 14, 15):
             self.report(1, version=version)
             with self.subTest(version=version), self.assertRaises(ValueError):
                 fixture.read_report(self.root, 1, self.nonce)

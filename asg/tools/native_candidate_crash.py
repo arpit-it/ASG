@@ -18,7 +18,7 @@ from native_restart_probe import inspect_bundle
 OPERATIONS = ['resolve', 'analyze', 'test', 'build']
 
 
-def read_session_proof(value, nonce, launch, admission_crash=False, session_cancel=False, session_cancel_active=False):
+def read_session_proof(value, nonce, launch, admission_crash=False, session_cancel=False, session_cancel_active=False, session_cancel_unknown=False):
     """Validate fixed session evidence; this never authorizes or launches work."""
     keys = {'sessionId', 'projectId', 'revision', 'dispatchId', 'dispatchCount',
             'sessionSha256', 'journalSha256', 'candidateSha256', 'executionSha256',
@@ -27,11 +27,14 @@ def read_session_proof(value, nonce, launch, admission_crash=False, session_canc
         keys |= {'cancellationRequested', 'receiptSha256'}
     if session_cancel_active:
         keys.add('activeBoundarySha256')
+    if session_cancel_unknown:
+        keys |= {'publicationFaultSha256', 'testResultPresent'}
     if (not isinstance(value, dict) or set(value) != keys or
             not isinstance(nonce, str) or re.fullmatch(r'[a-f0-9]{32}', nonce) is None or
             type(launch) is not int or launch not in (1, 2) or
             type(admission_crash) is not bool or type(session_cancel) is not bool or
             type(session_cancel_active) is not bool or (session_cancel_active and not session_cancel) or
+            type(session_cancel_unknown) is not bool or (session_cancel_unknown and not session_cancel_active) or
             (session_cancel and admission_crash) or
             value.get('sessionId') != f'session-{nonce}' or
             value.get('projectId') != f'restart-{nonce}'):
@@ -44,9 +47,11 @@ def read_session_proof(value, nonce, launch, admission_crash=False, session_canc
             for key, count in expected_counts.items()) or
             value.get('dispatchId') != (f'candidate-restart-{nonce}-1:3' if admitted else None)):
         raise ValueError('Session admission or no-replay evidence mismatch')
+    if session_cancel_unknown and value.get('testResultPresent') is not False:
+        raise ValueError('Unknown test result was replaced by completion evidence')
     if session_cancel and value.get('cancellationRequested') is not True:
         raise ValueError('Session cancellation intent missing')
-    for key in ('sessionSha256', 'journalSha256', 'candidateSha256', 'executionSha256') + (('receiptSha256',) if session_cancel else ()) + (('activeBoundarySha256',) if session_cancel_active else ()):
+    for key in ('sessionSha256', 'journalSha256', 'candidateSha256', 'executionSha256') + (('receiptSha256',) if session_cancel else ()) + (('activeBoundarySha256',) if session_cancel_active else ()) + (('publicationFaultSha256',) if session_cancel_unknown else ()):
         fingerprint = value.get(key)
         if key != 'sessionSha256' and not admitted:
             if fingerprint is not None:
@@ -149,15 +154,16 @@ def require_retry_transition(previous, current, launch, before_hash, promote=Fal
         raise ValueError('Retry rewrote immutable prior evidence')
 
 
-def read_report(root, launch, nonce, operation='resolve', stop=False, precommit=False, running=False, uncertain=False, acknowledge=False, retry=False, promote=False, promotion_crash=False, session_bound=False, admission_crash=False, session_cancel=False, session_cancel_active=False):
+def read_report(root, launch, nonce, operation='resolve', stop=False, precommit=False, running=False, uncertain=False, acknowledge=False, retry=False, promote=False, promotion_crash=False, session_bound=False, admission_crash=False, session_cancel=False, session_cancel_active=False, session_cancel_unknown=False):
     report = root / f'launch-{launch}.json'
     if report.is_symlink() or not report.is_file() or report.stat().st_size > 4096:
         raise ValueError('Invalid candidate report')
     value = json.loads(report.read_text())
-    if (not isinstance(value, dict) or type(value.get('version')) is not int or value['version'] != 15 or
+    if (not isinstance(value, dict) or type(value.get('version')) is not int or value['version'] != 16 or
             type(value.get('launch')) is not int or value['launch'] != launch or value.get('nonce') != nonce or
             value.get('dispatch') != f'candidate-restart-{nonce}-1:3' or
-            value.get('sessionBound') is not session_bound or value.get('admissionCrash') is not admission_crash or value.get('sessionCancel') is not session_cancel or value.get('sessionCancelActive') is not session_cancel_active or
+            value.get('sessionBound') is not session_bound or value.get('admissionCrash') is not admission_crash or value.get('sessionCancel') is not session_cancel or value.get('sessionCancelActive') is not session_cancel_active or value.get('sessionCancelUnknown') is not session_cancel_unknown or
+            (session_cancel_unknown and not session_cancel_active) or
             (session_cancel_active and not session_cancel) or
             (session_cancel and (not session_bound or admission_crash)) or
             (admission_crash and not session_bound) or
@@ -171,7 +177,7 @@ def read_report(root, launch, nonce, operation='resolve', stop=False, precommit=
             (retry and not acknowledge) or (launch == 4 and not retry) or
             (acknowledge and (not running or uncertain)) or (launch == 3 and not acknowledge) or (uncertain and not running) or
             (running and (not stop or precommit or operation != 'test')) or
-            value.get('completedOperations') != ([] if admission_crash else OPERATIONS[:3] if session_cancel_active else ['resolve'] if session_cancel else OPERATIONS[:OPERATIONS.index(operation)])):
+            value.get('completedOperations') != ([] if admission_crash else OPERATIONS[:2] if session_cancel_unknown else OPERATIONS[:3] if session_cancel_active else ['resolve'] if session_cancel else OPERATIONS[:OPERATIONS.index(operation)])):
         raise ValueError('Candidate report identity mismatch')
     if session_bound and retry:
         if value.get('sessionProof') is not None:
@@ -185,19 +191,29 @@ def read_report(root, launch, nonce, operation='resolve', stop=False, precommit=
     elif value.get('sessionRetryProof') is not None or value.get('beforeActionSha256') is not None:
         raise ValueError('Non-retry report contains retry evidence')
     elif session_bound:
-        read_session_proof(value.get('sessionProof'), nonce, launch, admission_crash, session_cancel, session_cancel_active)
+        read_session_proof(value.get('sessionProof'), nonce, launch, admission_crash, session_cancel, session_cancel_active, session_cancel_unknown)
     elif value.get('sessionProof') is not None:
         raise ValueError('Unbound report contains session evidence')
     if session_cancel:
+        wrong_test_exit = (value.get('actualTestExit') is not None if session_cancel_unknown else
+            type(value.get('actualTestExit')) is not int or value['actualTestExit'] != 0)
+        wrong_retained_exit = (value.get('retainedExit') is not None if session_cancel_unknown else
+            type(value.get('retainedExit')) is not int or value['retainedExit'] != 0)
         if session_cancel_active and (value.get('activeBeforeExit') is not True or
                 value.get('runningMarker') is not True or value.get('stopSignalled') is not False or
-                type(value.get('actualTestExit')) is not int or value['actualTestExit'] != 0):
+                wrong_test_exit):
             raise ValueError('Active cancellation boundary missing')
-        if (value.get('runFinished') is not True or value.get('candidatePhase') != 'failed' or
-                value.get('pendingOperation') != '' or value.get('executionPhase') != 'verifying' or
-                type(value.get('retainedExit')) is not int or value['retainedExit'] != 0 or
-                value.get('receiptOperations') != (OPERATIONS[:3] if session_cancel_active else ['resolve']) or value.get('promotionAllowed') is not False or
-                value.get('candidateStopPresent') is not False or
+        if session_cancel_unknown and (value.get('privateFaultObserved') is not True or
+                'actualTestExit' not in value or 'retainedExit' not in value or
+                value.get('acknowledgementPresent') is not False or value.get('failedOperation') != 'test' or
+                value.get('cleanup') != 'unknown'):
+            raise ValueError('Unknown-result publication fault missing')
+        expected_operations = OPERATIONS[:2] if session_cancel_unknown else OPERATIONS[:3] if session_cancel_active else ['resolve']
+        if (value.get('runFinished') is not (not session_cancel_unknown) or value.get('candidatePhase') != 'failed' or
+                value.get('pendingOperation') != ('test' if session_cancel_unknown else '') or
+                value.get('executionPhase') != ('executing' if session_cancel_unknown else 'verifying') or
+                wrong_retained_exit or value.get('receiptOperations') != expected_operations or
+                value.get('promotionAllowed') is not False or value.get('candidateStopPresent') is not False or
                 any(value.get(key) is not True for key in ('noLaterCommands', 'workingUnchanged',
                     'sourcesUnchanged', 'cancellationUnchanged', 'viewRendered')) or
                 (launch == 1 and value.get('readyForCrash') is not True)):
@@ -239,8 +255,8 @@ def read_report(root, launch, nonce, operation='resolve', stop=False, precommit=
     return value
 
 
-def observe(bundle, sdk, operation='resolve', stop=False, precommit=False, running=False, uncertain=False, acknowledge=False, retry=False, promote=False, promotion_crash=False, session_bound=False, admission_crash=False, session_cancel=False, session_cancel_active=False):
-    if type(session_cancel_active) is not bool or (session_cancel_active and not session_cancel) or (session_cancel and (not session_bound or admission_crash)) or (admission_crash and not session_bound) or (session_bound and (not stop or operation != 'test' or any((precommit, uncertain)) or ((running or acknowledge or retry or promote or promotion_crash) and not (running and acknowledge and retry and not admission_crash and not session_cancel)))) or (promotion_crash and not promote) or (promote and not retry) or (retry and not acknowledge) or (acknowledge and (not running or uncertain)) or operation not in OPERATIONS or (uncertain and not running) or (precommit and not stop) or (running and (not stop or precommit or operation != 'test')):
+def observe(bundle, sdk, operation='resolve', stop=False, precommit=False, running=False, uncertain=False, acknowledge=False, retry=False, promote=False, promotion_crash=False, session_bound=False, admission_crash=False, session_cancel=False, session_cancel_active=False, session_cancel_unknown=False):
+    if type(session_cancel_unknown) is not bool or (session_cancel_unknown and not session_cancel_active) or type(session_cancel_active) is not bool or (session_cancel_active and not session_cancel) or (session_cancel and (not session_bound or admission_crash)) or (admission_crash and not session_bound) or (session_bound and (not stop or operation != 'test' or any((precommit, uncertain)) or ((running or acknowledge or retry or promote or promotion_crash) and not (running and acknowledge and retry and not admission_crash and not session_cancel)))) or (promotion_crash and not promote) or (promote and not retry) or (retry and not acknowledge) or (acknowledge and (not running or uncertain)) or operation not in OPERATIONS or (uncertain and not running) or (precommit and not stop) or (running and (not stop or precommit or operation != 'test')):
         raise ValueError('Fixed crash operation required')
     if sys.platform != 'darwin':
         raise ValueError('Mac fixture only')
@@ -254,7 +270,7 @@ def observe(bundle, sdk, operation='resolve', stop=False, precommit=False, runni
     for launch in ((1, 2, 3, 4, 5) if promote else (1, 2, 3, 4) if retry else (1, 2, 3) if acknowledge else (1, 2)):
         if inspect_bundle(bundle) != (executable, binary):
             raise ValueError('Fixture binary changed')
-        (root / 'challenge.json').write_text(json.dumps({'nonce': nonce, 'launch': launch, 'sdk': str(sdk), 'operation': operation, 'stop': stop, 'precommit': precommit, 'running': running, 'uncertain': uncertain, 'acknowledge': acknowledge, 'retry': retry, 'promote': promote, 'promotionCrash': promotion_crash, 'sessionBound': session_bound, 'admissionCrash': admission_crash, 'sessionCancel': session_cancel, 'sessionCancelActive': session_cancel_active}))
+        (root / 'challenge.json').write_text(json.dumps({'nonce': nonce, 'launch': launch, 'sdk': str(sdk), 'operation': operation, 'stop': stop, 'precommit': precommit, 'running': running, 'uncertain': uncertain, 'acknowledge': acknowledge, 'retry': retry, 'promote': promote, 'promotionCrash': promotion_crash, 'sessionBound': session_bound, 'admissionCrash': admission_crash, 'sessionCancel': session_cancel, 'sessionCancelActive': session_cancel_active, 'sessionCancelUnknown': session_cancel_unknown}))
         with (root / f'process-{launch}.log').open('wb') as log:
             process = subprocess.Popen([str(executable)],
                 env={**os.environ, 'ASG_CANDIDATE_CRASH_ROOT': str(root)}, stdout=log, stderr=log)
@@ -268,7 +284,7 @@ def observe(bundle, sdk, operation='resolve', stop=False, precommit=False, runni
                 # publication to finish before parsing; malformed data remains a refusal.
                 while True:
                     try:
-                        value = read_report(root, launch, nonce, operation, stop, precommit, running, uncertain, acknowledge, retry, promote, promotion_crash, session_bound, admission_crash, session_cancel, session_cancel_active)
+                        value = read_report(root, launch, nonce, operation, stop, precommit, running, uncertain, acknowledge, retry, promote, promotion_crash, session_bound, admission_crash, session_cancel, session_cancel_active, session_cancel_unknown)
                         break
                     except (json.JSONDecodeError, UnicodeDecodeError):
                         if time.monotonic() > deadline:
@@ -305,6 +321,8 @@ def observe(bundle, sdk, operation='resolve', stop=False, precommit=False, runni
             retained += ('receiptSha256', 'cancellationRequested')
         if session_cancel_active:
             retained += ('activeBoundarySha256',)
+        if session_cancel_unknown:
+            retained += ('publicationFaultSha256', 'testResultPresent')
         if any(observations[0]['sessionProof'][key] != observations[1]['sessionProof'][key]
                for key in retained):
             raise ValueError('Session startup records changed on reopen')
@@ -332,16 +350,17 @@ def main():
     parser.add_argument('--admission-crash', action='store_true')
     parser.add_argument('--session-cancel', action='store_true')
     parser.add_argument('--session-cancel-active', action='store_true')
+    parser.add_argument('--session-cancel-unknown', action='store_true')
     parser.add_argument('--operation', choices=OPERATIONS + ['all'], default='resolve')
     args = parser.parse_args()
     try:
         if args.operation == 'all':
-            observations = [observe(args.bundle, args.sdk, operation, args.stop, args.precommit, args.running, args.uncertain, args.acknowledge, args.retry, args.promote, args.promotion_crash, args.session_bound, args.admission_crash, args.session_cancel, args.session_cancel_active) for operation in OPERATIONS]
+            observations = [observe(args.bundle, args.sdk, operation, args.stop, args.precommit, args.running, args.uncertain, args.acknowledge, args.retry, args.promote, args.promotion_crash, args.session_bound, args.admission_crash, args.session_cancel, args.session_cancel_active, args.session_cancel_unknown) for operation in OPERATIONS]
             if len({item['bundleSha256'] for item in observations}) != 1:
                 raise ValueError('Matrix binary changed')
             print(json.dumps({'matrix': observations}))
         else:
-            print(json.dumps(observe(args.bundle, args.sdk, args.operation, args.stop, args.precommit, args.running, args.uncertain, args.acknowledge, args.retry, args.promote, args.promotion_crash, args.session_bound, args.admission_crash, args.session_cancel, args.session_cancel_active)))
+            print(json.dumps(observe(args.bundle, args.sdk, args.operation, args.stop, args.precommit, args.running, args.uncertain, args.acknowledge, args.retry, args.promote, args.promotion_crash, args.session_bound, args.admission_crash, args.session_cancel, args.session_cancel_active, args.session_cancel_unknown)))
     except (ValueError, OSError, subprocess.TimeoutExpired):
         parser.exit(2, 'Candidate crash fixture refused or failed; artifacts retained.\n')
 

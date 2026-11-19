@@ -241,11 +241,14 @@ Future<void> main() async {
     }
     final input = jsonDecode(await challenge.readAsString());
     if (input is! Map<String, dynamic> ||
-        input.length != 16 ||
+        input.length != 17 ||
         input['nonce'] is! String ||
         !RegExp(r'^[a-f0-9]{32}$').hasMatch(input['nonce'] as String) ||
         ![1, 2, 3, 4, 5].contains(input['launch']) ||
         input['sdk'] is! String ||
+        input['sessionCancelUnknown'] is! bool ||
+        (input['sessionCancelUnknown'] == true &&
+            input['sessionCancelActive'] != true) ||
         input['sessionCancelActive'] is! bool ||
         (input['sessionCancelActive'] == true &&
             input['sessionCancel'] != true) ||
@@ -303,6 +306,7 @@ Future<void> main() async {
     final targetIndex = operations.indexOf(operation);
     final sessionCancel = input['sessionCancel'] as bool;
     final sessionCancelActive = input['sessionCancelActive'] as bool;
+    final sessionCancelUnknown = input['sessionCancelUnknown'] as bool;
     final sessionBound = input['sessionBound'] as bool;
     final admissionCrash = input['admissionCrash'] as bool;
     final stop = input['stop'] as bool;
@@ -378,7 +382,9 @@ Future<void> main() async {
     };
     Future<String> firstReceiptHash() async {
       final observed = await receipts.read(checks.load().runs.single);
-      final expected = sessionCancelActive
+      final expected = sessionCancelUnknown
+          ? operations.take(2).toList()
+          : sessionCancelActive
           ? operations.take(3).toList()
           : ['resolve'];
       if (jsonEncode(observed.map((item) => item.operation.name).toList()) !=
@@ -403,6 +409,7 @@ Future<void> main() async {
           '$operation.intent.json',
           '$operation.result.json',
         ],
+        if (sessionCancelUnknown) 'test.intent.json',
       ]) {
         final file = File(path.join(directory.path, name));
         if (await FileSystemEntity.isLink(file.path) ||
@@ -482,6 +489,30 @@ Future<void> main() async {
       return digest(raw);
     }
 
+    Future<String> publicationFaultHash() async {
+      final fault = File(
+        path.join(candidate.path, 'build', 'result-fault-$nonce'),
+      );
+      final directory =
+          (await receiptRoot
+                  .list(followLinks: false)
+                  .where((entry) => entry is Directory)
+                  .toList())
+              .single;
+      if (await FileSystemEntity.isLink(fault.path) ||
+          await fault.length() > 64 ||
+          await fault.resolveSymbolicLinks() != fault.absolute.path ||
+          await fault.readAsString() != nonce ||
+          await FileSystemEntity.type(
+                path.join(directory.path, 'test.result.json'),
+                followLinks: false,
+              ) !=
+              FileSystemEntityType.notFound) {
+        throw StateError('Unknown result publication boundary missing');
+      }
+      return digest(await fault.readAsString());
+    }
+
     Future<Map<String, Object?>?> sessionProof() async {
       if (!sessionBound || retry) return null;
       final saved = AgentSessionStore(records, project).load('session-$nonce');
@@ -541,6 +572,10 @@ Future<void> main() async {
         if (sessionCancel) 'receiptSha256': await firstReceiptHash(),
         if (sessionCancelActive)
           'activeBoundarySha256': await activeBoundaryHash(),
+        if (sessionCancelUnknown) ...{
+          'publicationFaultSha256': await publicationFaultHash(),
+          'testResultPresent': false,
+        },
         'receiptPreparations': receiptPreparations,
         'commandEntries': commandEntries,
       };
@@ -760,12 +795,15 @@ Future<void> main() async {
       final run = checks.load().runs.single;
       final snapshot = run.snapshot;
       final retained = await receipts.read(run);
-      final expected = sessionCancelActive
+      final expected = sessionCancelUnknown
+          ? operations.take(2).toList()
+          : sessionCancelActive
           ? operations.take(3).toList()
           : ['resolve'];
-      if (!run.finished ||
+      if (run.finished != !sessionCancelUnknown ||
           snapshot.phase != SourceGenerationPhase.failed ||
-          snapshot.pendingOperation.isNotEmpty ||
+          snapshot.pendingOperation != (sessionCancelUnknown ? 'test' : '') ||
+          (sessionCancelUnknown && snapshot.failedOperation != 'test') ||
           jsonEncode(snapshot.steps.map((item) => item.operation).toList()) !=
               jsonEncode(expected) ||
           snapshot.steps.any((item) => item.exitCode != 0 || item.cancelled) ||
@@ -774,14 +812,15 @@ Future<void> main() async {
           retained.any(
             (item) => item.result.exitCode != 0 || item.result.cancelled,
           ) ||
-          controller.savedExecutionFor(run)?.phase.name != 'verifying' ||
+          controller.savedExecutionFor(run)?.phase.name !=
+              (sessionCancelUnknown ? 'executing' : 'verifying') ||
           controller.canPromote ||
           checks.stopRequestFor(run) != null) {
         throw StateError(
           'Session cancellation did not retain only the actual first exit',
         );
       }
-      for (final operation in operations.skip(expected.length)) {
+      for (final operation in operations.skip(sessionCancelActive ? 3 : 1)) {
         if (await File(path.join(canonical, '$operation-dispatched'))
             .exists()) {
           throw StateError(
@@ -827,12 +866,22 @@ Future<void> main() async {
           'promotionCrash': promotionCrash,
           'completedOperations': expected,
           'receiptOperations': expected,
-          'retainedExit': retained.last.result.exitCode,
+          'retainedExit': sessionCancelUnknown
+              ? null
+              : retained.last.result.exitCode,
           if (sessionCancelActive) ...{
             'activeBeforeExit': true,
             'runningMarker': true,
             'stopSignalled': false,
-            'actualTestExit': retained.last.result.exitCode,
+            'actualTestExit': sessionCancelUnknown
+                ? null
+                : retained.last.result.exitCode,
+          },
+          if (sessionCancelUnknown) ...{
+            'privateFaultObserved': true,
+            'cleanup': 'unknown',
+            'acknowledgementPresent': checks.acknowledgementFor(run) != null,
+            'failedOperation': snapshot.failedOperation,
           },
           'runFinished': run.finished,
           'candidatePhase': snapshot.phase.name,
@@ -850,6 +899,7 @@ Future<void> main() async {
         sessionBound: true,
         sessionCancel: true,
         sessionCancelActive: sessionCancelActive,
+        sessionCancelUnknown: sessionCancelUnknown,
         sessionProof: proof,
       );
     }
@@ -1173,7 +1223,10 @@ Future<void> main() async {
         onPrepare: () => receiptPreparations++,
         loadAsset: (key) async {
           final source = await rootBundle.loadString(key);
-          if (!uncertain || key != 'tools/generation_command.py') return source;
+          if ((!uncertain && !sessionCancelUnknown) ||
+              key != 'tools/generation_command.py') {
+            return source;
+          }
           const anchor = '            receipt.publish(result)';
           if (source.split(anchor).length != 2) {
             throw StateError('Fixture publication anchor changed');
@@ -1316,6 +1369,18 @@ Future<void> main() async {
             }
             await stagedRelease.rename(release.path);
             step = await result.timeout(const Duration(seconds: 20));
+            if (sessionCancelUnknown) {
+              if (step != null || verifier.stopSignalled) {
+                throw StateError(
+                  'Publication failure unexpectedly returned an exit',
+                );
+              }
+              await publicationFaultHash();
+              // A private helper fault is not a validated Flutter exit result.
+              throw StateError(
+                'Test outcome remains unknown after publication failure',
+              );
+            }
             if (step == null ||
                 step.exitCode != 0 ||
                 step.cancelled ||
@@ -2220,6 +2285,7 @@ Future<void> report(
   bool admissionCrash = false,
   bool sessionCancel = false,
   bool sessionCancelActive = false,
+  bool sessionCancelUnknown = false,
   Map<String, Object?>? sessionProof,
   Map<String, Object?>? sessionRetryProof,
   String? beforeActionSha256,
@@ -2228,13 +2294,14 @@ Future<void> report(
   await file.create(exclusive: true);
   await file.writeAsString(
     jsonEncode({
-      'version': 15,
+      'version': 16,
       'launch': launch,
       ...observation,
       'sessionBound': sessionBound,
       'admissionCrash': admissionCrash,
       'sessionCancel': sessionCancel,
       'sessionCancelActive': sessionCancelActive,
+      'sessionCancelUnknown': sessionCancelUnknown,
       'sessionProof': sessionProof,
       'sessionRetryProof': sessionRetryProof,
       'beforeActionSha256': beforeActionSha256,
