@@ -18,6 +18,7 @@ import 'package:asg/services/model_settings_store.dart';
 import 'package:asg/services/application_store.dart';
 import 'package:asg/services/candidate_verification_store.dart';
 import 'package:asg/services/repair_attempt_store.dart';
+import 'package:asg/services/candidate_repair_lineage_store.dart';
 import 'package:asg/services/candidate_repair_evidence.dart';
 import 'package:asg/services/approved_source_proposer.dart';
 import 'package:asg/services/source_edit_proposer.dart';
@@ -40,6 +41,8 @@ import 'source_candidate_controller_test.dart'
     show AtomicRecords, FailedCheckHost, IntentCheckHost;
 import 'source_edit_proposer_test.dart' show FakeProvider;
 import 'source_generation_controller_test.dart' show FixtureHost;
+import 'candidate_reopen_context_test.dart'
+    show reopenFixture, reopenBefore, reopenAfter;
 
 class CandidateFolderPicker extends FolderPicker {
   @override
@@ -79,12 +82,18 @@ class ReviewCandidateHost extends FixtureHost {
     GenerationProgress progress, {
     bool resume = false,
   }) async {
-    var value = project.copy(phase: SourceGenerationPhase.verifying);
+    var value = project.copy(
+      phase: SourceGenerationPhase.verifying,
+      checkpointVersion: 1,
+    );
     await progress(value);
     for (final task in project.tasks!) {
+      value = value.copy(pendingOperation: task.operation.name);
+      await progress(value);
       if (task.operation.name == failure) {
         value = value.copy(
           phase: SourceGenerationPhase.failed,
+          pendingOperation: '',
           steps: [
             ...value.steps,
             GenerationStep(
@@ -98,6 +107,7 @@ class ReviewCandidateHost extends FixtureHost {
         return value;
       }
       value = value.copy(
+        pendingOperation: '',
         steps: [
           ...value.steps,
           GenerationStep(
@@ -187,6 +197,178 @@ void main() {
     if (!controller.isDisposed) controller.dispose();
   });
 
+  for (final kind in [
+    'success',
+    'before-copy',
+    'after-copy',
+    'cancel',
+    'dispose',
+  ]) {
+    test(
+      'selected repair controller durable lineage preparation: $kind',
+      () async {
+        controller.dispose();
+        final f = await reopenFixture();
+        records = PrivateFailureRecords()..values.addAll(f.records.values);
+        await ModelSettingsStore(records).save(
+          const LocalModelConfig(model: 'supplied-controller-repair-model'),
+        );
+        provider = FakeProvider();
+        var preparations = 0;
+        final hosts = <ReviewCandidateHost>[];
+        String change(String before, String after) => jsonEncode({
+          'summary': 'Supplied reviewed controller change',
+          'changes': [
+            {'path': 'lib/main.dart', 'before': before, 'after': after},
+          ],
+        });
+        void changeOrigin() {
+          final key = '${SelectedRepairRequest.prefix}${project.id}.1';
+          final origin = SelectedRepairRequest.decode(records.getString(key)!);
+          records.values[key] = SelectedRepairRequest.fromJson({
+            ...origin.toJson(),
+            'workingSha256': 'f' * 64,
+          }).encode();
+        }
+
+        controller = SourceReviewController(
+          project: project,
+          generated: f.basis.working,
+          records: records,
+          selectedSession: f.session,
+          folderPicker: CandidateFolderPicker(),
+          publishCandidate: (_, _, _) async => Uri.parse('http://127.0.0.1:1/'),
+          createCandidateHost: () {
+            final host = ReviewCandidateHost(failure: 'analyze');
+            hosts.add(host);
+            return host;
+          },
+          proposer: ApprovedSourceProposer(
+            records,
+            proposer: SourceEditProposer(createProvider: (_) => provider),
+          ),
+          readSnapshot: (source, _) async => {
+            'lib/main.dart':
+                source.sources['lib/main.dart'] ==
+                    sha256.convert(utf8.encode(reopenBefore)).toString()
+                ? reopenBefore
+                : reopenAfter,
+          },
+          prepareCandidate:
+              ({
+                required project,
+                required generated,
+                required evidence,
+                required records,
+                required parent,
+                required checkActive,
+              }) async {
+                checkActive();
+                preparations++;
+                if (preparations == 2) {
+                  expect(evidence.repairRequestReference, isNotNull);
+                  if (kind == 'after-copy') changeOrigin();
+                }
+                return GeneratedProject.fromJson({
+                  ...generated
+                      .copy(
+                        phase: SourceGenerationPhase.generated,
+                        steps: [],
+                        outputs: {},
+                        resolution: {},
+                        checkpointVersion: 0,
+                        pendingOperation: '',
+                        failedOperation: '',
+                      )
+                      .toJson(),
+                  'directory': '/supplied/controller-copy-$preparations',
+                  'sourceRequest': evidence.modelRequest!.toJson(),
+                  'sources': {
+                    ...generated.sources,
+                    for (final c in evidence.proposal.changes)
+                      c.path: sha256.convert(utf8.encode(c.after)).toString(),
+                  },
+                });
+              },
+        );
+        final initial = controller.request('Tanalyze', ['lib/main.dart']);
+        await tick();
+        provider.stream.add(change(reopenBefore, reopenAfter));
+        await provider.stream.close();
+        await initial;
+        expect(controller.error, isNull);
+        await controller.selectCandidateParent();
+        await controller.prepareCandidate();
+        await controller.candidateSession!.verify(approved: true);
+        expect(controller.canRequestRepair, isTrue);
+        final working = records.getString('studio.generation.v1.${project.id}');
+        provider = FakeProvider();
+        final repair = controller.requestRepair(['lib/main.dart']);
+        await tick();
+        provider.stream.add(
+          change(reopenAfter, 'void main() { /* supplied repair */ }'),
+        );
+        await provider.stream.close();
+        await repair;
+        expect(controller.error, isNull);
+        final reference = controller.proposal!.repairRequestReference!;
+        await controller.selectCandidateParent();
+        await controller.applyReviewedRepair(approved: false);
+        expect(preparations, 1);
+        if (kind == 'before-copy') changeOrigin();
+        final entered = Completer<void>(), gate = Completer<void>();
+        if (kind == 'cancel' || kind == 'dispose') {
+          records.beforeCommit = () async {
+            if (!entered.isCompleted) entered.complete();
+            await gate.future;
+          };
+        }
+        final applied = controller.applyReviewedRepair(approved: true);
+        if (kind == 'cancel' || kind == 'dispose') {
+          await entered.future;
+          if (kind == 'cancel') {
+            await controller.cancel();
+          } else {
+            controller.dispose();
+          }
+          gate.complete();
+        }
+        await applied;
+        final journal = CandidateVerificationStore(records, project.id).load();
+        if (kind == 'success') {
+          expect(controller.error, isNull);
+          expect(preparations, 2);
+          expect(journal.runs.length, 2);
+          final review = CandidateRepairLineageStore(
+            records,
+            project.id,
+          ).load(journal.runs.last)!;
+          expect(
+            review.lineage.repairRequestReference.encode(),
+            reference.encode(),
+          );
+        } else {
+          expect(preparations, kind == 'after-copy' ? 2 : 1);
+          expect(journal.runs.length, 1);
+          expect(
+            records.getString(
+              'studio.candidateRepairLineage.v1.${project.id}.2',
+            ),
+            isNull,
+          );
+          if (!controller.isDisposed) expect(controller.error, isNotNull);
+        }
+        expect(
+          records.getString('studio.generation.v1.${project.id}'),
+          working,
+        );
+        expect(
+          RepairAttemptStore(records, project.id).load().attempts.length,
+          1,
+        );
+      },
+    );
+  }
   test('production bound preparation and admission retains reopen context', () async {
     controller.dispose();
     final approval = PlanApprovalStore(records).load(project.id)!;

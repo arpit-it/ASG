@@ -4,6 +4,16 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:sembast/sembast_io.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:asg/services/studio_database.dart';
+import 'package:asg/services/candidate_repair_lineage_store.dart';
+import 'package:asg/models/selected_repair_request.dart';
+import 'package:asg/models/candidate_request_lineage.dart';
+
+import 'candidate_repair_lineage_store_test.dart'
+    show repairPreparationFixture, repairBasis;
+
 import 'package:asg/models/agent_session_binding.dart';
 import 'package:asg/services/agent_session_admission.dart';
 import 'package:asg/services/candidate_request_lineage_store.dart';
@@ -62,6 +72,235 @@ admittedReopen({bool pending = false}) async {
 }
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  test('native repair pointer survives cold reopen, Stop acknowledgement and fresh-consent retry', () async {
+    final f = await repairPreparationFixture();
+    final basis = repairBasis(f);
+    final root = await Directory.systemTemp.createTemp(
+      'asg-repair-linked-retry-',
+    );
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    var db = await databaseFactoryIo.openDatabase('${root.path}/records.db');
+    SavedCandidateRecoveryController? c;
+    try {
+      final records = await StudioDatabase.migrate(db, prefs);
+      for (final e in f.records.values.entries) {
+        await records.setString(e.key, e.value);
+      }
+      final journal = CandidateVerificationStore(records, project.id);
+      final run = await journal.start(
+        basis.prepared.copy(
+          phase: SourceGenerationPhase.verifying,
+          steps: [],
+          checkpointVersion: 1,
+        ),
+        () {},
+        reopenBasis: basis,
+        repairRequestReference: f.evidence.repairRequestReference,
+        sessionAdmission: AgentSessionRunAdmission(
+          records,
+          project,
+          AgentSessionBinding.select(
+            session: f.session,
+            projectId: project.id,
+            boardTaskId: 'Tanalyze',
+          ),
+        ),
+      );
+      await journal.checkpoint(
+        run.snapshot.copy(pendingOperation: 'resolve'),
+        () {},
+      );
+      await journal.requestStop(DateTime.now().toUtc());
+      final repairKey = 'studio.repairAttempts.v1.${project.id}';
+      final originKey = '${SelectedRepairRequest.prefix}${project.id}.1';
+      final repairs = records.getString(repairKey);
+      final origin = records.getString(originKey);
+      final working = records.getString('studio.generation.v1.${project.id}');
+      await db.close();
+      db = await databaseFactoryIo.openDatabase('${root.path}/records.db');
+      final reopened = await StudioDatabase.migrate(db, prefs);
+      final selected = AgentSessionStore(
+        reopened,
+        project,
+      ).load(f.session.sessionId)!;
+      final hosts = <ReopenInspectionHost>[];
+      c = SavedCandidateRecoveryController(
+        project: project,
+        records: reopened,
+        selectedSession: selected,
+        runNumber: run.number,
+        createHost: () {
+          final host = ReopenInspectionHost();
+          hosts.add(host);
+          return host;
+        },
+      );
+      await c.open();
+      expect(c.error, isNull);
+      expect(c.evidence!.initialRequestOrigin, isNull);
+      expect(
+        c.evidence!.repairRequestReference!.encode(),
+        f.evidence.repairRequestReference!.encode(),
+      );
+      final candidate = c.candidate!;
+      await candidate.verify(approved: false);
+      expect(hosts.last.verifications, 0);
+      await candidate.acknowledgeStopped(candidate.history.last);
+      expect(candidate.error, isNull);
+      final admissionRaw = reopened.getString(selected.storageKey);
+      await candidate.verify(approved: true);
+      expect(candidate.error, isNull);
+      expect(candidate.history.length, 3);
+      final next = CandidateRepairLineageStore(
+        reopened,
+        project.id,
+      ).load(candidate.history.last)!;
+      expect(next.lineage.runNumber, 3);
+      expect(
+        next.lineage.repairRequestReference.encode(),
+        f.evidence.repairRequestReference!.encode(),
+      );
+      expect(next.lineage.admissionSessionRecord, admissionRaw);
+      expect(
+        next.lineage.admissionSession.revision,
+        next.origin.requestSession.revision + 1,
+      );
+      expect(reopened.getString(repairKey), repairs);
+      expect(reopened.getString(originKey), origin);
+      expect(reopened.getString('studio.generation.v1.${project.id}'), working);
+      expect(hosts.last.verifications, 1);
+    } finally {
+      c?.dispose();
+      await db.close();
+      await root.delete(recursive: true);
+    }
+  });
+  for (final kind in ['origin', 'attempt', 'companion', 'conflict']) {
+    test('repair proof changed during inspection refuses late adoption: $kind', () async {
+      final f = await repairPreparationFixture();
+      final basis = repairBasis(f);
+      final journal = CandidateVerificationStore(f.records, project.id);
+      final run = await journal.start(
+        basis.prepared.copy(
+          phase: SourceGenerationPhase.verifying,
+          steps: [],
+          checkpointVersion: 1,
+        ),
+        () {},
+        reopenBasis: basis,
+        repairRequestReference: f.evidence.repairRequestReference,
+        sessionAdmission: AgentSessionRunAdmission(
+          f.records,
+          project,
+          AgentSessionBinding.select(
+            session: f.session,
+            projectId: project.id,
+            boardTaskId: 'Tanalyze',
+          ),
+        ),
+      );
+      final gate = Completer<void>();
+      final hosts = <ReopenInspectionHost>[];
+      final c = SavedCandidateRecoveryController(
+        project: project,
+        records: f.records,
+        selectedSession: journal.admittedSession!,
+        runNumber: run.number,
+        createHost: () {
+          final host = ReopenInspectionHost();
+          if (hosts.isEmpty) host.sourceGate = gate;
+          hosts.add(host);
+          return host;
+        },
+      );
+      final pending = c.open();
+      await tick();
+      if (kind == 'origin') {
+        final key = '${SelectedRepairRequest.prefix}${project.id}.1';
+        final origin = SelectedRepairRequest.decode(f.records.getString(key)!);
+        f.records.values[key] = SelectedRepairRequest.fromJson({
+          ...origin.toJson(),
+          'workingSha256': 'f' * 64,
+        }).encode();
+      } else if (kind == 'attempt') {
+        final key = 'studio.repairAttempts.v1.${project.id}';
+        f.records.values[key] = f.records
+            .getString(key)!
+            .replaceAll('supplied-repair-model', 'changed-retained-model');
+      } else if (kind == 'companion') {
+        final key =
+            'studio.candidateRepairLineage.v1.${project.id}.${run.number}';
+        f.records.values[key] = '${f.records.getString(key)} ';
+      } else {
+        f
+                .records
+                .values['${CandidateRequestLineage.prefix}${project.id}.${run.number}'] =
+            'conflicting origin';
+      }
+      final saved = Map<String, String>.of(f.records.values);
+      gate.complete();
+      await pending;
+      expect(c.error, isNotNull);
+      expect(c.candidate, isNull);
+      expect(hosts.every((h) => h.verifications == 0), isTrue);
+      expect(f.records.values, saved);
+      c.dispose();
+    });
+  }
+  for (final kind in ['corrupt', 'conflict']) {
+    test('unavailable optional repair proof preserves bare recovery: $kind', () async {
+      final f = await repairPreparationFixture();
+      final basis = repairBasis(f);
+      final journal = CandidateVerificationStore(f.records, project.id);
+      final run = await journal.start(
+        basis.prepared.copy(
+          phase: SourceGenerationPhase.verifying,
+          steps: [],
+          checkpointVersion: 1,
+        ),
+        () {},
+        reopenBasis: basis,
+        repairRequestReference: f.evidence.repairRequestReference,
+        sessionAdmission: AgentSessionRunAdmission(
+          f.records,
+          project,
+          AgentSessionBinding.select(
+            session: f.session,
+            projectId: project.id,
+            boardTaskId: 'Tanalyze',
+          ),
+        ),
+      );
+      if (kind == 'corrupt') {
+        f
+                .records
+                .values['studio.candidateRepairLineage.v1.${project.id}.${run.number}'] =
+            'private bad proof';
+      } else {
+        f
+                .records
+                .values['${CandidateRequestLineage.prefix}${project.id}.${run.number}'] =
+            'conflicting initial proof';
+      }
+      final saved = Map<String, String>.of(f.records.values);
+      final c = SavedCandidateRecoveryController(
+        project: project,
+        records: f.records,
+        selectedSession: journal.admittedSession!,
+        runNumber: run.number,
+        createHost: () => ReopenInspectionHost(),
+      );
+      await c.open();
+      expect(c.error, isNull);
+      expect(c.candidate, isNotNull);
+      expect(c.evidence!.repairRequestReference, isNull);
+      expect(c.evidence!.initialRequestOrigin, isNull);
+      expect(f.records.values, saved);
+      c.dispose();
+    });
+  }
   test('exact initial origin survives Stop acknowledgement, reopen and explicit retry without another proposal', () async {
     final f = await lineageFixture(formatted: true);
     final journal = CandidateVerificationStore(f.records, project.id);

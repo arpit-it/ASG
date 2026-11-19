@@ -6,6 +6,7 @@ import 'dart:async';
 import '../models/approved_source_proposal.dart';
 import '../models/selected_repair_request.dart';
 import '../services/selected_repair_request_store.dart';
+import '../services/candidate_repair_lineage_store.dart';
 import '../models/candidate_reopen_context.dart';
 import '../models/local_model_config.dart';
 import '../models/model_connection_preset.dart';
@@ -274,7 +275,30 @@ class SourceReviewController extends BaseController {
         }
       }
 
+      Future<void> requireRepairPreparation() async {
+        if (binding == null) {
+          throw StateError('Repair lineage has no selected session.');
+        }
+        await CandidateRepairLineageStore(
+          records,
+          project.id,
+        ).requirePreparation(
+          project: project,
+          admission: AgentSessionRunAdmission(records, project, binding),
+          evidence: evidence,
+          sourceBase: _proposalSource ?? generated,
+          workingRecord:
+              _workingRecord ??
+              (throw StateError('Original working record is unavailable.')),
+          authorize: checkActive,
+        );
+        checkActive();
+      }
+
       checkActive();
+      if (evidence.repairRequestReference != null) {
+        await requireRepairPreparation();
+      }
 
       final value = await _prepareCandidate(
         project: project,
@@ -287,6 +311,9 @@ class SourceReviewController extends BaseController {
       // Retain the path even if cancellation/withdrawal follows the last write.
       if (!isDisposed) _candidate = value;
       checkActive();
+      if (evidence.repairRequestReference != null) {
+        await requireRepairPreparation();
+      }
       // The reviewed diff has now been captured in a separate candidate. Its
       // subsequent check journal replaces latest-failure evidence intentionally.
       final candidateEvidence = ApprovedSourceProposal(
@@ -298,6 +325,7 @@ class SourceReviewController extends BaseController {
         initialRequestOrigin: evidence.repairRun == null
             ? evidence.initialRequestOrigin
             : null,
+        repairRequestReference: evidence.repairRequestReference,
       );
       _proposal = candidateEvidence;
       if (publishCandidate != null) {

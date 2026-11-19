@@ -5,6 +5,7 @@ import 'dart:convert';
 
 import 'package:asg/models/candidate_verification_run.dart';
 import 'package:asg/models/repair_attempt.dart';
+import 'package:asg/models/selected_repair_request.dart';
 import 'package:asg/services/repair_attempt_store.dart';
 import 'package:asg/services/repair_request_context.dart';
 import 'package:asg/services/selected_repair_request_store.dart';
@@ -746,6 +747,12 @@ class CandidateReopenFixture {
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  if (const bool.fromEnvironment('ASG_REPAIR_LINEAGE_FIXTURE')) {
+    runApp(
+      MaterialApp(home: await selectedRepairFixtureHome(lineageMode: true)),
+    );
+    return;
+  }
   if (const bool.fromEnvironment('ASG_SELECTED_REPAIR_FIXTURE')) {
     runApp(MaterialApp(home: await selectedRepairFixtureHome()));
     return;
@@ -1216,7 +1223,7 @@ class _RequestFixtureHomeState extends State<_RequestFixtureHome> {
 }
 
 /// New supplied observations, separate from all historical fixture identities.
-Future<Widget> selectedRepairFixtureHome() async {
+Future<Widget> selectedRepairFixtureHome({bool lineageMode = false}) async {
   final supplied = await RequestHistoryFixture.create();
   final records = supplied.records.source..readOnly = false;
   const project = TaskHistoryFixture.project;
@@ -1274,8 +1281,10 @@ Future<Widget> selectedRepairFixtureHome() async {
         boardTaskId: 'Tresolve',
       ),
     );
-    const model = ModelRequestProvenance(
-      model: 'supplied-repair-history-model',
+    final model = ModelRequestProvenance(
+      model: lineageMode
+          ? 'supplied-repair-lineage-model'
+          : 'supplied-repair-history-model',
       outputTokens: 4096,
     );
     final store = RepairAttemptStore(records, project.id);
@@ -1309,11 +1318,99 @@ Future<Widget> selectedRepairFixtureHome() async {
                 originals: const {
                   'lib/main.dart': RequestHistoryFixture.before,
                 },
-                responseModel: 'supplied-repair-history-response',
+                responseModel: lineageMode
+                    ? 'supplied-repair-lineage-model'
+                    : 'supplied-repair-history-response',
               )
             : null,
       );
     }
+  }
+  if (lineageMode) {
+    // Discard only inherited disposable run2 samples in this new fixture mode.
+    for (final key in [
+      'studio.candidateReopen.v1.${project.id}.2',
+      'studio.agentTaskHistory.v1.${project.id}.2',
+      'studio.agentExecution.v1.candidate-${project.id}-2',
+    ]) {
+      records.values.remove(key);
+    }
+    final attempt = RepairAttemptStore(
+      records,
+      project.id,
+    ).load().attempts.first;
+    final origin = SelectedRepairRequest.decode(
+      records.getString(
+        '${SelectedRepairRequest.prefix}${project.id}.${attempt.number}',
+      )!,
+    );
+    final reference = SelectedRepairRequestReference.forProposed(
+      origin,
+      attempt,
+    );
+    final proposal = SourceEditProposal.parse(
+      {
+        'summary': attempt.proposal!.summary,
+        'changes': [
+          for (final c in attempt.proposal!.changes)
+            {'path': c.path, 'before': c.before, 'after': c.after},
+        ],
+      },
+      originals: const {'lib/main.dart': RequestHistoryFixture.before},
+      responseModel: attempt.modelRequest!.responseModel,
+    );
+    final evidence = ApprovedSourceProposal(
+      projectId: project.id,
+      boardTaskId: 'Tresolve',
+      approval: working.approval!,
+      proposal: proposal,
+      modelRequest: attempt.modelRequest,
+      repairRequestReference: reference,
+    );
+    final prepared = GeneratedProject.fromJson({
+      ...working
+          .copy(
+            phase: SourceGenerationPhase.generated,
+            steps: [],
+            outputs: {},
+            resolution: {},
+            checkpointVersion: 0,
+            pendingOperation: '',
+            failedOperation: '',
+          )
+          .toJson(),
+      'directory': '/fixture/repair-lineage-copy',
+      'sourceRequest': attempt.modelRequest!.toJson(),
+      'sources': {
+        ...working.sources,
+        'lib/main.dart': SelectedRepairRequest.fingerprint(
+          RequestHistoryFixture.after,
+        ),
+      },
+    });
+    final basis = CandidateReopenBasis.capture(
+      projectId: project.id,
+      workingRecord: records.getString('studio.generation.v1.${project.id}')!,
+      working: working,
+      sourceBase: failed,
+      prepared: prepared,
+      evidence: evidence,
+    );
+    await CandidateVerificationStore(records, project.id).start(
+      prepared.copy(phase: SourceGenerationPhase.verifying),
+      () {},
+      reopenBasis: basis,
+      repairRequestReference: reference,
+      sessionAdmission: AgentSessionRunAdmission(
+        records,
+        project,
+        AgentSessionBinding.select(
+          session: session,
+          projectId: project.id,
+          boardTaskId: 'Tresolve',
+        ),
+      ),
+    );
   }
   records.readOnly = true;
   records.writeAttempts = 0;
@@ -1323,11 +1420,19 @@ Future<Widget> selectedRepairFixtureHome() async {
   return StatefulBuilder(
     builder: (context, refresh) => Scaffold(
       appBar: AppBar(
-        title: const Text('Selected repair provenance UI fixture'),
+        title: Text(
+          lineageMode
+              ? 'Repair candidate lineage UI fixture'
+              : 'Selected repair provenance UI fixture',
+        ),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          if (lineageMode)
+            const Text(
+              'New supplied linked startup only. No model, source copy, SDK or preview ran. Open and reload must preserve every record.',
+            ),
           const Text(
             'Three supplied repair observations: proposed, cancelled locally, '
             'and unresolved. Requested task Tresolve differs from failed operation analyze. '
@@ -1340,6 +1445,25 @@ Future<Widget> selectedRepairFixtureHome() async {
           Text('Records unchanged: ${baseline == jsonEncode(records.values)}'),
           OutlinedButton(
             onPressed: () async {
+              if (lineageMode) {
+                final controller = AgentSessionController(
+                  AgentSessionStore(records, project),
+                  createRecoveryHost: () => host,
+                )..load();
+                controller.open(RequestHistoryFixture.sessionId);
+                await Navigator.of(context).push<void>(
+                  MaterialPageRoute(
+                    builder: (_) => AgentSessionScreen(
+                      controller: controller,
+                      projectName:
+                          'Supplied repair lineage — production screen',
+                    ),
+                  ),
+                );
+                controller.dispose();
+                if (context.mounted) refresh(() {});
+                return;
+              }
               final controller = SourceReviewController(
                 project: project,
                 generated: working,
@@ -1368,7 +1492,11 @@ Future<Widget> selectedRepairFixtureHome() async {
               controller.dispose();
               if (context.mounted) refresh(() {});
             },
-            child: const Text('Open selected repair history'),
+            child: Text(
+              lineageMode
+                  ? 'Open repair candidate lineage'
+                  : 'Open selected repair history',
+            ),
           ),
         ],
       ),

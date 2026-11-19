@@ -12,6 +12,9 @@ import '../services/application_store.dart';
 import '../services/candidate_reopen_context_store.dart';
 import '../services/candidate_verification_store.dart';
 import '../services/candidate_request_lineage_store.dart';
+import '../services/candidate_repair_lineage_store.dart';
+import '../models/candidate_repair_lineage.dart';
+import '../models/selected_repair_request.dart';
 import '../models/session_proposal_reference.dart';
 import '../models/candidate_request_lineage.dart';
 import '../services/generation_host.dart';
@@ -110,18 +113,35 @@ class SavedCandidateRecoveryController extends BaseController {
       ).load().runs.last;
       final lineageKey =
           '${CandidateRequestLineage.prefix}${project.id}.$runNumber';
-      String? lineageRaw;
+      final repairLineageKey =
+          '${CandidateRepairLineage.prefix}${project.id}.$runNumber';
+      String? lineageRaw, repairLineageRaw;
       var lineageReadable = false;
       SessionProposalOrigin? initialOrigin;
+      SelectedRepairRequestReference? repairReference;
       try {
         lineageRaw = records.getString(lineageKey);
-        initialOrigin = CandidateRequestLineageStore(
-          records,
-          project.id,
-        ).load(run)?.lineage.origin;
+        repairLineageRaw = records.getString(repairLineageKey);
+        if (lineageRaw != null && repairLineageRaw != null) {
+          throw StateError('Conflicting candidate request origins.');
+        }
+        if (lineageRaw != null) {
+          initialOrigin = CandidateRequestLineageStore(
+            records,
+            project.id,
+          ).load(run)?.lineage.origin;
+        }
+        if (repairLineageRaw != null) {
+          repairReference = CandidateRepairLineageStore(
+            records,
+            project.id,
+          ).load(run)?.lineage.repairRequestReference;
+        }
         lineageReadable = true;
       } catch (_) {
-        // Legacy or unavailable optional lineage grants no inferred origin.
+        initialOrigin = null;
+        repairReference = null;
+        // Optional absent/unreadable/conflicting proof grants no inferred origin.
       }
       workingHost = _createHost();
       candidateHost = _createHost();
@@ -144,11 +164,23 @@ class SavedCandidateRecoveryController extends BaseController {
       );
       if (isDisposed || epoch != _epoch) return;
       _store.requireUnchanged(context);
-      if (lineageReadable && records.getString(lineageKey) != lineageRaw) {
-        throw StateError('Initial request lineage changed during reopening.');
+      if (lineageReadable &&
+          (records.getString(lineageKey) != lineageRaw ||
+              records.getString(repairLineageKey) != repairLineageRaw)) {
+        throw StateError('Request lineage changed during reopening.');
       }
       if (initialOrigin != null) {
         CandidateRequestLineageStore(records, project.id).load(run);
+      }
+      if (repairReference != null) {
+        final retained = CandidateRepairLineageStore(
+          records,
+          project.id,
+        ).load(run);
+        if (retained?.lineage.repairRequestReference.encode() !=
+            repairReference.encode()) {
+          throw StateError('Repair request lineage changed during reopening.');
+        }
       }
       final before = AgentSession.fromJson({
         ...context.session.toJson(),
@@ -182,6 +214,7 @@ class SavedCandidateRecoveryController extends BaseController {
         proposal: basis.evidence.proposal,
         modelRequest: basis.evidence.modelRequest,
         initialRequestOrigin: initialOrigin,
+        repairRequestReference: repairReference,
       );
       final publisher = working;
       candidate = SourceCandidateController(

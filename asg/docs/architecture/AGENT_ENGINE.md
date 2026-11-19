@@ -3280,3 +3280,105 @@ context as well as repair metadata. The native probe demonstrates stale-cache ri
 the acceptance matrix requires separate-adapter approval/session/working/failure
 refusals before preparation. This clarification adds no runtime behavior. Re-review
 the forward revised PR head and rerun mandatory CI; prior-head review is invalid.
+
+
+19 November2026 — PR762 verified mergedac352a2e8c62192378cda67e7414d13f47c8aaa9,
+exacttree8a230ccc7bf441debf3e06cb6287698a60e27ce8 matches all3 final docs. Fresh
+reviewb5cd70439e2b603d26a075c714911c514b472fbb/base2c880428 inspected the final
+contract and resolved its one pre-merge finding: durable preparation must compare
+full captured approval/session/working/failure context as well as repair metadata.
+Forward fix preserved published history; earlier-head review/CI were not used for
+merge. RequiredCI44627495095 Flutter135925243815/Python135925244026 both SUCCESS,
+every mandatory step SUCCESS; no conversations; unchanged head/base/main rechecked.
+Plugin PR/main/issue404OPEN and fetchedmain/tree verified. Probes3/focused44/product32/
+inventory9 PASS. Native read-only guard positive control succeeds with unchanged
+records; stale-origin comparison refuses before authorize and leaves durable bytes
+unchanged. Latest control log:/tmp/asg-404-repair-candidate-lineage-guard-controls.log.
+No runtime/schema behavior changed by the contract. One review rework, no escaped
+defect observed; timing remains coordinator/manual evidence, not provider timing.
+Coordinator merged/outcome_verified recorded before integration and writer release.
+
+Immediately claimed F20/CE01 implementation404-repair-candidate-lineage from verified
+main in the existing registered worktree,33 literal paths under existing#404.
+Started pure CandidateRepairLineage codec: separate version1 key/7-field2MiB record,
+explicit PR761 reference, exact256KiB raw pre-admission session, context digest,
+project/run/dispatch identity and JSON-safe ordinal. No duplicate original session
+bytes: original request session remains in the referenced immutable origin. Reject
+foreign/unsafe/duplicate/version/shape/bound/canonical data with sanitized private
+JSON errors. These codecs alone prove neither a stored relationship nor authority.
+No persistence registration/transaction, joint origin/context validation, preparation
+or recovery wiring, UI or stronger historical relationship is implemented yet.
+
+Foundation16 focused tests pass (4 new codec/privacy/adverse cases plus existing
+origin/initial-lineage/architecture checks); clean Flutter analysis and formatting.
+Global run35 is accepted by the new codec, avoiding a false per-session32 bound.
+Logs:/tmp/asg-repair-lineage-model-{test,analyze,format}.log. Supplied pure fixtures
+only; no live inference, SDK execution, source copy/restore, stable replacement,
+provisioning or deployment. Owner-started processes and unrelated dirty edits stay
+preserved. FullF20/CE01 and umbrella404 stay open; #400/F23-last/marketplace gates
+remain. No independent second task is ready.
+
+Next owned work: joint exact origin/attempt/basis/context/session validation, then
+typed full durable preparation guard, immutable atomic startup reservation, native
+storage/race/retry tests and independent historical review. Full regression/builds/
+IAB/exact PR review/required CI/verified merge remain pending. Keep the new claim
+active and resume it first; no partial implementation is marked Done or published.
+
+
+F20/CE01 repair-candidate lineage implementation checkpoint — PR762 base.
+Added pure joint origin/attempt/evidence/failed-source/working/context/run validation,
+request-to-admission session prefix/revision checks and exactly one new admission.
+Canonical proposal summary/changes and requested/observed provenance are compared,
+including unchanged selected input hashes. Retargeted origin, changed context digest
+with wrong working/summary, altered terminal entry, bad extension or wrong admission
+cannot inherit proof. Unknown response identity remains unknown. Pure retained-record
+fixtures may represent different requested/observed IDs; actual request transport
+continues rejecting a reported model mismatch before returning a proposal.
+
+Added typed CandidateRepairLineageStore: exact explicit lookup; asynchronous
+read-only conditional preparation comparison of ALL fixed repair context keys plus
+origin/journal; private immutable startup reservation; independent consistent exact
+historical join. New optional schema/key validation is registered and isolated in
+StudioDatabase. SourceReviewController awaits the full durable guard before copying
+and again after preparation, retaining a separate candidate path on later refusal;
+normalization keeps the explicit repair pointer while removing repairRun as before.
+SourceCandidateController forwards that pointer. CandidateVerificationStore commits
+the new absent-key companion with its existing journal/candidate/session/execution/
+task-history/context startup transaction before host/receipt entry. Initial and repair
+origins conflict; each new linked startup also refuses an occupied opposite-origin
+slot. Old formats and no-reference callers retain existing behavior.
+
+Native preparation matrix8 passes: positive unchanged comparison plus separate
+adapter origin/repair-journal/approval/session/working/source-failure/candidate-journal
+changes refuse before authorization. Every durable record is compared before/after
+the guard: no writes or added records. Atomic startup6 cases pass: success, failed
+write, origin race, occupied repair slot, occupied initial slot and simultaneous
+origins; refusal retains all records (apart from explicit injected race) and creates
+no partial startup. One additional actual native linked startup/cold-reopen test
+retains exact pointer/raw pre-session after current approval withdrawal and working
+byte rotation; optional corrupted companion is isolated while journal/origin/working
+facts remain readable. Historical read also refuses conflicting origins independently
+of current state. These are supplied providers/pure contexts/native DB transactions,
+not command receipts, actual SDK execution, prepared-folder acceptance or live model.
+
+Two new fixture setup mistakes were corrected under existing guards: prepared data
+retained old working verification steps and was correctly refused as not fresh;
+reset its evidence to a new unverified candidate. A test-only different response
+model was correctly rejected by SourceEditProposer; restored matching supplied
+transport identity, retained differing identities only in pure historical DTO tests,
+and included the existing mismatch-refusal transport suite in the rerun. No guard
+was weakened and earlier fixture/model observations were not relabelled.
+
+Latest focused184 pass, clean Flutter analysis and focused formatting/diff checks.
+This includes9 actual native cases,6 atomic startup cases, pure model/metadata and
+existing controller/startup/initial-lineage/transport/architecture regressions.
+Logs:/tmp/asg-repair-lineage-startup-test4.log,
+/tmp/asg-repair-lineage-startup-analyze3.log and same-prefix -format.log/-format2.log.
+No owner process stopped, stable app replaced, model downloaded or deployment done.
+
+Remaining owned work: dedicated selected-repair controller adverse-path integration
+coverage, preserving the optional pointer around awaited recovery inspections and
+fresh-consent retry, independent run-history projection/UI and fresh labelled IAB,
+then full regression/build/product/inventory, exact review/required CI/verified merge.
+The implementation remains unmerged/unpublished and404-repair-candidate-lineage
+stays claimed. FullF20/CE01/umbrella404 and deferred400 acceptance stay open.

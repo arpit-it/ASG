@@ -336,6 +336,7 @@ class SourceCandidateController extends BaseController {
         _authorize,
         reopenBasis: reopenBasis,
         initialRequestOrigin: evidence.initialRequestOrigin,
+        repairRequestReference: evidence.repairRequestReference,
         sessionAdmission: binding == null
             ? null
             : AgentSessionRunAdmission(records, project, binding),
