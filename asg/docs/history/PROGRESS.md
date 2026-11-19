@@ -15425,3 +15425,72 @@ regressions and final-source browser smoke are distinguished. No live inference,
 model install/download, SDK execution of supplied source or broadened platform/
 CE01 acceptance claimed. Exact PR review/required CI/verified merge still gate
 completion; umbrella404 remains OPEN and this implementation retains ownership.
+
+
+19 November 2026 — PR755 verified merged92625ca0b104bd92ced70ffef747b62dde700c26,
+exacttreef2e303d5d7a8a342562e3a0b0cf483b5b8d09543 matches all19 tested blobs.
+Fresh exactreview64a8ddaf/baseb27e9e75 found no blockers; requiredCI44591089757
+bothSUCCESS, conversations empty. Plugin PR/main/fetchedorigin and issue404OPEN
+verified. Delivered bounded metadata-only selected-session initial request history,
+atomic reserve/return context, truthful uncertainty/local outcomes and independent
+read-only reopen UI. FullFlutter2067/11existing skips/format528/analyze/fixtureanalysis/
+web/macOSdebugcompile/host56/product32/inventory9 passed, with actual native DB
+stale-context/reopen/corruption and final IAB729699e9 no replay/restore/effects.
+Prepublication native CAS finding was fixed and all affected checks/builds/IAB
+repeated; no escaped defect or live/generalCE01/platform-wide claim. Coordinator
+merged/outcome_verified recorded before integration/writer release. Owner dirty
+root IDE/history edits and processes preserved. Immediately claimed the next
+request-to-candidate lineage investigation from verified main.
+
+CE01 next bounded prerequisite investigation under #404:
+404-session-request-candidate-lineage-investigation. Concrete gap: request journal
+retains numbered source/model/approval/session metadata, but ApprovedSourceProposal
+has no initial request reference, and CandidateReopenBasis serializes only task,
+approval, proposal text and model provenance before admitted context/run identity.
+Acceptance: trace actual request return/preparation/strict context/startup/publication
+records; test two identical returned proposals from distinct explicit requests and
+show whether provenance can be distinguished. Define one bounded explicit typed
+reference and versioned durable lineage increment or exact missing prerequisite,
+including original selected versus admitted session, returned-outcome proof, CAS,
+missing/foreign/unresolved proof, legacy/unbound and repair behavior. Never match
+by latest/time/proposal hashes or infer accepted/executed work. Preserve old schemas
+unless explicitly versioned, repair budgets, consent and last working output. Run
+focused deterministic/native persistence regressions and a disposable ambiguity
+probe; no model/SDK effects. Docs-only in progress; no new reference/admission
+behavior delivered. This is the sole immediate follow-up; no independent second
+writer is ready under the requirement dependencies.
+
+
+CE01 request-to-candidate lineage investigation found a deterministic ambiguity on
+verified PR755 main: two actual selected-session journal/proposer requests returned
+identical valid source/model facts as distinct requests1/2, while their captured
+CandidateReopenBasis bytes are identical and contain no request reference. Probe1
+passes; working bytes unchanged and no candidate execution started. Initial disposable
+probe used a nonexistent sourceRequest copy parameter; corrected to the actual typed
+decoder before the passing run. Focused request/proposer/candidate-context/controller/
+session admission100 regressions pass. Logs:/tmp/asg-404-session-request-candidate-lineage-
+investigation-{probe,baseline}.log. Existing execution/consent/repair guards are intact;
+this is missing explicit recorded lineage, not proof of unsafe execution.
+
+AGENT_ENGINE.md specifies one bounded next implementation: a terminal-entry identity
+reference carried through initial preparation, and a versioned companion lineage
+record atomically published with startup while preserving strict existing v1 context
+formats. Exact original raw selected session is retained separately from the admitted
+revision/dispatch; raw digest is never reconstructed from a typed projection. Historical
+read-only proof joins exact request/companion/context/run under a consistent read-set,
+with unavailable legacy/corrupt proof, no latest/hash matching, replay, model authenticity,
+semantic completion or new authority. Acceptance includes identical requests, repair/
+unbound copy behavior, wrong or unresolved proof, raw session formatting, native CAS/
+startup refusal/reopen and narrow UI/IAB/full validation. This is docs-only; no runtime,
+record schema, model/SDK/platform behavior changed. Required investigation publication,
+fresh review, CI and verified merge remain before that dependent implementation.
+
+
+CE01 lineage investigation local validation complete: disposable probes2 pass,
+including identical-return ambiguity and valid formatted raw-session identity that
+differs from canonical typed re-encoding. Focused100/product32/inventory9 pass;
+diffcheck clean. Exact current source/working records and legacy model fixture facts
+are preserved; no runtime/schema/live-model/SDK/UI/platform change. Findings and
+one bounded companion-record implementation acceptance are recorded in AGENT_ENGINE.md
+and this sole task queue. Publish/review/requiredCI/verifiedmerge remain gates before
+reference propagation, startup CAS companion or historical UI implementation.
