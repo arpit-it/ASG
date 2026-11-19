@@ -17236,3 +17236,172 @@ exact PR review, required CI and verified remote merge remain pending; retain th
 404-repair-return-context claim and resume this owned work first. Umbrella404/CE01
 stay open, and dependent exact repair-attempt lineage remains ineligible until this
 prerequisite merges. No independent second task is ready.
+
+
+19 November2026 — PR759 verified merged a8ddcdefeacf64c6ff34219368a2ba9da645ccd1,
+exacttreea46074364bc645bf23feb13e854d741766ac8d97 matches all9 tested blobs.
+Fresh reviewf4a51074/base4f591c70 found no blockers; requiredCI44609015001 both jobs/
+all mandatory steps SUCCESS, threads empty. Plugin PR/main/fetchedorigin/tree/
+issue404OPEN verified. Delivered durable repair reservation/proposed-return context
+guards and one-terminal-write uncertainty, preserving budgets and legacy absence.
+Full2099/11existing skips/native12/format537/analyze/web/macOScompile/product32/
+inventory9 pass. Coordinator merged/outcome_verified recorded before integration/
+writer release. Owner primary dirty edits/processes preserved; no live inference,
+installs, stable replacement or deployment. Umbrella404/CE01 remain in progress.
+
+Immediately started bounded CE01 investigation under existing#404:
+404-repair-request-provenance-investigation. Existing repair attempts retain number,
+start, failed run, status, proposal and model provenance; they do not explicitly
+record requested board task or the selected captured input subset. Failure category
+is the failing operation and is not automatically the requested task. New return
+context guards current storage but do not add durable request-origin fields.
+Acceptance: trace actual task/prompt, selected capture, context/journal/outcome and
+normalization; probe distinct requested tasks or selected scopes with identical
+repair output and compare retained facts. Define one bounded explicit origin/
+reference/companion increment or precise prerequisite, preserving strict old formats,
+current CAS, budgets, consent/Stop/recovery and legacy unknown provenance. No latest/
+order/time/content guessing, replay, source restore or execution/completion claim.
+Use supplied providers and focused Mac-local regressions only. Docs-only scope is
+claimed; no stronger repair lineage is implemented. No independent second task is
+ready under the requirement dependencies.
+
+
+CE01 repair request-origin provenance investigation checkpoint on verified PR759:
+Two actual supplied-proposer probes pass, with the new durable return-context
+guards active and current. Probe1 requests the same supplied repair against one
+failed analyze run for Tanalyze and Ttest. Returned ApprovedSourceProposal task IDs
+differ, and normalized candidate bases retain that task difference. Repair journal
+entries retain distinct attempt numbers1/2, but after removing number/startedAt
+their stored facts are identical: only modelRequest/number/startedAt/failure/status/
+proposal exist. Both failure categories are analyze, so that category cannot prove
+requested board-task intent. This is missing recorded request provenance, not an
+unsafe execution or a claim that candidate bases lose their own task IDs.
+
+Probe2 keeps requested task Tanalyze and the full failed-source manifest fixed,
+but selects lib/main.dart alone versus also selecting unchanged lib/extra.dart.
+The actual supplied prompts differ by that extra captured file. Validated repair
+output is identical; the attempt facts (apart from number/time) AND pure normalized
+v1 CandidateReopenBasis bytes are identical. A full source manifest does not reveal
+which subset was captured for the request. Pure basis capture follows the production
+normalization shape; neither probe executes a preparer/SDK/host or reads real source
+files. Only the repair journal changes; working/candidate/session records stay byte-
+identical and no execution checkpoint is created. Initial-request origin remains
+null for these actual repairs. No model/network/inference or source restoration.
+
+Probes:/tmp/asg-404-repair-request-provenance-probe_test.dart; log same-prefix
+-probe.log. Existing focused context/repair/proposer/preparation/reopen regressions93
+pass; log /tmp/asg-404-repair-request-provenance-baseline.log. Stronger historical
+repair lineage therefore needs explicit durable requested-task and captured-input
+metadata, not only a reference to the legacy proposed attempt entry. Existing
+RepairRequestContext is a transient fixed-key guard and must not be misrepresented
+as a persisted request-origin snapshot. Legacy records stay unknown for these facts.
+
+Remaining investigation: define one bounded versioned request-origin metadata and
+terminal reference contract, including atomic reservation/return binding, all captured
+input hashes, optional selected-session/raw working identity, limits/privacy, old
+format compatibility and independent read-only review. Preserve the verified durable
+CAS/write-once uncertainty, budget consumption, current consent/source/Stop/recovery
+and last working output. Do not infer by ordinal/time/content, reconstruct missing
+intent from failure category or inherit an initial reference. No new record/reference
+or stronger candidate lineage is implemented; this claimed docs-only investigation
+is ongoing and must be reviewed/merged before dependent implementation.
+
+
+Repair request-provenance investigation result and next contract — PR759 base.
+All3 supplied probes pass. In addition to task/scope ambiguity, a third probe
+confirms a new proposed attempt can reconstruct its exact canonical reserved entry
+from number/start/failure and requested-only model/output settings, status reserved
+and proposal null. Construct ModelRequestProvenance(model, outputTokens) explicitly:
+withResponseModel(null) intentionally retains an observed response and does NOT clear
+it. The initial probe exposed that mistaken helper assumption; corrected without
+changing product code or relabelling response provenance. Requested version1 and
+observed-response version2 remain distinct. Valid formatted selected-session raw
+bytes survive the real repair flow, and their hash differs from typed re-encoding.
+Never reconstruct those raw bytes from a typed projection. Logs:
+/tmp/asg-404-repair-provenance-all-probes.log; focused93 remains unchanged-source
+regression evidence. These are supplied providers/pure capture, not live inference,
+source-file inspection, actual preparation, SDK execution or task completion.
+
+The next coherent implementation is 404-selected-repair-provenance under #404:
+durable requested-task/input provenance and independent read-only history for NEW
+selected-session repair requests. Keep bare legacy/unbound repair behavior and the
+strict v1 RepairAttempt/Journal/Basis/Context formats unchanged; older attempts gain
+no inferred task or input scope. Existing durable repair context and one-terminal-
+write uncertainty remain mandatory. Exact candidate repair linkage waits until
+this provenance prerequisite has been delivered and verified.
+
+Use a new canonical version1 companion key
+studio.selectedRepairRequest.v1.<project>.<attempt>. Proposed fields: version,
+projectId, attemptNumber, boardTaskId, requirementId, requirementsRevision,
+reservationSha256, failedRunSha256, workingSha256 (explicit null for legacy absence),
+requestSessionRecord (exact original raw selected session), sourceSha256 (ALL captured
+selected inputs), modelRequest (requested-only provenance). No prompt, new source
+bodies, private endpoint, credential, raw error or transcript. Bound to2MiB UTF-8;
+one raw session is bounded256KiB and worst-case outer string escaping plus small
+metadata fits that bound. Enforce existing valid IDs, <=8 safe lib/test paths and
+SHA256 fingerprints; use exact reserved-entry and canonical failed-run digests,
+and exact original working-record bytes when present. Requested model settings
+keep their existing limits and ceiling; no response-model downgrade is performed.
+
+Attempt number is the existing project-global sequence, NOT a per-session32 limit.
+Require positive JSON-safe integers <=9007199254740991 for new companion/reference
+identities; preserve legacy journal readability rather than silently renumbering or
+changing budget rules. Validate requested task/requirement against the selected raw
+session membership, its unchanged approved context/current board and actual requested
+task; captured hashes must match each selected failed-snapshot source, including
+unchanged inputs. The failure category is never substituted for requested task.
+
+Construct this metadata only inside the typed reservation flow after actual attempt
+number/time are known. Commit companion and budget reservation atomically, compare
+companion key absent plus the verified fixed-key context/journal read-set, and expose
+no provider before successful commit. If metadata/identity/size/storage/CAS fails,
+write neither and start no transport. Preserve distinct explicit attempts even for
+identical proposals and later journal growth. On proposed return, compare exact saved
+companion bytes and full PR759 context in the same journal CAS. The companion is
+immutable; local failed/cancelled outcomes retain original intent but grant no new
+rights. Failed terminal writes stay reserved/unresolved; no fallback record rewrite
+or budget refund. Never overwrite a preexisting/dangling companion to reuse a slot.
+
+A separate pure returned-reference DTO may contain version/projectId/attemptNumber/
+attemptSha256/originSha256, bounded1KiB. Produce it only after the successful proposed
+outcome commit and exact relation validation. attemptSha256 identifies the canonical
+terminal entry; originSha256 identifies exact canonical companion bytes. Validate
+origin.reservationSha256 by explicit requested-only reconstruction of the reserved
+entry, preserving original number/time/failure. Require terminal proposed status and
+matching task/source/model/approval/failure/working facts available in the jointly
+retained records. A DTO or hash match alone is not permission or authenticated cause.
+Do not add or infer a repair-candidate companion in this increment; there is no replay
+or restored proposal/source/verification/acceptance authority.
+
+Historical projection joins exact origin/attempt/reference under a consistent read-
+set and independently of current approval, working output or latest matching content.
+Show recorded task/requirement, selected paths/hashes, requested versus observed
+model and truthful intent/local outcome with explicit limits. Reserved remains
+unknown; proposed does not mean accepted or repaired. Missing/corrupt/foreign or
+legacy/unbound origin makes stronger provenance unavailable independently of old
+repair history/budget facts. Bound rendered projections with explicit omission/count
+labels when needed; never trim journals or alter consumed budgets silently. Reload
+starts no request, source capture or tool and does not restore a proposal. Keep
+reader failure/retry/disposal independent of active workflows and hide private bytes.
+
+Acceptance: actual selected-session requests for distinct board tasks and captured
+subsets retain their explicit differences through native close/reopen; later matching
+returns cannot retarget references. Enforce canonical shape/version/duplicate and
+byte bounds; bad task/requirement/session/model/failure/working/source hashes refuse
+new recording/return without partial writes. Test raw formatted session identity,
+requested/response provenance versions, typed reserved-entry reconstruction, all
+selected unchanged inputs, actual native stale adapters, metadata/journal persistence
+failures and immutable-slot races; unresolved budget stays consumed. Cover legacy/
+unbound absence, independent history after withdrawal/working rotation, corrupt
+optional origin preserving other facts, controller lifecycle and narrow/high-text UI
+plus fresh labelled IAB. Require format/analyze/fullFlutter/relevant builds/product/
+inventory, exact fresh review/required CI/protected merge and verified main. No live
+inference is needed for these supplied cases; any later live evidence must verify
+the prescribed runtime separately.
+
+This completes the bounded investigation locally only: probes3/focused93, product/
+inventory checks and exact publication/review/CI/verified merge remain recorded
+separately. No new origin schema, returned reference or stronger repair lineage is
+implemented by this docs-only change. Umbrella404/CE01 remain open; only this single
+provenance prerequisite becomes implementation-eligible after the investigation's
+verified merge. No independent second task is ready.
