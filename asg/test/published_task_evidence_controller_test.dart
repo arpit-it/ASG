@@ -14,6 +14,7 @@ import 'planning_conversation_test.dart' show project;
 import 'agent_task_decision_store_test.dart' show dependentPublication;
 
 import 'package:asg/services/agent_task_decision_store.dart';
+import 'package:asg/models/agent_task_decision.dart';
 
 import 'published_task_evidence_store_test.dart' show evidenceFixture;
 
@@ -28,7 +29,42 @@ class ControlledEvidenceStore extends PublishedTaskEvidenceStore {
   }
 }
 
+class ControlledDecisionStore extends AgentTaskDecisionStore {
+  ControlledDecisionStore(RecordStorage records) : super(records, project);
+  AgentTaskDecision? Function()? action;
+  @override
+  AgentTaskDecision? load(AgentSession session, int number) =>
+      action?.call() ?? super.load(session, number);
+}
+
 void main() {
+  test('disposal during retained-history load suppresses late decision and further reads', () async {
+    final f = await evidenceFixture(allAuthoredRules: true, taskId: 'Tresolve');
+    final decisions = ControlledDecisionStore(f.records);
+    final retained = await decisions.confirm(
+      decisions.select(f.session, f.run.number),
+      consent: true,
+      authorized: () => true,
+    );
+    final evidence = ControlledEvidenceStore(f.records);
+    final c = PublishedTaskEvidenceController(
+      evidence,
+      f.session,
+      f.run.number,
+      decisions: decisions,
+    );
+    var notifications = 0;
+    c.addListener(() => notifications++);
+    decisions.action = () {
+      c.dispose();
+      return retained;
+    };
+    c.load();
+    expect(c.decision, isNull);
+    expect(evidence.calls, 0);
+    expect(notifications, 0);
+  });
+
   test(
     'dependent confirmation requires choosing an exact retained prerequisite',
     () async {

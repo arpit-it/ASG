@@ -2144,3 +2144,10 @@ reopen and withdrawal without replay. Its publication/named-test facts are suppl
 not newly executed SDK tests. Protocol20 publication smoke still passes on the same
 isolated binary. These observations establish local bounded behavior, not semantic
 acceptance, arbitrary execution, live inference or unavailable-platform support.
+
+
+The fresh review also covers reentrant disposal during synchronous history/selection
+loading: returned facts are published only while the controller is alive, and a
+disposed controller performs no subsequent evidence read. A failing-then-passing
+regression proves that boundary. Full2,018 tests and fresh IAB/native process probes
+pass on the corrected source; earlier observations remain separately historical.

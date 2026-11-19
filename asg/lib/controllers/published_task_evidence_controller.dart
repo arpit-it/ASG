@@ -53,10 +53,12 @@ class PublishedTaskEvidenceController extends BaseController {
     _prerequisites.clear();
     _options = {};
     try {
-      _decision = decisions.load(selectedSession, runNumber);
+      final value = decisions.load(selectedSession, runNumber);
+      if (!isDisposed) _decision = value;
     } catch (_) {
-      _decisionError = 'Retained decision proof is unavailable. Existing records are preserved.';
+      if (!isDisposed) _decisionError = 'Retained decision proof is unavailable. Existing records are preserved.';
     }
+    if (isDisposed) return;
     try {
       final value = store.load(selectedSession, runNumber);
       if (!isDisposed) _evidence = value;
@@ -71,7 +73,7 @@ class PublishedTaskEvidenceController extends BaseController {
         final task = selectedSession.tasks.items.singleWhere(
           (t) => t.id == _evidence!.taskId,
         );
-        _options = {
+        final options = <String, List<int>>{
           for (final id in task.dependencies)
             id: List.unmodifiable([
               for (final ref in selectedSession.dispatches)
@@ -81,17 +83,21 @@ class PublishedTaskEvidenceController extends BaseController {
                   ref.runNumber,
             ]),
         };
+        if (isDisposed) return;
+        _options = options;
         _select();
       } catch (_) {
-        _decisionError = 'Completion decision is unavailable. Reload exact saved evidence and prerequisite decisions.';
+        if (!isDisposed) _decisionError = 'Completion decision is unavailable. Reload exact saved evidence and prerequisite decisions.';
       }
     }
     update();
   }
 
   bool _hasDecision(int number) {
+    if (isDisposed) return false;
     try {
-      return decisions.load(selectedSession, number) != null;
+      final value = decisions.load(selectedSession, number);
+      return !isDisposed && value != null;
     } catch (_) {
       return false;
     }
@@ -101,14 +107,17 @@ class PublishedTaskEvidenceController extends BaseController {
     _selection = null;
     _consent = false;
     try {
-      _selection = decisions.select(
+      final selection = decisions.select(
         selectedSession,
         runNumber,
         prerequisites: _prerequisites,
       );
-      _decisionError = null;
+      if (!isDisposed) {
+        _selection = selection;
+        _decisionError = null;
+      }
     } catch (_) {
-      _decisionError = 'Completion decision requires every nonempty authored named-test rule to pass and an explicit retained decision for each prerequisite. Manual, advisory, unmapped, stale or missing evidence cannot complete this contract.';
+      if (!isDisposed) _decisionError = 'Completion decision requires every nonempty authored named-test rule to pass and an explicit retained decision for each prerequisite. Manual, advisory, unmapped, stale or missing evidence cannot complete this contract.';
     }
   }
 
