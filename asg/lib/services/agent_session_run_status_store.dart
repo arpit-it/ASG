@@ -16,6 +16,8 @@ import 'agent_task_decision_store.dart';
 import '../models/agent_task_decision.dart';
 import 'record_storage.dart';
 import 'candidate_request_lineage_store.dart';
+import 'candidate_repair_lineage_store.dart';
+import '../models/candidate_repair_lineage.dart';
 import '../models/candidate_request_lineage.dart';
 import 'agent_task_history_store.dart';
 import 'agent_session_publication_store.dart';
@@ -173,11 +175,20 @@ class AgentSessionRunStatusStore {
         // Decision-only proof failure preserves independent retained facts.
       }
       CandidateRequestLineageReview? initialLineage;
+      CandidateRepairLineageReview? repairLineage;
       try {
-        final retained = CandidateRequestLineageStore(
-          records,
-          projectId,
-        ).load(run);
+        final initialRaw = records.getString(
+          '${CandidateRequestLineage.prefix}$projectId.${run.number}',
+        );
+        final repairRaw = records.getString(
+          '${CandidateRepairLineage.prefix}$projectId.${run.number}',
+        );
+        if (initialRaw != null && repairRaw != null) {
+          throw StateError('Conflicting optional candidate origins.');
+        }
+        final retained = initialRaw == null
+            ? null
+            : CandidateRequestLineageStore(records, projectId).load(run);
         if (retained != null &&
             retained.request.sessionId == session.sessionId &&
             retained.request.boardTaskId == reference.boardTaskId &&
@@ -185,8 +196,20 @@ class AgentSessionRunStatusStore {
                 jsonEncode(session.tasks.toJson())) {
           initialLineage = retained;
         }
+        final repair = repairRaw == null
+            ? null
+            : CandidateRepairLineageStore(records, projectId).load(run);
+        if (repair != null &&
+            repair.origin.requestSession.sessionId == session.sessionId &&
+            repair.origin.boardTaskId == reference.boardTaskId &&
+            jsonEncode(repair.lineage.admissionSession.tasks.toJson()) ==
+                jsonEncode(session.tasks.toJson())) {
+          repairLineage = repair;
+        }
       } catch (_) {
-        // Optional lineage failure preserves independent run and task history.
+        initialLineage = null;
+        repairLineage = null;
+        // Optional proof failure preserves independent run and task facts.
       }
       return AgentSessionRunStatus.recorded(
         reference: reference,
@@ -196,6 +219,7 @@ class AgentSessionRunStatusStore {
         finished: run.finished,
         taskHistory: taskHistory,
         initialLineage: initialLineage,
+        repairLineage: repairLineage,
         publication: publication,
         decision: decision,
         decisionState: decisionState,

@@ -16,6 +16,7 @@ import '../models/portable_project_archive.dart';
 
 import '../models/repair_attempt.dart';
 import '../models/selected_repair_request.dart';
+import '../models/candidate_repair_lineage.dart';
 
 import 'package:sembast/sembast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -131,6 +132,7 @@ class StudioDatabase implements ConditionalRecordStorage {
             !record.key.startsWith(SessionProposalRequestStore.prefix) &&
             !record.key.startsWith(CandidateRequestLineage.prefix) &&
             !record.key.startsWith(SelectedRepairRequest.prefix) &&
+            !record.key.startsWith(CandidateRepairLineage.prefix) &&
             !record.key.startsWith('studio.repairAttempts.v1.') &&
             !record.key.startsWith('studio.generationPrevious.v1.') &&
             !record.key.startsWith('studio.requirements.v1.') &&
@@ -166,6 +168,13 @@ class StudioDatabase implements ConditionalRecordStorage {
 
   static void validate(String key, String value) {
     if (key == 'studio.lastProject.v1') return;
+    if (key.startsWith(CandidateRepairLineage.prefix)) {
+      final lineage = CandidateRepairLineage.decode(value);
+      if (lineage.storageKey != key) {
+        throw const FormatException('Candidate repair lineage key changed.');
+      }
+      return;
+    }
     if (key.startsWith(SelectedRepairRequest.prefix)) {
       final origin = SelectedRepairRequest.decode(value);
       if (origin.storageKey != key) {

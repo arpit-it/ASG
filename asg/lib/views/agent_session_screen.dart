@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MPL-2.0
 // Copyright 2026 Arpit Sinha
 
+import 'candidate_repair_lineage_view.dart';
+
 import 'package:flutter/material.dart';
 
 import '../models/agent_session_run_status.dart';
@@ -270,6 +272,9 @@ class _AgentSessionScreenState extends State<AgentSessionScreen> {
                       if (status.available) ...[
                         CandidateRequestLineageView(
                           review: status.initialLineage,
+                        ),
+                        CandidateRepairLineageView(
+                          review: status.repairLineage,
                         ),
                         AgentTaskHistoryView(history: status.taskHistory),
                       ],

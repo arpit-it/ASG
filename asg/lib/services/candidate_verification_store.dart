@@ -4,6 +4,9 @@
 import 'dart:convert';
 
 import '../models/candidate_verification_run.dart';
+import '../models/candidate_repair_lineage.dart';
+import '../models/selected_repair_request.dart';
+import 'candidate_repair_lineage_store.dart';
 import '../models/candidate_reopen_context.dart';
 import '../models/candidate_stop_request.dart';
 import '../models/candidate_recovery_acknowledgement.dart';
@@ -160,6 +163,7 @@ class CandidateVerificationStore {
     AgentSessionRunAdmission? sessionAdmission,
     CandidateReopenBasis? reopenBasis,
     SessionProposalOrigin? initialRequestOrigin,
+    SelectedRepairRequestReference? repairRequestReference,
   }) => _serial(
     () => _start(
       snapshot,
@@ -168,6 +172,7 @@ class CandidateVerificationStore {
       sessionAdmission: sessionAdmission,
       reopenBasis: reopenBasis,
       initialRequestOrigin: initialRequestOrigin,
+      repairRequestReference: repairRequestReference,
     ),
   );
 
@@ -178,8 +183,12 @@ class CandidateVerificationStore {
     AgentSessionRunAdmission? sessionAdmission,
     CandidateReopenBasis? reopenBasis,
     SessionProposalOrigin? initialRequestOrigin,
+    SelectedRepairRequestReference? repairRequestReference,
   }) async {
     if (_owned != null) throw StateError('Verification run already reserved.');
+    if (initialRequestOrigin != null && repairRequestReference != null) {
+      throw StateError('A candidate cannot have conflicting request origins.');
+    }
     _session = null;
     _admittedSession = null;
     _taskHistory = null;
@@ -238,6 +247,18 @@ class CandidateVerificationStore {
             context: context!,
             run: run,
           );
+    if (repairRequestReference != null &&
+        (reservation == null || context == null)) {
+      throw StateError('Repair lineage requires bound candidate context.');
+    }
+    final repairLineage = repairRequestReference == null
+        ? null
+        : CandidateRepairLineageStore(records, projectId).prepare(
+            reference: repairRequestReference,
+            admission: reservation!,
+            context: context!,
+            run: run,
+          );
     await _commit(
       [...journal.runs, run],
       snapshot,
@@ -246,6 +267,7 @@ class CandidateVerificationStore {
       reservation: reservation,
       reopenContext: context,
       lineage: lineage,
+      repairLineage: repairLineage,
     );
     _admittedSession = reservation?.next;
     _owned = run;
@@ -377,6 +399,7 @@ class CandidateVerificationStore {
     AgentSessionReservation? reservation,
     CandidateReopenContext? reopenContext,
     CandidateRequestLineageReservation? lineage,
+    CandidateRepairLineageReservation? repairLineage,
   }) async {
     final storage = records;
     if (storage is! ConditionalRecordStorage) {
@@ -453,7 +476,10 @@ class CandidateVerificationStore {
         if (lineage != null) ...{
           lineage.requestKey: lineage.expectedRequests,
           lineage.key: null,
+          '${CandidateRepairLineage.prefix}$projectId.${runs.last.number}':
+              null,
         },
+        ...?repairLineage?.expected,
         ?contextKey: _expectedReopenContext,
         'studio.generation.v1.$projectId': ?workingRaw,
         ?historyKey: _expectedTaskHistory,
@@ -468,6 +494,7 @@ class CandidateVerificationStore {
       },
       updates: {
         if (lineage != null) lineage.key: lineage.updated,
+        if (repairLineage != null) repairLineage.key: repairLineage.updated,
         if (reopenContext != null) contextKey!: contextRaw!,
         ?historyKey: historyRaw!,
         if (reservation != null)
@@ -480,6 +507,14 @@ class CandidateVerificationStore {
         authorize();
         reservation?.requireCurrent();
         lineage?.requireCurrent();
+        repairLineage?.requireCurrent();
+        if (lineage != null &&
+            records.getString(
+                  '${CandidateRepairLineage.prefix}$projectId.${runs.last.number}',
+                ) !=
+                null) {
+          throw StateError('Conflicting candidate request origin changed.');
+        }
       },
     );
     _expectedJournal = raw;
