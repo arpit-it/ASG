@@ -1503,3 +1503,56 @@ Unknown helper failure remains null, not exit73, zero or cancelled=true.
 Native persistence, controller/UI integration, original receipt provenance and
 full CE01 acceptance remain pending. No new runtime/model/browser observation is
 claimed by these deterministic values and tests.
+
+
+### CE01 atomic bound task-history persistence — 19 November 2026
+
+New bound candidate runs persist studio.agentTaskHistory.v1.<project>.<run> in
+the same CandidateVerificationStore transaction as session admission, candidate,
+journal and execution startup. Expected history absence prevents an orphan or
+foreign record from being overwritten. No receipt preparation or host entry can
+precede this transaction. AgentTaskHistoryStore has no independent write method;
+it constructs validated transaction inputs and performs read-only loads.
+
+Subsequent checkpoints compare the exact prior history bytes, journal/candidate
+bytes and actual saved session bytes. Immutable source/configuration/approval/
+graph and the completed step prefix cannot change. A result must match an already
+persisted pending intent; result and a new pending operation cannot be combined
+into one observation-authorized checkpoint. Pending work and result saves retain
+the existing controller authority split. Cancellation races refuse the pending
+CAS before host entry; actual late results can still be saved against the
+cancelled successor without new execution authority. Failed writes advance no
+in-memory history/session checkpoint, so a bounded retry records no duplicate.
+
+A failed snapshot with a pending operation records interrupted/unknown rather
+than inventing an exit. Finished verification requires no unknown pending result.
+Explicit recovery acknowledgment remains separate: it can close the journal's
+operator-confirmed workflow while the immutable history still records an unknown
+operation. A later consented run has another record and reference; it does not
+rewrite the interrupted history. Candidate Stop intent remains its own existing
+record and does not fabricate a task result.
+
+Approved starter graphs may run test before analyze. New persisted history uses
+model version2 with an immutable operationOrder, validated against the frozen
+approved wire graph and candidate task order. Only resolve first, build last and
+one of each allowlisted operation are permitted; existing version1 histories
+still decode in canonical resolve/analyze/test/build order. The existing session
+version1 schema is unchanged. Legacy/unbound runs without histories return null;
+loads never synthesize, migrate, reconcile or dispatch. Historical reads allow
+later session reference extensions only when the original approval, task graph
+and entire admitted prefix remain equal. Invalid records remain retained and
+unavailable, with sanitized errors.
+
+StudioDatabase validates the new prefix, bounded size and exact project/run key
+before publication and when reopening records. Deterministic CAS fixtures cover
+failure, stale/corrupt history, foreign identity, source/prefix changes and
+withdrawal races. Actual native database close/reopen fixtures retain exact
+history/session/journal/candidate/execution bytes for startup, unknown interrupted
+and known supplied late-result states. Their result values are fixtures, not
+new Flutter execution, application-crash, cleanup or inference evidence.
+Controller fixtures emit intent before result like the native runner and verify
+no later command on withdrawal or disposal. Prior dated native binaries and
+receipts retain their original revision/protocol identities.
+
+No task completion, scheduler, automatic process reconciliation, receipt-publisher
+authentication, user-interface history display or full CE01 acceptance is claimed.
