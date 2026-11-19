@@ -2,6 +2,7 @@
 // Copyright 2026 Arpit Sinha
 
 import 'plan_approval.dart';
+import 'session_proposal_reference.dart';
 import 'model_request_provenance.dart';
 import 'source_edit_proposal.dart';
 import 'candidate_verification_run.dart';
@@ -15,9 +16,11 @@ class ApprovedSourceProposal {
     required this.proposal,
     this.repairRun,
     this.modelRequest,
+    this.initialRequestOrigin,
   });
 
   final ModelRequestProvenance? modelRequest;
+  final SessionProposalOrigin? initialRequestOrigin;
   final String projectId, boardTaskId;
   final PlanApproval approval;
   final SourceEditProposal proposal;

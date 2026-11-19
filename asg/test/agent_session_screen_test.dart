@@ -15,6 +15,12 @@ import 'package:asg/views/project_workspace.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'candidate_request_lineage_test.dart' show lineageFixture;
+import 'candidate_request_lineage_store_test.dart' show admission;
+
+import 'package:asg/models/source_generation.dart';
+import 'package:asg/services/candidate_verification_store.dart';
+
 import 'approved_source_proposer_test.dart' show seed;
 import 'agent_session_publication_test.dart' show publishedFixture;
 import 'agent_session_store_test.dart' show savedRun, selection;
@@ -31,6 +37,72 @@ Future<void> reveal(WidgetTester tester, Finder target, double delta) async {
 }
 
 void main() {
+  test('labelled lineage fixture preserves exact initial reference and stays read-only', () async {
+    final f = await CandidateReopenFixture.create(lineageMode: true);
+    final controller = AgentSessionController(
+      AgentSessionStore(f.uiRecords, TaskHistoryFixture.project),
+    )..open('recoverable');
+    expect(controller.error, isNull);
+    final status = controller.runStatuses.single;
+    expect(status.initialLineage!.request.number, 1);
+    expect(
+      status.initialLineage!.request.modelRequest.model,
+      'supplied-lineage-model',
+    );
+    expect(f.unchanged, isTrue);
+    expect(f.effectAttempts, 0);
+    controller.dispose();
+  });
+
+  testWidgets(
+    'production overview shows exact initial request at 320px enlarged text without effects',
+    (tester) async {
+      final f = await lineageFixture(formatted: true);
+      final journal = CandidateVerificationStore(f.records, project.id);
+      await journal.start(
+        f.basis.prepared.copy(
+          phase: SourceGenerationPhase.verifying,
+          steps: [],
+        ),
+        () {},
+        sessionAdmission: admission(f),
+        reopenBasis: f.basis,
+        initialRequestOrigin: f.origin,
+      );
+      final controller = AgentSessionController(
+        AgentSessionStore(f.records, project),
+      )..open(f.request.sessionId);
+      final before = Map.of(f.records.values);
+      tester.view.physicalSize = const Size(320, 900);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      await tester.pumpWidget(
+        MaterialApp(
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(context)
+                .copyWith(textScaler: TextScaler.linear(2)),
+            child: child!,
+          ),
+          home: AgentSessionScreen(
+            controller: controller,
+            projectName: project.name,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await reveal(
+        tester,
+        find.text('Initial request 1 → candidate run 1'),
+        300,
+      );
+      expect(find.text('Initial request 1 → candidate run 1'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+      expect(f.records.values, before);
+      await tester.pumpWidget(const SizedBox.shrink());
+    },
+  );
+
   testWidgets(
     'overview shows exact retained authored-check decision separately from publication',
     (tester) async {

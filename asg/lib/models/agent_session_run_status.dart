@@ -7,6 +7,7 @@ import 'agent_session_publication.dart';
 import 'agent_task_history.dart';
 import 'agent_task_decision.dart';
 import 'source_generation.dart';
+import 'candidate_request_lineage.dart';
 
 /// Historical confirmation state for this exact saved reference.
 enum AgentSessionDecisionState { absent, recorded, unavailable }
@@ -21,6 +22,7 @@ final class AgentSessionRunStatus {
       taskHistory = null,
       publication = null,
       decision = null,
+      initialLineage = null,
       decisionState = AgentSessionDecisionState.unavailable;
 
   const AgentSessionRunStatus.recorded({
@@ -30,6 +32,7 @@ final class AgentSessionRunStatus {
     required this.pendingOperation,
     required this.finished,
     this.taskHistory,
+    this.initialLineage,
     this.publication,
     this.decision,
     this.decisionState = AgentSessionDecisionState.unavailable,
@@ -41,6 +44,7 @@ final class AgentSessionRunStatus {
   final String? pendingOperation;
   final bool? finished;
   final AgentTaskHistory? taskHistory;
+  final CandidateRequestLineageReview? initialLineage;
   final AgentSessionPublication? publication;
   final AgentTaskDecision? decision;
   final AgentSessionDecisionState decisionState;

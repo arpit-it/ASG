@@ -2,6 +2,8 @@
 // Copyright 2026 Arpit Sinha
 
 import 'session_proposal_request_store.dart';
+import 'candidate_request_lineage_store.dart';
+import '../models/candidate_request_lineage.dart';
 import 'agent_task_decision_store.dart';
 import '../models/agent_task_decision.dart';
 
@@ -126,6 +128,7 @@ class StudioDatabase implements ConditionalRecordStorage {
             !record.key.startsWith(AgentSession.prefix) &&
             !record.key.startsWith(AgentSessionCatalog.prefix) &&
             !record.key.startsWith(SessionProposalRequestStore.prefix) &&
+            !record.key.startsWith(CandidateRequestLineage.prefix) &&
             !record.key.startsWith('studio.repairAttempts.v1.') &&
             !record.key.startsWith('studio.generationPrevious.v1.') &&
             !record.key.startsWith('studio.requirements.v1.') &&
@@ -161,6 +164,10 @@ class StudioDatabase implements ConditionalRecordStorage {
 
   static void validate(String key, String value) {
     if (key == 'studio.lastProject.v1') return;
+    if (key.startsWith(CandidateRequestLineage.prefix)) {
+      CandidateRequestLineageStore.decode(key, value);
+      return;
+    }
     if (key.startsWith(SessionProposalRequestStore.prefix)) {
       SessionProposalRequestStore.decode(key, value);
       return;

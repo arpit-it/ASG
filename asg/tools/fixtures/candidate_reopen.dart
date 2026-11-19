@@ -6,6 +6,7 @@ import 'dart:convert';
 import 'package:asg/controllers/source_review_controller.dart';
 import 'package:asg/models/local_model_config.dart';
 import 'package:asg/models/session_proposal_request.dart';
+import 'package:asg/models/session_proposal_reference.dart';
 import 'package:asg/services/approved_source_proposer.dart';
 import 'package:asg/services/source_edit_proposer.dart';
 import 'package:asg/services/model_provider.dart';
@@ -247,6 +248,7 @@ class CandidateReopenFixture {
   static Future<CandidateReopenFixture> create({
     bool decisionMode = false,
     bool preparationMode = false,
+    bool lineageMode = false,
   }) async {
     decisionMode = decisionMode || preparationMode;
     final old = await TaskHistoryFixture.create();
@@ -371,12 +373,16 @@ class CandidateReopenFixture {
         ],
       },
       originals: {'lib/main.dart': before},
-      responseModel: 'fixture-response',
+      responseModel: lineageMode
+          ? 'supplied-lineage-model'
+          : 'fixture-response',
     );
-    const request = ModelRequestProvenance(
-      model: 'fixture-request',
+    final request = ModelRequestProvenance(
+      model: lineageMode ? 'supplied-lineage-model' : 'fixture-request',
       outputTokens: 4096,
-      responseModel: 'fixture-response',
+      responseModel: lineageMode
+          ? 'supplied-lineage-model'
+          : 'fixture-response',
     );
     final evidence = ApprovedSourceProposal(
       projectId: project.id,
@@ -408,11 +414,42 @@ class CandidateReopenFixture {
       'recoverable',
       board.tasks.map((task) => task.id).toList(),
     );
+    SessionProposalOrigin? initialOrigin;
+    if (lineageMode) {
+      // Explicit supplied setup only; no transport, model, SDK or host execution.
+      final history = SessionProposalRequestStore(
+        records,
+        project.id,
+        selected.sessionId,
+      );
+      await history.reserve(
+        project: project,
+        binding: AgentSessionBinding.select(
+          session: selected,
+          projectId: project.id,
+          boardTaskId: 'Tresolve',
+        ),
+        workingRecord: records.getString('studio.generation.v1.${project.id}')!,
+        originals: {'lib/main.dart': before},
+        modelRequest: const ModelRequestProvenance(
+          model: 'supplied-lineage-model',
+          outputTokens: 4096,
+        ),
+        authorize: () {},
+      );
+      await history.finish(
+        SessionProposalRequestStatus.returnedValidated,
+        proposal: proposal,
+        authorizeReturn: () {},
+      );
+      initialOrigin = history.returnedOrigin;
+    }
     final journal = CandidateVerificationStore(records, project.id);
     final run = await journal.start(
       prepared.copy(phase: SourceGenerationPhase.verifying),
       () {},
       reopenBasis: basis,
+      initialRequestOrigin: initialOrigin,
       sessionAdmission: AgentSessionRunAdmission(
         records,
         project,
@@ -713,6 +750,7 @@ Future<void> main() async {
   final fixture = await CandidateReopenFixture.create(
     decisionMode: const bool.fromEnvironment('ASG_TASK_DECISION_FIXTURE'),
     preparationMode: const bool.fromEnvironment('ASG_PREPARATION_FIXTURE'),
+    lineageMode: const bool.fromEnvironment('ASG_LINEAGE_FIXTURE'),
   );
   runApp(MaterialApp(home: _FixtureHome(fixture)));
 }
@@ -729,7 +767,9 @@ class _FixtureHomeState extends State<_FixtureHome> {
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
       title: Text(
-        widget.fixture.preparationMode
+        const bool.fromEnvironment('ASG_LINEAGE_FIXTURE')
+            ? 'Initial request lineage UI fixture'
+            : widget.fixture.preparationMode
             ? 'Prerequisite preparation UI fixture'
             : widget.fixture.decisionMode
             ? 'Authored-check decision UI fixture'
@@ -739,6 +779,10 @@ class _FixtureHomeState extends State<_FixtureHome> {
     body: ListView(
       padding: const EdgeInsets.all(16),
       children: [
+        if (const bool.fromEnvironment('ASG_LINEAGE_FIXTURE'))
+          const Text(
+            'Supplied initial request lineage fixture. The recoverable run retains request 1 with supplied-lineage-model; no live inference or command execution. Other historical fixture identities remain unchanged.',
+          ),
         const Text(
           'Deterministic in-memory publication, named-test and manual observations. No SDK, files, model or preview runs. Default records refuse writes after setup; the labelled decision fixture permits only explicit decision records.',
         ),

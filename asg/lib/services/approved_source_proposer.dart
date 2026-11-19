@@ -229,7 +229,19 @@ class ApprovedSourceProposer {
       if (_cancelled) throw StateError('Source proposal cancelled.');
       if (initial != null) authorizeRequest();
       requireCurrent(project, evidence);
-      return evidence;
+      if (initial == null) return evidence;
+      final origin = initial.returnedOrigin;
+      if (origin == null) {
+        throw StateError('Initial return origin was not persisted.');
+      }
+      return ApprovedSourceProposal(
+        projectId: evidence.projectId,
+        boardTaskId: evidence.boardTaskId,
+        approval: evidence.approval,
+        proposal: evidence.proposal,
+        modelRequest: evidence.modelRequest,
+        initialRequestOrigin: origin,
+      );
     } catch (error) {
       await initial?.finish(
         _cancelled

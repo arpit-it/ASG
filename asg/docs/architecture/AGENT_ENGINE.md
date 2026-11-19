@@ -2722,3 +2722,37 @@ The proposed encoded bound is4MiB, replacing the unimplemented single-snapshot2M
 proposal. The immutable origin bundle must survive live retry and reopen.
 This corrects a future contract before merge; no product behavior/schema was changed.
 All3 probes pass; previous PR756 revision/review/CI cannot authorize this revision.
+
+
+### Initial-request lineage implementation
+
+SessionProposalRequestReference identifies one canonical returned entry by project,
+session, number and SHA256, bounded to1KiB. SessionProposalOrigin retains its exact
+original raw selected session, bounded256KiB. ApprovedSourceProposer exposes this
+origin only after successful returned-outcome persistence. SourceReviewController
+checks the exact returned proof before preparation and preserves initial origin
+through normalization, while actual repairs do not inherit it.
+
+CandidateRequestLineage is a new canonical4MiB companion under
+studio.candidateRequestLineage.v1.<project>.<run>. It keeps origin reference/raw
+session, exact current pre-admission raw session and exact v1 context digest.
+Origin-to-admission requires matching identity/approval/task graph, unchanged old
+dispatch prefix and revision growth equal to appended dispatch count; admission
+to context requires exactly one append. All captured input fingerprints, exact
+returned changes, model/task/approval/working identity and retained run must agree.
+CandidateVerificationStore commits this fixed-key reservation with context, candidate,
+journal, execution, session and task history in its existing startup CAS. Current
+journal bytes and absent companion are part of the durable read-set; failures start
+no tool and leave no partial admission. Checkpoints retain the companion unchanged.
+
+CandidateRequestLineageStore historical reads join the explicitly referenced entry,
+exact saved run/context and companion under consistent reads, independently of
+today's approval or working record. AgentSessionRunStatusStore composes this optional
+proof without erasing independent facts on failure. CandidateRequestLineageView
+shows recorded preparation facts and explicit limits, with no execution controls.
+SavedCandidateRecoveryController restores only a validated retained original origin
+for existing guarded retry, never by reconstructing raw bytes from typed projections.
+Legacy, unbound, repair and unavailable proof remain without an inferred initial link.
+No existing strict v1 basis/context/request schema or current consent, source, Stop,
+acknowledgment, repair or promotion boundary is weakened. Deterministic supplied
+fixtures remain distinct from live model observations and external authenticity.

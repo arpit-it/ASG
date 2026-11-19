@@ -10,6 +10,8 @@ import '../models/candidate_recovery_acknowledgement.dart';
 import '../models/agent_execution_checkpoint.dart';
 import '../models/source_generation.dart';
 import 'record_storage.dart';
+import 'candidate_request_lineage_store.dart';
+import '../models/session_proposal_reference.dart';
 import 'agent_task_history_store.dart';
 import '../models/agent_task_history.dart';
 import 'agent_session_admission.dart';
@@ -157,6 +159,7 @@ class CandidateVerificationStore {
     String? dispatchId,
     AgentSessionRunAdmission? sessionAdmission,
     CandidateReopenBasis? reopenBasis,
+    SessionProposalOrigin? initialRequestOrigin,
   }) => _serial(
     () => _start(
       snapshot,
@@ -164,6 +167,7 @@ class CandidateVerificationStore {
       dispatchId: dispatchId,
       sessionAdmission: sessionAdmission,
       reopenBasis: reopenBasis,
+      initialRequestOrigin: initialRequestOrigin,
     ),
   );
 
@@ -173,6 +177,7 @@ class CandidateVerificationStore {
     String? dispatchId,
     AgentSessionRunAdmission? sessionAdmission,
     CandidateReopenBasis? reopenBasis,
+    SessionProposalOrigin? initialRequestOrigin,
   }) async {
     if (_owned != null) throw StateError('Verification run already reserved.');
     _session = null;
@@ -216,15 +221,31 @@ class CandidateVerificationStore {
       dispatchId: dispatchId ?? execution?.dispatchId,
     );
     final reservation = sessionAdmission?.prepare(run, execution);
+    final context = reopenBasis == null
+        ? null
+        : CandidateReopenContext.bind(reopenBasis, reservation!.next, run);
+    if (initialRequestOrigin != null &&
+        (reservation == null || context == null)) {
+      throw StateError(
+        'Initial request lineage requires bound candidate context.',
+      );
+    }
+    final lineage = initialRequestOrigin == null
+        ? null
+        : CandidateRequestLineageStore(records, projectId).prepare(
+            origin: initialRequestOrigin,
+            admission: reservation!,
+            context: context!,
+            run: run,
+          );
     await _commit(
       [...journal.runs, run],
       snapshot,
       authorize,
       execution: execution,
       reservation: reservation,
-      reopenContext: reopenBasis == null
-          ? null
-          : CandidateReopenContext.bind(reopenBasis, reservation!.next, run),
+      reopenContext: context,
+      lineage: lineage,
     );
     _admittedSession = reservation?.next;
     _owned = run;
@@ -355,6 +376,7 @@ class CandidateVerificationStore {
     AgentExecutionCheckpoint? execution,
     AgentSessionReservation? reservation,
     CandidateReopenContext? reopenContext,
+    CandidateRequestLineageReservation? lineage,
   }) async {
     final storage = records;
     if (storage is! ConditionalRecordStorage) {
@@ -428,6 +450,10 @@ class CandidateVerificationStore {
     }
     await storage.commitRecords(
       expected: {
+        if (lineage != null) ...{
+          lineage.requestKey: lineage.expectedRequests,
+          lineage.key: null,
+        },
         ?contextKey: _expectedReopenContext,
         'studio.generation.v1.$projectId': ?workingRaw,
         ?historyKey: _expectedTaskHistory,
@@ -441,6 +467,7 @@ class CandidateVerificationStore {
         if (updatedExecution != null) executionKey!: expectedExecution,
       },
       updates: {
+        if (lineage != null) lineage.key: lineage.updated,
         if (reopenContext != null) contextKey!: contextRaw!,
         ?historyKey: historyRaw!,
         if (reservation != null)
@@ -452,6 +479,7 @@ class CandidateVerificationStore {
       authorize: () {
         authorize();
         reservation?.requireCurrent();
+        lineage?.requireCurrent();
       },
     );
     _expectedJournal = raw;

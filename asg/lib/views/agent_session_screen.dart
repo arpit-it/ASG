@@ -7,6 +7,7 @@ import '../models/agent_session_run_status.dart';
 
 import '../controllers/agent_session_controller.dart';
 import 'agent_task_history_view.dart';
+import 'candidate_request_lineage_view.dart';
 import 'saved_candidate_recovery_screen.dart';
 import 'published_task_evidence_screen.dart';
 
@@ -266,8 +267,12 @@ class _AgentSessionScreenState extends State<AgentSessionScreen> {
                         const Text(
                           'Publication evidence is unavailable. Saved run observations remain visible.',
                         ),
-                      if (status.available)
+                      if (status.available) ...[
+                        CandidateRequestLineageView(
+                          review: status.initialLineage,
+                        ),
                         AgentTaskHistoryView(history: status.taskHistory),
+                      ],
                       OutlinedButton(
                         key: ValueKey(
                           'open-saved-candidate-${status.reference.runNumber}',

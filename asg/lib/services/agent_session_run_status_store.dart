@@ -15,6 +15,8 @@ import 'agent_execution_checkpoint_store.dart';
 import 'agent_task_decision_store.dart';
 import '../models/agent_task_decision.dart';
 import 'record_storage.dart';
+import 'candidate_request_lineage_store.dart';
+import '../models/candidate_request_lineage.dart';
 import 'agent_task_history_store.dart';
 import 'agent_session_publication_store.dart';
 import '../models/agent_session_publication.dart';
@@ -170,6 +172,22 @@ class AgentSessionRunStatusStore {
       } catch (_) {
         // Decision-only proof failure preserves independent retained facts.
       }
+      CandidateRequestLineageReview? initialLineage;
+      try {
+        final retained = CandidateRequestLineageStore(
+          records,
+          projectId,
+        ).load(run);
+        if (retained != null &&
+            retained.request.sessionId == session.sessionId &&
+            retained.request.boardTaskId == reference.boardTaskId &&
+            jsonEncode(retained.lineage.admissionSession.tasks.toJson()) ==
+                jsonEncode(session.tasks.toJson())) {
+          initialLineage = retained;
+        }
+      } catch (_) {
+        // Optional lineage failure preserves independent run and task history.
+      }
       return AgentSessionRunStatus.recorded(
         reference: reference,
         sourcePhase: run.snapshot.phase,
@@ -177,6 +195,7 @@ class AgentSessionRunStatusStore {
         pendingOperation: run.snapshot.pendingOperation,
         finished: run.finished,
         taskHistory: taskHistory,
+        initialLineage: initialLineage,
         publication: publication,
         decision: decision,
         decisionState: decisionState,

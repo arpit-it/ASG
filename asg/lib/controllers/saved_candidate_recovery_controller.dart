@@ -11,6 +11,9 @@ import '../models/project.dart';
 import '../services/application_store.dart';
 import '../services/candidate_reopen_context_store.dart';
 import '../services/candidate_verification_store.dart';
+import '../services/candidate_request_lineage_store.dart';
+import '../models/session_proposal_reference.dart';
+import '../models/candidate_request_lineage.dart';
 import '../services/generation_host.dart';
 import '../services/generation_host_factory.dart';
 import '../services/record_storage.dart';
@@ -105,6 +108,21 @@ class SavedCandidateRecoveryController extends BaseController {
         records,
         project.id,
       ).load().runs.last;
+      final lineageKey =
+          '${CandidateRequestLineage.prefix}${project.id}.$runNumber';
+      String? lineageRaw;
+      var lineageReadable = false;
+      SessionProposalOrigin? initialOrigin;
+      try {
+        lineageRaw = records.getString(lineageKey);
+        initialOrigin = CandidateRequestLineageStore(
+          records,
+          project.id,
+        ).load(run)?.lineage.origin;
+        lineageReadable = true;
+      } catch (_) {
+        // Legacy or unavailable optional lineage grants no inferred origin.
+      }
       workingHost = _createHost();
       candidateHost = _createHost();
       if (identical(workingHost, candidateHost) ||
@@ -126,6 +144,12 @@ class SavedCandidateRecoveryController extends BaseController {
       );
       if (isDisposed || epoch != _epoch) return;
       _store.requireUnchanged(context);
+      if (lineageReadable && records.getString(lineageKey) != lineageRaw) {
+        throw StateError('Initial request lineage changed during reopening.');
+      }
+      if (initialOrigin != null) {
+        CandidateRequestLineageStore(records, project.id).load(run);
+      }
       final before = AgentSession.fromJson({
         ...context.session.toJson(),
         'revision': context.session.revision - 1,
@@ -151,7 +175,14 @@ class SavedCandidateRecoveryController extends BaseController {
       ).admitted(context.session, context.dispatchId);
       _context = context;
       _basis = basis;
-      _evidence = basis.evidence;
+      _evidence = ApprovedSourceProposal(
+        projectId: basis.evidence.projectId,
+        boardTaskId: basis.evidence.boardTaskId,
+        approval: basis.evidence.approval,
+        proposal: basis.evidence.proposal,
+        modelRequest: basis.evidence.modelRequest,
+        initialRequestOrigin: initialOrigin,
+      );
       final publisher = working;
       candidate = SourceCandidateController(
         project: project,

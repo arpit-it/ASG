@@ -10,6 +10,7 @@ import '../models/agent_session_binding.dart';
 import '../models/model_request_provenance.dart';
 import '../models/project.dart';
 import '../models/session_proposal_request.dart';
+import '../models/session_proposal_reference.dart';
 import '../models/source_edit_proposal.dart';
 import 'agent_session_admission.dart';
 import 'record_storage.dart';
@@ -29,6 +30,11 @@ final class SessionProposalRequestStore {
   static const prefix = 'studio.sessionProposalRequests.v1.';
   String get key => '$prefix$projectId.$sessionId';
   SessionProposalRequest? _owned;
+  late String _requestSessionRecord;
+  SessionProposalOrigin? _returnedOrigin;
+
+  /// Available only after the matching returned-outcome commit succeeds.
+  SessionProposalOrigin? get returnedOrigin => _returnedOrigin;
   Map<String, String?> _returnContext = const {};
   bool _outcomeWriteAttempted = false;
 
@@ -57,6 +63,19 @@ final class SessionProposalRequestStore {
 
   /// Read-only, including withdrawn sessions. No current approval is inferred.
   SessionProposalRequestJournal load() => _decode(records.getString(key));
+
+  SessionProposalRequest referenced(SessionProposalRequestReference reference) {
+    final requests = load().requests;
+    if (reference.projectId != projectId ||
+        reference.sessionId != sessionId ||
+        reference.number > requests.length ||
+        !reference.matches(requests[reference.number - 1])) {
+      throw const FormatException(
+        'Exact returned request reference is unavailable.',
+      );
+    }
+    return requests[reference.number - 1];
+  }
 
   Future<SessionProposalRequest> reserve({
     required StudioProject project,
@@ -93,6 +112,7 @@ final class SessionProposalRequestStore {
     }
     final admission = AgentSessionRunAdmission(records, project, binding);
     final sessionRecord = admission.requireCurrent();
+    SessionProposalOrigin.decodeSession(sessionRecord);
     final expected = <String, String?>{
       ...AgentSessionAdmission(records, project).approvalRecords(),
       binding.session.storageKey: sessionRecord,
@@ -149,6 +169,8 @@ final class SessionProposalRequestStore {
         }
       },
     );
+    _requestSessionRecord = sessionRecord;
+    _returnedOrigin = null;
     _owned = request;
     _returnContext = Map.unmodifiable({...expected}..remove(key));
     _outcomeWriteAttempted = false;
@@ -192,7 +214,7 @@ final class SessionProposalRequestStore {
       throw StateError('The owned request reservation changed.');
     }
     final now = DateTime.now().toUtc();
-    previous[owned.number - 1] = owned.finish(
+    final completed = owned.finish(
       status,
       at: now,
       returnedSha256: proposal == null
@@ -203,6 +225,14 @@ final class SessionProposalRequestStore {
             },
       responseModel: proposal?.responseModel,
     );
+    final origin = proposal == null
+        ? null
+        : SessionProposalOrigin(
+            reference: SessionProposalRequestReference.fromRequest(completed),
+            requestSessionRecord: _requestSessionRecord,
+          );
+    origin?.requireRequest(completed);
+    previous[owned.number - 1] = completed;
     final next = SessionProposalRequestJournal(previous).encode();
     _outcomeWriteAttempted = true;
     await (records as ConditionalRecordStorage).commitRecords(
@@ -210,6 +240,7 @@ final class SessionProposalRequestStore {
       updates: {key: next},
       authorize: proposal == null ? () {} : authorizeReturn!,
     );
+    _returnedOrigin = origin;
     _owned = null;
   }
 }

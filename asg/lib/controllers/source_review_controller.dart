@@ -12,6 +12,7 @@ import '../models/project.dart';
 import '../models/agent_session.dart';
 import '../models/agent_session_binding.dart';
 import '../services/agent_session_admission.dart';
+import '../services/candidate_request_lineage_store.dart';
 import '../models/plan_approval.dart';
 import '../models/repair_attempt.dart';
 import '../models/session_proposal_request.dart';
@@ -244,7 +245,25 @@ class SourceReviewController extends BaseController {
         _requireWorking();
         _proposer.requireCurrent(project, evidence);
         if (binding != null) {
-          AgentSessionRunAdmission(records, project, binding).requireCurrent();
+          final admission = AgentSessionRunAdmission(records, project, binding);
+          admission.requireCurrent();
+          final origin = evidence.initialRequestOrigin;
+          if (origin != null) {
+            CandidateRequestLineageStore(
+              records,
+              project.id,
+            ).requirePreparation(
+              origin: origin,
+              admission: admission,
+              evidence: evidence,
+              sourceBase: _proposalSource ?? generated,
+              workingRecord:
+                  _workingRecord ??
+                  (throw StateError('Original working record is unavailable.')),
+            );
+          }
+        } else if (evidence.initialRequestOrigin != null) {
+          throw StateError('Initial proposal has no selected session.');
         }
       }
 
@@ -269,6 +288,9 @@ class SourceReviewController extends BaseController {
         approval: evidence.approval,
         proposal: evidence.proposal,
         modelRequest: evidence.modelRequest,
+        initialRequestOrigin: evidence.repairRun == null
+            ? evidence.initialRequestOrigin
+            : null,
       );
       _proposal = candidateEvidence;
       if (publishCandidate != null) {

@@ -4,6 +4,10 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:asg/models/agent_session_binding.dart';
+import 'package:asg/services/agent_session_admission.dart';
+import 'package:asg/services/candidate_request_lineage_store.dart';
+
 import 'package:asg/services/application_store.dart';
 import 'package:asg/services/generation_input.dart';
 import 'package:asg/services/generation_host_native.dart';
@@ -17,6 +21,7 @@ import 'package:asg/services/candidate_verification_store.dart';
 import 'package:asg/services/generation_host.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'candidate_request_lineage_test.dart' show lineageFixture;
 import 'candidate_reopen_context_test.dart' show ReopenFixture, reopenFixture;
 import 'candidate_reopen_context_store_test.dart' show startReopen;
 import 'planning_conversation_test.dart' show project, tick;
@@ -57,6 +62,79 @@ admittedReopen({bool pending = false}) async {
 }
 
 void main() {
+  test('exact initial origin survives Stop acknowledgement, reopen and explicit retry without another proposal', () async {
+    final f = await lineageFixture(formatted: true);
+    final journal = CandidateVerificationStore(f.records, project.id);
+    final run = await journal.start(
+      f.basis.prepared.copy(phase: SourceGenerationPhase.verifying, steps: []),
+      () {},
+      reopenBasis: f.basis,
+      initialRequestOrigin: f.origin,
+      sessionAdmission: AgentSessionRunAdmission(
+        f.records,
+        project,
+        AgentSessionBinding.select(
+          session: f.origin.requestSession,
+          projectId: project.id,
+          boardTaskId: f.request.boardTaskId,
+        ),
+      ),
+    );
+    await journal.checkpoint(
+      run.snapshot.copy(pendingOperation: 'resolve'),
+      () {},
+    );
+    await journal.requestStop(DateTime.now().toUtc());
+    final requestKey =
+        'studio.sessionProposalRequests.v1.${project.id}.${f.request.sessionId}';
+    final originalRequests = f.records.getString(requestKey);
+    final working = f.records.getString('studio.generation.v1.${project.id}');
+    final hosts = <ReopenInspectionHost>[];
+    final c = SavedCandidateRecoveryController(
+      project: project,
+      records: f.records,
+      selectedSession: journal.admittedSession!,
+      runNumber: 1,
+      createHost: () {
+        final h = ReopenInspectionHost();
+        hosts.add(h);
+        return h;
+      },
+    );
+    await c.open();
+    expect(c.error, isNull);
+    expect(
+      c.evidence!.initialRequestOrigin!.requestSessionRecord,
+      f.origin.requestSessionRecord,
+    );
+    final candidate = c.candidate!;
+    await candidate.verify(approved: false);
+    expect(hosts.last.verifications, 0);
+    await candidate.acknowledgeStopped(candidate.history.single);
+    expect(candidate.error, isNull);
+    await candidate.verify(approved: true);
+    expect(candidate.error, isNull);
+    expect(candidate.history, hasLength(2));
+    final second = CandidateRequestLineageStore(
+      f.records,
+      project.id,
+    ).load(candidate.history.last)!;
+    expect(
+      second.lineage.origin.reference.encode(),
+      f.origin.reference.encode(),
+    );
+    expect(
+      second.lineage.origin.requestSessionRecord,
+      f.origin.requestSessionRecord,
+    );
+    expect(second.lineage.admissionSession.dispatches, hasLength(1));
+    expect(second.lineage.origin.requestSession.dispatches, isEmpty);
+    expect(f.records.getString(requestKey), originalRequests);
+    expect(f.records.getString('studio.generation.v1.${project.id}'), working);
+    expect(hosts.last.verifications, 1);
+    c.dispose();
+  });
+
   test(
     'actual native source inspection opens without SDK execution and refuses changed files',
     () async {
