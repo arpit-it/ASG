@@ -1455,3 +1455,51 @@ write that succeeds while candidate startup fails, or require fresh execution
 authority merely to retain an actual result. This is a constraint on integration,
 not permission to implement or execute it here. Process reconciliation remains
 operator-confirmed; a saved PID or event never authorizes termination.
+
+
+### CE01 typed task verification observations — 19 November 2026
+
+AgentTaskHistory is a pure validation prerequisite in models/agent_task_history.dart.
+It performs no record writes, command dispatch, receipt authentication, process
+reconciliation, task completion or dependency unlocking. Existing AgentSession
+version1 bytes and candidate workflows are unchanged.
+
+Version1 history has exactly version, session, reference, withdrawalSequence and
+observations. Its basis is a frozen uncancelled AgentSession containing the exact
+last admitted reference. The task, run, dispatch, approval and selected dependency
+graph therefore stay bound together. A supplied currentSession must equal that
+basis or its single cancellation successor, not a later admission or replacement
+approval. Historical callers must retain the original admitted snapshot; this is
+not a projection against an arbitrarily newer session. No constructor proves
+that its caller's claimed admission or result actually occurred.
+
+Each observation has exactly sequence, kind, operation, exitCode and cancelled.
+Kinds are admitted, pending, result, interrupted and finished. Operations reuse
+BuildOperation's resolve/analyze/test/build allowlist. Only result has integer
+exitCode and boolean cancelled; all other kinds require both fields null.
+Sequence0 is admitted; subsequent positions must be contiguous. Results require
+matching pending operations in fixed order. A failed/cancelled result cannot
+start another operation. Interruption retains the pending operation; an actual
+late matching result can be recorded, but the interrupted attempt cannot start
+further work. Finished requires no unknown pending operation and is terminal;
+it says only that this verification attempt ended, never that a task succeeded.
+A pre-command failure may finish with an empty actual-result prefix.
+
+Withdrawal is a separate caller-observed boundary, the next observation index
+when cancellation was supplied. It never supplies an operation result. Append
+requires a current snapshot; withdrawal can only be added or retained. A pending
+operation at/after withdrawal is refused, while the existing pending operation's
+actual result remains recordable. Reading older history with a now-cancelled
+matching session does not rewrite its boundary; a later append/explicit withdrawal
+observation must retain cancellation and cannot dispatch anything. Clearing a
+recorded boundary with an uncancelled snapshot is refused. The model cannot
+verify when a caller-supplied boundary or result occurred; storage integration
+must validate provenance and atomically retain it with the candidate journal.
+
+The record permits at most16 observations and AgentSession.maxEncodedBytes+8192
+UTF-8 bytes, with strict version/types/keys and signed32-bit exit integers.
+Collections and snapshots are immutable; serialization returns detached values.
+Unknown helper failure remains null, not exit73, zero or cancelled=true.
+Native persistence, controller/UI integration, original receipt provenance and
+full CE01 acceptance remain pending. No new runtime/model/browser observation is
+claimed by these deterministic values and tests.
