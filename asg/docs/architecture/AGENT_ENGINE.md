@@ -2248,3 +2248,113 @@ retains the same decision after two explicit fixture mutations. Native protocol2
 five-process persistence/crash/reopen and protocol20 five-launch bound publication
 smoke pass on the new isolated binary. These establish their bounded fixture/Mac
 behaviors, not general CE01, semantic acceptance or unavailable-platform behavior.
+
+
+### Selected-session prerequisite provenance — 19 November 2026 investigation
+
+In progress under #404, after the verified session decision overview. Existing
+AgentSessionBinding.select validates project/task membership and withdrawal;
+AgentSessionRunAdmission validates the exact saved session, current approval,
+frozen graph and candidate startup identity. Neither consumes a selected
+prerequisite-decision mapping. This is the existing explicit review boundary,
+not evidence of dependency-ready scheduling.
+
+AgentTaskDecisionReference binds historical task/run/fingerprint and recursively
+validated authored-check proof. Decision selection compares prerequisite requirement
+content to the current board, while PublishedTaskEvidenceStore requires the selected
+publication's exact current working record and current input/report identity.
+These checks deliberately do not assert semantic artifact compatibility. Publication
+records retain original/published working hashes, and candidate reopen retains a
+reviewed source basis; investigate whether an exact, bounded lineage statement can
+be established, and what additional explicit provenance would be needed before any
+future admission change. Run number ordering or a guessed latest decision is not
+an input-provenance contract. Multiple prerequisite outputs and intervening
+publications require explicit treatment rather than hash-based readiness claims.
+
+Next: trace those proof boundaries and current regression cases, identify the
+smallest useful conservative outcome or the missing contract, and specify adverse
+cases/acceptance. No source implementation, automatic next-task selection, schema
+change, execution grant or generic completion is delivered by this investigation.
+
+
+#### Findings and next implementation boundary
+
+SourceReviewController captures working separately from `_proposalSource ?? generated`.
+CandidateReopenBasis validates the reviewed before/after hashes against sourceBase
+and prepared, while only the project input manifests must match working. This is
+intentional support for a separately reviewed base, including repair context.
+SourceCandidateController checks the original working record and prepared candidate
+before verification; candidate startup can retain the optional context atomically.
+Promotion separately records original/published working hashes with completion.
+Neither graph membership nor that original-working hash asserts which source base
+was reviewed. Context is optional in the existing admission API, so valid legacy
+publications/decisions cannot be assumed to contain it.
+
+A disposable deterministic probe used the existing published fixture and actual
+strict domain parsers. A two-publication sequence retained an exact working link
+and equal preparation/prerequisite source maps. A second accepted basis retained
+the same working hash and prepared output but used another reviewed before-source
+with matching before hash. It passed the existing parser while sourceBase differed
+from working. Thus a working-hash equality alone is insufficient. This is an
+expected-contract counterexample, not a defect requiring changes to repair rules.
+Probe: /tmp/asg-404-prerequisite-provenance-probe_test.dart and
+/tmp/asg-404-session-prerequisite-provenance-investigation-probe.log. Supplied model
+identities and fake hosts remain fixture evidence; no live model or SDK is invoked.
+
+The smallest useful next outcome is read-only direct preparation provenance for
+an explicitly selected historical prerequisite decision within the existing
+published-task review. For each prerequisite in an already retained dependent
+decision, use its exact task/run/fingerprint rather than choose a latest result.
+Show direct recorded linkage, no direct match, or unavailable proof separately
+from the unchanged historical authored-check decision. No state is called ready,
+Done, compatible, accepted, eligible or permission to execute. This outcome adds
+no admission gate, inference, scheduler, decision rewrite or new durable record.
+
+The historical loader takes RecordStorage/project ID, exact current saved session
+and dependent run. Share existing strict decision/publication/run/checkpoint proof;
+validate the dependent decision and every exact retained prerequisite first. Read
+CandidateReopenContext directly through a bounded canonical identity decoder;
+do not use loadLatest, which intentionally requires current working/approval and
+an active latest candidate. Match context project/task/run/dispatch/start identity,
+its frozen admitted session to the dependent publication session, and its prepared
+candidate to the exact completed run. A stale/repaired final snapshot that cannot
+match the original context is unavailable; never reconstruct a context from output.
+Use current session prefix/graph proof to retain withdrawal/growing-session history.
+Capture one consistent read-set for the complete composed review, fail closed on
+changes, and preserve independent decision/publication facts on lineage-only error.
+
+Direct recorded linkage requires all of: the prerequisite publication's published
+working hash equals dependent publication.originalWorkingSha256 and the dependent
+basis.workingSha256; the canonical retained prerequisite working snapshot and basis
+working snapshot independently match that digest; and complete sourceBase.sources
+key/value map equals the exact prerequisite run's source map. Reuse existing strict
+parsers before comparison. These are exact local recorded identities, not current
+file inspection, external authenticity or semantic compatibility. If all proofs are
+valid but the source base or working identity differs, report no direct match;
+missing, malformed, foreign, inconsistent or noncanonical proof is unavailable.
+The projection must expose only bounded typed states/exact reference identity,
+not entire stored source proposals or tool output.
+
+Multiple prerequisites are reviewed per edge. Different earlier outputs generally
+cannot all be the same direct working snapshot. Report each edge independently;
+no guessed transitive chain, aggregate verdict or automatic choice. A later approved
+edit may retain behavior or remove it; byte-map identity does not establish that
+behavior. New future dependency-ordered execution therefore still needs an explicit
+approved input/provenance and authorization contract covering multiple inputs,
+intervening/repair changes, stale current state and atomic admission. The proposed
+read-only review does not satisfy that prerequisite and must not retrofit the
+current decision mode into a dependency guarantee.
+
+Implement this typed projection, strict historical service, controller read/error/
+lifecycle handling and production view together. Existing retained decision review
+can show its stored prerequisite rows; a root decision has an explicit no-historical-
+prerequisites state. Loading/refresh must create no current approval, host, model,
+inspection or write authority. Keep exact decision confirmation/consent/CAS behavior
+and existing formats unchanged. Verify direct fixture link, valid divergent bases,
+missing/foreign/corrupt context, wrong task/run/session/checkpoint, changed maps,
+multiple publications/prerequisites, withdrawal/growth/current-working rotation,
+read races, immutable projections and controller disposal/error sanitation. Verify
+narrow/high-text rendering and labelled actual IAB proof with no effects. Shared
+historical decoder changes require fresh relevant native reopen regression/builds;
+full required local checks, exact review, required CI and verified merge remain gates.
+This completes the investigation boundary only, not this future implementation.
