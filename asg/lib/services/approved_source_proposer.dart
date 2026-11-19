@@ -10,6 +10,7 @@ import 'session_proposal_request_store.dart';
 import '../models/repair_attempt.dart';
 import '../models/model_request_provenance.dart';
 import 'repair_attempt_store.dart';
+import 'repair_request_context.dart';
 import '../models/approved_source_proposal.dart';
 import '../models/build_plan.dart';
 import '../models/local_model_config.dart';
@@ -97,6 +98,8 @@ class ApprovedSourceProposer {
     required Map<String, String> originals,
     GeneratedProject? repairCandidate,
     AgentSessionBinding? sessionBinding,
+    AgentSessionBinding? repairSessionBinding,
+    String? repairWorkingRecord,
     String? requestWorkingRecord,
     void Function()? authorizeSession,
   }) async {
@@ -109,6 +112,11 @@ class ApprovedSourceProposer {
             authorizeSession == null ||
             sessionBinding.boardTaskId != boardTaskId)) {
       throw StateError('Complete initial session request context is required.');
+    }
+    if (repairSessionBinding != null &&
+        (repairCandidate == null ||
+            repairSessionBinding.boardTaskId != boardTaskId)) {
+      throw StateError('Complete selected repair context is required.');
     }
     final approval = PlanApprovalStore(records).requireCurrentApproval(project);
     final task = _task(project, boardTaskId);
@@ -199,6 +207,13 @@ class ApprovedSourceProposer {
           repairRun,
           authorizeRequest,
           modelRequest: modelRequest,
+          context: RepairRequestContext.capture(
+            records: records,
+            project: project,
+            failure: repairRun,
+            sessionBinding: repairSessionBinding,
+            workingRecord: repairWorkingRecord,
+          ),
         );
       }
       authorizeRequest();
@@ -220,7 +235,11 @@ class ApprovedSourceProposer {
       // Includes changes while the provider was finishing transport cleanup.
       requireCurrent(project, evidence);
       if (initial != null) authorizeRequest();
-      await attempts?.finish(RepairAttemptStatus.proposed, proposal: proposal);
+      await attempts?.finish(
+        RepairAttemptStatus.proposed,
+        proposal: proposal,
+        authorizeReturn: authorizeRequest,
+      );
       await initial?.finish(
         SessionProposalRequestStatus.returnedValidated,
         proposal: proposal,
@@ -248,9 +267,13 @@ class ApprovedSourceProposer {
             ? SessionProposalRequestStatus.cancelledLocally
             : SessionProposalRequestStatus.failedLocally,
       );
-      await attempts?.finish(
-        _cancelled ? RepairAttemptStatus.cancelled : RepairAttemptStatus.failed,
-      );
+      if (attempts != null && !attempts.outcomeWriteAttempted) {
+        await attempts.finish(
+          _cancelled
+              ? RepairAttemptStatus.cancelled
+              : RepairAttemptStatus.failed,
+        );
+      }
       rethrow;
     } finally {
       _active = false;
