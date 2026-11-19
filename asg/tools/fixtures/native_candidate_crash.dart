@@ -7,6 +7,17 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:crypto/crypto.dart';
+import 'package:sembast/sembast_io.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:asg/models/agent_task_decision.dart';
+import 'package:asg/services/agent_task_decision_store.dart';
+import 'package:asg/controllers/published_task_evidence_controller.dart';
+import 'package:asg/services/published_task_evidence_store.dart';
+import 'package:asg/views/published_task_evidence_screen.dart';
+
+import 'candidate_reopen.dart' show CandidateReopenFixture;
+import 'agent_session_task_history.dart' show TaskHistoryFixture;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:asg/models/candidate_operation_receipt.dart';
@@ -246,6 +257,10 @@ Future<void> main() async {
       throw StateError('Invalid challenge.');
     }
     final input = jsonDecode(await challenge.readAsString());
+    if (input is Map<String, dynamic> && input['mode'] == 'task-decision') {
+      await taskDecisionFixture(canonical, input);
+      return;
+    }
     if (input is! Map<String, dynamic> ||
         input.length != 17 ||
         input['nonce'] is! String ||
@@ -2644,4 +2659,211 @@ Future<void> report(
     }),
     flush: true,
   );
+}
+
+/// A process-crash fixture for decisions only. Publication/check facts are supplied;
+/// no SDK, model, source inspection or preview service is constructed.
+final class DecisionCommitBoundary implements ConditionalRecordStorage {
+  DecisionCommitBoundary(this.delegate);
+  final ConditionalRecordStorage delegate;
+  Future<void> Function()? before, after;
+  int commits = 0;
+  @override
+  String? getString(String key) => delegate.getString(key);
+  @override
+  Future<bool> setString(String key, String value) =>
+      throw StateError('No incidental decision writes.');
+  @override
+  Future<void> commitRecords({
+    required Map<String, String?> expected,
+    required Map<String, String> updates,
+    required void Function() authorize,
+  }) async {
+    if (updates.length != 1 ||
+        !updates.keys.single.startsWith(AgentTaskDecision.prefix)) {
+      throw StateError('Only one decision is allowed.');
+    }
+    await before?.call();
+    await delegate.commitRecords(
+      expected: expected,
+      updates: updates,
+      authorize: authorize,
+    );
+    commits++;
+    await after?.call();
+  }
+}
+
+Future<void> taskDecisionFixture(
+  String root,
+  Map<String, dynamic> input,
+) async {
+  if (input.length != 4 ||
+      !{'mode', 'nonce', 'launch', 'sdk'}.every(input.containsKey) ||
+      input['mode'] != 'task-decision' ||
+      input['nonce'] is! String ||
+      !RegExp(r'^[a-f0-9]{32}$').hasMatch(input['nonce'] as String) ||
+      input['launch'] is! int ||
+      ![1, 2, 3, 4, 5].contains(input['launch']) ||
+      input['sdk'] is! String ||
+      !await File(
+        path.join(input['sdk'] as String, 'bin/cache/flutter_tools.snapshot'),
+      ).exists()) {
+    throw StateError('Invalid fixed decision challenge.');
+  }
+  final launch = input['launch'] as int, nonce = input['nonce'] as String;
+  final databasePath = path.join(root, 'task-decision.db');
+  final baselineFile = File(path.join(root, 'decision-baseline.json'));
+  if (await FileSystemEntity.isLink(databasePath) ||
+      await FileSystemEntity.isLink(baselineFile.path) ||
+      (launch == 1
+          ? await File(databasePath).exists() || await baselineFile.exists()
+          : !await baselineFile.exists())) {
+    throw StateError('Unexpected decision fixture state.');
+  }
+  final db = await databaseFactoryIo.openDatabase(databasePath);
+  final records = await StudioDatabase.migrate(
+    db,
+    await SharedPreferences.getInstance(),
+  );
+  if (launch == 1) {
+    final supplied = await CandidateReopenFixture.create(decisionMode: true);
+    for (final e in supplied.records.values.entries) {
+      await records.setString(e.key, e.value);
+    }
+    final session = AgentSessionStore(
+      records,
+      TaskHistoryFixture.project,
+    ).load('published')!;
+    final number = session.dispatches.last.runNumber;
+    await baselineFile.create(exclusive: true);
+    await baselineFile.writeAsString(
+      jsonEncode({
+        'nonce': nonce,
+        'run': number,
+        'records': supplied.records.values,
+      }),
+      flush: true,
+    );
+  }
+  if (await baselineFile.length() > 2 * 1024 * 1024) {
+    throw StateError('Decision baseline exceeds its bound.');
+  }
+  final baseline =
+      jsonDecode(await baselineFile.readAsString()) as Map<String, dynamic>;
+  if (baseline.length != 3 ||
+      baseline['nonce'] != nonce ||
+      baseline['run'] is! int ||
+      baseline['records'] is! Map<String, dynamic>) {
+    throw StateError('Decision baseline changed.');
+  }
+  final number = baseline['run'] as int;
+  final original = Map<String, String>.from(baseline['records'] as Map);
+  const project = TaskHistoryFixture.project;
+  final sessions = AgentSessionStore(records, project);
+  var session = sessions.load('published')!;
+  final key = AgentTaskDecision.keyFor(project.id, session.sessionId, number);
+  final boundary = DecisionCommitBoundary(records);
+  final store = AgentTaskDecisionStore(
+    boundary,
+    project,
+    now: () => DateTime.utc(2026, 11, 19),
+  );
+  if (launch <= 3 && records.getString(key) != null) {
+    throw StateError('Decision appeared before explicit commit.');
+  }
+  if (launch >= 4 && records.getString(key) == null) {
+    throw StateError('Committed decision was lost.');
+  }
+  var newDecisionRefused = false;
+  if (launch == 5) {
+    final beforeDecision = records.getString(key);
+    session = await sessions.requestCancellation(session);
+    try {
+      store.select(session, number);
+    } catch (_) {
+      newDecisionRefused = true;
+    }
+    if (!newDecisionRefused || records.getString(key) != beforeDecision) {
+      throw StateError('Withdrawal changed retained decision.');
+    }
+  }
+  final controller = PublishedTaskEvidenceController(
+    PublishedTaskEvidenceStore(records, project),
+    session,
+    number,
+    decisions: store,
+  )..load();
+  Future<void> observation() async {
+    final decision = store.load(session, number);
+    final raw = records.getString(key);
+    final unchanged = original.entries.every(
+      (e) => records.getString(e.key) == e.value,
+    );
+    final unrelated = original.entries
+        .where((e) => launch != 5 || e.key != session.storageKey)
+        .every((e) => records.getString(e.key) == e.value);
+    final value = <String, Object?>{
+      'version': 21,
+      'mode': 'task-decision',
+      'nonce': nonce,
+      'launch': launch,
+      'decisionPresent': raw != null,
+      'decisionSha256': raw == null ? null : digest(raw),
+      'evidenceSha256': decision?.evidence.fingerprint,
+      'originalRecordsUnchanged': unchanged,
+      'unrelatedRecordsUnchanged': unrelated,
+      'workingSha256': digest(
+        records.getString('studio.generation.v1.${project.id}')!,
+      ),
+      'controllerBusy': controller.busy,
+      'controllerSuccessDelivered': controller.decision != null,
+      'canConsent': controller.canConsent,
+      'decisionCommits': boundary.commits,
+      'sessionWithdrawn': session.cancellationRequested,
+      'newDecisionRefused': newDecisionRefused,
+      'sourceInspections': 0,
+      'sdkAttempts': 0,
+      'modelAttempts': 0,
+      'previewAttempts': 0,
+    };
+    if (!unrelated || (launch != 5 && !unchanged)) {
+      throw StateError('Decision changed unrelated records.');
+    }
+    final output = File(path.join(root, 'launch-$launch.json'));
+    await output.create(exclusive: true);
+    await output.writeAsString(jsonEncode(value), flush: true);
+  }
+
+  if (launch == 2 || launch == 3) {
+    final never = Completer<void>();
+    Future<void> stopAtBoundary() async {
+      await observation();
+      await never.future;
+    }
+
+    if (launch == 2) {
+      boundary.before = stopAtBoundary;
+    } else {
+      boundary.after = stopAtBoundary;
+    }
+    controller.setConsent(true);
+    if (!controller.canConfirm) {
+      throw StateError('Explicit confirmation unavailable.');
+    }
+    await controller.confirm();
+    throw StateError(
+      'Host must crash the owned fixture before confirmation returns.',
+    );
+  }
+  runApp(
+    MaterialApp(home: PublishedTaskEvidenceScreen(controller: controller)),
+  );
+  await WidgetsBinding.instance.endOfFrame;
+  if (launch >= 4 && (controller.decision == null || controller.canConsent)) {
+    throw StateError('Retained decision projection failed.');
+  }
+  await observation();
+  await db.close();
+  exit(0);
 }

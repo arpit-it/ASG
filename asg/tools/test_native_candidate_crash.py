@@ -863,5 +863,64 @@ class CandidateCrashTests(unittest.TestCase):
             launch.assert_not_called()
 
 
+    def decision_report(self, launch):
+        return {'version': 21, 'mode': 'task-decision', 'nonce': self.nonce, 'launch': launch,
+                'decisionPresent': launch >= 3, 'decisionSha256': 'a' * 64 if launch >= 3 else None,
+                'evidenceSha256': 'b' * 64 if launch >= 3 else None,
+                'originalRecordsUnchanged': launch != 5, 'unrelatedRecordsUnchanged': True,
+                'workingSha256': 'c' * 64, 'controllerBusy': launch in (2, 3),
+                'controllerSuccessDelivered': launch >= 4, 'canConsent': launch == 1,
+                'decisionCommits': int(launch == 3), 'sessionWithdrawn': launch == 5,
+                'newDecisionRefused': launch == 5, 'sourceInspections': 0, 'sdkAttempts': 0,
+                'modelAttempts': 0, 'previewAttempts': 0}
+
+    def test_decision_protocol_requires_exact_absence_commit_reopen_and_withdrawal_facts(self):
+        for launch in (1, 2, 3, 4, 5):
+            value = self.decision_report(launch)
+            report = self.root / f'launch-{launch}.json'
+            report.write_text(json.dumps(value))
+            self.assertEqual(fixture.read_decision_report(self.root, launch, self.nonce), value)
+            changes = [('version', 20), ('launch', True), ('nonce', 'b' * 32),
+                       ('decisionPresent', not value['decisionPresent']),
+                       ('originalRecordsUnchanged', not value['originalRecordsUnchanged']),
+                       ('unrelatedRecordsUnchanged', False), ('decisionCommits', True),
+                       ('controllerBusy', not value['controllerBusy']),
+                       ('controllerSuccessDelivered', not value['controllerSuccessDelivered']),
+                       ('canConsent', not value['canConsent']), ('sdkAttempts', 1),
+                       ('modelAttempts', 1), ('sourceInspections', 1), ('previewAttempts', 1),
+                       ('workingSha256', None), ('sessionWithdrawn', not value['sessionWithdrawn']),
+                       ('newDecisionRefused', not value['newDecisionRefused']),
+                       ('decisionSha256', None if launch >= 3 else 'd' * 64),
+                       ('evidenceSha256', None if launch >= 3 else 'e' * 64)]
+            for key, replacement in changes:
+                report.write_text(json.dumps(dict(value, **{key: replacement})))
+                with self.subTest(launch=launch, key=key), self.assertRaises(ValueError):
+                    fixture.read_decision_report(self.root, launch, self.nonce)
+            for changed in (dict(value, extra=True), {k: v for k, v in value.items() if k != 'decisionCommits'}):
+                report.write_text(json.dumps(changed))
+                with self.assertRaises(ValueError):
+                    fixture.read_decision_report(self.root, launch, self.nonce)
+
+    def test_decision_report_refuses_symlink_and_oversize(self):
+        target = self.root / 'target.json'
+        target.write_text(json.dumps(self.decision_report(1)))
+        report = self.root / 'launch-1.json'
+        report.symlink_to(target)
+        with self.assertRaises(ValueError):
+            fixture.read_decision_report(self.root, 1, self.nonce)
+        report.unlink()
+        report.write_text(' ' * 8193)
+        with self.assertRaises(ValueError):
+            fixture.read_decision_report(self.root, 1, self.nonce)
+
+    def test_decision_bundle_preflight_refusal_launches_nothing(self):
+        with mock.patch.object(fixture.sys, 'platform', 'darwin'), \
+                mock.patch.object(fixture, 'inspect_bundle', side_effect=ValueError('wrong identity')), \
+                mock.patch.object(fixture.subprocess, 'Popen') as launch:
+            with self.assertRaises(ValueError):
+                fixture.observe_decision(self.root, self.root)
+            launch.assert_not_called()
+
+
 if __name__ == '__main__':
     unittest.main()

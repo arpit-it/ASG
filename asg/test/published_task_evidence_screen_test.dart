@@ -6,6 +6,7 @@ import 'dart:convert';
 import 'package:asg/controllers/agent_session_controller.dart';
 import 'package:asg/controllers/published_task_evidence_controller.dart';
 import 'package:asg/services/agent_session_store.dart';
+import 'package:asg/services/requirement_check_report_store.dart';
 import 'package:asg/services/published_task_evidence_store.dart';
 import 'package:asg/views/agent_session_screen.dart';
 import 'package:asg/views/published_task_evidence_screen.dart';
@@ -17,6 +18,104 @@ import 'published_task_evidence_store_test.dart' show evidenceFixture;
 import 'agent_session_screen_test.dart' show reveal;
 
 void main() {
+  testWidgets(
+    'narrow double-text consent saves a retained decision independently of later current evidence',
+    (tester) async {
+      final f = await evidenceFixture(
+        allAuthoredRules: true,
+        taskId: 'Tresolve',
+      );
+      final c = PublishedTaskEvidenceController(
+        PublishedTaskEvidenceStore(f.records, project),
+        f.session,
+        f.run.number,
+      );
+      tester.view.physicalSize = const Size(320, 740);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final before = Map.of(f.records.values);
+      await tester.pumpWidget(
+        MaterialApp(
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(context)
+                .copyWith(textScaler: const TextScaler.linear(2)),
+            child: child!,
+          ),
+          home: PublishedTaskEvidenceScreen(controller: c),
+        ),
+      );
+      expect(f.records.values, before);
+      final button = find.widgetWithText(
+        OutlinedButton,
+        'Record authored-check completion decision',
+      );
+      expect(c.canConfirm, isFalse);
+      await reveal(tester, find.byType(CheckboxListTile), 200);
+      await tester.tap(find.byType(Checkbox));
+      await tester.pumpAndSettle();
+      await reveal(tester, button, 200);
+      await tester.tap(button);
+      await tester.pumpAndSettle();
+      expect(c.decision, isNotNull);
+      expect(f.records.values.length, before.length + 1);
+      for (final e in before.entries) {
+        expect(f.records.values[e.key], e.value);
+      }
+      f.records.values['studio.generation.v1.${project.id}'] =
+          '{changed working';
+      c.load();
+      await tester.pumpAndSettle();
+      expect(c.decision, isNotNull);
+      expect(c.error, contains('unavailable'));
+      tester
+          .state<ScrollableState>(find.byType(Scrollable).first)
+          .position
+          .jumpTo(0);
+      await tester.pumpAndSettle();
+      await reveal(
+        tester,
+        find.text('Retained authored-check completion decision'),
+        200,
+      );
+      expect(
+        find.text('Retained authored-check completion decision'),
+        findsOneWidget,
+      );
+      expect(find.byType(CheckboxListTile), findsNothing);
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox());
+    },
+  );
+
+  testWidgets(
+    'passing authored contracts offer an explicit completion decision',
+    (tester) async {
+      final f = await evidenceFixture(allAuthoredRules: true);
+      final report = RequirementCheckReportStore(f.records).load(project);
+      final requirement = report.results
+          .firstWhere((r) => r.requirement.id == 'R1')
+          .requirement;
+      expect(report.requirementVerifiedAgainstChecks(requirement), isTrue);
+      final before = Map.of(f.records.values);
+      final c = PublishedTaskEvidenceController(
+        PublishedTaskEvidenceStore(f.records, project),
+        f.session,
+        f.run.number,
+      );
+      await tester.pumpWidget(
+        MaterialApp(home: PublishedTaskEvidenceScreen(controller: c)),
+      );
+      expect(c.evidence, isNotNull);
+      expect(
+        find.text('Record authored-check completion decision'),
+        findsOneWidget,
+      );
+      expect(f.records.values, before);
+      await tester.pumpWidget(const SizedBox());
+    },
+  );
+
   testWidgets(
     'production session route scopes criterion facts read-only at narrow double text',
     (tester) async {

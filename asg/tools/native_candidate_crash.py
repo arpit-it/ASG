@@ -414,10 +414,101 @@ def observe(bundle, sdk, operation='resolve', stop=False, precommit=False, runni
             'limitation': 'Fixed verification completion-gap fixture only; no automatic reconciliation or general lifecycle acceptance.'}
 
 
+
+def read_decision_report(root, launch, nonce):
+    """Strict separate protocol21: supplied evidence, actual native decision CAS."""
+    file = root / f'launch-{launch}.json'
+    if file.is_symlink() or file.stat().st_size > 8192:
+        raise ValueError('Unsafe decision report')
+    value = json.loads(file.read_text())
+    keys = {'version', 'mode', 'nonce', 'launch', 'decisionPresent', 'decisionSha256',
+            'evidenceSha256', 'originalRecordsUnchanged', 'unrelatedRecordsUnchanged',
+            'workingSha256', 'controllerBusy', 'controllerSuccessDelivered', 'canConsent',
+            'decisionCommits', 'sessionWithdrawn', 'newDecisionRefused',
+            'sourceInspections', 'sdkAttempts', 'modelAttempts', 'previewAttempts'}
+    if (not isinstance(value, dict) or set(value) != keys or type(launch) is not int or
+            launch not in (1, 2, 3, 4, 5) or not isinstance(nonce, str) or
+            re.fullmatch(r'[a-f0-9]{32}', nonce) is None or
+            type(value['version']) is not int or value['version'] != 21 or
+            type(value['launch']) is not int or value['launch'] != launch or
+            value['mode'] != 'task-decision' or value['nonce'] != nonce):
+        raise ValueError('Decision report identity mismatch')
+    expected = {'decisionPresent': launch >= 3, 'originalRecordsUnchanged': launch != 5,
+                'unrelatedRecordsUnchanged': True, 'controllerBusy': launch in (2, 3),
+                'controllerSuccessDelivered': launch >= 4, 'canConsent': launch == 1,
+                'sessionWithdrawn': launch == 5, 'newDecisionRefused': launch == 5}
+    if any(type(value[k]) is not bool or value[k] != v for k, v in expected.items()):
+        raise ValueError('Decision boundary facts mismatch')
+    counts = {'decisionCommits': int(launch == 3), 'sourceInspections': 0,
+              'sdkAttempts': 0, 'modelAttempts': 0, 'previewAttempts': 0}
+    if any(type(value[k]) is not int or value[k] != v for k, v in counts.items()):
+        raise ValueError('Unexpected decision write or execution')
+    for key in ('workingSha256', 'decisionSha256', 'evidenceSha256'):
+        fingerprint = value[key]
+        if launch < 3 and key != 'workingSha256':
+            if fingerprint is not None:
+                raise ValueError('Decision proof present before commit')
+        elif not isinstance(fingerprint, str) or re.fullmatch(r'[a-f0-9]{64}', fingerprint) is None:
+            raise ValueError('Decision fingerprint missing')
+    return value
+
+
+def observe_decision(bundle, sdk):
+    """Only launches/kills this inspected disposable fixture; never SDK/model work."""
+    if sys.platform != 'darwin':
+        raise ValueError('Mac fixture only')
+    executable, binary = inspect_bundle(bundle)
+    sdk = Path(sdk).resolve(strict=True)
+    if not (sdk / 'bin/cache/flutter_tools.snapshot').is_file():
+        raise ValueError('Existing prepared SDK required')
+    root = Path(tempfile.mkdtemp(prefix='asg-candidate-crash-')).resolve()
+    nonce = secrets.token_hex(16)
+    observations = []
+    for launch in (1, 2, 3, 4, 5):
+        if inspect_bundle(bundle) != (executable, binary):
+            raise ValueError('Fixture binary changed')
+        (root / 'challenge.json').write_text(json.dumps({'mode': 'task-decision', 'nonce': nonce, 'launch': launch, 'sdk': str(sdk)}))
+        with (root / f'process-{launch}.log').open('wb') as log:
+            process = subprocess.Popen([str(executable)], env={**os.environ, 'ASG_CANDIDATE_CRASH_ROOT': str(root)}, stdout=log, stderr=log)
+            try:
+                deadline = time.monotonic() + 60
+                while not (root / f'launch-{launch}.json').exists():
+                    if process.poll() is not None or time.monotonic() > deadline:
+                        raise ValueError(f'Decision app handshake failed; artifacts: {root}')
+                    time.sleep(0.02)
+                while True:
+                    try:
+                        value = read_decision_report(root, launch, nonce)
+                        break
+                    except (json.JSONDecodeError, UnicodeDecodeError):
+                        if time.monotonic() > deadline:
+                            raise ValueError('Decision report incomplete')
+                        time.sleep(0.02)
+                if inspect_bundle(bundle) != (executable, binary):
+                    raise ValueError('Fixture binary changed before decision crash')
+                if launch in (2, 3):
+                    if process.poll() is not None:
+                        raise ValueError('App exited before owned decision crash')
+                    process.kill()
+                    if process.wait(timeout=5) != -9:
+                        raise ValueError('Expected owned app crash missing')
+                elif process.wait(timeout=10) != 0:
+                    raise ValueError('Decision reopen refused')
+                observations.append(value)
+            finally:
+                if process.poll() is None:
+                    process.kill()
+                    process.wait(timeout=5)
+    if len({v['workingSha256'] for v in observations}) != 1 or len({v['decisionSha256'] for v in observations[2:]}) != 1 or len({v['evidenceSha256'] for v in observations[2:]}) != 1:
+        raise ValueError('Decision or original working evidence changed across reopen')
+    return {'version': 21, 'mode': 'task-decision', 'bundleSha256': binary, 'artifacts': str(root),
+            'launches': observations, 'scope': 'Actual isolated native decision persistence and process-crash boundaries on supplied named-test observations; no SDK/model/live artifact or general task acceptance.'}
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--bundle', required=True)
     parser.add_argument('--sdk', required=True)
+    parser.add_argument('--task-decision', action='store_true')
     parser.add_argument('--stop', action='store_true')
     parser.add_argument('--precommit', action='store_true')
     parser.add_argument('--running', action='store_true')
@@ -434,7 +525,11 @@ def main():
     parser.add_argument('--operation', choices=OPERATIONS + ['all'], default='resolve')
     args = parser.parse_args()
     try:
-        if args.operation == 'all':
+        if args.task_decision:
+            if args.operation != 'resolve' or any((args.stop, args.precommit, args.running, args.uncertain, args.acknowledge, args.retry, args.promote, args.promotion_crash, args.session_bound, args.admission_crash, args.session_cancel, args.session_cancel_active, args.session_cancel_unknown)):
+                raise ValueError('Decision-only mode cannot combine execution scenarios')
+            print(json.dumps(observe_decision(args.bundle, args.sdk)))
+        elif args.operation == 'all':
             observations = [observe(args.bundle, args.sdk, operation, args.stop, args.precommit, args.running, args.uncertain, args.acknowledge, args.retry, args.promote, args.promotion_crash, args.session_bound, args.admission_crash, args.session_cancel, args.session_cancel_active, args.session_cancel_unknown) for operation in OPERATIONS]
             if len({item['bundleSha256'] for item in observations}) != 1:
                 raise ValueError('Matrix binary changed')

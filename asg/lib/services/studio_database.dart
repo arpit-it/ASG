@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: MPL-2.0
 // Copyright 2026 Arpit Sinha
 
+import 'agent_task_decision_store.dart';
+import '../models/agent_task_decision.dart';
+
 import 'dart:convert';
 
 import '../models/agent_execution_checkpoint.dart';
@@ -118,6 +121,7 @@ class StudioDatabase implements ConditionalRecordStorage {
             !record.key.startsWith('studio.candidateStop.v1.') &&
             !record.key.startsWith('studio.candidateRecovery.v1.') &&
             !record.key.startsWith('studio.agentExecution.v1.') &&
+            !record.key.startsWith(AgentTaskDecision.prefix) &&
             !record.key.startsWith(AgentSession.prefix) &&
             !record.key.startsWith(AgentSessionCatalog.prefix) &&
             !record.key.startsWith('studio.repairAttempts.v1.') &&
@@ -155,6 +159,10 @@ class StudioDatabase implements ConditionalRecordStorage {
 
   static void validate(String key, String value) {
     if (key == 'studio.lastProject.v1') return;
+    if (key.startsWith(AgentTaskDecision.prefix)) {
+      AgentTaskDecisionStore.decode(key, value);
+      return;
+    }
     if (key.startsWith(AgentSessionPublicationStore.prefix)) {
       AgentSessionPublicationStore.decode(key, value);
       return;
