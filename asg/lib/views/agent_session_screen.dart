@@ -198,6 +198,15 @@ class _AgentSessionScreenState extends State<AgentSessionScreen> {
                                 'Run evidence is unavailable or does not match this session. Saved data is retained.',
                               ),
                       ),
+                      if (status.publication case final publication?)
+                        Text(
+                          'Published candidate for ${publication.reference.boardTaskId}. '
+                          'Publication is recorded separately from task completion and acceptance criteria.',
+                        ),
+                      if (status.publicationUnavailable)
+                        const Text(
+                          'Publication evidence is unavailable. Saved run observations remain visible.',
+                        ),
                       if (status.available)
                         AgentTaskHistoryView(history: status.taskHistory),
                       OutlinedButton(

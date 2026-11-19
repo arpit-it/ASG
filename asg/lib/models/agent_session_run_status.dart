@@ -3,6 +3,7 @@
 
 import 'agent_execution_checkpoint.dart';
 import 'agent_session.dart';
+import 'agent_session_publication.dart';
 import 'agent_task_history.dart';
 import 'source_generation.dart';
 
@@ -13,7 +14,8 @@ final class AgentSessionRunStatus {
       executionPhase = null,
       pendingOperation = null,
       finished = null,
-      taskHistory = null;
+      taskHistory = null,
+      publication = null;
 
   const AgentSessionRunStatus.recorded({
     required this.reference,
@@ -22,6 +24,7 @@ final class AgentSessionRunStatus {
     required this.pendingOperation,
     required this.finished,
     this.taskHistory,
+    this.publication,
   });
 
   final AgentSessionDispatch reference;
@@ -30,5 +33,10 @@ final class AgentSessionRunStatus {
   final String? pendingOperation;
   final bool? finished;
   final AgentTaskHistory? taskHistory;
+  final AgentSessionPublication? publication;
   bool get available => sourcePhase != null && executionPhase != null;
+  bool get publicationUnavailable =>
+      available &&
+      executionPhase == AgentExecutionPhase.completed &&
+      publication == null;
 }

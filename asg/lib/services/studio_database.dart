@@ -20,6 +20,7 @@ import '../models/plan_approval.dart';
 import '../models/source_generation.dart';
 import 'application_store.dart';
 import 'agent_task_history_store.dart';
+import 'agent_session_publication_store.dart';
 import 'candidate_reopen_context_store.dart';
 import 'ask_store.dart';
 import 'manual_check_observation_store.dart';
@@ -154,6 +155,10 @@ class StudioDatabase implements ConditionalRecordStorage {
 
   static void validate(String key, String value) {
     if (key == 'studio.lastProject.v1') return;
+    if (key.startsWith(AgentSessionPublicationStore.prefix)) {
+      AgentSessionPublicationStore.decode(key, value);
+      return;
+    }
     if (key.startsWith(CandidateReopenContextStore.prefix)) {
       CandidateReopenContextStore.decode(key, value);
       return;

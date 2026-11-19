@@ -18,6 +18,7 @@ import 'package:asg/models/agent_execution_checkpoint.dart';
 import 'package:asg/models/candidate_verification_run.dart';
 import 'package:asg/models/agent_session_binding.dart';
 import 'package:asg/services/agent_session_store.dart';
+import 'package:asg/services/agent_session_publication_store.dart';
 import 'package:asg/services/agent_task_history_store.dart';
 import 'package:asg/services/agent_session_run_status_store.dart';
 import 'package:asg/services/agent_session_admission.dart';
@@ -790,6 +791,50 @@ Future<void> main() async {
       return digest(jsonEncode(evidence));
     }
 
+    Map<String, Object?>? sessionPublicationProof() {
+      final store = AgentSessionPublicationStore(records, projectId);
+      if (records.getString(store.keyFor(1)) != null) {
+        throw StateError(
+          'Interrupted first run cannot have a publication outcome',
+        );
+      }
+      final raw = records.getString(store.keyFor(2));
+      if (raw == null) return null;
+      final saved = AgentSessionStore(records, project).load('session-$nonce')!;
+      final run = checks.load().runs.last;
+      final execution = AgentExecutionCheckpoint.fromJson(
+        jsonDecode(
+          records.getString('studio.agentExecution.v1.candidate-$projectId-2')!,
+        ),
+      );
+      final value = store.load(session: saved, run: run, execution: execution)!;
+      final status = AgentSessionRunStatusStore(
+        records,
+        projectId,
+      ).load(saved).last;
+      final previous = records.getString(
+        'studio.generationPrevious.v1.$projectId',
+      );
+      if (previous == null ||
+          run.number != 2 ||
+          status.publication == null ||
+          jsonEncode(status.publication!.toJson()) != raw ||
+          value.originalWorkingSha256 != digest(previous) ||
+          value.publishedWorkingSha256 !=
+              digest(records.getString(workingKey)!)) {
+        throw StateError('Publication outcome or read-only projection changed');
+      }
+      return {
+        'runNumber': value.runNumber,
+        'boardTaskId': value.reference.boardTaskId,
+        'dispatchId': value.dispatchId,
+        'sha256': digest(raw),
+        'projectionSha256': digest(jsonEncode(status.publication!.toJson())),
+        'originalWorkingSha256': value.originalWorkingSha256,
+        'publishedWorkingSha256': value.publishedWorkingSha256,
+      };
+    }
+
     Future<Map<String, Object?>?> sessionRetryProof() async {
       if (!sessionBound || !retry) return null;
       final saved = AgentSessionStore(records, project).load('session-$nonce');
@@ -878,6 +923,7 @@ Future<void> main() async {
         'secondReceiptSha256': journal.runs.length == 1
             ? null
             : await retryReceiptHash(journal.runs.last),
+        if (promote) 'publication': sessionPublicationProof(),
         if (promote) 'workingSha256': digest(records.getString(workingKey)!),
         if (promote)
           'previousSha256':
@@ -2584,7 +2630,7 @@ Future<void> report(
   await file.create(exclusive: true);
   await file.writeAsString(
     jsonEncode({
-      'version': 19,
+      'version': 20,
       'launch': launch,
       ...observation,
       'sessionBound': sessionBound,

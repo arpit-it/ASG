@@ -1855,3 +1855,48 @@ Evidence: existing session/history/admission/promotion100 tests plus acceptance/
 criterion/manual/recovery54 tests passed on the Mac. Initial attempted read used
 a nonexistent development_task.dart; DevelopmentTask is actually defined in
 requirements_board.dart, and the trace above uses that source.
+
+
+### Bound-session publication outcomes — 19 November 2026 implementation
+
+AgentSessionPublication retains a bounded immutable local observation for one
+explicitly promoted bound candidate. It freezes the admitted session, last task/
+run/dispatch reference, UTC run identity, full verified-run fingerprint, exact
+original and published working-record fingerprints, and typed execution before/
+after transition. The before checkpoint must be verifying and the after value
+must be exactly its reviewing/completed transition. Strict shape, size, canonical
+UTC, hashes and duplicate-member checks reject malformed records. These are local
+correlated facts, not authenticated external exits or criterion acceptance.
+
+SourceGenerationController computes the exact published generation encoding once.
+For a bound promotion, it captures the outcome after preview validation and before
+the final conditional commit. The transaction expects outcome absence and existing
+session/approval/journal/execution/working identities, and jointly publishes the
+outcome, completed execution and current/previous working records. A failed or
+raced commit cannot publish a subset. Existing outcome bytes are never replaced
+by this workflow. Session v1, task history and reopen context formats are unchanged;
+unbound promotion does not invent a session outcome. No loader backfills legacy
+records or guesses from today's latest files.
+
+AgentSessionPublicationStore is read-only. It correlates canonical retained bytes
+with the exact verified run and completed checkpoint, and validates the original
+session as a prefix of the currently selected saved session. Later admissions and
+cancellation can preserve historical publication; today's Plan/working pointers
+are not a new baseline for that history. Current execution/approval guards for
+actions remain separate. Missing/corrupt/foreign publication does not erase
+independent run and task-history facts. It grants no retry or dependency readiness.
+
+The saved-session screen labels valid evidence Published candidate and explicitly
+separates task completion and acceptance criteria. A completed checkpoint without
+valid publication gets an unavailable-evidence message. Narrow/high-text widgets
+cover both states without writes. The labelled in-memory browser fixture supplies
+publication and withdrawal observations, exercises production screens and refuses
+writes after setup; it does not execute a model, SDK or preview.
+
+Native protocol20 additionally requires the exact publication record/projection,
+selected task/run/dispatch and actual original/published working fingerprints in
+bound promotion cases. Evidence is absent before publication and retained after a
+commit-before-controller-return crash and separate read-only reopen. Refused
+publication must preserve the entire prior proof. Historical protocol19/binary
+observations remain distinct. Full CE01 task acceptance/lifecycle and broader F20
+acceptance remain open; publication never sets board TaskStatus.done.

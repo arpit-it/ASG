@@ -6,6 +6,7 @@ import 'package:asg/services/agent_session_store.dart';
 import 'package:asg/services/agent_task_history_store.dart';
 
 import '../tools/fixtures/agent_session_task_history.dart';
+import '../tools/fixtures/candidate_reopen.dart' show CandidateReopenFixture;
 
 import 'package:asg/services/conversation_store.dart';
 import 'package:asg/services/plan_approval_store.dart';
@@ -15,6 +16,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'approved_source_proposer_test.dart' show seed;
+import 'agent_session_publication_test.dart' show publishedFixture;
 import 'agent_session_store_test.dart' show savedRun, selection;
 import 'planning_conversation_test.dart' show project;
 import 'source_candidate_controller_test.dart' show AtomicRecords;
@@ -30,6 +32,79 @@ Future<void> reveal(WidgetTester tester, Finder target, double delta) async {
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  test(
+    'labelled supplied publication fixture retains read-only projected history',
+    () async {
+      final f = await CandidateReopenFixture.create();
+      final controller = AgentSessionController(
+        AgentSessionStore(f.records, TaskHistoryFixture.project),
+      );
+      controller.open('published');
+      expect(controller.selected!.cancellationRequested, isTrue);
+      expect(controller.runStatuses.last.publication, isNotNull);
+      expect(f.records.writeAttempts, 0);
+      expect(f.unchanged, isTrue);
+      expect(f.effectAttempts, 0);
+      controller.dispose();
+    },
+  );
+
+  testWidgets(
+    'published candidate remains a read-only observation at narrow enlarged text after withdrawal',
+    (tester) async {
+      final f = await publishedFixture();
+      final records = f.fixture.records;
+      final store = AgentSessionStore(records, project);
+      final session = await store.requestCancellation(f.session);
+      final controller = AgentSessionController(store)..open(session.sessionId);
+      tester.view.physicalSize = const Size(320, 740);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final before = Map.of(records.values);
+      await tester.pumpWidget(
+        MaterialApp(
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(context)
+                .copyWith(textScaler: const TextScaler.linear(2)),
+            child: child!,
+          ),
+          home: AgentSessionScreen(
+            controller: controller,
+            projectName: project.name,
+          ),
+        ),
+      );
+      await reveal(
+        tester,
+        find.textContaining('Published candidate for Tanalyze'),
+        250,
+      );
+      expect(
+        find.textContaining('separately from task completion'),
+        findsOneWidget,
+      );
+      expect(tester.takeException(), isNull);
+      expect(records.values, before);
+      records.values[f.publication.storageKey] = '{invalid-publication';
+      final changed = Map.of(records.values);
+      controller.open(session.sessionId);
+      await tester.pumpAndSettle();
+      await reveal(
+        tester,
+        find.textContaining('Publication evidence is unavailable'),
+        250,
+      );
+      expect(
+        find.textContaining('Published candidate for Tanalyze'),
+        findsNothing,
+      );
+      expect(records.values, changed);
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox());
+    },
+  );
+
   testWidgets(
     'narrow enlarged saved overview distinguishes unresolved and unavailable evidence',
     (tester) async {
