@@ -1738,3 +1738,46 @@ behavior needs its own current-binary evidence; protocol18 observations remain
 historical. No live inference is necessary for the context/navigation slice.
 This investigation changes no application code, storage or authority, and does
 not complete production recovery navigation, general CE01/F20 or platform gates.
+
+
+### Explicit saved-candidate entry — 19 November 2026 implementation
+
+New bound production preparation captures CandidateReopenBasis with the original
+working record fingerprint, working/source-base/prepared snapshots and complete
+bounded reviewed proposal/provenance. CandidateVerificationStore binds an
+immutable CandidateReopenContext to the admitted session/run/dispatch/time in the
+same startup transaction as journal/candidate/execution/history, before receipt
+preparation or command entry. Startup expects absence and the original working
+record; subsequent checkpoints compare the exact retained context bytes. Explicit
+acknowledgment also compares context and never rewrites it. Existing legacy and
+unbound records receive no backfill.
+
+CandidateReopenContextStore is read-only. It requires the exact selected current
+session, approval/task membership, latest matching journal run, immutable context,
+current candidate, history projection and original working identity. The only
+allowed journal/candidate phase difference is justified by the existing exact
+acknowledgment before/after fingerprints. Superseded, cancelled, missing, corrupt
+or foreign records remain retained and unavailable for recovery.
+
+AgentSessionScreen offers Open saved candidate only for the latest matching bound
+reference. SavedCandidateRecoveryController owns two fresh distinct hosts and uses
+the optional CandidateSourceInspectionHost interface. NativeGenerationHost exposes
+its existing read-only checkSources through that interface. Opening performs two
+source inspections and repeats retained identity after awaits; it starts no model,
+preparation, verification, preview, reconciliation, acknowledgment or record write.
+Unsupported hosts receive an unavailable message. Async disposal prevents late
+publication. Original working authority is retained rather than rebased on reopen.
+
+The dedicated recovery screen presents retained reviewed changes and reuses
+SourceCandidateView. Acknowledgment, newly consented verification, Stop and
+promotion remain separate actions, with current guards at each boundary.
+Promotion uses the existing separate working controller and original selection
+basis so atomic session/working-output checks remain enforced. The route blocks
+back navigation while candidate work is active; Stop retains its existing control.
+
+Deterministic browser fixtures exercise the production screens with supplied
+sources and counters, not native files or inference. Protocol19 native fixtures
+also inspect the production recovery controller on separate app launches while
+retaining context fingerprints. Neither observation history nor an acknowledgment
+is task completion, process cleanup or authority for automatic replay. General
+session scheduling, task lifecycle and broader CE01/F20 acceptance remain open.

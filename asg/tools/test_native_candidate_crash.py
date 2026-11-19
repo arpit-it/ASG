@@ -22,6 +22,8 @@ class CandidateCrashTests(unittest.TestCase):
                 'dispatchCount': 0 if admission_crash else 1,
                 'dispatchId': None if admission_crash else f'candidate-restart-{self.nonce}-1:3',
                 'taskHistory': None if admission_crash else self.history_proof(),
+                'reopenContextSha256': None if admission_crash else 'a' * 64,
+                'reopenEntryChecked': launch == 2, 'reopenEntryAvailable': launch == 2 and not admission_crash,
                 'sessionSha256': 'b' * 64,
                 'journalSha256': None if admission_crash else 'c' * 64,
                 'candidateSha256': None if admission_crash else 'd' * 64,
@@ -133,7 +135,7 @@ class CandidateCrashTests(unittest.TestCase):
     def test_cancellation_proof_requires_intent_actual_receipt_and_no_new_effects(self):
         for launch in (1, 2):
             proof = self.session_proof(launch)
-            proof.update(taskHistory=self.history_proof(cancelled=True), revision=2, cancellationRequested=True, receiptSha256='f' * 64,
+            proof.update(taskHistory=self.history_proof(cancelled=True), revision=2, cancellationRequested=True, reopenEntryAvailable=False, receiptSha256='f' * 64,
                          commandEntries=1 if launch == 1 else 0)
             fixture.read_session_proof(proof, self.nonce, launch, session_cancel=True)
             for key, value in [('cancellationRequested', False), ('revision', 1),
@@ -145,7 +147,7 @@ class CandidateCrashTests(unittest.TestCase):
     def test_cancel_report_retains_only_the_actual_first_exit_without_promotion(self):
         for launch in (1, 2):
             proof = self.session_proof(launch)
-            proof.update(taskHistory=self.history_proof(cancelled=True), revision=2, cancellationRequested=True, receiptSha256='f' * 64,
+            proof.update(taskHistory=self.history_proof(cancelled=True), revision=2, cancellationRequested=True, reopenEntryAvailable=False, receiptSha256='f' * 64,
                          commandEntries=1 if launch == 1 else 0)
             fields = dict(sessionBound=True, sessionCancel=True, stopRequested=True,
                 sessionProof=proof, completedOperations=['resolve'], receiptOperations=['resolve'],
@@ -167,7 +169,7 @@ class CandidateCrashTests(unittest.TestCase):
     def test_active_cancellation_requires_three_actual_receipts_and_boundary_hash(self):
         for launch in (1, 2):
             proof = self.session_proof(launch)
-            proof.update(revision=2, cancellationRequested=True, receiptSha256='f' * 64,
+            proof.update(revision=2, cancellationRequested=True, reopenEntryAvailable=False, receiptSha256='f' * 64,
                 taskHistory=self.history_proof(cancelled=True, active=True), activeBoundarySha256='a' * 64, commandEntries=3 if launch == 1 else 0)
             fixture.read_session_proof(proof, self.nonce, launch,
                 session_cancel=True, session_cancel_active=True)
@@ -201,7 +203,7 @@ class CandidateCrashTests(unittest.TestCase):
                     session_cancel_active=True, session_cancel_unknown=True)
         for launch in (1, 2):
             proof = self.session_proof(launch)
-            proof.update(revision=2, cancellationRequested=True, receiptSha256='f' * 64,
+            proof.update(revision=2, cancellationRequested=True, reopenEntryAvailable=False, receiptSha256='f' * 64,
                 taskHistory=self.history_proof(cancelled=True, active=True, unknown=True), activeBoundarySha256='a' * 64, publicationFaultSha256='b' * 64,
                 testResultPresent=False, commandEntries=3 if launch == 1 else 0)
             fields = dict(sessionBound=True, sessionCancel=True, sessionCancelActive=True,
@@ -255,7 +257,7 @@ class CandidateCrashTests(unittest.TestCase):
 
     def test_active_completed_mode_cannot_relabel_unknown_test_result(self):
         proof = self.session_proof(1)
-        proof.update(revision=2, cancellationRequested=True, receiptSha256='f' * 64,
+        proof.update(revision=2, cancellationRequested=True, reopenEntryAvailable=False, receiptSha256='f' * 64,
             taskHistory=self.history_proof(cancelled=True, active=True), activeBoundarySha256='a' * 64, commandEntries=3)
         self.report(1, operation='test', sessionBound=True, sessionCancel=True,
             sessionCancelActive=True, stopRequested=True, sessionProof=proof,
@@ -288,6 +290,7 @@ class CandidateCrashTests(unittest.TestCase):
         proof = dict(sessionId=f'session-{self.nonce}', projectId=f'restart-{self.nonce}',
             revision=count, dispatchCount=count,
             dispatchIds=[f'candidate-restart-{self.nonce}-{n}:3' for n in range(1, count + 1)],
+            reopenEntryChecked=launch != 1, reopenEntryAvailable=launch in (2, 3, 4),
             cancellationRequested=False, receiptPreparations=int(launch in (1, 3)),
             commandEntries=3 if launch == 1 else 4 if launch == 3 else 0,
             basisSha256='a' * 64, sessionSha256=('b' if count == 1 else 'c') * 64,
@@ -299,7 +302,7 @@ class CandidateCrashTests(unittest.TestCase):
             recoverySha256=None if launch == 1 else '8' * 64,
             secondExecutionSha256=None if count == 1 else '9' * 64,
             secondReceiptSha256=None if count == 1 else 'a' * 64)
-        first = dict(self.history_proof(), runNumber=1, dispatchId=proof['dispatchIds'][0])
+        first = dict(self.history_proof(), runNumber=1, dispatchId=proof['dispatchIds'][0], reopenSha256='b' * 64)
         proof['taskHistories'] = [first]
         if count == 2:
             events = [['admitted', None, None, None]]
@@ -308,7 +311,7 @@ class CandidateCrashTests(unittest.TestCase):
             events += [['finished', None, None, None]]
             proof['taskHistories'].append(dict(sha256='c' * 64, projectionSha256='c' * 64,
                 events=events, withdrawalSequence=None, pendingOperation=None, finished=True,
-                runNumber=2, dispatchId=proof['dispatchIds'][1]))
+                runNumber=2, dispatchId=proof['dispatchIds'][1], reopenSha256='c' * 64))
         return proof
 
     def test_bound_retry_proof_tracks_explicit_actions_and_read_only_reopens(self):
@@ -383,6 +386,27 @@ class CandidateCrashTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             fixture.read_report(self.root, 1, self.nonce)
 
+    def test_production_entry_requires_exact_observation_and_context_fingerprints(self):
+        proof = self.retry_proof(3)
+        for key, value in [('reopenEntryChecked', False), ('reopenEntryChecked', 1),
+                           ('reopenEntryAvailable', False), ('reopenEntryAvailable', 1)]:
+            with self.subTest(key=key), self.assertRaises(ValueError):
+                fixture.read_retry_proof(dict(proof, **{key: value}), self.nonce, 3)
+        changed = json.loads(json.dumps(proof))
+        changed['taskHistories'][0]['reopenSha256'] = None
+        with self.assertRaises(ValueError):
+            fixture.read_retry_proof(changed, self.nonce, 3)
+        changed['taskHistories'][0]['reopenSha256'] = '1' * 64
+        fixture.read_retry_proof(changed, self.nonce, 3)
+        previous = self.retry_proof(2)
+        with self.assertRaises(ValueError):
+            fixture.require_retry_transition(previous, changed, 3, fixture.retry_digest(previous))
+        for key, value in [('reopenContextSha256', None), ('reopenEntryChecked', False),
+                           ('reopenEntryAvailable', False), ('reopenEntryAvailable', 1)]:
+            changed = dict(self.session_proof(2), **{key: value})
+            with self.subTest(key=key), self.assertRaises(ValueError):
+                fixture.read_session_proof(changed, self.nonce, 2)
+
     def test_retry_proof_requires_both_retained_task_histories(self):
         # Existing single-dispatch history proof does not cover retry stages.
         with self.assertRaises(ValueError):
@@ -428,7 +452,7 @@ class CandidateCrashTests(unittest.TestCase):
 
     def promotion_proof(self, launch):
         proof = self.retry_proof(min(launch, 4))
-        proof.update(workingSha256=('b' if launch < 4 else 'c') * 64,
+        proof.update(reopenEntryAvailable=launch in (2, 3, 4), workingSha256=('b' if launch < 4 else 'c') * 64,
                      previousSha256=None if launch < 4 else 'b' * 64,
                      workingPublished=launch >= 4,
                      secondExecutionPhase='completed' if launch >= 4 else 'verifying' if launch == 3 else None)
@@ -488,7 +512,7 @@ class CandidateCrashTests(unittest.TestCase):
                         running=True, acknowledge=True, retry=True, promote=True, promotion_crash=crash, session_bound=True)
 
     def report(self, launch, operation='resolve', **changes):
-        value = {'version': 18, 'launch': launch, 'nonce': self.nonce, 'dispatch': f'candidate-restart-{self.nonce}-1:3'}
+        value = {'version': 19, 'launch': launch, 'nonce': self.nonce, 'dispatch': f'candidate-restart-{self.nonce}-1:3'}
         value.update(sessionBound=False, admissionCrash=False, sessionCancel=False, sessionCancelActive=False, sessionCancelUnknown=False, sessionProof=None, sessionRetryProof=None, beforeActionSha256=None, promotionCrash=False, promote=False, retry=False, acknowledge=False, uncertain=False, publicationFault=False, intentUnchanged=True, running=False, runningMarker=False, runningCancelled=False, precommit=False, stopSignalled=False, stopSaveBlocked=False, savedStopPresent=False, stopRequested=False, stopUnchanged=True, operation=operation, completedOperations=fixture.OPERATIONS[:fixture.OPERATIONS.index(operation)])
         if launch == 1:
             value['readyForCrash'] = True
@@ -721,7 +745,7 @@ class CandidateCrashTests(unittest.TestCase):
             fixture.read_report(self.root, 2, self.nonce, operation='test', stop=True, session_bound=True)
 
     def test_protocol10_cannot_be_relabelled_as_session_evidence(self):
-        for version in (10, 11, 12, 13, 14, 15, 16, 17):
+        for version in (10, 11, 12, 13, 14, 15, 16, 17, 18):
             self.report(1, version=version)
             with self.subTest(version=version), self.assertRaises(ValueError):
                 fixture.read_report(self.root, 1, self.nonce)

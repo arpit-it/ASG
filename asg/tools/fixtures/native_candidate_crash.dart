@@ -11,6 +11,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:asg/models/candidate_operation_receipt.dart';
 import 'package:asg/models/agent_session.dart';
+import 'package:asg/models/candidate_reopen_context.dart';
+import 'package:asg/controllers/saved_candidate_recovery_controller.dart';
+import 'package:asg/services/candidate_reopen_context_store.dart';
 import 'package:asg/models/agent_execution_checkpoint.dart';
 import 'package:asg/models/candidate_verification_run.dart';
 import 'package:asg/models/agent_session_binding.dart';
@@ -368,6 +371,78 @@ Future<void> main() async {
       onCommand: launch == 1 ? null : () => commandEntries++,
     );
     AgentSession? selectedSession, initialSessionSelection;
+    CandidateReopenBasis? preparedReopenBasis;
+    var reopenEntryChecked = false, reopenEntryAvailable = false;
+    Future<void> inspectReopenEntry() async {
+      if (!sessionBound || launch == 1) return;
+      final saved = AgentSessionStore(records, project).load('session-$nonce');
+      if (saved == null) throw StateError('Reopen session missing');
+      final before = jsonEncode({
+        for (final key in [
+          workingKey,
+          checks.key,
+          checks.candidateKey,
+          saved.storageKey,
+          for (var number = 1; number <= saved.dispatches.length; number++)
+            CandidateReopenContextStore.keyFor(projectId, number),
+        ])
+          key: records.getString(key),
+      });
+      final preparations = receiptPreparations, commands = commandEntries;
+      var createdHosts = 0;
+      final recovery = SavedCandidateRecoveryController(
+        project: project,
+        records: records,
+        selectedSession: saved,
+        runNumber: saved.dispatches.isEmpty
+            ? 1
+            : saved.dispatches.last.runNumber,
+        createHost: () {
+          createdHosts++;
+          return SignalledFixtureHost(
+            receiptFiles: receipts,
+            runOperation: null,
+            onPrepare: () => receiptPreparations++,
+            onCommand: () => commandEntries++,
+          );
+        },
+      );
+      await recovery.open();
+      reopenEntryChecked = true;
+      reopenEntryAvailable =
+          recovery.candidate != null && recovery.error == null;
+      final expected =
+          !admissionCrash && !sessionCancel && !(promote && launch == 5);
+      if (reopenEntryAvailable != expected ||
+          (expected ? createdHosts != 2 : createdHosts != 0)) {
+        recovery.dispose();
+        throw StateError('Production saved candidate entry mismatch');
+      }
+      recovery.dispose();
+      if (receiptPreparations != preparations ||
+          commandEntries != commands ||
+          before !=
+              jsonEncode({
+                for (final key in [
+                  workingKey,
+                  checks.key,
+                  checks.candidateKey,
+                  saved.storageKey,
+                  for (
+                    var number = 1;
+                    number <= saved.dispatches.length;
+                    number++
+                  )
+                    CandidateReopenContextStore.keyFor(projectId, number),
+                ])
+                  key: records.getString(key),
+              })) {
+        throw StateError(
+          'Read-only production entry changed retained state or started work',
+        );
+      }
+    }
+
     Map<String, Object?>? initialCancellationOutput;
     Future<Map<String, Object?>> outputState() async => {
       'working': digest(records.getString(workingKey)!),
@@ -541,6 +616,18 @@ Future<void> main() async {
           jsonEncode(projected.toJson()) != rawHistory) {
         throw StateError('Task history identity or projection mismatch');
       }
+      final contextKey = CandidateReopenContextStore.keyFor(
+        projectId,
+        run.number,
+      );
+      final contextRaw = records.getString(contextKey);
+      if (contextRaw == null) {
+        throw StateError('Admitted reopen context missing');
+      }
+      CandidateReopenContextStore.decode(
+        contextKey,
+        contextRaw,
+      ).requireRun(run);
       return {
         'sha256': digest(rawHistory),
         'projectionSha256': digest(jsonEncode(projected.toJson())),
@@ -615,6 +702,15 @@ Future<void> main() async {
         }
       }
       return {
+        'reopenContextSha256': admissionCrash
+            ? null
+            : digest(
+                records.getString(
+                  CandidateReopenContextStore.keyFor(projectId, 1),
+                )!,
+              ),
+        'reopenEntryChecked': reopenEntryChecked,
+        'reopenEntryAvailable': reopenEntryAvailable,
         'taskHistory': historyProof,
         'sessionId': saved.sessionId,
         'projectId': saved.projectId,
@@ -729,6 +825,11 @@ Future<void> main() async {
           {
             'runNumber': run.number,
             'dispatchId': run.dispatchId,
+            'reopenSha256': digest(
+              records.getString(
+                CandidateReopenContextStore.keyFor(projectId, run.number),
+              )!,
+            ),
             ...taskHistoryProof(saved, run),
           },
       ];
@@ -743,6 +844,8 @@ Future<void> main() async {
         'sessionId': saved.sessionId,
         'projectId': saved.projectId,
         'taskHistories': histories,
+        'reopenEntryChecked': reopenEntryChecked,
+        'reopenEntryAvailable': reopenEntryAvailable,
         'basisSha256': digest(
           jsonEncode({
             'sessionId': saved.sessionId,
@@ -805,7 +908,9 @@ Future<void> main() async {
     String retryDigest(Map<String, Object?> proof) {
       final stable = Map<String, Object?>.from(proof)
         ..remove('receiptPreparations')
-        ..remove('commandEntries');
+        ..remove('commandEntries')
+        ..remove('reopenEntryChecked')
+        ..remove('reopenEntryAvailable');
       Object? canonical(Object? value) {
         if (value is Map<String, Object?>) {
           final keys = value.keys.toList()..sort();
@@ -819,7 +924,9 @@ Future<void> main() async {
     }
 
     Future<Map<String, Object?>> admissionState() async => {
-      'sessionProof': await sessionProof(),
+      'sessionProof': Map<String, Object?>.from((await sessionProof())!)
+        ..remove('reopenEntryChecked')
+        ..remove('reopenEntryAvailable'),
       'working': digest(records.getString(workingKey)!),
       'output': digest(await working.readAsString()),
       'sources': digest(
@@ -916,7 +1023,9 @@ Future<void> main() async {
       final output = await outputState();
       final stableProof = Map<String, Object?>.from(proof)
         ..remove('receiptPreparations')
-        ..remove('commandEntries');
+        ..remove('commandEntries')
+        ..remove('reopenEntryChecked')
+        ..remove('reopenEntryAvailable');
       final current = {'sessionProof': stableProof, 'outputState': output};
       final baseline = File(path.join(canonical, 'cancelled-state.json'));
       if (first) {
@@ -1033,23 +1142,42 @@ Future<void> main() async {
       if (sessionBound && selectedSession == null) {
         throw StateError('Bound fixture requires its selected session');
       }
+      final latest = checks.load().runs;
+      final basis = !sessionBound
+          ? null
+          : preparedReopenBasis ??
+                CandidateReopenContextStore.decode(
+                  CandidateReopenContextStore.keyFor(
+                    projectId,
+                    latest.last.number,
+                  ),
+                  records.getString(
+                    CandidateReopenContextStore.keyFor(
+                      projectId,
+                      latest.last.number,
+                    ),
+                  )!,
+                ).basis;
       return SourceCandidateController(
         project: project,
         candidate: snapshot,
-        evidence: ApprovedSourceProposal(
-          projectId: projectId,
-          boardTaskId: stop ? 'Tanalyze' : 'fixture',
-          approval: approval,
-          proposal: SourceEditProposal.parse(
-            {
-              'summary': 'Fixture review only',
-              'changes': [
-                {'path': 'lib/main.dart', 'before': 'old', 'after': 'new'},
-              ],
-            },
-            originals: {'lib/main.dart': 'old'},
-          ),
-        ),
+        reopenBasis: basis,
+        evidence:
+            basis?.evidence ??
+            ApprovedSourceProposal(
+              projectId: projectId,
+              boardTaskId: stop ? 'Tanalyze' : 'fixture',
+              approval: approval,
+              proposal: SourceEditProposal.parse(
+                {
+                  'summary': 'Fixture review only',
+                  'changes': [
+                    {'path': 'lib/main.dart', 'before': 'old', 'after': 'new'},
+                  ],
+                },
+                originals: {'lib/main.dart': 'old'},
+              ),
+            ),
         records: controllerRecords,
         sessionBinding: selectedSession == null
             ? null
@@ -1117,6 +1245,7 @@ Future<void> main() async {
         AgentSessionAdmission(records, project).requireApproval(initial);
         initialSessionSelection = initial;
       }
+      await inspectReopenEntry();
       if (sessionCancel) {
         final basisFile = File(path.join(canonical, 'admitted-session.json'));
         if (await FileSystemEntity.isLink(basisFile.path) ||
@@ -1296,6 +1425,83 @@ Future<void> main() async {
         phase: SourceGenerationPhase.verifying,
         pendingOperation: '',
       );
+      if (sessionBound) {
+        final input = GenerationInput(
+          project,
+          ApplicationStore(records).load(project).definition,
+        );
+        for (final entry in {
+          'assets/app.json': input.applicationJson,
+          'asg_project.json': input.metadataJson,
+        }.entries) {
+          final file = File(path.join(working.parent.path, entry.key));
+          await file.parent.create(recursive: true);
+          await file.writeAsString(entry.value, flush: true);
+        }
+        final original = await File(
+          path.join(working.parent.path, 'lib', 'main.dart'),
+        ).readAsString();
+        final replacement = await File(
+          path.join(candidate.path, 'lib', 'main.dart'),
+        ).readAsString();
+        final base = Directory(path.join(canonical, 'source-base'));
+        await base.create();
+        for (final relative in snapshot.sources.keys) {
+          final target = File(path.join(base.path, relative));
+          await target.parent.create(recursive: true);
+          if (relative == 'lib/main.dart') {
+            await target.writeAsString(original, flush: true);
+          } else {
+            await target.writeAsBytes(
+              await File(path.join(candidate.path, relative)).readAsBytes(),
+              flush: true,
+            );
+          }
+        }
+        final previous = GeneratedProject(
+          directory: working.parent.path,
+          sdk: sdk,
+          python: 'python3',
+          sources: await NativeGenerationHost.fingerprints(
+            working.parent.path,
+            source: true,
+          ),
+        );
+        await SourceGenerationStore(records).save(projectId, previous);
+        preparedReopenBasis = CandidateReopenBasis.capture(
+          projectId: projectId,
+          workingRecord: records.getString(workingKey)!,
+          working: previous,
+          sourceBase: GeneratedProject(
+            directory: base.path,
+            sdk: sdk,
+            python: 'python3',
+            sources: await NativeGenerationHost.fingerprints(
+              base.path,
+              source: true,
+            ),
+          ),
+          prepared: snapshot,
+          evidence: ApprovedSourceProposal(
+            projectId: projectId,
+            boardTaskId: 'Tanalyze',
+            approval: approval,
+            proposal: SourceEditProposal.parse(
+              {
+                'summary': 'Fixture reviewed source',
+                'changes': [
+                  {
+                    'path': 'lib/main.dart',
+                    'before': original,
+                    'after': replacement,
+                  },
+                ],
+              },
+              originals: {'lib/main.dart': original},
+            ),
+          ),
+        );
+      }
       stage = 'journal-start';
       final initialRun = stop ? null : await checks.start(snapshot, () {});
       final initialDirectory = initialRun == null
@@ -2378,7 +2584,7 @@ Future<void> report(
   await file.create(exclusive: true);
   await file.writeAsString(
     jsonEncode({
-      'version': 18,
+      'version': 19,
       'launch': launch,
       ...observation,
       'sessionBound': sessionBound,

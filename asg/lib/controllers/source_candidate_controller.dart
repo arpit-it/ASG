@@ -12,6 +12,7 @@ import '../models/candidate_recovery_status.dart';
 import '../models/candidate_recovery_acknowledgement.dart';
 import '../services/agent_execution_checkpoint_store.dart';
 import '../models/approved_source_proposal.dart';
+import '../models/candidate_reopen_context.dart';
 import '../models/build_plan.dart';
 import '../models/candidate_failure.dart';
 import '../models/candidate_verification_run.dart';
@@ -42,6 +43,7 @@ class SourceCandidateController extends BaseController {
     required this.host,
     required this.publish,
     this.requireWorking,
+    this.reopenBasis,
     AgentSessionBinding? sessionBinding,
   }) : _result = candidate {
     _sessionBinding = sessionBinding;
@@ -55,6 +57,7 @@ class SourceCandidateController extends BaseController {
   final GenerationHost host;
   final CandidatePromotion publish;
   final void Function()? requireWorking;
+  final CandidateReopenBasis? reopenBasis;
   CandidateVerificationStore? _activeStore;
   Future<void> _stopWrite = Future<void>.value();
   bool _stopSaving = false;
@@ -242,6 +245,18 @@ class SourceCandidateController extends BaseController {
       }
       AgentSessionRunAdmission(records, project, binding).requireCurrent();
     }
+    final basis = reopenBasis;
+    if (basis != null) {
+      final raw = records.getString('studio.generation.v1.${project.id}');
+      if (basis.projectId != project.id ||
+          raw == null ||
+          !basis.matchesWorkingRecord(raw) ||
+          !basis.matchesCandidate(_result)) {
+        throw StateError(
+          'Prepared candidate or original working identity changed.',
+        );
+      }
+    }
     requireWorking?.call();
     ApprovedSourceProposer(records).requireCurrent(project, evidence);
     if (_result.approval == null ||
@@ -319,6 +334,7 @@ class SourceCandidateController extends BaseController {
       final run = await store.start(
         initial,
         _authorize,
+        reopenBasis: reopenBasis,
         sessionAdmission: binding == null
             ? null
             : AgentSessionRunAdmission(records, project, binding),

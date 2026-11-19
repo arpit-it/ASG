@@ -61,3 +61,8 @@ abstract interface class CandidateReceiptHost {
     CandidateVerificationRun run,
   );
 }
+
+/// Optional read-only source inspection. It must not prepare or execute tools.
+abstract interface class CandidateSourceInspectionHost {
+  Future<void> checkSources(GeneratedProject project);
+}
