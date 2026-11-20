@@ -19,6 +19,8 @@ import 'candidate_reopen.dart' show CandidateReopenFixture;
 import 'native_repair_lineage.dart' show runNativeRepairLineageFixture;
 import 'native_initial_lineage.dart' show runNativeInitialLineageFixture;
 import 'native_initial_unresolved.dart' show runNativeInitialUnresolvedFixture;
+import 'native_initial_return_boundary.dart'
+    show runNativeInitialReturnBoundaryFixture;
 import 'agent_session_task_history.dart' show TaskHistoryFixture;
 
 import 'package:flutter/material.dart';
@@ -263,6 +265,15 @@ Future<void> main() async {
     if (input is Map<String, dynamic> && input['mode'] == 'repair-lineage') {
       stage = 'repair-lineage';
       await runNativeRepairLineageFixture(
+        canonical,
+        await challenge.readAsString(),
+      );
+      exit(0);
+    }
+    if (input is Map<String, dynamic> &&
+        input['mode'] == 'initial-return-boundary') {
+      stage = 'initial-return-boundary';
+      await runNativeInitialReturnBoundaryFixture(
         canonical,
         await challenge.readAsString(),
       );

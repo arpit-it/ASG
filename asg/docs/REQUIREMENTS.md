@@ -19653,3 +19653,82 @@ Investigation verification: 25 focused Flutter checks PASS (including both priva
 HTTP/native terminal gates), product acceptance32 PASS, inventory9 PASS; diff
 whitespace clean. No application code changed. Protected final-revision CI and
 fresh PR review remain required before this contract is marked delivered.
+
+
+### 2026-11-20 — #404 terminal-return investigation merged; native track started
+
+PR775 protected merge1d645ce865d4c3fd33b170a8a652bbb1b3b279fc verified through
+GitHub main, merged PR and fetched tree392a6a3f1defac9c69c03fdd3ba5a41006a93054.
+Fresh review remote b99190ca58999a8460ca231cff2e7f4b8dc2d084/base d083f85
+found no blocking issues; conversations empty. CI44674096322 Python136081679354
+and Flutter136081679148 both SUCCESS, every required/post step passed. Local
+format556 unchanged, analyze clean, full2229PASS/12explicit skips, web built;
+focused25/product32/inventory9 PASS. Coordinator merge/outcome recorded and
+integration/claim released. Full #404 remains open.
+
+Immediately claimed dependency-ready task404-native-initial-return-fixture in
+registered issue worktree; root owns Dart fixture/test/router, shared docs/inventory,
+and sole isolated native build resource. Strict bounded protocol25 challenge parser
+and permanent adverse tests started; two tests PASS (four valid phase/launch
+combinations plus malformed/foreign/mixed/oversized cases). Runtime/host integration
+and actual native observations remain pending. Host-only disjoint writer tasked
+404-native-initial-return-host with Python module/router/regressions; it must claim
+before edits, no native build or live runtime work, handoff stopped and serialize
+publication through root. Exact report design30fields/10slots/16counters, four
+placeholder samples max2589bytes, private designSHA256
+4984ddcd000f2bddef11fcb213747512d6a239dd03669ccb3133fec03e2a2d8b.
+These samples are design only. Existing model readiness observation remains
+connection-refused; zero inference, no owner process changed or stable app replaced.
+
+
+#404 native initial terminal fixture handoff: protocol25 fixed supplied provider
+now holds before/after physical terminal commit; both reports distinguish stored
+response, supplied validated metadata, delivered=null and cold retained reference.
+Actual native DB VM phase/cold read, corrupt journal, foreign capture and symlink/
+privacy refusal tests PASS; focused47PASS, Flutter and explicit fixture analysis
+clean. Native app crash proof still pending. Host disjoint handoffc4d97134 verified
+clean/stopped,134portablehost+6restartPASS, no process/build/inference observations
+claimed. Root will acquire union ownership before integration and new isolated
+Mac build. Owner runtime/stable app/last output/other edits preserved.
+
+
+### #404 native initial terminal boundary final local evidence
+
+Integrated clean stopped/released handoffs f6294c90502c16bc5a0d69bbc832079a404d71dc
+and c4d97134c3a8c6e47ec500a047474139c94ef791 only after acquiring exclusive union
+claim404-native-initial-return-integration; sourcecommit853054f85eedfa2034bb6a233e81aaffbd0fe0b5.
+Protocol25 exact30reportfields/10recordslots/16counters, five-key bounded challenge.
+Supplied provider metadata only, no live transport. Before terminal commit report
+has validated metadata but physical reserved/null stored response; after physical
+commit report has returnedValidated/exact supplied model+hashes. Both have pending
+proposal, terminalReturns0 and deliveredReference=null. Parent validated same live
+owned child, killed/waited -9, then separately cold-opened read-only. Before stays
+reserved with no reference; after retains exact validated record reference labelled
+retained only. Both cold reports have all counters0, no provider/replay/proposal,
+unchanged raw journal/session/working/unrelated records. No source restored.
+
+NEW isolated bundle:
+/private/tmp/asg404-native-initial-return-derived/Build/Products/Debug/Automated Software Generator.app
+Identity com.arsinha.asg.restartfixture, explicitly launched only; stable app and
+all older working bundles preserved. Whole-bundleSHA256
+198761d8fd1124a57679b92aa27c9b84d6e69562969d541f9a44d34e99acb542.
+605 pinned source inputSHA256
+07b8cd979f4bd9ae4fdf86501ff6b83f0d60703d9a52bd4948d50bdc5d81a385.
+Three Python host-inputSHA256 e4f30993363105a5d0767292d4c1c56b1e5c8ea4f37a8da82b5efc7c4197e63c.
+All inputs byte-identical after all36actual native launches on this SAME bundle:
+new protocol25 before2+after2=4; preserved24 basic2+explicitnext4=6, protocol23
+precommit2/retry4/corrupt2=8, protocol22 equivalent8, decision21five, legacy20five
+bound running-stop/ack/retry/promotion. New mode does not run SDK/model/preview/
+candidate/copy/host; legacy20 retains its original fixed SDK/receipt scope. Owned
+fixture processes settled. No owner-started process stopped. Source/bundle/case
+receipts: /tmp/asg404-native-initial-return-{source-manifest,bundle,evidence-summary}.json
+and twelve separately hashed reports named in summary; no earlier evidence relabelled.
+
+Local final validation:47focused Flutter PASS,8newVM/parser/adverse tests PASS,
+format559 unchanged; Flutter analyze and explicit fixture analysis clean; full
+Flutter2237PASS/12explicit live skips, web built. Python134host+6restart+32product+
+9inventory PASS. Inventory regenerated unchanged. Style/import issues fixed before
+final validation; no escaped defect observed. Fresh exact PR review and ALL required
+CI remain mandatory. This bounded native outcome does not complete fullCE01/F20/
+#404/liveQwen/#400; marketplace dependencies/F23-last unchanged. No installs,
+model downloads, unrestricted execution, stable replacement, cloud or deployment.
