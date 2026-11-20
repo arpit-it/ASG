@@ -2,6 +2,7 @@
 // Copyright 2026 Arpit Sinha
 
 import '../models/imported_plan.dart';
+import '../models/imported_commit_context.dart';
 import '../models/imported_document_context.dart';
 import '../models/imported_source_context.dart';
 import '../models/imported_repository_context.dart';
@@ -29,6 +30,7 @@ class ImportedPlanController extends BaseController {
            });
   final String root;
   final ImportedPlanStore store;
+  ImportedCommitContext? get capturedCommit => store.capturedCommit;
   ImportedDocumentContext? get capturedDocuments => store.capturedDocuments;
   ImportedSourceContext? get capturedSource => store.capturedSource;
   ImportedRepositoryContext? get capturedContext => store.capturedContext;

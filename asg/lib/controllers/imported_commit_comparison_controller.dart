@@ -3,6 +3,8 @@
 import 'dart:async';
 
 import '../models/imported_commit_comparison.dart';
+import '../models/imported_commit_context.dart';
+import '../models/project_inspection.dart';
 import '../models/imported_source_baseline.dart';
 import '../models/imported_source_proposal_record.dart';
 import '../models/imported_commit_source_observation.dart';
@@ -55,6 +57,15 @@ class ImportedCommitComparisonController extends BaseController {
       !_cleanupUncertain &&
       supported &&
       ImportedCommitReadRequest.validCommit(_commit);
+  bool get canPreparePlanning =>
+      !isDisposed &&
+      !_busy &&
+      !_cleanupUncertain &&
+      !stale &&
+      _comparison != null &&
+      _lastInputs != null &&
+      _comparison!.observation.status == ImportedCommitSourceStatus.observed &&
+      _commit == _comparison!.request.commit;
   bool get canStop => !isDisposed && _busy && !_stopped;
   bool get blockedByOtherRead => !_busy && store.readOwned;
   String? get error => _error;
@@ -182,6 +193,51 @@ class ImportedCommitComparisonController extends BaseController {
       _busy = false;
       update();
     }
+  }
+
+  /// Prepares supplied historical data only. It never dispatches the host or
+  /// persists/approves a plan; the next workspace owns those explicit actions.
+  Future<ImportedCommitContext?> preparePlanning(
+    ProjectInspection inspection,
+  ) async {
+    if (!canPreparePlanning) return null;
+    final generation = ++_generation;
+    final comparison = _comparison!;
+    final inputs = _lastInputs!;
+    ImportedCommitContext? captured;
+    _busy = true;
+    _stopped = false;
+    _error = null;
+    update();
+    try {
+      _alive(generation);
+      _lease = store.acquireRead();
+      final selection = store.prepare(saved, comparison.request.commit);
+      await store.verify(selection, () => _alive(generation));
+      _alive(generation);
+      captured = store.planningContext(
+        selection,
+        comparison,
+        inspection,
+        inputs,
+      );
+      _alive(generation);
+    } catch (_) {
+      if (!isDisposed && !_stopped) {
+        _error = 'Commit planning context could not be prepared. Recheck the commit and current requirements.';
+        _stale = _comparison != null;
+      }
+    } finally {
+      if (_lease != null && !_cleanupUncertain) {
+        store.releaseRead(_lease!);
+        _lease = null;
+      }
+      _busy = false;
+      update();
+    }
+    // Final notification can synchronously dispose/replace the owner or change
+    // captured inputs. Recheck after it before handing data to the caller.
+    return canPreparePlanning ? captured : null;
   }
 
   Future<void> cancel() async {

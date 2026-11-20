@@ -4,10 +4,19 @@ import 'package:flutter/material.dart';
 
 import '../controllers/imported_commit_comparison_controller.dart';
 import '../models/imported_commit_source_observation.dart';
+import '../models/imported_commit_context.dart';
+import '../models/project_inspection.dart';
 
 class ImportedCommitComparisonScreen extends StatefulWidget {
-  const ImportedCommitComparisonScreen({super.key, required this.controller});
+  const ImportedCommitComparisonScreen({
+    super.key,
+    required this.controller,
+    this.inspection,
+    this.onPlan,
+  });
   final ImportedCommitComparisonController controller;
+  final ProjectInspection? inspection;
+  final void Function(ImportedCommitContext)? onPlan;
   @override
   State<ImportedCommitComparisonScreen> createState() =>
       _ImportedCommitComparisonScreenState();
@@ -83,6 +92,22 @@ class _ImportedCommitComparisonScreenState
     );
   }
 
+  Future<void> _preparePlanning() async {
+    final owner = c;
+    final inspection = widget.inspection;
+    final onPlan = widget.onPlan;
+    if (inspection == null) return;
+    final captured = await owner.preparePlanning(inspection);
+    if (mounted &&
+        identical(owner, c) &&
+        !owner.isDisposed &&
+        captured != null &&
+        identical(inspection, widget.inspection) &&
+        identical(onPlan, widget.onPlan)) {
+      onPlan?.call(captured);
+    }
+  }
+
   @override
   Widget build(BuildContext context) => AnimatedBuilder(
     animation: c,
@@ -135,6 +160,11 @@ class _ImportedCommitComparisonScreenState
                 ),
               ],
             ),
+            if (widget.inspection != null && widget.onPlan != null)
+              OutlinedButton(
+                onPressed: c.canPreparePlanning ? _preparePlanning : null,
+                child: const Text('Review committed source and plan'),
+              ),
             if (c.busy) const LinearProgressIndicator(),
             if (c.confirming) const Text('Waiting for read consent.'),
             if (c.error != null)

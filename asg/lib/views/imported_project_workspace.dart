@@ -53,6 +53,21 @@ class ImportedProjectWorkspace extends StatelessWidget {
               saved: saved,
               store: ImportedCommitComparisonStore(records),
             ),
+            inspection: inspection,
+            onPlan: (captured) {
+              if (!context.mounted) return;
+              Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => ImportedPlanScreen(
+                    controller: ImportedPlanController(
+                      inspection.root,
+                      ImportedPlanStore(records, capturedCommit: captured),
+                      inspection: inspection,
+                    ),
+                  ),
+                ),
+              );
+            },
           ),
         ),
       );
