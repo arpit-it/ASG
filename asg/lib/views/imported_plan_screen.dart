@@ -69,18 +69,24 @@ class _ImportedPlanScreenState extends State<ImportedPlanScreen> {
               'Write a plan against saved requirements and the workspace’s captured metadata. Reload refreshes saved planning data only. Reinspect the folder explicitly to refresh disk metadata. Approval records review consent only; source editing and execution are unavailable and no project files are changed.',
             ),
             SelectableText('Folder: ${controller.root}'),
-            if (controller.capturedDocuments != null) ...[
-              const Text(
-                'This draft uses historical captured documents. Saving stores their text and provenance locally in ASG application records. No model sharing, repository writes or execution is authorized. Changed requirements invalidate this capture; return to review and prepare a new context.',
+            if (controller.capturedContext != null) ...[
+              Text(
+                controller.capturedContext!.includesSource
+                    ? 'This draft uses historical captured source. Saving stores its text and provenance locally in ASG application records. No model sharing, repository writes or execution is authorized. Changed requirements invalidate this capture; return to review and prepare a new context.'
+                    : 'This draft uses historical captured documents. Saving stores their text and provenance locally in ASG application records. No model sharing, repository writes or execution is authorized. Changed requirements invalidate this capture; return to review and prepare a new context.',
               ),
               SelectableText(
-                'Captured context SHA-256: ${controller.capturedDocuments!.digest}',
+                'Captured context SHA-256: ${controller.capturedContext!.digest}',
               ),
               ExpansionTile(
-                title: const Text('Review captured document text'),
+                title: Text(
+                  controller.capturedContext!.includesSource
+                      ? 'Review captured source text'
+                      : 'Review captured document text',
+                ),
                 children: [
                   for (final document
-                      in controller.capturedDocuments!.documents)
+                      in controller.capturedContext!.capturedFiles)
                     Padding(
                       padding: const EdgeInsets.all(12),
                       child: Column(
@@ -92,7 +98,9 @@ class _ImportedPlanScreenState extends State<ImportedPlanScreen> {
                           SelectableText('SHA-256: ${document.digest}'),
                           SelectableText(
                             document.text.isEmpty
-                                ? '[Empty document]'
+                                ? (controller.capturedContext!.includesSource
+                                      ? '[Empty source file]'
+                                      : '[Empty document]')
                                 : document.text,
                           ),
                         ],

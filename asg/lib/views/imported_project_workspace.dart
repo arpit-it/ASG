@@ -98,6 +98,20 @@ class ImportedProjectWorkspace extends StatelessWidget {
           root: inspection.root,
           records: records,
           inspection: inspection,
+          onPlan: (captured) {
+            if (!context.mounted) return;
+            Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => ImportedPlanScreen(
+                  controller: ImportedPlanController(
+                    inspection.root,
+                    ImportedPlanStore(records, capturedSource: captured),
+                    inspection: inspection,
+                  ),
+                ),
+              ),
+            );
+          },
           onAdvisory: (captured) {
             if (!context.mounted) return;
             Navigator.of(context).push(

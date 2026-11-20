@@ -17,12 +17,14 @@ class ProjectSourcePanel extends StatefulWidget {
     this.controller,
     this.inspection,
     this.onAdvisory,
+    this.onPlan,
   });
   final String root;
   final RecordStorage records;
   final ProjectSourceController? controller;
   final ProjectInspection? inspection;
   final ValueChanged<ImportedSourceContext>? onAdvisory;
+  final ValueChanged<ImportedSourceContext>? onPlan;
   @override
   State<ProjectSourcePanel> createState() => _ProjectSourcePanelState();
 }
@@ -108,6 +110,59 @@ class _ProjectSourcePanelState extends State<ProjectSourcePanel> {
         approved == true;
   }
 
+  Future<void> _plan() async {
+    final owner = _controller;
+    final inspection = widget.inspection;
+    if (inspection == null || widget.onPlan == null) return;
+    final prepared = owner.preparePlan(inspection);
+    if (prepared == null || !mounted || !identical(owner, _controller)) return;
+    final approved = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        scrollable: true,
+        title: const Text('Plan with captured source'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SelectableText('Folder: ${inspection.root}'),
+            SelectableText(
+              'Selected files: ${prepared.files.map((d) => d.path).join(', ')}',
+            ),
+            SelectableText('Context SHA-256: ${prepared.digest}'),
+            const SizedBox(height: 12),
+            const Text(
+              'Open a manual plan using the captured source, metadata and current requirements. Saving a draft stores the captured source text and provenance in ASG application storage. No repository files are changed and nothing is sent to a model. Approval records review consent only; execution is unavailable. Captures are historical, not current disk verification.',
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Open manual plan'),
+          ),
+        ],
+      ),
+    );
+    if (!mounted ||
+        !identical(owner, _controller) ||
+        owner.isDisposed ||
+        approved != true) {
+      return;
+    }
+    final currentInspection = widget.inspection;
+    if (currentInspection == null ||
+        !owner.acceptsPreparedPlan(prepared, currentInspection)) {
+      return;
+    }
+    if (!mounted || !identical(owner, _controller) || owner.isDisposed) return;
+    widget.onPlan?.call(prepared);
+  }
+
   void _advisory() {
     final owner = _controller, inspection = widget.inspection;
     if (inspection == null || widget.onAdvisory == null) return;
@@ -181,6 +236,11 @@ class _ProjectSourcePanelState extends State<ProjectSourcePanel> {
                       : null,
                   child: const Text('Review selected source'),
                 ),
+                if (widget.inspection != null && widget.onPlan != null)
+                  OutlinedButton(
+                    onPressed: c.canPreparePlan ? _plan : null,
+                    child: const Text('Plan with captured source'),
+                  ),
                 if (widget.inspection != null && widget.onAdvisory != null)
                   OutlinedButton(
                     onPressed: c.canPrepareAdvisory ? _advisory : null,
