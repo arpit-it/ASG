@@ -22530,3 +22530,85 @@ requiredCI/freshreview/verifiedmerge gates. Source advisory sharing integration 
 later acceptance. This is the sole selected next task; no speculative backlog or
 second independent writer. FullF20, liveQwen/deferred400 and F23-last/marketplacegate
 remain unchanged. No model/process/runtime/install/sourcewrite/deployment effects.
+
+
+### 2026-11-20 — source-context investigation merged; typed context started
+
+PR802 fresh reviewed head5c67474e1160c022ba680e578e34b766b4c05ea0 protected squashmerge
+c908fac41b8abacb320c78fd929628985c4ab0d2 verified by plugin main/mergedPR/issue404OPEN
+and fetched exact testedtree d74608e50d7d6fd3c5b2ee22c11e89847a0d377b matchinglocal
+4ca9ee7. Full remote/localdiff review no blockers, emptythreads, unchangedhead/base.
+RequiredCI44762012471 Flutter136376712061/Python136376712395 every required/poststep
+SUCCESS; completedlogs inspected fullFlutter/browserstorage/transport/staticHTML/
+web/independentgeneratedFlutter/Python suites. Investigation32pure/probe plus19
+advisory storage/CAS/Stop/identity checks PASS. Coordinator merge/outcome recorded,
+integration/claim released; no product behavior or permission expansion claimed.
+
+Immediately claimed404-captured-source-context from verifiedmain in same registered
+issueworktree, solewriter. Scope pure ImportedSourceContext/modeltests plus canonical
+history/requirements/architecture/inventory only. Started separate versioned immutable
+captured-imported-source-context with source files/root/metadata/requirements/order/
+text/hash identity, requestroot/readset/observed checks,128KiB whole UTF8 evidence
+limit, source_verified=false and planninginputs comparison. Existing instruction/
+advisory/storage/helper/UI paths unchanged, no sharing/permission/IO callsite added.
+
+Initial11context+1architecture PASS: stable and changed identities; wrongroot/readset/
+refusals/private errors; JSON-expansion bound; immutable snapshots; metadata/authored
+requirements/tasks/currentplanninginput comparisons; all refusals; ordered files.
+Two-file analysis clean; inventory regenerated and9inventory checks PASS. Initial
+mechanical copy briefly produced an invalid local identifier before formatting;
+corrected before tests, no published revision or product effect. Logs
+/tmp/asg404-captured-source-start.log,
+/tmp/asg404-captured-source-start-analyze.log and
+/tmp/asg404-captured-source-start-inventory.log. Continue exact boundary/fourfile/
+BOM/CRLF/order/compatibility scenarios and full regression/web/requiredCI/freshreview/
+verifiedmerge before completion. No model requests, owner-source reads, process/
+install/download/stableapp/cloud/deployment effects. FullF20/source-sharing and
+unavailableplatform400 remain OPEN; marketplacegate/F23-last preserved. Activeclaim
+retained for continuation; no second independent dependency-ready track admitted.
+
+
+### 20 November 2026 — captured-source context validation
+
+Completed pure ImportedSourceContext implementation under404-captured-source-context.
+Separate captured-imported-source-context identity binds selected root/inspection,
+validated requirements and ordered exact file text/bytecount/hash; immutable source
+objects preserve bytes. Whole untrusted-evidence UTF8 cap128KiB, private mismatch/
+overflow/refusal errors and source_verified=false. App input comparison is captured
+identity only, never disk verification/sharing/read/plan/command authority. No UI,
+provider/storage/helper or existing instruction/advisory format changes.
+
+Final30focused source/document/advisoryrequest/architecture checks PASS, including
+exact128KiB evidence/onebyte overflow, expansion/multibyte/BOM/normalization,
+root/allmetadata/requirements/tasks/refusal/readset identity, snapshots and four
+ordered files at exact65536aggregatebytes with BOM/CRLF/emptyfile. Order reversal
+changesdigest. One new test initially expected mutation of original constructor
+lists to alter metadata/requirements, but both existing classes copy those lists;
+corrected to assert stable oldsnapshot and reject newlyconstructed changedinputs.
+No product fix was needed. Full analysis clean;614Dartfiles formatted; inventory9/
+product32 PASS. FullFlutter/web results and exact remote CI/review/merge recorded
+in PR evidence; do not mark fullF20 complete. Logs
+/tmp/asg404-captured-source-{focused,analyze,full,web,format,inventory,product}.log.
+
+Next eligible coherent F20/#404 implementation after this verifiedmerge: explicit
+advisory questions about captured source. Bind the final source context to a typed
+advisory input, expose a captured-source review action with metadata/requirements
+matching and no automatic reread, then reuse existing bounded question/answer,
+explicit per-request destination/model/context consent and storage CAS/Stop/retry/
+responseidentity guarantees. Preserve existing document request/record formats and
+behavior; source context stays distinct in its versioned captured payload. Measure
+whole serialized prompt and refuse oversized source without truncation; retained
+capture/previous answer survive refusal. New source text remains untrusted data,
+not command/plan authority. Default unavailable hosts remain explicit. Regression
+coverage must include source content/root/order/requirements/settings changes,
+consent cancellation/disposal, failed save/retry, matching response ID, source prompt
+budget, legacy document compatibility, native storage reopen and supplied-data IAB;
+full format/analyze/tests/web/isolatedMac/requiredCI/freshreview/verifiedmerge gates.
+Only later explicitly consented local inference may use the configured owner Qwen
+runtime after health/models/responseID verification; unavailable runtime leaves that
+acceptance pending. No deployment/install/owner sourcewrite or new arbitrary code
+execution. This is the sole next task, not a second backlog; no independent ready
+writer admitted. FullF20/deferred400/F23-last and marketplacegate unchanged.
+
+Final local fullFlutter2533PASS/13explicit opt-in skips and mainwebbuild PASS.
+Runtime source unchanged after these checks; no native UI or live model claim.
