@@ -23314,3 +23314,130 @@ analyze and627format clean. Logs/tmp/asg404-saved-proposal-review-{widget,full,a
 This is a test/documentation-only forward revision; all seven runtime hashes match the
 verified web/isolatedMac/IAB build receipt exactly. Prior head review/CI evidence is not
 used to merge the changed revision: final exact rereview and required CI must pass anew.
+
+
+### F20 / #404 — verified PR810 and baseline-recheck investigation started, 20 November 2026
+
+PR810 merged9b79c589ecf0437aa0a3209ac855a86bac9b6f8d; tested/reviewed tree
+2180eaf665b9eb04002ac30be600160d7a973f2f. Final fresh review covered remote
+b304125959bdb811ac7ebe30182703c754a7f5ad against1a3ce55329a61803d3f1877d3cab96ae90fc00c6,
+including the forward controller-replacement consent regression. Required final
+CI44791372615 Python136479742131/Flutter136479741340 all required and poststeps SUCCESS;
+completed logs inspected, exact remote/local diff matched, no blocking findings, empty
+threads and unchangedhead/base/main verified before protected merge. PriorheadCI was not
+used for revised-head approval. Pluginmain/mergedPR/404OPEN and fetchedmain/tree verified.
+Final localfull2588 PASS/13 existing opt-in skips, all5 screenchecks/analyze627format/
+inventory9/product32 and matching7runtime-hash web/isolatedMac/IAB evidence recorded.
+Coordinator recorded checks/review_changes/review/merge/outcome, then released completed
+integration/claim. Its durations are cooperative continuation-track/manual observations,
+not total feature or provider CI timing; unknown escaped-defect counts remain unknown.
+Owner dirty checkout/processes preserved; owned8400preview stopped. FullF20 remains open.
+
+Immediately claimed404-saved-baseline-recheck from verifiedmain in the same registered
+worktree, solewriter, no independent ready disjoint task. Existing404 covers the concrete
+F20 stale-baseline gate before future imported source edits; no new issue. This bounded
+investigation owns only these three canonical documents and uses disposable probes.
+Acceptance: inspect saved-proposal/context and existing request/observation/controller/
+native host/helper; compare every original selected file's root/readset/order/path/bytes/
+hash against an explicitly consented fresh contained observation. Cover unchanged BOM/
+CRLF/multibyte data, changed target or another captured file, missing/refused/unsafe
+observations and mismatched readsets; preserve saved records. Use existing trusted helper
+fixtures only on newly owned temporary folders, with no owner-source/model requests.
+
+Started by tracing a concrete attribution boundary: source observation schema contains
+selected_paths/files/status but no root. A future comparison must bind the frozen fresh
+request.root to the saved record.root as well as exact selected paths; payload hash equality
+alone cannot establish requested-folder provenance. Existing request freezes selected
+paths and the native host owns trusted packaged-helper arguments/cleanup. A point-in-time
+byte match must remain source_verified=false, never revive historical plan approval or
+close the TOCTOU gap for a later write. Current app-plan checks, explicit fresh-read consent,
+Stop/disposal/cleanup and any future editing authorization remain separate prerequisites.
+No production baseline-check/apply/source-write workflow is added by this investigation.
+
+
+Baseline investigation start:6 disposable comparison probes plus19 existing historical
+record/source-context tests passed25total, log/tmp/asg404-baseline-pure-start.log;
+31 existing descriptor-contained source-reader fixtures passed on this Mac, log
+/tmp/asg404-baseline-reader-start.log. The native fixtures use newly owned temporary
+source folders, not owner repositories. Supplied comparisons preserve exact BOM/CRLF
+bytes and saved record identity; changed target or peer file, wrong frozen request root,
+subset/reordered readset and missing/unsafe/changed/unavailable observations refuse.
+A matching historical byte observation can coexist with a later unreviewed current plan:
+it establishes neither current approval nor source_verified=true. Disposable comparison
+code in/tmp/asg404_saved_baseline_probe_test.dart is not a production app baseline gate.
+
+Current gaps for this active investigation: actual app fresh-read consent and lifecycle/
+selection/root/current-plan/requirements changes while read is pending, owned worker
+cleanup/Stop, and independently bound new native observation evidence must be resolved
+before choosing the next coherent baseline-check workflow. Point-in-time equality still
+does not authorize or make a future write race-free. No production code or saved records
+changed in this investigation; no model/source-write/execution/install/deployment effect.
+
+Coordinator report for completed404-saved-imported-proposal-flow records continuation
+start-to-merge1935.4seconds and paired CI-observation wait532.1seconds, one review rework
+observation and one verified user outcome. These are cooperative manual observations for
+that continuation segment, not provider CI timing or whole-feature elapsed time. Zero
+recorded escaped-defect observations is not evidence that none exist; actual unknown
+counts and earlier model-start duration remain unknown. Active baseline investigation
+claim retained for continuation; no completion or new app capability claimed.
+
+
+### F20 / #404 — saved baseline recheck investigation findings, 20 November 2026 UTC
+
+Completed bounded404-saved-baseline-recheck prerequisite investigation. Eleven disposable
+pure/lifecycle/native probes plus existing source-controller/host/observation/historical
+record/store regressions passed69total, log/tmp/asg404-baseline-final.log. Earlier31
+contained-reader fixtures passed separately; no aggregate app capability is inferred.
+Actual Mac packaged-helper bytes matched trusted source SHA256
+073b8f2addc76592aa2a19906f1461a92264641248641fdcecceb9cc037a0c13. Six independent owned
+contained reads captured two temporary files, matched unchanged BOM/CRLF/café bytes,
+detected peer and target changes, refused missing invalid/source_missing and symlink
+unsupported/unsafe_source, and retained original historical record bytes/digest. Receipt
+/tmp/asg404-baseline-native-receipt.json binds helper hash, supplied root/selected paths,
+observation statuses/file hashes and original record identity. Source folder and helper
+jobs were closed/removed; no owner-source/model/readback app record changed.
+
+The first native probe incorrectly expected missing source to be unavailable; it was
+corrected to the helper's actual invalid/source_missing protocol and all cases reranPASS.
+This was a probe expectation, not a production defect. Fresh observations remain
+source_verified=false. Comparison feasibility in/tmp/asg404_saved_baseline_probe_test.dart
+requires frozen request.root == saved root and exact full readset/order/path/length/hash/
+text/bytes. Matching hashes from a differently requested root, subsets, reordered readsets
+and changes to another captured file refuse. Neither a matching baseline nor an old
+historically reviewed plan establishes current approval, whole-repository freshness or a
+race-free future write; frozen request provenance is necessary because payload omits root.
+
+Existing native host validates canonical absolute root/Python outside project, loads only
+packaged helper into a private owned directory, launches argument-vector -I/-S/-B without
+shell/parent environment, bounds output/deadline and owns kill/reap/nonrecursive cleanup.
+Stop/late startup/cleanup uncertainty guards are covered by current host/controller tests.
+A result is not reusable until owned cleanup confirms; uncertain cleanup blocks overlap.
+The manual ProjectSourceController is intentionally only a data reader: four pending-read
+probes demonstrate that requirements/plan/saved-comparison/runtime-setting record changes
+do not turn that reader into a frozen saved-baseline admission guard. It publishes captured
+untrusted data without changing app records or granting approval. This is an integration
+gap for the new workflow, not a regression in the manual-reader contract.
+
+Next coherent implementation after verified investigation merge: explicitly recheck all
+selected files of one saved comparison through the existing contained native reader.
+Add a pure immutable comparison binding saved-record identity and frozen root/readset/
+request/observation identities; label point-in-time match/change/refusal and keep
+source_verified=false. Add read-only app-record selection/durable zero-update fences for
+saved folder/current saved record/requirements/current plan/runtime settings; require
+unchanged expected inputs before consent/dispatch and after owned cleanup before result
+publication. Historical comparison is allowed without reviving current approval; current
+plan/requirements identity is a separate frozen guard, never inferred from matching bytes.
+
+Use one owned host job, explicit root/paths/Python read consent, generation/disposal/Stop/
+late-result guards and sticky uncertain-cleanup exclusion. Keep previous comparison/result
+stale on cancellation/refusal/failure; do not rewrite saved history or automatically rebase,
+apply, verify a build, share with a model or execute project commands. Provide a history
+entry/recheck view with current limits and unsupported-host states. Cover pure identities/
+allreadset/refusals, durable stale-cache app fences, confirmation changes and delayed
+cleanup/disposal, real owned Mac read matrix and injected IAB/narrow UI, then required
+format/analyze/fullFlutter/web/isolatedMac/inventory/CI/freshreview/verifiedmerge. No new
+source-write, Git or execution permission is part of this next slice.
+
+Investigation publication/fresh exact review/requiredCI/verifiedmerge remain pending.
+Reuse404umbrella; fullF20/CE01 and unavailable-platform400 remain open. Marketplacegate/
+F23-last unchanged. No independent ready disjoint writer or owner process change.
