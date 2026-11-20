@@ -8209,3 +8209,123 @@ source-write, Git or execution permission is part of this next slice.
 Investigation publication/fresh exact review/requiredCI/verifiedmerge remain pending.
 Reuse404umbrella; fullF20/CE01 and unavailable-platform400 remain open. Marketplacegate/
 F23-last unchanged. No independent ready disjoint writer or owner process change.
+
+
+### F20 / #404 — verified PR811 and baseline-check implementation started, 20 November 2026 UTC
+
+PR811 verified merged4e091c86e50247af0d3d07bd9dba19c3622f359a; inspected tree
+f6d29aa7292c1496f9476a29f79aaaa94abdb2a9. Fresh exact review of remote
+02ecdbf24af6ad093caf9eb2fa4b7460d9d84dff against9b79c589ecf0437aa0a3209ac855a86bac9b6f8d
+matched remote/localdiff, found no blocking issues or review threads and retained the
+fixture-versus-product distinctions. CI44794707013 Python136491111769/Flutter136491112241
+all required and poststeps SUCCESS; completed logs inspected. Pluginmain/mergedPR/404OPEN
+and fetchedmain/tree verified. Coordinator recorded checks/review/merge/outcome then
+released completed integration/claim.69focused/31readerfixtures/six actual owned Mac
+observations establish the investigation findings, not a delivered app baseline action.
+
+Coordinator investigation-segment observations: start-to-merge1276.6seconds, paired CI
+observation wait544.1seconds, zero recorded review rework and one outcome-verification
+attestation. These manual/cooperative intervals and investigation tally are not provider
+CI timing or a new user workflow; escaped defects remain unknown despite zero recorded
+observations. Owner checkout/processes unchanged; fullF20/CE01 and unavailable-platform400
+acceptance remain open, marketplacegate/F23-last preserved.
+
+Immediately claimed404-imported-baseline-check from verifiedmain in same registered
+worktree, solewriter, no independent ready disjoint task. Coherent outcome: explicitly
+recheck all selected files of a saved comparison with historical records preserved and
+point-in-time match/change/refusal distinct from current approval. Scope new pure model,
+read-only record/fence/reader service, controller and focused view, history/workspace
+entry wiring, related tests and canonical docs/inventory. Freeze saved folder/record,
+requirements/current plan/runtime configuration; verify durable zero-update inputs before
+consent/dispatch and after owned cleanup. Explicit root/all-paths/Python read consent;
+owned read lease must survive view recreation until cleanup confirms, with Stop/disposal/
+late-result/uncertain-cleanup guards and stale previous-result retention. No source writes,
+model sharing, approval revival, executable export, automatic rebase/apply or commands.
+Final coherent feature needs actual native/IAB/narrow/fullregression/build/CI/freshreview/
+verifiedmerge; this model-only start is not published as a completed user capability.
+
+Started pure immutable ImportedSourceBaseline with matched/changed/refused status,
+all-selected-file before/after hashes/byte counts and exact byte/text equality, explicit
+saved-record/request/observation identities, UTC observation time and bounded16KiB
+identity record. Binds frozen root and complete selected-path order to original saved
+context; lexical canonical absolute root/Python-outside-project checks reject malformed,
+inside-project, unpaired-scalar and oversized requests privately. Existing native service
+must still validate physical root/interpreter and own actual reads. Refused observations
+never invent fresh hashes; changed peers cannot be ignored just because target matches.
+source_verified remainsfalse and there is no current-approval/write/execution field.
+No storage/host/controller/UI callsite is added by this start.
+
+Five new baseline regressions plus existing historical record/source-observation/
+architecture checks passed20total, analyze clean after two styleinfos corrected manually,
+focused files formatted and inventory9 PASS. Logs/tmp/asg404-baseline-implementation-
+{start,analyze,inventory}.log. A separate actual owned Mac six-read matrix against the new
+production model also passed, log/tmp/asg404-baseline-model-native-start.log; independent
+receipt/tmp/asg404-baseline-model-native-receipt.json records helper/driver/model hashes,
+original record identity and observation statuses. Its temporary root was removed and
+source_verified stayedfalse. No owner-source or model request.
+
+Artifact limit: the first new-model fixture rerun regenerated the investigation's rolling
+/tmp/asg404-baseline-native-receipt.json path; its original per-root receipt metadata is no
+longer available there. PR811 and original test log retain the reported checks/helper
+identity, but that rolling artifact must not be reused as original per-root proof. The
+new-model fixture now writes its distinct receipt above; fresh roots/events are independent
+observations, not replacements for earlier identities. No saved app record or last working
+user output was overwritten. Remaining service/controller/consent/lease/native-app/IAB/
+fullchecks are pending under the active implementation claim.
+
+
+### F20 / #404 — saved source baseline recheck workflow, 20 November 2026 UTC
+
+Completed the coherent local baseline-check implementation: saved comparison history
+opens a focused explicit-read screen; no read occurs on navigation or cancelled consent.
+The immutable comparison binds saved record, frozen root/Python/full ordered readset,
+observation identity and time, and every selected file's before/observed hashes and bytes.
+Changed peers are detected even when the proposed target still matches. Match/change is
+a transient unverified observation, never current approval or a later write grant.
+
+Read-only selection freezes folder references, requirements, current plan, saved history
+and runtime configuration. Durable zero-update expected-input checks run before consent,
+before dispatch and after owned cleanup before publication. Current plan may be absent
+or unapproved; historical approval is not revived. A shared-record-store reader lease
+blocks recreated controllers until owned cleanup and pending consent/read settle; sticky
+cleanup uncertainty blocks reuse. Stop/disposal/late results/refusals retain the previous
+comparison as stale. No saved-history writes, source writes, model requests or commands.
+Lease exclusion is in-process per shared RecordStorage, not a crash/cross-process claim.
+
+Validation: 27 focused tests and full Flutter 2613 PASS / 13 existing opt-in skips; analyze
+clean, 635 formatted files unchanged, inventory9/product32 PASS, web and isolated macOS
+builds PASS. Logs /tmp/asg404-baseline-flow-{focused,full-final,analyze-final,format-final,
+inventory-final,product,web-final,native-final,browser-build-final}.log. Production native
+DB tests cover stale durable changes behind cache for all five keys. Actual Mac controller/
+DB/packaged-reader flow on owned temporary files matches BOM/CRLF/café, detects changed
+peer, refuses missing invalid/source_missing, retains stale working result and preserves
+all physical app records and original target bytes. Temporary root removed, lease released.
+Independent evidence /tmp/asg404-baseline-flow-native-7700d2b84dd0add3546cc7237ba802f49f38932f9d9b71dc081d98fde193c314.json
+binds six runtime hashes and helper SHA256073b8f2addc76592aa2a19906f1461a92264641248641fdcecceb9cc037a0c13.
+The committed native regression does not write a shared rolling evidence file; retained
+fixture evidence is distinct from future test roots. Recheck after that test-only cleanup
+is recorded separately below.
+
+IAB injected fixture verified Cancel/read0, matched/read1, changed peer/read2, missing
+refusal/read3 retains changed/stale, Stop of delayed read/read4 retains stale, and app-plan
+change during read/read5 rejects publication. Baseline writes remain0 and saved history
+unchanged throughout; one intentional fixture app edit is not a baseline write. UI states
+show all selected paths, point-in-time statuses, before/observed hashes and no new approval.
+Owned port8401 server stopped. /tmp/asg404-baseline-flow-build-receipt.json binds runtime
+hashes, packaged helper and isolated bundle com.arsinha.asg.baselinecheckvalidation.
+No installed/stable app replacement or native GUI claim; modelRequests0. Browser display
+is injected transport evidence; actual Mac contained read is independently exercised above.
+
+Widget consent tests initially waited for settling while the deliberately busy progress
+indicator remained active; finite dialog pumping fixed that test harness, then all5 passed.
+Manual style fixes resolved analyzer infos. Required CI, exact fresh review and verified
+merge remain pending. FullF20/CE01, unavailable-platform #400, marketplace gate and F23-last
+remain unchanged; no independent eligible disjoint second writer was identified.
+
+
+Final test-only receipt cleanup retest: full Flutter2613 PASS/13 existing opt-in skips,
+analyze clean, inventory9 PASS and635format unchanged. Logs /tmp/asg404-baseline-flow-
+review-{full,analyze,inventory,format}.log. All six production runtime hashes still exactly
+match the verified web/isolatedMac/native-flow/IAB receipt; no runtime changed after those
+checks. Local diff/whitespace review found no additional blocking issue. Publication and
+fresh exact remote PR review/requiredCI/verifiedmerge remain pending.
