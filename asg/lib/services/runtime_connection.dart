@@ -9,6 +9,7 @@ import 'package:http/http.dart' as http;
 
 import '../models/local_model_config.dart';
 import '../models/runtime_setup.dart';
+import '../models/structured_proposal_json.dart';
 
 class RuntimeConnection {
   RuntimeConnection({http.Client? client}) : _client = client ?? http.Client();
@@ -64,7 +65,14 @@ class RuntimeConnection {
           detail: 'Runtime health endpoint did not respond successfully. Check the local server and connection URL.',
         );
       }
-      final data = jsonDecode(response.body);
+      final raw = response.body;
+      try {
+        rejectDuplicateJsonMembers(raw);
+      } catch (_) {
+        // The scanner expects JSON tokens; malformed input is invalid too.
+        throw const FormatException('Invalid health response');
+      }
+      final data = jsonDecode(raw);
       if (data is! Map<String, dynamic> ||
           !['ready', 'loading', 'error'].contains(data['status']) ||
           (data['model'] != null && data['model'] is! String) ||

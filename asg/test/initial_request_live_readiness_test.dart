@@ -49,6 +49,158 @@ http.StreamedResponse _reply(Object? value, {int status = 200}) =>
     http.StreamedResponse(Stream.value(utf8.encode(jsonEncode(value))), status);
 
 void main() {
+  test('malformed raw source metadata has fixed private diagnostics', () async {
+    for (final bytes in [
+      utf8.encode('"unterminated private-sentinel'),
+      utf8.encode('}'),
+      utf8.encode('{"status":'),
+      [0xff],
+    ]) {
+      final client = _Client(
+        (_) async => http.StreamedResponse(Stream.value(bytes), 200),
+      );
+      await expectLater(
+        checkSourceRequestLiveReadiness(createClient: () => client),
+        throwsA(
+          isA<FormatException>()
+              .having(
+                (error) => error.message,
+                'fixed message',
+                'Invalid source readiness metadata.',
+              )
+              .having((error) => error.source, 'no raw metadata', isNull),
+        ),
+      );
+      expect(client.closed, isTrue);
+      expect(client.requests, hasLength(1));
+    }
+  });
+
+  test(
+    'duplicate raw source metadata is refused before readiness approval',
+    () async {
+      final health = jsonEncode(_health());
+      final inventory = jsonEncode(_inventory());
+      final cases = <(String, String)>[
+        (
+          '/health',
+          health.replaceFirst(
+            '"status":"ready"',
+            '"status":"loading","status":"ready"',
+          ),
+        ),
+        (
+          '/health',
+          health.replaceFirst(
+            '"status":"ready"',
+            '"status":"ready","status":"ready"',
+          ),
+        ),
+        (
+          '/health',
+          health.replaceFirst(
+            '"status":"ready"',
+            r'"status":"loading","\u0073tatus":"ready"',
+          ),
+        ),
+        (
+          '/health',
+          health.replaceFirst(
+            '"streaming":true',
+            '"streaming":false,"streaming":true',
+          ),
+        ),
+        ('/v1/models', inventory.replaceFirst('"id":', '"id":"foreign","id":')),
+        (
+          '/v1/models',
+          inventory.replaceFirst('"id":', '"id":"$liveModelId","id":'),
+        ),
+        (
+          '/v1/models',
+          inventory.replaceFirst('"id":', r'"\u0069d":"foreign","id":'),
+        ),
+        (
+          '/v1/models',
+          inventory.replaceFirst(
+            '"max_input_tokens":4096',
+            '"max_input_tokens":1,"max_input_tokens":4096',
+          ),
+        ),
+        (
+          '/v1/models',
+          inventory.replaceFirst(
+            '"max_output_tokens":4096',
+            '"max_output_tokens":4096,"max_output_tokens":4096',
+          ),
+        ),
+        (
+          '/v1/models',
+          inventory.replaceFirst(
+            '"schema_version":1',
+            r'"schema_version":0,"\u0073chema_version":1',
+          ),
+        ),
+      ];
+      for (final (path, raw) in cases) {
+        final client = _Client(
+          (request) async => http.StreamedResponse(
+            Stream.value(
+              utf8.encode(
+                request.url.path == path
+                    ? raw
+                    : request.url.path == '/health'
+                    ? health
+                    : inventory,
+              ),
+            ),
+            200,
+          ),
+        );
+        await expectLater(
+          checkSourceRequestLiveReadiness(createClient: () => client),
+          throwsFormatException,
+          reason: raw,
+        );
+        expect(client.closed, isTrue);
+        expect(
+          client.requests.map((r) => r.url.path),
+          path == '/health' ? ['/health'] : ['/health', '/v1/models'],
+        );
+        expect(
+          client.requests.every((r) => r.method == 'GET' && !r.followRedirects),
+          isTrue,
+        );
+      }
+    },
+  );
+  test(
+    'unique escaped source metadata passes shared and compatibility guards',
+    () async {
+      for (final compatibility in [false, true]) {
+        final health = jsonEncode(_health())
+            .replaceFirst('"status"', r'"\u0073tatus"');
+        final inventory = jsonEncode(_inventory())
+            .replaceFirst('"id"', r'"\u0069d"')
+            .replaceFirst('"max_input_tokens"', r'"max_\u0069nput_tokens"');
+        final client = _Client(
+          (request) async => http.StreamedResponse(
+            Stream.value(
+              utf8.encode(request.url.path == '/health' ? health : inventory),
+            ),
+            200,
+          ),
+        );
+        if (compatibility) {
+          await checkInitialRequestLiveReadiness(createClient: () => client);
+        } else {
+          await checkSourceRequestLiveReadiness(createClient: () => client);
+        }
+        expect(client.closed, isTrue);
+        expect(client.requests, hasLength(2));
+      }
+    },
+  );
+
   test(
     'accepts exact idle bridge assertions with the source request budget',
     () {

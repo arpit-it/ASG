@@ -12,6 +12,57 @@ import 'package:http/testing.dart';
 
 void main() {
   test(
+    'duplicate raw health metadata fails closed without leaking values',
+    () async {
+      for (final raw in [
+        '{"status":"loading","status":"ready","model":"private-sentinel"}',
+        '{"status":"ready","status":"ready"}',
+        r'{"status":"loading","\u0073tatus":"ready"}',
+        '{"status":"ready","model":"wrong","model":"private-sentinel"}',
+        '{"status":"ready","model_path":"/wrong","model_path":"/private-sentinel"}',
+        '{"status":"ready","phase":"thinking","phase":"idle"}',
+        '{"status":"ready","metadata":{"id":"private-sentinel","id":"private-sentinel"}}',
+      ]) {
+        var requests = 0;
+        final connection = RuntimeConnection(
+          client: MockClient((_) async {
+            requests++;
+            return http.Response(raw, 200);
+          }),
+        );
+        final health = await connection.check(const LocalModelConfig());
+        expect(health.ready, isFalse, reason: raw);
+        expect(health.idle, isFalse);
+        expect(health.model, isNull);
+        expect(health.modelPath, isNull);
+        expect(health.loadedDevice, isNull);
+        expect(health.detail, contains('invalid'));
+        expect(health.detail, isNot(contains('sentinel')));
+        expect(requests, 1);
+        connection.close();
+      }
+    },
+  );
+  test(
+    'unique escaped health keys and values retain valid readiness',
+    () async {
+      final connection = RuntimeConnection(
+        client: MockClient(
+          (_) async => http.Response(
+            r'{"\u0073tatus":"ready","phase":"idle","model":"safe\u002dmodel","metadata":{"a":1},"other":{"a":2}}',
+            200,
+          ),
+        ),
+      );
+      final health = await connection.check(const LocalModelConfig());
+      expect(health.ready, isTrue);
+      expect(health.idle, isTrue);
+      expect(health.model, 'safe-model');
+      connection.close();
+    },
+  );
+
+  test(
     'health messages omit server text and retain startup identity',
     () async {
       for (final status in ['ready', 'loading', 'error', 'private-sentinel']) {
@@ -138,6 +189,9 @@ void main() {
   test('invalid records fail privately without claiming ready', () async {
     for (final body in [
       'private-sentinel',
+      '"unterminated private-sentinel',
+      '}',
+      '{"status":',
       '[]',
       'null',
       '{}',

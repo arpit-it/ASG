@@ -3,6 +3,7 @@
 
 import 'dart:convert';
 
+import 'package:asg/models/structured_proposal_json.dart';
 import 'package:http/http.dart' as http;
 
 import 'live_model_config.dart' show liveModelId;
@@ -66,7 +67,13 @@ Future<void> checkSourceRequestLiveReadiness({
       }
       bytes.addAll(chunk);
     }
-    return jsonDecode(utf8.decode(bytes));
+    try {
+      final raw = utf8.decode(bytes);
+      rejectDuplicateJsonMembers(raw);
+      return jsonDecode(raw);
+    } catch (_) {
+      throw const FormatException('Invalid source readiness metadata.');
+    }
   }
 
   try {

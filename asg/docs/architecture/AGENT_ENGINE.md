@@ -4887,3 +4887,141 @@ before final checks; no escaped defect observed. Five files only:two test harnes
 helper files plus three owned docs. No production/schema/approval/runtime change.
 Fresh exact PR review, every required CI step and verified merge still required.
 FullCE01/F20/#404/#400/liveQwen/marketplace gate/F23-last remain unchanged.
+
+
+### 2026-11-20 — #404 selected-repair harness merged; runtime prerequisite started
+
+PR780 protected expected-head mergece89dde3b714eba05581d075bc075fe3467b8f6d
+verified GitHub main, mergedPR and fetched treeba119bc916e236a3909a6fb668a2b5d770696b48.
+Fresh review remote414c3efbce29db70555efa96f271e2c54c7b1344/base3052db3d
+found no blocker; threads empty. CI44684968177 Python136117002852 and
+Flutter136117003197 everymandatory/poststepSUCCESS. New synthetic harness active
+PASS in Linux logs, ownercase explicitly skipped. Local64focused/full2250PASS
+13opt-inskips/format560/analyze/web/product32/inventory9 evidence preserved.
+Coordinator merged/outcome recorded and claim/integration released. Harness
+infrastructure delivered; actual initial/selected-repair live acceptance remains
+PENDING under404, no weights/device/context-fit claim. Owner dirty edits and
+processes/stableapp/last working outputs preserved.
+
+Immediately claimed next bounded prerequisite task
+404-owner-runtime-readiness-investigation underexisting404/F20 in registered
+direct issue worktree. Scope thisledger/PROGRESS/AGENT_ENGINE only. Root sole
+readiness/model worker; no second independent ready task admitted. Acceptance:
+read-only fixedroutes,8765listener/sanitizedbridgeprocess observations, documented
+checkpoint metadata without loading/hashing weights or reading owner preferences/
+credentials/fullargv, then identify exact evidence/action to make live source
+acceptance eligible. No start/stop/port/config/install/download/conversion action.
+If independently exactready idle, atmostone standalone existingowner repair test
+may run, with postrequest reconciliation; otherwise generation0 and pending.
+
+Actual observation2026-11-20T06:11:59Z: health and models both connection-refused
+(curl7/HTTP000); lsof8765LISTEN returned no entries (exit1, no error). Sanitized
+process scan found no qwen_server.py or mlx_lm.server command candidates. This
+means no listener/expected bridge process was observed at this sample, not proof
+about all unrelated processes or owner intent. No process changed or terminated.
+The documented existing checkpoint directory IS present:3weight files totalling
+16,054,541,349bytes, config present and declaring4bit/group64. Only filenames/stat
+and bounded config metadata read; no weights loaded/authenticated, no memory-fit
+or MLX-compatibility inferred. ConfigSHA256
+14b65a0ee06517060a6bbd979bb1a8ff54e7b304b1a1f01d54344b88b8285e85.
+Private resolved path remains only in /tmp/asg404-owner-runtime-readiness-observation.json;
+receiptSHA25677fc633afb1ad69a053fe752416ae1088d6eb15fbd2717e52420ce0d708f224f.
+No rawprocessargv/credentials or privatecheckpointpath published. Generation0.
+
+Specific F20 live prerequisite: an owner-started/recovered existing MLX service
+must listen at fixed8765 and report ready/idle/Metal with the exact configured
+Qwen3.8-27B-4bit ID and4096source budget before either standalone live test is
+eligible. Setup guide's existing path is Save runtime setup → Start selected
+model → wait Runtime reports ready/MLXMetal → verify Connect project chat ID/URL.
+No download is indicated by the observed checkpoint-file presence; directory/config
+metadata alone does not prove loadability or model identity. Next read-only work:
+verify saved-launch/source readiness contract and record bounded owner action or
+remaining uncertainty, then review/publish findings. FullCE01/F20/#400, marketplace
+gate and F23-last preserved; no stable replacement/unrestrictedexecution/cloud/deploy.
+
+
+### #404 runtime investigation admits independent duplicate-metadata repair
+
+Current source contract verified: RuntimeSetupController.start re-scans selected
+checkpoint, preserves explicit backend/Python setup and refuses an already-ready
+runtime; NativeRuntimeHost reserves fixed8765 before starting packaged bridge
+with model path, backend, model-id and owned parent-pid. Controller saves project
+connection only after ready health reports both selected name and exact path;
+Stop targets its owned process. These are current SOURCE contracts, not proof of
+installed stable-app revision or the owner's saved settings (not read/changed).
+Deterministic runtime setup/connection/redirect/source-readiness101fixtures PASS;
+no owner runtime started. Existing missing listener, checkpoint metadata and
+required ready/idle exactMLXMetal identity remain the live F20 prerequisite.
+
+Independent concrete gap confirmed on current main with two private mocked-response
+regressions: raw health JSON with status loading followed by duplicate status
+ready incorrectly becomes RuntimeConnection.ready=true AND passes strict source
+preflight. Baseline /tmp/asg404-duplicate-readiness-baseline.log has2expectedFAIL;
+no network/inference/model involved. Introduction revision/user incidents unknown;
+this is a reproduced latent validation defect, not an observed live-model failure.
+
+Admit bounded task404-source-readiness-duplicate-metadata underexisting404/F20,
+dependent only on mergedPR780, independent of the read-only runtime investigation.
+Acceptance: reject duplicate raw health fields in product RuntimeConnection and
+duplicate raw health/inventory fields in shared source guard BEFORE interpreting
+status/model/path/source-budget readiness. Reuse existing pure duplicate-member
+validator, preserve all valid unique replies, byte/deadline/redirect/cleanup rules
+and initial API compatibility; locally authored product error, no raw serverdata
+leak. Permanent adverse tests include conflicting/identical/escaped duplicate
+keys, nested inventory IDs/limits, and unique valid controls. No model/port/backend
+configuration or server-process changes; no response-stream parser expansion.
+
+Second writer may claim ONLY lib/services/runtime_connection.dart,
+test/runtime_connection_test.dart, test/initial_request_live_readiness.dart and
+test/initial_request_live_readiness_test.dart in a distinct registered issue
+worktree. Root keeps docs scope and sole runtime observations; neither writer
+edits the other's paths. Both stop/commit/release handoffs before root acquires
+union integration for one coherent validation/finding PR. Focused regressions,
+format/analyze/fulltests/relevantbuild, exact freshreview/allrequiredCI/verified
+merge remain mandatory. No current native40 evidence reused for revised source.
+
+
+#404 owner runtime diagnostic handoff:101deterministic setup/connection/readiness
+fixtures PASS plus1actual filesystem-only NativeRuntimeHost.scan observation.
+The documented candidate is metadata-admitted and quantized,16,054,541,349bytes;
+scanner's Qwen3.5 architecture-family detail is not an authenticated server model
+ID. Candidate name is folder label Qwen3.8-27B-4bit; actual loaded identity still
+requires health/inventory/response verification. No weights loaded or process
+started; source ce89dde3 scan receipt /tmp/asg404-owner-checkpoint-scan.json.
+Fresh06:21:50Z health/models still refused,8765listenercount0; generation0.
+Private path/config metadata and prior06:11:59Z source observations remain tied
+to their timestamps, not generalized to a loaded backend or installed-app version.
+
+Required owner condition is an already approved compatible existingMLX service
+started/recovered with explicitMLX/Metal, existingPython/checkpoint, fixed8765 and
+exactQwen3.8ID/sourcebudgets, then ready/idle before a single standalone live
+request. The saved Python/backend/preferences and stable binary revision were
+not read or changed; package compatibility/memoryfit/weightauth remain unknown.
+No download/upgrade/fallback or automatic service action was performed. Current
+source protects app-owned Stop and avoids changing connection before path+name
+match; these source facts do not prove owner settings or runtime loadability.
+
+Independent latent duplicate-readiness defect reproduced without live runtime;
+its two negative fixtures failed original source. Accepted stopped clean4path
+handoff2aac3a788a048af9ba9674c0e7916947a2d6b063,111focusedPASS/2live skips,
+format/analyzeclean, no live/mock identity conflation. This defect does NOT
+explain the absent listener; no user incident observed, introduction unknown.
+Both tasks await union integration/exact finalchecks/review/requiredCI/merge.
+No previousnative40 observations reused as revised-source acceptance.
+
+
+### #404 readiness validation integration — final local checks
+
+Combined stopped/released diagnostic and duplicate-metadata handoffs. Original
+private two-case reproducer now2PASS; fullFlutter2255PASS/13explicit opt-in skips,
+format560unchanged, analyzer clean, web/Wasm dry run built. Product32/inventory9
+PASS; inventory refreshed for changed runtime_connection source. Isolated normal
+Mac debug build succeeded at /private/tmp/asg404-readiness-duplicate-derived with
+validation bundle identity, no install/launch/stable replacement. This build is
+not native runtime acceptance; previous40native observations retain original
+source/bundle identities. Logs /tmp/asg404-readiness-union-{baseline-now,full,format,
+analyze,web,macos,product,inventory}.log. Two original baseline failures demonstrate
+a pre-existing duplicate-member validation defect, not an observed owner incident
+or the cause of the absent8765listener. Source runtime remains unavailable and
+owner inference acceptance PENDING; generation0. Required remote CI and fresh
+exact-revision review/verified protected merge remain pending. Full404 stays OPEN.
