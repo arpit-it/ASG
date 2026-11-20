@@ -9226,3 +9226,138 @@ receipt: /tmp/asg404-proposal-final-{inputs,receipt}.json; logs
 /tmp/asg404-proposal-{format,analyze,full,inventory,product,web,native}-final.log.
 Exact remote PR review, required CI and protected merge remain mandatory before
 this bounded outcome is recorded as merged. Full F20/CE01 remains open.
+
+
+### F20 / CE01 #404 — verified proposal merge and next admission investigation
+
+PR819 verified merged c0f1910e827d4060c74829111e6c8fc76d05f01b on20November2026UTC,
+remote tested tree9e3c93cc2a016a5fbc275913245babe9722d9ce8. Plugin main/mergedPR/
+404OPEN and fetchedtree verified; exact fresh review and requiredCI44834919793
+jobs136628756907/136628758023 all steps/poststeps SUCCESS; completed logs inspected.
+2737fullFlutterPASS/13optinskips, format/analyze/inventory9/product32/web/isolated
+unsignedmacOS/IAB and native durable history regressions passed. Completed integration
+and claim released. The bounded user outcome is manual committed replacement preview,
+explicit local save and independent historical reopening; fullF20/CE01 remains open.
+
+Corrected metrics supersede rough estimates in the merge attestation: coordinator
+recorded start-to-merge1851.2s and CI observation wait631.5s (manual event timestamps,
+not provider execution duration); recorded fresh-review rework0; one earlier local
+full-suite layout regression was fixed before publication. Escaped defects remain
+unknown despite zero recorded observations; one bounded user outcome verified.
+
+Immediately claimed and started 404-commit-candidate-admission on registered branch
+404-commit-candidate-admission, dependency PR819 verified above. Reuse umbrella404;
+no new issue or independent disjoint writer is needed. Investigation acceptance:
+verify new immutable proposal/history cannot be mistaken for legacy candidate source,
+retain literal paths and BOM/CRLF bytes, distinguish selected commit observation from
+complete candidate tree identity, and define the smallest supported admission
+prerequisite before adding any copy, write or execution action.
+
+Actual read-only code inspection plus five disposable pure probes and15existing
+candidate/proposal/native-store regressions passed20total. New history/proposal JSON
+is rejected by CandidateSourceFile.decode. Imported lib/main.dart is intentionally
+outside fixed asg/(lib|test) Dart candidate paths. New preview preserves UTF-8 BOM
+while the old candidate text policy rejects it; stripping the BOM changes before
+bytes/hash and is not an adapter. The legacy decoder accepts a caller-supplied
+64hex digest shape and its payload contains neither commit nor plan binding; this
+is pure validation, not a demonstrated exposed write path or authority bypass.
+A selected-source manifest/context hash therefore must not be relabeled as a full
+candidate fingerprint. The old native check also requires a prepared source-40hex
+snapshot containing asg/pubspec.yaml and explicit operation consent, not arbitrary
+imported Flutter execution support.
+
+Probe /tmp/asg404_commit_candidate_admission_probe_test.dart SHA25647fd215fc0a08240287011b928b79b29d822654344400bb8af3320455c3b9554;
+log /tmp/asg404-commit-candidate-admission-start.log. No candidate operation/helper,
+source copy/write, model request, install, stable replacement or deployment occurred.
+Next in this active investigation: verify complete-tree/mode/destination and exact
+post-substitution identity prerequisites against disposable native fixtures before
+proposing a bounded import adapter. Investigation is not marked Done; review/CI/
+merge of its final evidence remain pending. Owner checkout/outputs preserved;
+#400 unavailable-platform deferrals, marketplace gate and F23-last unchanged.
+
+
+### F20 / #404 — candidate-copy admission investigation, final local evidence
+
+The remaining admission question was verified on the Mac using five owned native
+Git fixtures plus the44existing prepare_self_candidate regressions:49PASS. Together
+with five pure cross-schema probes and15Dart proposal/candidate/store regressions,
+this investigation has69passing checks. Logs: /tmp/asg404-commit-candidate-native-
+{probe,regression}.log and /tmp/asg404-commit-candidate-admission-start.log. Native
+probe /tmp/asg404_commit_candidate_native_probe.py SHA2569b4f7cedba44375043fb7e27bd320b126a93f66411f19c00564b6fe0e4597b9b.
+No owner checkout, stable output or runtime was used. Temporary repositories and
+outputs were removed by fixture teardown. The probes exercise existing primitives;
+no new production copy, editing or execution path is delivered by these documents.
+
+Concrete findings:
+- The commit observer's complete manifest binds path/mode/Git blob metadata but
+  returns source bytes for only selected root lib/test Dart files. Its manifest
+  SHA differs from the prepared candidate fingerprint, which also binds directory
+  entries, normalized executable modes and SHA256 of every copied file's bytes.
+- A selected source observation succeeded for a commit containing an unselected
+  file over the candidate2MiB/file bound; complete preparation refused before
+  allocating output. Observation success is therefore not complete-copy eligibility.
+  Future preparation must independently enforce2048files,2MiB/file,24MiB total,
+  path/mode/collision limits and complete object verification without truncation.
+- Actual preparation copied immutable committed bytes, including nonselected binary
+  data and executable modes, while preserving dirty selected working bytes, an
+  untracked file, index, HEAD and refs. No checkout/reset, filters, hooks or build ran.
+- Substituting the observed manifest SHA as expected candidate digest refused
+  publication. The owned run remained incomplete; no ready path was published and
+  original snapshot/source identities were unchanged. Such partial output is
+  recoverable evidence, not success or a reason for automatic replay/deletion.
+- Mode-only and extra-directory changes alter the full fingerprint even with the
+  selected before bytes unchanged. Existing legacy substitution, with its actual
+  full fingerprint and fixed asg/lib target, published a separate exact output;
+  returned output fingerprint matched a fresh scan and original/source stayed
+  unchanged. This is reference coverage of the existing ASG-only adapter, not a
+  mapping of imported paths or an imported editing grant.
+- Git object-store destinations refused before any new output; physical metadata,
+  index and refs remained unchanged. Native service inspection confirms existing
+  check/run entry separately requires an ASG-shaped prepared snapshot and explicit
+  SelfSnapshotOperation. A generic copy must never automatically enter that adapter.
+
+Next dependency-ready coherent increment after this investigation's verified merge:
+explicit preparation of a fresh isolated immutable baseline copy from the current
+saved committed proposal, without applying its replacement or running any command
+from the repository. The app must explain that the output contains the original
+commit, not the proposed edit. No arbitrary imported check/build support is implied.
+
+Admission and acceptance for that increment:
+1. Separate typed request/result/history bind selected root, full commit/tree,
+   manifest SHA/count, current exact context/full approved plan, saved proposal
+   digest, explicit canonical destination and whole prepared-copy fingerprint.
+   A selected manifest or context digest never substitutes for that fingerprint.
+2. Freeze folder registration, requirements, full current approved immutable plan,
+   saved committed proposal and trusted runtime selection. Durable fences before
+   launch and conditional final history persistence reject changed/foreign inputs.
+   Historical source alone does not revive approval. Capture exact consent once;
+   replacement/navigation/late results cannot retarget it or authorize another run.
+3. A trusted bundled bounded helper copies only verified immutable Git objects to
+   a newly allocated private sibling run outside checkout/candidate/Git metadata/
+   object stores/application bundles. Preserve bytes and safe normalized modes,
+   enforce complete limits and recheck root/destination identity through publication.
+   Never checkout, reset, fetch, run hooks/filters/submodules, apply replacement,
+   install, build, execute or replace existing output. No network/model operation.
+4. New native host owns a single process group and bounded stdout/stderr/time;
+   Stop/disposal waits for proven owned descendant cleanup. Unconfirmed cleanup
+   blocks replay; incomplete/pending publication remains recoverable and cannot be
+   exposed as ready. Late success/DB confirmation failure preserves a known run
+   and old record; reload/recovery is explicit, with no automatic duplicate copy.
+5. Focused controller/store/view and an explicit preparation consent show root,
+   full commit/tree/plan/proposal identities, destination and original-copy limits.
+   Display successful fingerprint/path only after validated native result and
+   durable persistence; disclose incomplete/unconfirmed result separately. Reopen
+   history without assuming the directory is still current or granting execution.
+   Preserve old proposal/working histories and last working output.
+6. Verify disposable dirty-repo copy/source-index-refs preservation; all-file
+   overflow/unsafe modes/paths/destination conflicts; Stop before/during launch,
+   cleanup uncertainty, pending publication and late result; durable record races,
+   corrupt record quarantine/reopen; narrow enlarged UI and IAB. Run relevant
+   format/analyze/fullFlutter/Python fixtures/web/isolatedMac checks, fresh exact
+   PR review/allrequiredCI/verifiedmerge before recording app acceptance.
+
+This closes the local admission investigation's stated questions; final exact PR
+review, required CI and verified merge remain pending. It does not complete full
+F20/CE01. Sole writer: next implementation depends on this evidence and no eligible
+disjoint independent task was admitted. #400 deferrals, marketplace gate, F23-last,
+approval limits and last working outputs remain unchanged.
