@@ -7955,3 +7955,120 @@ then format/analyze/fullFlutter/web/isolatedMac/inventory/requiredCI/freshreview
 Investigation publication and protected merge remain pending at this checkpoint. Reuse
 umbrella404; no additional issue/backlog. FullF20/CE01 and unavailable-platform400 remain
 pending; marketplace gate and F23-last ordering unchanged. No second ready disjoint writer.
+
+
+### F20 / #404 — verified recovery investigation and save/reopen implementation started, 20 November 2026
+
+PR809 verified merged1a3ce55329a61803d3f1877d3cab96ae90fc00c6, tested/inspected tree
+bc72b25e08e30176ed48b4ef05b7b65594cb5df6. Fresh exact review covered remote
+f94e40fc5a12b24bb1a12ce4e154a054ca2032e9 against1fb3dfb6eedbf819be1a13c442da43e9b8e61c29;
+remote/localdiff match, no blocking findings, empty review threads, unchangedhead/base.
+CI44785205263 Python136458106500/Flutter136458106024 all required and poststeps SUCCESS;
+completed logs inspected. Pluginmain/mergedPR/404OPEN and fetchedmain/tree verified.
+Coordinator recorded checks/review/merge/outcome and released completed integration/claim.
+Attachment was attempted but the chat exceeds100attachmentidentities; no attachments
+removed. Forty-six local investigation/relevant regressions passed; no runtime change
+was included in that investigation. FullF20/CE01 and unavailable-platform400 remain open.
+
+Immediately claimed404-saved-imported-proposal from verifiedmain in the same registered
+worktree, solewriter; no independent ready disjoint task. Existing404 umbrella covers
+explicit local save/reopen of one last working historical comparison. Scope new strict
+record/context restore, existing proposal store/controller/view, StudioDatabase registration,
+related model/store/controller/widget/database tests and canonical docs/inventory.
+Acceptance: complete original canonical reviewed-plan/source/proposal provenance in a
+strict immutable <=256KiB record; explicit captured-source/replacement storage consent;
+current nonstale preview and durable folder/requirements/current-plan/previous-record CAS;
+commit-time input/alive guards, failed/conflicting/corrupt/disposed retention and safe
+explicit retry. Reopen historical comparison independently from current plan, without
+reviving approval or auto-preview/rebase/apply/source reads/writes/model/commands.
+Full regression/build/IAB/CI/freshreview/verifiedmerge belongs to this coherent feature,
+not a model-only delivery. Preserve existing record schemas/keys and dirty owner checkout.
+
+Started pure ImportedSourceContext.restore and ImportedSourceProposalRecord. Context
+restore checks canonical exact field/selection identities, duplicates, string scalar
+validity,32-level decoded structure, typed metadata/files/requirements, original source
+UTF8 byte/hash constraints and existing128KiB evidence cap. Exact canonical empty default
+revision0 is separate from nonempty durable-board revision>=1; no coercion/versionchange.
+Historical record retains full reviewed plan/source context, exact proposal identity and
+UTC recorded time, verifies root/full-plan/source/before-after/proposal identities by
+reconstruction, enforces256KiB whole record and64KiB proposal bound, and rejects
+noncanonical/malformed/duplicate/unknown/tampered/invalid-scalar inputs with private errors.
+Data remain immutable/unverified and confer no current approval or transport authority.
+No storage registration/save/controller/UI callsite added by this start.
+
+Six new record/context regressions plus existing pure proposal/source-context/architecture
+checks passed24total: exact BOM/CRLF roundtrip/immutability/fullplan identity, nonempty
+revision3 board and selected-file order, unpaired reviewed-plan/source/metadata scalar
+refusal, unknown/duplicate/escapedduplicate/noncanonical/oversize envelope, root/plan/
+source/replacement/time tampering and deep context refusal. Analyze clean; focused Dart
+files formatted. Inventory regenerated for changed runtime. Logs
+/tmp/asg404-saved-proposal-start-tests.log and
+/tmp/asg404-saved-proposal-start-analyze.log. Database/CAS/disposal/save-consent/reopen
+workflow, widget/IAB/fullchecks remain pending under active implementation claim.
+No owner-source/model requests, installs/downloads/stableapp/cloud/deployment effects;
+marketplacegate/F23-last and existing Stop/recovery/last-output boundaries unchanged.
+
+
+### F20 / #404 — saved imported-source comparison implementation, 20 November 2026
+
+Completed coherent save/reopen workflow on404-saved-imported-proposal. Ownership was
+explicitly expanded before adding the necessary workspace history entry: released the
+original404-saved-imported-proposal claim, preserved existing wiring in checkpointc7239dd
+when clean admission was required, then claimed404-saved-imported-proposal-flow with the
+same outcome plus workspace/view regression paths. No edits in expanded paths preceded
+that claim; no abandoned work, unrelated files or remote effects discarded. Solewriter,
+serialized publication; original models started in85754bc remain part of this feature.
+
+Explicit Save comparison locally consent describes storing all captured source, full
+reviewed plan and replacement, replacing this folder's last saved comparison,256KiBtotal
+limit and no source/write/model/execution grant. New versioned per-folder app key is
+strictly validated by StudioDatabase, including key/root identity. Corrupt history is
+retained as an unreadable record without blocking unrelated app records or being treated
+as absence. Durable expected folder/requirements/current-plan/previous-record CAS and
+commit-time alive/input checks protect publication. Failure/unknown confirmation keeps
+editable draft and previous comparison; unchanged retry is explicit and revalidates.
+Already-authorized durable commits are not claimed undoable by later disposal.
+
+History-only workspace entry and controller mode reopen app records without any source
+capture, current plan or model/host action. Reconstructed original source/diff/plan remain
+historical/unverified, separate from current approval; no automatic rebase/preview/apply.
+Editor can open prior history independently of current planning success. New context/
+record models preserve canonical bytes/hash/order/BOM/CRLF/defaultrevision0/nonemptyboard
+identities and refuse unsupported/corrupt/duplicate/oversize inputs privately.
+Existing keys/formats and manual-plan consent remain unchanged. No source-file writes,
+deletes, execution, executable export, model requests or external data-sharing consent.
+
+Tests exposed and corrected two implementation defects before publication: new corrupt
+history initially escaped the database's per-record unreadable handling; registration now
+preserves its bytes while other records open. A new mutable-caller expected-input race
+reproducer failed before the fix and passed afterward: store.save now freezes expected
+inputs at invocation, so mutation during a pending transaction cannot authorize overwrite
+of an external winner. Logs/tmp/asg404-saved-proposal-mutable-{reproducer,fixed}.log.
+Neither defect was published or an escaped user defect; the final revised source was
+retested and rebuilt. The UI consent was also made explicit about the whole-record limit.
+
+Validation:58focused workflow/model/nativeDB/widget/workspace/legacy-plan/architecture
+checks passed before final snapshot fix; the final store5/regression and complete suite
+passed afterward. Final fullFlutter2587 PASS/13 existing opt-in skips; analyze clean;
+627formattedfiles unchanged; inventory9/product32 PASS. Web and isolated macOS Debug
+builds PASS under com.arsinha.asg.savedproposalvalidation, with no install/launch or stable
+app replacement. Seven-runtime-file hash receipt and exact packaged source helper in
+/tmp/asg404-saved-proposal-build-receipt.json; native UI not verified. Final logs
+/tmp/asg404-saved-proposal-{full,analyze,format,inventory,web,native,browser-build}-final.log;
+focused log/tmp/asg404-saved-proposal-focused.log, product log
+/tmp/asg404-saved-proposal-product.log. No live inference was needed or claimed.
+
+IAB supplied-data fixture onowned8400 verified consentCancel->emptyhistory, confirmed
+save, failure retaining firstsavedcomparison+secondeditable draft, explicit retry success,
+then history-only reopen after current plan removal. Literal untrusted source/link text
+and original historical plan displayed without action; synthetic capture count remained1,
+no new source/model/command request. Preview server stopped after verification. This is
+injected browser evidence plus separate actual native database save/reopen/CAS/corruption
+checks, not a claim of native device UI or owner-repository access.
+
+Publication/fresh exact review/requiredCI/verifiedmerge remain pending at this checkpoint.
+FullF20/CE01 and unavailable-platform400 acceptance stay open; marketplacegate/F23-last,
+Stop/recovery and last-working-output limits preserved. Next concrete prerequisite after
+verified merge is a bounded saved-baseline recapture investigation: compare all original
+selected source bytes against an explicitly consented fresh contained read, including
+changed/missing/refused observations, without source writes or execution authority.

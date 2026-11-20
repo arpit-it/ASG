@@ -1,9 +1,12 @@
 // SPDX-License-Identifier: MPL-2.0
 // Copyright 2026 Arpit Sinha
 import 'dart:convert';
+import 'dart:async';
 import 'dart:io';
 
 import 'package:asg/models/imported_plan.dart';
+import 'package:asg/controllers/imported_source_proposal_controller.dart';
+import 'package:asg/models/imported_source_proposal_record.dart';
 import 'package:asg/services/imported_plan_store.dart';
 import 'package:asg/services/imported_source_proposal_store.dart';
 import 'package:asg/services/inspected_folder_store.dart';
@@ -74,6 +77,147 @@ void main() {
         throwsStateError,
       );
       expect(r.updatesSeen, isEmpty);
+    },
+  );
+  test('registered history saves and survives database reopen without current plan; key mismatch refuses', () async {
+    final root = await Directory.systemTemp.createTemp('asg-saved-proposal-');
+    SharedPreferences.setMockInitialValues({});
+    final preferences = await SharedPreferences.getInstance();
+    var db = await databaseFactoryIo.openDatabase('${root.path}/records.db');
+    try {
+      final records = await StudioDatabase.migrate(db, preferences);
+      final seed = await proposal.proposalRecords();
+      for (final entry in seed.values.entries) {
+        await records.setString(entry.key, entry.value);
+      }
+      final c = ImportedSourceProposalController(
+        inspection: fixture.finding(),
+        context: fixture.capturedSourcePlan(),
+        store: ImportedSourceProposalStore(records),
+      );
+      await c.load();
+      await c.preview('lib/main.dart', 'Saved native replacement');
+      await c.save(c.proposal!);
+      expect(c.error, isNull);
+      final saved = c.saved!;
+      final target = ImportedSourceProposalStore.key('/project');
+      expect(records.getString(target), saved.encode());
+      expect(
+        () => StudioDatabase.validate(
+          ImportedSourceProposalStore.key('/other'),
+          saved.encode(),
+        ),
+        throwsFormatException,
+      );
+      await StoreRef<String, String>('records')
+          .record(ImportedPlanStore.key('/project'))
+          .delete(db);
+      c.dispose();
+      await db.close();
+      db = await databaseFactoryIo.openDatabase('${root.path}/records.db');
+      final reopened = await StudioDatabase.migrate(db, preferences);
+      final history = ImportedSourceProposalController.history(
+        root: '/project',
+        store: ImportedSourceProposalStore(reopened),
+      );
+      await history.load();
+      expect(history.saved!.encode(), saved.encode());
+      expect(history.saved!.proposal.replacement, 'Saved native replacement');
+      expect(history.canPreview, isFalse);
+      expect(
+        ImportedSourceProposalRecord.decode(reopened.getString(target)!).digest,
+        saved.digest,
+      );
+      history.dispose();
+    } finally {
+      await db.close();
+      await root.delete(recursive: true);
+    }
+  });
+  test('actual durable previous-record conflict and corrupt reopen preserve physical bytes', () async {
+    final root = await Directory.systemTemp.createTemp(
+      'asg-saved-proposal-cas-',
+    );
+    SharedPreferences.setMockInitialValues({});
+    final preferences = await SharedPreferences.getInstance();
+    var db = await databaseFactoryIo.openDatabase('${root.path}/records.db');
+    try {
+      final records = await StudioDatabase.migrate(db, preferences);
+      final seed = await proposal.proposalRecords();
+      for (final entry in seed.values.entries) {
+        await records.setString(entry.key, entry.value);
+      }
+      final c = ImportedSourceProposalController(
+        inspection: fixture.finding(),
+        context: fixture.capturedSourcePlan(),
+        store: ImportedSourceProposalStore(records),
+      );
+      await c.load();
+      await c.preview('lib/main.dart', 'First');
+      await c.save(c.proposal!);
+      final target = ImportedSourceProposalStore.key('/project'),
+          original = c.saved!.encode();
+      final changed = jsonDecode(original) as Map<String, dynamic>;
+      changed['recordedAt'] = DateTime.utc(2027).toIso8601String();
+      final winner = jsonEncode(changed);
+      final rows = StoreRef<String, String>('records');
+      await c.preview('lib/main.dart', 'Second');
+      await rows.record(target).put(db, winner);
+      expect(records.getString(target), original);
+      await c.save(c.proposal!);
+      expect(await rows.record(target).get(db), winner);
+      expect(c.saved!.encode(), original);
+      await rows.record(target).put(db, 'private corrupt record');
+      c.dispose();
+      await db.close();
+      db = await databaseFactoryIo.openDatabase('${root.path}/records.db');
+      final reopened = await StudioDatabase.migrate(db, preferences);
+      final history = ImportedSourceProposalController.history(
+        root: '/project',
+        store: ImportedSourceProposalStore(reopened),
+      );
+      await history.load();
+      expect(history.saved, isNull);
+      expect(history.historyError, isNotNull);
+      expect(await rows.record(target).get(db), 'private corrupt record');
+      expect(history.canSave, isFalse);
+      history.dispose();
+    } finally {
+      await db.close();
+      await root.delete(recursive: true);
+    }
+  });
+  test(
+    'save freezes caller expected inputs before a pending transaction',
+    () async {
+      final r = await proposal.proposalRecords();
+      final c = proposal.proposalController(r);
+      await c.load();
+      await c.preview('lib/main.dart', 'First');
+      await c.save(c.proposal!);
+      await c.preview('lib/main.dart', 'Second');
+      final store = ImportedSourceProposalStore(r);
+      final inputs = Map<String, String?>.of(
+        store.read(fixture.finding(), fixture.capturedSourcePlan()).inputs,
+      );
+      final record = ImportedSourceProposalRecord.create(
+        context: c.context!,
+        plan: c.plan!,
+        proposal: c.proposal!,
+        recordedAt: DateTime.utc(2026),
+      );
+      final target = ImportedSourceProposalStore.key('/project');
+      final changed = jsonDecode(c.saved!.encode()) as Map<String, dynamic>;
+      changed['recordedAt'] = DateTime.utc(2027).toIso8601String();
+      final winner = jsonEncode(changed);
+      r.writeGate = Completer<void>();
+      final pending = store.save(record, fixture.finding(), inputs, () {});
+      r.values[target] = winner;
+      inputs[target] = winner;
+      r.writeGate!.complete();
+      await expectLater(pending, throwsStateError);
+      expect(r.values[target], winner);
+      c.dispose();
     },
   );
 }

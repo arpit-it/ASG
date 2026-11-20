@@ -12,6 +12,8 @@ import 'dart:convert';
 import '../models/agent_execution_checkpoint.dart';
 import '../models/agent_session.dart';
 import '../models/imported_plan.dart';
+import '../models/imported_source_proposal_record.dart';
+import 'imported_source_proposal_store.dart';
 import '../models/imported_advisory_record.dart';
 import 'imported_advisory_store.dart';
 import '../models/portable_project_archive.dart';
@@ -142,6 +144,7 @@ class StudioDatabase implements ConditionalRecordStorage {
             !record.key.startsWith('studio.namedChecks.v1.') &&
             !record.key.startsWith('studio.importedPlan.v1.') &&
             !record.key.startsWith(ImportedAdvisoryStore.prefix) &&
+            !record.key.startsWith(ImportedSourceProposalStore.prefix) &&
             !record.key.startsWith('studio.planApproval.v1.')) {
           rethrow;
         }
@@ -171,6 +174,15 @@ class StudioDatabase implements ConditionalRecordStorage {
 
   static void validate(String key, String value) {
     if (key == 'studio.lastProject.v1') return;
+    if (key.startsWith(ImportedSourceProposalStore.prefix)) {
+      final record = ImportedSourceProposalRecord.decode(value);
+      if (key != ImportedSourceProposalStore.key(record.root)) {
+        throw const FormatException(
+          'Saved source comparison identity changed.',
+        );
+      }
+      return;
+    }
     if (key.startsWith(CandidateRepairLineage.prefix)) {
       final lineage = CandidateRepairLineage.decode(value);
       if (lineage.storageKey != key) {

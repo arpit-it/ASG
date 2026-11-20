@@ -15,7 +15,8 @@ import 'imported_plan_test.dart' as fixture;
 
 class ProposalRecords extends fixture.Records
     implements ConditionalRecordStorage {
-  Completer<void>? gate;
+  Completer<void>? gate, writeGate;
+  bool failWrites = false;
   final updatesSeen = <Map<String, String>>[];
   @override
   Future<void> commitRecords({
@@ -25,10 +26,14 @@ class ProposalRecords extends fixture.Records
   }) async {
     updatesSeen.add(Map.of(updates));
     await gate?.future;
+    if (updates.isNotEmpty) await writeGate?.future;
     if (expected.entries.any((e) => values[e.key] != e.value)) {
       throw StateError('private durable conflict');
     }
     authorize?.call();
+    if (updates.isNotEmpty && failWrites) {
+      throw StateError('private write failure');
+    }
     values.addAll(updates);
   }
 }
@@ -143,7 +148,7 @@ void main() {
         await c.load();
         expect(c.canPreview, isFalse);
         expect(c.error, isNot(contains('private corrupt')));
-        expect(r.updatesSeen, isEmpty);
+        expect(r.updatesSeen, everyElement(isEmpty));
         c.dispose();
       }
     },
@@ -182,6 +187,123 @@ void main() {
       expect(c.proposal, same(previous));
       expect(c.stale, isTrue);
       expect(c.canPreview, isFalse);
+      c.dispose();
+    },
+  );
+  test('explicit save is durable before success; history-only reload needs no plan or source capture', () async {
+    final r = await proposalRecords(),
+        c = proposalController(await proposalRecords());
+    c.dispose();
+    final owner = proposalController(r);
+    await owner.load();
+    await owner.preview('lib/main.dart', 'Saved replacement');
+    await owner.save(owner.proposal!);
+    final raw = r.values[ImportedSourceProposalStore.key('/project')];
+    expect(raw, isNotNull);
+    expect(owner.saved!.encode(), raw);
+    expect(owner.canSave, isFalse);
+    r.values.remove(ImportedPlanStore.key('/project'));
+    final history = ImportedSourceProposalController.history(
+      root: '/project',
+      store: ImportedSourceProposalStore(r),
+    );
+    await history.load();
+    expect(history.saved!.proposal.replacement, 'Saved replacement');
+    expect(history.context, isNull);
+    expect(history.plan, isNull);
+    expect(history.proposal, isNull);
+    expect(history.canPreview, isFalse);
+    expect(history.canSave, isFalse);
+    expect(r.values[ImportedSourceProposalStore.key('/project')], raw);
+    owner.dispose();
+    history.dispose();
+  });
+  test('failed save retains last saved bytes and draft comparison; unchanged retry succeeds', () async {
+    final r = await proposalRecords();
+    final c = proposalController(r);
+    await c.load();
+    await c.preview('lib/main.dart', 'First');
+    await c.save(c.proposal!);
+    final before = c.saved!.encode();
+    await c.preview('lib/main.dart', 'Second');
+    final draft = c.proposal;
+    r.failWrites = true;
+    await c.save(draft!);
+    expect(c.saved!.encode(), before);
+    expect(r.values[ImportedSourceProposalStore.key('/project')], before);
+    expect(c.proposal, same(draft));
+    expect(c.canSave, isTrue);
+    expect(c.error, isNot(contains('private write failure')));
+    r.failWrites = false;
+    await c.save(draft);
+    expect(c.saved!.proposal.replacement, 'Second');
+    expect(c.error, isNull);
+    c.dispose();
+  });
+  test(
+    'dispose while save waits prevents late transaction authorization',
+    () async {
+      final r = await proposalRecords();
+      final c = proposalController(r);
+      await c.load();
+      await c.preview('lib/main.dart', 'First');
+      await c.save(c.proposal!);
+      final before = c.saved!.encode();
+      await c.preview('lib/main.dart', 'Second');
+      r.writeGate = Completer<void>();
+      final pending = c.save(c.proposal!);
+      expect(c.busy, isTrue);
+      expect(c.saved!.encode(), before);
+      c.dispose();
+      r.writeGate!.complete();
+      await pending;
+      expect(r.values[ImportedSourceProposalStore.key('/project')], before);
+    },
+  );
+  test(
+    'changed previous record during save preserves external winner',
+    () async {
+      final r = await proposalRecords();
+      final c = proposalController(r);
+      await c.load();
+      await c.preview('lib/main.dart', 'First');
+      await c.save(c.proposal!);
+      final key = ImportedSourceProposalStore.key('/project');
+      final data = jsonDecode(c.saved!.encode()) as Map<String, dynamic>;
+      data['recordedAt'] = DateTime.utc(2027).toIso8601String();
+      final winner = jsonEncode(data);
+      await c.preview('lib/main.dart', 'Second');
+      r.writeGate = Completer<void>();
+      final pending = c.save(c.proposal!);
+      r.values[key] = winner;
+      r.writeGate!.complete();
+      await pending;
+      expect(r.values[key], winner);
+      expect(c.stale, isTrue);
+      expect(c.canSave, isFalse);
+      expect(c.proposal!.replacement, 'Second');
+      c.dispose();
+    },
+  );
+  test(
+    'draft invalidation and corrupt saved history cannot silently overwrite',
+    () async {
+      final r = await proposalRecords();
+      final c = proposalController(r);
+      await c.load();
+      await c.preview('lib/main.dart', 'First');
+      final p = c.proposal!;
+      c.invalidateDraft();
+      await c.save(p);
+      expect(c.saved, isNull);
+      expect(r.updatesSeen, everyElement(isEmpty));
+      final key = ImportedSourceProposalStore.key('/project');
+      r.values[key] = 'private corrupt history';
+      await c.load();
+      expect(c.historyError, isNotNull);
+      expect(c.canPreview, isFalse);
+      expect(r.values[key], 'private corrupt history');
+      expect(c.historyError, isNot(contains('private corrupt history')));
       c.dispose();
     },
   );

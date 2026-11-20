@@ -3,18 +3,27 @@
 import '../models/imported_plan.dart';
 import '../models/imported_source_context.dart';
 import '../models/imported_source_proposal.dart';
+import '../models/imported_source_proposal_record.dart';
 import '../models/project_inspection.dart';
 import '../services/imported_source_proposal_store.dart';
 import 'base_controller.dart';
 
 class ImportedSourceProposalController extends BaseController {
   ImportedSourceProposalController({
-    required this.inspection,
-    required this.context,
+    required ProjectInspection inspection,
+    required ImportedSourceContext this.context,
     required this.store,
-  });
-  final ProjectInspection inspection;
-  final ImportedSourceContext context;
+  }) : inspection = inspection,
+       root = inspection.root;
+  ImportedSourceProposalController.history({
+    required this.root,
+    required this.store,
+  }) : inspection = null,
+       context = null;
+  final String root;
+  final ProjectInspection? inspection;
+  final ImportedSourceContext? context;
+  bool get historyOnly => context == null;
   final ImportedSourceProposalStore store;
   int _generation = 0;
   bool _busy = false, _ready = false, _stale = false;
@@ -22,6 +31,17 @@ class ImportedSourceProposalController extends BaseController {
   ImportedPlan? _plan;
   ImportedSourceProposal? _proposal;
   Map<String, String?>? _inputs;
+  ImportedSourceProposalRecord? _saved;
+  String? _savedRaw, _historyError;
+  ImportedSourceProposalRecord? get saved => _saved;
+  String? get historyError => _historyError;
+  bool get canSave =>
+      canPreview &&
+      store.writable &&
+      _proposal != null &&
+      !stale &&
+      !(_saved?.proposal.matches(_proposal!) ?? false);
+
   bool get busy => _busy;
   bool get canPreview => !isDisposed && _ready && !_busy;
   String? get error => _error;
@@ -60,14 +80,34 @@ class ImportedSourceProposalController extends BaseController {
     update();
     try {
       _alive(generation);
-      final selection = store.read(inspection, context);
+      try {
+        final history = store.history(root);
+        await store.verify(history.inputs, () => _alive(generation));
+        _alive(generation);
+        _saved = history.record;
+        _savedRaw = history.inputs[ImportedSourceProposalStore.key(root)];
+        _historyError = null;
+      } catch (_) {
+        if (!isDisposed) _historyError = 'Saved comparison could not be reopened. Previously loaded comparison is retained; existing records have not been replaced.';
+        rethrow;
+      }
+      if (historyOnly) return;
+      final selection = store.read(inspection!, context!);
+      if (selection.inputs[ImportedSourceProposalStore.key(root)] !=
+          _savedRaw) {
+        throw StateError('Saved comparison changed. Reload.');
+      }
       await store.verify(selection.inputs, () => _alive(generation));
       _alive(generation);
       _plan = selection.plan;
       _inputs = selection.inputs;
       _ready = true;
     } catch (_) {
-      if (!isDisposed) _error = 'Current reviewed source plan could not be loaded. Review source, requirements and plan, then reload.';
+      if (!isDisposed) {
+        _error = historyOnly
+            ? 'Saved comparison could not be reopened. Retry reload; existing records have not been replaced.'
+            : 'Current reviewed source plan could not be loaded. Review source, requirements and plan, then reload.';
+      }
     } finally {
       _busy = false;
       update();
@@ -83,11 +123,11 @@ class ImportedSourceProposalController extends BaseController {
     update();
     try {
       _alive(generation);
-      store.read(inspection, context);
+      store.read(inspection!, context!);
       await store.verify(_inputs!, () => _alive(generation));
       _alive(generation);
       final value = ImportedSourceProposal.create(
-        context: context,
+        context: context!,
         plan: _plan!,
         path: path,
         replacement: replacement,
@@ -100,6 +140,52 @@ class ImportedSourceProposalController extends BaseController {
       if (!isDisposed) {
         if (e is! FormatException) _ready = false;
         _error = 'Proposal could not be prepared. Keep a current reviewed source plan and a changed selected file within 16 KiB and 500 lines. Reload if planning inputs changed.';
+      }
+    } finally {
+      _busy = false;
+      update();
+    }
+  }
+
+  Future<void> save(ImportedSourceProposal expected) async {
+    if (isDisposed || _busy) return;
+    if (!canSave || !identical(expected, _proposal)) {
+      _error = 'Comparison changed. Preview the current draft before saving.';
+      update();
+      return;
+    }
+    final generation = ++_generation;
+    _busy = true;
+    _error = null;
+    update();
+    try {
+      _alive(generation);
+      final record = ImportedSourceProposalRecord.create(
+        context: context!,
+        plan: _plan!,
+        proposal: expected,
+        recordedAt: DateTime.now().toUtc(),
+      );
+      await store.save(record, inspection!, _inputs!, () => _alive(generation));
+      _alive(generation);
+      final updated = Map<String, String?>.unmodifiable({
+        ..._inputs!,
+        ImportedSourceProposalStore.key(root): record.encode(),
+      });
+      store.requireInputs(updated);
+      _inputs = updated;
+      _saved = record;
+      _savedRaw = record.encode();
+      _historyError = null;
+    } catch (_) {
+      if (!isDisposed) {
+        _error = 'Comparison could not be saved or confirmed. Draft and previous comparison are retained. Reload if saved inputs changed, then retry.';
+        try {
+          store.requireInputs(_inputs!);
+        } catch (_) {
+          _ready = false;
+          _stale = true;
+        }
       }
     } finally {
       _busy = false;
