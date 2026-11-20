@@ -20938,3 +20938,89 @@ product,coordinator-test}.log, /tmp/asg404-source-host-final.log,
 Required remote CI, exact fresh PR review and verified merge pending. FullF20,
 source-context sharing/chat integration and unavailable-platform400 acceptance
 remain open. Marketplace gate/F23-last preserved. Claim retained through review.
+
+
+### 2026-11-20 — selected-source review merged; source-context investigation started
+
+PR801 fresh reviewed head2f3bb0e83e7c1d06180cf5f87ac41355fe246279 protected squashmerge
+5b0c3b63df0e85b03ad6cd08ececd52b68a85e22 verified by plugin main/mergedPR/issue404OPEN
+and fetched exact tree6caa27a0133d0ce4a339db97ae9c7c4ae516d880 matching local64734eb.
+Full remote/localdiff identical after index abbreviation normalization; strict model,
+request/consent/setup/lifecycle/nativehost/UI/tests reviewed with no blockers;
+threads empty, head/base unchanged. RequiredCI44759979146 Python136369605984 and
+Flutter136369606813 all required/poststeps SUCCESS; completed logs inspected,
+including source31, fullFlutter, actual browser storage/transport, staticHTML,
+mainweb and independent generatedFlutter project checks. Local full2518PASS13skip,
+finalhost26/widget5 including two added test-only cases PASS, analysis/612fileformat/
+web/isolatedMac exacthelper/IABsynthetic/Python suites as recorded above. Bounded
+in-app selected-source read/review delivered; fullF20/nativeUI/liveQwen not claimed.
+Coordinator merge/outcome recorded, integration and completedclaim released.
+Dirtyowner main/stableapp/ownerprocesses preserved; preview8396 stopped.
+
+Immediately claimed404-source-context-boundary investigation from verifiedmain in
+registered directissueworktree, solewriter. Scope three shared canonical docs;
+no product/model/schema changes. Outcome: identify concrete typed captured-source
+identity and explicit sharing prerequisites before extending document-only advisory.
+Read ProjectSourceObservation/ReadRequest, ImportedDocumentContext and current
+ImportedAdvisoryRequest.prepare and existing puretests. Advisory context is final
+ImportedDocumentContext with instruction-document list; there is no production
+source context/advisory route. Observation alone has no selected-root/metadata/
+requirements/destination identity. Do not relabel source as instruction documents.
+
+Started4disposable pure Mac probes plus existing source observation/documentcontext/
+advisoryrequest regressions:28PASS. Valid32768byte source exceeds current24KiB
+wholeprompt admission;16384 literal quote bytes expand beyond24KiB in JSON even
+before prompt framing. Identical captured bytes can be selected from distinct roots;
+future context must bind exactroot/readset/bytes/metadata/requirements and sharing
+consent, rather than treating a leafhash as full request identity. LF/CRLF/BOM
+captures retain distinct hashes and originaltext. Existing document fixture was
+used only to measure its transport admission, never as a production source route.
+No source truncation, runtime requests, source reads/writes, durable schema changes,
+installs/downloads/cloud/deployment. Temporary probe
+/tmp/asg404_source_context_probe_test.dart; log/tmp/asg404-source-context-start.log.
+
+Continue this owned investigation with source/context byte-budget and compatibility
+failure cases, then record one bounded typed source-context implementation in this
+canonical queue under404. Source sharing/chat remains pending; fullF20 and deferred
+400 remainOPEN, marketplacegate/F23-last unchanged. No independent disjoint second
+ready task was admitted. Claim remainsactive for continuation.
+
+
+### 20 November 2026 — captured-source context boundary findings
+
+Completed bounded local investigation under404-source-context-boundary. Eight
+synthetic pure probes plus source/documentcontext/advisoryrequest regressions:
+32PASS (/tmp/asg404-source-context-final.log). An initial additional store-test
+filename did not exist; corrected invocation reran all32PASS; no test removed from
+production suite. Existing imported_advisory_test separately exercises storage/CAS,
+Stop and response identity. No production code or schema changed.
+
+32768 valid source bytes can exceed24KiB whole advisory prompt. 16384 quote bytes
+expand beyond24KiB JSON;32768 allowed nonNUL control bytes expand beyond128KiB
+captured-context ceiling. Admission must measure serialized UTF8 including framing,
+refuse whole oversized input and retain exact captured bytes; no truncation.
+Existing document-only context is final and source observations have no root/
+metadata/requirements identity. Legacy answer decoder rejects appended source_text;
+ordinary encode/decode remains stable. Source context must not be relabelled as
+instruction documents or silently inserted into old saved records. Current advisory
+controller/store is explicitly typed to ImportedDocumentContext and performs saved-
+input CAS before dispatch/completion; later source sharing requires separate visible
+consent with captured context/destination/model and the same lifecycle guarantees.
+These are deterministic fixtures, not live model/nativeUI/platform acceptance.
+
+Next eligible bounded implementation under existingF20/#404: claimed typed captured
+source context prerequisite after this investigation's verified merge. Acceptance:
+new pure immutable ImportedSourceContext binds exact selectedroot, inspection and
+validated requirements, ordered selectedpaths and exact source text/bytecount/hash;
+validate requestroot/observationstatus/readset, serialize a versioned separate scope,
+source_verified=false, retain BOM/CRLF and immutable snapshots. Whole serialized
+untrusted evidence bounded128KiB; fail privately for overflow/mismatch/corrupt
+requirements, never truncate. Stable digest changes with root/pathorder/bytes/
+metadata/requirements. Compare current planninginputs without claiming currentdisk
+verification, read permission, storage or sharing. Do not alter instruction context,
+advisory record/store/prompt formats, controller/UI or existing helper. Focused
+boundary/immutability/error/identity tests, architecture/analyze/fullregression/web,
+requiredCI/freshreview/verifiedmerge gates. Source advisory sharing integration is
+later acceptance. This is the sole selected next task; no speculative backlog or
+second independent writer. FullF20, liveQwen/deferred400 and F23-last/marketplacegate
+remain unchanged. No model/process/runtime/install/sourcewrite/deployment effects.
