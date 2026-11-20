@@ -13,9 +13,11 @@ class ImportedSourceProposalScreen extends StatefulWidget {
     super.key,
     required this.controller,
     this.onBaseline,
+    this.onCommitComparison,
   });
   final ImportedSourceProposalController controller;
   final ValueChanged<ImportedSourceProposalRecord>? onBaseline;
+  final ValueChanged<ImportedSourceProposalRecord>? onCommitComparison;
   @override
   State<ImportedSourceProposalScreen> createState() =>
       _ImportedSourceProposalScreenState();
@@ -107,6 +109,11 @@ class _ImportedSourceProposalScreenState
       OutlinedButton(
         onPressed: c.busy ? null : () => widget.onBaseline!(saved),
         child: const Text('Recheck captured files'),
+      ),
+    if (widget.onCommitComparison != null)
+      OutlinedButton(
+        onPressed: c.busy ? null : () => widget.onCommitComparison!(saved),
+        child: const Text('Compare with a commit'),
       ),
   ];
 

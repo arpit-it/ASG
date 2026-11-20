@@ -10,6 +10,9 @@ import '../services/record_storage.dart';
 import '../services/requirements_store.dart';
 import 'requirements_screen.dart';
 import 'imported_source_baseline_screen.dart';
+import 'imported_commit_comparison_screen.dart';
+import '../controllers/imported_commit_comparison_controller.dart';
+import '../services/imported_commit_comparison_store.dart';
 import '../controllers/imported_source_baseline_controller.dart';
 import '../services/imported_source_baseline_store.dart';
 import 'git_metadata_panel.dart';
@@ -41,6 +44,19 @@ class ImportedProjectWorkspace extends StatelessWidget {
     ImportedSourceProposalController controller,
   ) => ImportedSourceProposalScreen(
     controller: controller,
+    onCommitComparison: (saved) {
+      if (!context.mounted) return;
+      Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (_) => ImportedCommitComparisonScreen(
+            controller: ImportedCommitComparisonController(
+              saved: saved,
+              store: ImportedCommitComparisonStore(records),
+            ),
+          ),
+        ),
+      );
+    },
     onBaseline: (saved) {
       if (!context.mounted) return;
       Navigator.of(context).push(

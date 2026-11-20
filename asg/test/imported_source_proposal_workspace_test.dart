@@ -71,4 +71,35 @@ void main() {
       expect(saved.sourceVerified, false);
     },
   );
+  testWidgets('saved history opens commit comparison without a source read', (
+    tester,
+  ) async {
+    final records = await baselineRecords(baselineSaved());
+    final before = Map<String, String>.of(records.values);
+    await tester.pumpWidget(
+      MaterialApp(
+        home: ImportedProjectWorkspace(inspection: finding(), records: records),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('Open saved source comparison'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Open saved source comparison'));
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.text('Compare with a commit'),
+      250,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.ensureVisible(
+      find.widgetWithText(OutlinedButton, 'Compare with a commit'),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Compare with a commit'));
+    await tester.pumpAndSettle();
+    expect(find.text('Compare captured files with a commit'), findsOneWidget);
+    expect(find.text('Read selected commit content?'), findsNothing);
+    expect(records.values, before);
+    expect(records.updatesSeen, everyElement(isEmpty));
+  });
 }
