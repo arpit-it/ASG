@@ -4500,3 +4500,130 @@ final validation; no escaped defect observed. Fresh exact PR review and ALL requ
 CI remain mandatory. This bounded native outcome does not complete fullCE01/F20/
 #404/liveQwen/#400; marketplace dependencies/F23-last unchanged. No installs,
 model downloads, unrestricted execution, stable replacement, cloud or deployment.
+
+
+### 2026-11-20 — #404 native terminal return merged; repair investigation started
+
+PR776 protected expected-head merge d53e0b0a31b4e52d2dbb0c968e0fb40f52e03538
+verified through GitHub main, merged PR and fetched exacttree
+86f19fd0b8854cb543afc3a66ee44170c753e54a. Fresh review remote
+0edd6bbdbdb177da0a386e79cc123651736f7eb1/base1d645ce8 found no blocker;
+threads empty. Required CI44676740892 Python136090257325 and Flutter136090257659
+every mandatory/post step SUCCESS. Linux logs confirm all8newDart cases active
+PASS. Native36launches and full2237/12skip local evidence retain their exact bundle/
+source identities above. Coordinator merge/outcome recorded; integration and claim
+released. Owner checkout's separate IDE/history edits preserved; umbrella404 OPEN.
+
+Immediately claimed next dependency-ready bounded task
+404-repair-return-boundary-investigation under existing #404, registered direct
+issue worktree. Scope this ledger, PROGRESS and AGENT_ENGINE only. Acceptance:
+trace repair terminal write versus returnedReference, verify two actual disposable
+nativeDB component gates and cold reopen with exact selected origin/failure/session/
+working/unrelated maps, check current fixed runtime readiness, then define bounded
+next native contract only if supported. No second independent ready writer; root
+is sole readiness/runtime worker; no live inference or app build assigned.
+
+Concrete gap: RepairAttemptStore.finish sets _outcomeWriteAttempted before _commit,
+awaits proposed repair persistence, then exposes _returnedReference. Native repair
+protocol22 seeds by awaiting the full ApprovedSourceProposer return before later
+candidate boundaries, so it does not cover this earlier terminal-write interval.
+Private /tmp/asg404-repair-return-probe.dart now passes2/2 component observations:
+before physical commit status reserved/no proposal; after physical commit status
+proposed/stored proposal. Both holds keep returnedReference null and original
+finish Future incomplete. Release yields exact matching selected reference; actual
+database close/reopen retains full map and selected origin byte-identically, with
+no replay/provider/transport or source application. Original failure/session/working
+and every other record remain unchanged. Initial harness attempt correctly refused
+a context bound to a different storage wrapper; binding context and store to the
+same guard corrected the probe, without application changes. This is component
+evidence, NOT actual native process crash, HTTP or live model evidence. ProbeSHA256
+637dd2b84aa6d46257b01045e3cb2eb27dddb9b05fe53a5e3fa8b09fe3bb6892; log /tmp/asg404-repair-return-probe.log.
+
+At2026-11-20T04:56:05Z fixed8765 /health and /v1/models both refused connection
+(curl7/HTTP000); generation requests0. Existing server not started/stopped/replaced.
+Live Qwen3.8-27B-4bit acceptance remains pending exact ready MLX/Metal endpoint.
+Next work: specify the selected repair origin/journal report and two native terminal
+gates, with exact retained failure and no delivered/proposal-execution claim,
+then review this investigation before admitting implementation. FullF20/CE01/#400,
+marketplace gate and F23-last unchanged; no installs/downloads/cloud/deployment.
+
+
+### #404 repair terminal-return boundary investigation and next contract
+
+Final prerequisite evidence:44focused Flutter checks PASS, including four private
+nativeDB components (before/after physical terminal commit and two physical
+conditional-commit races). The latter bypassed normal application storage only
+inside disposable DB records: noncanonical selected origin and malformed physical
+repair journal were both retained byte-identically after proposed-outcome refusal;
+returnedReference stayed null and outcomeWriteAttempted true. Normal storage API
+correctly refused malformed writes during harness setup; no application defect or
+fix inferred. Final private probeSHA256 dddab5b8059a7c14f7b5cb3a879cbe72641001fe8931d3fb5dd14077b09b2cd8.
+Log /tmp/asg404-repair-return-focused.log. Component probes do not invoke provider,
+HTTP, native app process or live model and establish no crash/device acceptance.
+At2026-11-20T04:59:08Z /health and /v1/models both connection-refused (curl7/000),
+generation0; live exact Qwen3.8-27B-4bit MLX/Metal acceptance still pending.
+
+Next eligible implementation after THIS investigation's verified merge:
+404-native-repair-return-boundary, existing umbrella404/F20. Preserve modes20–25.
+New fixed opt-in protocol26 mode repair-return-boundary; no production storage
+format or application-flow change. Challenge exact5keys mode,nonce,launch,sdk,
+boundary; boundaries beforeCommit/afterCommit and launches1/2 only. Same canonical
+private0700root, bounded4096challenge/8192report, strict duplicate/nonfinite/types/
+identity/standalone or mixed option refusal, nofollow pinned control files.
+
+Each boundary uses a fresh independent root and fixed supplied model
+supplied-native-repair-return-boundary-model. Seed one fixed FAILED candidate/check
+metadata record, working fingerprint, approval/board and selected raw session R1/
+Tanalyze revision0/dispatch0, with no source folder/copy/SDK command or candidate
+execution. Setup is explicitly failureSetupCalls1, never a successful real check.
+Use actual ApprovedSourceProposer repair path with selected repairSessionBinding.
+Reservation atomically persists repair attempt1 AND selected origin1 before the
+fixed provider runs once. Gate terminal PROPOSED update before delegate commit or
+after physical verification but before its Future resolves. No proposal return,
+terminal return or deliveredReference; stored journal is reserved/no proposal
+beforeCommit versus proposed/exact response+proposal hash afterCommit. Source
+proposal text remains bounded private storage; reports contain only fingerprints.
+
+Report exact32fields: version, mode, nonce, launch, boundary, stage, projectId, sessionId, boardTaskId, requirementId, requestedModel, attemptCount, attemptNumber, attemptStatus, attemptSha256, originSha256, failureSha256, originalSessionSha256, sessionRevision, sessionDispatchCount, storedResponseModel, storedProposalSha256, validatedResponseModel, validatedProposalSha256, declaredSourceSha256, deliveredReference, retainedReference, recordsBefore, recordsAfter, unrelatedBeforeSha256, unrelatedAfterSha256, counters.
+Exact11literal record slots: working, repairOrigin, repairJournal, failureJournal, failedCandidate, session, execution, history, context, initialCompanion, repairCompanion.
+Exact17counters: setupCalls, failureSetupCalls, proposalCalls, reservationCommits, reservationReturns, suppliedProviderCalls, proposalReturns, terminalAttempts, terminalCommits, terminalReturns, liveTransportAttempts, sdkAttempts, candidateEffects, unrelatedWrites, previewAttempts, sourceCopies, hostCreations.
+Stage1 setup/failureSetup/proposal/reservationCommit/reservationReturn/provider/
+terminalAttempt each1, terminalCommit0or1; all other counts0. Both recordsBefore
+origin/journal=null, recordsAfter origin/journal=hash; preserved failureJournal,
+failedCandidate,working,session hashes match and all execution/companion slotsnull.
+ValidatedResponseModel/proposalHash only held stage; stored counterparts only
+afterCommit and match held supplied metadata. Hash proposal via SHA256 of canonical
+jsonEncode(proposal.toJson()), distinct from entire attempt and raw-origin hashes.
+
+Parent pins exact bundle/source/root/report/challenge, validates same live owned
+child and held report, kills/waits expected-9, then separate launch2 cold-read-only.
+Cold counters all0, validatedResponse/proposal fieldsnull, exact raw map and original
+selected origin/failed evidence/session/working preserved, no replay/rehydration/
+SDK/source copy/new candidate. Cold retainedReference only afterCommit, exact
+SelectedRepairRequestReference5keys version/projectId/attemptNumber/attemptSha256/
+originSha256 jointly matched via origin.requireAttempt; beforeCommit no reference.
+Persisted proposed repair is retained history, never delivered proposal or renewed
+execution authority. Refuse foreign/changed origin, journal, capture, nonce/phase
+without rewriting any record. No fresh attempt/retry/dispatch/promotion slice.
+
+Private design /tmp/asg404-repair-return-report-design.json SHA256287279784ecb298fee58f4b4eeddb2d44be2c7bdd89c1217e8626f12e5429425
+contains4placeholder samples, max3309bytes. These are design ONLY.
+Validation: permanent strict parser/phase/cold/adverse Dart regressions with fresh
+private POSIX roots and precise expected errors, portable host positive/adverse
+contracts, format/analyze/full tests/web/PythonrequiredCI. Build NEW isolated Mac
+restartfixture bundle and record exact source/whole-bundle hashes;4newnative
+launches plus preserved36native20–25 matrix on SAME new bundle. Observe owned
+process cleanup before release. Fixed new mode inspects existing SDK only and
+never runs it; old20 retains original bounded SDK/receipt scope. No stable app
+replacement, inference substitution, installs/downloads/cloud/deployment.
+
+Investigation remains Pending review/requiredCI/verified merge; protocol26 source
+and all new actual native observations remain PENDING. FullF20/CE01/#404/#400,
+marketplace prerequisites and F23-last unchanged. One root writer; no independent
+second task admitted. Time-to-merge/CI-provider timing/escaped-defect metrics unknown
+unless separately measured; no escaped defect observed in this investigation.
+
+Final investigation local checks:44focusedPASS, product32/inventory9PASS;
+format559unchanged, analyze clean, fullFlutter2237PASS/12explicit skips, web built.
+Three docs only; no application code, schema or approval-policy changes. Required
+final-revision CI and fresh exact PR review still mandatory before merge.
