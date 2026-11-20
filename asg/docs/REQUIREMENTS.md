@@ -19445,3 +19445,44 @@ Local bounded fixture acceptance complete; final commit/plugin publication/fresh
 exact review/all requiredCI/protected verifiedmerge still gate delivery. Keep union
 claim and serialized publication; fullCE01/F20/umbrella404/liveQwen and deferred400
 remain open. Do not relabel deterministic supplied identities as live inference.
+
+
+Fresh PR774 review correction: initial host challenge.write_bytes and log.open(wb)
+could follow a pre-existing link before child launch, contradicting the bounded
+regular-file contract. Two portable refusal regressions FAIL the original driver
+by demonstrating changed unrelated test target bytes; no actual app/model/owner
+files involved. /tmp/asg404-native-unresolved-review-baseline.log. Forward fix
+bc8dbaace796bf4a719ae9e221c95a70157b5c97 uses exclusive no-follow temporary challenge
+creation, atomic replacement with pinned previous/final identity and exclusive
+no-follow process-log creation. A between-launch challenge-link regression also
+refuses without another child or target write. Positive portable drivers now use
+fresh controlled roots per scenario, matching real temporary-root semantics.
+
+All121host +6restart tests PASS after fix; /tmp/asg404-native-unresolved-review-
+{host2,restart}.log. Initial helper draft compared pre/post-rename ctime and refused
+normal rename; corrected to verify inode/size/mtime across rename then pin the FULL
+final identity. Positive cases and every existing refusal now pass. One blocking
+fresh-review rework, no escaped defect observed. Original08bc27e4 CI/review cannot
+authorize the revised head; final revision needs fresh review and new requiredCI.
+
+Repeated ALL32actual native launches with revised driver: new2+4 plus legacy23/22/
+21/20 twenty-six, allPASS on unchanged isolated bundle
+f5cb4d4d9fa42b68b58318568a03465d6bc676dd3562875c2304a9d301da249a.
+603Dart/macOS/build inputs edef48dfdcb3be700c1d100f0a2b8dc6d19fb113a7992ea336a0487a23d0752f
+still byte-identical to native sourcecommitf019cb4, so no app rebuild was needed.
+Revised host3input digest
+feaa8a1898e151d54d1c67f441b3b63864f46e7238ff30349af2be3b7a0af3f5 binds driver
+sourcecommitbc8dbaa separately. New reports/private identities:
+/tmp/asg404-native-unresolved-review-evidence-summary.json and matching review-
+{native-basic,native-next,initial-precommit,initial-retry,initial-corrupt,repair-
+precommit,repair-retry,repair-corrupt,legacy21,legacy20}.json. Prior32observations
+remain separately retained at their original driver revision; not counted as64new
+capabilities. Task-owned native processes settled. Source/byte identity and scope
+limits remain explicit: supplied metadata, no newcase model/SDK/source execution;
+legacy20 original fixed SDK/receipt scope preserved.
+
+Flutter2228/12opt-in skips, focus115/analyze/format remain evidence for unchanged
+Dart inputs; final requiredCI reruns mandatory checks on revised published head.
+Final product/inventory and new exact PRreview/CI/verifiedmerge still gate delivery;
+fullCE01/F20/#404/liveQwen/platform400 stay open. Owner processes/primary edits/
+stable application/last working outputs preserved. No install/download/deployment.

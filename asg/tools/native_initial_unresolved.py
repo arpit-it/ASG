@@ -200,6 +200,36 @@ def read_report(root, launch, nonce, explicit_next=False):
     return validate_report(value, launch, nonce, explicit_next)
 
 
+
+def _write_challenge(root, launch, raw, previous_identity):
+    """Replace only our pinned challenge; never follow an artifact link."""
+    target = root / 'challenge.json'
+    if previous_identity is None:
+        try:
+            target.lstat()
+        except FileNotFoundError:
+            pass
+        else:
+            raise ValueError('Fresh challenge path required')
+    elif _file_identity(target) != previous_identity:
+        raise ValueError('Challenge changed between owned launches')
+    temporary = root / f'challenge-{launch}.tmp'
+    descriptor = os.open(temporary, os.O_WRONLY | os.O_CREAT | os.O_EXCL |
+                         getattr(os, 'O_NOFOLLOW', 0), 0o600)
+    with os.fdopen(descriptor, 'wb') as stream:
+        stream.write(raw)
+        stream.flush()
+        os.fsync(stream.fileno())
+    identity = _file_identity(temporary)
+    os.replace(temporary, target)
+    published = _file_identity(target)
+    # Rename may update ctime; pin the final full identity after verifying inode,
+    # size and mtime belong to the exclusively created file.
+    if published[:4] != identity[:4]:
+        raise ValueError('Challenge replaced while publishing')
+    return published
+
+
 def run_initial_unresolved(bundle, sdk, explicit_next=False):
     """Observe only fixed owned disposable children; no SDK/model command execution."""
     if type(explicit_next) is not bool:
@@ -222,6 +252,7 @@ def run_initial_unresolved(bundle, sdk, explicit_next=False):
     root_identity = root.stat().st_dev, root.stat().st_ino
     nonce = secrets.token_hex(16)
     observations = []
+    challenge_identity = None
     for launch in ((1, 2, 3, 4) if explicit_next else (1, 2)):
         if (root.resolve(strict=True) != root or (root.stat().st_dev, root.stat().st_ino) != root_identity or
                 inspect_bundle(bundle) != (executable, binary)):
@@ -231,8 +262,10 @@ def run_initial_unresolved(bundle, sdk, explicit_next=False):
                                 'sdk': str(sdk), 'explicitNext': next_stage}).encode('utf-8')
         if len(challenge) > MAX_CHALLENGE_BYTES:
             raise ValueError('Unresolved challenge exceeded bound')
-        (root / 'challenge.json').write_bytes(challenge)
-        with (root / f'process-{launch}.log').open('wb') as log:
+        challenge_identity = _write_challenge(root, launch, challenge, challenge_identity)
+        log_descriptor = os.open(root / f'process-{launch}.log',
+            os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, 'O_NOFOLLOW', 0), 0o600)
+        with os.fdopen(log_descriptor, 'wb') as log:
             process = subprocess.Popen([str(executable)],
                 env={**os.environ, 'ASG_CANDIDATE_CRASH_ROOT': str(root)}, stdout=log, stderr=log)
             try:

@@ -4283,3 +4283,12 @@ summary in /tmp/asg404-native-unresolved-*.json identify actual tested inputs.
 Full2228/12opt-in skips, focused115/host118/restart6 and analysis/format pass.
 Final exact review/requiredCI/verifiedmerge remain gates; no generalCE01/F20,
 liveQwen or unavailable-platform acceptance claimed.
+
+
+PR774 fresh-review hardening: revised driver refuses unsafe challenge/log files
+before launch, pins atomic challenge replacement and uses exclusive no-follow logs.
+121host/6restart tests pass, including original-driver failing symlink regressions.
+All32same-binary native observations repeated with driverbc8dbaa/digest
+feaa8a1898e151d54d1c67f441b3b63864f46e7238ff30349af2be3b7a0af3f5.
+Native603source inputs/bundle remain unchanged; original driver evidence is kept
+separately. Final revised review/requiredCI/verifiedmerge still gate delivery.

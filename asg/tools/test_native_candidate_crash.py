@@ -1765,29 +1765,34 @@ class UnresolvedInitialTests(unittest.TestCase):
         file.unlink();os.mkfifo(file)
         with self.assertRaises(ValueError):self.protocol.read_report(self.root,1,self.nonce)
 
-    def driver(self,explicit=False,bad_launch=None,exit_code=0,early=False,signal=-9,replace=False):
+    def driver(self,explicit=False,bad_launch=None,exit_code=0,early=False,signal=-9,replace=False,sabotage_challenge=False):
         sdk=self.root/'sdk';(sdk/'bin/cache').mkdir(parents=True,exist_ok=True)
         (sdk/'bin/cache/flutter_tools.snapshot').write_text('prepared SDK')
+        control=Path(tempfile.mkdtemp(prefix="asg-candidate-crash-driver-",dir=self.root)).resolve()
+        self.driver_root=control
         processes=[];outer=self
         class Process:
             def __init__(self,*args,**kwargs):
                 self.number=len(processes)+1;self.killed=False;processes.append(self)
                 outer.assertEqual(args[0],[str(outer.root/'owned-executable')])
-                outer.assertEqual(kwargs['env']['ASG_CANDIDATE_CRASH_ROOT'],str(outer.root))
+                outer.assertEqual(kwargs['env']['ASG_CANDIDATE_CRASH_ROOT'],str(control))
                 value=outer.report(self.number)
                 if bad_launch==self.number:value['counters']['sdkAttempts']=1
-                (outer.root/f'launch-{self.number}.json').write_text(json.dumps(value))
+                (control/f'launch-{self.number}.json').write_text(json.dumps(value))
             def poll(self):
                 return signal if self.killed else exit_code if self.number in (2,4) or early else None
             def kill(self):self.killed=True
             def wait(self,timeout):
+                if sabotage_challenge and self.number==1 and self.killed:
+                    target=outer.root/'outside-challenge';target.write_bytes(b'preserve unrelated bytes')
+                    challenge=control/'challenge.json';challenge.unlink();challenge.symlink_to(target)
                 if replace:
-                    file=outer.root/f'launch-{self.number}.json'
+                    file=control/f'launch-{self.number}.json'
                     raw=file.read_text();file.unlink();file.write_text(raw)
                 return self.poll()
         with mock.patch.object(self.protocol.sys,'platform','darwin'), \
                 mock.patch.object(self.protocol,'inspect_bundle',return_value=(self.root/'owned-executable','a'*64)), \
-                mock.patch.object(self.protocol.tempfile,'mkdtemp',return_value=str(self.root)), \
+                mock.patch.object(self.protocol.tempfile,'mkdtemp',return_value=str(control)), \
                 mock.patch.object(self.protocol.secrets,'token_hex',return_value=self.nonce), \
                 mock.patch.object(self.protocol.subprocess,'Popen',side_effect=Process):
             try:return self.protocol.run_initial_unresolved(self.root/'fixture.app',sdk,explicit),processes
@@ -1798,7 +1803,7 @@ class UnresolvedInitialTests(unittest.TestCase):
             value,processes=self.driver(explicit)
             self.assertEqual(len(value['launches']),count)
             self.assertEqual([p.killed for p in processes],[True,False]*(count//2))
-            challenge=json.loads((self.root/'challenge.json').read_text())
+            challenge=json.loads((self.driver_root/'challenge.json').read_text())
             self.assertEqual(set(challenge),{'mode','nonce','launch','sdk','explicitNext'})
             self.assertIs(challenge['explicitNext'],explicit)
 
@@ -1869,6 +1874,33 @@ class UnresolvedInitialTests(unittest.TestCase):
                 mock.patch.object(self.protocol.subprocess,'Popen') as launch:
             with self.assertRaises(ValueError):self.protocol.run_initial_unresolved(self.root,sdk)
             launch.assert_not_called()
+
+    def unsafe_write_case(self, name):
+        sdk=self.root/'sdk';(sdk/'bin/cache').mkdir(parents=True)
+        (sdk/'bin/cache/flutter_tools.snapshot').write_text('prepared SDK')
+        control=self.root/'control';control.mkdir(mode=0o700)
+        target=self.root/'outside-control';target.write_bytes(b'preserve unrelated bytes')
+        (control/name).symlink_to(target)
+        with mock.patch.object(self.protocol.sys,'platform','darwin'), \
+                mock.patch.object(self.protocol,'inspect_bundle',return_value=(self.root/'app','a'*64)), \
+                mock.patch.object(self.protocol.tempfile,'mkdtemp',return_value=str(control)), \
+                mock.patch.object(self.protocol.subprocess,'Popen',side_effect=ValueError('never launch in refusal test')) as launch:
+            with self.assertRaises((ValueError,OSError)):
+                self.protocol.run_initial_unresolved(self.root,sdk)
+            self.assertEqual(target.read_bytes(),b'preserve unrelated bytes')
+            launch.assert_not_called()
+
+    def test_changed_challenge_between_owned_launches_refuses_without_touching_target(self):
+        with self.assertRaises(ValueError):self.driver(sabotage_challenge=True)
+        self.assertEqual((self.root/'outside-challenge').read_bytes(),b'preserve unrelated bytes')
+        self.assertEqual(len(self.failed_processes),1)
+        self.assertTrue(self.failed_processes[0].killed)
+
+    def test_driver_refuses_preexisting_challenge_symlink_without_touching_target(self):
+        self.unsafe_write_case('challenge.json')
+
+    def test_driver_refuses_preexisting_log_symlink_without_touching_target(self):
+        self.unsafe_write_case('process-1.log')
 
 if __name__ == '__main__':
     unittest.main()
