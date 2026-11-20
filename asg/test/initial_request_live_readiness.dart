@@ -7,9 +7,9 @@ import 'package:http/http.dart' as http;
 
 import 'live_model_config.dart' show liveModelId;
 
-/// Validates bridge assertions for the opt-in initial source request only.
+/// Validates fixed-owner source budgets for initial and selected-repair requests.
 /// This neither authenticates weights nor proves a later response's model ID.
-void requireInitialRequestLiveReadiness(Object? health, Object? inventory) {
+void requireSourceRequestLiveReadiness(Object? health, Object? inventory) {
   if (health is! Map<String, Object?> ||
       health['status'] != 'ready' ||
       health['phase'] != 'idle' ||
@@ -17,10 +17,10 @@ void requireInitialRequestLiveReadiness(Object? health, Object? inventory) {
       health['device'] != 'metal' ||
       health['model'] != liveModelId ||
       health['streaming'] != true) {
-    throw StateError('Initial-request live runtime is not ready on MLX/Metal.');
+    throw StateError('Source-request live runtime is not ready on MLX/Metal.');
   }
   if (inventory is! Map<String, Object?>) {
-    throw StateError('Initial-request live model inventory is invalid.');
+    throw StateError('Source-request live model inventory is invalid.');
   }
   final data = inventory['data'];
   if (data is! List || data.length != 1) {
@@ -28,7 +28,7 @@ void requireInitialRequestLiveReadiness(Object? health, Object? inventory) {
   }
   final entry = data.single;
   if (entry is! Map<String, Object?> || entry['id'] != liveModelId) {
-    throw StateError('Initial-request live model identity does not match.');
+    throw StateError('Source-request live model identity does not match.');
   }
   final limits = entry['asg_request_limits'];
   if (limits is! Map<String, Object?> ||
@@ -38,13 +38,13 @@ void requireInitialRequestLiveReadiness(Object? health, Object? inventory) {
       limits['max_input_tokens'] != 4096 ||
       limits['max_output_tokens'] is! int ||
       limits['max_output_tokens'] != 4096) {
-    throw StateError('Initial-request live source budget is not verified.');
+    throw StateError('Source-request live source budget is not verified.');
   }
 }
 
 /// Reads only the owner's fixed bridge routes. No redirect, retry or inference.
 /// The client created here is always closed, including timeout/parser failures.
-Future<void> checkInitialRequestLiveReadiness({
+Future<void> checkSourceRequestLiveReadiness({
   http.Client Function()? createClient,
   Duration timeout = const Duration(seconds: 5),
 }) async {
@@ -72,8 +72,21 @@ Future<void> checkInitialRequestLiveReadiness({
   try {
     final health = await read('/health').timeout(timeout);
     final inventory = await read('/v1/models').timeout(timeout);
-    requireInitialRequestLiveReadiness(health, inventory);
+    requireSourceRequestLiveReadiness(health, inventory);
   } finally {
     client.close();
   }
 }
+
+/// Retains the existing initial-request harness API with the same strict guard.
+void requireInitialRequestLiveReadiness(Object? health, Object? inventory) =>
+    requireSourceRequestLiveReadiness(health, inventory);
+
+/// Compatibility entry point; shares the fixed routes, limits and client cleanup.
+Future<void> checkInitialRequestLiveReadiness({
+  http.Client Function()? createClient,
+  Duration timeout = const Duration(seconds: 5),
+}) => checkSourceRequestLiveReadiness(
+  createClient: createClient,
+  timeout: timeout,
+);

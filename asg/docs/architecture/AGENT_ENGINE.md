@@ -4803,3 +4803,87 @@ original source/bundle and are not reused as new native acceptance here. Full
 CE01/F20/#404/liveQwen/#400 remain OPEN. Fresh exact PR review, every required CI
 step and verified remote merge remain required; no install/download/unrestricted
 execution/stable replacement/cloud/deployment. No escaped defect observed.
+
+
+### 2026-11-20 — #404 repair HTTP journal merged; live preflight track started
+
+PR779 protected expected-head merge3052db3df00983935a66bb2b0e26065bf89f648e
+verified GitHub main, mergedPR and fetched tree23123106631f23cda46e595df95ea7b4ae4057e1.
+Fresh review remote69a9c32bc4bce2e90a3cd3758f3b44f854a491ba/basee41f8c97
+found no blocker; threads empty. CI44682860119 Flutter136110151092 and
+Python136110151439 every mandatory/post step SUCCESS. Linux logs confirm all3new
+actualHTTP/nativeDB cases activePASS. Local48focused/full2249PASS12explicit skips,
+format559/analyze/web/product32/inventory9 evidence preserved. Coordinator merged/
+outcome recorded and integration/claim released. Full404 OPEN; owner dirty primary
+checkout, owner processes and previous working outputs preserved.
+
+Immediately claimed dependency-ready task404-selected-repair-live-preflight under
+existing404/F20, registered direct issue worktree. Scope shared docs/inventory,
+test/initial_request_live_readiness.dart and newtest/repair_request_live_test.dart.
+Concrete gap: initial requests have a strict opt-in owner/native-journal harness;
+selected repair now has actual synthetic HTTP/native reservation coverage but
+no corresponding fixed-owner opt-in response-identity/cold-journal harness.
+
+Acceptance: clearly shared strict source-budget readiness API with existing
+initial entry points compatible; fixed8765GET health/models,5s/16KiB/no redirects/
+retries, exact ready idle MLX/Metal/Qwen3.8-27B-4bit/singleinventory4096limits before
+storage/proposer effects. Same selected-repair/nativeDB harness must have active
+syntheticHTTP success/preflight-refusal checks and default explicit owner-live skip.
+Named opt-in real case verifies actual response ID and exact nonnull selected
+reference/proposed journal across DBclose/reopen with unchanged original failure/
+session/working/origin/unrelated records. Returned source stays in memory/private
+records only; no source application, candidate/SDK/preview/host/stable replacement.
+No automatic retry after failed/timedout inference; client close does not prove
+servergeneration stopped; reconcile runtime ownership before another live request.
+
+Started by sharing unchanged strict guard body as requireSourceRequestLiveReadiness
+and checkSourceRequestLiveReadiness, retaining compatible initial-named wrappers.
+Fixed routes, limits, rejection conditions, timeout/body bound/client cleanup remain
+unchanged. Existing guard16, initialsyntheticharness1 and selectedrepairHTTP3 all
+PASS (20total); one existing initial owner-live case explicitly skipped, no live
+claim. Log /tmp/asg404-selected-repair-live-preflight-start.log. New selected repair
+opt-in harness still PENDING; broader checks/review/requiredCI/merge remain pending.
+At2026-11-20T05:52:31Z fixed /health and /v1/models both connection-refused
+(curl7/HTTP000); generation0. Root sole readiness/model worker; no server/model
+starts/stops/downloads/substitution. One writer only; no second independent ready
+task admitted. FullCE01/F20/#400/liveQwen/marketplace gate/F23-last preserved.
+
+
+### #404 selected-repair opt-in source readiness harness final local evidence
+
+Added test/repair_request_live_test.dart. The same nativeDB/default HTTP harness
+actively passes supplied synthetic SSE and readiness-refusal scenarios; fixed
+owner case is separately named and explicitly skipped unless ASG_REAL_INFERENCE
+is enabled. Shared strict source readiness APIs retain compatible initial entry
+points: fixed8765GET-only health/models, no redirects/retries,5s deadlines,16KiB
+reply cap, ready idle MLX/Metal, exact single Qwen3.8-27B-4bit inventory and typed
+4096source input/output limits, always-close client. This is bridge assertion
+validation, not authenticated weights or later response identity proof.
+
+Preflight precedes fixture storage/proposer effects. Actual native atomic origin
+and reserved repair entry are physically observed before transport. Harness
+requires nonnull exact response model, requested model/4096ceiling, proposed
+attempt and jointly matching selected reference; source changes are compared
+only in memory/private records. Actual DB close/reopen retains full raw map and
+selected origin/failure/session/working/unrelated records, with no replay. Fixture
+server callback failures remain observable after transport close. No candidate,
+source application, SDK, preview, host, stable-app replacement or deployment.
+
+Run the owner case ONLY as a standalone single worker after exact ready/idle
+identity verification: flutter test --no-pub --dart-define=ASG_REAL_INFERENCE=true
+test/repair_request_live_test.dart --name '^owner Qwen selected repair'. No retry
+after timeout/failure and no assertion that client cancellation stops server
+inference; reconcile owner runtime before another request. At2026-11-20T05:56:28Z
+fixed health/models both connection-refused (curl7/000), readyfalse, generation0.
+Therefore no owner-live test/inference attempted; live selected-repair acceptance
+remains PENDING under404, not a skipped-pass or completed model acceptance.
+
+Final local checks:64focusedPASS/2explicit owner-live skips, format560unchanged,
+Flutter analyze clean, fullFlutter2250PASS/13explicit opt-in skips, web built;
+product32/inventory9PASS, inventory regenerated unchanged. Logs
+/tmp/asg404-selected-repair-live-preflight-{regression,format,analyze,full,web,product,inventory}.log
+and bounded readiness receipt runtime-final.json. Two style issues corrected
+before final checks; no escaped defect observed. Five files only:two test harness/
+helper files plus three owned docs. No production/schema/approval/runtime change.
+Fresh exact PR review, every required CI step and verified merge still required.
+FullCE01/F20/#404/#400/liveQwen/marketplace gate/F23-last remain unchanged.
