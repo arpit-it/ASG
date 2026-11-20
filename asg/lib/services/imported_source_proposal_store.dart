@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: MPL-2.0
 // Copyright 2026 Arpit Sinha
+import 'dart:convert';
+
 import '../models/imported_plan.dart';
+import '../models/imported_source_proposal_record.dart';
 import '../models/imported_source_context.dart';
 import '../models/project_inspection.dart';
 import 'imported_plan_store.dart';
@@ -8,10 +11,64 @@ import 'inspected_folder_store.dart';
 import 'record_storage.dart';
 import 'requirements_store.dart';
 
-/// Reads planning inputs only. Conditional storage is used with zero updates.
+/// Historical app records only; never reads or changes source files.
 class ImportedSourceProposalStore {
   ImportedSourceProposalStore(this.records);
   final RecordStorage records;
+  static const prefix = 'studio.importedSourceProposal.v1.';
+  static String key(String root) =>
+      '$prefix${InspectedFolderStore.workspaceId(root)}';
+  bool get writable => records is ConditionalRecordStorage;
+  ({ImportedSourceProposalRecord? record, Map<String, String?> inputs}) history(
+    String root,
+  ) {
+    try {
+      final target = key(root), raw = records.getString(key(root));
+      final record = raw == null
+          ? null
+          : ImportedSourceProposalRecord.decode(raw);
+      if (record != null && record.root != root) throw StateError(_changed);
+      requireInputs({target: raw});
+      return (record: record, inputs: Map.unmodifiable({target: raw}));
+    } catch (_) {
+      throw StateError('Saved source comparison could not be reopened.');
+    }
+  }
+
+  Future<void> save(
+    ImportedSourceProposalRecord record,
+    ProjectInspection inspection,
+    Map<String, String?> inputs,
+    void Function() alive,
+  ) async {
+    final expectedInputs = Map<String, String?>.unmodifiable(inputs);
+    final target = key(record.root);
+    void check() {
+      alive();
+      final current = read(inspection, record.context);
+      if (record.root != inspection.root ||
+          jsonEncode(current.plan.toJson()) !=
+              jsonEncode(record.plan.toJson()) ||
+          expectedInputs.length != current.inputs.length ||
+          current.inputs.keys.any((k) => !expectedInputs.containsKey(k))) {
+        throw StateError(_changed);
+      }
+      requireInputs(expectedInputs);
+    }
+
+    check();
+    final checked = ImportedSourceProposalRecord.decode(record.encode());
+    final storage = records;
+    if (storage is! ConditionalRecordStorage) {
+      throw StateError('Historical saving requires transactional app storage.');
+    }
+    await storage.commitRecords(
+      expected: expectedInputs,
+      updates: {target: checked.encode()},
+      authorize: check,
+    );
+  }
+
   static const _changed =
       'Saved source planning inputs changed. Reopen review.';
 
@@ -26,8 +83,10 @@ class ImportedSourceProposalStore {
           InspectedFolderStore.workspaceId(inspection.root),
         ),
         ImportedPlanStore.key(inspection.root),
+        key(inspection.root),
       ];
       final inputs = {for (final key in keys) key: records.getString(key)};
+      history(inspection.root);
       final plan = ImportedPlanStore(
         records,
         capturedSource: context,

@@ -85,6 +85,20 @@ class ImportedProjectWorkspace extends StatelessWidget {
           icon: const Icon(Icons.approval),
           label: const Text('Plan and approval'),
         ),
+        OutlinedButton.icon(
+          onPressed: () => Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) => ImportedSourceProposalScreen(
+                controller: ImportedSourceProposalController.history(
+                  root: inspection.root,
+                  store: ImportedSourceProposalStore(records),
+                ),
+              ),
+            ),
+          ),
+          icon: const Icon(Icons.history),
+          label: const Text('Open saved source comparison'),
+        ),
         const SizedBox(height: 16),
         for (final limitation in ProjectInspection.limitations)
           Padding(
