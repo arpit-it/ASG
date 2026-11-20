@@ -20828,3 +20828,130 @@ cloud/deploy untouched; old native/live evidence retains originalidentity.
 Fresh exactPRreview/allrequiredCI/verifiedmerge pending; full404/liveQwen/#400,
 marketplace gate andF23-last retained. This is one internal safety prerequisite,
 not full imported-repository support.
+
+
+### 2026-11-20 — #404 command-free reader merged; manual imported metadata flow started
+
+PR787 protected expected-head merge6090d539b9bcecc59387aa78fcb845e01ef8b480
+verified remote main/mergedPR/fetched tree0b4d4ff92f9319f3ba7a6ba4ec0a9ce84dffcacf.
+Fresh revieweda69b1914a96b95b86e9a9ce9f0cfadc2267f68c8/baseb95e9db6 no blocker;
+threads empty. CI44702064960 Python136172579595/Flutter136172580047 every mandatory/
+post step SUCCESS; new33helpertests activeLinuxPASS. Local33Mac/coordinator20/
+product32/inventory9/fullFlutter2280PASS13skips/format561/analyze/web retained.
+Coordinator merged/outcome recorded and integration/claim released. Bounded
+internal helper Done; full404/liveQwen/#400 remain OPEN, no appUI/status/authority
+or complete isolation claim. Ownerdirty checkout/processes/outputs preserved.
+
+Immediately claimed404-imported-git-metadata-inspection underexisting404/F20, one
+coherent manual imported-folder read flow, solewriter. Strict pure model validates
+version1 helper output (duplicate/oversize/extra/malformed/contradictory schema
+rejected with private fixed errors). MVC controller/host/view adds explicit scoped
+read confirmation, no scan on open or savedplan/model authority, no storage writes.
+NativeMac existing configured absolute trusted interpreter only (resolved outside
+inspectedroot), packaged helper through -I -S -B in owned tempcwd, bounded output/
+deadline/cancel/kill/reap/cleanup; no PATH search, install/model/Git/projectcommand.
+Absent/corrupt/relative environment or unsupportedweb/host refuses honestly.
+
+UI labels literal file declarations, not current verified branch/commit/Gitstate;
+workingtree/ahead/conflict unknown. Packed/indirected/mutated results remain typed
+unsupported/changed. Busy/disposal/startup/timeout/cancel/late-result tests and
+visible stale prior observation on failure; no setting/runtime/process replacement.
+Owned scope includes model/hostfactory/native/stub/controller/panel/importedview,
+packaged asset/pubspec, focused tests, inventory and three docs. Future integration
+requires actual disposableMac helper evidence, relevantweb/isolatedMacbuild/UI
+checks, product/inventory, allrequiredCI/freshreview/verifiedmerge. No cloned/fetched
+repo, arbitrary editing/execution, remoteauth, stableapp/install/cloud/deployment.
+No second independent writer task admitted because MVC/host/view share one frozen
+protocol and user outcome. Marketplace gate/F23-last/deferred400 preserved.
+
+
+#404 manual imported metadata flow started with pure model protocol boundary:
+GitHeadObservation.parse validates exactversion1keys/layout/scope/status/reasons,
+consistent symbolic/direct/unresolved/refusal fields, strict literalref/OID subset,
+falseGitverification and unknown working/ahead/conflict. Duplicate/escapedkeys,
+oversize/malformed/extra/contradictory/known-state assertions fail with fixed
+private FormatException/no rawsource. No storage/HTTP/widgets/process imports.
+Initial7modeltests PASS, log /tmp/asg404-imported-git-metadata-model-start.log;
+format/diffcheck clean. Nativehost/controller/panel/asset/actualMac/IABwhere
+applicable/broaderchecks/inventory/review/CI/merge remain PENDING. Read-only
+researcher requested nativejob lifecycle/test matrix, no extra writer/claim.
+No helper launched or apppermission/UI integrated in this start; sole task lease
+active. No ownerrepo/runtime/model/nativeapp/install/cloud/deploy effects.
+
+
+#404 manual metadata flow now freezes the validated model and host interface for
+two disjoint tracks within ONE coherent futurePR (not dependent features):
+GitMetadataReadRequest immutable root/python; GitMetadataHost supported/inspect/
+cancel/dispose, owned cleanup including late startup before another job. Root
+continues controller/view/asset/shareddocs; delegated nativehost writer may own
+ONLY git_metadata_host_native.dart and git_metadata_host_test.dart in distinct
+registeredWT. Placeholder native factory is unsupported until integrated, not
+a product implementation or advertised capability. Both use frozen interface
+handoff and depend only on verifiedhelperPR787. Stop/commit/release both before
+union; root sole integration owner, max2writers. No model/runtime/ownerrepo effects.
+
+
+#404 manual Git metadata UI/controller handoff: 21 focused model/controller/widget/architecture tests PASS; focused analysis clean. IAB disposable browser component fixture verified explicit confirmation then literal declared reference/OID with working tree, sync and conflicts unknown; real browser factory disabled as unsupported. Supplied fixture data only, no filesystem/process/model inference proof. Native writer stopped clean at6250dfb (two owned paths), 27 focused Flutter/33 Python helper tests and clean analysis reported; its actual disposable Mac helper smoke uses injected trusted asset bytes, not packaged bundle. Native claim released. UI handoff stops for union integration; full final checks/packaged asset/native build/fresh PR review/CI/merge remain pending. No owner runtime/model/stable app changes.
+
+
+### #404 manual imported Git metadata — integrated implementation and review fixes
+
+One coherent manual action is now integrated into the imported workspace, after
+existing requirements/plan controls and approval limitations. It performs no read
+on open and grants no source-write, Git, model or process authority from project
+text. Explicit confirmation freezes selected folder plus saved existing absolute
+Python; default relative python3/corrupt settings refuse without settings writes.
+Pure strict version1 parser rejects duplicate/escaped keys, malformed/extra or
+contradictory fields, oversized JSON and any verified/known Git-state assertion.
+Displayed literal reference/OID are declarations only, never verified commit or
+object state; workingtree/aheadbehind/conflicts remain unknown. Missing loose
+reference remains unresolved, packed/indirected layouts unsupported. Web and
+non-Mac factories remain unavailable, not platform acceptance.
+
+Native service runs the trusted bundled command-free reader using resolved
+configured Python outside canonical selected root, -I -S -B, no shell/PATH search
+or inherited environment, owned private empty temp cwd outside root. Deadline
+covers input/assets/temp/start/exit/pipeEOF; 4KiB stdout and stderr caps and any
+stderr/nonzero/invalid payload fail privately. Captures late-start Process handle;
+cancel/dispose share owned kill/reap/tempcleanup before another inspection. Only
+owned live Process handles are signalled; no savedPID, owner runtime or Git
+commands. Cleanup uncertainty blocks retries and preserves unexpected entries,
+no recursive deletion. Prior reading retained visibly stale on failure/Stop;
+controller suppresses late results and waits cleanup. This is containment-aware
+metadata observation, not OSsandbox or atomic/authenticated repository proof.
+
+Root UI and native tracks stopped/committed/released before union claim and
+native6250dfb handoff integration. Full regression exposed initial panel placement
+pushing existing approval disclaimer out of initial lazy viewport; moved panel
+after all existing controls/limitations, affected20tests nowPASS. Read-only source
+review found synchronous busy-listener Stop could precede dispatch; new regression
+failed before fix (one unexpected host request), post-notification Stop/disposal
+guard now prevents dispatch; controller8testsPASS. Source re-review no remaining
+blocker, not finalremotePR review. Logs /tmp/asg404-git-metadata-{layout,stop-before,
+stop-after}.log. These were unmerged integration defects, not owner incidents.
+
+IAB supplied-data component fixture verified manual confirmation then declared
+reference/OID plus unknown state, and actual browser-default factory disabled.
+No filesystem/process/model accessed by that fixture. Native19host+7model+1
+architecture27PASS and inherited33Python reported in stopped handoff, including
+actual disposableMac helper smoke using existingPython and injected trustedsource
+bytes. Asset packaging/finalfullchecks and isolatedMacbuild are separately checked
+on integrated source; do not equate fixture with nativeUI or liveinference.
+Full404/CE07/CE13, liveQwen and deferred400 remain OPEN; marketplace gate/F23-last
+retained. No installs/downloads/stableapp replacement/owner runtime changes or
+cloud/deployment. Final exactPRreview/requiredCI/protectedmerge remain pending.
+
+
+#404 integrated final local checks after both fixes: fullFlutter2320PASS with13
+explicit skips, format572unchanged, analyzer clean, web/Wasm dryrun built, isolated
+normal Mac debug build succeeded with disposable derived output and validation
+bundleID (no install/launch/stable replacement). Python helper33/coordinator20/
+product32/inventory9PASS. Logs /tmp/asg404-git-metadata-{full3,format,analyze,web,
+mac-build3,python,coordinator,product,inventory}.log. Mac and web packaged helper
+bytes exactly match reviewed source SHA256
+c6252d5d47f6305f6d098d60b2cbe659d4d1199d19cc60ffec68ff6f4aec3be0.
+Actual isolatedPython invocation of the builtMac packaged helper on a disposable
+looseHEAD/ref fixture PASS, no stderr, root bytes unchanged, tempfixture removed.
+Receipt /tmp/asg404-git-metadata-packaging-receipt.json. This verifies packaging
+and controlled helper execution, not nativeUI or liveinference/allplatform flow.
+Final exactremotePRreview/requiredCI/protectedmerge pending; full404 remainsOPEN.
