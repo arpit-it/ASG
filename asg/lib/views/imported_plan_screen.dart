@@ -69,6 +69,16 @@ class _ImportedPlanScreenState extends State<ImportedPlanScreen> {
               'Write a plan against saved requirements and the workspace’s captured metadata. Reload refreshes saved planning data only. Reinspect the folder explicitly to refresh disk metadata. Approval records review consent only; source editing and execution are unavailable and no project files are changed.',
             ),
             SelectableText('Folder: ${controller.root}'),
+            if (controller.capturedCommit != null) ...[
+              const Text(
+                'This plan uses selected immutable commit source. Saving stores that source and provenance locally in ASG application records. Approval is review consent only. Current working files and conflicts remain unknown; workspace package, SDK and runners are not verified for this commit.',
+              ),
+              SelectableText('Commit: ${controller.capturedCommit!.commit}'),
+              SelectableText('Commit tree: ${controller.capturedCommit!.tree}'),
+              SelectableText(
+                'Manifest SHA-256: ${controller.capturedCommit!.manifestDigest} (${controller.capturedCommit!.manifestFiles} files)',
+              ),
+            ],
             if (controller.capturedContext != null) ...[
               Text(
                 controller.capturedContext!.includesSource

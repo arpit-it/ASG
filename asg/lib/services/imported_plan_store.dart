@@ -4,6 +4,7 @@
 import 'dart:convert';
 
 import '../models/imported_plan.dart';
+import '../models/imported_commit_context.dart';
 import '../models/imported_document_context.dart';
 import '../models/imported_source_context.dart';
 import '../models/imported_repository_context.dart';
@@ -45,15 +46,22 @@ class ImportedPlanStore {
     this.records, {
     this.capturedDocuments,
     this.capturedSource,
+    this.capturedCommit,
   }) {
-    if (capturedDocuments != null && capturedSource != null) {
+    if ([
+          capturedDocuments,
+          capturedSource,
+          capturedCommit,
+        ].where((v) => v != null).length >
+        1) {
       throw ArgumentError('Choose one captured planning context.');
     }
   }
   final ImportedDocumentContext? capturedDocuments;
   final ImportedSourceContext? capturedSource;
+  final ImportedCommitContext? capturedCommit;
   ImportedRepositoryContext? get capturedContext =>
-      capturedSource ?? capturedDocuments;
+      capturedCommit ?? capturedSource ?? capturedDocuments;
   final RecordStorage records;
   static final _writers = Expando<Set<String>>();
   static String key(String root) =>
@@ -115,6 +123,7 @@ class ImportedPlanStore {
         reads,
         capturedDocuments: capturedDocuments,
         capturedSource: capturedSource,
+        capturedCommit: capturedCommit,
       );
       final current = snapshot.load(inspection.root);
       if (jsonEncode(current?.toJson()) != jsonEncode(expected?.toJson())) {

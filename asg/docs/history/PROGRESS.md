@@ -22568,3 +22568,129 @@ F23 acceptance is inferred. FullF20/CE01, isolated-copy/run prerequisites and #4
 open; marketplace gate and F23-last ordering remain unchanged. This investigation changes
 only three canonical documents. No runtime/dependency/asset/workflow source changed, so
 unrelated local builds were not repeated; required remote CI still gates the final PR.
+
+### F20 / #404 — verified immutable-context investigation and manual planning implementation started, 20 November 2026 UTC
+
+PR816 protected merge7fbd073fab0f79cfa7664bcc0d01c37817972502 verified by pluginmain,
+mergedPR/404OPEN and fetched tree7d101220bef5196afb61c581c7584d01cb29654e, equal reviewed
+contents. Exact fresh review remotece6f8d8cb2474996671a3a9e4f2f31bcd42c6855 versus
+8e091f1074f000cb9513338ae40a1abead02058e matched normalized local/remote diff; only three
+append-only canonical docs, no blocking findings or unresolved threads. RequiredCI
+44823279140 Flutter136589337885/Python136589338552 every required step/poststep SUCCESS;
+completed logs inspected. Eight disposable probes plus77existing regressions passed85;
+prototype limitations explicitly retained. Completed claim/integration released. PR
+attachment hit existing100identity limit; unrelated attachments retained. Owner six dirty
+files and processes preserved. No new model/source-copy/execution/install/deployment effect.
+
+Coordinator manual investigation start-to-merge1158.7seconds, observed CI interval641.6
+seconds, zero recorded review rework and one prerequisite outcome-verification attestation.
+These are cooperative manual observations, not provider CI timing or a new app user
+workflow; actual escaped defects remain unknown despite zero recorded observations.
+
+Immediately claimed404-committed-source-planning from verifiedmain in same registered
+worktree, solewriter/no independent eligible disjoint second task. Existing404 covers one
+coherent app outcome: successful nonstale settled commit comparison explicitly prepares
+committed-source review and a user-authored manual plan, bound to full commit/tree/manifest/
+selected bytes and current workspace metadata/requirements. Claim includes typedcontext,
+comparison preparation/store/controller/view/workspace wiring, typed plan store/controller/
+view, pure/store/race/widget/nativeDB/reopen/IAB tests, inventory and these canonical docs.
+Store context remains mutually exclusive with old document/working-source contexts and
+must survive transactional snapshot reconstruction. Preserve existing app keys/formats,
+draft-before-approval, last working records and no automatic sharing/read/save/approval.
+No source-proposal, copy/write/execution or new model entry is authorized. Full required
+checks/builds/freshreview/CI/verifiedmerge still gate completing this coherent app workflow.
+
+Started ImportedCommitContext pure model and seven regression tests. Separate canonical
+captured-imported-commit-context scope binds workspace metadata/requirements, exact full
+commit/tree/manifest/count/orderedreadset and every mode/blob/UTF8/BOM/CRLF/text/hash/count.
+Stable context identity excludes Python path, observation timestamp and whole comparison
+event digest. Captured workspace metadata is not committed toolchain verification.
+Source_verified=false, working/conflict unknown. Strict duplicate/key/type/canonical/
+Unicode/128KiB guards and reconstruction through existing strict observation decoder
+independently check selected blobs/bytes/modes/hash/path limits. Restoring supplies history
+only, with no fabricated interpreter/live-read identity or I/O. Lists/bytes remain immutable.
+
+Seven new tests plus existing observation/comparison/source-context/architecture tests
+passed31total. Exact BOM/café/emoji/CRLF and empty bytes roundtrip; different commit/tree/
+manifest/mode/content/requirements change identity, Python-only changes do not; malformed
+schema/authority/byte/hash/blob/path/count and unpaired Unicode refuse privately. Valid
+64KiB selected data whose JSON text expansion exceeds128KiB refuses without truncation.
+Focused format zero-change, analyzer clean from Flutterroot and inventory9 PASS after
+new-input regeneration. Logs /tmp/asg404-committed-source-planning-{context-start,
+analyze-rechecked,inventory-start}.log. These checks establish a pure model start only;
+store/controller/UI integration, race/reopen/nativeDB/IAB/fullapp/build validation remain
+pending in the owned claim. No helper/model/source operation was dispatched. FullF20/CE01,
+unavailable-platform400, marketplace gate and F23-last ordering remain unchanged.
+
+### F20 / #404 — committed-source manual planning app validation, 20 November 2026 UTC
+
+Completed the owned coherent app implementation locally; publication/fresh exact PR review,
+requiredCI and verifiedmerge still gate completion. Successful nonstale cleanup-settled
+commit comparison now explicitly prepares a separate immutable planning context and opens
+source review/user-authored plan. Preparation acquires the shared reader lease, freezes
+and verifies the same five app records through durable zero-update fences, checks exact
+request/observation identity and returns no context after Stop, changed inputs/commit,
+replacement/disposal or uncertain work. It dispatches no helper and writes no records.
+Changed committed bytes are valid historical planning data, not current working-file proof.
+
+ImportedPlanStore/Controller retain mutually exclusive typed immutable/document/working-
+source contexts through transactional snapshot reconstruction. Existing keys/record formats
+stay unchanged. A current draft must be saved before approval; new commit/tree/manifest/
+source/requirements changes make historical approval inactive. Failed/stale/disposed or
+concurrent writes preserve the last record. View/workspace entry shows fullcommit/tree/
+manifest, exact source/hashes and local source-containing app-record persistence wording.
+Workspace metadata is not verified for the commit; working/conflict state remains unknown.
+Existing saved source-comparison history is preserved. No source-proposal extension,
+repository write/copy/execution, model-sharing/request or implicit plan save/approval.
+
+Local boundary review added a regression for final idle-notification disposal. It failed
+initial source: preparePlanning returned context after its final update disposed the owner.
+Fixed by holding the candidate until cleanup/idle notification completes and rechecking
+canPreparePlanning afterward. Regression FAILbefore/PASSafter logs
+/tmp/asg404-committed-source-planning-idle-{before,after}.log. Initial full2702/build/event
+receipts remain separate; revised final evidence below binds fixed inputs. Early test
+setup failures (double disposal, lazy-list scrolling) and test-only braces/scroll hit-test
+warnings were corrected; final focused run has no warning or failure.
+
+Revised validation:77focused tests PASS; full2703 PASS with13existing opt-in skips;
+653files zero-change format, analyzer clean, architecture included, inventory9/product32
+PASS. Productionweb build and isolated unsigned macOS build PASS. Distinct validation
+bundle ID com.arsinha.asg.committedplanningvalidation and packaged helper bytes verified;
+no native GUI launch, installation, stable replacement or platform-device claim. Revised
+logs /tmp/asg404-committed-source-planning-{focused,full,analyze,format,inventory,product,
+web,native}-revised.log. All14 checked runtime/test/helper/dependency input hashes unchanged
+in /tmp/asg404-committed-source-planning-input-hashes.json. Build receipt
+/tmp/asg404-committed-source-planning-build-receipt.json binds source inputs, bundle/helper
+and browser fixture; initial receipts preserved with -initial suffix. Distinct native event
+path is in that receipt and /tmp/asg404-committed-source-planning-native-event-path.txt;
+old source observations were never overwritten or relabelled as revised evidence.
+
+Actual disposable Mac Git/helper/nativeDB phase: captured BOM/café/CRLF bytes, matched
+firstcommit/changedpeer secondcommit/refused object; explicit new immutable manual draft
+and approval, DBclose/reopen and typed canonical context restore. Compatible explicit
+context reopens approved; ordinary workspace leaves approval inactive. Only plan record
+changes in the planning phase; saved source comparison, source bytes, index and HEAD
+unchanged. Owned temporary root removed. Positive native proof complements synthetic
+pending-prepare Stop/disposal/commit/requirements/shared-lease races and failed/disposed/
+changed-requirements/concurrent plan saves, plus replacement and narrow2x-text widgets.
+
+IAB used real revised model/store/controller/views with synthetic host/records only.
+Initial reads/writes0, plan entry disabled; consented commitA read1, explicit review no
+additional read/write, source/commit/tree/manifest visible. Manual draft save and explicit
+approval produced2app-record writes. Returning comparison was stale until recheck.
+Samecommit read2 recovered approved plan. Synthetic failed-save read3 retained previous
+saved text, kept edits and displayed inactive approval/error. Recovery read4 reopened the
+original approved record. DifferentcommitD read5 with identical bytes opened different
+context identity and inactive historical approval. Source expansion showed selected hashes/
+counts/text. App writes remained2 and saved comparison unchanged throughout; fixture edits0,
+model requests0. Browser check is injected UI, not a native Git read in web. Owned port8403
+server stopped after final observation. Binding required localhost permission; successful
+owned server used loopback only, with no external exposure or install.
+
+No second independent dependency-ready disjoint task existed. FullF20/CE01 #404 remains
+open for committed-source change proposals, isolated copy/admission and safe execution;
+unavailable-platform acceptance stays under400, marketplacegate/F23-last unchanged.
+Next eligible work after verified merge: inspect exact committed-context/approved-plan
+proposal and history admission, preserving old working-source schemas and avoiding
+conversion that discards commit identity. Use existing404, actual bounded local evidence
+and one coherent next outcome; no speculative backlog or source execution permission.

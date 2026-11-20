@@ -12,6 +12,9 @@ import 'package:asg/models/imported_commit_source_observation.dart';
 import 'package:asg/models/imported_source_proposal.dart';
 import 'package:asg/models/imported_source_proposal_record.dart';
 import 'package:asg/models/imported_plan.dart';
+import 'package:asg/models/imported_commit_context.dart';
+import 'package:asg/controllers/imported_plan_controller.dart';
+import 'package:asg/services/imported_plan_store.dart';
 import 'package:asg/models/project_inspection.dart';
 import 'package:asg/models/project_source_observation.dart';
 import 'package:asg/models/requirements_board.dart';
@@ -28,7 +31,9 @@ import 'imported_source_baseline_test.dart' show baselineSaved;
 
 /// Returned metadata belongs to this newly owned fixture only. No rolling artifact
 /// is written by the regression; an explicit separate runner can retain its event.
-Future<Map<String, Object?>> actualCommitComparisonFixture() async {
+Future<Map<String, Object?>> actualCommitComparisonFixture({
+  bool exercisePlanning = false,
+}) async {
   const python =
       '/Library/Frameworks/Python.framework/Versions/3.12/bin/python3.12';
   final base = await Directory.systemTemp.createTemp(
@@ -75,8 +80,8 @@ Future<Map<String, Object?>> actualCommitComparisonFixture() async {
   final capturedCommit = await git(['rev-parse', 'HEAD']);
   final reader = NativeProjectSourceHost();
   SharedPreferences.setMockInitialValues({});
-  final prefs = await SharedPreferences.getInstance(),
-      db = await databaseFactoryIo.openDatabase('${base.path}/records.db');
+  final prefs = await SharedPreferences.getInstance();
+  var db = await databaseFactoryIo.openDatabase('${base.path}/records.db');
   ImportedCommitComparisonController? controller;
   final evidence = <String, Object?>{};
   try {
@@ -180,6 +185,84 @@ Future<Map<String, Object?>> actualCommitComparisonFixture() async {
       'modelRequests': 0,
       'ownerSourceAccess': false,
     });
+    if (exercisePlanning) {
+      await records.setString(
+        ImportedPlanStore.key(root),
+        jsonEncode(plan.toJson()),
+      );
+      c.setCommit(changedCommit);
+      await c.recheck(confirm: confirm);
+      final inspection = ProjectInspection(
+        root: root,
+        packageName: 'synthetic_commit_compare',
+        dartSdk: '^3.0.0',
+        runners: ['web'],
+      );
+      final committed = await c.preparePlanning(inspection);
+      expect(committed, isNotNull);
+      expect(committed!.files.last.source.text, '// changed peer\n');
+      final planner = ImportedPlanController(
+        root,
+        ImportedPlanStore(records, capturedCommit: committed),
+        inspection: inspection,
+      );
+      await planner.load();
+      expect(planner.approved, false);
+      await planner.decide(true);
+      expect(planner.error, isNotNull);
+      expect(ImportedPlanStore(records).load(root)!.context, plan.context);
+      await planner.saveDraft('Review exact committed source');
+      expect(planner.error, isNull);
+      expect(planner.approved, false);
+      await planner.decide(true);
+      expect(planner.approved, true);
+      final planRaw = records.getString(ImportedPlanStore.key(root));
+      planner.dispose();
+      c.dispose();
+      await db.close();
+      db = await databaseFactoryIo.openDatabase('${base.path}/records.db');
+      final reopened = await StudioDatabase.migrate(db, prefs);
+      final restored = ImportedCommitContext.restore(
+        ImportedPlanStore(reopened).load(root)!.context,
+      );
+      final explicit = ImportedPlanController(
+        root,
+        ImportedPlanStore(reopened, capturedCommit: restored),
+        inspection: inspection,
+      );
+      final ordinary = ImportedPlanController(
+        root,
+        ImportedPlanStore(reopened),
+        inspection: inspection,
+      );
+      await explicit.load();
+      await ordinary.load();
+      expect(explicit.approved, true);
+      expect(ordinary.approved, false);
+      expect(reopened.getString(ImportedPlanStore.key(root)), planRaw);
+      expect(
+        reopened.getString(ImportedSourceProposalStore.key(root)),
+        saved.encode(),
+      );
+      expect(await File('$root/.git/index').readAsBytes(), index);
+      expect(await git(['rev-parse', 'HEAD']), changedCommit);
+      expect(await first.readAsBytes(), utf8.encode('\ufeff// café\r\n'));
+      expect(await peer.readAsString(), '// changed peer\n');
+      explicit.dispose();
+      ordinary.dispose();
+      final after = {for (final row in await rows.find(db)) row.key: row.value};
+      after.remove(ImportedPlanStore.key(root));
+      expect(after, before);
+      evidence.addAll({
+        'recordsUnchanged': false,
+        'comparisonPhaseRecordsUnchanged': true,
+        'onlyPlanRecordChanged': true,
+        'manualDraftAndApprovalReopened': true,
+        'ordinaryApprovalInactive': true,
+        'savedComparisonPreserved': true,
+        'commitContextSha256': restored.digest,
+      });
+    }
   } finally {
     controller?.dispose();
     await reader.dispose();
