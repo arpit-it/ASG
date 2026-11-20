@@ -4627,3 +4627,103 @@ Final investigation local checks:44focusedPASS, product32/inventory9PASS;
 format559unchanged, analyze clean, fullFlutter2237PASS/12explicit skips, web built.
 Three docs only; no application code, schema or approval-policy changes. Required
 final-revision CI and fresh exact PR review still mandatory before merge.
+
+
+### 2026-11-20 — #404 repair terminal investigation merged; native track started
+
+PR777 protected expected-head merge6f2035c621bd24cbf79c012c4c585b1db411843b
+verified GitHub main, mergedPR and fetched tree9a4aa176d869e1b182fe179910b6e88f83c65e8d.
+Fresh review remote71047e0264d8b6431c697e895c622fc490fd177b/base d53e0b0a
+found no blocker; threads empty. CI44678383505 Flutter136095598298 and
+Python136095598570 both SUCCESS, every mandatory/post step passed. Local
+44focused/product32/inventory9 PASS, format559unchanged/analyze clean/full2237PASS
+12explicit skips/web built. Coordinator merged/outcome recorded; investigation
+claim and integration released. Full404 remains OPEN; owner dirty edits untouched.
+
+Immediately claimed dependency-ready task404-native-repair-return-fixture on
+registered direct issue worktree. Root scope Dart fixture/test/router and shared
+docs/inventory; sole isolated nativebuild resource assigned to root, none started
+yet. Added strict bounded protocol26 challenge metadata, exact32/11/17 schema
+constants and canonical selected-origin prefix. Two permanent parser tests PASS
+cover four valid launch/phase combinations, foreign/mixed/bool/double/invalidpath,
+valid duplicate-key payload and multibyte oversized inputs. Native runtime gate,
+cold reader and actual app-crash evidence remain PENDING.
+
+Delegated disjoint host track404-native-repair-return-host to reuse its clean
+registered worktree; must acquire its own claim before editing only three Python
+host/router/test paths, no nativebuild/inference/SDK command, stop clean and
+handoff before root union integration. Exact contract/design remain the merged
+32reportfields/11slots/17counters above; no placeholder treated as observation.
+Model health remained unavailable at last04:59:08Z check with generation0. Native
+implementation does not consume live runtime. No owner processes/stable app/last
+working outputs changed; unavailable400/marketplace gate/F23-last preserved.
+
+
+#404 native repair terminal fixture handoff:57focused Flutter regressions PASS,
+including9new parser/nativeDB/adverse cases; Flutter and explicit fixture analyzes
+clean. Actual selected repair reservation atomically creates attempt+origin, fixed
+provider1 reaches held terminal proposed update before/after physical commit,
+then independent read-only reopen preserves exact origin/failure/session/working
+and rejects damaged origin/journal/capture. No source folders or SDK commands.
+
+Contract clarification: SourceEditProposal has no toJson method. Proposal hashes
+use the EXISTING persisted RepairAttempt.toJson()['proposal'] object (summary plus
+ordered changes with path/before/after), SHA256(jsonEncode(...)); fixed supplied
+payload uses identical structure. Response model remains separate provenance. This
+corrects earlier contract shorthand; no model/storage/wire-format change. Supplied
+failed snapshot includes GenerationInput fingerprints for metadata/app definition,
+so existing approval guard remains enabled without writing source files. Setup
+compile/fingerprint and style/import issues corrected before final checks; not
+reported as application defects. Native process evidence still pending.
+
+Accepted stopped clean host handoffb46327e64709998fdde523af3ecc1d89b44a675d,
+148portablehost+6restartPASS. Neither portable mocks nor VM holds are native crash
+proof. Writers must both release clean handoffs before union integration/new build;
+root owns sole native artifact resource, owner runtime/stable app/last output and
+unrelated dirty primary checkout remain preserved.
+
+
+### #404 native selected-repair terminal boundary final local evidence
+
+Integrated stopped clean/released root handoffe95be8965871058639ca966b9bd9a0d2f6d825f3
+and hostb46327e64709998fdde523af3ecc1d89b44a675d under union claim
+404-native-repair-return-integration. Sourcecommit5a755809b9635443c496a71f5d0e23c3a3e4aea7.
+Protocol26 strict5-key challenge,32reportfields/11literal slots/17counters;
+source proposal fingerprints use actual RepairAttempt.toJson()['proposal'] as
+clarified above. Supplied FAILED check/snapshot metadata only; no SDK check or
+source file was created for new mode. Existing project-input approval guard and
+conditional storage validation remain enabled. No production app/schema changes.
+
+NEW isolated native bundle:
+/private/tmp/asg404-native-repair-return-derived/Build/Products/Debug/Automated Software Generator.app
+Identity com.arsinha.asg.restartfixture, never installed/replaced stable app.
+Whole-bundleSHA256 3437ef2da013a3ba581aa78a6a07f29d934276a82533c562d1dca20d2eb3c8ff.
+607pinned source-inputSHA256 921bc58e9720ceeb881f29530751c3b72394341615674c71da45f2a5754c7f6c.
+Three Python host-inputSHA256 66df5ad2cf1096969c8df78c311587bd6ee2a2616ddd42764a2d2baa7fb101bb.
+All source bytes unchanged after all40actual native launches on this SAME bundle:
+new26 before2+after2=4; preserved25 four,24six,23eight,22eight,21five,20five=36.
+Old working bundles/observations retained at their original identities; this is
+not40new capabilities. Fourteen separately hashed case receipts and exact roots
+are listed in /tmp/asg404-native-repair-return-evidence-summary.json; source and
+bundle receipts use matching source-manifest.json/bundle.json names.
+
+In each new held stage, actual selected repair reservation/origin committed before
+provider1 and no proposal/terminal return or delivered reference occurred. Before
+physical terminal commit, durable attempt remains reserved with no stored proposal
+or response; after physical commit it is proposed with exact supplied response and
+proposal hash. Parent validated its same live child, killed/waited expected-9,
+then separate cold app read retained exact attempt/origin/failure/session/working/
+unrelated records, zero counters and no replay. Only afterCommit cold report
+derived jointly matching retained-history reference; never proposal delivery or
+execution approval. New mode has no live/SDK/source-copy/candidate/preview/host
+effect. Legacy20 retains original bounded SDK/receipt scope. All owned fixture/
+artifact-root processes settled, owner-started processes and last output preserved.
+
+Local checks:57focusedPASS including9new parser/nativeDB/adverse cases; format560
+unchanged, Flutter and explicit fixture analysis clean; fullFlutter2246PASS with
+12explicit live skips; web built. Python148host+6restart+32product+9inventoryPASS.
+Inventory regenerated unchanged. Setup compile/fingerprint/style corrections
+completed before these final checks; no escaped defect observed. Fresh exact PR
+review and every required CI step remain mandatory. FullCE01/F20/#404/liveQwen/
+unavailable400 remain open; marketplace gate/F23-last preserved. No installs,
+model downloads, unrestricted source execution, stable replacement, cloud or deploy.
