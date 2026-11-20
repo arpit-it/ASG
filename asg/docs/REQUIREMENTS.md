@@ -19959,3 +19959,79 @@ completed before these final checks; no escaped defect observed. Fresh exact PR
 review and every required CI step remain mandatory. FullCE01/F20/#404/liveQwen/
 unavailable400 remain open; marketplace gate/F23-last preserved. No installs,
 model downloads, unrestricted source execution, stable replacement, cloud or deploy.
+
+
+### 2026-11-20 — #404 native repair terminal merged; actual HTTP track started
+
+PR778 protected expected-head mergee41f8c97e431b68cda5e2b628da5ae435badee03
+verified GitHub main, mergedPR and fetched treed474846a4dff97a5d463076f78fb35736b8ec2b5.
+Fresh review remotec537d6b55747ba1432bbc41c253a2aa3c3bf280f/base6f2035c6
+found no blocker; conversations empty. CI44680794531 Flutter136103428139 and
+Python136103428551 every mandatory/post step SUCCESS; all9newPOSIX/metadata
+tests activePASS in Linux logs. Native40samebundle607inputs and full2246PASS/12skip
+local evidence retain exact identities above. Coordinator merge/outcome recorded;
+union claim and integration released. Full404 remains OPEN; primary dirty edits
+and every owner-started process/stable app/last working output preserved.
+
+Immediately claimed next bounded task404-repair-http-journal-regressions under
+existing404/F20 in registered direct issue worktree. Scope this ledger, PROGRESS,
+AGENT_ENGINE, acceptance inventory and test/repair_request_http_journal_test.dart.
+Concrete gap verified by test inventory: selected repairSessionBinding coverage
+has no actual HTTP/loopback fixture, whereas initial requests have permanent
+actualHTTP/nativeDB journal tests. This is a transport/storage regression slice,
+not a new requirement, model claim or speculative backlog. One root writer only.
+
+Acceptance: default HTTP proposer plus disposable nativeDB; physical selected
+origin AND reserved attempt atomically committed before HTTP; withhold reservation
+completion and observe no HTTP until release. Successful exact response returns
+matching selected reference; wrong response ID consumes failed attempt with no
+proposal/reference. Persistence refusal leaves neither origin/journal and sends
+no HTTP. Actual DB close/reopen retains exact raw cohort and original failure,
+selected raw session, working and unrelated records, no replay. Cleanup settles
+original Future/provider/server before closing DB; callback assertions propagate.
+
+Implemented these three permanent cases using synthetic SSE metadata on an
+ephemeral loopback port and real default model transport. All3PASS; analyzerclean
+after correcting one brace-style issue. No production app changes or SDK/source/
+candidate execution, native app launch, live weight or genericplatform claim.
+Logs /tmp/asg404-repair-http-journal-{focused,analyze}.log. Broader checks, required
+CI, fresh review and verified merge remain pending for this in-progress task.
+At2026-11-20T05:35:20Z fixed8765 /health and /v1/models both refused connection
+(curl7/HTTP000), generation0. Root was sole readiness worker; no runtime started/
+stopped/replaced. Live Qwen3.8-27B-4bit acceptance remains pending exact ready
+MLX/Metal endpoint. Marketplace gate/F23-last/unavailable400 remain unchanged.
+
+
+### #404 actual selected-repair HTTP/native journal final local evidence
+
+Permanent test/repair_request_http_journal_test.dart now verifies3actual HTTP
+scenarios with default production transport and synthetic SSE metadata. Physically
+read selected origin+reserved attempt before reading/responding to request body;
+reservation completion is held after atomic commit and no HTTP arrives until
+release. Requested/stored response model identity and4096source ceiling checked.
+Success returns exact jointly matched selected reference; wrong response ID
+retains consumed failed attempt, null proposal/response identity/reference.
+Reservation persistence refusal produces no HTTP and no partial origin/journal.
+Actual DB close/reopen preserves exact raw cohort, original failure/session/working/
+unrelated map and no replay. No source application or candidate/SDK/preview effect.
+
+Cleanup releases held reservation, cancels service, drains ORIGINAL proposal
+Future, closes server/subscription, awaits any entered callback before DB close
+and deletion, then restores HttpOverrides. Main tests await original result and
+callback assertions separately. Two private adverse cleanup probes PASS: cancel
+during held reservation safely drains/tears down (including repeated close), and
+an intentionally damaged private origin makes HTTP callback assertion observable
+even though transport refusal is expected. These are fixture checks, not recovery
+permission or live model/crash evidence. Private probeSHA25687c347d46243735100ea8f6c49c9d0e8d2ae74d6ccc56fef4ac1965f275f42a0;
+/tmp/asg404-repair-http-cleanup-probe.dart.
+
+Final local validation:48focusedPASS (3newpermanent+2privatecleanup+initialHTTP/
+repair/context/reference regressions), format559unchanged, analyze clean, full
+Flutter2249PASS/12explicit skips, web built, product32/inventory9PASS; regenerated
+inventory unchanged. Logs /tmp/asg404-repair-http-journal-{regression,format,analyze,full,web,product,inventory}.log.
+Only test+three owned docs changed; no application/storage/approval/transport
+configuration change. Existing native40 observations remain tied to PR778's
+original source/bundle and are not reused as new native acceptance here. Full
+CE01/F20/#404/liveQwen/#400 remain OPEN. Fresh exact PR review, every required CI
+step and verified remote merge remain required; no install/download/unrestricted
+execution/stable replacement/cloud/deployment. No escaped defect observed.
