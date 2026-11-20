@@ -18160,3 +18160,268 @@ Local diff/failure-order review passes. Exact scoped commit, serialized publicat
 fresh final PR review, requiredCI and protected verifiedmerge remain mandatory.
 FullF20/CE01/umbrella404 and deferred400 remain open. No actual model inference,
 source restoration, stable app replacement, owner-process stop or deployment done.
+
+
+20 November2026 — PR764 verified merged2e8755fe2fef8b8068c4d92788b1cad39a818f4a,
+exacttree64685d19d657ea34197ad9c94299344147858e1d matches all9 tested published
+files. Fresh exact9file review9195f4d0b97a23d70c7808e016258f1c62a3b273 against
+base9207c186 found no blocking issues. RequiredCI44639869834 Python135967856067/
+Flutter135967856482 both SUCCESS and every mandatory step SUCCESS; conversations
+empty and unchanged head/base/main rechecked before protected expected-head merge.
+PluginPR/main/issue404OPEN and fetchedmain/tree verified. Full2174/11existing skips,
+focused77/analyze/fixture/format550/web/macOScompile/product32/inventory9 and fresh
+IAB9141 passed within the recorded supplied bounds. Native app was not launched or
+installed. Delivered separate read-only retained repair-copy path visibility, not
+durable orphan history, source restoration or authority for the new copy. Coordinator
+merged/outcome_verified recorded before integration/writer release. No review rework
+or escaped defect observed; task/CI timing remains coordinator/manual observation,
+not provider timing. PR attachment hit existing chat limit100, without affecting
+publication/review/merge. Owner3IDE/3canonical-doc edits and processes preserved.
+
+Immediately claimed next F20/CE01 prerequisite investigation under existing#404:
+404-native-repair-lineage-investigation, from verified2e8755fe in the same registered
+worktree. It owns only REQUIREMENTS, PROGRESS and AGENT_ENGINE docs. No independent
+second disjoint writer is ready. REQUIREMENTS remains the only queue; fullF20/CE01/
+umbrella404 and deferred400 stay open, with F23-last/marketplace gates unchanged.
+
+Concrete acceptance gap: the native app fixture still constructs manual
+ApprovedSourceProposal/CandidateReopenBasis records without selected repair origin,
+returned repair reference or CandidateRepairLineage wiring. Its makeController
+reopen path reads basis.evidence directly, whose strictv1 wire format intentionally
+contains no optional repair pointer. Production SavedCandidateRecoveryController
+separately validates/reinstates that pointer; the old fixture cannot establish that
+new behavior. Legacy native candidate/session protocol20 and task-decision21 evidence
+remain valid for their original boundaries and must not be relabelled.
+
+Acceptance for this bounded investigation: map actual native startup/reopen/report
+boundaries; distinguish old reports from new proof using bounded supplied probes;
+define one separate versioned Mac crash/reopen fixture mode with exact original
+repair/attempt/context/run/admission identities, atomic pre/postcommit boundaries,
+zero unintended effects and optional corruption isolation. Preserve old modes, fixed
+commands, consumed budgets, current consent/Stop/recovery and last working output.
+No runtime/fixture implementation or new native-process acceptance is delivered by
+this documentation investigation. Its verified contract merge is prerequisite to
+that dependent implementation; no duplicate issue or speculative backlog is added.
+
+Started actual local prerequisite work on merged main. Host fixture56 pass; source
+and three supplied protocol probes pass, and focused pure/new-lineage/native-DB/
+recovery/architecture55 pass. Logs:/tmp/asg404-native-repair-lineage-merged-host.log,
+/tmp/asg404-native-repair-lineage-merged-probe.log,
+/tmp/asg404-native-repair-lineage-focused.log. The55 are not55 native process tests.
+Private probe:/tmp/asg404-native-repair-lineage-probe.py. Native fixture source SHA256
+is d1ca5cfd4fd58346695ba4d9f8c2230c67106f40ea192c55c94f578c117c9122. Protocol20
+accepts its unchanged legacy baseline with absent or unrelated extra fields; such
+fields receive no lineage validation. This is an evidence-scope observation, not a
+claim that legacy protocol20 grants new production authority or is a lineage decoder.
+No live model, actual SDK/native fixture app, source copy or owner-process stop ran.
+
+Next owned work: finish the proposed new-mode report/read-set and failure matrix,
+including production recovery retry with actual new pre-admission raw session; review
+legacy mode/version separation and bind expected new records to independent report
+facts. Keep this investigation claimed and unmerged until focused validation, exact
+fresh review/requiredCI/verifiedmerge. Unavailable platforms stay deferred under400.
+
+
+## Native repair lineage protocol contract — investigation result, 20 November2026
+
+F20/CE01 track404-native-repair-lineage-investigation is locally complete as a
+bounded contract, subject to fresh review/requiredCI/verified merge. Its dependent
+implementation is404-native-repair-lineage-fixture under the SAME umbrella404.
+No runtime/fixture mode or new native-process acceptance is delivered here.
+
+The current AdmissionCommitBarrier calls the authorization guard and pauses before
+its delegated transaction; it does not provide an after-commit seam. A disposable
+private probe adds two fixed companion-key pause points around the ACTUAL existing
+CandidateVerificationStore.start transaction on StudioDatabase. Before commit,
+the entire physical records store equals its captured baseline. After commit,
+exactly7 updated records form one cohort: candidate checks journal, source candidate,
+selected session, execution checkpoint, task history, reopen context and repair
+companion. The whole physical store equals baseline plus those7 updates. A new
+native adapter independently loads the exact joined proof and actual raw pre-session.
+In both pauses the startup future has delivered no result, so its caller continuation
+has zero entries; releasing with a supplied error changes no durable record. Repair
+journal/origin and working bytes remain unchanged. Both actual native database seam
+probes pass:/tmp/asg404-native-repair-admission-probe_test.dart and same-prefix.log.
+No process was killed and no host/receipt/SDK was invoked. Do not relabel this as an
+actual application crash/reopen observation or a proof of OS process cleanup.
+
+The next coherent implementation adds a SEPARATE opt-in native mode and strict
+protocol22, preserving existing candidate/session20 and task-decision21 identities,
+reader semantics and old fixture observations. Never append unrelated fields to an
+old report and call it new lineage proof. Reject old/future versions, duplicate JSON
+members, unknown/missing fields, wrong mode/nonce/launch/boundary, unsafe paths and
+mixed incompatible legacy flags. Keep the existing bounded report/file/challenge
+and owned-process protections. No new install, model download or app replacement.
+
+Setup is explicitly supplied metadata/source, not live inference or SDK success:
+use an actual ApprovedSourceProposer selected repair with a deterministic injected
+provider, matching neutral fixture requested/observed model ID, and a complete
+recorded supplied failed candidate. Preserve its explicit returned reference,
+immutable canonical origin/proposed attempt, original raw request session, all
+selected before hashes, full failed-source/working/model/proposal identity and
+consumed budget. A prepared fixture source folder may be supplied and fingerprinted;
+this mode does not establish the production source-copy routine or live model return.
+Use current production service validation and bound candidate startup with fresh
+verification state; never fabricate initialRequestOrigin or infer the repair pointer
+from latest/time/content/run order. The fixture must identify supplied setup effects
+separately from effects after startup. No HTTP/model transport or actual SDK command
+is required for this bounded acceptance.
+
+Fixed stages and expected observations:
+- Precommit scenario, launch1: new linked startup is held before the delegate write.
+  Original repair origin/attempt/working and failed run remain; all new run/context/
+  execution/task/companion slots are absent, selected session unchanged. No startup
+  result, receipt preparation, model transport, SDK or preview after the pause.
+  Host terminates only its own nonce-bound fixture app after the ready report.
+- Precommit launch2: independent process/database read-only observation matches the
+  entire baseline and proves no new dispatch or companion. It never tries to resume
+  verification, restore a proposal or refund the consumed repair request.
+- Postcommit scenario, launch1: hold after the delegated atomic commit, before its
+  future returns. All7 startup records and the exact repair reference/companion are
+  durable, with expected single session admission. Original repair and working bytes
+  unchanged. Startup result/receipt/SDK/preview not delivered. Kill only owned app.
+- Postcommit launch2: independently reopened app/adapter loads the joint proof through
+  production historical readers, with exact request/terminal/context/run/dispatch/
+  raw-admission relationships. No host construction, source inspection, proposal
+  restoration, model/copy/SDK/preview or new record write in this read-only stage.
+- Postcommit launch3 (explicit retry variant): open through production
+  SavedCandidateRecoveryController, with its current source/working/approval/session
+  checks, then explicitly consent to a fresh retry. Do not reuse the legacy factory
+  that rebuilds evidence solely from strictv1 basis. Preserve the original SAME
+  repair reference/attempt and actual current pre-admission raw session; commit a
+  new run/context/dispatch/companion. Hold its startup return again before any
+  receipt/SDK/preview. No new proposal, transport, copy or repair budget consumption.
+  Existing Stop/reconciliation/acknowledgement requirements apply whenever required
+  by recorded state; do not fabricate a pending command merely to force a dialog.
+- Postcommit launch4: read-only independent reopen validates both retained companions,
+  the shared unchanged original request/attempt, distinct run/context/dispatch and
+  the actual new raw pre-admission session. It starts no retry and writes nothing.
+
+Use private fixed per-nonce fixture roots, baseline/prepared source folders and
+native database outside candidate/tool write scope. Record the exact compiled
+binary SHA256 and source manifest, challenge/nonce, process ownership and artifacts
+for every actual new scenario. Do not terminate an owner process or adopt/kill a
+process by saved PID. Preserve old binaries/results and keep skipped or failed new
+observations unknown. Compile-only and same-process DB probes are not replacements
+for the new separately launched native acceptance.
+
+Concrete report/read-set contract: strict bounded protocol22/mode repair-lineage;
+nonce, launch1..4, boundary precommit/postcommit, stage (paused/read-only/retry-paused/
+retry-read-only), exact project/session/run/dispatch, proof state absent/joined/
+unavailable and the explicit existing reference DTO (project/attempt/origin hash/
+terminal hash). Retain separate hashes for original raw request session and actual
+raw pre-admission session, companion and context. Report fixed before/after record
+hash maps for the7 startup cohort plus original repair origin/journal and working;
+retry maps also include both runs' immutable execution/task/context/companion slots.
+Use null only for genuine absent values and strict lowercase64-hex hashes otherwise.
+A cohort digest cannot substitute for these fixed member identities. Validate the
+joined proof with current production readers; do not label arbitrary matching hashes
+authenticated or a task completion. Preserve a digest of unrelated records and
+working/source hashes. No raw session, prompt/source body, endpoint, credential or
+private exception text in reports. Reuse the existing8KiB report bound only if the
+fixed schema demonstrably fits; otherwise explicitly bound and test a new-mode-only
+limit, never silently widen legacy readers.
+
+Counters must distinguish deterministic setup provider/source actions, explicit
+recovery source inspections and post-pause/cold-read effects. Required cold-read and
+post-pause write/startup-return/receipt/transport/copy/SDK/preview effects are zero;
+initial durable startup writes are the declared7-record cohort, not zero total writes.
+Production recovery inspections on retry are expected and cannot be relabelled zero.
+Report unknown honestly; host acceptance checks exact stage-specific values and
+across-launch identities, not report status strings alone.
+
+Failure matrix for implementation: wrong/old/version/mode/nonce/launch/boundary and
+mixed-mode flags; malformed/duplicate/extra JSON, invalid optional/hash/DTO/run IDs;
+foreign session/dispatch, changed origin/terminal/context/raw admission, selected
+input/model/proposal mismatch; occupied repair or opposite initial slot and failed
+transaction; no partial startup or new host effects on refusal. Preserve current
+repair-journal growth behavior when the EXACT referenced entry still matches.
+For optional companion corruption, use a separate explicitly labelled disposable
+fixture-control case after valid committed evidence: only the calculated companion
+slot may change. Reopen must keep bare session/run/source/budget records intact,
+stronger lineage unavailable, no inferred alternative, no effects. Separate that
+intentional control mutation from read-only counters and retain the valid baseline.
+No generic caller-chosen DB keys, commands or scope in the challenge.
+
+Required implementation checks: strict host parser/mode-confusion fixtures, Dart
+new-mode preflight and private native seam controls; actual owned Mac precommit and
+postcommit/reopen scenarios, explicit production-recovery retry/reopen and optional
+corruption isolation; relevant legacy native scenarios on the exact new binary.
+Then full format/analyze/Flutter/web/isolated macOS build/product/inventory, exact
+fresh PR review, both required CI jobs and verified remote merge. No generalized
+CE01, platform400 or live inference acceptance is inferred. If the expected native
+seam cannot be reached, keep it pending with actual missing-stage evidence and fix
+that bounded fixture; never weaken current production guards to force acceptance.
+
+
+Protocol22 fixed fixture values/counter clarification: start from one explicitly
+supplied finished failed run1 and one proposed selected repair attempt1; selected
+session has revision0/no dispatches. Linked startup is candidate run2/one admission,
+revision1; optional retry is run3/second admission, revision2. Initial failed run1
+is explicitly unbound; this does not fabricate an initial-request lineage or claim
+the whole production UI workflow. All actual source/approval/project fingerprints
+must validate through current services. Use neutral matching supplied model ID
+supplied-native-repair-lineage-model; no live inference or loaded-weight claim.
+Original request/pre-admission raw session hashes match at run2; retry must use the
+actual stored revision1 pre-admission raw bytes, while origin raw revision0 stays
+unchanged. Do not synthesize either raw snapshot by stripping typed dispatches.
+
+Report22 must validate exact fixed run/attempt/task/session identities and stage
+values, not merely positive counters. Cold read-only launches2/4 have zero host
+construction, source-inspection/copy, startup, receipt preparation, live-model
+transport, SDK, preview and record writes. Launch1 setup has exactly one supplied
+provider return and explicitly declared fixture-source/failure creation before the
+baseline; after either pause all caller/startup-return and host effects stay zero.
+Launch3 production recovery expects two checkSources calls (working and candidate)
+and two distinct owned inspection hosts, then exactly one newly consented startup
+whose return is withheld. No new supplied proposal/provider call or source copy on
+retry. The7 declared startup record updates are not zero total writes; report them
+separately from zero unrelated writes. Do not label setup source creation or recovery
+inspections as zero. Keep receipt/SDK/preview/transport0 at every stage of this
+bounded metadata/recovery mode. Real command receipt/process cleanup evidence stays
+with the existing separately labelled native scenarios.
+
+Investigation checks pass: two actual native DB transaction-pause probes, source and
+three protocol20 evidence-scope probes, focused55, host56, product32 and inventory9.
+Private regenerated inventory at /tmp/asg404-native-lineage-contract-inventory.json
+leaves canonical runtime inventory unchanged because no runtime source changed.
+Relevant native probe:/tmp/asg404-native-repair-admission-probe.log. Host/product/
+inventory logs:/tmp/asg404-native-lineage-contract-{host,product,inventory}.log.
+No production/fixture code changed, no app or process launched/killed, no model/SDK
+ran. Documentation-only checks may reuse unchanged runtime build evidence; both
+required remote CI jobs and fresh exact review remain mandatory. Next: publish this
+three-doc bounded contract, verify merge, release the investigation claim, and
+immediately claim/start404-native-repair-lineage-fixture. FullF20/CE01/umbrella404,
+#400 and all other unmet acceptance remain open.
+
+
+Fresh PR765 contract review correction — captured versus durable identity.
+The before-commit native probe already has a fully encoded run2 companion/context
+in its captured update map, while neither record exists durably. Therefore report22
+must not overload planned target IDs/hashes as proof that startup committed.
+Use separate targetRunNumber/targetDispatchId (fixed planned2 or3) and
+committedTargetRunNumber/committedTargetDispatchId (null until that exact target is
+found in the retained journal). A retained earlier failed run1 is not the target.
+capturedAdmissionSessionSha256 hashes the actual pre-admission raw session read for
+the reservation; it exists even before commit. durableAdmissionSessionSha256 is null
+before commit and comes only from the decoded stored companion after joint validation.
+The original request raw session hash remains a third distinct origin observation.
+Context/companion durable hashes are null when their fixed stored slots are absent;
+never substitute the captured pending-update bytes. On joined committed/read-only stages,
+all durable fields must match the exact stored joined proof and declared target.
+Report file/baseline artifact writes are fixture instrumentation; zero record writes
+means zero native database record updates in read-only stages. Keep their counters
+separate, and compare baseline artifacts against the previously captured host facts.
+The strengthened two native seam probes pass and explicitly distinguish captured
+companion bytes from absent durable context/companion. Log:
+/tmp/asg404-native-repair-admission-review-probe.log. This clarification adds no
+runtime/schema implementation; forward revised review/CI are mandatory. Previous
+head approval is not granted and previous-head CI cannot authorize the revised merge.
+
+For an explicitly corrupted optional companion, fixed raw record hashes may remain
+present as observations even though stronger proof is unavailable. Keep proof state
+unavailable and derived durable admission/relationship fields null unless the full
+join succeeds. A physical opaque record hash is neither absence nor validated
+lineage. Independent core target run/dispatch facts remain readable from the journal;
+never invent their stronger relation. Retain this corruption control separately from
+successful joined-stage comparisons and preserve unchanged core record identities.
