@@ -8072,3 +8072,13 @@ Stop/recovery and last-working-output limits preserved. Next concrete prerequisi
 verified merge is a bounded saved-baseline recapture investigation: compare all original
 selected source bytes against an explicitly consented fresh contained read, including
 changed/missing/refused observations, without source writes or execution authority.
+
+
+Fresh PR810 review added the missing controller-replacement consent regression before
+approval: replacing the editor with a history-only controller while its save dialog is
+open disposes the original owner, and confirming old consent writes to neither folder.
+All5 proposal screen checks and the revised fullFlutter2588 PASS/13opt-inskips;
+analyze and627format clean. Logs/tmp/asg404-saved-proposal-review-{widget,full,analyze,format}.log.
+This is a test/documentation-only forward revision; all seven runtime hashes match the
+verified web/isolatedMac/IAB build receipt exactly. Prior head review/CI evidence is not
+used to merge the changed revision: final exact rereview and required CI must pass anew.

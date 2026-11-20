@@ -157,4 +157,50 @@ void main() {
       expect(c.error, isNotNull);
     },
   );
+  testWidgets(
+    'replacing controller while save consent is open cannot retarget consent',
+    (tester) async {
+      final originalRecords = await fixture.proposalRecords();
+      final original = fixture.proposalController(originalRecords);
+      await tester.pumpWidget(
+        MaterialApp(home: ImportedSourceProposalScreen(controller: original)),
+      );
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextField), 'Old pending consent');
+      await tester.ensureVisible(
+        find.widgetWithText(FilledButton, 'Preview read-only diff'),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Preview read-only diff'));
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text('Save comparison locally'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Save comparison locally'));
+      await tester.pumpAndSettle();
+      final replacementRecords = await fixture.proposalRecords();
+      final replacement = ImportedSourceProposalController.history(
+        root: '/other',
+        store: ImportedSourceProposalStore(replacementRecords),
+      );
+      await tester.pumpWidget(
+        MaterialApp(
+          home: ImportedSourceProposalScreen(controller: replacement),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(original.isDisposed, isTrue);
+      await tester.tap(find.text('Save comparison'));
+      await tester.pumpAndSettle();
+      expect(
+        originalRecords.values[ImportedSourceProposalStore.key('/project')],
+        isNull,
+      );
+      expect(
+        replacementRecords.values[ImportedSourceProposalStore.key('/other')],
+        isNull,
+      );
+      expect(find.text('Saved source comparison'), findsOneWidget);
+      expect(find.byType(TextField), findsNothing);
+    },
+  );
 }
