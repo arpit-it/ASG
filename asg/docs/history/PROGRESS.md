@@ -17559,3 +17559,22 @@ full unrelated-record comparisons remain. New3cases PASS and fullFlutter2201PASS
 Final logs:/tmp/asg404-http-journal-review-{focused,full-test,analyze,full-format}.log.
 No production source, new model/provider or actual8765call. Ready for scoped
 publication/fresh exact PRreview/requiredCI/verifiedmerge; delivery not yet claimed.
+
+
+Fresh PR771 review correction: early assertion failure while reservation completion
+is held could leave the original proposer future pending when native storage closes.
+Fixture now keeps a separate settlement listener, releases/cancels owned work and
+waits with a bound BEFORE closing HTTP/server/database resources. Tests still await
+the ORIGINAL future for success/refusal assertions; cleanup listener does not turn
+a proposal failure into success or swallow callback assertions.
+
+Private early-failure probe plus3permanentcases4PASS:
+/tmp/asg404-http-journal-cleanup-focused2.log. It injects failure at the held reserve,
+then verifies request settled, HTTPcalls0, databaseclosed, tempdirectoryremoved and
+HTTPoverridesrestored. Initial private extraction matched embedded source text
+instead of top-level main; corrected function boundary before passing probe.
+FullFlutter2201PASS/11existing skips, cleananalysis/format552/product32/inventory9
+repeated after cleanup fix; /tmp/asg404-http-journal-cleanup-{full-test,analyze,
+full-format,product,inventory}.log. No production runtime/source or model effects.
+Forward revision requires new exact PRreview/requiredCI; old aa20b33c CI/review
+cannot authorize it. Keep claim/integration valid until final verifiedmerge.

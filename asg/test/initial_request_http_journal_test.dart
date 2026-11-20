@@ -88,6 +88,7 @@ class _Fixture {
   final AgentSessionBinding binding;
   final String working;
   ApprovedSourceProposer? service;
+  Future<void>? _settled;
   _ReservationBoundary? boundary;
   StreamSubscription<HttpRequest>? subscription;
   final handled = Completer<void>();
@@ -171,7 +172,7 @@ class _Fixture {
     service = ApprovedSourceProposer(
       boundary!,
     ); // Uses the default HTTP provider.
-    return service!.propose(
+    final pending = service!.propose(
       project: project,
       boardTaskId: 'Tanalyze',
       config: config,
@@ -180,6 +181,10 @@ class _Fixture {
       requestWorkingRecord: working,
       authorizeSession: () {},
     );
+    // The test awaits the original future; this separate listener only drains
+    // cancellation during cleanup if an earlier assertion fails.
+    _settled = pending.then<void>((_) {}, onError: (Object _, StackTrace _) {});
+    return pending;
   }
 
   Future<void> requireCallback() async {
@@ -202,13 +207,17 @@ class _Fixture {
       await service?.cancel();
     } finally {
       try {
-        await server.close(force: true);
+        await _settled?.timeout(_wait);
       } finally {
         try {
-          await subscription?.cancel();
+          await server.close(force: true);
         } finally {
-          await database?.close();
-          database = null;
+          try {
+            await subscription?.cancel();
+          } finally {
+            await database?.close();
+            database = null;
+          }
         }
       }
     }
