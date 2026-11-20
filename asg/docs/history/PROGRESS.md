@@ -19104,3 +19104,121 @@ Torch fallback is indicated by this check. Saved setup choice and successful
 load remain unverified, and fixedhealth/models were unavailable at07:34:53.
 Required exactfreshPRreview/allrequiredCI/verifiedmerge remain pending for these
 findings. Full404/liveQwen/#400 stay OPEN, marketplace gate/F23-last preserved.
+
+
+### 2026-11-20 — #404 MLX prerequisite findings merged; Git inventory boundary started
+
+PR785 protected expected-head merge232c6a76b6c8528cab999f602317496e23092d3d
+verified remote main/mergedPR/fetched tree2822d8c2cc663b003c2e1c95a9227bc81d40eeeb.
+Fresh reviewed34cdb74b608eaa64336b69ba90d7009de5ab6f6e/basea88926e2 no blocker,
+threads empty. CI44696629235 Flutter136154822017/Python136154822467 every mandatory/
+post step SUCCESS. Localbackend67run1skip/fullFlutter2280PASS13skips/format561/
+analyze/web/product32/inventory9. Coordinator merged/outcome recorded, integration
+and claim released. Bounded dependency investigation Done; full404/liveQwen/#400
+remain OPEN. MLX dependencies discoverable does not prove loaded device/model
+readiness; owner8765ready/idle exactmodel/inventory/budgets/response is still needed.
+Ownerdirty checkout/processes/lastworking outputs preserved.
+
+Immediately claimed404-git-inventory-boundary-investigation under existing404/F20,
+sole docs writer in registered issue worktree. Canonical existing-gap table maps
+F07/F08/F20 to read-only Git workspace inventory before imported-source changes.
+Code search/imported workspace confirms only inspected folder/planning UI, no
+Git inventory service/status behavior. Concrete prerequisite: establish whether
+naive status can execute repository-configured clean filters/fsmonitor commands,
+then bound safe refusal/override conditions before any future Git adapter.
+Acceptance: disposable private local repositories only, no remotes/network,
+isolated global/system config/emptytemplates; two known inert marker helpers may
+write only within owned fixtures. Measure command execution and before/after
+HEAD/index/tracked hashes, controlled refusal/override, bounded output/deadlines,
+cleanup. No owner repository hook/config execution, credentials, clone/fetch,
+model/runtime/nativeapp/install/deploy effects. Record actual Mac/Git/source
+identity and narrow next implementation contract; no arbitrary Git safety/support
+claim or enabled UI. Root sole writer, no second independent task admitted.
+Future publication requires docs checks/freshreview/requiredCI/verifiedmerge.
+Marketplace gate/F23-last/deferred400 and all approval limits preserved.
+
+
+#404 Git inventory boundary investigation started with five actual controlled
+checks on Darwinarm64, git2.54.0(AppleGit-157), source232c6a76 at2026-11-20T07:50:54Z.
+Disposable repositories had empty templates, no remotes/network, isolated global/
+system Git config, pager/hooks disabled and optional locks off. Only two reviewed
+inert fixture helpers wrote known marker files; no owner repository was touched.
+Baseline dirty status ran no helper. Configured clean filter DID run its marker
+command during status, despite read-only intention/hooks disabled. Reading only
+local filter key names with --no-includes allowed a controlled preflight refusal
+before status, without marker execution. Separately configured fsmonitor DID run
+its marker during status; explicit core.fsmonitor=false prevented that marker
+while still reporting dirty. HEADfile/mainref/index/config/trackedfile hashes
+remained unchanged in measured status/preflight cases; marker side effects were
+confined to owned fixtures. Cleanup completed. All5checks PASS after strengthening
+ref hashing; private script /tmp/asg404-git-inventory-boundary-probe.py and receipt
+/tmp/asg404-git-inventory-boundary-receipt.json, SHA256
+b847535d577d5fc6ef02f1746b8f786723c99f8103ba1858149cbcfe66a46c06.
+
+This is a prerequisite finding, not an ASG product defect or complete Git sandbox.
+Current imported workspace has no Git inventory feature to enable. Next bounded
+implementation contract must validate contained Git topology/config before any
+status invocation; refuse unsupported filter/include/worktree indirection rather
+than executing repository commands, isolate inherited config/environment, disable
+fsmonitor/hooks/pager/optional writes, bound process/output/path handling and
+retain explicit unsupported results. Known-key fixture refusal is not a general
+parser or proof of safety for arbitrary repos. An imported-folder open currently
+grants no execution approval; any future native Git inspection needs its own
+explicit bounded action/permission and truthful branch/dirty/conflict evidence.
+No clone/fetch/sourceediting/auth or broad support claim. Investigation remains
+owned; further source/contract review and publication checks pending. No model/
+runtime/nativeapp/install/cloud/deploy effects; full404/liveQwen/#400 stay OPEN.
+
+
+### #404 Git inventory boundary — extended controlled findings
+
+Extended same disposable probe at2026-11-20T07:54:33Z on sameGit/source/host: eight
+checks PASS. A filter-key preflight first found no keys; controlled config update
+then installed the known inert filter before status, which DID execute it. This
+is deterministic check/use interleaving, no timing race required. Preflight alone
+cannot guarantee a later arbitrary-repo status avoids repository commands.
+Configured-filter and configured-fsmonitor fixtures separately returned main/
+40hexHEAD via symbolic-ref/rev-parse without their marker helpers running; this
+measures those commands on two controlled configs, NOT complete safety for all
+Git configs/topologies/versions. Original five-case receipt retained byte-identical
+SHA b847535d; extended receipt /tmp/asg404-git-inventory-boundary-extended-receipt.json
+SHA256dfcebd86407aa10f2b473928e1409473ba35c604be7c23f911d3cae17ad13e12,
+script /tmp/asg404-git-inventory-boundary-extended-probe.py. No ownerrepo/remotes
+or model/runtime effects; HEAD/mainref/index/config/working bytes unchanged in
+status cases except explicit controlled config intervention and fixture markers.
+
+Refinement: original required preflight/overrides are necessary examples, NOT
+sufficient authorization to execute status after mutable config checks. Any
+future status adapter needs an enforced immutable configuration/snapshot or
+separately proven isolation boundary and typed unsupported behavior. Do not
+enable naive status in imported workspace. A bounded independent first slice
+can instead read contained Git HEAD/ref metadata WITHOUT invoking Git, shell,
+hooks, filters, config, index or network. Use descriptor-anchored no-follow bounded
+regular-file reads; reject symlink/gitfile/worktree indirection and unsupported
+formats. Report branch/detached/declaredOID only, working-tree/aheadbehind/conflict
+unknown, never invent verified commit/content identity or action approval.
+This is the next narrow implementation contract after reviewed merge of findings,
+not a claim of an existing Git inventory feature or full Git sandbox.
+
+
+### #404 Git inventory boundary — final local evidence
+
+Source/contract review confirms the queued imported-workspace inventory is not
+yet implemented; model-download Git URLs are a separate explicitly selected
+model setup flow. Existing imported workspace grants no execution approval.
+Eight controlled Git checks establish only the measured config/helper cases;
+mutable preflight is insufficient for future arbitrary-repo status. Narrow next
+slice is a command-free contained HEAD/ref metadata reader, with declaredOID/
+branch observation only and dirty/aheadbehind/conflict explicitly unknown.
+It must never spawn Git or read executable config/filters/hooks/index, and must
+refuse unsupported indirection/symlinks/oversized/malformed metadata with bounded
+no-follow reads. No full Git support or new execution authority is implied.
+
+FinalFlutter2280PASS/13explicit opt-in skips, format561unchanged, analyzer clean,
+web/Wasm dry run built, product32/inventory9PASS. Logs /tmp/asg404-git-boundary-
+{full,format,analyze,web,product,inventory}.log. Original and extended private
+probe receipts retain their separate exact SHA256 identities; no owner repo,
+remote/network, credentials, model/runtime/nativeapp/install/sourceapplication/
+cloud/deploy effects. Three docs only. No ASG product vulnerability claimed: no
+Git inventory exists yet. Required exactfreshPRreview/allrequiredCI/verifiedmerge
+remain pending. Full404/liveQwen/#400, marketplace gate/F23-last preserved.
