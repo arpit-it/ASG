@@ -20367,3 +20367,108 @@ Fresh exact PR review, required final CI and verified protected merge remain gat
 Full F20/#404 stays OPEN; native UI, live Qwen, authenticated Git workflow and
 unavailable-platform #400 acceptance are pending. Marketplace gate and F23-last
 remain. No second dependency-ready disjoint task was admitted.
+
+
+### 2026-11-20 — captured-document plan review merged; advisory boundary started
+
+PR796 reviewed head49e0107074282ba4a94de565a88f8cd12c988fa8 protected squashmerge
+ab4588cdced1c4904f91335a7595ff022017e06b verified by plugin main/mergedPR/issue404OPEN
+and fetched exact tested treeb6cd50831103cc17be17fe02e6121165de638b77. Fresh exact
+remote/localdiff review had no blockers, conversations empty; CI44742202772 Python
+136308398263/Flutter136308398722 and every poststep SUCCESS. Bounded manual-plan
+capture/save/review consent Done;79focused/full2440PASS13skips, analyzer/format/web/
+isolatedMac build, actual native database reopen/stale-row checks and honest IAB
+memory fixture passed. NativeUI/liveinference/fullF20 remainOPEN. Coordinator merge/
+outcome recorded and integration/claim released. Owner dirty main/processes and
+stable app preserved. Source publication did not deploy an application.
+
+Immediately claimed404-imported-advisory-boundary under existingF20/#404, solewriter
+in registered isolated worktree from verifiedmain. Concrete next gap: imported
+workspace has captured document plans but no advisory question/consent/provider
+boundary. Existing ChatController takes StudioProject and its plan prompt can
+propose a generated fixed starter; it cannot be relabelled as imported source chat.
+Investigation acceptance: inspect actual request/identity/Stop boundaries and use
+synthetic attributed captures in a disposable provider fixture; bounded health/
+models reads determine live eligibility. Identify explicit local-sharing/current-
+input consent, response identity, budgets and no-effect integration prerequisites.
+Only three canonical docs claimed, private disposable probes; no product source,
+models, owner files, commands, cloud or provider selection changes. Captured text
+stays user data, no tool/system/write/scheduling authority. Full404/deferred400,
+marketplace gate and F23-last preserved; no independent second ready task.
+
+
+Started investigation evidence on verifiedmerged product revisionab4588c:
+ModelProvider.generate accepts one prompt string; LocalModelProvider sends exactly
+one user-role message, configured model/output budget and no tools. Imported
+DocumentContext.untrustedEvidence has no current provider call site. Existing
+ChatController requires StudioProject, shares generated-project conversation/
+requirements/plan stores and can propose fixed-starter operation contracts in Plan
+mode. Reusing it unchanged would misrepresent imported-source support. A future
+imported advisory controller should remain separate, with explicit selected local
+endpoint/model/context confirmation, bounded question/context/history, current
+capture/requirements revalidation, private errors and retained last saved answers.
+Keep response prose advisory, do not parse it into edits/tools/tasks/approval.
+Separate repository-context sharing consent from manual plan review consent.
+
+Actual disposable loopback probe used current product LocalModelProvider and typed
+synthetic ImportedDocumentContext, fixture IDasg-imported-advisory-fixture, not a
+model/checkpoint. Seven boundary checks PASS, five synthetic HTTP responses:
+exact attributed capturedJSON/hostiletext stays one userpayload with no tools;
+matching response identity/output budget; contradictory identity, redirect and
+truncation refuse completed response privately; omitted model remains legacy-
+compatible with null completed identity; cancelled provider cannot redispatch;
+external endpoint validation refuses before transport. Probe and receipt:
+/tmp/asg404_imported_advisory_probe.dart and
+/tmp/asg404-advisory-provider-probe-receipt.json. Server closed in finally. This
+observes request construction and failure handling, not semantic injection immunity,
+model fit, actual model inference, native UI or durable imported-chat history.
+
+At2026-11-20T13:21:25.878012Z bounded GET127.0.0.1:8765/health and /v1/models both
+failedURLError (0.007s/0.000s). No generation request, runtime start/stop/reconfigure,
+model download or owner source access. Evidence
+/tmp/asg404-advisory-runtime-observation.json. Live acceptance specifically needs
+reachable healthy MLX/Metal runtime, /v1/models exactQwen3.8-27B-4bit and successful
+response model ID before any live claim. Existing generic transport permits omitted
+IDs for compatibility, so a strict imported coding path must not count that as
+verified identity. Byte128KiB context bound does not establish token fit; explicit
+refusal/budget handling and serial ownership remain necessary. Implementation can
+continue independently with injected providers while live acceptance stays pending.
+Next bounded implementation candidate is explicit imported read-only advisory
+question/answer consent, one captured context and no tool effects, including stale
+input/Stop/private-error/save-failure/disposal regressions. This investigation's
+canonical checkpoint is local; required publication/CI/freshreview/verifiedmerge
+are still pending, and its claim remains active for continuation. Full404/#400 and
+marketplace/F23-last limits remain unchanged. No second independent ready writer.
+
+
+### #404 imported advisory boundary — investigation conclusion
+
+Resumed the owned investigation with unchanged product treeb6cd50831103cc17be17fe02e6121165de638b77.
+Repeated the disposable real loopback provider probe:7boundary checks PASS/five
+synthetic responses; fixture server closed. Existing local-model/streaming/response-
+identity regression tests31PASS (/tmp/asg404-advisory-existing-transport.log).
+No current model inference result is claimed. The earlier dated health/models
+URLError observation remains historical, not silently refreshed or retried.
+
+Bounded finding: reuse LocalModelProvider transport and explicit budgets, but add
+a dedicated imported advisory controller/view and typed question/context admission.
+Do not reuse generated-project ChatController plan instructions or reinterpret
+Ask history keys as imported context history. First implementation should explicitly
+confirm the exact local destination/model, folder/capture digest and question;
+revalidate saved folder/requirements/config after consent, prohibit tool effects,
+retain literal answer separately from plan approval and refuse unverified response
+identity for this new path. Generic legacy transport's optional identity remains
+compatible. At most one owned request, bounded Stop/timeout and private failure
+handling are required. Omitted/mismatched identity, oversize context, stale consent,
+failed storage and disposal cannot become completed evidence. This design does not
+claim prompt-injection immunity; execution remains absent. The128KiB capture cap is
+not a token-fit guarantee. Live acceptance needs reachable existing MLX/Metal runtime
+and exact Qwen3.8-27B-4bit health/inventory/response identity, pending as documented.
+
+Investigation scope completed locally; final exact PR review, required CI and
+verifiedmerge still gate delivery. Only these three documentation files changed;
+no product/runtime/tool/persistence/dependency/workflow change. Documentation-only
+local policy does not require unrelated builds; final required CI remains mandatory.
+FullF20/#404 and deferred#400 remain open; marketplace/F23-last unchanged. Original
+owner dirty edits/processes and stable installation preserved. No second independent
+eligible task, inference request, install, model download, cloud or deployment.
