@@ -20338,3 +20338,89 @@ This run fixedhealth/models both connection-refused, generation0; liveQwen pendi
 Prior native observations retain their original source/bundle identities and do
 not establish new native runtime acceptance. Required finalremoteCI/freshreview/
 verifiedmerge remain pending; full404/#400/marketplace gate/F23-last preserved.
+
+
+### 2026-11-20 — #404 generation metadata fix merged; journal tracks started
+
+PR782 protected expected-head merged61323f2c496e03b45164ca8af437d77cfccfa76
+verified remote main/mergedPR/fetched tree80bbe7e548827516ff5bc45a0f00d069968f9930.
+Fresh reviewed d9db5d50646a5226867fe9d934ca934f6cd3186d/basea81f925e no blocker,
+threads empty. Required CI44690504625 Python136134885870/Flutter136134886091 every
+mandatory/post step SUCCESS; all7new cases activeLinuxPASS. Localfocused30,
+full2262PASS13explicit skips, format561/analyze/web/isolatedMac/product32/inventory9.
+Coordinator merged/outcome recorded and integration/claim released. Bounded
+response validation Done; full404/liveQwen/#400 OPEN. Original ownerdirty checkout,
+owner processes and working outputs preserved. No inference/model/stable changes.
+
+Immediately start404-initial-ambiguous-response-journal and admit independent
+404-repair-ambiguous-response-journal, both depend ONLY on verifiedPR782. Existing
+404/F20 covers actual source response/journal acceptance; no new issue. Concrete
+gap: transport mocks prove duplicate rejection; current actualHTTP/native journal
+fixtures cover simple mismatch but not ambiguous duplicate IDs/terminal frames.
+Root owns three docs and initial_request_http_journal_test.dart; delegated writer
+may claim ONLY repair_request_http_journal_test.dart in distinct registeredWT.
+Acceptance each: plain/escaped contradictory duplicates and terminal ambiguity
+after valid partial source fail without completed identity; durable reservation
+physically precedes HTTP, failed journal survives actual DBclose/reopen with
+unchanged working/session/unrelated records, no retry/replay. Repair also retains
+exact selected origin/failure and no delivered selected reference/proposal.
+Keep positive/mismatch controls, callback failure visibility and drain-before-close
+cleanup. No source application/candidate/SDK/model/nativeapp/owner runtime work.
+Two disjoint writers maximum; root sole integration owner, handoffs stop/commit/
+release before union. Focused/full checks, exactfreshreview/requiredCI/verified
+merge mandatory. Full404/#400/marketplace gate/F23-last remain unchanged.
+
+
+#404 initial ambiguous-response journal track started: extended actual default
+HTTP/nativeDB fixture to six response modes (valid, ordinary mismatch, plain/
+escaped duplicate model ID, plain/escaped terminal duplicate after valid source
+frame) plus reserve-refusal control. All7PASS, log /tmp/asg404-initial-ambiguous-
+journal-focused.log; format clean, diffcheck clean. New four ambiguity paths
+retain failedLocally/native-reopen state, no completed response model/returned
+hashes, unchanged full working/session/unrelated map and oneHTTP/no cold replay.
+This is synthetic random-port HTTP/nativeDB evidence, not owner inference.
+Repair writer separately claimed sole repair fixture and began analogous cases;
+two valid disjoint claims, root sole integration owner. Broader checks, both
+stopped handoffs, union integration/review/CI/merge remain pending. No prior
+native/live observations reused for these tests. Full404/liveQwen/#400 OPEN.
+
+
+#404 initial journal handoff final: valid source frame explicitly flushed before
+plain/escaped ambiguous terminal frames. All7actualHTTP/nativeDB scenarios plus
+7transport duplicate and1architecture case PASS (15total); focused analyzer clean,
+format unchanged and diffcheck clean. Log /tmp/asg404-initial-ambiguous-journal-
+regression.log; no ownernetwork/inference/nativeapp/build or source production
+changes. Root stopping four-path initial/docs handoff before union; repair
+writer independently finalizing its sole test path. Acceptance remains bounded
+synthetic journal behavior, full404/liveQwen/#400 pending.
+
+
+### #404 ambiguous HTTP journal integration — final local evidence
+
+Both stopped clean handoffs accepted and claims released: initial0db7f07f0d0f8a
+and repair97fa4fad82dbe07b. Sole union claim404-ambiguous-response-journal-integration
+then combined their disjoint files. Initial terminal scenarios strengthened to
+flush an actual valid partial source fragment, with remainder in the ambiguous
+terminal frame, matching repair. These prove failed durable journals after valid
+partial source bytes, not a claim that a client observed bytes at a timed instant.
+
+Each actualHTTP/nativeDB fixture now7PASS: valid, ordinary mismatch, plain/escaped
+contradictory duplicate IDs, plain/escaped terminal duplicates and reserve refusal.
+Both physically verify reservation before HTTP; invalid responses retain failure
+and no completed identity/evidence, actual close/reopen raw-map equality and
+oneHTTP/no replay. Repair retains matching selected origin and original failure,
+no proposed source or delivered selected reference. Existing callback error
+visibility and cancel/drain-before-close retained. Eight added scenarios total.
+
+Finalcombined32focusedPASS, fullFlutter2270PASS/13explicit opt-in skips, format561
+unchanged, analyzer clean, web/Wasm dry run built, product32/inventory9PASS. Logs
+/tmp/asg404-ambiguous-journal-{regression,full,format,analyze,web,product,inventory}.log.
+Only two tests and three docs changed; production runtime/schema/inventory inputs
+unchanged. No new nativeapp execution/build/install or model/owner process changes;
+prior native observations retain their original identities. At2026-11-20T07:04:05Z
+fixedhealth/models unavailableURLError, generation0; private bounded receipt
+/tmp/asg404-ambiguous-journal-runtime-status.json. Full404/liveQwen/#400 remain OPEN.
+Required exactfreshPRreview/allrequiredCI/verifiedprotectedmerge still pending.
+No product defect newly discovered in these journal checks; metadata defect and
+its before/after evidence remain recorded under mergedPR782. Marketplace/F23-last
+preserved, no cloud/deployment/unrestricted execution.

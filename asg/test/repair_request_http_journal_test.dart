@@ -28,6 +28,8 @@ import 'candidate_repair_proposer_test.dart' show boundFailure, saveFailure;
 const _model = 'synthetic-http-repair-metadata';
 const _wait = Duration(seconds: 10);
 
+enum _AmbiguousMetadata { plain, escaped, terminalPlain, terminalEscaped }
+
 /// Actual native commit, with its completion withheld before transport may start.
 class _ReservationBoundary implements ConditionalRecordStorage {
   _ReservationBoundary(this.delegate, {required this.refuse});
@@ -102,7 +104,7 @@ class _Fixture {
   final handled = Completer<void>();
   Object? callbackError;
   StackTrace? callbackStack;
-  int httpCalls = 0;
+  int httpCalls = 0, validPartialFramesFlushed = 0;
 
   String get journalKey => 'studio.repairAttempts.v1.${project.id}';
   String get originKey => '${SelectedRepairRequest.prefix}${project.id}.1';
@@ -115,7 +117,7 @@ class _Fixture {
       row.key: row.value,
   };
 
-  void serve({bool mismatch = false}) {
+  void serve({bool mismatch = false, _AmbiguousMetadata? ambiguity}) {
     subscription = server.listen((request) async {
       httpCalls++;
       try {
@@ -149,23 +151,45 @@ class _Fixture {
           charset: 'utf-8',
         );
         final observed = mismatch ? 'synthetic-wrong-repair-response' : _model;
+        final terminalAmbiguity =
+            ambiguity == _AmbiguousMetadata.terminalPlain ||
+            ambiguity == _AmbiguousMetadata.terminalEscaped;
+        final escaped =
+            ambiguity == _AmbiguousMetadata.escaped ||
+            ambiguity == _AmbiguousMetadata.terminalEscaped;
+        final duplicateKey = escaped ? r'"\u006dodel"' : '"model"';
+        final ambiguousMembers =
+            '"model":"synthetic-wrong-repair-response",$duplicateKey:${jsonEncode(_model)}';
+        final uniqueMembers = '"model":${jsonEncode(observed)}';
+        final supplied = response();
+        final split = terminalAmbiguity
+            ? supplied.length ~/ 2
+            : supplied.length;
+        final firstMembers = ambiguity != null && !terminalAmbiguity
+            ? ambiguousMembers
+            : uniqueMembers;
         request.response.write(
-          'data: ${jsonEncode({
-            'model': observed,
-            'choices': [
-              {
-                'delta': {'content': response()},
-              },
-            ],
-          })}\n\n',
+          'data: {$firstMembers,"choices":${jsonEncode([
+            {
+              'delta': {'content': supplied.substring(0, split)},
+            },
+          ])}}\n\n',
         );
+        if (terminalAmbiguity) {
+          // Deliver a valid nonterminal source fragment before the ambiguous end.
+          await request.response.flush();
+          validPartialFramesFlushed++;
+        }
+        final terminalMembers = terminalAmbiguity
+            ? ambiguousMembers
+            : uniqueMembers;
         request.response.write(
-          'data: ${jsonEncode({
-            'model': observed,
-            'choices': [
-              {'delta': {}, 'finish_reason': 'stop'},
-            ],
-          })}\n\n',
+          'data: {$terminalMembers,"choices":${jsonEncode([
+            {
+              'delta': terminalAmbiguity ? {'content': supplied.substring(split)} : {},
+              'finish_reason': 'stop',
+            },
+          ])}}\n\n',
         );
         request.response.write('data: [DONE]\n\n');
         await request.response.close();
@@ -312,13 +336,37 @@ Future<void> _withFixture(Future<void> Function(_Fixture) run) async {
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  for (final mismatch in [false, true]) {
+  for (final scenario in [
+    (label: 'validated return', mismatch: false, ambiguity: null),
+    (label: 'wrong response ID', mismatch: true, ambiguity: null),
+    (
+      label: 'contradictory plain duplicate model',
+      mismatch: false,
+      ambiguity: _AmbiguousMetadata.plain,
+    ),
+    (
+      label: 'contradictory escaped duplicate model',
+      mismatch: false,
+      ambiguity: _AmbiguousMetadata.escaped,
+    ),
+    (
+      label: 'plain terminal duplicate after valid partial source',
+      mismatch: false,
+      ambiguity: _AmbiguousMetadata.terminalPlain,
+    ),
+    (
+      label: 'escaped terminal duplicate after valid partial source',
+      mismatch: false,
+      ambiguity: _AmbiguousMetadata.terminalEscaped,
+    ),
+  ]) {
+    final invalid = scenario.mismatch || scenario.ambiguity != null;
     test(
-      'actual selected repair HTTP/native journal: ${mismatch ? 'wrong response ID' : 'validated return'}; synthetic SSE only',
+      'actual selected repair HTTP/native journal: ${scenario.label}; synthetic SSE only',
       () async {
         await _withFixture((f) async {
           final before = await f.raw();
-          f.serve(mismatch: mismatch);
+          f.serve(mismatch: scenario.mismatch, ambiguity: scenario.ambiguity);
           final pending = f.propose();
           await f.boundary!.entered.future.timeout(_wait);
           await Future<void>.delayed(const Duration(milliseconds: 50));
@@ -349,13 +397,22 @@ void main() {
           }
           await f.requireCallback();
           expect(f.httpCalls, 1);
+          expect(
+            f.validPartialFramesFlushed,
+            scenario.ambiguity == _AmbiguousMetadata.terminalPlain ||
+                    scenario.ambiguity == _AmbiguousMetadata.terminalEscaped
+                ? 1
+                : 0,
+          );
           final entry = RepairAttemptStore(
             f.records,
             project.id,
           ).load().attempts.single;
           expect(entry.modelRequest!.model, _model);
-          expect(entry.modelRequest!.responseModel, mismatch ? null : _model);
-          if (mismatch) {
+          expect(entry.failure.toJson(), reserved.failure.toJson());
+          origin.requireAttempt(entry);
+          expect(entry.modelRequest!.responseModel, invalid ? null : _model);
+          if (invalid) {
             expect(refusal, anyOf(isA<FormatException>(), isA<StateError>()));
             expect(evidence, isNull);
             expect(entry.status, RepairAttemptStatus.failed);
@@ -370,12 +427,18 @@ void main() {
           expect(after, {...before, f.journalKey: raw, f.originKey: originRaw});
           await f.reopen();
           expect(await f.raw(), after);
+          final retained = RepairAttemptStore(
+            f.records,
+            project.id,
+          ).load().attempts.single;
+          expect(retained.toJson(), entry.toJson());
+          origin.requireAttempt(retained);
           final page = SelectedRepairRequestStore(
             f.records,
             project.id,
           ).load(f.binding.session.sessionId);
           expect(page.entries.single.origin!.encode(), originRaw);
-          if (mismatch) {
+          if (invalid) {
             expect(page.entries.single.reference, isNull);
           } else {
             page.entries.single.reference!.requireMatch(origin, entry);
