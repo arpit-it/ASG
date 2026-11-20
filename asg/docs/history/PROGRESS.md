@@ -17578,3 +17578,115 @@ repeated after cleanup fix; /tmp/asg404-http-journal-cleanup-{full-test,analyze,
 full-format,product,inventory}.log. No production runtime/source or model effects.
 Forward revision requires new exact PRreview/requiredCI; old aa20b33c CI/review
 cannot authorize it. Keep claim/integration valid until final verifiedmerge.
+
+
+20 November 2026 — PR #771 verified merged at b879f3d1a2737d8ede1b5751e6b4f991d815812b.
+Fetched tree a2685affe19d83e40c7223c4cd0d9c8ec5de8dea matches tested contents.
+Fresh revised review d5374aeffaf47477a3dd6cc9860bb3f93826dc45/base928d2950
+found no remaining blockers after one cleanup correction. Required CI44660536981
+Flutter136037487351/Python136037487601 and every step SUCCESS; empty conversations,
+unchanged head/base/main and protected expected-head merge verified. Plugin PR/main/
+issue404 OPEN and fetched tree independently checked. Local full2201 PASS/11existing
+skips, focused46 plus private cleanup probe, clean analysis/format552/product32/
+inventory9. Delivered three portable HTTP/native journal regressions, not live
+Qwen evidence. Coordinator merged/outcome_verified then integration/claim released.
+Manual observed CI wait differs from provider timing (unknown); one review rework,
+no escaped defect observed. Owner edits/processes/stable app/output preserved.
+
+Immediately claimed next bounded task 404-live-initial-preflight under SAME #404/
+F20/CE01 from verified main. Concrete inspected gap: test/live_model_config.dart
+selects fixed endpoint/model but does not check health/models readiness; existing
+application opt-in covers another workflow and not initial-request native journal.
+The merged future-live plan requires those checks before generation. Add a focused
+fail-closed helper, deterministic ready/adverse tests and an opt-in initial-request
+native verification harness. Scope: test/initial_request_live_readiness.dart,
+test/initial_request_live_readiness_test.dart, test/initial_request_live_test.dart,
+REQUIREMENTS, PROGRESS and inventory. One coherent writer, no independent second
+ready task. Root/asg404 assigned sole runtime worker for bounded read-only readiness.
+
+Acceptance: bounded /health ready/idle/mlx/metal/exactQwen3.8-27B-4bit and /v1/models
+exact identity/output4096 capacity before a request; wrong/malformed/missing/busy/
+unavailable fails without inference, substitution or automatic retry. Use exact
+8765/default proposer and disposable native records only for explicitly opted-in
+verification; actual response ID must be nonnull/exact and durable validated return
+retained through real close/reopen, no candidate/source application/SDK/preview.
+Readiness is server assertion, not authenticated weights. Deterministic fixtures
+never count as live. Format/analyze/full tests/product/inventory, required finalCI,
+fresh exact review and verified merge gate harness delivery; live acceptance remains
+separate/pending if runtime unavailable. No owner runtime start/stop/install/download.
+
+Readiness recheck at 2026-11-20T02:34:17.875611+00:00: /health and /v1/models both connection refused(errno61);
+/tmp/asg404-live-initial-preflight-runtime.json. Generation attempts0, no identity/
+MLX/Metal or actual response established. Existing owner service must become
+reachable with exact ready identity/budget before live acceptance. Both reads
+settled; no active inference or process changes. Continue deterministic guard and
+harness implementation as a useful Mac-verifiable prerequisite. FullF20/CE01,
+unavailable400, F23-last and marketplace gates remain unchanged/open.
+
+
+404-live-initial-preflight implementation checkpoint: added focused test-only
+initial_request_live_readiness.dart validator and adverse regression file. Nine
+focused tests PASS (/tmp/asg404-live-initial-readiness-focused.log): exact ready
+idle MLX/Metal/streaming identity and typed4096 budgets accepted; each health
+mismatch/missing field, malformed/missing inventory, wrong/ambiguous model list
+and insufficient/loosely typed limits refused. Tests exercise supplied metadata,
+not actual model readiness or weights. Owner8765 remains unreachable; attempts0.
+
+Work remains IN PROGRESS: bounded HTTP health/models fetch/cleanup and explicitly
+opt-in native initial-request harness must still be wired; pure metadata validator
+alone does not prevent network requests or prove durable live outcomes. Next run
+resumes this owned task before selecting other work. Full format/analyze/Flutter/
+product/inventory, fresh exact review/requiredCI/verifiedmerge remain gates; no
+harness delivery or live acceptance claimed. Claim valid; sole writer rootasg404,
+no active inference/build/preview and no owner processes changed.
+
+
+404-live-initial-preflight completed implementation checkpoint: fixed GET-only
+/health and /v1/models, no redirects/retries/inference, per-route5s deadline and
+16KiB streamed metadata bound, owned client closed on all paths. Exact ready/idle/
+mlx/metal/streaming/Qwen3.8 identity plus single advertised matching model and typed
+4096 input/output limits gate the opt-in test before creating native state. Limits
+remain bridge assertions rather than measured context or authenticated weights.
+Sixteen deterministic readiness tests cover missing/mismatched/malformed/busy/
+ambiguous identity, budgets, HTTP redirects/errors, oversized/invalid JSON, stalled
+headers/body, unavailable client and cleanup. They do not contact owner8765.
+
+New test/initial_request_live_test.dart uses DEFAULT ApprovedSourceProposer and
+actual native StudioDatabase, records physical reserved intent before commit
+completion permits transport, requires a nonnull matching observed response ID,
+checks exact raw original-session reference/returned hashes/returnedValidated and
+unchanged entire unrelated records map, then actually closes/reopens storage with
+identical retained metadata. Only synthetic in-memory source is proposed; nothing
+is applied, admitted as a candidate or executed. Pending proposer work is cancelled
+and separately drained before closing owned storage/temp resources; HTTP overrides
+restored. A portable supplied-SSE case exercises the SAME harness on an ephemeral
+loopbackport with a neutral identity and confirms native reopen adds no request;
+readiness refusal adds no generation/retry. This is synthetic, not live evidence.
+
+Owner live case is explicit ASG_REAL_INFERENCE opt-in, fixed8765/exactQwen3.8 only,
+no automatic retries. Run it alone only with assigned serialized runtime ownership.
+Readiness/response/parser/timeouts must fail the test, never become a pass or model
+substitution; client cancellation does not prove server inference stopped. Current
+readiness remains connectionrefused as observed at02:34:17Z, generation attempts0.
+Skip is NOT live acceptance. The existing owner service needs reachable ready
+MLX/Metal/exact identity/source budget and then actual matching response evidence.
+
+Final focused21PASS/1explicit live skip and analysis clean; zero-change555-file
+format. Product32/inventory9PASS; regenerated canonical inventory unchanged because
+no mapped production input changed. An initial full2218PASS/12existing-plus-new
+opt-in skips completed, but two refusal assertions changed during that run; it is
+not final-source evidence. Full suite is repeated after freezing all three source
+files; only its final result may gate publication. Tests-only change; requiredCI
+will exercise browser/web builds, no new platform/live/stable-app acceptance.
+Logs:/tmp/asg404-live-preflight-final-{focused,analyze,format,full-test}.log.
+Publication, exact fresh review/requiredCI and verifiedmerge still pending; keep
+valid owned claim. FullF20/CE01/umbrella404 and deferred400 remain open.
+
+
+Final frozen-source validation completed: fullFlutter2218PASS/12explicit opt-in
+skips, focused21PASS/1live skip, cleananalysis and format555unchanged; product32/
+inventory9PASS. Final full log:/tmp/asg404-live-preflight-final-full-test.log.
+No source changed during this final run. Local diff reviewed for bounded routes,
+identity/budget refusal, native reservation/return/reopen integrity and cleanup.
+Scoped harness ready for plugin publication and exact fresh PRreview/requiredCI;
+no actual live acceptance or fullF20/CE01 completion claimed.
