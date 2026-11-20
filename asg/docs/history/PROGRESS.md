@@ -22301,3 +22301,19 @@ Python plus complete bounded tree-metadata access; no automatic read/ref resolut
 approval revival. Keep previous results stale on refusal/change/Stop/disposal; no source
 write/copy/model/project commands. Actual disposable Mac/nativeDB and injected IAB tests
 plus required app checks/builds/CI/freshreview/verifiedmerge precede that app capability.
+
+
+Fresh PR814 review found two Stop ordering defects before merge: an already-stopped
+request opened repository metadata before checking Stop, and Stop becoming true during
+repository validation did not prevent the following Git child dispatch. Both new
+regressions fail the initial reviewed source (/tmp/asg404-commit-observer-review-stop-
+before.log). Fixed by checking Stop/deadline before repository.open and again immediately
+after validation before Popen. No initial-head approval/CI may authorize the revised head.
+
+Revised source passes29observer tests with ResourceWarnings-as-errors, including both
+new Stop regressions and all actual native CLI/object/bounds/lifecycle cases. Adjacent
+snapshot44/Git33/working-source31/inventory9/product32 reranPASS; logs/tmp/asg404-commit-
+observer-review-{stop-after,candidate,git,source,inventory,product}.log. No Flutter runtime/
+asset/dependency changed. Forward publication, fresh exact revised review and all required
+CI on the final head remain mandatory. Initial fixture checks and source receipt retain
+their original hashes; revised evidence is separate, not a replacement of earlier events.

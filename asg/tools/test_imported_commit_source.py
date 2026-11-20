@@ -248,6 +248,22 @@ class NativeCommitObserverTests(unittest.TestCase):
         saved=self.root.parent/'saved-pack';pack.rename(saved);pack.symlink_to(saved)
         self.assertRefused(self.observe(),'unsupported_layout')
 
+    def test_pre_stopped_request_does_not_open_repository_metadata(self):
+        with patch.object(observer._Repository,'open') as opened:
+            self.assertRefused(self.observe(stopped=lambda:True),'stopped')
+            opened.assert_not_called()
+
+    def test_stop_during_validation_does_not_dispatch_child(self):
+        repository=observer._Repository(observer.request(str(self.root),self.head,['lib/main.dart']))
+        repository.open();stop=[False]
+        reader=observer._ObjectReader(repository,time.monotonic()+2,lambda:stop[0])
+        try:
+            with patch.object(repository,'validate',side_effect=lambda _oid:stop.__setitem__(0,True)),patch.object(observer.subprocess,'Popen',side_effect=AssertionError('No child after Stop')) as started:
+                with self.assertRaises(observer._Refused):
+                    reader.command(['cat-file','-s',self.head],32,self.head)
+                started.assert_not_called()
+        finally:repository.close()
+
     def test_stopped_deadline_and_configuration_change_drop_all_output(self):
         self.assertRefused(self.observe(stopped=lambda:True),'stopped')
         self.assertRefused(self.observe(deadline_seconds=0.000001),'deadline')

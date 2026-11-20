@@ -352,6 +352,7 @@ class _ObjectReader:
     def command(self, args, limit, oid):
         self.check()
         self.repository.validate(oid)
+        self.check()
         env = {'PATH': '/usr/bin:/bin', 'GIT_CONFIG_NOSYSTEM': '1',
                'GIT_CONFIG_SYSTEM': os.devnull, 'GIT_CONFIG_GLOBAL': os.devnull,
                'GIT_TERMINAL_PROMPT': '0', 'GIT_NO_LAZY_FETCH': '1',
@@ -414,9 +415,10 @@ def observe(root, commit, paths, *, stopped=None, deadline_seconds=DEADLINE_SECO
             raise InvalidCommitSource()
         deadline = time.monotonic()+deadline_seconds
         repository = _Repository(selected)
-        repository.open()
         reader = _ObjectReader(repository, deadline,
                                stopped or (lambda: _stop_requested))
+        reader.check()
+        repository.open()
         reader.check()
         tree = commit_tree(commit, reader.read('commit', commit))
         manifest, metadata_bytes, directories = [], 0, 0
