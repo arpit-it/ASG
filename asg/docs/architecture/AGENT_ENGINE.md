@@ -8591,3 +8591,112 @@ observer-review-{stop-after,candidate,git,source,inventory,product}.log. No Flut
 asset/dependency changed. Forward publication, fresh exact revised review and all required
 CI on the final head remain mandatory. Initial fixture checks and source receipt retain
 their original hashes; revised evidence is separate, not a replacement of earlier events.
+
+
+### F20 / #404 — verified commit observer and app comparison started, 20 November 2026 UTC
+
+PR814 verified merged9929c4a84cb33dc94a316fae0e655ccb466e81e5; exact final tested tree
+ca9274caa0c9ede4f7b1ce7618a482b7ed199434. Fresh revised review remote d5530f2592463fd1d2861294d2ce3464a89f90fd
+against10ce9d787c21e9cbe5d2b8cbedf0b8cf13bc50b9 matched local/remote diff and tested
+contents. Both Stop admission/dispatch findings were reproduced failing before, fixed
+and retested;29observer cases and adjacent regressions passed. Initial CI44809988044
+was cancelled and not reused. FinalCI44810576594 Python136545900475/Flutter136545900059
+all required/poststeps SUCCESS, including new observer fixtures; completed logs inspected.
+Final head/base/main unchanged and threads empty before protected expected-head merge.
+Pluginmain/mergedPR/404OPEN and fetchedmain/tree verified. Coordinator recorded final
+checks/review/merge/outcome and released integration/claim. Standalone data reader is
+delivered; no app commit action/source copy/execute/model capability is claimed. Owner
+dirty checkout/processes preserved. Attempted PR attachment hit existing100item limit;
+unrelated attachments retained.
+
+Coordinator observer segment: start-to-merge2216.3seconds, paired CI observation intervals
+619.4seconds total (cancelled initial and successful final observed separately), one
+recorded review-rework event and one standalone outcome attestation. These cooperative
+manual intervals are not provider CI timing or a new app user workflow; actual escaped
+defects remain unknown despite zero recorded escaped-defect observations.
+
+Immediately claimed404-imported-commit-comparison from verifiedmain in same registered
+worktree, solewriter; no independent eligible disjoint second task. Existing404 covers
+the coherent app outcome: saved history opens explicit full40hex commit selection/read
+consent, compares every original captured file with selected immutable commit content,
+and retains historical records and stale last working results. Typed data/native host/
+read-only store/controller/focused view/history wiring/tests/helper asset/inventory and
+canonical docs are one claimed feature, not separate parser-only delivery. Freeze five
+app records with existing durable zero-update fences and reuse baseline shared-store
+reader lease across both workflows. Consent names root/commit/all paths/Python and
+complete bounded tree-metadata access; no automatic read/ref resolution or revival of
+plan approval. Owned Stop/late startup/disposal/uncertain cleanup, typed exit/status and
+root/commit/readset identity agreement remain mandatory. No source copy/write/model or
+project commands. Actual disposable Mac/nativeDB/IAB and fullapp/build/CI/freshreview/
+verifiedmerge gates precede completing this app outcome.
+
+Started pure immutable ImportedCommitReadRequest and ImportedCommitSourceObservation.
+Requests freeze canonical POSIX root/Python outside project, exact full commit and ordered
+paths. Strict128KiB response schema rejects duplicates/unknown fields, invalid authority
+claims, malformed identities/types/counts, unsafe modes and path/readset/blob discrepancies.
+Selected blob Git SHA1 is independently recomputed over exact bytes, while existing pure
+working-source decoder validates SHA256/byte/base64/UTF8/BOM/bounds. Unattributed refusal
+contains no invented root/commit/tree/manifest/files; typed decode alone proves no native
+read or authenticated origin. Lists/bytes immutable; source_verified=false and working
+state/conflict unknown. Commit/tree/manifest identities are supplied typed metadata until
+an owned physical native read binds the exact request. Host/controller/store/UI/asset
+integration and pure historical comparison model remain pending in this active claim.
+
+Six new model tests plus8existing source-observation tests and architecture check passed
+15total; analyzer clean, focused format clean and inventory9 PASS. Logs/tmp/asg404-commit-
+comparison-{model,analyze,inventory}-start.log. Tests cover exact BOM/café/CRLF, frozen
+selection, full-commit syntax, private malformed/duplicate/oversized schema, false working
+state/source-verified claims, mismatched blob/mode/path/length and typed empty refusals.
+Initial inventory correctly detected the newly added model; deterministic regeneration
+updated current comparison inputs, then all9 checks passed. This is not fresh native/app
+commit-comparison evidence. No native helper/model/source operation was dispatched by
+this model-only start. FullF20/CE01 and unavailable-platform400 remain open; marketplace
+gate/F23-last unchanged.
+
+2026-11-20 — F20/CE01 #404 immutable-commit comparison app validation (pending PR merge).
+
+Completed the coherent saved-history entry: explicit full40hex commit input and read
+consent, typed exact-root/commit/readset observation, all-original-file historical byte
+comparison, native host, five-record read-only durable fences, shared baseline/commit
+reader lease, focused MVC screen and helper asset. Results bind commit/tree/manifest,
+request/observation identities and every before/committed hash/count; they remain temporary
+and unverified. No current approval is revived and no source copy/write, model request or
+project command is authorized. Current working files/conflicts remain unknown.
+
+The Mac host starts only the packaged observer in a private directory and owned session.
+A complete PID marker is published atomically before Git can start; graceful Stop allows
+helper child reaping, then bounded owned-group termination confirms no remaining children.
+Late startup, streams, refusal attribution, disposal and uncertain cleanup fail closed;
+uncertainty retains the shared reader lease. No foreign directory is recursively removed.
+This is cooperative same-user process ownership, not an OS sandbox. Other platforms have
+an explicit unavailable host, not verified native support.
+
+Final checks: 69 focused Flutter tests; full2679 PASS with13 existing opt-in skips;
+650 Dart files format-clean, analyzer clean, architecture included, acceptance inventory9
+PASS and product claims32 PASS. Production web build and isolated unsigned macOS build
+PASS. Bundle ID com.arsinha.asg.commitcomparisonvalidation; packaged helper hash matched
+source. No installation, stable replacement, native GUI or live model verification claimed.
+Logs /tmp/asg404-commit-comparison-{focused,full,analyze,format,inventory,web,native}-final.log;
+source hashes /tmp/asg404-commit-comparison-final-input-hashes.json and build receipt
+/tmp/asg404-commit-comparison-build-receipt.json bind final production inputs. Distinct
+initial/final native event receipts are preserved; final event path is recorded in build
+receipt and /tmp/asg404-commit-comparison-native-event-path.txt.
+
+Actual disposable Mac Git/native DB fixture: exact BOM/multibyte/CRLF capture matched its
+commit; a second commit changed the peer and retained target match; unavailable commit
+preserved prior comparison as stale. Physical five app records, saved history, Git index,
+HEAD and current working bytes stayed unchanged. Actual cooperative and SIGTERM-resistant
+child fixtures confirmed group cleanup; early pending-marker Stop cleaned before observer
+admission. Browser IAB injected-host fixture used current real controller/store/view and
+synthetic records only: invalid HEAD never read, cancellation read0; matched/read1,
+changedpeer/read2, wrongcommit/read3 rejection, selected_path_missing/read4 refusal,
+delayed/read5 Stop, durable input change/read6 rejection, matched/read7 recovery and
+cleanup uncertainty/read8 disabled further reads/input. Previous results remained stale
+on failure; comparison writes0 and saved history unchanged throughout. One explicit
+fixture-only input edit occurred; no owner source/model accessed. Owned port8402 server
+stopped after verification. Browser evidence does not claim native execution in web.
+
+Fresh exact PR review, required remote CI and verified merge still gate completion of
+this app increment. Full F20/CE01 #404 remains open for immutable-context planning, explicit
+isolated copy/admission, reviewable changes and safe execution. Unavailable platforms stay
+under #400; marketplace gate and F23-last ordering remain unchanged.
