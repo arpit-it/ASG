@@ -19810,3 +19810,143 @@ Helper observes bounded point-in-time metadata, not atomic/authenticatedrepo or
 OSsandbox; interpreter must be outside selectedfolder, no silentfallback/install.
 Full404/liveQwen/unavailableplatform400 OPEN, marketplacegate/F23-last retained.
 Final exactremotePRreview/allrequiredCI/verifiedmerge remain mandatory.
+
+
+### 2026-11-20 — #404 confirmed import merged; instruction-context investigation started
+
+PR #791 merged as 5f4077f4354baaccc907b4da2196da3f367366d7 after the fresh
+review of remote24397985d908f8fd9af73d9763b4ae6dcdbd1bdb against ff2872e.
+Required CI44721642325: Flutter136238603738 and Python136238604011, every
+required and post step SUCCESS. Plugin main/merged PR and fetched merged tree
+ e4eb05644523bb636e35ba4f363247a8d4628bde match tested local42e744a.
+Issue #404 remains OPEN. Coordinator merge/outcome recorded; integration and
+completed claim released. Delivered explicit contained metadata import/reopen,
+owned helper lifecycle and captured planning context. Local2367FlutterPASS with
+13 explicit skips, analysis/format/web/isolatedMacbuild pass. Actual packaged Mac
+service and supplied-data IAB flow are separate evidence; native UI launch failed
+before reporting state and remains UNVERIFIED. No live inference claim.
+
+Immediately claimed 404-imported-instruction-context-boundary in the registered
+issue worktree on verified main, sole writer, under existing F20/#404 bounded
+source/instruction acceptance. Three-doc scope only: requirements, progress and
+AGENT_ENGINE architecture. This is a prerequisite investigation, not enabled
+repository instruction loading or another backlog. No independent second task
+is ready. Owner dirty checkout/processes and stable application remain preserved.
+
+Actual ImportedPlanStore.context serializes exactly root/package/dartSdk/runners/
+requirements from the confirmed inspection and saved application records. There
+is no imported AGENTS.md/README.md reader. A disposable Flutter probe created
+only owned temporary instruction documents and memory records, saved/approved a
+captured plan, changed those documents, and found identical context and retained
+approval; changing captured SDK changed context. Probe plus existing planning
+regressions:13PASS, /tmp/asg404-instruction-context-start.log. Receipt:
+/tmp/asg404-instruction-context-start-receipt.json. No model request, owner-project
+content read, project command, installation or selected-owner-file write occurred.
+Omission is a known missing capability, not a promise that current approval binds
+to disk instructions. Requirements changes already invalidate captured plans.
+
+Next work in this active investigation: define and review a bounded document
+readset and provenance/authority contract before implementation. Explicit selected
+files, per-file/aggregate byte limits, strict encoding, content hashes and root/
+relative-path identities must be covered by fresh consent and change detection.
+Reject links/special files/retargeting, malformed or oversized payloads privately;
+retain last working outputs and require fresh context review when any included
+input changes. No recursive discovery or silent model sharing. Repository text
+is untrusted data: it never grants tools, commands, installation, network or source
+writes, and cannot supersede owner policy. Reuse the descriptor/owned-process
+boundary only after evaluating its document-specific readset and failure cases.
+No reader/schema implementation is enabled by this start record; final contract,
+required checks, fresh PR review and verified merge remain pending. Full F20,
+live Qwen and unavailable-platform #400 acceptance remain open; marketplace gate
+and F23-last remain unchanged.
+
+
+### #404 imported instruction context — bounded prerequisite contract
+
+Investigation outcome: existing imported planning does not read repository
+instruction documents. The 13-case probe/regression evidence above establishes
+omission and snapshot semantics only. Existing advisory review prompts already
+label evidence untrusted, and RepairRequestContext captures fixed application
+record identities; neither is a repository document loader or disk readset.
+Do not route repository prose through the application's trusted instruction or
+permission channels. Full F20 remains unchecked.
+
+The next eligible implementation under this same umbrella is a command-free
+instruction-document observation helper, followed by a separately reviewed app
+integration. The helper contract is deliberately bounded:
+
+- Explicit canonical selected root, with a nonempty user-selected subset of
+  root-relative `AGENTS.md` and `README.md` only; canonical fixed order, no repeated
+  paths, nested discovery, includes, URL fetches, globbing, submodules or Git calls.
+  A missing selected file is a refusal, not silently omitted context. Unselected
+  documents are never opened. Reading project source remains separate acceptance.
+- Maximum 32 KiB raw bytes per selected document, 64 KiB aggregate, 128 KiB total
+  response. These are byte bounds, not model-token capacity claims. Require strict
+  UTF-8 without NUL; retain exact bytes for SHA-256 and base64 transport. No YAML,
+  Markdown directives, shell fragments, links or embedded instructions execute.
+- Versioned fixed-key response with a literal scope, ordered selected readset,
+  status/private reason and `source_verified=false`. Each successful entry binds
+  exact relative path, byte length, SHA-256 and canonical base64. Reject unknown,
+  duplicate/escaped-duplicate JSON keys, unsupported versions, inconsistent sizes,
+  hashes, paths and encodings. A refusal contains no document body or partial
+  successful entries. Root identity is frozen in the caller request; no absolute
+  filesystem paths or OS exception text need be echoed by the helper.
+- Anchor root and ancestors with nofollow descriptors, then only single-link
+  regular selected entries with before/open/after/final held-and-named identity
+  checks, bounded reads and complete handle cleanup. Refuse links, hardlinks,
+  special files, permission failures and observed mutations; preserve outside
+  sentinel bytes in adversarial fixtures. Descriptor checks are best-effort
+  mutation detection, not atomic repository authentication or an OS sandbox.
+- App integration must separately freeze root, selected paths and an existing
+  absolute interpreter resolving outside the root; preview those identities
+  before read consent. Use a packaged reviewed helper, isolated launch, deadline,
+  bounded output, strict response validation and owned Stop/late-start/reap/cleanup
+  semantics. No auto-install, fallback runtime, repository command or selected
+  file write. Browsers/unverified hosts refuse through an explicit capability.
+- Observation consent permits reading only. A separate preview/model action must
+  identify the exact captured text and configured destination. No automatic model
+  send or local-to-cloud fallback; F23 external data-sharing remains gated. Text
+  stays an attributed untrusted-data block, never a system instruction, permission
+  grant, command, tool request or schedule. Prompt wording alone is not enforcement:
+  deterministic operation/path/resource policies continue to control all effects.
+- Any later plan context must bind observation version, selected root/readset,
+  document path/size/digest and captured requirements/metadata. A changed readset,
+  byte digest, root, requirements or relevant model/operation policy invalidates
+  affected review. Revalidate with fresh explicit read before claiming current
+  disk state; saved snapshots remain historical and cannot authorize execution.
+  Malformed/oversized/refused/cancelled reads retain last working context as stale,
+  never silently replace it with an empty successful context or revive approval.
+
+Acceptance before app integration: deterministic boundary tests on this Mac and
+active supported POSIX CI for exact byte limits, two-file aggregate, invalid UTF-8,
+NUL, missing/linked/hardlinked/FIFO entries, root/ancestor/entry replacement,
+mid-read mutations, final readset changes, private error responses, no unselected
+body read, no recursion/process/network/write, FD cleanup and isolated CLI output.
+Typed parsing and lifecycle integration need their own strict/failure/disposal
+regressions and honest service/UI evidence. This document implements none of those
+future behaviors. Native UI failure, live Qwen identity and deferred #400 remain
+separate acceptance. No model runtime, owner process or stable app was changed.
+
+
+Protocol decision for that prerequisite: exactly seven top-level members
+`version`, `scope`, `status`, `reason`, `selected_paths`, `documents`,
+`source_verified`; version integer1, scope `project-instruction-documents`,
+source_verified literal false. Request selection uses the fixed ordered allowlist
+above; success must echo that exact selection and return the same ordered paths.
+Each document has exactly `path`, `byte_length`, `sha256`, `content_base64`.
+SHA-256 is lowercase 64-character hex of exact decoded bytes, with no whitespace,
+newline or Unicode normalization; strict UTF-8 decoding occurs after byte/hash
+validation. Reject NUL. Empty regular documents may succeed and remain attributed;
+an empty selection does not. Failed observations retain only safe fixed selection
+names, documents=[], and a fixed allowlisted private reason. Observed status uses
+reason=null; other statuses are invalid/unsupported/changed/unavailable. No raw
+exception/message/extensions or privilege field is accepted. This is a proposed
+wire contract, not an implemented or authenticated source snapshot.
+
+
+Final local investigation checks:13focusedPASS, fullFlutter2367PASS with13explicit
+skips, format580unchanged, analyzer clean, web/Wasm build succeeded; product32 and
+inventory9 PASS. Logs /tmp/asg404-instruction-context-{final-focused,full,format,
+analyze,web,product,inventory}.log. No product source, helper, manifest, workflow
+or persistence schema changed. Three-doc exact PR review and required remote CI
+remain mandatory; this investigation is not marked Done before verified merge.
