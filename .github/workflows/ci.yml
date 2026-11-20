@@ -56,6 +56,8 @@ jobs:
         run: python -B tools/test_development_coordinator.py
       - name: Verify command-free Git metadata observations
         run: python -B tools/test_git_head_metadata.py
+      - name: Verify descriptor-contained project metadata
+        run: python -B tools/test_project_metadata.py
       - run: python -B tools/test_product_acceptance.py
       - run: python -B tools/test_acceptance_inventory.py
       - name: Verify native fixture report contracts
