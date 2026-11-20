@@ -17,12 +17,14 @@ class ProjectInstructionPanel extends StatefulWidget {
     this.controller,
     this.inspection,
     this.onPlan,
+    this.onAdvisory,
   });
   final String root;
   final RecordStorage records;
   final ProjectInstructionController? controller;
   final ProjectInspection? inspection;
   final ValueChanged<ImportedDocumentContext>? onPlan;
+  final ValueChanged<ImportedDocumentContext>? onAdvisory;
   @override
   State<ProjectInstructionPanel> createState() =>
       _ProjectInstructionPanelState();
@@ -164,6 +166,19 @@ class _ProjectInstructionPanelState extends State<ProjectInstructionPanel> {
     widget.onPlan?.call(prepared);
   }
 
+  void _advisory() {
+    final owner = _controller, inspection = widget.inspection;
+    if (inspection == null || widget.onAdvisory == null) return;
+    final prepared = owner.preparePlan(inspection);
+    if (prepared == null ||
+        !mounted ||
+        !identical(owner, _controller) ||
+        owner.isDisposed) {
+      return;
+    }
+    widget.onAdvisory?.call(prepared);
+  }
+
   void _read() {
     final owner = _controller;
     owner.read([
@@ -235,6 +250,11 @@ class _ProjectInstructionPanelState extends State<ProjectInstructionPanel> {
                   OutlinedButton(
                     onPressed: c.canPreparePlan ? _plan : null,
                     child: const Text('Plan with captured documents'),
+                  ),
+                if (widget.inspection != null && widget.onAdvisory != null)
+                  OutlinedButton(
+                    onPressed: c.canPreparePlan ? _advisory : null,
+                    child: const Text('Ask about captured documents'),
                   ),
                 if (c.busy)
                   OutlinedButton(

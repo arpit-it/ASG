@@ -21978,3 +21978,131 @@ local policy does not require unrelated builds; final required CI remains mandat
 FullF20/#404 and deferred#400 remain open; marketplace/F23-last unchanged. Original
 owner dirty edits/processes and stable installation preserved. No second independent
 eligible task, inference request, install, model download, cloud or deployment.
+
+
+### 2026-11-20 — imported advisory investigation merged; question flow started
+
+PR797 exact reviewed head1b413613ad7653509486bfd3d829d1f7aa68b473 protected squash
+31177be5d5b33cac40a4c2c3e7d79070fa11ca7c verified by plugin main/mergedPR/issue404OPEN
+and fetched treeb0f64dde286cb198fcd4fa532d5baf8011af6a80 matching local49d0245. Fresh
+complete remote/localdiff review found no blockers; conversations empty. Required
+CI44744171100 Python136315054525/Flutter136315054722 and every poststep SUCCESS,
+including browser, normalweb and independent generatedproject checks. Bounded
+investigation Done, not imported chat delivery. Seven synthetic loopback boundary
+checks and31existing transport checks PASS. Dated unavailable runtime observations
+remain separate; no live inference. Coordinator merge/outcome recorded; integration
+and claim released. Owner dirty main/processes/stableapp preserved.
+
+Immediately claimed404-imported-advisory-question from verifiedmain, solewriter in
+registered isolated worktree under F20/#404. Outcome: one explicitly confirmed
+read-only advisory question against reviewed captures, actual streaming/Stop and
+retained completed local answer; no source effects. Scope covers typed request/
+record, separate controller/store/view, document-panel/workspace integration,
+strict database validation and relevant tests/shared docs/inventory. Acceptance:
+confirm exact root/context/local destination/model/question and local-storage
+consequence; stale capture/requirements/settings or cancelled/replaced consent
+cannot dispatch or complete; missing/mismatched response ID never becomes verified
+answer. Preserve last records/current text on transport/storage failure and Stop;
+new isolated key, no legacy schema/key reinterpretation. Production conditional
+save/reopen, controller disposal/save ordering, narrow UI/IAB/appropriate builds and
+full required regression/review/verifiedmerge remain gates. No second independent
+ready task; marketplace gate/F23-last and deferred#400 unchanged.
+
+Started pure ImportedAdvisoryRequest.prepare: immutable exact question/captured
+context/normalized local endpoint/model/output budget/prompt identity, explicit
+source_verified=false. Fixed read-only advisory preamble wraps complete attributed
+question/context as JSON user data, with no starter contract/tools/effects API.
+8000-character question limit,24KiB complete UTF8 prompt and64KiB canonical identity
+record caps reject rather than silently trim captured content. Question outer
+whitespace is normalized; included data/config changes invalidate consent identity.
+Existing local config validation rejects external endpoints and invalid budgets.
+Neither digest nor byte admission proves model weights, token fit or injection
+immunity. This model is not yet wired to a provider, storage or UI and starts no
+request or permission grant.
+
+Initial5request-model tests plus MVCarchitecture1 PASS: exact hostile/BOM/CRLF data
+attribution; destination/model/budget/context/question identity and canonical
+endpoint; private invalid input errors; exact24576promptbyte boundary and onebyte
+refusal; JSON expansion and multibyte overflow, Unicode distinctions. Two-file
+analysis clean. Canonical inventory regenerated and9checks PASS. Logs
+/tmp/asg404-advisory-question-start.log, -start-analyze.log, -start-inventory.log.
+Remaining controller/store/UI/consent/Stop/durability and full regression/build/
+requiredCI/review/merge are pending within this same coherent task. FullF20/#404,
+actual Qwen live acceptance and unavailable-platform#400 remainOPEN. No model
+request, runtime change, owner source action, install, download, cloud or deployment.
+
+
+### #404 imported advisory question — completed local implementation and evidence
+
+Fresh captured-document review can now open a separate advisory question screen.
+It never rereads files. Each question requires explicit confirmation of folder,
+captured-context/request SHA256, normalized local endpoint, exact requested model,
+question and output budget. Disclosure distinguishes sending captured metadata/
+requirements/document text to that local endpoint from storing only the latest
+question/answer/identity/provenance in ASG records; a successful answer replaces
+this folder's previous advisory answer. Cancel retains text and sends nothing.
+No generated-project prompt, operation-contract parser, source write, command,
+build, plan approval or scheduling action is present. Answer text remains literal
+advisory content. Hashes/data labels are not authenticity or current-disk evidence.
+
+Separate MVC request/record/controller/store/view use the configured local provider.
+Request caps are8000questioncharacters/24KiB completeUTF8prompt/64KiB identityJSON,
+with no captured-content truncation. Replies cap12000characters; strict11-field
+version1 record rejects duplicate/extra keys, invalid types/IDs/endpoints/budgets,
+root/storage-key mismatch and corrupt data privately. New key
+studio.importedAdvisory.v1.<imported-workspace-id> leaves legacy keys/formats intact.
+Records retain question/answer/root/context+request digests/destination/requested+
+reported model/outputtokens/time, not captured document text or raw provider errors.
+The response ID must match the requested ID; missing identity is refused for this
+new path while generic transport compatibility remains unchanged. This remains a
+server assertion, not proof of loaded weights or model semantic correctness.
+
+Consent and completion compare exact folder-reference, requirements, model-settings
+and previous-answer inputs. Production ConditionalRecordStorage checks durable
+rows in a read-only transaction before dispatch and conditionally commits completion;
+changed cache/durable inputs and stale editors preserve previous answer. Injected
+plain RecordStorage has guarded legacy fallback, not cross-process atomicity.
+Completed responses survive failed writes for Retry saving without reinference,
+or explicit discard. No partial/error/Stop/timeout/identity failure becomes a
+completed record. One imported-advisory app connection per isolate is held through
+bounded cancellation cleanup; uncertainty blocks redispatch and exposes Retry Stop,
+including recovery of a disposed owner's uncertain connection. This is not the
+future cross-feature/shared-inference scheduler, nor proof server inference stopped.
+Disposal/replaced-controller consent/save-notification guards prevent late request
+or state publication. Closing during an already-authorized local commit can still
+leave its valid stored result; app Stop is unavailable while saving.
+
+Final37focused PASS (request5, controller/store/nativeDB19, screen5, panel7,
+MVCarchitecture1). FullFlutter2470PASS/13explicit opt-in skips;601-file zero-change
+format, clean analysis, normalweb and isolatedDebugmacOS build PASS. Isolated bundle
+com.arsinha.asg.advisoryvalidation was not installed/launched. Product32/inventory9/
+coordinator20 PASS. Actual native database close/reopen preserves exact answer,
+stale durable settings refuse dispatch/commit despite unchanged session cache,
+and corrupt advisory rows are retained/quarantined without blocking unrelated
+records. Widgets verify separate sharing consent, cancellation/text retention,
+settings changes, replaced dialogs, storage retry and320px enlarged-text scrolling.
+Initial confirmation spinner/test settlement issues were corrected; explicit
+widget real-async settlement handles connection cleanup futures. Analyzer style
+infos were fixed. An automatic style tool unexpectedly added hooks:any to the
+manifest; only that generated line was removed immediately and original manifest
+bytes verified; no dependency installation/lockfile change was performed.
+
+IAB supplied-data fixture used synthetic providerasg-imported-advisory-fixture,
+in-memory records and synthetic document helper, no model/filesystem/process call.
+Observed initial disabled action, selected captures, exact sharing/storage disclosure,
+Cancel retention, saved answer/reopen, missing-ID refusal preserving prior answer,
+active partial/Stop/discard and failed-save/Retry saving success. Browser memory
+fixture is separate from actual native DB tests; native UI remainsUNVERIFIED.
+Owned8395preview server stopped. Eight product-source hashes match UI/build receipt
+/tmp/asg404-advisory-ui-build-receipt.json, with Mac/web helper packaging match.
+Logs /tmp/asg404-advisory-{focused-final3,full-final2,analyze-final3,format-final2,
+web-final,mac-final,product-final,inventory-final2,coordinator-final}.log.
+
+At2026-11-20T13:55:49.032113Z bounded8765/health and /v1/models bothURLError
+(0.006s/0.000s), /tmp/asg404-advisory-live-eligibility.json. Zero owner-model requests;
+no runtime start/stop/reconfigure/download. ExactQwen3.8-27B-4bit MLX/Metal health,
+model inventory and response-ID live acceptance staysPENDING. Byte limits do not
+establish token fit or injection immunity. Required finalCI/fresh exact PRreview/
+verifiedmerge still gate this bounded implementation; fullF20/#404 and deferred400
+remainOPEN. Owner dirtymain/processes/stableapp preserved; marketplace/F23-last
+retained. No second independent ready task, unapproved install/cloud/deployment.

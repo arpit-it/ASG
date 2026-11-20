@@ -12,6 +12,8 @@ import 'dart:convert';
 import '../models/agent_execution_checkpoint.dart';
 import '../models/agent_session.dart';
 import '../models/imported_plan.dart';
+import '../models/imported_advisory_record.dart';
+import 'imported_advisory_store.dart';
 import '../models/portable_project_archive.dart';
 
 import '../models/repair_attempt.dart';
@@ -139,6 +141,7 @@ class StudioDatabase implements ConditionalRecordStorage {
             !record.key.startsWith('studio.manualChecks.v1.') &&
             !record.key.startsWith('studio.namedChecks.v1.') &&
             !record.key.startsWith('studio.importedPlan.v1.') &&
+            !record.key.startsWith(ImportedAdvisoryStore.prefix) &&
             !record.key.startsWith('studio.planApproval.v1.')) {
           rethrow;
         }
@@ -246,6 +249,13 @@ class StudioDatabase implements ConditionalRecordStorage {
       PortableDecisionStore.decode(value);
     } else if (key.startsWith('studio.archive.v1.')) {
       PortableProjectArchive.decode(value);
+    } else if (key.startsWith(ImportedAdvisoryStore.prefix)) {
+      final record = ImportedAdvisoryRecord.decode(value);
+      if (key != ImportedAdvisoryStore.key(record.root)) {
+        throw const FormatException(
+          'Imported advisory storage identity changed.',
+        );
+      }
     } else if (key.startsWith('studio.importedPlan.v1.')) {
       ImportedPlan.fromJson(decoded as Map<String, dynamic>);
     } else if (key == InspectedFolderStore.key) {
