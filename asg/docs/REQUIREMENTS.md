@@ -20728,3 +20728,103 @@ remote/network, credentials, model/runtime/nativeapp/install/sourceapplication/
 cloud/deploy effects. Three docs only. No ASG product vulnerability claimed: no
 Git inventory exists yet. Required exactfreshPRreview/allrequiredCI/verifiedmerge
 remain pending. Full404/liveQwen/#400, marketplace gate/F23-last preserved.
+
+
+### 2026-11-20 — #404 Git boundary findings merged; command-free HEAD reader started
+
+PR786 protected expected-head mergeb95e9db62ee848f0a5f278b0cb215af0632a8b6d
+verified remote main/mergedPR/fetched tree9873325ff018a682528f227cc3bd7c49ce199bf4.
+Fresh reviewed84f32461a6c3cc8e66e18a5a1a7b79968989fc01/base232c6a76 no blocker,
+threads empty. CI44698931166 Flutter136162330521/Python136162330726 every mandatory/
+post step SUCCESS. Eight controlledGit checks/local2280FlutterPASS13skips/format/
+analyze/web/product32/inventory9 retained. Coordinator merged/outcome recorded;
+integration and claim released. Bounded investigation Done, full404/liveQwen/#400
+OPEN. Ownerdirty checkout/processes and lastworking outputs preserved.
+
+Immediately claimed404-command-free-git-head-reader under existing404/F20, sole
+writer in registeredissueWT. One coherent internal prerequisite, no new issue: a
+stdlib POSIX helper observes literal contained loose .gitHEAD/ref declarations
+without invoking Git/shell/config/index/hooks/filters/objects/network or writes.
+Owns tools/git_head_metadata.py, its deterministic tests, existingCIruntimejob
+step and three docs. Fixed --root/versionedJSON, no rawpath/errors. Descriptor-
+anchored nofollow directories/regular files, bounded stable reads/cleanup; reject
+links/hardlinks/FIFO/malformed/oversize/traversal/.gitfile/commondir/gitdir/reftable
+and ANYpacked-refs presence. Packs can be legitimate: unsupported, not corrupt
+or unborn. Missing loose target unresolved. No automatic retry on changed input.
+
+Read-only design review clarified essential truthfulness: ignoring config means
+no certification of repositoryformat/objectformat/refstorage. Return ONLY literal
+declared_ref/declared_oid/head_form/oid_source, git_state_verified=false and
+workingtree/aheadbehind/conflict unknown. DeclaredOID does not prove object or
+commit existence, atomic snapshot, authenticatedGitstate or execution approval.
+Descriptor anchoring is not a general OSsandbox against hostile mounts/writers.
+Initial branch path grammar is an explicit strict subset. No appUI integration
+or nativeGit execution enabled by this helper; future integration needs its own
+reviewed bounded action. Test positive/missing/refusal/descriptorrace/mutation/
+no-forbidden-read/process/unchanged-file cases and add CItest step preserving
+read-only permissions/pinnedactions/protection. Fullchecks/freshreview/requiredCI/
+verifiedmerge mandatory. No second independent writer task admitted; read-only
+researcher made no edits/claims. No model/runtime/nativeapp/install/cloud/deploy.
+Marketplace gate/F23-last/deferred400 retained.
+
+
+#404 command-free HEAD reader started: tools/git_head_metadata.py implements
+fixed --root/versionedJSON literal loose-file observations using anchored
+POSIX nofollow descriptors, bounded regular single-link files and held-fd/name
+stability checks. It never imports/spawns Git/subprocess/shell or reads config,
+index, objects, hooks, filters, packed refs or network; rejects knownindirection
+markers and allpackedrefs presence. Symbolic loose declaration/direct40or64hex/
+missingtarget states retain explicit unverifiedGitstate and unknown working/
+ahead/conflict fields. No appUI/manifest/authority integration performed.
+
+Initial12disposableMac tests PASS: symbolic/direct declarations, unresolvedtarget,
+no direct.git, packedpresence without read, HEADsymlink/traversal/FIFO/hardlink
+refusal, forbidden-read/process spies, unchangedbytes and actual isolated Python
+CLI JSON. Log /tmp/asg404-git-head-reader-start.log. This is START evidence only:
+expanded descriptor race/mutation/malformed/topology/cleanup tests, runtimeCI
+registration, broaderchecks/freshreview/verifiedmerge remain pending. No OSsandbox/
+atomicrepo snapshot, verifiedcommit/Gitstate or allplatform claim. No ownerrepo/
+model/runtime/nativeapp/install/deploy effects. Sole writer lease remains active.
+
+
+### #404 command-free HEAD reader — final local implementation evidence
+
+Internal stdlib helper now emits version1 literal-file-declaration JSON only:
+observed/unresolved/not_present/unsupported/invalid/changed/unavailable, fixed
+reason, declared_ref/declared_oid/head_form/oid_source, git_state_verified=false
+and workingtree/aheadbehind/conflict unknown. It does not interpret config or
+certify repositoryformat/refstorage/object/commit state. Canonical absolute root
+and ref components use POSIXdirfd nofollow handles; bounded regularsingle-link
+HEAD/ref reads verify before/opened/after/named identity and held descriptors.
+Known .gitfile/link/commondir/gitdir/reftable/ANYpackedrefs are refused without
+following/reading; no Git/subprocess/shell/config/index/objects/hooks/filter or
+network access, writes, automatic retry or rawpath/error echo. Packed repos are
+unsupported, missing loose targets unresolved, never inferred unborn.
+
+Read-only source review found and root fixed prepublication mutation gaps:
+poststat-open disappearance/replacement nowchanged, finalreadset disappearance
+nowchanged, finalmarker absence checked AFTER files/missing; cached host capability
+check includes statfollow_symlinks so syscallspies exercise realIO. Deterministic
+late-marker regression originally26PASS/1FAIL (observed instead ofchanged), now
+PASS. These were unmerged helper defects, not escaped app incidents. Subsequent
+read-only source pass found no new blocker within stated non-sandbox scope.
+
+33focusedMac tests PASS: literal symbolic/direct40/64 declarations, unresolved/
+missing/invalid/malformed/oversize cases, root/.git/refdir/leaf link/swaps, outside-
+authorized-root symlink/hardlink refusal, FIFO, stat-open/duringread/finalreadset/
+marker/missingtarget mutation, no forbidden reads/processes, unchangedbytes, FD
+cleanup on success/failure/changed and actual isolatedPythonCLI fixedJSON/stderr.
+Logs /tmp/asg404-git-head-reader-{final-focused,marker-before}.log. RegularFS calls
+can still block; caller needs a process deadline. No OSsandbox, hostilemount/ABA
+or atomicrepository snapshot guarantee. ASCIIref grammar is an explicitsubset.
+
+Existing Python runtimeCI job adds only this deterministic suite; job names,
+read-only permissions, pinnedactions/protection unchanged. Localcoordinator20/
+product32/inventory9PASS, fullFlutter2280PASS13explicit skips, format561unchanged,
+analyzer clean, web/Wasm dry run built. Logs /tmp/asg404-git-head-reader-{coordinator,
+product,inventory,full,format,analyze,web}.log. No appUI/asset/nativeGit/status or
+new approval authority is integrated. Ownerrepo/model/runtime/nativeapp/install/
+cloud/deploy untouched; old native/live evidence retains originalidentity.
+Fresh exactPRreview/allrequiredCI/verifiedmerge pending; full404/liveQwen/#400,
+marketplace gate andF23-last retained. This is one internal safety prerequisite,
+not full imported-repository support.
