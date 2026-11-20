@@ -17482,3 +17482,80 @@ automatic retry. Current readiness is missing; live acceptance remains open whil
 the portable regression task is independently verifiable on this Mac. Finish
 documentation checks and fresh exact review/requiredCI/verifiedmerge before marking
 this prerequisite investigation complete or starting the dependent test increment.
+
+
+20 November2026 — PR770 verified merged928d295096cf12a6974bb9334ab36e44ba7902a6,
+exacttree8d654bb86c88d5b48fbb88001658f567ba29e04b matches3tested published docs.
+Fresh3docreview7751757df73a2d79cad48e4230acc76ad79bf9ab/base01dd35ca found no
+remaining blocker after strengthening private timing evidence: native reserve
+completion held after commit, HTTPcalls0untilrelease, then actual physical intent/
+response/outcome/reopen checks;2matching/mismatchcases PASS plus reserve-refusal1.
+Log:/tmp/asg404-initial-http-journal-probe4-gated.log. Published docs/tree unchanged.
+RequiredCI44657209429 Python136026262723/Flutter136026263086 bothSUCCESS and
+allmandatory/poststepsSUCCESS, emptythreads/unchangedhead/base/main checked before
+protected expected-head merge; pluginPR/main/issue404OPEN and fetchedtree verified.
+Local merged-event gate initially refused because checks event preceded review_changes.
+Reran3synthetic+42component45checks/product32/inventory9 on unchanged inputs, then
+recorded post-review checks, merged and outcome_verified before release. No GitHub
+check or protection bypassed; incidental clean next branch creation preceded gate
+reconciliation but no claim/edits began there until ownership released.
+One validation-rework, no escaped defect observed; provider timings unknown versus
+manual observation wait. Delivered local prerequisite contract only; live8765Qwen
+readiness remains pending connectionrefused, not a delivered live model result.
+
+Immediately claimed404-initial-http-journal-regressions from verifiedmain under
+SAMEF20/CE01/#404 in reused clean registered worktree. Four owned paths: new
+test/initial_request_http_journal_test.dart, REQUIREMENTS, PROGRESS, inventory.
+One coherent writer, no independent second ready task; no live runtime worker
+required for neutral synthetic HTTP/nativeDB tests. Implement the merged3case
+contract including explicit durable-completion gate and actual native close/reopen,
+mismatchfailedmetadata and persistence-refusal0HTTP/no partial writes. Cleanup
+resources/HTTP overrides on allpaths; never label synthetic fixture asQwen/weights
+or invoke owner8765. Full required checks/fresh review/CI/verifiedmerge remain
+mandatory. FullF20/CE01/umbrella404 and deferred400/live acceptance stay open.
+
+
+Permanent HTTP/native-journal regression implementation checkpoint: new
+test/initial_request_http_journal_test.dart has3portable VM cases using DEFAULT
+production HTTP provider (no FakeProvider/MockClient), neutral supplied SSE on
+private ephemeral loopbackport and actual StudioDatabase close/reopen. Native
+reservation completion is explicitly held AFTER physical commit; an I/O window
+runs while gate remains held and HTTPcalls0, then handler checks physical reserved
+intent before reading/responding to request. Matching validated result retains
+exact selected origin/raw session/observed ID/returned-file hashes through reopen;
+wrong model refuses validated origin and retains failedLocally/empty returned
+hashes. Reserve persistence refusal sends0HTTP and preserves all physical records
+through close/reopen. Only request journal changes; working/session/unrelated
+records stay exact, candidate journal absent. No source application/copy/SDK/preview.
+
+Fixture owns and cleans service/server/subscription/nativeDB/temp directory and
+restores HTTP overrides even on setup failure; callback assertions are surfaced.
+Mismatched-model assertion excludes TimeoutException; bounded waits prevent hangs.
+Actual loopback I/O is synthetic contract evidence, NOT8765/Qwen/live inference or
+proof of model weights. No owner runtime/model processes were contacted or changed
+for this test increment.
+
+Local3PASS; focused3+42components+architecture46PASS; fullFlutter2201PASS/11existing
+skips. Clean analyze, format552unchanged,product32/inventory9PASS; regenerated
+canonical inventory unchanged because mapped production inputs did not change.
+Logs:/tmp/asg404-http-journal-{focused,final-components,final-full-test,final-
+analyze,final-full-format,product,inventory-test}.log. Review strengthened timing
+assertions with an I/O window and repeated affected/full checks; no production
+runtime source or schema changed. Tests-only increment needs no new app/native
+build claim; final requiredCI includes browser/web checks.
+
+Scoped local checkpoint ready; publication, fresh exact PR review, final requiredCI
+and verifiedmerge remain pending. Keep valid claim and resume owned regression
+task first. FullF20/CE01/umbrella404/platform400 and live8765Qwen readiness remain
+open. Stable application/owner edits/processes and last working outputs preserved;
+no install/download/cloud provisioning/deployment or unrestricted source execution.
+
+
+Prepublication review refinement: metadata source-retention assertion now inspects
+DECODED JSON values rather than escaped wire text, so JSON escaping cannot hide
+a retained source body from that assertion. Exact returned-hash/outcome/origin and
+full unrelated-record comparisons remain. New3cases PASS and fullFlutter2201PASS/
+11existing skips repeated after this change; analyze clean and format552unchanged.
+Final logs:/tmp/asg404-http-journal-review-{focused,full-test,analyze,full-format}.log.
+No production source, new model/provider or actual8765call. Ready for scoped
+publication/fresh exact PRreview/requiredCI/verifiedmerge; delivery not yet claimed.
