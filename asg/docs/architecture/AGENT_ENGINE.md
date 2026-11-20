@@ -3965,3 +3965,137 @@ Mac23cases8launches plus preserved22/21/20cases18launches pass on bundle
 This is supplied metadata/source fixture evidence, not production source-copy, live
 inference, general SDK or fullCE01/platform acceptance. See canonical requirements/
 progress for source/report digests and exact validation limits.
+
+
+## Live initial-request prerequisites —20 November2026
+
+
+
+Live initial-request prerequisite checkpoint at2026-11-20T01:50:07Z. Both local
+8765 /health and /v1/models fail with URLError/ConnectionRefusedError errno61.
+/tmp/asg404-live-initial-runtime-{preflight,recheck}.json. No model identity, MLX/
+Metal readiness or response model can be established; generationAttempts0. Do not
+substitute models or relabel supplied native23 evidence as live. Exact missing
+prerequisite: existing owner runtime must become reachable at8765, health ready
+onMLX/Metal and models advertise exactQwen3.8-27B-4bit before a bounded live request;
+actual matching response ID is additionally needed before any passing live claim.
+No server/model process was started/stopped/changed, installed or downloaded. Root's
+read-only runtime checks settled with no active request; another runtime worker
+must still be explicitly assigned before any later live inference.
+
+Useful local prerequisite completed despite unavailable runtime:2private synthetic
+loopbackHTTP-to-native-journal integration probes pass using ACTUAL default
+LocalModelProvider through SourceEditProposer/ApprovedSourceProposer and physical
+StudioDatabase records. This server is a supplied SSE fixture on a disposable
+loopbackport with neutral synthetic-http-initial-metadata identity, not8765, not
+Qwen or live inference. At HTTP arrival the physical native journal already has
+reserved intent with no response identity. Matching supplied response yields exact
+validated-return metadata/original raw initial origin; mismatched response yields
+failedLocally with no validated origin/returned hashes. Actual DB close/reopen
+retains exact outcomes and raw records; one HTTP request per case, no replay.
+Only request journal changes; working/session/all unrelated records unchanged,
+candidate journal absent. Fixture server/client/database are closed and private
+files removed; no source application/copy/SDK/preview/candidate admission occurs.
+
+Probe:/tmp/asg404-initial-http-journal-probe_test.dart; final strengthened log
+/tmp/asg404-initial-http-journal-probe3.log (2PASS, including physical reserved
+record assertion). Earlier mismatch assertion was tightened to FormatException/
+StateError so timeout cannot count as expected refusal. Component proposer/journal/
+source/transport42PASS:/tmp/asg404-live-initial-prerequisite-tests.log. These are
+2synthetic integration probes plus42component checks, never44live observations.
+
+Concrete next owned work: finish bounded live-verification prerequisites/opt-in
+validation plan and determine whether these composed HTTP/native-journal cases
+need permanent regression coverage (existing tests isolate supplied provider from
+transport). Current task stays docs-only/in progress, live acceptance pending.
+Exact review/requiredCI/verifiedmerge still gate bounded investigation completion.
+No production source changed, no cloud/native app/stable replacement/deployment.
+FullF20/CE01/umbrella404 and unavailable400 stay open; preserve owner processes
+and last working outputs, resume this owned investigation first.
+
+
+## Initial-request transport/journal prerequisite result —20 November2026
+
+Bounded investigation404-live-initial-request-investigation is locally complete
+as a prerequisite result; current live inference acceptance remains pending. It
+found one concrete integration-coverage gap: selected initial-request tests inject
+a supplied provider, while local transport tests inject HTTP clients. Neither
+existing suite composes ACTUAL default HTTP provider, selected-session proposer and
+physical native journal across reserve/response/outcome/reopen. Private synthetic
+loopback/native probes now demonstrate that composition without a running model.
+
+New third probe passes: native reservation persistence refusal prevents ANY HTTP
+request and leaves the entire physical records map unchanged. Fault wrapper rejects
+only initial request-reservation commit before delegation; it does not fake a
+transport failure after sending. Probe:/tmp/asg404-initial-http-reserve-refusal-
+probe_test.dart, log same-prefix.log. Together with matching-response/mismatched-ID
+probes in /tmp/asg404-initial-http-journal-probe3.log, there are3synthetic composed
+observations plus42existing component tests, not45live model runs. The synthetic
+server is always separate from8765, neutral fixture model ID, and has no weights.
+Only its owned endpoint/client/database are opened/closed; source is never applied.
+
+Next bounded dependency-ready implementation AFTER this contract's verified merge:
+404-initial-http-journal-regressions under SAME#404. Add one permanent focused test
+file test/initial_request_http_journal_test.dart with three portable VM cases:
+1. At actual HTTP request arrival, direct physical native record already shows
+   reserved initial intent with no response model. Successful bounded SSE under
+   matching neutral fixture ID produces returnedValidated, matching observed ID,
+   exact initial request reference/raw session and only declared returned-file hashes.
+   Close/reopen actual database; exact journal/outcome survives with no HTTP replay.
+2. Supplied different response model ID must fail production transport/proposer
+   validation, retain failedLocally with no validated return/origin/returned hashes,
+   and preserve working/session/all unrelated records through native close/reopen.
+   Timeouts cannot count as expected mismatch; assert actual allowed refusal types.
+3. Refused durable reservation produces0HTTPcalls, no journal/partial records, no
+   observed response, and no file/candidate/SDK/preview effects. Do not introduce a
+   fallback provider or swallow errors to turn a failure into a validated return.
+
+Use default ApprovedSourceProposer->SourceEditProposer->LocalModelProvider against
+a private loopback HttpServer on an ephemeral port, not an injected model provider
+or a mocked HTTP client. Seed only synthetic approved task/session/working metadata
+in disposable native database; do not touch owner application storage. Request
+source max_tokens stays4096. The fixture sends fixed small SSE; body/model/path/
+stream/token assertions prove the composed API contract, not model correctness.
+Restore HTTP overrides and close owned service/server/database/temp files on every
+path, including setup failure; bound waits and surface callback failures. Native
+DB adapter must actually close/reopen rather than merely reload a typed object.
+Tests should run on existing Mac and Linux VM CI without platform skips, native
+apps, live model, SDK invocation, installation or new dependency. Preserve strict
+source parser, response-model validation, request budget/consent/Stop/error behavior
+and current wire formats. No production runtime change is planned for this gap.
+
+Follow-up owned scope: that test, REQUIREMENTS/PROGRESS and acceptance inventory as
+needed; shared integration owner handles ledgers. One coherent writer is sufficient.
+Acceptance needs3composed cases PASS, relevant existing42tests, architecture, full
+format/analyze/Flutter and requiredCI including browser/web checks; source inventory
+regenerated only if relevant inputs change, with historical observations unchanged.
+No test mirrors an implementation method; each verifies an external HTTP/durable
+ordering or failure boundary. Fresh exact PR review and verified protected merge
+are mandatory before recording this regression increment delivered.
+
+Future LIVE opt-in validation is separate and NOT satisfied by these tests:
+- Check existing8765health ready with actualMLX/Metal and /v1/models exact
+  Qwen3.8-27B-4bit. Verify current server budget permits sourceOutputTokens4096 and
+  serialized availability; do not lower or bypass production ceilings to force it.
+- Assign exactly one runtime worker, leave owner-started processes alone and avoid
+  competing requests. Inability to prove readiness/identity/budget keeps it pending.
+- Use one small synthetic approved initial source request via actual production
+  proposer/default transport to that exact configured endpoint/model. No candidate
+  admission, file copy/application, SDK or preview; original working/session stay.
+- Actual successful stream response must expose non-null model ID EXACTLY matching
+  Qwen3.8-27B-4bit before passing live metadata proof. A requested ID or advertised
+  model alone is insufficient. Server assertion still is not authenticated weights.
+- Verify physical reserve-before-transport, returnedValidated/reference/raw original
+  session/returned hashes and actual native close/reopen with no replay. Invalid
+  JSON, truncation, mismatch or persistence failure remain failure/unknown evidence,
+  not a reason to retry automatically or claim the server stopped inference.
+- Record tested revision, date, health/backend/device/model/request limits and actual
+  matching response identity; retain private raw responses separately. Never commit
+  prompts, source bodies, credentials or private model/endpoint payloads.
+
+Both8765endpoints currently refuse connection(errno61), so no live generation was
+attempted and no live model observation exists. Existing runtime must become
+reachable with the documented ready identity/budget before that acceptance becomes
+eligible. Continue the portable regression increment; no model/process install,
+download/start/stop or cloud/stable-app action is authorized by this contract.
+FullF20/CE01/umbrella404 and unavailable400 remain open.

@@ -17373,3 +17373,112 @@ com.arsinha.asg.restartfixture, never installed/replaced stable app. Owner proce
 and last working output preserved. Exact final source commit/publication, fresh PR
 review, requiredCI and verifiedmerge still gate delivery; fullF20/CE01/umbrella404
 and unavailable400 stay open.
+
+
+20 November2026 — PR769 verified merged01dd35ca2364b421903ed5672dcfc5536555dbfe,
+exacttreecf684934818e19ce978514b06fd4bad00620f8d2 matches9tested/published files.
+Fresh9patchreviewc1dbcce01512d20f56cde6e02a4f7f34c29cf3cd/base6fdc8642 found
+no blockers/rework. RequiredCI44655038816 Python136019052579/Flutter136019053045
+bothSUCCESS, allmandatory/poststepsSUCCESS, Pythonlogs6+100PASS, emptythreads and
+unchanged head/base/main verified before protected expected-head merge. PluginPR/
+main/issue404OPEN and fetchedtree verified. Local full2198/11existing skips, clean
+analyze/format553/web/isolatedmacOS/product32/inventory9 and samebinary26native
+launches pass. Delivered bounded native initial-request lineage proof with explicit
+older selection, not live inference/production copy/generalCE01/platform completion.
+Coordinator merged/outcome_verified recorded before integration/writer release.
+No escaped defect observed; manual wait/time distinct from unknown provider timing.
+Owner primary edits/processes, stable app and last working output preserved.
+
+Immediately claimed404-live-initial-request-investigation under SAMEF20/CE01/#404
+from verifiedmain in reused clean registered worktree; only REQUIREMENTS/PROGRESS/
+AGENT_ENGINE docs owned. Current native23setup is deliberately supplied; existing
+selected-session proposer/journal regressions use supplied providers. Concrete gap
+is dated live transport/validated response/durable initial metadata evidence tied
+to current exactQwen3.8-27B-4bit/MLXMetal8765, without applying or executing source.
+Root is sole assigned8765 runtime worker for this bounded investigation, no other
+live worker; owner-started server/processes must remain untouched. No independent
+second ready task is admitted because runtime resource/evidence is serial.
+
+Acceptance: inspect current initial request/proposer/transport tests, check bounded
+/health and /v1/models for ready MLX/Metal and exact model before any inference,
+then actual matching response model before any passing live claim. If eligible,
+one serialized bounded synthetic request may prove reserve/validated return/reopen
+metadata via production proposer. No candidate admission, source copy/application,
+SDK command or preview. If missing/mismatched runtime, leave live acceptance pending
+and perform useful deterministic/local prerequisite trace/probe; never substitute
+model, restart owner processes, install/download or weaken guards. Record dated
+revision/model/limits/outcome without prompts/source/private model payload in repo.
+Investigation in progress, docs-only; fresh review/requiredCI/verifiedmerge gate its
+bounded completion. FullF20/CE01/umbrella404 and unavailable400 remain open.
+
+
+Live initial-request prerequisite checkpoint at2026-11-20T01:50:07Z. Both local
+8765 /health and /v1/models fail with URLError/ConnectionRefusedError errno61.
+/tmp/asg404-live-initial-runtime-{preflight,recheck}.json. No model identity, MLX/
+Metal readiness or response model can be established; generationAttempts0. Do not
+substitute models or relabel supplied native23 evidence as live. Exact missing
+prerequisite: existing owner runtime must become reachable at8765, health ready
+onMLX/Metal and models advertise exactQwen3.8-27B-4bit before a bounded live request;
+actual matching response ID is additionally needed before any passing live claim.
+No server/model process was started/stopped/changed, installed or downloaded. Root's
+read-only runtime checks settled with no active request; another runtime worker
+must still be explicitly assigned before any later live inference.
+
+Useful local prerequisite completed despite unavailable runtime:2private synthetic
+loopbackHTTP-to-native-journal integration probes pass using ACTUAL default
+LocalModelProvider through SourceEditProposer/ApprovedSourceProposer and physical
+StudioDatabase records. This server is a supplied SSE fixture on a disposable
+loopbackport with neutral synthetic-http-initial-metadata identity, not8765, not
+Qwen or live inference. At HTTP arrival the physical native journal already has
+reserved intent with no response identity. Matching supplied response yields exact
+validated-return metadata/original raw initial origin; mismatched response yields
+failedLocally with no validated origin/returned hashes. Actual DB close/reopen
+retains exact outcomes and raw records; one HTTP request per case, no replay.
+Only request journal changes; working/session/all unrelated records unchanged,
+candidate journal absent. Fixture server/client/database are closed and private
+files removed; no source application/copy/SDK/preview/candidate admission occurs.
+
+Probe:/tmp/asg404-initial-http-journal-probe_test.dart; final strengthened log
+/tmp/asg404-initial-http-journal-probe3.log (2PASS, including physical reserved
+record assertion). Earlier mismatch assertion was tightened to FormatException/
+StateError so timeout cannot count as expected refusal. Component proposer/journal/
+source/transport42PASS:/tmp/asg404-live-initial-prerequisite-tests.log. These are
+2synthetic integration probes plus42component checks, never44live observations.
+
+Concrete next owned work: finish bounded live-verification prerequisites/opt-in
+validation plan and determine whether these composed HTTP/native-journal cases
+need permanent regression coverage (existing tests isolate supplied provider from
+transport). Current task stays docs-only/in progress, live acceptance pending.
+Exact review/requiredCI/verifiedmerge still gate bounded investigation completion.
+No production source changed, no cloud/native app/stable replacement/deployment.
+FullF20/CE01/umbrella404 and unavailable400 stay open; preserve owner processes
+and last working outputs, resume this owned investigation first.
+
+
+Live initial-request investigation result: existing8765health/models connection
+refusal leaves live model readiness/identity/response acceptance pending. No actual
+inference attempted. Useful local prerequisites now comprise3synthetic HTTP/native
+journal probes (validated matching response, wrong response ID refusal, reservation
+persistence failure before any HTTP) and42existing component checks, allPASS.
+Third probe:/tmp/asg404-initial-http-reserve-refusal-probe_test.dart and matching
+.log. This proves bounded composed transport/durable ordering, not model weights,
+actualQwen response, source execution or native application crash recovery.
+
+AGENT_ENGINE.md defines one concrete follow-up under SAME#404, AFTER this bounded
+investigation's verified merge:404-initial-http-journal-regressions. Add permanent
+portable3case test/initial_request_http_journal_test.dart using actual default
+production HTTP transport with separate neutral synthetic loopback SSE and real
+physical native close/reopen. Assert durable intent at HTTP arrival, exact matching
+validated return, mismatch failed outcome and no HTTP/partial records when reserve
+fails; only journal may change, no source/candidate/SDK/preview effects. Close and
+restore resources even on failure. No dependency or production guard/schema change.
+Relevant42/full format/analyze/Flutter/requiredCI/fresh review/verifiedmerge gate it.
+This is the next sole bounded increment, not another speculative backlog.
+
+Future live opt-in plan separately requires readyMLXMetal8765/exactQwen3.8-27B-4bit,
+budget4096/serialized worker, observed non-null exactmatching response ID and actual
+native reserve/validated-return/reopen proof. No substitution/restart/download or
+automatic retry. Current readiness is missing; live acceptance remains open while
+the portable regression task is independently verifiable on this Mac. Finish
+documentation checks and fresh exact review/requiredCI/verifiedmerge before marking
+this prerequisite investigation complete or starting the dependent test increment.
