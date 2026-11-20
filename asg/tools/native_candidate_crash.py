@@ -18,6 +18,7 @@ import native_repair_lineage
 import native_initial_lineage
 import native_initial_unresolved
 import native_initial_return_boundary
+import native_repair_return_boundary
 
 OPERATIONS = ['resolve', 'analyze', 'test', 'build']
 
@@ -513,6 +514,7 @@ def main():
     parser.add_argument('--bundle', required=True)
     parser.add_argument('--sdk', required=True)
     parser.add_argument('--task-decision', action='store_true')
+    parser.add_argument('--repair-return-boundary', action='store_true')
     parser.add_argument('--initial-return-boundary', action='store_true')
     parser.add_argument('--return-boundary', choices=('beforeCommit', 'afterCommit'))
     parser.add_argument('--initial-unresolved', action='store_true')
@@ -541,7 +543,9 @@ def main():
     parser.add_argument('--operation', choices=OPERATIONS + ['all'], default='resolve')
     args = parser.parse_args()
     try:
-        if args.initial_return_boundary:
+        if args.initial_return_boundary or args.repair_return_boundary:
+            if args.initial_return_boundary and args.repair_return_boundary:
+                raise ValueError('Exactly one terminal-return mode required')
             if (args.initial_unresolved or args.unresolved_next or args.initial_lineage or
                     args.initial_boundary is not None or args.initial_retry or args.initial_corrupt or
                     args.repair_lineage or args.lineage_boundary is not None or args.lineage_retry or
@@ -551,8 +555,9 @@ def main():
                         args.admission_crash, args.session_cancel, args.session_cancel_active,
                         args.session_cancel_unknown))):
                 raise ValueError('Terminal-return mode cannot combine other scenarios')
-            print(json.dumps(native_initial_return_boundary.run_initial_return_boundary(
-                args.bundle, args.sdk, args.return_boundary or 'beforeCommit')))
+            runner = (native_repair_return_boundary.run_repair_return_boundary if args.repair_return_boundary
+                      else native_initial_return_boundary.run_initial_return_boundary)
+            print(json.dumps(runner(args.bundle, args.sdk, args.return_boundary or 'beforeCommit')))
         elif args.return_boundary is not None:
             raise ValueError('Return boundary requires its explicit primary mode')
         elif args.initial_unresolved:

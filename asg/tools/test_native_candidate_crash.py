@@ -2140,5 +2140,265 @@ class InitialReturnBoundaryTests(unittest.TestCase):
         with self.assertRaises(OSError):self.protocol._write_challenge(self.root,2,b'{}',None)
         self.assertEqual(target.read_text(),'unchanged')
 
+class RepairReturnBoundaryTests(unittest.TestCase):
+    """Protocol26 does not equate stored return metadata with proposal delivery."""
+    def setUp(self):
+        self.temporary=tempfile.TemporaryDirectory(prefix='asg-return-host-tests-')
+        self.addCleanup(self.temporary.cleanup)
+        self.root=Path(self.temporary.name).resolve();self.nonce='d'*32
+        self.protocol=fixture.native_repair_return_boundary
+
+    digest=staticmethod(UnresolvedInitialTests.digest)
+
+    def records(self,committed=False):
+        value={key:None for key in self.protocol.RECORD_SLOTS}
+        value.update(working=self.digest('working'),session=self.digest('raw session'),
+                     failureJournal=self.digest('whole failure journal'),failedCandidate=self.digest('failed candidate'),
+                     repairOrigin=self.digest('canonical raw origin'),
+                     repairJournal=self.digest('proposed journal' if committed else 'reserved journal'))
+        return value
+
+    def report(self,launch,boundary='beforeCommit'):
+        committed=boundary=='afterCommit';project=f'restart-{self.nonce}';session=f'session-{self.nonce}'
+        counters={key:0 for key in self.protocol.COUNTER_KEYS}
+        if launch==1:counters.update(setupCalls=1,failureSetupCalls=1,proposalCalls=1,reservationCommits=1,reservationReturns=1,
+            suppliedProviderCalls=1,terminalAttempts=1,terminalCommits=int(committed))
+        return {'version':26,'mode':'repair-return-boundary','nonce':self.nonce,'launch':launch,
+            'boundary':boundary,'stage':'held-terminal' if launch==1 else 'cold-retained',
+            'projectId':project,'sessionId':session,'boardTaskId':'Tanalyze','requirementId':'R1',
+            'requestedModel':self.protocol.MODEL,'attemptCount':1,'attemptNumber':1,
+            'attemptStatus':'proposed' if committed else 'reserved',
+            'attemptSha256':self.digest('proposed attempt' if committed else 'reserved attempt'),
+            'originSha256':self.digest('canonical raw origin'),'failureSha256':self.digest('canonical failed run'),
+            'storedResponseModel':self.protocol.MODEL if committed else None,
+            'storedProposalSha256':self.digest('source map') if committed else None,
+            'validatedResponseModel':self.protocol.MODEL if launch==1 else None,
+            'validatedProposalSha256':self.digest('source map') if launch==1 else None,
+            'originalSessionSha256':self.digest('raw session'),'sessionRevision':0,'sessionDispatchCount':0,
+            'deliveredReference':None,'retainedReference':{'version':1,'projectId':project,'attemptNumber':1,
+                'attemptSha256':self.digest('proposed attempt'),'originSha256':self.digest('canonical raw origin')} if launch==2 and committed else None,
+            'recordsBefore':dict(self.records(committed),repairJournal=None,repairOrigin=None) if launch==1 else self.records(committed),'recordsAfter':self.records(committed),
+            'unrelatedBeforeSha256':self.digest('unrelated'),'unrelatedAfterSha256':self.digest('unrelated'),
+            'declaredSourceSha256':self.digest('declared metadata'),'counters':counters}
+
+    def validate(self,value,launch=1,boundary='beforeCommit'):
+        return self.protocol.validate_report(value,launch,self.nonce,boundary)
+
+    def test_both_boundaries_and_independent_cold_transition_fit8192(self):
+        for boundary in ('beforeCommit','afterCommit'):
+            previous=None
+            for launch in (1,2):
+                value=self.report(launch,boundary);self.assertLess(len(json.dumps(value).encode()),8192)
+                self.validate(value,launch,boundary);self.protocol.require_transition(previous,value);previous=value
+
+    def test_strict_schema_identity_numbers_and_boundary_refusals(self):
+        for key,bad in {'version':25,'mode':'initial-unresolved','nonce':'a'*32,'launch':True,
+            'boundary':'precommit','stage':'read-only','projectId':'p','sessionId':'s','boardTaskId':'Ttest',
+            'requirementId':'F20','requestedModel':'wrong','attemptCount':True,'attemptNumber':2,
+            'sessionRevision':1,'sessionDispatchCount':True}.items():
+            with self.subTest(key=key),self.assertRaises(ValueError):self.validate(dict(self.report(1),**{key:bad}))
+        for section in ('report','retainedReference','recordsBefore','recordsAfter','counters'):
+            for extra in (False,True):
+                value=self.report(2,'afterCommit');target=value if section=='report' else value[section]
+                if extra:target['unknown']=None
+                else:target.pop(next(iter(target)))
+                with self.subTest(section=section,extra=extra),self.assertRaises(ValueError):self.validate(value,2,'afterCommit')
+        for launch in (True,0,3):
+            with self.assertRaises(ValueError):self.protocol.validate_report(self.report(1),launch,self.nonce,'beforeCommit')
+
+    def test_stored_validated_and_delivered_are_distinct(self):
+        for boundary in ('beforeCommit','afterCommit'):
+            for launch in (1,2):
+                value=self.report(launch,boundary)
+                for patch in ({'deliveredReference':{}},{'validatedResponseModel':'wrong'},
+                              {'validatedProposalSha256':'e'*64},{'storedResponseModel':'wrong'},
+                              {'storedProposalSha256':'e'*64}):
+                    # A cold afterCommit standalone hash is an opaque observation; transition pins it.
+                    if ((launch==2 and boundary=='afterCommit' and set(patch)=={'storedProposalSha256'}) or
+                            (launch==1 and boundary=='beforeCommit' and set(patch)=={'validatedProposalSha256'})):continue
+                    with self.subTest(launch=launch,boundary=boundary,patch=patch),self.assertRaises(ValueError):
+                        self.validate(dict(value,**patch),launch,boundary)
+        value=self.report(1,'afterCommit');value['retainedReference']=self.report(2,'afterCommit')['retainedReference']
+        with self.assertRaises(ValueError):self.validate(value,1,'afterCommit')
+        value=self.report(2);value['retainedReference']={}
+        with self.assertRaises(ValueError):self.validate(value,2)
+        for key,bad in {'version':True,'projectId':'p','attemptNumber':2,'attemptSha256':'f'*64,'originSha256':'f'*64}.items():
+            value=self.report(2,'afterCommit');value['retainedReference'][key]=bad
+            with self.subTest(key=key),self.assertRaises(ValueError):self.validate(value,2,'afterCommit')
+
+    def test_record_cohort_and_cold_no_write(self):
+        for boundary in ('beforeCommit','afterCommit'):
+            for launch in (1,2):
+                for slot in self.protocol.RECORD_SLOTS:
+                    value=self.report(launch,boundary);value['recordsAfter'][slot]='e'*64
+                    with self.subTest(boundary=boundary,launch=launch,slot=slot):
+                        if launch==1 and slot=='repairJournal':self.validate(value,launch,boundary)
+                        else:
+                            with self.assertRaises(ValueError):self.validate(value,launch,boundary)
+        value=self.report(1,'afterCommit');value['recordsAfter']['repairJournal']=value['recordsBefore']['repairJournal']
+        with self.assertRaises(ValueError):self.validate(value,1,'afterCommit')
+        value=self.report(1);value['recordsAfter']['repairJournal']=None
+        with self.assertRaises(ValueError):self.validate(value)
+        value=self.report(1);value['recordsBefore']['repairJournal']='e'*64
+        with self.assertRaises(ValueError):self.validate(value)
+
+    def test_all_counters_and_hash_types_are_strict(self):
+        for boundary in ('beforeCommit','afterCommit'):
+            for launch in (1,2):
+                for key in self.protocol.COUNTER_KEYS:
+                    for bad in (True,-1,self.report(launch,boundary)['counters'][key]+1):
+                        value=self.report(launch,boundary);value['counters'][key]=bad
+                        with self.subTest(key=key,bad=bad),self.assertRaises(ValueError):self.validate(value,launch,boundary)
+        for key in ('attemptSha256','originSha256','failureSha256','originalSessionSha256','unrelatedBeforeSha256','unrelatedAfterSha256',
+                    'declaredSourceSha256','validatedProposalSha256'):
+            for bad in (None,True,'F'*64,'g'*64,'a'*63):
+                with self.subTest(key=key,bad=bad),self.assertRaises(ValueError):self.validate(dict(self.report(1),**{key:bad}))
+
+    def test_cold_transition_pins_retained_request_and_baseline(self):
+        for boundary in ('beforeCommit','afterCommit'):
+            for field in ('attemptSha256','declaredSourceSha256','records','unrelated','boundary'):
+                value=self.report(2,boundary)
+                if field=='records':value['recordsBefore']['working']=value['recordsAfter']['working']='e'*64
+                elif field=='unrelated':value['unrelatedBeforeSha256']=value['unrelatedAfterSha256']='e'*64
+                elif field=='boundary':value['boundary']='afterCommit' if boundary=='beforeCommit' else 'beforeCommit'
+                else:
+                    value[field]='e'*64
+                    if field=='attemptSha256' and boundary=='afterCommit':value['retainedReference']['attemptSha256']='e'*64
+                with self.subTest(boundary=boundary,field=field),self.assertRaises(ValueError):self.protocol.require_transition(self.report(1,boundary),value)
+        value=self.report(2,'afterCommit');value['storedProposalSha256']='e'*64
+        with self.assertRaises(ValueError):self.protocol.require_transition(self.report(1,'afterCommit'),value)
+        with self.assertRaises(ValueError):self.protocol.require_transition(None,self.report(2))
+
+    def test_strict_control_files_refuse_symlink_duplicate_nonfinite_partial_oversize(self):
+        import os
+        file=self.root/'launch-1.json';raw=json.dumps(self.report(1))
+        for text in (raw.replace('"version": 26','"version":26,"version":26',1),
+                     raw.replace('"setupCalls": 1','"setupCalls":1,"setupCalls":1',1),
+                     raw.replace('"sessionRevision": 0','"sessionRevision":NaN'), '['*1100+'0'+']'*1100, ' '*8193):
+            file.write_text(text)
+            with self.assertRaises(ValueError):self.protocol.read_report(self.root,1,self.nonce,'beforeCommit')
+        file.write_text('{"private":')
+        with self.assertRaises(json.JSONDecodeError) as caught:self.protocol.read_report(self.root,1,self.nonce,'beforeCommit')
+        self.assertEqual(caught.exception.doc,'')
+        file.unlink();target=self.root/'target';target.write_text(raw);file.symlink_to(target)
+        with self.assertRaises((ValueError,OSError)):self.protocol.read_report(self.root,1,self.nonce,'beforeCommit')
+        file.unlink();os.mkfifo(file)
+        with self.assertRaises(ValueError):self.protocol.read_report(self.root,1,self.nonce,'beforeCommit')
+        target=self.root/'outside';target.write_text('unchanged');(self.root/'challenge.json').symlink_to(target)
+        with self.assertRaises(ValueError):self.protocol._write_challenge(self.root,1,b'{}',None)
+        self.assertEqual(target.read_text(),'unchanged')
+
+    def driver(self,boundary='beforeCommit',bad_launch=None,early=False,exit_code=0,signal=-9,tamper=None):
+        sdk=self.root/'sdk';(sdk/'bin/cache').mkdir(parents=True,exist_ok=True)
+        (sdk/'bin/cache/flutter_tools.snapshot').write_text('prepared SDK')
+        processes=[];outer=self
+        class Process:
+            def __init__(self,*args,**kwargs):
+                self.number=len(processes)+1;self.killed=False;processes.append(self)
+                outer.assertEqual(args[0],[str(outer.root/'owned-executable')])
+                outer.assertEqual(kwargs['env']['ASG_CANDIDATE_CRASH_ROOT'],str(outer.root))
+                value=outer.report(self.number,boundary)
+                if bad_launch==self.number:value['counters']['sdkAttempts']=1
+                (outer.root/f'launch-{self.number}.json').write_text(json.dumps(value))
+                if tamper=='challenge':(outer.root/'challenge.json').write_text('{}')
+            def poll(self):return signal if self.killed else exit_code if self.number==2 or early else None
+            def kill(self):self.killed=True
+            def wait(self,timeout):
+                if tamper=='report':
+                    file=outer.root/f'launch-{self.number}.json';raw=file.read_text();file.unlink();file.write_text(raw)
+                return self.poll()
+        with mock.patch.object(self.protocol.sys,'platform','darwin'), \
+                mock.patch.object(self.protocol,'inspect_bundle',return_value=(self.root/'owned-executable','a'*64)), \
+                mock.patch.object(self.protocol.tempfile,'mkdtemp',return_value=str(self.root)), \
+                mock.patch.object(self.protocol.secrets,'token_hex',return_value=self.nonce), \
+                mock.patch.object(self.protocol.subprocess,'Popen',side_effect=Process):
+            try:return self.protocol.run_repair_return_boundary(self.root/'fixture.app',sdk,boundary),processes
+            except ValueError:self.failed_processes=processes;raise
+
+    def test_owned_driver_both_boundaries_two_child_handles(self):
+        for boundary in ('beforeCommit','afterCommit'):
+            for file in self.root.glob('*'):
+                if file.is_file():file.unlink()
+            value,processes=self.driver(boundary)
+            self.assertEqual([p.killed for p in processes],[True,False])
+            self.assertEqual(value['version'],26)
+            challenge=json.loads((self.root/'challenge.json').read_text())
+            self.assertEqual(set(challenge),{'mode','nonce','launch','sdk','boundary'})
+            self.assertEqual(challenge['boundary'],boundary)
+
+    def test_owned_driver_refuses_bad_child_state_and_control_replacement(self):
+        for options in ({'bad_launch':1},{'early':True},{'exit_code':1},{'signal':-15},
+                        {'tamper':'report'},{'tamper':'challenge'}):
+            for file in self.root.glob('*'):
+                if file.is_file():file.unlink()
+            with self.subTest(options=options),self.assertRaises(ValueError):self.driver(**options)
+
+    def test_partial_deadline_cleans_up_only_owned_live_handle(self):
+        with mock.patch.object(self.protocol,'read_report',side_effect=json.JSONDecodeError('partial','',0)), \
+                mock.patch.object(self.protocol.time,'monotonic',side_effect=[0,61]):
+            with self.assertRaises(ValueError):self.driver()
+        self.assertEqual(len(self.failed_processes),1);self.assertTrue(self.failed_processes[0].killed)
+
+    def test_cli_explicit_boundary_refuses_legacy_and_standalone_flags(self):
+        import contextlib,io
+        base=['native_candidate_crash.py','--bundle','/supplied.app','--sdk','/supplied/sdk']
+        flags=('--initial-return-boundary','--initial-unresolved','--unresolved-next','--initial-lineage','--initial-retry','--initial-corrupt',
+            '--repair-lineage','--lineage-retry','--lineage-corrupt','--task-decision','--stop','--precommit',
+            '--running','--uncertain','--acknowledge','--retry','--promote','--promotion-crash','--session-bound',
+            '--admission-crash','--session-cancel','--session-cancel-active','--session-cancel-unknown')
+        bad=[['--return-boundary','beforeCommit']]+[['--repair-return-boundary',flag] for flag in flags]
+        bad += [['--repair-return-boundary','--operation','test'],['--repair-return-boundary','--initial-boundary','precommit'],
+                ['--repair-return-boundary','--lineage-boundary','postcommit'],['--repair-return-boundary','--initial-return-boundary']]
+        for args in bad:
+            with self.subTest(args=args),mock.patch.object(fixture.sys,'argv',base+args), \
+                    mock.patch.object(self.protocol,'run_repair_return_boundary') as run,contextlib.redirect_stderr(io.StringIO()):
+                with self.assertRaises(SystemExit) as caught:fixture.main()
+                self.assertEqual(caught.exception.code,2);run.assert_not_called()
+        for options,boundary in (([],'beforeCommit'),(['--return-boundary','afterCommit'],'afterCommit')):
+            with mock.patch.object(fixture.sys,'argv',base+['--repair-return-boundary']+options), \
+                    mock.patch.object(self.protocol,'run_repair_return_boundary',return_value={}) as run, \
+                    contextlib.redirect_stdout(io.StringIO()):
+                fixture.main();run.assert_called_once_with('/supplied.app','/supplied/sdk',boundary)
+
+
+    def test_stale_report_and_invalid_boundary_refuse_before_child_launch(self):
+        with mock.patch.object(self.protocol,'inspect_bundle') as inspect:
+            with self.assertRaises(ValueError):self.protocol.run_repair_return_boundary(self.root,self.root,'precommit')
+            inspect.assert_not_called()
+        (self.root/'launch-1.json').write_text(json.dumps(self.report(1)))
+        with mock.patch.object(self.protocol.subprocess,'Popen') as process:
+            with self.assertRaises(ValueError):self.driver()
+            process.assert_not_called()
+        self.assertEqual(self.failed_processes,[])
+
+    def test_control_link_and_replacement_preserve_external_target(self):
+        target=self.root/'external';target.write_text('unchanged')
+        identity=self.protocol._write_challenge(self.root,1,b'{}',None)
+        challenge=self.root/'challenge.json';challenge.unlink();challenge.symlink_to(target)
+        with self.assertRaises(ValueError):self.protocol._write_challenge(self.root,2,b'{}',identity)
+        self.assertEqual(target.read_text(),'unchanged')
+        challenge.unlink();(self.root/'challenge-2.tmp').symlink_to(target)
+        with self.assertRaises(OSError):self.protocol._write_challenge(self.root,2,b'{}',None)
+        self.assertEqual(target.read_text(),'unchanged')
+
+
+    def test_origin_and_failed_baseline_cohort_are_exactly_pinned(self):
+        for boundary in ('beforeCommit','afterCommit'):
+            for key in ('repairOrigin','repairJournal'):
+                value=self.report(1,boundary);value['recordsBefore'][key]='e'*64
+                with self.subTest(boundary=boundary,key=key),self.assertRaises(ValueError):self.validate(value,1,boundary)
+                value=self.report(1,boundary);value['recordsAfter'][key]=None
+                with self.assertRaises(ValueError):self.validate(value,1,boundary)
+            value=self.report(1,boundary);value['originSha256']='e'*64
+            with self.assertRaises(ValueError):self.validate(value,1,boundary)
+            for field in ('failureSha256','originSha256'):
+                value=self.report(2,boundary);value[field]='e'*64
+                if field=='originSha256':
+                    value['recordsBefore']['repairOrigin']=value['recordsAfter']['repairOrigin']='e'*64
+                    if boundary=='afterCommit':value['retainedReference']['originSha256']='e'*64
+                with self.subTest(boundary=boundary,field=field),self.assertRaises(ValueError):
+                    self.protocol.require_transition(self.report(1,boundary),value)
+        self.assertNotEqual(self.report(1)['failureSha256'],self.report(1)['recordsAfter']['failureJournal'])
+
 if __name__ == '__main__':
     unittest.main()
