@@ -49,7 +49,7 @@ class _ImportedPlanScreenState extends State<ImportedPlanScreen> {
           padding: const EdgeInsets.all(24),
           children: [
             const Text(
-              'Write a plan against the saved requirements and inspected folder metadata. Approval records review consent only. Source editing and execution are unavailable; no project files are changed.',
+              'Write a plan against saved requirements and the workspace’s captured metadata. Reload refreshes saved planning data only. Reinspect the folder explicitly to refresh disk metadata. Approval records review consent only; source editing and execution are unavailable and no project files are changed.',
             ),
             SelectableText('Folder: ${controller.root}'),
             if (controller.busy) const LinearProgressIndicator(),
@@ -80,7 +80,7 @@ class _ImportedPlanScreenState extends State<ImportedPlanScreen> {
             if (controller.plan != null) ...[
               Text(
                 controller.approved
-                    ? 'Approved for current planning context'
+                    ? 'Approved for captured planning context'
                     : controller.current
                     ? 'Saved draft · not approved'
                     : 'Outdated or unavailable context · approval inactive',

@@ -4,8 +4,12 @@
 import '../models/project_inspection.dart';
 
 class ProjectInspector {
-  Future<ProjectInspection> inspect(String path) async =>
-      throw UnsupportedError(
-        'Project inspection requires a native filesystem.',
-      );
+  bool get supported => false;
+  Future<ProjectInspection> inspect(
+    String root, {
+    required String python,
+  }) async =>
+      throw UnsupportedError('Contained project inspection is unavailable.');
+  Future<void> cancel() async {}
+  Future<void> dispose() async {}
 }

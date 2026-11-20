@@ -13,6 +13,8 @@ import 'package:asg/views/project_inspection_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'project_metadata_import_test.dart' as consent;
+
 class Picker extends FolderPicker {
   Future<String?> Function() select = () async => '/project';
   bool available = true;
@@ -72,12 +74,13 @@ void main() {
       await store.save('/saved');
       store.failLoad = true;
       final c = ProjectInspectionController(
+        setupStore: consent.ImportSetup(),
         store: store,
         picker: Picker(),
         inspect: (root) async => result(root),
       );
       expectPrivate(c.storageError);
-      await c.chooseFolder();
+      await c.chooseFolder(confirm: consent.approve);
       expect(c.canSave, isFalse);
       expect(c.canOpenWorkspace, isFalse);
       store.failLoad = false;
@@ -85,6 +88,7 @@ void main() {
       expect(store.load(), ['/saved']);
       c.dispose();
       final reopened = ProjectInspectionController(
+        setupStore: consent.ImportSetup(),
         store: store,
         picker: Picker(),
       );
@@ -100,11 +104,12 @@ void main() {
     );
     await store.save('/saved');
     final c = ProjectInspectionController(
+      setupStore: consent.ImportSetup(),
       store: store,
       picker: Picker(),
       inspect: (root) async => result(root),
     );
-    await c.chooseFolder();
+    await c.chooseFolder(confirm: consent.approve);
     store.failSave = true;
     await c.saveFolder();
     expectPrivate(c.error);
@@ -125,24 +130,26 @@ void main() {
       final picker = Picker();
       var fail = false;
       final c = ProjectInspectionController(
+        setupStore: consent.ImportSetup(),
         picker: picker,
         inspect: (root) async {
           if (fail) throw StateError(privateDetail);
           return result(root);
         },
       );
-      await c.chooseFolder();
+      await c.chooseFolder(confirm: consent.approve);
       picker.select = () async => throw StateError(privateDetail);
-      await c.chooseFolder();
+      await c.chooseFolder(confirm: consent.approve);
       expectPrivate(c.error);
       expect(c.findings?.root, '/project');
       picker.select = () async => '/other';
       fail = true;
-      await c.chooseFolder();
+      await c.chooseFolder(confirm: consent.approve);
       expectPrivate(c.error);
-      expect(c.findings, isNull);
+      expect(c.findings?.root, '/project');
+      expect(c.stale, isTrue);
       fail = false;
-      await c.chooseFolder();
+      await c.chooseFolder(confirm: consent.approve);
       expect(c.error, isNull);
       expect(c.findings?.root, '/other');
       c.dispose();
@@ -156,6 +163,7 @@ void main() {
     await store.save('/project');
     var fail = false;
     final c = ProjectInspectionController(
+      setupStore: consent.ImportSetup(),
       store: store,
       picker: Picker(),
       inspect: (root) async {
@@ -163,15 +171,16 @@ void main() {
         return result(root);
       },
     );
-    await c.reopen('/project');
+    await c.reopen('/project', confirm: consent.approve);
     fail = true;
-    expect(await c.openWorkspace(), isNull);
+    expect(await c.openWorkspace(confirm: consent.approve), isNull);
     expectPrivate(c.error);
-    expect(c.findings, isNull);
+    expect(c.findings?.root, '/project');
+    expect(c.stale, isTrue);
     expect(c.canOpenWorkspace, isFalse);
     expect(store.load(), ['/project']);
     fail = false;
-    await c.reopen('/project');
+    await c.reopen('/project', confirm: consent.approve);
     expect(c.error, isNull);
     expect(c.canOpenWorkspace, isTrue);
     c.dispose();
@@ -191,6 +200,7 @@ void main() {
         final deferInspection = operation != 'save';
         if (operation == 'picker') picker.select = () => pendingPick.future;
         final c = ProjectInspectionController(
+          setupStore: consent.ImportSetup(),
           store: store,
           picker: picker,
           inspect: (root) async =>
@@ -199,13 +209,15 @@ void main() {
         Future<void> work;
         if (operation == 'save') {
           picker.select = () async => '/new';
-          await c.chooseFolder();
+          await c.chooseFolder(confirm: consent.approve);
           store.pending = Completer<List<String>>();
           work = c.saveFolder();
         } else if (operation == 'reopen') {
-          work = c.reopen('/project');
+          work = c
+              .reopen('/project', confirm: consent.approve)
+              .then<void>((_) {});
         } else {
-          work = c.chooseFolder();
+          work = c.chooseFolder(confirm: consent.approve).then<void>((_) {});
         }
         await Future<void>.delayed(Duration.zero);
         c.dispose();
@@ -229,42 +241,45 @@ void main() {
       final picker = Picker();
       final pending = Completer<ProjectInspection>();
       final c = ProjectInspectionController(
+        setupStore: consent.ImportSetup(),
         picker: picker,
         inspect: (_) => pending.future,
       );
-      final work = c.chooseFolder();
+      final work = c.chooseFolder(confirm: consent.approve).then<void>((_) {});
       await Future<void>.delayed(Duration.zero);
-      await c.chooseFolder();
+      await c.chooseFolder(confirm: consent.approve);
       expect(picker.calls, 1);
       expect(c.busy, isTrue);
       pending.complete(result('/project'));
       await work;
       picker.select = () async => null;
-      await c.chooseFolder();
+      await c.chooseFolder(confirm: consent.approve);
       expect(c.findings?.root, '/project');
       picker.select = () async => throw StateError('picker unavailable');
-      await c.chooseFolder();
+      await c.chooseFolder(confirm: consent.approve);
       expect(c.error, contains('Check local folder access'));
       expect(c.busy, isFalse);
       c.dispose();
     },
   );
-  test('invalid selection clears findings; retry succeeds', () async {
+  test('invalid selection retains stale findings; retry succeeds', () async {
     var fail = false;
     final c = ProjectInspectionController(
+      setupStore: consent.ImportSetup(),
       picker: Picker(),
       inspect: (path) async {
         if (fail) throw const FormatException('Invalid folder');
         return result(path);
       },
     );
-    await c.chooseFolder();
+    await c.chooseFolder(confirm: consent.approve);
     fail = true;
-    await c.chooseFolder();
-    expect(c.findings, isNull);
-    expect(c.error, contains('Check local folder access'));
+    await c.chooseFolder(confirm: consent.approve);
+    expect(c.findings?.root, '/project');
+    expect(c.stale, isTrue);
+    expect(c.error, contains('Folder metadata could not be read'));
     fail = false;
-    await c.chooseFolder();
+    await c.chooseFolder(confirm: consent.approve);
     expect(c.error, isNull);
     expect(c.findings, isNotNull);
     c.dispose();
@@ -273,33 +288,35 @@ void main() {
     final picker = Picker()..available = false;
     var calls = 0;
     final c = ProjectInspectionController(
+      setupStore: consent.ImportSetup(),
       picker: picker,
       inspect: (path) async {
         calls++;
         return result(path);
       },
     );
-    await c.chooseFolder();
+    await c.chooseFolder(confirm: consent.approve);
     expect(picker.calls, 0);
     expect(c.error, contains('unavailable'));
     picker.available = true;
     final pending = Completer<String?>();
     picker.select = () => pending.future;
-    final work = c.chooseFolder();
+    final work = c.chooseFolder(confirm: consent.approve).then<void>((_) {});
     c.dispose();
     pending.complete('/project');
     await work;
     expect(calls, 0);
-    await c.chooseFolder();
+    await c.chooseFolder(confirm: consent.approve);
     expect(picker.calls, 1);
   });
   test('disposal ignores late findings', () async {
     final pending = Completer<ProjectInspection>();
     final c = ProjectInspectionController(
+      setupStore: consent.ImportSetup(),
       picker: Picker(),
       inspect: (_) => pending.future,
     );
-    final work = c.chooseFolder();
+    final work = c.chooseFolder(confirm: consent.approve).then<void>((_) {});
     await Future<void>.delayed(Duration.zero);
     c.dispose();
     pending.complete(result('/project'));
@@ -316,6 +333,7 @@ void main() {
       var reads = 0;
       var missing = false;
       final c = ProjectInspectionController(
+        setupStore: consent.ImportSetup(),
         store: store,
         picker: Picker(),
         inspect: (root) async {
@@ -324,19 +342,23 @@ void main() {
           return result(root);
         },
       );
-      expect(await c.openWorkspace(), isNull);
-      await c.chooseFolder();
-      expect(await c.openWorkspace(), isNull);
+      expect(await c.openWorkspace(confirm: consent.approve), isNull);
+      await c.chooseFolder(confirm: consent.approve);
+      expect(await c.openWorkspace(confirm: consent.approve), isNull);
       expect(reads, 1);
       await c.saveFolder();
       expect(c.canOpenWorkspace, isTrue);
-      expect((await c.openWorkspace())?.root, '/project');
+      expect(
+        (await c.openWorkspace(confirm: consent.approve))?.root,
+        '/project',
+      );
       expect(reads, 2);
       missing = true;
-      expect(await c.openWorkspace(), isNull);
-      expect(c.findings, isNull);
+      expect(await c.openWorkspace(confirm: consent.approve), isNull);
+      expect(c.findings?.root, '/project');
+      expect(c.stale, isTrue);
       expect(c.canOpenWorkspace, isFalse);
-      expect(c.error, contains('Check that it still exists'));
+      expect(c.error, contains('Folder metadata could not be read'));
       expect(store.load(), ['/project']);
       c.dispose();
     },
@@ -353,6 +375,7 @@ void main() {
       var reads = 0;
       final picker = Picker();
       final c = ProjectInspectionController(
+        setupStore: consent.ImportSetup(),
         store: store,
         picker: picker,
         inspect: (root) async {
@@ -360,19 +383,19 @@ void main() {
           return pending == null ? result(root) : pending.future;
         },
       );
-      await c.reopen('/project');
+      await c.reopen('/project', confirm: consent.approve);
       pending = Completer<ProjectInspection>();
-      final opening = c.openWorkspace();
+      final opening = c.openWorkspace(confirm: consent.approve);
       expect(c.busy, isTrue);
-      expect(await c.openWorkspace(), isNull);
-      await c.chooseFolder();
+      expect(await c.openWorkspace(confirm: consent.approve), isNull);
+      await c.chooseFolder(confirm: consent.approve);
       await c.saveFolder();
       expect(picker.calls, 0);
       expect(reads, 2);
       c.dispose();
       pending.complete(result('/project'));
       expect(await opening, isNull);
-      expect(await c.openWorkspace(), isNull);
+      expect(await c.openWorkspace(confirm: consent.approve), isNull);
     },
   );
   testWidgets(
@@ -389,6 +412,7 @@ void main() {
           home: ProjectInspectionScreen(
             key: UniqueKey(),
             controller: ProjectInspectionController(
+              setupStore: consent.ImportSetup(),
               store: store,
               picker: Picker(),
               inspect: (root) async {
@@ -402,12 +426,17 @@ void main() {
       await open();
       await tester.tap(find.text('/project'));
       await tester.pumpAndSettle();
+      await tester.tap(find.text('Inspect metadata'));
+      await tester.pumpAndSettle();
       await tester.scrollUntilVisible(
         find.text('Open requirements workspace'),
         180,
         scrollable: find.byType(Scrollable).first,
       );
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Open requirements workspace'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Inspect metadata'));
       await tester.pumpAndSettle();
       expect(reads, 2);
       expect(find.text('Imported project workspace'), findsOneWidget);
@@ -436,12 +465,17 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('/project'));
       await tester.pumpAndSettle();
+      await tester.tap(find.text('Inspect metadata'));
+      await tester.pumpAndSettle();
       await tester.scrollUntilVisible(
         find.text('Open requirements workspace'),
         180,
         scrollable: find.byType(Scrollable).first,
       );
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Open requirements workspace'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Inspect metadata'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Requirements and tasks'));
       await tester.pumpAndSettle();
@@ -461,6 +495,7 @@ void main() {
         home: ProjectInspectionScreen(
           key: UniqueKey(),
           controller: ProjectInspectionController(
+            setupStore: consent.ImportSetup(),
             store: store,
             picker: Picker(),
             inspect: (root) async => result(root),
@@ -471,7 +506,10 @@ void main() {
     await open();
     await tester.tap(find.text('Choose Flutter folder'));
     await tester.pumpAndSettle();
+    await tester.tap(find.text('Inspect metadata'));
+    await tester.pumpAndSettle();
     await tester.ensureVisible(find.text('Save folder reference'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Save folder reference'));
     await tester.pumpAndSettle();
     expect(find.text('Saved folders'), findsOneWidget);
@@ -479,6 +517,8 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Package: sample'), findsNothing);
     await tester.tap(find.text('/project'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Inspect metadata'));
     await tester.pumpAndSettle();
     expect(find.text('Package: sample'), findsOneWidget);
     expect(tester.takeException(), isNull);
@@ -494,6 +534,7 @@ void main() {
       MaterialApp(
         home: ProjectInspectionScreen(
           controller: ProjectInspectionController(
+            setupStore: consent.ImportSetup(),
             picker: Picker(),
             inspect: (path) async => result(path),
           ),
@@ -501,6 +542,8 @@ void main() {
       ),
     );
     await tester.tap(find.text('Choose Flutter folder'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Inspect metadata'));
     await tester.pumpAndSettle();
     expect(find.text('Package: sample'), findsOneWidget);
     expect(find.text('Declared Dart SDK: ^3.9.0'), findsOneWidget);

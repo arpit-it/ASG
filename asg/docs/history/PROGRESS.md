@@ -19657,3 +19657,156 @@ evidence, not real app import repair, liveinference or unavailableplatform proof
 Final exactPRreview/allrequiredCI/protectedmerge pending. Full404/liveQwen/deferred
 400 OPEN, marketplace gate/F23-last retained. No ownerrepo/runtime/model/stableapp/
 install/download/cloud/deployment effects.
+
+
+### 2026-11-20 — #404 descriptor reader merged; confirmed contained import started
+
+PR790 protected expected-head squashff2872e107846789fe2378b06d00bcdfd1ecdd6d
+verified plugin currentmain/mergedPR plus fetched tree
+f6fbf83ad9135a800d0ac747402bac427d938739 identical tested localbbc17619d84af2125c958a1d0bbb47cc7d769eb7.
+Freshreview remotec9d44afb0c4e2715262e60ae386486bc4a7dcf9f/base03dde5c no
+blocker, threads empty. CI44712328426 Python136206846367/Flutter136206846992
+everyrequired/post step SUCCESS; new29cases ACTIVE Linux no skips. Mac29+33Git/
+20coordinator/32product/9inventory/fullFlutter2320PASS13skips/format/analyze/web
+retained as datedmatching evidence. Boundedstandalone reader Done, not appimport
+fix or liveinference/platform acceptance. Full404 remainsOPEN. Coordinator
+merged/outcome recorded; integration/writer claim released. Ownerdirty checkout,
+stableapp/runtime/processes and lastworking outputs preserved.
+
+Immediately claimed404-confirmed-contained-project-import under existing404/F20,
+one coherent futurePR for choose/reopen/open-workspace consent, strictresponse
+projection, ownedhelper process/Stop cleanup and savedfolder preservation. No
+newissue. Legacy path-based inspector must be retired/failclosed before completion;
+no silent fallback. Existing savedfolder/settings formats and separateplan/write/
+execution approvals remain. No automaticinstall/runtime/model setup. Web and
+nonverifiedhosts unavailable honestly, deferred400/marketplace gate/F23-last kept.
+
+Initial pure ProjectMetadataObservation parser requires exactversion1/scope/8keys,
+false source_verified, strictknownstatuses/reasons, no partialrefusalpayload,
+orderedunique fixedrunners, canonicalbase64+decoded64KiB/rawJSON128KiB bounds.
+Immutablemanifest/runners; pure private-error UTF8/YAML projection preserves
+existing Fluttermanifest requirements with no IO/authority. Immutable
+ProjectMetadataReadRequest root/python is one-action controller snapshot, not
+execution consent.9focusedmodel+architecture testsPASS,6fileanalysisclean, format
+clean; initialbrace-style finding fixed. Logs /tmp/asg404-contained-import-model-
+{tests,analyze,format}.log. App flows, native execution/assets/controller/consent
+UI/fullchecks/build/IAB/exactPRreview/requiredCI/merge remain pending.
+
+Frozenhost interface ProjectMetadataHost supported/inspect(request)->observation/
+cancel/dispose now committed alongside model; cancel settles ownedcleanup incl
+latestart beforeanotherjob. Factories/stubs remain unsupported baseline until
+nativehost integration; notadvertisedproductbehavior. Two disjoint tracks within
+ONE coherent parentPR can now use this local frozeninterface, depending only on
+verified790/788: rootUI/controller/model/asset/sharedrecords, nativewriter ONLY
+project_metadata_host_native.dart and project_metadata_host_test.dart. Stop/
+commit/release both before unionintegration. Root soleintegrationowner; max2writers,
+no competingmodel/nativebuild/artifact work. No ownerrepo/model/runtime effects.
+
+
+#404 contained import tracks admitted after clean frozenbaselinee4e033e7fbd2a6e6318e74c6d8c1131f76ccbd96
+/tree7b12149359eae378566b8adb50c628af7d957c33: parentclaim released; root claims
+404-contained-project-import-ui (all parentpaths EXCEPT nativehost/test), delegated
+404-contained-project-metadata-native-host claims only those2paths in separate
+clean registeredWT/directissuebranch on agreedbaseline. Nativewriter independently
+verified currenthelpermainff2872e/ancestor through plugin+safe fetch, privatelease
+valid3600sec. No integrationlock or PRpublication for incomplete appfeature.
+Frozen APIs unchanged; root handles consent/controller/legacyinspector retirement/
+assets/sharedrecords, nativewriter handles owned128KiBtransport/lifecycle fixtures.
+Both must stop/commit/release before union. Nativeimplementation nowunderway;
+model9tests/analysisclean are initial evidence only, appintegration not complete.
+
+
+#404 confirmed import UI/controller handoff checkpoint (incomplete): controller
+choose/reopen/open now take view-owned confirmation callback freezing root/python,
+private settings validation, stale retained findings, Stop/disposal/pre-dispatch
+guards and ownedcleanup wait. Strict inspectoradapter has no direct File.open;
+legacy nativefile is compatibility export, stub unavailable; view renders consent
+and blocks stale navigation; asset added. Updated existing tests and new consent/
+cleanup tests. Nativewriter stopped clean atd30478dd2fa4e8b32a0dc714b0817b3c235403d6
+(twoownedpaths),33Flutter/29helperPASS/analysisclean reported, ownclaimreleased.
+
+First combined UIcompile exposed additional productioncaller in ImportedPlanController
+that auto-invoked the old inspector on plan load/save/approval. No tests claimed
+passing for this checkpoint. Root must expand union scope BEFORE editing that
+controller/view/workspace/tests: use explicitly confirmed workspace metadata
+snapshot for planning (apprecords only), label captured planningcontext and require
+explicit reinspection for disk refresh, never hiddenhelper launch or pathname
+fallback. Existing save/order/contextguards remain. RootUIstops/commits/releases
+for union; no publication until this discovered path and all regressions pass.
+
+
+### #404 confirmed contained import — final integrated behavior and checks
+
+RootUI stopped/committed before revisedunionclaim; nativewriter stopped/released
+2pathhandoffd30478dd2fa4e8b32a0dc714b0817b3c235403d6 integrated without changing
+frozenmodel/host API. Union scope explicitly added discovered planning caller
+before edits. DefaultProjectInspector now projects a strict helper response and
+requires explicitPython; legacy native compatibilityexport has no pathname reads,
+stubfailsclosed. No current production ProjectInspector caller falls back to
+File.open/pubspec path reads.
+
+Choose/reopen/open-workspace use view-owned confirmation with frozen root and
+existing configured absolutePython, no read on screen open or automaticsettings/
+install/model changes. NativeMac helper resolves interpreter outside selectedroot,
+private outside temp/cwd, -I-S-B, no inheritedenv/shell/PATH search. Stdout128KiB/
+stderr4KiB caps, any stderr/nonzero/schema/UTF8failureprivate; deadline covers
+assets/temp/start/exit/EOF; capturedlateProcess cleanup/kill/reap/tempdelete blocks
+nextjob, uncertaincleanupsticky. Web/otherunverifiedhosts unavailable honestly.
+
+Controller guards synchronousbusy/confirmation Stop/disposal beforedispatch, late
+picker/consent/results, concurrentchooser/reopen/save and finalbusy-notification
+disposal before navigation. Stop does not pretend to close nativefolderpicker;
+usercloses pendingchooser/dialog tofinish, busy excludes anotherlaunch. Previous
+findings retained visiblystale onfailure/Stop, disabledsave/open; savedfolderkeys/
+JSON and storage ordering retained. Workspace opens only fresh matching success.
+
+ImportedPlanController default now consumes workspace’s immutable explicitly
+confirmed metadata snapshot and current apprecords only. Planload/save/approval
+never implicitly refreshesdisk/helper or fallsback to old inspector. Missing or
+wrongroot snapshot failsclosed; captured-contextlabel tells users to explicitly
+reinspect for disk refresh. Existing plan save/context/invalidation guards and
+separate source-write/execute approval limits remain; no sourceediting/preview or
+verified Git/source/platform authority is enabled. No persistenceformatmigration.
+
+Prepublication failures corrected: initialcompile exposed automaticplanningread;
+scope expanded then replaced by snapshot. Busyspinner whilewaitingconsent caused
+pumpAndSettletimeout; spinner nowrepresents work only. Widgetscroll checks now
+waitlayout before taps; 320x800/textscale2 reproduced actualdialogRenderFlex64px
+overflow afterfixing lazylisttestscroll, fixed by scrollabletitle/content. Analysis
+brace-style infos fixed. These were unmerged integration findings, not ownerapp
+incidents. Read-only combinedreview no remainingblocker, not executed-testclaim.
+
+80focusedcombined checks PASS before additionalrealpackagedadapter case. Final
+local fullFlutter2367PASS13explicit skips, format580unchanged, analyzer clean;
+normalmain web/Wasm dryrun and isolatednormalMacdebugbuild(customvalidationID,
+noinstall/launch/stablereplacement) pass. Pythonprojecthelper29/Githelper33/
+coordinator20/product32/inventory9PASS. Logs /tmp/asg404-contained-import-
+{combined-focused3,full-final,format-final,analyze-final2,web-final,mac-build-final,
+project-helper,git-helper,coordinator,product-final,inventory-final}.log.
+
+Actualdefaultpackagedasset ProjectInspector Macservice test5PASS includes strict
+projection of regularfixture plus hardlink/symlinkaliasrefusal with separateowned
+outside sentinel/main unchanged, knownexistingFrameworkPython, no projectcommands.
+Log /tmp/asg404-contained-import-packaged-adapter.log. Mac/webpackaged helper bytes
+match reviewedsource SHA25609c3370c5e43cabf2cca9a7f26db1a09aaffff6e8a6e5edee0a259f01df10bc7;
+actual builtMacasset isolatedPythonCLI ondisposableFlutterfixture PASS, unchanged
+bytes; /tmp/asg404-contained-import-packaging-receipt.json.
+
+IAB supplied-data fixture verified cancel/explicitroot+interpreterconfirmation/
+findings/save-reference/reconfirm-before-workspace/open/snapshotplan screen.
+Browserdefaulthelper supported=false visiblylabelled; fixture usedcontrolledpicker/
+memoryrecords/fakehost, no filesystem/process/model access. NativeUI fixture
+(customcom.arsinha.asg.containedimportuifixture/isolatedderivedfolder) built, but
+computer-use getApp failed with expiredcontinuation before returnedUIstate; fresh
+inventory/processcheck foundnofixtureprocess/eventlog. Controlledselectedfixture
+bytes unchanged. NativeUI interaction remains UNVERIFIED; do not convert build,
+Macservice test or IABfixture into nativeUI/ownerfolderchooser/liveinference proof.
+UIreceipt /tmp/asg404-contained-import-ui-receipt.json SHA256
+85eeec7c9fad55c31010ba447b78e1b277ba4e217c1180d92f2c99e0c3c66180; recordedproduct
+sourcehashes still match. Ownedlocalhostpreviewserverstopped; ownerprocesses,
+stableapp/config/data untouched. Retaineddisposablefixture/bundles are notdeployed.
+
+Helper observes bounded point-in-time metadata, not atomic/authenticatedrepo or
+OSsandbox; interpreter must be outside selectedfolder, no silentfallback/install.
+Full404/liveQwen/unavailableplatform400 OPEN, marketplacegate/F23-last retained.
+Final exactremotePRreview/allrequiredCI/verifiedmerge remain mandatory.

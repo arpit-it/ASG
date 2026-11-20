@@ -3,116 +3,134 @@
 
 import 'dart:io';
 
-import 'package:flutter_test/flutter_test.dart';
 import 'package:asg/services/project_inspector.dart';
 import 'package:asg/services/project_inspector_stub.dart' as stub;
+import 'package:flutter_test/flutter_test.dart';
+
+import 'project_metadata_import_test.dart';
 
 void main() {
-  late Directory root;
-  const manifest = '''name: imported_app
-environment:
-  sdk: '>=3.0.0 <4.0.0'
-dependencies:
-  flutter:
-    sdk: flutter
-''';
-  setUp(() async {
-    root = await Directory.systemTemp.createTemp('asg_inspection_');
-    root = Directory(await root.resolveSymbolicLinks());
-    await Directory('${root.path}/lib').create();
-    await File('${root.path}/lib/main.dart').writeAsString('void main() {}');
-    await File('${root.path}/pubspec.yaml').writeAsString(manifest);
-  });
-  tearDown(() => root.delete(recursive: true));
-  test('reads metadata and runners without changing project files', () async {
-    await Directory('${root.path}/web').create();
-    final before = await File('${root.path}/pubspec.yaml').readAsBytes();
-    final result = await ProjectInspector().inspect(root.path);
-    expect(result.packageName, 'imported_app');
-    expect(result.dartSdk, '>=3.0.0 <4.0.0');
-    expect(result.runners, ['web']);
-    expect(await File('${root.path}/pubspec.yaml').readAsBytes(), before);
-    expect(
-      await File('${root.path}/lib/main.dart').readAsString(),
-      'void main() {}',
-    );
-    expect((await root.list(recursive: true).toList()).length, 4);
-    expect(() => result.runners.add('linux'), throwsUnsupportedError);
-  });
-  test('rejects invalid manifests without replacing them', () async {
-    for (final text in [
-      '',
-      'name: bad-name',
-      'name: x\nenvironment: {}',
-      '$manifest\nname: duplicate',
-      'name: [',
-    ]) {
-      final file = File('${root.path}/pubspec.yaml');
-      await file.writeAsString(text);
-      await expectLater(
-        ProjectInspector().inspect(root.path),
-        throwsA(isA<FormatException>()),
-      );
-      expect(await file.readAsString(), text);
-    }
-  });
+  TestWidgetsFlutterBinding.ensureInitialized();
   test(
-    'rejects missing source, relative paths and oversized manifest',
+    'actual packaged Mac inspector rejects linked manifest aliases',
     () async {
-      await expectLater(
-        ProjectInspector().inspect('relative'),
-        throwsFormatException,
+      const python =
+          '/Library/Frameworks/Python.framework/Versions/3.12/bin/python3';
+      final temp = await Directory.systemTemp.createTemp(
+        'asg-contained-inspector-',
       );
-      await File('${root.path}/pubspec.yaml').writeAsString(' ' * 65537);
-      await expectLater(
-        ProjectInspector().inspect(root.path),
-        throwsFormatException,
+      final outsideTemp = await Directory.systemTemp.createTemp(
+        'asg-inspector-outside-',
       );
-      await File('${root.path}/pubspec.yaml').writeAsString(manifest);
-      await File('${root.path}/lib/main.dart').delete();
-      await expectLater(
-        ProjectInspector().inspect(root.path),
-        throwsFormatException,
-      );
+      final root = Directory(await temp.resolveSymbolicLinks());
+      final outside = File('${outsideTemp.path}/outside.yaml');
+      const manifest =
+          'name: actual_packaged_fixture\nenvironment:\n  sdk: ">=3.0.0 <4.0.0"\ndependencies:\n  flutter:\n    sdk: flutter\n';
+      final inspector = ProjectInspector();
+      try {
+        await Directory('${root.path}/lib').create();
+        final main = File('${root.path}/lib/main.dart');
+        await main.writeAsString('// inert; helper never reads this body\n');
+        final selected = File('${root.path}/pubspec.yaml');
+        await selected.writeAsString(manifest);
+        await outside.writeAsString(
+          manifest.replaceFirst('actual_packaged_fixture', 'outside_sentinel'),
+        );
+        final mainBefore = await main.readAsBytes(),
+            outsideBefore = await outside.readAsBytes();
+        final value = await inspector.inspect(root.path, python: python);
+        expect(value.packageName, 'actual_packaged_fixture');
+        expect(await selected.readAsString(), manifest);
+        for (final hardlink in [true, false]) {
+          if (await FileSystemEntity.type(selected.path, followLinks: false) !=
+              FileSystemEntityType.notFound) {
+            await selected.delete();
+          }
+          if (hardlink) {
+            // Trusted OS fixture operation, never an imported-project command.
+            final result = await Process.run('/bin/ln', [
+              outside.path,
+              selected.path,
+            ], runInShell: false);
+            expect(result.exitCode, 0);
+          } else {
+            await Link(selected.path).create(outside.path);
+          }
+          await expectLater(
+            inspector.inspect(root.path, python: python),
+            throwsA(
+              isA<FormatException>().having(
+                (e) => e.toString(),
+                'private',
+                isNot(contains('outside_sentinel')),
+              ),
+            ),
+          );
+          expect(await outside.readAsBytes(), outsideBefore);
+          expect(await main.readAsBytes(), mainBefore);
+        }
+      } finally {
+        await inspector.dispose();
+        await temp.delete(recursive: true);
+        await outsideTemp.delete(recursive: true);
+      }
     },
+    skip: !Platform.isMacOS
+        ? 'Actual Mac packaged interpreter host; portable helper/transport tests remain active.'
+        : false,
   );
-  test('rejects linked root, manifest, source directory and runners', () async {
-    final alias = Link('${root.path}_link');
-    await alias.create(root.path);
-    try {
-      await expectLater(
-        ProjectInspector().inspect(alias.path),
-        throwsFormatException,
-      );
-    } finally {
-      await alias.delete();
-    }
-    final original = File('${root.path}/original.yaml');
-    await File('${root.path}/pubspec.yaml').rename(original.path);
-    await Link('${root.path}/pubspec.yaml').create(original.path);
-    await expectLater(
-      ProjectInspector().inspect(root.path),
-      throwsFormatException,
+
+  test('strict adapter uses explicit frozen root and interpreter', () async {
+    final host = ImportHost();
+    final inspector = ProjectInspector(host: host);
+    final value = await inspector.inspect(
+      '/selected',
+      python: '/trusted/python',
     );
-    await Link('${root.path}/pubspec.yaml').delete();
-    await original.rename('${root.path}/pubspec.yaml');
-    await Link('${root.path}/web').create('${root.path}/lib');
-    await expectLater(
-      ProjectInspector().inspect(root.path),
-      throwsFormatException,
-    );
-    await Link('${root.path}/web').delete();
-    await Directory('${root.path}/lib').rename('${root.path}/source');
-    await Link('${root.path}/lib').create('${root.path}/source');
-    await expectLater(
-      ProjectInspector().inspect(root.path),
-      throwsFormatException,
-    );
+    expect(host.requests.single.root, '/selected');
+    expect(host.requests.single.python, '/trusted/python');
+    expect(value.root, '/selected');
+    expect(value.packageName, 'controlled_app');
+    expect(value.runners, ['web']);
+    await inspector.cancel();
+    await inspector.dispose();
+    expect(host.cancels, 1);
+    expect(host.disposals, 1);
   });
-  test('unsupported platform refuses inspection', () async {
+  test('transport errors cannot echo private data', () async {
+    final host = ImportHost()
+      ..read = () => Future.error(StateError('private-sentinel'));
+    final inspector = ProjectInspector(host: host);
     await expectLater(
-      stub.ProjectInspector().inspect(root.path),
+      inspector.inspect('/private-sentinel', python: '/trusted/python'),
+      throwsA(
+        isA<FormatException>().having(
+          (e) => e.toString(),
+          'private',
+          isNot(contains('private-sentinel')),
+        ),
+      ),
+    );
+    await inspector.dispose();
+  });
+  test('unsupported backend never dispatches', () async {
+    final host = ImportHost()..supported = false;
+    final inspector = ProjectInspector(host: host);
+    await expectLater(
+      inspector.inspect('/selected', python: '/trusted/python'),
       throwsUnsupportedError,
     );
+    expect(host.requests, isEmpty);
+    await inspector.dispose();
+  });
+  test('explicit unsupported compatibility service fails closed', () async {
+    final inspector = stub.ProjectInspector();
+    expect(inspector.supported, isFalse);
+    await expectLater(
+      inspector.inspect('/selected', python: '/trusted/python'),
+      throwsUnsupportedError,
+    );
+    await inspector.cancel();
+    await inspector.dispose();
   });
 }
