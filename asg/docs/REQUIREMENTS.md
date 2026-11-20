@@ -20955,3 +20955,116 @@ looseHEAD/ref fixture PASS, no stderr, root bytes unchanged, tempfixture removed
 Receipt /tmp/asg404-git-metadata-packaging-receipt.json. This verifies packaging
 and controlled helper execution, not nativeUI or liveinference/allplatform flow.
 Final exactremotePRreview/requiredCI/protectedmerge pending; full404 remainsOPEN.
+
+
+### 2026-11-20 — #404 manual metadata merged; imported-manifest boundary investigation started
+
+PR788 protected expected-head squash merge
+d9d8299635ab8a41524709b2bf618bff9a92e2f0 verified through plugin currentmain,
+mergedPR and fetched treef08c456fb7afd20e71c861555276fe89d66bfb3d, identical tested
+locala3c050381d0d65f7357a27dacb9097bf9c0a11f1. Exactreview remote30308b608cb17d04b19a4cb55ed5878ee594adc3
+/base6090d539b9bcecc59387aa78fcb845e01ef8b480 no blocker, threads empty.
+CI44707141760 Flutter136189452318/Python136189452581 every required/post step
+SUCCESS, including browser transport/storage, independent generated project and
+33command-free helper cases onLinux. Local2320FlutterPASS13skips, cleanformat/
+analyze/web/isolatedMacbuild and packaging/disposableMachelper evidence retained.
+Bounded manual metadata increment Done; full404 remainsOPEN, no nativeUI/live
+inference/allplatform claim. Coordinator merged/outcome recorded, integration
+and writer claim released. Ownerdirty checkout and stableapp/processes preserved.
+09:02:46UTC /health and /v1/models both unavailableURLError; generation0, owner
+runtime left running/untouched if present. LiveQwen acceptance stayspending.
+
+Immediately claimed404-project-inspection-file-boundary-investigation in reused
+registeredissueWT/currentmain under existing404/F20, solewriter. Three docs only;
+no new issue/backlog. Observable outcome: establish current manifest containment
+limits before broader source/instruction context, with controlled Mac evidence and
+a bounded remedy proposal. Read ProjectInspector/model/imported-plancontext and
+existing symbolic-link tests. Inspector uses nofollow type checks then pathname
+File.open/read, but no single-link or opened-descriptor identity observation.
+Imported plan context currently contains root/package/sdk/runners/requirements,
+not arbitrary repository source/instructions. No new source reading enabled.
+
+Initial actual existingDart importer probe on source d9d8299,09:12:28UTC: regular
+manifest accepted(linkcount1), same valid manifest hard-linked from a separate
+controlled fixture location accepted(linkcount2), symbolic-link control rejected.
+All fixture bytes unchanged; owned temp fixture removed. ExistingtrustedDart only,
+no project commands/model/network/ownerrepo or secrets. Receipt
+/tmp/asg404-project-inspection-boundary-receipt.json SHA256
+117d27fa2edc1668da401e06c8ebbb355bea592e2c6a1f2e057f17cefb0ff718; privateprobe
+/tmp/asg404-project-inspection-boundary-probe.dart SHA256
+b89f1e74c91525149228c002b4e4c5fb8b636e767149b03fe196146a090cbc3a.
+This demonstrates hard-link alias admission, not outside owner data access or
+sourceexecution/approval escalation. Path check/open race is a source inference,
+not a measured race result; no atomic/OSsandbox guarantee is claimed.
+
+Next investigation step: compare currentDart file primitives and the reviewed
+descriptor helper boundary, identify the smallest verifiable containment remedy
+and its regression cases without expanding execution permissions. Investigation
+remains in progress; focused existinginspector validation, final review/CI/merge
+stillpending. Solelease retained. Marketplace gate/F23-last/deferred400 preserved.
+
+
+#404 imported-manifest boundary start checkpoint: existing ProjectInspector
+focused suite5PASS (regular/invalid/missing/oversize/linked/unsupported cases),
+log /tmp/asg404-project-inspection-boundary-focused.log. Together with three
+disposable actual importer controls, confirms current static symlink rejection
+and hard-link alias admission. No race execution proof. Three-doc investigation
+checkpoint committed; sole currentclaim valid, no integration lock/publication.
+Next: smallest containment remedy and deterministic regression design; full404/
+liveQwen/deferred400 remain open.
+
+
+### #404 imported-manifest containment investigation — measured conclusion
+
+Installed Dart SDK public FileStat exposes times/type/mode/size, not device/inode/
+linkcount; RandomAccessFile has no public fstat/dirfd/openat/nofollow interface.
+Current ProjectInspector requires nofollow path types, then File.open follows
+the pathname. Adding File.stat before/after or resolveSymbolicLinks cannot by
+itself establish that the opened descriptor is the validated object. Public
+File locks also do not prevent an uncooperative pathname replacement. No new
+FFI/native ABI assumptions, package installs or project execution were introduced.
+
+09:16:34UTC deterministic controlled IOOverrides intervention on unchanged
+source d9d8299635ab8a41524709b2bf618bff9a92e2f0: replace the regular selected
+pubspec.yaml with a symlink immediately at final File.open (after importer type
+checks). Existing importer/actual filesystem read returned outside_control from
+a separately located controlled valid manifest, rather than inside_control from
+the validated original. Held original, outside fixture and inert main bytes
+unchanged; all owned tempfixture removed. This is an instrumented check/open
+replacement demonstration, not unassisted concurrency/attack likelihood, secret
+exfiltration or sourceexecution. Initial test-hook run rejected its own rename
+return File constructor; corrected fixture also delegates that known held path.
+No product change was needed for the successful demonstration.
+
+Private probe /tmp/asg404-project-inspection-replacement-probe.dart SHA256
+6ab0c7496e44550a75516759fd4fa3f347004002d23ff491f2f59c29d256d00f; receipt
+/tmp/asg404-project-inspection-replacement-receipt.json SHA256
+d57a02ed8de5ab5143cfa35f4614a9bf46c6f0d50a71ceedd24a818ab97a7bd0.
+Together with regular/hardlink/symlink controls and existing5PASS, current boundary
+is static symbolic-link rejection, not descriptor-contained stable source reads.
+Imported planning currently records only root/package/sdk/runners/requirements;
+this finding grants no broader repository access or executable tool authority.
+
+Concrete next F20 prerequisite under existing404: implement a command-free
+POSIX descriptor-based project-metadata reader with deterministic containment
+fixtures, before integrating it into the import action. Bound canonical root,
+regular single-link pubspec<=64KiB, lib/main existence and fixed runner names;
+anchor all components/names with nofollow descriptors, validate pre/opened/post/
+named identities and missing-entry changes, close every handle and emit bounded
+versioned private JSON. No source file bodies beyond the manifest, recursive
+scan, Git/config/hooks/project commands/network/writes or automatic retries.
+Keep manifest schema parsing in Dart or return bounded content for the existing
+parser; stdlib helper must not require PyYAML/site packages. Test leaf/ancestor
+replacement, hardlinks/FIFO/mutation/oversize/unchangedbytes/FDcleanup and controls.
+Treat root/manifest/source/runner stability as one read set, not independent
+stat-then-read checks. Descriptor containment still is not atomic repository
+snapshot, authenticated source or a general OSsandbox.
+
+Future app integration needs explicit reviewed interpreter/asset/process/consent
+contract and owned deadline/Stop cleanup; do not silently add interpreter setup
+or a dependency to existing cross-platform import, or advertise support until
+that integration is verified. Preserve saved folders, unrelated records, last
+working outputs and separate plan/source-write approvals. This investigation
+changes only three docs; no import behavior is fixed/enabled by this PR. Final
+exactPRreview/requiredCI/verifiedmerge pending. Full404/liveQwen/deferred400 open,
+marketplace gate/F23-last preserved. No independent second writer task is ready.
