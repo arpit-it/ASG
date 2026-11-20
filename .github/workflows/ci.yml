@@ -60,6 +60,8 @@ jobs:
         run: python -B tools/test_project_metadata.py
       - name: Verify contained instruction document observations
         run: python -B tools/test_project_instruction_documents.py
+      - name: Verify contained selected source observations
+        run: python -B tools/test_project_source_files.py
       - run: python -B tools/test_product_acceptance.py
       - run: python -B tools/test_acceptance_inventory.py
       - name: Verify native fixture report contracts
