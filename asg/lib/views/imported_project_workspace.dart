@@ -12,6 +12,9 @@ import 'requirements_screen.dart';
 import 'git_metadata_panel.dart';
 import 'project_instruction_panel.dart';
 import 'project_source_panel.dart';
+import 'imported_source_proposal_screen.dart';
+import '../controllers/imported_source_proposal_controller.dart';
+import '../services/imported_source_proposal_store.dart';
 import 'imported_plan_screen.dart';
 import 'imported_advisory_screen.dart';
 import '../controllers/imported_advisory_controller.dart';
@@ -98,6 +101,20 @@ class ImportedProjectWorkspace extends StatelessWidget {
           root: inspection.root,
           records: records,
           inspection: inspection,
+          onProposal: (captured) {
+            if (!context.mounted) return;
+            Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => ImportedSourceProposalScreen(
+                  controller: ImportedSourceProposalController(
+                    inspection: inspection,
+                    context: captured,
+                    store: ImportedSourceProposalStore(records),
+                  ),
+                ),
+              ),
+            );
+          },
           onPlan: (captured) {
             if (!context.mounted) return;
             Navigator.of(context).push(

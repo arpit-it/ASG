@@ -7765,3 +7765,87 @@ verifiedmerge. Reuse404; this is the sole next task, no speculative/parallel que
 FullF20/liveQwen/deferred400 remainOPEN; marketplacegate/F23-last unchanged. No owner-
 source/model/install/download/stableapp/cloud/deployment effects. RequiredremoteCI/
 freshreview/verifiedmerge gate investigation completion; activeclaim held throughreview.
+
+
+### 2026-11-20 — proposal boundary merged; read-only imported proposal started
+
+PR807 fresh reviewed headab8563bb8d87165f7e8ca09ddab783e922c1c3a5 protected squashmerge
+039535cf80f42be49948b717dfd9782d269169c6 verified by plugin main/mergedPR/issue404OPEN
+and fetched exacttreed8b0f0fe8204f7e67eda3954ad4d471dc2a45bac matching local0438680.
+Full3doc remote/localdiff/criteria/probes review no blockers, emptythreads and unchanged
+head/base/main. RequiredCI44777451763 Python136430939699/Flutter136430940218 every
+required/poststep SUCCESS; completedlogs inspected fullFlutter/browserstorage/
+transport/staticHTML/web/independentgeneratedFlutter/Python checks. Investigation30
+pure/probe/candidate/diff/source-context checks PASS. Coordinator merge/outcome
+recorded, integration/completedclaim released. No production proposal/writeauthority
+or fullF20 acceptance claimed; ownerdata/processes/stableapp preserved.
+
+Immediately claimed404-imported-source-proposal from verifiedmain in registered
+issueworktree, solewriter. Coherent outcome includes pure proposal, readonly app-record
+service/durable input fence, featurecontroller/view/source/workspace entry, private
+stale/error/draft retention and actual relevant fixture/UI/build/CI gates. Scope new
+model/service/controller/view/tests plus selected existing source UI/controller,
+canonicaldocs/inventory; no independent disjoint readywriter admitted.
+
+Started pure final ImportedSourceProposal. Separate versioned imported-source-proposal
+identity binds exact root/contextSHA/canonical full reviewed-planSHA/selected relative
+path/before-afterSHA/replacement, source_verified=false and64KiBwholeUTF8record bound.
+Requires reviewedplan context equal to captured sourcecontext, selected literalfile,
+changed replacement and before/replacement16KiB/500line exact text. Preserves BOM/CRLF/
+Unicode bytes via strict roundtrip validation, refuses invalidUTF16/NUL/unsupported
+controls/oversize privately with no truncation/pathcoercion. Empty replacement is
+proposed empty contents only, no delete semantics. Immutable selected source and
+SourceLineDiff remain transient review data, not apply patch/writegrant/currentdisk
+proof. Current savedplan/app/durable input checks belong to pending service/controller;
+this pure model alone does not establish current approval or source-write authority.
+
+Initial4proposal+5existingdiff+1architecture checks PASS: exact BOM/CRLF before/after
+reconstruction/hash/fullplan timestamp identity, immutable sourcebytes/difflines,
+unapproved/wrongcontext/unselected/fixedprefix/unchanged private refusal,16KiB exact/
+overflow/multibyte/500line/501line/surrogate/NUL/control validation and empty-content
+proposal record with no execution transport. Two braceinfos corrected manually,
+then twofileanalysis clean and10checks rerunPASS; inventory regenerated and9inventory
+checks PASS. Logs/tmp/asg404-imported-proposal-start.log,
+/tmp/asg404-imported-proposal-start-analyze.log and
+/tmp/asg404-imported-proposal-start-inventory.log. Continue additional model identity/
+beforelimit cases, actual savedplan/current-input/durable fence/controller/view and
+IAB/fullrequiredchecks before review/merge. No service/UI/storage/model/file/toolchain
+callsite added by this start. FullF20/liveQwen/deferred400 pending, marketplacegate/
+F23-last unchanged; no owner-source/install/download/stableapp/cloud/deployment effect.
+Activeclaim retained for continuation.
+
+
+### F20 / #404 — transient imported-source proposal implementation, 20 November 2026
+
+Continued owned404-imported-source-proposal in registered issue worktree. Added
+read-only app-record selection/verification service, lifecycle-aware controller and
+explicit captured-source/workspace entry to a transient replacement editor. Preview
+requires the exact saved reviewed source plan, saved folder, metadata and requirements;
+production conditional storage verifies durable expected inputs with zero updates.
+Changed inputs require reload, never implicit rebase. Invalid drafts, changed plans,
+failed verification and disposal retain prior comparison marked stale; editable draft
+is retained. No proposal record, source write/read/delete, model, toolchain, command,
+apply or execution grant. The existing manual-plan storage consent remains separate.
+
+The screen selects only captured files, shows literal reviewed plan and identity hashes,
+reuses bounded immutable SourceLineDiff, labels historical captured comparisons unverified
+and exposes only Preview/Reload. A replacement may be empty contents, never file deletion.
+Controller replacement resets view state and disposes the old owner.
+
+Verification: 10 new controller/store/widget regressions PASS, including actual native
+DB durable-plan change behind stale session cache, zero-update fences, immutable inputs,
+unapproved/missing/corrupt plan refusal, delayed verify/disposal, changed saved plan,
+invalid-draft retry/previous-output retention, narrow320px/textscale2 and screen disposal.
+Existing proposal/source-panel/controller/architecture27 PASS; fullFlutter2570 PASS with
+13 existing opt-in skips. Analyze clean;624formattedfiles unchanged;web build PASS;
+isolatedmacOS Debug build PASS under com.arsinha.asg.sourceproposalvalidation without
+install/launch/stable-app replacement. Six-runtime-hash receipt in
+/tmp/asg404-source-proposal-build-receipt.json; native UI not verified. Inventory9 PASS.
+IAB supplied-data fixture onowned8399 verified literal untrusted source display, authored
+replacement/diff, oversize refusal with previous comparison stale and corrected retry;
+preview server stopped after verification. No owner-source or live-model requests.
+Logs/tmp/asg404-proposal-{new-tests,full,analyze,format,inventory,web,native,browser-build}.log.
+
+Publication/fresh exact review/requiredCI/verifiedmerge pending at this checkpoint.
+FullF20 and unavailable-platform#400 acceptance remain open; marketplace gate/F23-last,
+Stop/recovery, approval and last-working-output boundaries preserved.
