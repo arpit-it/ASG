@@ -18641,3 +18641,117 @@ exact PR review, requiredCI with new step and verified merge still pending. Keep
 valid writer lease and resume this owned task first. No live model/native app,
 source-copy/restore, stable replacement, owner-process stop or deployment occurred
 for this CI increment. FullF20/CE01/umbrella404 and deferred400 stay open.
+
+
+20 November2026 — PR767 verified mergedf36ded5d30c602a030c230a5ddaf517638523a7d,
+exacttree61d37534505597723870ffab20bef4dca98c5228 matches3tested/published files.
+Fresh exact3patch review19e7ab95b7629dbbd45bb4f9b97c0413567b46b7/baseeb2024a7
+found no blocker or rework. RequiredCI44650011861 Flutter136002263783 and Python
+136002264407 bothSUCCESS, allmandatory/poststepsSUCCESS, no conversations and
+unchanged head/base/main verified before protected expected-head merge. New named
+native fixture report step logs prove restart6+candidate76 tests PASS on Ubuntu.
+PluginPR/main/issue404OPEN and fetchedmain/tree verified. Coordinator merged and
+outcome_verified recorded before release. No escaped defect observed; provider
+durations unknown, manual CI observation wait kept distinct. No product source or
+platform acceptance expanded; stable app/owner edits/processes preserved.
+
+Immediately claimed404-native-initial-lineage-investigation under SAME#404 from
+verifiedmain in reused registered worktree. Three owned docs only: REQUIREMENTS,
+PROGRESS and AGENT_ENGINE. No independent second task is ready. Concrete next CE01
+gap: production initial-request lineage has exact selected terminal entry/original
+raw session/admission/context/run readers and same-process native DB tests, but
+actual disposable app20/21 fixtures carry no initial origin and separate22fixture
+constructs a selected repair with unbound failed baseline. Its native crash/reopen
+evidence cannot establish initial-request lineage. Do not relabel them.
+
+Acceptance: inventory exact native and production paths, run bounded source probe
+and focused initial-lineage/nativeDB/recovery tests, then define a separate bounded
+initial-request native acceptance contract. Require exact older selected entry even
+after identical later returns, original versus actual retry raw admission, atomic
+pre/postcommit cohort, independent cold historical joins, explicit production retry
+and isolated optional corruption; no latest/hash inference or restored authority.
+Preserve strict existing modes/schemas, consent/Stop, consumed budgets, working
+outputs and owner processes. Supplied source/provider metadata is not live inference,
+production copy execution or SDK success. Docs-only investigation is in progress;
+implementation waits for reviewed contract merge. FullF20/CE01/umbrella404 and
+deferred400 remain open; REQUIREMENTS stays the sole queue.
+
+Started read-only source inventory on verifiedmain: both actual native fixture
+entrypoints have0initialRequestOrigin/0CandidateRequestLineageStore mentions, while
+production store/recovery contain the actual initial joins. SHA256-bound results
+are /tmp/asg404-native-initial-lineage-source-probe.json. This static evidence maps
+missing coverage; it does not prove runtime correctness or actual native startup.
+Initial documentation append used wrong relative cwd and failed before any write;
+corrected to absolute repository paths. Focused lineage/recovery tests are running.
+
+
+Initial native-lineage investigation checkpoint: focused29 tests PASS across
+candidate_request_lineage model/store, saved candidate recovery and architecture;
+/tmp/asg404-native-initial-lineage-focused.log. Includes existing native DB
+stale-adapter/close-reopen and historical optional-proof isolation; not29 separate
+native app processes. Source inventory demonstrates the missing app-mode initial
+join without claiming that absence alone proves a product defect.
+
+Production mapping: CandidateRequestLineage has strict canonical8-field v1 companion
+with exact requestReference, original raw requestSessionRecord, actual immediate
+admissionSessionRecord, contextSHA and run/dispatch. Startup expected read-set pins
+request journal and absent initial companion/opposite repair companion, alongside
+existing approval/working/session/run records; updated initial companion joins the
+same7-record startup cohort. Historical load pins exact retained run, referenced
+terminal request, context and companion consistently. Recovery restores an optional
+initial origin independently from repair reference; conflicting/corrupt origins grant
+no inferred origin. Existing native22mode exercises repair only.
+
+Next owned work: finish fixed supplied initial-request setup and distinct new-mode
+report/read-set/failure matrix, including explicitly selected older identical return
+versus later journal growth, actual retry pre-admission raw session, independent
+cold validation of both companions and optional-corruption isolation. No new native
+mode, app launch/kill, model/SDK command, copy/restore, stable replacement or
+deployment delivered by this checkpoint. Keep this docs-only investigation claimed;
+review/requiredCI/verified contract merge gate dependent implementation.
+
+
+Initial-request native investigation result,20 November2026. Two actual native
+StudioDatabase pre/postcommit pause probes pass with selected original request1
+after identical returned request2; planned companion exists before commit only
+in pending map, full7-record cohort appears only after transaction, independent
+adapter joins selected1/original formatted raw session/actual admission, startup
+result delivery0 and no records change on injected failure release. Initial private
+probe passed response metadata into request reservation and was correctly refused;
+request-time metadata corrected without product changes. Probe2PASS log
+/tmp/asg404-native-initial-admission-probe2.log; existing focused29PASS log retained.
+Neither probe is a separate app crash/reopen or actual copy workflow.
+
+AGENT_ENGINE.md now specifies bounded dependent404-native-initial-lineage-fixture:
+separate protocol23/mode initial-lineage, exact6key4096byte challenge,40key8KiB report,
+15raw slots/16counters, explicitly selected request1/latest2 identical returned
+FILE-HASH maps, exact metadata references and original/current raw admission.
+Journal stores returned-source hashes rather than full proposal text; contract
+labels that distinction and never claims reconstruction. Seven-record atomic
+startup, cold read-only join, real production retry inspections, independent BOTH
+retained-companion validation and optional corruption isolate raw from joined proof.
+Existing20/21/repair22 remain unchanged, and all new native app acceptance stays
+pending implementation after this contract's verified merge. Schema execution note
+/tmp/asg404-native-initial-lineage-report-schema.json SHA256
+566e08aa8ae90b7ee0a2c7f57c22f7e1d110ad60291a883ee66a54fddac5724f. This note is
+not another queue; REQUIREMENTS defines the bounded task and acceptance.
+
+Investigation source/probe/focused checks pass; no production/fixture code changed.
+Finish bounded report-fit/strict scenario review and required documentation checks,
+then publish3docs for exact fresh review/requiredCI/verifiedmerge. Do not begin the
+dependent implementation until prerequisite merge is verified. Keep umbrella404,
+fullF20/CE01 and deferred400 open. Owner edits/processes and last output preserved;
+no app kill/live inference/new SDK command/copy/stable replacement/deployment here.
+
+
+Contract checks complete:40unique fields/15slots/16counters; conservative fully
+populated compact report5008bytes fits8192 (even opposite slots filled for size
+only). /tmp/asg404-native-initial-lineage-report-fit.json is a contract-size probe,
+not a protocol validator or valid native observation. Source inventory, two actual
+native DB seam probes and focused29 pass. Portable host76/restart6/product32/
+inventory9 pass; logs /tmp/asg404-native-initial-contract-{host,restart,product,
+inventory}.log. No production source or canonical inventory changes; docs-only
+validation reuses unchanged runtime build evidence from verifiedmain/PR767, without
+claiming a new app build or native-process result. Both required remote jobs remain
+mandatory. Local exact contract/failure-order review complete; publish only3docs,
+fresh exact PR review, requiredCI and verified merge before implementation.
