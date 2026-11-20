@@ -16919,3 +16919,174 @@ join succeeds. A physical opaque record hash is neither absence nor validated
 lineage. Independent core target run/dispatch facts remain readable from the journal;
 never invent their stronger relation. Retain this corruption control separately from
 successful joined-stage comparisons and preserve unchanged core record identities.
+
+
+20 November2026 — PR765 verified mergedf20a738ead7bd06a4ff6813b24e71fb74d7e0b1a,
+exacttree51ac6f63b28b72ba18de4e65311fe5b5a5909c19 matches all3 final published docs.
+Fresh revised review1dcba721339074652ed5f8cc53213c227480aa5f/base2e8755fe inspected
+all3 exact patches. One review rework corrected captured planned versus durable
+joined identities and raw corrupt-record observations; strengthened native probes2
+pass. RevisedCI44643096116 Python135978935508/Flutter135978935841 both SUCCESS,
+every mandatory step SUCCESS, conversations empty and unchanged head/base/main
+rechecked before protected expected-head merge. PluginPR/main/issue404OPEN plus
+fetchedmain/tree verified. Source/protocol probes, focused55/host56/product32/
+inventory9 pass; unchanged runtime source/inventory means no new local build claim.
+No runtime/native-mode or actual app crash/reopen acceptance was delivered by this
+contract. No app/process launched/killed, source restored, model/SDK run or deployment.
+Coordinator merged/outcome_verified recorded before integration/writer release.
+One review rework, no escaped defect observed; task/CI timing remains coordinator/
+manual rather than provider timing. PR attachment hit the existing chat limit100.
+
+Immediately claimed implementation404-native-repair-lineage-fixture from verified
+main under existingF20/CE01/#404. Its merged contract above is the acceptance source.
+Two dependency-ready, disjoint implementation tracks integrate into ONE coherent PR:
+root owns7 literal Dart/preflight/shared-doc/inventory paths and exclusive native
+build/launch resources; delegated404-native-repair-lineage-host owns only3 Python
+host/parser/test paths in a separate registered worktree. Claim before edits; maximum
+2 writers, no shared writer checkout. Host writer must stop edits and hand off tested
+commits; root serializes integration/publication and final review/CI/merge. No new
+issue or second backlog. FullF20/CE01/umbrella404 and deferred400 stay open.
+
+Bounded implementation acceptance: strict separate protocol22 mode repair-lineage;
+supplied selected repair with exact immutable origin/reference/terminal metadata;
+owned precommit/postcommit app crash and independent read-only reopen with absent/
+full7-record cohort; explicit production recovery retry with SAME reference and NEW
+run/context/dispatch/actual raw pre-session; optional corrupt companion preserves
+bare facts and grants no inferred linkage. Preserve legacy20/21 behavior/evidence,
+current guards, consumed budgets, Stop/recovery, working outputs and owner processes.
+No generic commands/DB scopes, production schema change, live inference, downloads,
+stable-app replacement or deployment. New actual native observations remain pending.
+
+Common new-mode challenge agreed for both tracks: exact keys mode, nonce, launch,
+boundary, corruptOptional, sdk. Mode repair-lineage; nonce lowercase32-hex; launch1..4;
+boundary precommit/postcommit, precommit only1/2; corruptOptional is boolean and true
+only for postcommit read-only launch2 in its own control scenario. SDK is an existing
+absolute nonempty safe path, validated independently before any use. Old-mode flags
+must not be mixed. New-mode raw challenge parsing rejects duplicate/unknown/missing
+members and preserves the existing4096-byte bound. Typed derived target run2 for1/2,
+run3 for3/4; strict stages as merged contract. Challenge grants no production authority.
+Python report field names/layout will be shared explicitly with the Dart writer;
+all merged semantic identities, fixed member hashes and counter distinctions remain
+mandatory. New native code is test-fixture-only; no production main entry is changed.
+
+Started the Dart challenge/preflight implementation and delegated host validation.
+Remaining: implement/test new mode and parser/driver, integrate disjoint handoff,
+actual owned native scenarios with exact binary/source/artifact identities and
+legacy regressions, then full local checks/fresh exact review/requiredCI/verifiedmerge.
+Keep both valid leases and root-only native/inference resource ownership; no live
+inference is needed for fixed supplied metadata. Primary owner3IDE/3canonical-doc
+edits and owner-started processes remain untouched.
+
+
+404-native-repair-lineage-fixture implementation checkpoint on verified PR765.
+Root added a pure typed NativeRepairLineageChallenge in the NEW isolated fixture
+module and new preflight tests. It accepts only exact6-key4096-byte new-mode input;
+strict mode/nonce/int launch/boundary/control/SDK fields; unknown/missing/duplicate/
+UTF8 oversize/mixed legacy values and unsafe relative/non-normal SDK paths fail
+with sanitized errors. Derived target run/dispatch/companion identities are explicitly
+planned values, with no committed-proof fields or execution/storage authority.
+Corruption control is restricted to postcommit read-only launch2. No native main
+entry is wired yet, so no new mode or native-process result is claimed.
+
+Ten focused preflight+architecture checks pass, general Flutter analysis and direct
+new-fixture module analysis clean, focused format/diff checks pass. Logs:
+/tmp/asg404-native-lineage-preflight-test.log,
+/tmp/asg404-native-lineage-preflight-analyze.log,
+/tmp/asg404-native-lineage-preflight-fixture-analyze.log,
+/tmp/asg404-native-lineage-preflight-format.log. These are pure input guards, not
+actual process ownership, durable startup or native crash/reopen acceptance.
+
+Delegated host writer claimed its3 Python paths in separate Git-registered worktree
+/Users/arpitsinha/.codex/worktrees/404-native-repair-lineage-host/ASG, branch
+404-native-repair-lineage-host. Managed create/attach both hit the existing chat
+attachment limit100; the clean registered Git worktree and coordinator claim exist,
+so scoped work proceeds explicitly there. No parent writer files were shared. Status
+confirms exactly2 active writers, root asg404 and host asg404-host, no integration
+lock. Root owns native launch/build resources; host tests mock those actions.
+
+Host report schema agreed at /tmp/asg404-native-lineage-report-schema.json, SHA256
+c4ca8bbd88c1898e3a5cf3880a93427aacc9c7be6d22b12642f73bdfae008790:35 exact top
+fields,14 fixed record slots,16 counters, existing5-key reference and8KiB report.
+It separates captured/durable target and pre-session facts, raw slots from joined
+proof, fixed setup/cold/recovery effects and across-launch comparisons. Cold source
+manifest digests are recorded metadata; any independent host physical source checks
+must be labelled separately rather than counted as new app inspections. Host writer
+is implementing parser/driver/negative-case fixtures and will stop edits for handoff.
+
+Remaining owned work: wire actual native mode and fixed setup/record reports,
+integrate tested disjoint host handoff, build isolated native binary and run owned
+precommit/postcommit/cold-read/retry/corruption plus legacy scenarios with exact
+source/binary/artifact identities. Then full required local checks, fresh exact PR
+review, both mandatory CI jobs and verified merge. Current implementation is dirty,
+unpublished and incomplete; keep valid leases and resume owned tracks first. No
+model/SDK/tool/app process, source copy/restore, stable replacement or deployment ran
+for this checkpoint. FullF20/CE01/umbrella404 and deferred400 acceptance remain open.
+
+
+20 November2026 — native repair-lineage fixture implementation checkpoint.
+The app entry now selects a separate protocol22 mode. Actual production proposer
+with supplied provider, native StudioDatabase startup pause, cold proof readers and
+SavedCandidateRecoveryController retry are wired into fixed fixture setup/reports.
+Twelve Dart checks pass:9 strict challenge guards and3 same-process native database
+workflow cases (precommit, postcommit+retry, optional corruption). These are not
+separate native application crashes. Direct fixture analysis is clean. Logs:
+/tmp/asg404-native-lineage-vm-test.log and
+/tmp/asg404-native-lineage-app-analyze2.log. Host handoff fa66979c21e35679e2783f38e6c1f9ab1b552dc6
+has76 crash/parser tests plus6 restart tests passing; writer stopped. Review fixed
+retry validation to allow an identical canonical candidate hash while requiring
+all new context/companion/execution/history slots and changed journal/session.
+Seven declared transaction updates need not mean seven different hashes.
+
+Isolated native fixture build started; actual owned crash/reopen scenarios, complete
+regressions, publication, fresh review, requiredCI and verifiedmerge remain pending.
+No production runtime code changed, live inference/SDK verification/stable replacement
+or deployment claimed. Retain scope leases and resume this bounded#404 task first.
+
+
+Native repair-lineage integration,20 November2026. Both writer tracks stopped and
+released before transfer; root app checkpoint0b4b1e6 and hostfa66979 were preserved.
+Fresh union-scope task404-native-repair-lineage-integration now owns all10 literal
+paths for the SAME coherent#404 increment. The first union claim was refused because
+a sibling handoff was wrongly described as a merged prerequisite. A shell sequence
+then adopted the already authorized local handoff5e7d957 before inspecting that
+refusal. Corrected contract records the sibling as same-PR handoff, and union claim
+succeeded before any further edits. No concurrent scope or owner work was lost;
+this ordering mistake does not count as a completed prerequisite merge.
+
+Local review found final cold launch4 must independently join BOTH retained
+companions, rather than only the newest plus old raw hashes. Added production-reader
+validation of run2 and regression damage to prior companion with newest still valid.
+Actual corruption surfaces FormatException; the regression expects that specific
+error. Rebuilt binary and repeated all native evidence after this source correction;
+initial binary531f7efb0f1f8df40413b873f012231e58082e6d79ac6f19164f21efb27f937e
+observations remain separate and are not final-revision acceptance.
+
+
+Final owned Mac native scenarios pass on disposable bundle
+b8a7522ce95e1694b665f9ab1172554f96a0a9634c227d434bb0d43be5ab41c2, private
+/tmp/asg404-native-lineage-derived output, separate com.arsinha.asg.restartfixture
+identity. Protocol22 precommit2,postcommit+retry4,optionalcorruption2 launches pass.
+Each paused startup withheld caller return; host killed only its own live handle.
+Cold reopens write no records and construct no hosts; retry production inspections2
+and declared startup7 updates are explicit. Source manifest hashes are recorded
+setup metadata, not cold source inspections. Live model/receipt/SDK/preview counters0
+for new mode. Same final binary also passes protocol21five-launch decision scenario
+and protocol20five-launch bound-session Stop/acknowledgement/retry/promotion smoke.
+Legacy20 smoke uses its supplied command adapter and real fixture receipt/process
+boundaries; it does not establish live inference or a new general SDK test result.
+Initial incompatible legacy flag request was refused before launch; documented
+compatible flags succeeded, with no guard weakened.
+
+Reports:/tmp/asg404-native-lineage-final-{precommit,retry,corrupt,legacy21,legacy20}.json
+precommit: 2 launches; reportSHA256 0d8cb57f70b6a9ce282cf4e1434ab6f745bdee0755ffe27d9521b32b81744778
+retry: 4 launches; reportSHA256 5c95e7d800fe7e8be9452a98fe17a9a744f5c929ef3f053ee9fac962f985a5ba
+corrupt: 2 launches; reportSHA256 833b60caeddea474f2dd239ddc05126a9db5b933b3c3c34e4540ba367dbfec43
+legacy21: 5 launches; reportSHA256 a3e864d87a14577f9473cdcd52704d04a2e4f2dadf86fdf2ad22316b8089f536
+legacy20: 5 launches; reportSHA256 ddaef2de3d0668341cd8bf0c2f12c0de9a99d92960af436cb33e68599b72097f
+
+Canonical acceptance inventory regeneration is unchanged: no production lib source
+was modified. Host/crash76+restart6,product32,inventory9 pass. Productionweb build and
+isolated macOS standard/fixture builds pass; direct two-module analysis clean,
+format552 unchanged. Fresh exact PR review/requiredCI/verifiedmerge remain gates;
+fullF20/CE01/umbrella404 and unavailable-platform400 stay open. Stable application,
+owner runtime/processes, last working output and unrelated primary edits preserved.

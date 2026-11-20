@@ -16,6 +16,7 @@ import 'package:asg/services/published_task_evidence_store.dart';
 import 'package:asg/views/published_task_evidence_screen.dart';
 
 import 'candidate_reopen.dart' show CandidateReopenFixture;
+import 'native_repair_lineage.dart' show runNativeRepairLineageFixture;
 import 'agent_session_task_history.dart' show TaskHistoryFixture;
 
 import 'package:flutter/material.dart';
@@ -257,6 +258,14 @@ Future<void> main() async {
       throw StateError('Invalid challenge.');
     }
     final input = jsonDecode(await challenge.readAsString());
+    if (input is Map<String, dynamic> && input['mode'] == 'repair-lineage') {
+      stage = 'repair-lineage';
+      await runNativeRepairLineageFixture(
+        canonical,
+        await challenge.readAsString(),
+      );
+      exit(0);
+    }
     if (input is Map<String, dynamic> && input['mode'] == 'task-decision') {
       await taskDecisionFixture(canonical, input);
       return;
