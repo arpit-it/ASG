@@ -8700,3 +8700,145 @@ Fresh exact PR review, required remote CI and verified merge still gate completi
 this app increment. Full F20/CE01 #404 remains open for immutable-context planning, explicit
 isolated copy/admission, reviewable changes and safe execution. Unavailable platforms stay
 under #400; marketplace gate and F23-last ordering remain unchanged.
+
+### F20 / #404 — verified commit comparison and planning-context investigation started, 20 November 2026 UTC
+
+PR815 protected merge8e091f1074f000cb9513338ae40a1abead02058e verified through pluginmain,
+mergedPR/404OPEN and fetched tree88f015fbb4f93d33d5608ba24bcd1ddd699d4920, equal tested
+contents. Fresh review exact remote50480a7f51bb809888e99b02f840155ea92dcacd against
+9929c4a84cb33dc94a316fae0e655ccb466e81e5 matched normalized local/remote diff; no blocking
+findings or unresolved threads. RequiredCI44820630617 Flutter136580311864 and
+Python136580312306 every required step/poststep SUCCESS; completed logs inspected.
+Local69focused/2679full13existingopt-in skips, format/analyze/inventory9/product32,
+productionweb/isolatedMac and actual disposable nativeDB/Git/IAB guards establish the
+bounded read-only comparison outcome. No current approval, whole-copy readiness, source
+write/copy/execution, nativeGUI/install or model capability claimed. Completed ownership
+and integration released. Attachment attempt hit existing100identity limit; unrelated
+attachments retained. Owner checkout's6unrelated dirty files and processes preserved.
+
+Coordinator manual start-to-merge4065.4seconds, paired observed CI interval535.2seconds,
+zero recorded review rework and one verified bounded app outcome. These are cooperative
+manual intervals, not provider CI timing; escaped defects remain unknown despite zero
+recorded escaped-defect observations.
+
+Immediately claimed404-commit-context-admission on verifiedmain in same registered
+worktree; existing umbrella404 covers this bounded prerequisite, no new issue/backlog.
+Solewriter, no independent eligible disjoint second task. Owned scope is these three
+canonical documents only; disposable probes stay outside repository. Acceptance: map
+immutable commit data into advisory/manual-plan identity without discarding commit/tree/
+manifest/full readset, current app metadata/requirements or source-sharing consent;
+identify store/controller/recovery changes needed before a coherent app implementation.
+No app source/model/copy/write/execution effect in this investigation. Fresh reviewed
+publication/requiredCI/verifiedmerge still gate completing the investigation.
+
+Inspected ImportedRepositoryContext, ImportedSourceContext, ImportedAdvisoryRequest/
+Record/Store/Controller and ImportedPlanStore/Controller. Generic advisory accepts an
+ImportedRepositoryContext but expects metadata.root in its record; current manual-plan
+store admits only typed document or working-source capture and reconstructs those types
+during durable save. It cannot safely accept an immutable comparison as current context.
+Historical proposal models/stores remain tied to ImportedSourceContext; that scope must
+stay explicit rather than silently treating matching commit bytes as working-source proof.
+
+Three disposable Dart probes plus51relevant existing context/advisory/plan/proposal tests
+passed54total. Log /tmp/asg404-commit-context-admission-rechecked.log; probe source
+/tmp/asg404_commit_context_admission_probe_test.dart. Equal selected bytes from two full
+commit IDs retain different new comparison identities, but hypothetical flattening into
+existing working-source context collapses both context and advisory request identities
+and equals the approved historical plan context. This is a demonstrated unsafe conversion
+to avoid, not an exposed app pathway or newly discovered existing authorization bypass.
+Strict captured-source restore rejects extra commit/tree/manifest fields, preventing an
+in-place version1 extension. A valid30000byte capture is admitted by source bounds but
+rejected by existing24KiB advisory prompt bound; no truncation or model request occurred.
+An initial command named nonexistent imported_plan_store_test.dart and failed loading;
+corrected to actual imported_plan_test.dart and all54reranPASS. Initial log retained.
+
+Next investigation work: settle typed immutable-context canonical schema/restore and
+identity matrix, current metadata/requirements fencing, optional advisory consent/view
+provenance and manual-plan draft-before-approval semantics, plus recoverable history
+compatibility. A coherent implementation must include its store/controller/UI path and
+relevant adverse coverage; parser-only acceptance is insufficient. No automatic model
+sharing or inference is needed for these deterministic admission probes. FullF20/CE01,
+unavailable-platform400, marketplace gate and F23-last ordering remain unchanged.
+
+### F20 / #404 — immutable-context admission findings, 20 November 2026 UTC
+
+Completed local prerequisite investigation; publication/fresh review/requiredCI/verified
+merge remain pending. Eight disposable admission/schema probes plus77relevant existing
+context/advisory/manual-plan/proposal tests passed85total. Final log
+/tmp/asg404-commit-context-admission-final-rechecked.log; prototype source
+/tmp/asg404_commit_context_schema_probe_test.dart. Initial prototype used two arguments
+instead of the existing three-argument RequirementsStore.save API; corrected and all85
+reranPASS. Earlier failed log retained. Prototype records are supplied deterministic data,
+not production schema/native admission or a new app capability. No live model request,
+owner repository source operation, install/build/deployment or app storage mutation.
+Existing regression fixtures use only disposable native databases and fake providers.
+
+Verified findings:
+- Equal selected bytes across different commits collapse identity if converted into the
+  old working-source context; they can equal the historical approved plan context.
+  Current app exposes no such conversion. Preserve its strict version1 schema.
+- Commit comparison record identity includes observation time. Repeating the same request
+  and content at a later time changes that record digest while request/observation digests
+  stay equal. Do not use whole comparison digest or timestamp as stable planning identity.
+- A proposed separate canonical captured-imported-commit-context scope can retain metadata,
+  requirements, fullcommit/tree/manifest/count/readset and per-file mode/blob/SHA256/count/
+  text. Projection probes change identity for each provenance component. Mutated prototype
+  projections are not claimed valid; strict production decoding remains implementation.
+- Existing generic advisory request/answer plumbing can carry this prototype identity:
+  prompt contains exact commit/tree; completed answer retains root and context digest,
+  excluding captured source plaintext. Existing advisory store's frozen input authorization
+  rejects changed requirements; changed SDK metadata does not match captured inputs.
+  Generic plumbing is not a user entry or sharing grant. Current24KiB prompt bound can
+  reject a valid30000byte source capture; preserve refusal rather than truncate data.
+- Existing default planning workspace loads an unknown immutable-context plan only as
+  historical/inactive. It cannot approve that record against ordinary metadata context;
+  attempted approval retains original bytes. A new explicit typed store/view path is
+  necessary. No existing proposal/history schema should silently accept this new type.
+
+Selected implementation boundary after verified merge: one coherent committed-source
+review and user-authored manual-plan workflow, entered explicitly from a successful,
+nonstale, cleanup-settled commit comparison. It includes typed context/restore, current
+app-input fence, review/plan entry, manual-plan store/controller/view provenance and all
+relevant recovery/adverse tests. No model integration or source proposal/copy/execution
+is required for that bounded user outcome. Existing404 covers it; no new issue needed.
+
+Required design constraints for that implementation:
+1. Canonical separate versioned context; immutable lists/bytes, duplicate/unknown/type/
+   Unicode/byte/count/path/mode/blob/hash guards and exact canonical restore. Bind root,
+   full commit/tree/manifest metadata, complete selected readset and exact committed
+   UTF8/BOM/CRLF text, plus workspace inspection and requirements. Source_verified=false;
+   working/conflict unknown. Workspace package/SDK/runners are captured app observations,
+   not parsed from or verified for the selected commit. Exclude observation timestamp,
+   Python path and comparison-record digest from stable context identity; keep read-event
+   provenance separately in comparison UI. Canonical source data never becomes authority.
+2. Context preparation is an explicit controller action after owned cleanup. Recheck the
+   exact comparison request/current commit and frozen five app records with existing
+   durable zero-update fences before returning context. Stale/refused/changed-input,
+   disposed/pending/uncertain work cannot prepare context. Changed selected bytes are
+   legitimate committed context, not a requirement to match the historical capture.
+3. Extend plan storage with one mutually exclusive typed immutable capture alongside
+   existing document/working-source captures. Preserve it through internal transactional
+   snapshot reconstruction; validate metadata/requirements and exact current saved plan.
+   Existing keys/plan record format stay unchanged. Existing current draft must be saved
+   before explicit approval; new context invalidates prior approval. Failed/stale/disposed
+   writes retain saved records. Reopening/repeating the exact capture yields stable identity;
+   different commit/tree/manifest/requirements yields inactive historical approval.
+4. Comparison and planning views show full immutable identity, selected source/hashes and
+   context limits. Entry alone never reads files, shares text or saves/approves a plan.
+   Saving stores source-containing context in ASG application records with clear local
+   persistence wording. Default root plan remains historical until explicit compatible
+   context is supplied; saved source-comparison history remains recoverable after a new
+   manual plan. No source-proposal extension, repository copy/write or execution action.
+5. Verify pure malformed/identity/byte/restore cases, preparation and save races/disposal,
+   shared read ownership, historical plan/context reopening and actual disposable nativeDB,
+   narrow/replacement/navigation widgets and IAB manual flow. Run format/analyze/fullFlutter,
+   inventory, relevant web/isolatedMac builds, exact fresh review and allrequiredCI before
+   completing the app outcome. Platform acceptance beyond this Mac remains under400.
+
+Optional future advisory entry requires separate displayed immutable provenance and local
+model-sharing consent, exact response identity and retained last-answer recovery. It is
+not automatically enabled by the manual-plan workflow; no external endpoint sharing or
+F23 acceptance is inferred. FullF20/CE01, isolated-copy/run prerequisites and #400 stay
+open; marketplace gate and F23-last ordering remain unchanged. This investigation changes
+only three canonical documents. No runtime/dependency/asset/workflow source changed, so
+unrelated local builds were not repeated; required remote CI still gates the final PR.
