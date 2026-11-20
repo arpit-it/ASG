@@ -5192,3 +5192,102 @@ Required exactfreshPRreview/allrequiredCI/verifiedprotectedmerge still pending.
 No product defect newly discovered in these journal checks; metadata defect and
 its before/after evidence remain recorded under mergedPR782. Marketplace/F23-last
 preserved, no cloud/deployment/unrestricted execution.
+
+
+### 2026-11-20 — #404 ambiguous SSE journals merged; JSON compatibility tracks started
+
+PR783 protected expected-head merge78b06b033e9b13c23c4ba9484d9df4998c36303a
+verified remote main/mergedPR/fetched tree550184bc387c256b440c02bc2c89f12e15f8c115.
+Fresh reviewedf434a6e8c765cb677abd7012fdea1753aa6f3556/based61323f2 no blocker,
+threads empty. CI44692502912 Python136141389903/Flutter136141390296 every mandatory/
+post step SUCCESS; eight new actualHTTP/nativeDB scenarios activeLinuxPASS.
+Local32focused/full2270PASS13explicit skips/format561/analyze/web/product32/inventory9.
+Coordinator merged/outcome recorded; integration and union claim released. Both
+bounded SSE journal tracks Done; full404/liveQwen/#400 stay OPEN, ownerdirty
+checkout/processes/lastworking outputs preserved. No source apply/inference/native
+app/stable replacement/deployment.
+
+Immediately claim404-initial-json-response-journal and admit independent
+404-repair-json-response-journal underexisting404/F20, both depend ONLY on verified
+PR783. Concrete gap verified in source/evidence: LocalModelProvider supports
+non-streaming JSON compatibility, both actualHTTP/native journal fixtures solely
+serve SSE. Transport mocks alone do not prove durable source/repair JSON outcomes.
+Root owns initial fixture plus three shared docs; delegated writer may claim
+only repair fixture in distinct registeredWT. Preserve seven SSE/control cases
+and add actual application/json valid, wrongID, plain/escaped contradictory model
+and absent response-model scenarios. Valid replies complete source hashes or repair proposal/reference; explicit
+conflicting IDs fail. An absent optional ID retains unknown response identity,
+without inventing it from requested configuration.
+Verify physical durable intent before HTTP, unchanged full working/session/failure/
+origin/unrelated map, actual DBclose/reopen/no retry or replay, callback visibility
+and drain cleanup. No production optional-ID policy change, source apply/candidate/
+SDK/model/owner runtime/nativeapp work. Two disjoint writers, one integration owner;
+stopped released handoffs before union; required fullchecks/freshreview/CI/merge.
+Marketplace gate/F23-last and deferred400 remain unchanged.
+
+
+#404 JSON compatibility start finding: initial valid/wrong/plain+escapedduplicate
+cases PASS; the first missingID assertion incorrectly assumed strict source
+refusal and FAILED (refusal null). SourceEditProposer explicitly compares only
+nonnull response IDs, and ApprovedSourceProposer preserves optional identity.
+This is existing deliberate unknown-ID compatibility, not a demonstrated defect.
+Corrected acceptance: valid missingID may return validated source with null
+responseModel; requested model remains separate. No fabricated model proof or
+new rejection policy. Owner-live harness still requires exactnonnull identity
+for live acceptance. Source production unchanged; repair writer notified.
+
+
+#404 initial JSON journal track now12PASS: seven preserved SSE/control scenarios
+and five actualJSON valid/wrong/plain+escapedduplicate/absentID cases. Valid
+absentID succeeds with nullresponseModel retained through actual DBreopen, while
+requested identity, valid returned hashes and working/session/unrelated records
+remain truthful and unchanged. Explicit wrong/ambiguous IDs fail; oneHTTP/no
+reopen replay retained. Log /tmp/asg404-initial-json-journal-focused.log; format/
+diffcheck clean. Initial false strict-ID expectation corrected from inspected
+source contract, no production change. Repair writer independently confirmed
+same nullableidentity behavior and is testing corrected compatibility acceptance.
+Both tracks remain owned/unmerged; broaderchecks/freshreview/CI/merge pending.
+No inference/owner runtime/nativeapp/SDK/source application. Full404/liveQwen OPEN.
+
+
+#404 initial JSON handoff final:12actualHTTP/nativeDB cases plus7transport and
+1architecture case PASS (20total), focused analyzer clean, onefileformat unchanged,
+diffcheck clean. Log /tmp/asg404-initial-json-journal-regression.log. Current
+optional response identity remains nullable: absent-ID valid reply retains null
+responseModel and real returned hashes through reopen, not an authenticated model
+claim; conflicting IDs remain failure. Initial stopped fourpath handoff follows;
+repair writer owns only its fixture and is independently stopping. No production/
+model/runtime/nativeapp/SDK/source application or live acceptance.
+
+
+### #404 JSON journal integration — final local evidence
+
+Both clean stopped handoffs accepted/released: initial6c9193e1985e8e67/tree719c0ad4
+and repairf1d4f9a34b60ba6b/tree8000e9ac. Sole union task404-json-response-journal-
+integration combines only two fixture files and three docs. Each fixture now
+12actualHTTP/nativeDB PASS: seven preserved SSE/reservation cases plus JSON valid,
+wrongID, plain/escaped duplicate model and absent-ID compatibility. Requests
+still send stream:true; actual application/json message.content responses enter
+the production compatibility path. Explicit invalid IDs fail without returned
+evidence; valid absent-ID replies succeed while observed identity remains null.
+Requested model, valid source hashes/proposal/reference, origin/failure/session/
+working/unrelated records stay truthful through actual DBclose/reopen/no replay.
+Callbacks remain observable and pending work drains before DBclose.
+
+The initial strict missing-ID expectation was incorrect (each fixture originally
+11PASS/1FAIL); source contract inspection corrected test acceptance, without any
+production policy change. SourceEditProposer only rejects nonnull conflicts;
+nullable ModelRequestProvenance preserves request-only v1metadata. Null response
+identity never proves loaded model identity; owner-live harnesses still demand
+exact nonnull response identity. No new product defect inferred.
+
+Final42focusedPASS, fullFlutter2280PASS/13explicit opt-in skips, format561unchanged,
+analyzer clean, web/Wasm dry run built, product32/inventory9PASS. Logs
+/tmp/asg404-json-journal-{regression,full,format,analyze,web,product,inventory}.log.
+No production/schema/runtime-inventory change, nativeapp build/launch/install,
+model/inference/ownerprocess/sourceapplication/SDK/deployment. Old native/live
+observations retain original identities, not reused as current acceptance. Fresh
+bounded owner route receipt /tmp/asg404-json-journal-runtime-status.json records
+this run's status separately; no generation requested. Full404/liveQwen/#400 OPEN;
+required exactPRreview/allrequiredCI/verifiedmerge pending. Marketplace/F23-last
+preserved.
