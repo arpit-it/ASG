@@ -22106,3 +22106,128 @@ establish token fit or injection immunity. Required finalCI/fresh exact PRreview
 verifiedmerge still gate this bounded implementation; fullF20/#404 and deferred400
 remainOPEN. Owner dirtymain/processes/stableapp preserved; marketplace/F23-last
 retained. No second independent ready task, unapproved install/cloud/deployment.
+
+
+### 2026-11-20 — imported advisory question merged; selected-source boundary started
+
+PR798 reviewed headf6902b90834e471e892668882473fb7011dfaa6f protected squashmerge
+c437ddfb0bc83d4eb9e3c18c232f0d145cdde4d8 verified by plugin main/mergedPR/issue404OPEN
+and fetched exacte2fb0f860964a8e72c2054c8537d56d2a38db9cf tree, matching local164953b.
+Fresh exact full diff review had no blockers, conversations empty. CI44750045165
+Python136335257359/Flutter136335257866 and all required/poststeps SUCCESS,
+including browser/transport, normal web and independent generated-project checks.
+Bounded explicitly consented captured-document advisory question/latest-answer
+implementation Done:37focused/full2470PASS13skips, clean analysis/601-file format,
+web/isolatedMac build, actual nativeDB reopen/CAS/quarantine and IAB synthetic
+consent/cancel/reopen/identity-refusal/Stop/save-retry evidence. This does not verify
+native UI, exactQwen live inference or fullF20; those remainOPEN. Coordinator merge/
+outcome recorded, integration/claim released; dirty owner main/processes/stableapp
+preserved. No source/deployment/installation/model-runtime effect was enabled.
+
+Immediately claimed404-imported-source-context-boundary, solewriter in registered
+issue worktree/currentverifiedmain, existingF20 inspect-bounded-source acceptance.
+Concrete gap: new advisory flow can use root instruction documents but cannot yet
+include explicitly selected source files. Existing public helper/model selection
+only admits AGENTS.md/README.md. Investigation scope only three canonical docs and
+private disposable probes, no helper protocol/app/model/permission changes. Examine
+path/readset/payload/consent requirements before extending source capture. Full404,
+deferred400, marketplacegate and F23-last stay unchanged; no independent second
+ready task admitted.
+
+Started actual Mac prerequisite probes on the verified merged revision. NinePASS
+using current project_instruction_documents.Reader/inspect_documents and an owned
+/private/tmp synthetic Flutter tree: public lib/main.dart selection refuses before
+observation; explicit validated directory-by-directory walk yields exact nested
+bytes/hash; directory and final-file symlinks, multiple hard links, source-byte
+overflow and replaced readset files refuse; invalid UTF8 requires strict caller
+decoding and refuses there. The internal regular primitive demonstrably accepts
+raw ../outside.dart when handed directly (the outside file was also owned synthetic
+fixture data). This is an extension hazard, not an exposed current public path:
+the fixed whitelist rejects untrusted source paths before Reader use. Do not widen
+selection by forwarding raw relative strings to regular. Future callers must
+validate each component, reject absolute/empty/dot/parent/control paths and walk
+all intermediate directories with descriptor-relative nofollow checks, then pass
+only a single validated basename. Preserve final readset validation, length/hash/
+strict-text checks, bounded selection/aggregate/output and explicit root/readset
+confirmation; no recursive crawl or source execution follows from a capture.
+
+Existing contained-document helper regressions25PASS. Probe/receipts:
+/tmp/asg404_source_context_probe.py,
+/tmp/asg404-source-context-probe-receipt.json and
+/tmp/asg404-source-context-existing-reader.log. Fixture removed, descriptors closed;
+zero owner-source reads/model requests and no public helper/app integration changes.
+Reader primitives return observations, not authenticated source or atomic repository
+snapshots. Source-context typing/canonical identity must be designed separately
+from the fixed document protocol; do not silently reinterpret legacy captures or
+plan contexts. A future sharing prompt must preview selected source identity and
+remain separate from document-read consent and any write/command permission.
+This claimed investigation has started with concrete evidence; publication/required
+CI/freshreview/verifiedmerge remain pending for its canonical findings. Live model/
+native UI and full existing-repository acceptance remain pending as recorded.
+
+
+### #404 selected-source boundary — investigation conclusion and implementation contract
+
+Resumed owned investigation; main still verifiedc437ddfb0bc83d4eb9e3c18c232f0d145cdde4d8,
+no open PR or independent dependency-ready writer. Current helper/model/context/
+native-host code confirms fixed root-document selection and isolated Python
+-I -S -B dispatch of a privately packaged, bounded reader. Root-document payloads
+and ImportedDocumentContext must retain their existing scope/format; do not label
+new source files as AGENTS/README captures or silently reinterpret old plan data.
+The raw regular-file primitive's caller-side basename assumption remains protected
+by the current fixed public whitelist. Internal traversal probing was confined to
+owned synthetic files and is not a current public exploit or source access grant.
+
+Next bounded implementation contract under existingF20/#404: a standalone stdlib
+selected-source helper with a separate version1 project-source-files observation
+scope, selected_paths plus files, fixed reason/status schema and source_verified=false.
+Do not change the current document helper/protocol, app call sites, source writes,
+model transfers or permissions in this prerequisite. A complete helper/negative-
+fixture/requiredCI increment is a coherent prerequisite; native host/typed model/
+controller/view/context integration follows its own verified outcome. New reader
+code must run without project/site imports under isolated Python flags; do not
+weaken -I/-S or import a module from an imported repository merely to reuse Reader.
+Keep the helper self-contained or load only explicitly owned packaged resources;
+review duplication/refactoring against unchanged existing reader regressions.
+
+Initial supported selection subset: one to four explicitly named unique files,
+under lib/ or test/, with exact lowercase .dart extension. Preserve the confirmed
+ordered selection, do not glob/crawl/discover files implicitly. Limit512UTF8bytes
+per relative path,16components including root-kind and basename,128ASCIIcharacters
+per component; components match [A-Za-z0-9_][A-Za-z0-9_.-]{0,127}. Reject absolute,
+backslash, empty/dot/parent, hidden components, whitespace/control, non-ASCII,
+wildcard and outside-subset paths, duplicate and case-fold duplicate selections.
+Fail before filesystem work; never normalize an invalid path into a different
+approved identity. This deliberately narrow source-path subset is not a promise
+for every legitimate project/file name or other language/platform.
+
+Walk each intermediate directory by a single validated component using descriptor-
+relative nofollow directory opens. Pass only the validated final basename to the
+regular reader; refuse symlink/nonregular/multiple-link files and directory
+indirection. Track file identity as well as selected spelling to refuse alias/
+duplicate observations. Retain stable before/open/after file signatures, directory
+identity and final selected-readset checks, descriptor cleanup on every exit and
+private fixed refusals with no partial payload. Keep32KiB per file,64KiB aggregate,
+128KiB complete helper response ceilings; exact UTF8 bytes/base64/SHA256/plaintext
+round trip (including BOM/CRLF/Unicode distinctions), strict decode and no NUL.
+Refuse overflow/changed/missing/unsafe/unavailable files rather than truncating or
+returning partial source. No project import, hooks/submodule/dependency/toolchain
+execution, shell, package install or source write. File/directory observations are
+not authenticated source or an atomic repository snapshot. A future app host still
+needs explicit root/Python/readset consent, deadline, Stop and cleanup ownership;
+a future model prompt retains its separate complete-input cap and sharing choice.
+
+Repeated nine descriptor/source-boundary probes PASS and existing document helper
+regressions25PASS (/tmp/asg404-source-context-existing-reader-final.log). Added a
+private pure selection prototype with29PASS examples (4accepted/25refused): nested
+lib/test names, exact depth, traversal/absolute/hidden/duplicate/case aliases,
+backslash/wildcard/control/non-ASCII/space, component/path/depth overflow and invalid
+input types. /tmp/asg404_source_selection_probe.py and
+/tmp/asg404-source-selection-probe-receipt.json. The prototype is investigation
+only, not a shipped parser or acceptance for future helper revisions. Nine prior
+actual descriptor probes/receipts remain separately identified. No model/runtime,
+owner source, native UI, app asset or public protocol effect occurred; fixtures
+removed/descriptors closed. Documentation-only local policy does not require
+unrelated builds; required finalCI/fresh exactreview/verifiedmerge still gate this
+investigation's delivery. Full404/nativeUI/liveQwen and deferred400 remainOPEN;
+marketplace/F23-last retained; owner dirty main/processes/stableapp preserved.
