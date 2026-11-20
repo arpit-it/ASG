@@ -5836,3 +5836,98 @@ working outputs and separate plan/source-write approvals. This investigation
 changes only three docs; no import behavior is fixed/enabled by this PR. Final
 exactPRreview/requiredCI/verifiedmerge pending. Full404/liveQwen/deferred400 open,
 marketplace gate/F23-last preserved. No independent second writer task is ready.
+
+
+### 2026-11-20 — #404 containment investigation merged; descriptor reader started
+
+PR789 protected expected-head squash03dde5cefe6afc4334ddb94f87eb5068f97e3bcf
+verified through plugin main/mergedPR and fetched tree
+e0d1ec349f185dc986d6be5bf94a3832fb580dae, identical reviewed local9ad9606453de7b5ba5136df9194d9f19ae922b3a.
+Freshreview remote0fe75df8e579bebb48ffd8f5b1cd16c06a4757a4/base d9d8299 no
+blocker, threads empty. CI44709627694 Python136197725946/Flutter136197726132
+every required/post step SUCCESS. Three-doc investigation Done: measured regular/
+hardlink/symlink controls and controlled final-open replacement, publicDart API
+limits, explicit descriptor-reader prerequisite. No importer behavior fixed by
+that merge; full404 stillOPEN. Coordinator merged/outcome recorded, integration
+and claim released. Ownerdirty checkout/processes/stableapp preserved.
+
+Immediately claimed404-descriptor-project-metadata-reader under existing404/F20
+in reused registeredissueWT/currentmain, solewriter. Scope two new Python files,
+existingPythonCI step and three docs. One internal safety prerequisite, not app
+integration or expanded repository access. Fixed --root, version1 exact8keys
+version/scope/status/reason/manifest_base64/included_runners/main_present/
+source_verified. Scope project-metadata-files, source_verified=false always.
+Success transports <=64KiB rawmanifest as base64, main_presenttrue and fixed
+runnernames; refusal nullmanifest/nullmain/emptyrunners+fixed private reason.
+Output<=128KiB; base64 is not YAMLvalidation/sourceauthentication.
+
+Initial tools/project_metadata.py anchors canonicalroot/components/lib/runners
+with POSIXnofollow directory descriptors, regularsinglelink pubspec boundedread,
+regularsinglelink main existence without bodyread, stable held/named readset and
+missingrunner checks. Reviewed Git-reader descriptor patterns adapted locally,
+without importing Git logic or changing its verified implementation. No recursive
+scan/listdir/Git/config/hooks/YAMLpackages/subprocess/network/write. Parentmust
+enforce processdeadline; no atomicrepo/OSsandbox claim. App import remains unchanged
+until separately reviewed consent/interpreter/asset/process integration.
+
+Initial10disposableMac tests PASS: rawmanifest/fixedrunners, exact65536binarybytes
+base64roundtrip87384bytes, oversizedpre-readrefusal, missingrequiredentries, hardlink
+refusal beforecontentread, symlink/FIFOrefusal, onlymanifestbodyread+allFDclose,
+stat-open replacement refusal with separateoutside sentinel unchanged, missing
+runnerappearance beforefinalvalidation, actualPython-I-S-BCLI fixed8keyJSON.
+Log /tmp/asg404-project-metadata-start.log. This is start evidence only: expanded
+ancestor/main/runner replacement/mutation/private-error/FDfailure cases, CI
+registration, broaderrequiredchecks/freshreview/protectedmerge remain pending.
+Read-only design reviewer supplied cases but wrote/executed nothing. No second
+independent writer task ready. Solelease remainsactive; full404/liveQwen/deferred
+400 open, marketplace gate/F23-last retained. No installs/modeldownloads/runtime
+changes/stableapp replacement/cloud/deployment.
+
+
+### #404 descriptor project-metadata reader — final local implementation evidence
+
+Standalone stdlib tools/project_metadata.py implements fixed --root/version1
+project-metadata-files JSON with exact8keys, source_verified=false and no root/OS
+error echo. Manifest bytes<=65536 are canonicalbase64transport, not YAML validation
+or source verification; output<=128KiB. Included fixed runner directories are
+not tested platform support. Main must be an openable regular single-link file,
+metadata only: no main/source body read. Refusals erase manifest/runners/main
+payload rather than mixing partial observations. No app/asset/caller integration
+or interpreter setup changes are included; existing importer behavior is unchanged.
+
+Canonical root/ancestors/lib/runners use anchored nofollow directory descriptors;
+manifest/main use nofollowstat, regularsinglelink policy, nonblock/nofollowopen
+and matching openedidentity before any contentread. Manifest boundedmax+1read,
+size/signature checks; final held/named file and directory identities plus stable
+missingrunner observations cover one readset. All owned handles close in finally.
+No Git/config/hooks/sourcebodies beyondmanifest/listdir/recursive scan/YAMLpackages/
+subprocess/network/writes or automaticretry. Still best-effort mutation detection,
+not atomicrepo/authentication/OSsandbox against hostile mounts/writers. Filesystem
+syscalls may block: a future caller needs owned processdeadline/Stop/reap cleanup.
+
+29focusedMac tests PASS: fixedrunner/rawmanifest controls, exact64KiB binary
+base64roundtrip and oversizedpre-read refusal; requiredmissing/unsupportedhost/
+invalidroots; root/ancestor/lib/runner links; mainhardlink/link and unreadablemain
+policy; pubspecstat-open link/disappearance/hardlink/grow/FIFO swaps; midread
+truncate/same-length/grow; finalmanifest/main/root/lib/runner replacement/removal;
+missingrunnerappeared/finalstaterror/permission-not-absent/privateerrors; only
+manifestbodyread/no scans/highlevelopen/processes; FDcounts success/readerror/
+representativerefusals; actualPython-I-S-BCLI fixed8keyJSON and privateinvalidargs.
+Outside sentinels in separateownedtempfixtures retained unchanged. Initialexpanded
+fixture collided with existinglib directory; corrected test-only nestedcase names,
+then29PASS. No product failure was hidden or converted to skip.
+
+Read-only implementation/test/workflow source review found no blocker, no edits
+or executed-test claim. Mainpolicy clarified; finalvalidation cannot detect every
+mutation after its last check, consistent with explicit non-atomic limit. Existing
+PythonCI job adds only deterministic suite step; permissions/pinnedactions/checks
+unchanged. Required remoteCI must show29cases ACTIVE Linux, not merelygreen/skipped.
+
+Local29new/33Githelper/20coordinator/32product/9inventoryPASS; fullFlutter2320PASS
+13explicit skips, format572unchanged, analyzer clean and web/Wasm dryrun build
+succeeded. Logs /tmp/asg404-project-metadata-{final-focused,git-regression,coordinator,
+product,inventory,format,analyze,full,web}.log. This is helper/CLI and regression
+evidence, not real app import repair, liveinference or unavailableplatform proof.
+Final exactPRreview/allrequiredCI/protectedmerge pending. Full404/liveQwen/deferred
+400 OPEN, marketplace gate/F23-last retained. No ownerrepo/runtime/model/stableapp/
+install/download/cloud/deployment effects.
