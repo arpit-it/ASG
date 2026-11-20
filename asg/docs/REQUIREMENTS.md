@@ -21456,3 +21456,89 @@ inventory9 PASS. Logs /tmp/asg404-instruction-context-{final-focused,full,format
 analyze,web,product,inventory}.log. No product source, helper, manifest, workflow
 or persistence schema changed. Three-doc exact PR review and required remote CI
 remain mandatory; this investigation is not marked Done before verified merge.
+
+
+### 2026-11-20 — #404 instruction-context investigation merged; reader started
+
+PR792 protected expected-head merge277afee6f8dfd5d7706ef4a3e240822132a7677c
+verified through plugin main/merged PR and fetched tree
+5ec4a379148c30288e8a12beaf5cfc8e976c7b9d, matching tested local a1355b4.
+Fresh exact3doc review remote44f382d54c09e92b6cab248c855ff76a2ea35b0a/base5f4077f
+found no blocker; threads empty. Required CI44723877372 Flutter136246291177 and
+Python136246291513 every required/post step SUCCESS. Bounded investigation Done:
+measured current omission and fixed document provenance/authority contract, no
+reader enabled by that merge. Full404OPEN. Coordinator merge/outcome recorded,
+integration/claim released. Owner dirty main/processes/stable application retained.
+
+Immediately claimed404-contained-instruction-document-reader under existingF20,
+sole writer in registered issue worktree/current verified main, with prerequisite
+merge evidence. Scope standalone Python reader/test, eventual deterministic CI
+step and these three shared docs. No independent second ready task. Initial
+project_instruction_documents.py adapts the reviewed nofollow descriptor pattern
+into the seven-key version1 project-instruction-documents response. Fixed explicit
+root AGENTS.md/README.md selection only, canonical order, 32KiB/file and64KiB total,
+128KiB output; strict UTF8/noNUL, exact bytes/length/SHA256/base64. Refusal drops all
+partial documents; source_verified=false. No app/asset/typed caller/model wiring.
+
+Initial10Mac disposable tests PASS: fixed keys/exact bytes/hash, two exact file
+limits/emptydocument, oversizedpre-read refusal, malformedUTF8/NUL discards both,
+invalid/duplicate/reversed/traversal selection noopen, onlyselectedbodyread,
+missing/symlink/hardlink refusal, controlled stat-open substitution without outside
+read or sentinel mutation, finalreadsetmutation discardsboth, actualPython-I-S-B
+CLI and privateinvalidargs. Log /tmp/asg404-instruction-reader-start.log. This is
+start evidence only: expanded ancestor/root/FIFO/midread/final identity/error/FD
+cleanup cases, CI registration, full regression checks/freshreview/verifiedmerge
+remain pending. Deadline/owned process lifecycle belongs to later app integration;
+helper is neither atomic repository authentication nor an OS sandbox. No inference,
+model/runtime/install/sourcewrite/stableapp/cloud/deployment effects. FullF20/live
+Qwen/deferred400 remainopen; marketplacegate and F23-last retained.
+
+
+### #404 contained instruction documents — final implementation evidence
+
+Standalone stdlib project_instruction_documents.py observes only an explicit
+nonempty ordered subset of root AGENTS.md/README.md, never discovering includes,
+project source, instructions or links. Selection is frozen before filesystem work.
+Version1 project-instruction-documents response has exact seven top-level keys;
+each successful entry binds path/byte_length/SHA256/canonicalbase64 of exactbytes.
+32KiB/file,64KiB aggregate,128KiB completeCLIoutput, strictUTF8/noNUL; BOM/Unicode/
+CRLF preserved without normalization. Emptyregular documents are valid, empty or
+invalid selection is not. Refusals erase all documentpayload, use fixedprivate
+reasons and source_verified=false. No echoed roots/OSerrors or textauthority.
+
+The reviewed descriptor pattern is adapted as a standalone helper, without a
+project-local module import that could load repository code. Canonicalroot and
+ancestors nofollow anchored; selected single-link regularfiles have matching
+before/open/after/final held-and-named signatures, bounded reads and finally
+cleanup. Root/ancestor/entry replacement and observedmutation refuse. No arbitrary
+scan/Git/config/hooks/subprocess/network/selectedfilewrite/model. CLI fixed
+--root ROOT --file AGENTS.md [--file README.md], or onlyselectedREADME, no shell.
+Not atomic authentication/OSsandbox; filesystem syscall blocking requires future
+caller-owned deadline/Stop/reap. No app asset/caller/typed parsing/UI/model sharing
+or stored-context schema integration is enabled. Existing import behavior remains.
+
+25focusedMac disposable tests PASS: exactkeys/path/byte/hash/base64, both32KiB
+limits/emptytext, oversizedpreread, malformedUTF8/NUL and secondmissing/oversize
+partialpayload erasure; invalid/duplicate/reversed/traversal/no-selection refusal
+beforeopen; onlyselectedbodyread; root/ancestor symlinks; selectedsymlink/hardlink/
+FIFO and stat-open FIFO/link/disappearance/growth; midread truncate/same-size/growth;
+finalsamebytes replacement/removal/root/ancestor replacement; privatepermission/
+read/finalstatfailure; ownedFDcleanup success/readfailure; noscan/highlevelopen/
+process/network/write; unsupportedhost/syscalls; exact BOM/Unicode/CRLF; mutable
+selection staysfrozen; actualisolatedPython-I-S-BCLI, bothfulldocuments128KiBbound,
+privateinvalidargs. Outside owned sentinel remainsunchanged in controlledrace.
+Log /tmp/asg404-instruction-reader-final-focused.log. This does not claim every
+possible filesystem race is detectable. Readsetfreeze fixed during localreview;
+no ownerincident or escapeddefect claim. LinuxCI must execute25cases actively,
+not merelyreportgreen withsuite skipped. Existing Python job gains only this
+stdlibsuite step; pinnedactions/permissions/protection unchanged. FullF20/liveQwen/
+unavailableplatform400 remainopen, marketplacegate/F23-last preserved.
+
+
+Final local checks:25instruction-reader/29project-reader/33Git-reader/20coordinator/
+32product/9inventory tests PASS; fullFlutter2367PASS13explicit skips, format580
+unchanged, analyzer clean and webbuild successful. Logs /tmp/asg404-instruction-
+reader-{final-focused,project-regression,git-regression,coordinator,product,
+inventory,format,analyze,full,web}.log. No live model request or app behavior change.
+Final exact PR review, required CI with active Linux reader suite and verified
+protected merge remain mandatory. Full404 and deferred acceptance stay open.
