@@ -8452,3 +8452,126 @@ This standalone observer does not claim an imported app action or certify workin
 
 Investigation final publication, exact fresh review, all requiredCI and verified merge
 remain pending. Existing #404 covers the next prerequisite; no new issue or backlog.
+
+
+### F20 / #404 — verified snapshot admission and commit observer implementation started, 20 November 2026 UTC
+
+PR813 verified merged10ce9d787c21e9cbe5d2b8cbedf0b8cf13bc50b9; inspected tree
+1649b2796270f41f2ce45d1be9d7551d5df57689. Fresh exact review remote4faf845319e1b8599b0fb24b285f6e4b43f575f7
+againsta49895b562f5e570f3e2d1dc2596e022902f3310 matched local/remote diff and three
+append-only canonical docs; no blocking findings or review threads. RequiredCI44805051393
+Python136526741630/Flutter136526742168 allrequired/poststepsSUCCESS; completed logs
+inspected. Pluginmain/mergedPR/404OPEN and fetchedmain/tree verified. Coordinator recorded
+checks/review/merge/outcome and released completed claim/integration. Four owned Git
+probes,44snapshot/33Gitmetadata/31source Python regressions and prior18Flutter checks
+establish the prerequisite findings, not a newly delivered imported copy/edit app flow.
+Attempted PR attachment hit existing100item limit; no unrelated attachment removed.
+
+Coordinator investigation segment: start-to-merge978.2seconds, paired CI observation
+wait464.2seconds, zero recorded review rework and one outcome-verification attestation.
+These cooperative/manual intervals and investigation tally are not provider CI timing or
+a new app user capability; escaped defects remain unknown despite zero observations.
+Owner dirty checkout/processes preserved; no model/source-write/install/deployment effect.
+
+Immediately claimed404-imported-commit-observer from verifiedmain in same registered
+worktree, solewriter; no independent eligible disjoint second task. Existing404 covers the
+next concrete F20 prerequisite. Coherent outcome: standalone bounded read-only observer
+of explicitly selected Dart blobs from an actual immutable Git commit, distinct from
+working-file capture and self-candidate execution transport. Claim owns new helper/tests,
+requiredPython CI fixture wiring and these three canonical docs; no app asset/controller/
+UI integration. Acceptance: canonical root/full nonzero40hex commit and1–4 literal paths;
+actual object-type/ID/byte agreement, bounded complete tree metadata and exact selected
+UTF8/BOM/CRLF bytes/hash/count with commit/tree/manifest identities. Fail closed on
+unsafe modes/path/case collisions/Git-links, missing objects/paths, bounds and unsupported
+repository layouts. Fixed bounded argument-vector object reads, scrubbed config/env, no
+network/lazyfetch/filters/hooks/submodules/project execution or root/index/ref/candidate
+writes. Owned Stop/deadline/output/cleanup, actual disposable Mac fixtures and required
+CI/freshreview/verifiedmerge precede completion. App consent/current-input/plan binding,
+copy/branching/runnable adapters and external model sharing remain separate prerequisites.
+
+Started pure validation only in tools/imported_commit_source.py: frozen request/readset,
+strict SHA1 object-byte verification and limits, commit-to-tree binding, immutable binary
+tree entries with Git ordering/mode/name/duplicate/case-collision/count guards, and exact
+selected blob byte/hash/base64 records. No filesystem/process reader or CLI is exposed in
+this start. A commit ID alone is insufficient: future reader must verify each returned
+commit/tree/selected-blob object's bytes and bound traversal before publication; unselected
+working content, clean/conflict state, authenticated origin and write permission remain
+unknown. These supplied-data parsers do not establish app source provenance on their own.
+
+Nine new tests passed, including malformed/mismatched/truncated objects, unsafe symlink/
+Git-link tree modes, case collisions, ordering/count/byte/readset bounds, immutable data,
+empty and BOM/café/CRLF bytes, and actual owned Git commit/tree/blob parser agreement.
+Adjacent33Gitmetadata and31selected-source regressions passed. Logs/tmp/asg404-commit-
+observer-{parser,git,source}-start.log. Newly owned Git fixture removed; original fixture
+bytes preserved. No source files/records in the owner's repository were read or changed
+by fixtures; no model/build/execution authority inferred. Native object-reader process/
+layout/configuration hazards, aggregate/traversal limits, response protocol, Stop/cleanup,
+CLI and CI wiring remain pending within the active coherent implementation claim.
+FullF20/CE01 and unavailable-platform400 remain open; marketplacegate/F23-last unchanged.
+
+
+### F20 / #404 — bounded immutable commit source observer, 20 November 2026 UTC
+
+Implemented standalone tools/imported_commit_source.py and its regression fixtures.
+Explicit canonical POSIX root, nonzero full40hex SHA1 commit and1–4 literal selected
+lib/test Dart paths; no ref/revision expressions. Actual commit bytes bind the root tree;
+every traversed binary tree and selected blob is checked against its kind/size/Git object
+ID. Tree modes/order/component/case-collision/duplicate guards reject symlink/Git-link
+entries even outside selected paths. Limits: commit64KiB, tree metadata1MiB total,2048
+files/128directories/16levels, selected32KiB each/64KiB total, response128KiB and10second
+read deadline plus bounded owned cleanup. Exact UTF8/BOM/CRLF/multibyte/empty bytes and
+SHA256/base64 are retained. Response binds root/commit/readset/tree/full flat metadata
+manifest SHA256/count; source_verified=false, working_tree/conflict unknown.
+
+Initial layout deliberately limited: direct no-follow .git directory and primary object
+store; standard bounded local config whitelist (core storage flags plus passive user/
+remote/branch values). Includes/extensions/worktree overrides/fsmonitor/filters and
+nonstandard syntax refuse. Linked/bare/shallow layouts, alternates, hardlinks, symlink
+metadata and unsupported object-info/pack entries refuse. Ordinary loose and packed
+objects are tested. This is an explicit subset, not arbitrary-repository compatibility.
+No-follow held directory identities, stable config/HEAD/pack/info signatures and pre/post
+command validation reject detected repository changes. These cooperative checks are not
+an OS sandbox against hostile same-user mutation or atomic full-working-tree capture.
+
+Only fixed /usr/bin/git cat-file size/type-specific object reads are dispatched with
+argument vectors, scrubbed environment, disabled global/system config, no replacement
+objects/grafts/lazyfetch/network/prompt/optional locks, and explicit hooks/fsmonitor
+disabling. No shell, diff filters, hooks, submodule operations or project commands. Every
+owned child is killed/reaped on Stop/deadline/output overflow; uncertain cleanup returns
+refusal and stops further reads. CLI supports -I/-S/-B and emits only bounded typed JSON
+with exit0 observed /2 refused; partial source files/identities never publish on refusal.
+A caller must still own the outer helper deadline, cleanup and cross-job exclusion.
+
+Manifest metadata contains path/mode/Git blob ID, not unselected blob content or sizes;
+it does not establish total repository byte bounds, clean state or copy readiness. App
+consent/native-host ownership/current-input/plan binding, source copy/branches/checks and
+model sharing remain unimplemented separate admissions. No app asset or user action is
+added by this standalone prerequisite; no inference/runtime/platform acceptance claim.
+
+27 observer tests passed on this Mac, including actual isolated CLI, dirty/untracked and
+three-stage index invariance, exact BOM/empty bytes, packed objects, corrupt loose object,
+unsafe tree modes/case collisions, layout/configuration/metadata indirection, size/tree/
+depth/response bounds, Stop/deadline/output child kill/reap, uncertain cleanup with no
+further dispatch and changed-config result refusal. ResourceWarnings-as-errors passed.
+Existing snapshot44/Gitmetadata33/selectedsource31/inventory9/product32/coordinator20
+checks passed separately. Logs/tmp/asg404-commit-observer-{native-tests,existing-candidate,
+existing-git,existing-source,inventory,product,coordinator}.log. The corruption fixture
+initially could not edit its own Git-read-only object; fixture chmod/restore corrected
+that test setup and all reranPASS. No owner-source/index/refs/records or last outputs changed.
+
+The required Python job now runs the27observer fixtures. Only that test step was added;
+job names, permissions, pinned actions and protection are unchanged. No Flutter runtime,
+assets/dependencies or platform runner changed; required finalCI still reruns Flutter
+checks/web and all Python fixtures. Publication, exact fresh review, completed requiredCI
+and verified merge remain pending. FullF20/CE01/unavailable-platform400 remain open,
+marketplacegate/F23-last preserved, solewriter/no independent eligible disjoint task.
+
+Next coherent app outcome after verified standalone merge: explicitly compare every
+captured file of a saved comparison with a user-selected full commit, preserving working
+history. Add strict typed request/response/comparison, packaged native host with owned
+Stop/cleanup, frozen five-app-input read fences and shared-store reader exclusion, and
+a focused consent/result screen entered from history. Consent names root/commit/all paths/
+Python plus complete bounded tree-metadata access; no automatic read/ref resolution or
+approval revival. Keep previous results stale on refusal/change/Stop/disposal; no source
+write/copy/model/project commands. Actual disposable Mac/nativeDB and injected IAB tests
+plus required app checks/builds/CI/freshreview/verifiedmerge precede that app capability.
