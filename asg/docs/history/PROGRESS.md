@@ -21393,3 +21393,101 @@ REQUIREMENTS. Investigation scope canonicaldocs only, reuse404, no speculative q
 or independent disjoint readywriter. Marketplacegate/F23-last/approvallimits and
 unavailableplatform400 unchanged. No owner-source/model/install/download/stableapp/
 cloud/deployment effects; activeclaim retained through review.
+
+
+### 2026-11-20 — source manual plans merged; proposal/diff boundary investigation started
+
+PR806 fresh reviewed head5f142ed1b9e866014e049bc1d323e1fcc885b4c2 protected squashmerge
+d1b7e62b77e3194e5af438e7d938b8a1e62056ae verified by plugin main/mergedPR/issue404OPEN
+and fetched exacttree73678bbbddecc7dace97755e9443233a54e8be78 matching localdc06c5d.
+Full12file remote/localdiff matched; source admission/legacyformat/currentdraft/CAS/
+post-consent checks/disposed-owner authorization/literal review and real regressions
+reviewed no blockers; emptythreads unchangedhead/base/main. RequiredCI44774964188
+Python136422198362/Flutter136422197591 every required/poststep SUCCESS; completedlogs
+inspected new source-consent/disposal/sourceDB/CAS and legacy/fullFlutter/browser/
+transport/staticHTML/web/independentgeneratedFlutter/Python checks. Local51focused,
+full2556PASS13explicit skips, finalpanel9/analyze/616fileformat/inventory9/product32,
+web/isolatedMac/exacthelper/hashreceipt and IABsynthetic consentCancel/save(unapproved)/
+separateApprove/samecontextreopen/changedrequirementsinactive PASS as above. Bounded
+source-backed user-authored manual plans delivered; reviewapproval is not execution
+permission. Coordinator merge/outcome recorded, integration/completedclaim released.
+Ownerdata/processes/stableapp preserved; fullF20/liveQwen/deferred400 remainOPEN.
+
+Immediately claimed404-source-proposal-boundary from verifiedmain in registered
+issueworktree, solewriter, threecanonicaldoc scope. Read imported source/manualplan
+and existing CandidateSourceProposal/CandidateSourceFile/ApprovedSourceProposal and
+SourceLineDiff boundaries. Concrete gap: fixed candidate source path uses asg/lib
+or asg/test rootprefix/stricter components, while imported source paths are relative
+lib/test and can include supported dots/hyphens. Fixed candidate text caps16KiB/
+500lines versus32KiB observed sourcefile. Do not silently prepend a directory,
+truncate a capture, relabel it as a fixed candidate or inherit execution identity.
+
+Started4pure probes plus existing candidateproposal/diff regressions:14PASS, incl
+narrow320px/200percent review and Cancel no-write cases. Verified imported literal
+pathsubset versus fixedcandidate refusal/prefix mismatch; fixed candidate exact16KiB
+acceptance/32KiB and501line refusal; SourceLineDiff exact BOM/CRLF/missingnewline
+reconstruction and immutable lines;300x300line comparison takes complete600row
+coarse fallback beyond65536matrixcells rather than quadratic allocation, retaining
+both before/after text. /tmp/asg404_source_proposal_probe_test.dart and
+/tmp/asg404-source-proposal-start.log retain evidence. No model/source filesystem/
+command/toolchain action or new production code added by investigation.
+
+Continue current-plan/context/source identity and replacement validation/legacy
+compatibility probes, then record one bounded read-only imported proposal/diff
+implementation in REQUIREMENTS. Manual plan consent cannot authorize source writes,
+commands or arbitrary execution. No independent disjoint readytask admitted;
+marketplacegate/F23-last/unavailableplatform400 unchanged. No install/download/
+stableapp/cloud/deployment effects. Activeclaim retained for continuation.
+
+
+### 20 November 2026 — imported source proposal/diff boundary findings
+
+Completed bounded investigation404-source-proposal-boundary. Seven pure disposable
+probes plus existing candidateproposal/source-line-diff/imported-source-context
+regressions:30PASS. Log/tmp/asg404-source-proposal-final.log; probe
+/tmp/asg404_source_proposal_probe_test.dart. No production model/controller/UI or
+storage change. Current fixed CandidateSourceProposal additionally binds snapshot,
+Python/trusted-source/destination/runName; that transport is not an imported read-only
+proposal contract. Do not coerce imported paths or inherit those execution identities.
+
+Verified fixed candidate16KiB/500line policy differs from32KiB source observation;
+fixed candidate validator also refuses BOM-prefixed text (UTF8 decode strips BOM),
+whereas SourceLineDiff preserves original BOM/CRLF/missingnewline tokens and immutable
+attribution. Unicode normalization differences retain different bytehashes; invalid
+UTF16/NUL refuse fixed replacement validation. A new imported preview policy must
+validate exact roundtripping text with explicit BOM preservation and reject oversize/
+invalid text without normalization/truncation. Existing line-diff max65536matrixcells
+coarse fallback can be reused as read-only comparison; verified complete before/
+after reconstruction at300x300lines and existing narrow320px/200percent review.
+
+Prototype canonical full ImportedPlan.toJson SHA shows changes to authored text,
+context, approved flag or recordedAt each alter identity. Leaf filehash or context
+hash alone cannot identify the reviewed plan. Controller/store must recheck current
+app inputs and exact savedplan before publishing preview; rawapprovedtrue is not
+source-write/command permission. Preserve fixed candidate and legacy plan workflows.
+
+Next eligible coherent F20/#404 implementation after verifiedmerge: read-only
+user-authored imported source proposal/diff review. New pure immutable proposal binds
+root, exact ImportedSourceContext digest, canonical full approved-current-plan digest,
+one literally selected captured lib/test path, before/after bytehashes and replacement
+in a separate versioned source_verified=false identity (wholeUTF8 identity<=64KiB).
+Require plan.context==capture.recordJson and reviewedplan flag, exact selected path,
+changed replacement and bounded exact before/replacement text16KiB/500lines; retain
+BOM/CRLF/Unicode distinctions, reject invalidUTF16/NUL/unsupported controls/oversize,
+never truncate or prepend asg/. Empty replacement means proposed empty contents only,
+never file deletion. SourceLineDiff comparison is display data, not an apply patch.
+
+New feature controller/view prepares from fresh selected capture and current saved
+sourceplan, rechecks root/metadata/requirements/exactplan before preview and marks
+retained preview stale on changed inputs/failure. User chooses capturedfile and authors
+replacement in transient UI, reviews literal before/after hashes/plan/context identity
+and bounded/coarse diff. No new source-text persistence, model/toolchain request,
+file read/write/delete, command, candidate publication or execution grant; existing
+plan storage consent/approval limits remain. Reject stale/unapproved/mismatched/
+corrupt/disposed/oversize inputs with retained draft/lastcomparison and privateerrors.
+Focus pure identity/boundary/immutable plus controller/storage mismatch/widget/narrow/
+IABsupplied-data checks, fullformat/analyze/tests/web/isolatedMac/requiredCI/freshreview/
+verifiedmerge. Reuse404; this is the sole next task, no speculative/parallel queue.
+FullF20/liveQwen/deferred400 remainOPEN; marketplacegate/F23-last unchanged. No owner-
+source/model/install/download/stableapp/cloud/deployment effects. RequiredremoteCI/
+freshreview/verifiedmerge gate investigation completion; activeclaim held throughreview.
