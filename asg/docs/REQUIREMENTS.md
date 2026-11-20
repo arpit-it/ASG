@@ -19323,3 +19323,125 @@ distinct, reserved1 must NOT be passed to returned-only reference constructor.
 New fixture/host implementation and all separate native process observations
 remain pending. Docs-only scoped investigation ready for exact plugin publication,
 fresh review, all requiredCI and protected verifiedmerge, not yet delivered.
+
+
+20 November2026 — PR773 verified merged21d59a185fa05ee748874c06bda7c70aa34b5f88,
+exacttree11baa7cfa304269b8bdfd51437a39a6c2cc2f5b4 matches3tested/published docs.
+Fresh three-patch reviewe51d47960dc7e6ad276971f6a75252c38b680b73/baseb99d0770
+found no blockers/rework. RequiredCI44665000293 Python136052029580/Flutter136052030260
+bothSUCCESS/every stepSUCCESS; unchanged head/base/main/mergeable/emptythreads
+verified before protected expected-head merge. Plugin PR/main/issue404OPEN and
+fetched tree verified. Investigation checks86PASS/product32/inventory9; no new
+production/build/model/process acceptance. Coordinator merged/outcome_verified
+recorded before integration/claim release. No escaped defect observed; provider
+timing unknown versus manual observation intervals. Owner primary dirty edits,
+processes, stable app and last working output preserved.
+
+Immediately started dependency-ready404-native-unresolved-initial-fixture under
+SAME#404/F20/CE01 in reused clean registered worktree from verifiedmain. Rootasg404
+claimed7literalpaths: REQUIREMENTS/PROGRESS/AGENT_ENGINE/inventory, parent Dart
+native_candidate_crash.dart, new native_initial_unresolved.dart and corresponding
+Dart test. Second independent disjoint writerasg404-host claimed task
+404-native-unresolved-initial-host in separate reused registered host worktree,
+ONLY new native_initial_unresolved.py, Python driver routing and host tests.
+Both depend on verifiedPR773, contracts agree on strict merged protocol24. Root
+is sole integration owner and exclusive later isolated native build/app worker;
+host writer runs only portable Python tests, no app/build/inference/publication.
+No live runtime worker required. Stop clean handoffs before any union integration
+scope change; two-writer ceiling/leases respected.
+
+Dart implementation checkpoint: new NativeInitialUnresolvedChallenge enforces
+exact5keys, nonce/typedstage/explicitNext matrix, SDK lexical scope, duplicateJSON
+and UTF-8 byte bounds. Typed32reportfields/14counters and nonce-bound10recordslots
+are declared; regression checks compare key prefixes against current production
+constants to avoid false absent-cohort proof. Seven focused testsPASS and Flutter
+analyze clean: /tmp/asg404-native-unresolved-challenge-{tests,analyze}.log. These
+are parser/contract tests only, not native stage/process or live acceptance.
+
+Current owned work remains IN PROGRESS: implement actual native storage/proposer
+reservation pause, cold read-only stages and explicit fresh request continuation,
+Dart parent routing and full VM refusal/sequence coverage. Host writer is separately
+implementing report/transitions/owned-child driver/CLI refusal checks. After clean
+handoffs, exactsource integration/full local checks and one isolated binary must
+establish new6 plus relevantlegacy26 actual launches before final fresh review/CI/
+verifiedmerge. None of these new native launches has occurred. No production schema,
+owner runtime/model install/download/start/stop, stable replacement or deployment.
+FullCE01/F20/umbrella404 and deferred400 remain open; live8765 readiness remains
+pending the last dated connection-refused observation, not inferred from fixtures.
+
+
+Protocol24 Dart handoff checkpoint: implemented real ApprovedSourceProposer with
+actual native reservation commit held before provider entry, immutable unresolved1,
+read-only2/4 and explicit supplied return2/origin2 on3. Nonce-private bounded
+capture files permit exact physical record comparison across opens; typed report
+cohort32/10/14 and zero unsupported-effect counters validated before reporting.
+Parent Dart opt-in routing added without changing legacy20–23 modes. No source
+tree/files/candidate/SDK/preview/model process is created by this mode.
+
+Ten new Dart tests PASS (challenge7 plus actualVM stage2/4 sequences and cold nonce/
+symlink refusal), focused new+legacy/recovery115PASS, analysis clean after scoped
+brace/nullability style fixes. /tmp/asg404-native-unresolved-{vm-tests2,components2,
+analyze2}.log. Four actual Dart VM reports pass stopped host writer's strict Python
+validation and transitions: /tmp/asg404-native-unresolved-interop.log and
+/tmp/asg404-native-unresolved-vm-reports.json. These are same-process VM observations,
+NOT app process crashes. VM hold release is explicitly thrown after report.
+
+Host writer stopped clean at4c0810a7eb16226b02e1bd38f247c7fde16a5fcb/tree
+3bd76dac03ba77778a5a0df1fe90a6dbba0aa180, exactly3owned Python paths,118host+6restart
+checks PASS, no native/SDK/model execution. Lease retained pending acknowledged
+release. Root will make clean scoped handoff, stop edits, release both claims and
+acquire fresh union integration ownership before adopting the host commit. Native
+build/full final checks/same-binary32launch observations remain pending; no delivery
+claimed. Preserve original scopes/evidence and owner processes/last output.
+
+
+Protocol24 integrated acceptance checkpoint: stopped clean Dart5d66b847 and host
+4c0810a7 handoffs had BOTH original writer claims released, then a fresh ten-path
+404-native-unresolved-initial-integration claim acquired before host adoption.
+Integrated sourcecommit f019cb4ead4d25f98f03155679d395b43a8ee353 identifies tested
+code. FullFlutter2228PASS/12explicit opt-in skips, focused115, cleananalysis/
+format556 plus2fixturefiles, host118/restart6/product32/inventory9PASS. Logs:
+/tmp/asg404-native-unresolved-{full-test,final-analyze,final-format,fixture-format,
+integrated-host,integrated-restart,product,inventory}.log.
+
+Exclusive native build succeeded with existing toolchain/local packages and no
+tracked Runner changes: /private/tmp/asg404-native-unresolved-derived/Build/Products/
+Debug/Automated Software Generator.app, com.arsinha.asg.restartfixture. Never
+installed/replaced stable app or launched by name. Whole-bundle SHA256
+f5cb4d4d9fa42b68b58318568a03465d6bc676dd3562875c2304a9d301da249a.
+603source inputs SHA256
+edef48dfdcb3be700c1d100f0a2b8dc6d19fb113a7992ea336a0487a23d0752f remained
+byte-identical after all observations. Private manifest/evidence summary:
+/tmp/asg404-native-unresolved-source-manifest.json and
+/tmp/asg404-native-unresolved-evidence-summary.json. The summary records per-case
+report SHA256s, private artifact roots, launch counts and exact binary identity;
+these observations do not authenticate remote state.
+
+Actual NEW protocol24 primary2launches and explicit4launches PASS (6total). Initial
+native process physically commits reserved intent, reports reservationReturns0/
+suppliedProviderCalls0/proposalReturns0 and holds before provider entry. Driver
+validates its exact owned LIVE child, kills/waits expected signal; separate cold
+reopen retains exact unresolved request1/raw working/session/unrelated records with
+all effect counters0. Explicit continuation completes distinct returnedValidated2/
+reference2 while1 remains reserved/unchanged; another owned kill/read-only reopen
+retains both outcomes without replay/source restoration. Reports:
+/tmp/asg404-native-unresolved-native-{basic,next}.json. Newcases are fixed supplied
+metadata only: no8765/model weights, source tree/copy, candidate admission, execution
+host, SDK or preview. These are actual isolated native-process observations,
+separate from earlier VM pause throws, not general CE01/F20 acceptance.
+
+Preserved legacy23 precommit2/retry4/corrupt2, legacy22 equivalent8, decision21five
+and bound retry/promotion20five PASS on SAME binary:26legacy+6new=32launches. Reports:
+/tmp/asg404-native-unresolved-{initial-precommit,initial-retry,initial-corrupt,
+repair-precommit,repair-retry,repair-corrupt,legacy21,legacy20}.json. Legacy20 retains
+its original fixed SDK/receipt scope; no new general runner/model capability is
+inferred. Immutable whole bundle inspected before launches/owned boundaries and
+only owned live subprocess handles signalled. Cleanup check, excluding its own
+inspection shell, confirms no task fixture process remains. Owner-started processes,
+primary dirty edits, stable app and last working outputs preserved. No install,
+download, cloud provisioning or deployment.
+
+Local bounded fixture acceptance complete; final commit/plugin publication/fresh
+exact review/all requiredCI/protected verifiedmerge still gate delivery. Keep union
+claim and serialized publication; fullCE01/F20/umbrella404/liveQwen and deferred400
+remain open. Do not relabel deterministic supplied identities as live inference.
