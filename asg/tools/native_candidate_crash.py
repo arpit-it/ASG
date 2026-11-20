@@ -16,6 +16,7 @@ import time
 from native_restart_probe import inspect_bundle
 import native_repair_lineage
 import native_initial_lineage
+import native_initial_unresolved
 
 OPERATIONS = ['resolve', 'analyze', 'test', 'build']
 
@@ -511,6 +512,8 @@ def main():
     parser.add_argument('--bundle', required=True)
     parser.add_argument('--sdk', required=True)
     parser.add_argument('--task-decision', action='store_true')
+    parser.add_argument('--initial-unresolved', action='store_true')
+    parser.add_argument('--unresolved-next', action='store_true')
     parser.add_argument('--initial-lineage', action='store_true')
     parser.add_argument('--initial-boundary', choices=('precommit', 'postcommit'))
     parser.add_argument('--initial-retry', action='store_true')
@@ -535,7 +538,20 @@ def main():
     parser.add_argument('--operation', choices=OPERATIONS + ['all'], default='resolve')
     args = parser.parse_args()
     try:
-        if args.initial_lineage:
+        if args.initial_unresolved:
+            if (args.initial_lineage or args.initial_boundary is not None or args.initial_retry or
+                    args.initial_corrupt or args.repair_lineage or args.lineage_boundary is not None or
+                    args.lineage_retry or args.lineage_corrupt or args.task_decision or
+                    args.operation != 'resolve' or any((args.stop, args.precommit, args.running,
+                        args.uncertain, args.acknowledge, args.retry, args.promote, args.promotion_crash,
+                        args.session_bound, args.admission_crash, args.session_cancel,
+                        args.session_cancel_active, args.session_cancel_unknown))):
+                raise ValueError('Unresolved initial mode cannot combine other scenarios')
+            print(json.dumps(native_initial_unresolved.run_initial_unresolved(
+                args.bundle, args.sdk, args.unresolved_next)))
+        elif args.unresolved_next:
+            raise ValueError('Unresolved next requires its explicit primary mode')
+        elif args.initial_lineage:
             if (args.repair_lineage or args.lineage_boundary is not None or args.lineage_retry or
                     args.lineage_corrupt or args.task_decision or args.operation != 'resolve' or
                     any((args.stop, args.precommit, args.running, args.uncertain, args.acknowledge,

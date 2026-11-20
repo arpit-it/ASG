@@ -1609,5 +1609,298 @@ class InitialLineageTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.protocol.read_report(self.root,1,self.nonce,'postcommit')
 
+class UnresolvedInitialTests(unittest.TestCase):
+    """Protocol24 fixed observations keep unknown outcomes unknown."""
+    def setUp(self):
+        self.temporary=tempfile.TemporaryDirectory(prefix='asg-unresolved-host-tests-')
+        self.addCleanup(self.temporary.cleanup)
+        self.root=Path(self.temporary.name).resolve()
+        self.nonce='c'*32
+        self.protocol=fixture.native_initial_unresolved
+
+    @staticmethod
+    def digest(text):
+        import hashlib
+        return hashlib.sha256(text.encode()).hexdigest()
+
+    def records(self, count):
+        result={key:None for key in self.protocol.RECORD_SLOTS}
+        result.update(working=self.digest('working'),session=self.digest('raw session'))
+        if count:result['requestJournal']=self.digest(f'journal{count}')
+        return result
+
+    def report(self, launch):
+        fresh=launch>=3;count=2 if fresh else 1;project=f'restart-{self.nonce}';session=f'session-{self.nonce}'
+        counters={key:0 for key in self.protocol.COUNTER_KEYS}
+        if launch==1:counters.update(setupCalls=1,proposalCalls=1,reservationCommits=1)
+        if launch==3:counters.update(proposalCalls=1,reservationCommits=1,reservationReturns=1,
+                                    suppliedProviderCalls=1,proposalReturns=1,terminalCommits=1)
+        return {'version':24,'mode':'initial-unresolved','nonce':self.nonce,'launch':launch,
+            'explicitNext':fresh,'stage':{1:'reserved-paused',2:'read-only',3:'fresh-return-paused',4:'fresh-read-only'}[launch],
+            'projectId':project,'sessionId':session,'boardTaskId':'Tanalyze','requirementId':'R1',
+            'requestedModel':self.protocol.MODEL,'requestCount':count,'unresolvedRequestNumber':1,
+            'latestRequestNumber':count,'unresolvedRequestStatus':'reserved',
+            'latestRequestStatus':'returnedValidated' if fresh else 'reserved',
+            'unresolvedRequestSha256':self.digest('reserved request1'),
+            'latestRequestSha256':self.digest('returned request2' if fresh else 'reserved request1'),
+            'unresolvedResponseModel':None,'latestResponseModel':self.protocol.MODEL if fresh else None,
+            'unresolvedReturnedSourceSha256':None,'latestReturnedSourceSha256':self.digest('returned map') if fresh else None,
+            'originalSessionSha256':self.digest('raw session'),'sessionRevision':0,'sessionDispatchCount':0,
+            'requestReference':{'version':1,'projectId':project,'sessionId':session,'number':2,
+                'requestSha256':self.digest('returned request2')} if fresh else None,
+            'recordsBefore':self.records(0 if launch==1 else 1 if launch<=3 else 2),
+            'recordsAfter':self.records(count),'unrelatedBeforeSha256':self.digest('unrelated'),
+            'unrelatedAfterSha256':self.digest('unrelated'),'declaredSourceSha256':self.digest('declared metadata'),
+            'counters':counters}
+
+    def validate(self,value,launch=1):
+        return self.protocol.validate_report(value,launch,self.nonce,launch>=3)
+
+    def test_four_stage_contract_and_cross_launch_chain_fit8192(self):
+        previous=None
+        for launch in (1,2,3,4):
+            value=self.report(launch)
+            self.assertLess(len(json.dumps(value).encode()),8192)
+            self.assertEqual(self.validate(value,launch),value)
+            self.protocol.require_transition(previous,value);previous=value
+
+    def test_wrong_protocol_identity_and_boolean_ints_refused(self):
+        bad={'version':23,'mode':'initial-lineage','nonce':'f'*32,'launch':True,
+            'explicitNext':1,'stage':'read-only','projectId':'p','sessionId':'s','boardTaskId':'Ttest',
+            'requirementId':'R2','requestedModel':'wrong','requestCount':True,'unresolvedRequestNumber':2,
+            'latestRequestNumber':2,'sessionRevision':True,'sessionDispatchCount':1}
+        for key,value in bad.items():
+            with self.subTest(key=key),self.assertRaises(ValueError):self.validate(dict(self.report(1),**{key:value}))
+        for version in (20,21,22,23,25,True):
+            with self.subTest(version=version),self.assertRaises(ValueError):self.validate(dict(self.report(1),version=version))
+        for args in [(True,self.nonce,False),(1,'Z'*32,False),(2,self.nonce,True),(3,self.nonce,False)]:
+            with self.subTest(args=args),self.assertRaises(ValueError):self.protocol.validate_report(self.report(1),*args)
+
+    def test_unknown_request_never_acquires_response_reference_or_returned_state(self):
+        for launch in (1,2,3,4):
+            for patch in ({'unresolvedRequestStatus':'returnedValidated'}, {'unresolvedResponseModel':self.protocol.MODEL},
+                          {'unresolvedReturnedSourceSha256':'f'*64}):
+                with self.subTest(launch=launch,patch=patch),self.assertRaises(ValueError):self.validate(dict(self.report(launch),**patch),launch)
+        for patch in ({'requestReference':self.report(3)['requestReference']},
+                      {'latestResponseModel':self.protocol.MODEL},{'latestReturnedSourceSha256':'f'*64},
+                      {'latestRequestSha256':'f'*64},{'latestRequestStatus':'returnedValidated'}):
+            with self.subTest(patch=patch),self.assertRaises(ValueError):self.validate(dict(self.report(1),**patch))
+
+    def test_fresh_request_reference_exact_and_distinct_from_reserved_one(self):
+        for key,bad in {'version':True,'projectId':'p','sessionId':'s','number':1,'requestSha256':'e'*64}.items():
+            value=self.report(3);value['requestReference'][key]=bad
+            with self.subTest(key=key),self.assertRaises(ValueError):self.validate(value,3)
+        value=self.report(3);value['latestRequestSha256']=value['unresolvedRequestSha256']
+        value['requestReference']['requestSha256']=value['latestRequestSha256']
+        with self.assertRaises(ValueError):self.validate(value,3)
+        for patch in ({'latestResponseModel':None},{'latestReturnedSourceSha256':None},
+                      {'latestRequestStatus':'reserved'},{'requestReference':None}):
+            with self.subTest(patch=patch),self.assertRaises(ValueError):self.validate(dict(self.report(3),**patch),3)
+
+    def test_exact_member_sets_for_reports_references_records_counters(self):
+        for section in ('report','requestReference','recordsBefore','recordsAfter','counters'):
+            for extra in (False,True):
+                value=self.report(3);target=value if section=='report' else value[section]
+                if extra:target['unexpected']=None
+                else:target.pop(next(iter(target)))
+                with self.subTest(section=section,extra=extra),self.assertRaises(ValueError):self.validate(value,3)
+
+    def test_all_hash_fields_are_lowercase64hex_or_genuine_absence(self):
+        for key in ('unresolvedRequestSha256','latestRequestSha256','originalSessionSha256',
+                    'unrelatedBeforeSha256','unrelatedAfterSha256','declaredSourceSha256','latestReturnedSourceSha256'):
+            for bad in (None,True,'F'*64,'g'*64,'a'*63):
+                with self.subTest(key=key,bad=bad),self.assertRaises(ValueError):self.validate(dict(self.report(3),**{key:bad}),3)
+
+    def test_only_request_journal_can_change_at_reservation_and_fresh_return(self):
+        for launch in (1,2,3,4):
+            for slot in self.protocol.RECORD_SLOTS:
+                value=self.report(launch);value['recordsAfter'][slot]='e'*64
+                with self.subTest(launch=launch,slot=slot):
+                    if slot=='requestJournal' and launch in (1,3):self.validate(value,launch)
+                    else:
+                        with self.assertRaises(ValueError):self.validate(value,launch)
+        for launch in (1,3):
+            value=self.report(launch);value['recordsAfter']['requestJournal']=value['recordsBefore']['requestJournal']
+            with self.assertRaises(ValueError):self.validate(value,launch)
+        value=self.report(1);value['recordsBefore']['requestJournal']='e'*64
+        with self.assertRaises(ValueError):self.validate(value)
+
+    def test_every_counter_and_unrelated_write_refused(self):
+        for launch in (1,2,3,4):
+            for key in self.protocol.COUNTER_KEYS:
+                for bad in (True,-1,self.report(launch)['counters'][key]+1):
+                    value=self.report(launch);value['counters'][key]=bad
+                    with self.subTest(launch=launch,key=key,bad=bad),self.assertRaises(ValueError):self.validate(value,launch)
+        with self.assertRaises(ValueError):self.validate(dict(self.report(1),unrelatedAfterSha256='e'*64))
+
+    def test_cross_launch_pins_unknown_intent_baseline_and_cold_reference(self):
+        for launch in (2,3,4):
+            for change in ('unresolvedRequestSha256','declaredSourceSha256','records','unrelated'):
+                value=self.report(launch)
+                if change=='records':value['recordsBefore']['working']=value['recordsAfter']['working']='e'*64
+                elif change=='unrelated':value['unrelatedBeforeSha256']=value['unrelatedAfterSha256']='e'*64
+                else:
+                    value[change]='e'*64
+                    if change=='unresolvedRequestSha256' and launch==2:value['latestRequestSha256']='e'*64
+                with self.subTest(launch=launch,change=change),self.assertRaises(ValueError):self.protocol.require_transition(self.report(launch-1),value)
+        value=self.report(4);value['latestRequestSha256']=value['requestReference']['requestSha256']='e'*64
+        with self.assertRaises(ValueError):self.protocol.require_transition(self.report(3),value)
+        for previous,current in [(None,self.report(2)),(True,self.report(2)),(self.report(1),self.report(3))]:
+            with self.assertRaises(ValueError):self.protocol.require_transition(previous,current)
+
+    def test_strict_reader_duplicate_nonfinite_partial_oversize_symlink_fifo(self):
+        import os
+        file=self.root/'launch-1.json';raw=json.dumps(self.report(1));file.write_text(raw)
+        self.protocol.read_report(self.root,1,self.nonce)
+        for text in (raw.replace('"version": 24','"version":24,"version":24',1),
+                     raw.replace('"setupCalls": 1','"setupCalls":1,"setupCalls":1',1),
+                     raw.replace('"sessionRevision": 0','"sessionRevision":NaN'), ' '*8193):
+            file.write_text(text)
+            with self.assertRaises(ValueError):self.protocol.read_report(self.root,1,self.nonce)
+        file.write_text('{"private":')
+        with self.assertRaises(json.JSONDecodeError) as caught:self.protocol.read_report(self.root,1,self.nonce)
+        self.assertEqual(caught.exception.doc,'')
+        file.unlink();target=self.root/'target';target.write_text(raw);file.symlink_to(target)
+        with self.assertRaises((ValueError,OSError)):self.protocol.read_report(self.root,1,self.nonce)
+        file.unlink();os.mkfifo(file)
+        with self.assertRaises(ValueError):self.protocol.read_report(self.root,1,self.nonce)
+
+    def driver(self,explicit=False,bad_launch=None,exit_code=0,early=False,signal=-9,replace=False,sabotage_challenge=False):
+        sdk=self.root/'sdk';(sdk/'bin/cache').mkdir(parents=True,exist_ok=True)
+        (sdk/'bin/cache/flutter_tools.snapshot').write_text('prepared SDK')
+        control=Path(tempfile.mkdtemp(prefix="asg-candidate-crash-driver-",dir=self.root)).resolve()
+        self.driver_root=control
+        processes=[];outer=self
+        class Process:
+            def __init__(self,*args,**kwargs):
+                self.number=len(processes)+1;self.killed=False;processes.append(self)
+                outer.assertEqual(args[0],[str(outer.root/'owned-executable')])
+                outer.assertEqual(kwargs['env']['ASG_CANDIDATE_CRASH_ROOT'],str(control))
+                value=outer.report(self.number)
+                if bad_launch==self.number:value['counters']['sdkAttempts']=1
+                (control/f'launch-{self.number}.json').write_text(json.dumps(value))
+            def poll(self):
+                return signal if self.killed else exit_code if self.number in (2,4) or early else None
+            def kill(self):self.killed=True
+            def wait(self,timeout):
+                if sabotage_challenge and self.number==1 and self.killed:
+                    target=outer.root/'outside-challenge';target.write_bytes(b'preserve unrelated bytes')
+                    challenge=control/'challenge.json';challenge.unlink();challenge.symlink_to(target)
+                if replace:
+                    file=control/f'launch-{self.number}.json'
+                    raw=file.read_text();file.unlink();file.write_text(raw)
+                return self.poll()
+        with mock.patch.object(self.protocol.sys,'platform','darwin'), \
+                mock.patch.object(self.protocol,'inspect_bundle',return_value=(self.root/'owned-executable','a'*64)), \
+                mock.patch.object(self.protocol.tempfile,'mkdtemp',return_value=str(control)), \
+                mock.patch.object(self.protocol.secrets,'token_hex',return_value=self.nonce), \
+                mock.patch.object(self.protocol.subprocess,'Popen',side_effect=Process):
+            try:return self.protocol.run_initial_unresolved(self.root/'fixture.app',sdk,explicit),processes
+            except ValueError:self.failed_processes=processes;raise
+
+    def test_owned_two_and_four_launches_keep_explicit_next_stage_local(self):
+        for explicit,count in ((False,2),(True,4)):
+            value,processes=self.driver(explicit)
+            self.assertEqual(len(value['launches']),count)
+            self.assertEqual([p.killed for p in processes],[True,False]*(count//2))
+            challenge=json.loads((self.driver_root/'challenge.json').read_text())
+            self.assertEqual(set(challenge),{'mode','nonce','launch','sdk','explicitNext'})
+            self.assertIs(challenge['explicitNext'],explicit)
+
+    def test_owned_driver_refuses_report_before_launching_any_next_child(self):
+        with self.assertRaises(ValueError):self.driver(True,bad_launch=2)
+        self.assertEqual(len(self.failed_processes),2)
+        self.assertEqual([p.killed for p in self.failed_processes],[True,False])
+
+    def test_owned_driver_refuses_premature_exit_wrong_signal_nonzero_and_replaced_report(self):
+        for options in ({'early':True},{'signal':-15},{'exit_code':1},{'replace':True}):
+            with self.subTest(options=options),self.assertRaises(ValueError):self.driver(**options)
+
+    def test_invalid_mode_and_sdk_never_launch_any_child(self):
+        with mock.patch.object(self.protocol,'inspect_bundle') as inspect:
+            with self.assertRaises(ValueError):self.protocol.run_initial_unresolved(self.root,self.root,1)
+            inspect.assert_not_called()
+        for sdk in ('relative','/bad\npath',str(self.root/'missing')):
+            with mock.patch.object(self.protocol.sys,'platform','darwin'), \
+                    mock.patch.object(self.protocol,'inspect_bundle',return_value=(self.root/'app','a'*64)), \
+                    mock.patch.object(self.protocol.subprocess,'Popen') as launch:
+                with self.assertRaises((ValueError,OSError)):self.protocol.run_initial_unresolved(self.root,sdk)
+                launch.assert_not_called()
+
+    def test_cli_explicit_mode_rejects_every_other_scenario_prelaunch(self):
+        import contextlib,io
+        base=['native_candidate_crash.py','--bundle','/supplied.app','--sdk','/supplied/sdk']
+        flags=('--initial-lineage','--initial-retry','--initial-corrupt','--repair-lineage',
+            '--lineage-retry','--lineage-corrupt','--task-decision','--stop','--precommit',
+            '--running','--uncertain','--acknowledge','--retry','--promote','--promotion-crash',
+            '--session-bound','--admission-crash','--session-cancel','--session-cancel-active','--session-cancel-unknown')
+        bad=[['--unresolved-next']]+[['--initial-unresolved',flag] for flag in flags]
+        bad += [['--initial-unresolved','--operation','test'],['--initial-unresolved','--initial-boundary','precommit'],
+                ['--initial-unresolved','--lineage-boundary','postcommit'],['--initial-lineage','--unresolved-next']]
+        for args in bad:
+            with self.subTest(args=args),mock.patch.object(fixture.sys,'argv',base+args), \
+                    mock.patch.object(self.protocol,'run_initial_unresolved') as run,contextlib.redirect_stderr(io.StringIO()):
+                with self.assertRaises(SystemExit) as caught:fixture.main()
+                self.assertEqual(caught.exception.code,2);run.assert_not_called()
+        with mock.patch.object(fixture.sys,'argv',base+['--initial-unresolved','--unresolved-next']), \
+                mock.patch.object(self.protocol,'run_initial_unresolved',return_value={}) as run, \
+                contextlib.redirect_stdout(io.StringIO()):
+            fixture.main();run.assert_called_once_with('/supplied.app','/supplied/sdk',True)
+
+
+    def test_incomplete_owned_report_deadline_cleans_up_live_child(self):
+        with mock.patch.object(self.protocol,'read_report',side_effect=json.JSONDecodeError('partial','',0)), \
+                mock.patch.object(self.protocol.time,'monotonic',side_effect=[0,61]):
+            with self.assertRaises(ValueError):self.driver()
+        self.assertEqual(len(self.failed_processes),1)
+        self.assertTrue(self.failed_processes[0].killed)
+
+    def test_reader_refuses_report_replaced_between_lstat_and_open(self):
+        file=self.root/'launch-1.json';file.write_text(json.dumps(self.report(1)))
+        original_open=self.protocol.os.open
+        def replacing_open(path,flags):
+            raw=file.read_text();other=self.root/'replacement';other.write_text(raw);other.replace(file)
+            return original_open(path,flags)
+        with mock.patch.object(self.protocol.os,'open',side_effect=replacing_open):
+            with self.assertRaises(ValueError):self.protocol.read_report(self.root,1,self.nonce)
+
+    def test_driver_refuses_symlink_disposable_root_before_launch(self):
+        sdk=self.root/'sdk';(sdk/'bin/cache').mkdir(parents=True)
+        (sdk/'bin/cache/flutter_tools.snapshot').write_text('prepared SDK')
+        alias=self.root/'alias';alias.symlink_to(self.root,target_is_directory=True)
+        with mock.patch.object(self.protocol.sys,'platform','darwin'), \
+                mock.patch.object(self.protocol,'inspect_bundle',return_value=(self.root/'app','a'*64)), \
+                mock.patch.object(self.protocol.tempfile,'mkdtemp',return_value=str(alias)), \
+                mock.patch.object(self.protocol.subprocess,'Popen') as launch:
+            with self.assertRaises(ValueError):self.protocol.run_initial_unresolved(self.root,sdk)
+            launch.assert_not_called()
+
+    def unsafe_write_case(self, name):
+        sdk=self.root/'sdk';(sdk/'bin/cache').mkdir(parents=True)
+        (sdk/'bin/cache/flutter_tools.snapshot').write_text('prepared SDK')
+        control=self.root/'control';control.mkdir(mode=0o700)
+        target=self.root/'outside-control';target.write_bytes(b'preserve unrelated bytes')
+        (control/name).symlink_to(target)
+        with mock.patch.object(self.protocol.sys,'platform','darwin'), \
+                mock.patch.object(self.protocol,'inspect_bundle',return_value=(self.root/'app','a'*64)), \
+                mock.patch.object(self.protocol.tempfile,'mkdtemp',return_value=str(control)), \
+                mock.patch.object(self.protocol.subprocess,'Popen',side_effect=ValueError('never launch in refusal test')) as launch:
+            with self.assertRaises((ValueError,OSError)):
+                self.protocol.run_initial_unresolved(self.root,sdk)
+            self.assertEqual(target.read_bytes(),b'preserve unrelated bytes')
+            launch.assert_not_called()
+
+    def test_changed_challenge_between_owned_launches_refuses_without_touching_target(self):
+        with self.assertRaises(ValueError):self.driver(sabotage_challenge=True)
+        self.assertEqual((self.root/'outside-challenge').read_bytes(),b'preserve unrelated bytes')
+        self.assertEqual(len(self.failed_processes),1)
+        self.assertTrue(self.failed_processes[0].killed)
+
+    def test_driver_refuses_preexisting_challenge_symlink_without_touching_target(self):
+        self.unsafe_write_case('challenge.json')
+
+    def test_driver_refuses_preexisting_log_symlink_without_touching_target(self):
+        self.unsafe_write_case('process-1.log')
+
 if __name__ == '__main__':
     unittest.main()

@@ -4261,3 +4261,44 @@ a subprocess was killed. Fix/retest/review final inputs and verify protected mer
 before declaring this bounded fixture delivered. FullCE01/F20/liveQwen/unavailable
 platform acceptance remain pending. Existing approvals, Stop/recovery and last
 working outputs are unchanged.
+
+
+Protocol24 implementation checkpoint: Dart reservation hold/read-only/fresh-return
+stages and fixed routing are implemented, with10VM tests and115focused regressions
+passing. Four actual VM reports also satisfy the separate host validator. Native
+process acceptance remains pending final integrated isolated binary/owned launches.
+VM pause release, strict report validation and a build alone are not crash proof.
+
+
+Protocol24 actual isolated Mac acceptance checkpoint: primary2 and explicit4
+launches pass, plus preserved legacy23/22/21/20 twenty-six launches on SAME bundle
+f5cb4d4d9fa42b68b58318568a03465d6bc676dd3562875c2304a9d301da249a.
+Reserved1 remains unresolved across owned crash/cold read; explicit validated2
+preserves1 and no reopen replay occurs. Newcases have no provider before first
+pause, no live model/SDK/copy/candidate/host/preview. Legacy20 retains its original
+fixed SDK/receipt scope. 603source inputs
+edef48dfdcb3be700c1d100f0a2b8dc6d19fb113a7992ea336a0487a23d0752f stayed
+unchanged after all32launches; sourcecommitf019cb4 and private source/evidence
+summary in /tmp/asg404-native-unresolved-*.json identify actual tested inputs.
+Full2228/12opt-in skips, focused115/host118/restart6 and analysis/format pass.
+Final exact review/requiredCI/verifiedmerge remain gates; no generalCE01/F20,
+liveQwen or unavailable-platform acceptance claimed.
+
+
+PR774 fresh-review hardening: revised driver refuses unsafe challenge/log files
+before launch, pins atomic challenge replacement and uses exclusive no-follow logs.
+121host/6restart tests pass, including original-driver failing symlink regressions.
+All32same-binary native observations repeated with driverbc8dbaa/digest
+feaa8a1898e151d54d1c67f441b3b63864f46e7238ff30349af2be3b7a0af3f5.
+Native603source inputs/bundle remain unchanged; original driver evidence is kept
+separately. Final revised review/requiredCI/verifiedmerge still gate delivery.
+
+
+Final VM portability correction keeps the private-root guard strict: own scratch
+roots explicitly0700, exact pause errors required, Linux enabled. Full2229/12skips
+and116focused pass. A separate final build/source51c3ba4/603inputs832e6f690016adcaaed4eda3ad1bdeb085f5d2147808f3c20f54e76709651782
+produced bundlee6ed3a85de0c7b847958c2aa38c5b9448a8643c5db6bd914fc2e076219013bfd;
+all32native cases repeated successfully on it, prior bundles/reports preserved.
+/tmp/asg404-native-unresolved-posix-evidence-summary.json records exact source/
+driver/bundle/report identities. Final revised review/requiredCI/verifiedmerge
+remain gates; failed earlier CI does not authorize delivery or platform claims.

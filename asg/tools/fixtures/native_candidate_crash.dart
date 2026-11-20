@@ -18,6 +18,7 @@ import 'package:asg/views/published_task_evidence_screen.dart';
 import 'candidate_reopen.dart' show CandidateReopenFixture;
 import 'native_repair_lineage.dart' show runNativeRepairLineageFixture;
 import 'native_initial_lineage.dart' show runNativeInitialLineageFixture;
+import 'native_initial_unresolved.dart' show runNativeInitialUnresolvedFixture;
 import 'agent_session_task_history.dart' show TaskHistoryFixture;
 
 import 'package:flutter/material.dart';
@@ -262,6 +263,15 @@ Future<void> main() async {
     if (input is Map<String, dynamic> && input['mode'] == 'repair-lineage') {
       stage = 'repair-lineage';
       await runNativeRepairLineageFixture(
+        canonical,
+        await challenge.readAsString(),
+      );
+      exit(0);
+    }
+    if (input is Map<String, dynamic> &&
+        input['mode'] == 'initial-unresolved') {
+      stage = 'initial-unresolved';
+      await runNativeInitialUnresolvedFixture(
         canonical,
         await challenge.readAsString(),
       );
