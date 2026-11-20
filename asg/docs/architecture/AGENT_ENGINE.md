@@ -6310,3 +6310,132 @@ reader-{final-focused,project-regression,git-regression,coordinator,product,
 inventory,format,analyze,full,web}.log. No live model request or app behavior change.
 Final exact PR review, required CI with active Linux reader suite and verified
 protected merge remain mandatory. Full404 and deferred acceptance stay open.
+
+
+### 2026-11-20 — #404 document reader merged; confirmed review integration started
+
+PR793 expected-head protected squash86c6d0d3b52b80ac0c4fc2f1662eedf712672fec
+verified through plugin main/mergedPR and fetched treedd3f65a07d52fc34333a35b11c5d61b72c1987f5,
+identical testedlocald6854139a7a414e745ec4142ace01fc1f03dd359. Fresh exact six-file
+review remote f51b34b0a24f27ca4563061afab7ad70e2bed7b0/base277afee6 found no
+blocker, threads empty. CI44726151371 Python136253948839/Flutter136253949260 every
+required/poststep SUCCESS; actual Linux log confirms25reader tests active, no skips
+(25in0.173s). Bounded standalone reader Done; no app/model instruction loading
+claimed. Full404OPEN. Coordinator merged/outcome recorded; integration and claim
+released. Owner dirty checkout/processes/stable application preserved.
+
+Immediately claimed404-confirmed-instruction-document-review in registered issue
+worktree/current verified main under existing F20, solewriter. Scope typed model,
+owned host/controller/plaintextpanel integration, packagedasset and relevant tests/
+shared evidence. No second independent outcome ready. Started immutable typed
+ProjectInstructionObservation/Document/ReadRequest: seven-key strict JSON with
+duplicate/escapedduplicate rejection, fixed selection/order, byte/base64/UTF8/NUL/
+SHA256 checks and exact plain text including preservedBOM. Unknown/forged/partial
+payloads throw fixedprivate errors; response and byte/document/selection lists
+immutable, requestselection frozen, sourceVerified=false always. No widget/IO/model
+imports or newdependencies. No current UI/caller dispatch or persistence changes.
+
+Initial model3tests plus MVCarchitecture1 PASS. Initial analysis found seven
+brace-style infos; applied scoped fixes, then twofileanalysis clean and4tests PASS.
+Logs
+/tmp/asg404-instruction-review-start.log and -start-analyze.log. Covers immutable
+Unicode/BOM/exactbytes, unsafe/requestmutation, forged/extra/partial/duplicatewire
+payloads and fixedprivacy. An initial local command used the duplicated asg path
+before creating files; corrected path then reran passing tests, no product defect.
+Expanded boundary/refusal/limit tests, owned helper lifecycle, readconsent/plaintext
+UI, packaged Mac service and honest browser/native acceptance remain pending.
+No automatic modelsharing, instructionauthority, commands/install/sourcewrites or
+scheduling. FullF20/liveQwen/deferred400 open; marketplacegate/F23-last retained.
+
+
+### #404 confirmed instruction-document review — final local evidence
+
+Imported workspace now contains a manual Repository documents panel. Select only
+root AGENTS.md/README.md, then explicitly confirm frozen root, selected paths and
+existing configured absolute Python outside the root. No defaultpython3 fallback,
+installation or automatic read. Plain selectable text, byte counts and exact
+SHA256 attribution are captured data, not instruction/tool authority or current
+source verification. Nothing is sent to a model, saved as instructions, scheduled,
+executed as project commands or written into selected files. Existing imported
+plan/store schemas and captured metadata approval semantics remain unchanged.
+
+Typed immutable seven-key response validation enforces ordered selection/document
+correspondence, exact byte length/canonicalbase64/SHA256, strictUTF8/noNUL,32KiB
+perfile/64KiB total/128KiB response; rejects duplicate/escapedduplicate/unknown keys,
+forged provenance, malformed/partial payloads privately. BOM/Unicode/CRLF preserved.
+NativeMac host adapts the reviewed owned-helper lifecycle: packaged asset, isolated
+-I-S-B launch, outside interpreter/root revalidation, owned private temp directory,
+no shell/inheritedenvironment, stdout128KiB/stderr4KiB/deadline, late-start capture,
+Stop/kill/reap/pipeEOF and nonrecursive cleanup. Exact requested readset binding
+is required. Unsupported web/unverifiedhosts refuse production reads. Cleanup
+uncertainty blocks later jobs and preserves unexpected entries; no ownerPID reuse
+or process signals. Descriptor helper remains best-effort, not atomic/OSsandbox.
+
+Controller busy/confirmation/Stop/disposal guards prevent overlapping reads and
+late publication. A cancelled/failed/changed-selection refresh retains prior text
+visibly stale; unknown cleanup remains sticky. No storage writes. Stop while a
+confirmation is open does not pretend to dismiss that dialog; dispatch remains
+blocked until it settles. View owns dialog/controller lifecycle, invalidates old
+workspace consent, and renders literal plain text without Markdown execution.
+
+45focusedcombined tests PASS, including25host/10controller/7model/2widget and
+MVCarchitecture1. Host covers exact isolated arguments/environment/readset, limits,
+privateerrors, deadline/Stop/late asset/temp/process startup/EOF/cancel/dispose,
+interpreter/temp retarget and stickycleanup. Actual defaultpackaged Mac host reads
+only disposable selected AGENTS and preserves bytes. Controller covers absent/
+cancelled/frozen consent, setupchange, stale retainedfindings, Stopbeforedispatch,
+late result/cleanup overlap, uncertaincleanup/disposal and wrongreadset. Widgets
+pass320x800 at2xtext, cancel/read/plaintext/privatefailure/stalerefresh and replaced
+workspace pendingdialog. Parser covers bytes/hash/base64/encoding/NUL/refusal/
+selection/schema/duplicate bounds and immutable collections. Initial test-only
+synchronous reset await removed; two analyzer style infos fixed/retested.
+Logs /tmp/asg404-instruction-review-{combined-final,host,controller,panel,analysis-final}.log.
+
+FullFlutter2411PASS13explicit skips; format591unchanged, analyzer clean, normal
+webbuild and isolatednormalMacdebugbuild SUCCESS (customvalidationbundleID, no
+install/launch/stableapp replacement). Pythoninstruction25/project29/coordinator20/
+product32/inventory9PASS; canonicalinventory regenerated. Logs /tmp/asg404-
+instruction-review-{full,format,web,mac-build,python,project-regression,coordinator,
+product,inventory}.log. Mac/web packaged helper bytes match reviewed source SHA256
+adbf58420bc5623942414892cf5087b7d205c4182ca7d715049cb3bf3db6fbdb. Actual builtMac
+asset CLI on two disposable documents passes with unchangedbytes. Receipt
+/tmp/asg404-instruction-review-packaging-ui-receipt.json records sourcehashes.
+
+IAB supplied-data fixture visibly verified Cancel/no findings, frozen folder/files/
+interpreter confirmation, selectingboth files and attributed plain-text captures.
+It used memoryrecords/fakehost and no filesystem/process/model. Browser production
+read capability remains unavailable. Owned loopback8393 preview server stopped.
+NativeUI interaction remains UNVERIFIED (no nativeUI launch attempted this slice);
+Mac service/packaging/build and IAB are distinct, not nativeUI/ownerfolder/inference
+proof. Retained isolated build output is not deployment. No runtime/model changes,
+installs/downloads/cloud provisioning/deployment. Full404/liveQwen/deferred400 open,
+marketplacegate/F23-last retained. Final exact PR review, allrequiredCI and verified
+protectedmerge remain mandatory; no full umbrella completion is claimed.
+
+
+### #404 document review — fresh-review lifecycle correction and retest
+
+Fresh review of PR794 remote103dc7c2ddf47080acb3147abba30a13e45f2a0f found a
+supported injection edge: changing records while passing the same controller
+caused dispose followed by reattachment of that disposed controller. Production
+null-controller creation was unaffected, but lifecycle acceptance was incomplete.
+_create now refuses a disposed injected instance and creates a fresh controller
+for current records. Regression replaces records during pending consent, verifies
+oldhost has zero reads, no listener exception, and fresh configuredPython in the
+new Mac confirmation; unsupportedhosts remain disabled with no fake native claim.
+Read-only source reviewer identified the edge; root fixed and freshly reviewed it.
+This is pre-merge review rework, not an owner incident or escaped defect.
+
+Revised fullFlutter2412PASS13explicit skips,46focusedPASS, format591unchanged,
+analysis clean, normalweb and supplied-datafixture rebuild PASS, isolatedMacdebug
+rebuild SUCCESS with verified customvalidationbundleID. Canonicalinventory rebuilt,
+product32/inventory9 PASS. Logs /tmp/asg404-instruction-review-revised-{full,focused,
+analyze,format,web,browser,mac,product,inventory}.log. IAB rerun visibly confirms
+cancel/no findings, selectedroot/files/interpreter and two captured plaintext
+provenances on rebuilt fixture. Owned8393 server stopped again. RebuiltMac/webasset
+bytes match unchangedhelper; actual builtMacasset isolatedCLI passes with two
+owned selecteddocuments unchanged. New receipt preserves earlier observations:
+/tmp/asg404-instruction-review-revised-packaging-ui-receipt.json. NativeUI and live
+inference remain unverified. Previous CI44729698989 PASS belongs to the superseded
+revision and is not reused; revised exacthead/base freshreview and allrequiredCI
+must pass before protectedmerge. No full404/deferred400 completion or newauthority.
