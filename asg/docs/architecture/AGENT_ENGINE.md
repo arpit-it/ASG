@@ -3757,3 +3757,200 @@ launch validates both retained companions independently. It is never production
 bootstrap or a live-inference/SDK-result claim. Owned Mac scenarios and legacy20/21
 smokes passed on bundle b8a7522ce95e1694b665f9ab1172554f96a0a9634c227d434bb0d43be5ab41c2;
 see canonical requirements/progress for exact private report digests and limits.
+
+
+## Native initial-request lineage investigation —20 November2026
+
+
+
+Initial native-lineage investigation checkpoint: focused29 tests PASS across
+candidate_request_lineage model/store, saved candidate recovery and architecture;
+/tmp/asg404-native-initial-lineage-focused.log. Includes existing native DB
+stale-adapter/close-reopen and historical optional-proof isolation; not29 separate
+native app processes. Source inventory demonstrates the missing app-mode initial
+join without claiming that absence alone proves a product defect.
+
+Production mapping: CandidateRequestLineage has strict canonical8-field v1 companion
+with exact requestReference, original raw requestSessionRecord, actual immediate
+admissionSessionRecord, contextSHA and run/dispatch. Startup expected read-set pins
+request journal and absent initial companion/opposite repair companion, alongside
+existing approval/working/session/run records; updated initial companion joins the
+same7-record startup cohort. Historical load pins exact retained run, referenced
+terminal request, context and companion consistently. Recovery restores an optional
+initial origin independently from repair reference; conflicting/corrupt origins grant
+no inferred origin. Existing native22mode exercises repair only.
+
+Next owned work: finish fixed supplied initial-request setup and distinct new-mode
+report/read-set/failure matrix, including explicitly selected older identical return
+versus later journal growth, actual retry pre-admission raw session, independent
+cold validation of both companions and optional-corruption isolation. No new native
+mode, app launch/kill, model/SDK command, copy/restore, stable replacement or
+deployment delivered by this checkpoint. Keep this docs-only investigation claimed;
+review/requiredCI/verified contract merge gate dependent implementation.
+
+
+## Native initial-request lineage contract —20 November2026
+
+Bounded F20/CE01/#404 investigation404-native-initial-lineage-investigation defines
+one dependent implementation404-native-initial-lineage-fixture. This contract
+delivers no runtime mode or new app-crash acceptance. Preserve actual native20/21
+and repair22 readers/evidence; neither unbound candidates nor repair origins prove
+initial request lineage. Native platform acceptance is only the owner's Mac, with
+unavailable-platform work remaining under400. No live model or new SDK command is
+needed for supplied metadata; loaded Qwen identity is not inferred from this fixture.
+
+Two private native StudioDatabase probes pass, before/after actual startup commit.
+Both begin with selected returned request1 and later returned request2 with identical
+supplied changed-source results. Their request references remain distinct. At the
+before pause all physical records equal baseline and no new context/companion is
+durable, although the pending update map already contains encoded planned identity.
+After commit exactly7 declared updates form the physical store delta; a fresh native
+adapter joins request1, original formatted raw session, actual raw admission and
+run1/context while latest returned request remains2. Startup result delivery stays0
+and injected release failure leaves records unchanged. These are same-process
+native database seam probes, not app kills, separate process reopen or source-copy
+acceptance. Initial probe incorrectly passed response metadata to request reserve;
+the production guard refused it. Corrected request-time model metadata passed; no
+guard was changed. Probe/log:/tmp/asg404-native-initial-admission-probe_test.dart and
+/tmp/asg404-native-initial-admission-probe2.log. Focused existing29 checks also pass.
+
+Implement a separate fixed protocol23/mode initial-lineage. Challenge is EXACT6keys:
+mode,nonce,launch,boundary,corruptOptional,sdk. Nonce lowercase32hex; launch1..4;
+precommit only1/2, postcommit1..4; boolean corruption only postcommit read-only2
+in a separate two-launch control (no retry). Canonical absolute existing SDK path
+and private canonical nonce-bound fixture root use the existing safety limits;
+challenge rawUTF8<=4096, reject duplicates/unknown/missing/invalid fields. Explicit
+new-mode CLI flags reject legacy/task-decision/repair mode combinations before app
+inspection/launch. No arbitrary command, database key, folder, script or stored PID
+control. The new helper is not referenced by production main.
+
+Setup: create one supplied approved Flutter fixture project restart-$nonce, session
+session-$nonce with revision0/no dispatches, R1 and mapped Tanalyze (operation index3).
+No failed baseline run or repair journal/origin is fabricated. Supply working and
+prepared source folders explicitly with recorded source manifests; use ACTUAL
+ApprovedSourceProposer twice with one deterministic injected provider returning the
+SAME supplied source proposal, matching requested/observed model
+supplied-native-initial-lineage-model and outputTokens4096. Request reservations
+contain request-time model metadata; response identity belongs only to validated
+returns. Preserve exact initialRequestOrigin from first result, then create second
+return before baseline capture. Select first explicitly even though latest is2.
+The selected reference is the existing5key v1 DTO: version,projectId,sessionId,
+number,requestSha256. It hashes the canonical terminal metadata entry, never source
+content or latest-request position. Both entries must be returnedValidated and the
+actual first origin must pass production preparation/admission validation.
+
+Initial journals retain returned FILE-HASH MAPS, not full proposal text. Therefore
+report selectedReturnedSourceSha256/latestReturnedSourceSha256 are SHA256 of sorted
+key canonical JSON maps of each entry's returnedSha256 and must match. Setup also
+compares actual supplied proposal results directly while available. Those retained
+map digests do not prove equal summary text or reconstruct a proposal. Selected and
+latest terminal-entry hashes must be distinct, requestCount2, selectedNumber1 and
+latestNumber2. No new request, provider return or budget consumption occurs on retry
+or cold read. Request journal stays byte-identical after setup in this fixed case.
+
+Launch1 target run1, dispatch candidate-restart-$nonce-1:3. Before commit, journal,
+candidate, run1 execution/history/context/initial companion are absent and session
+remains revision0. Postcommit startup has one admission/revision1 and all7 updates:
+journal,candidate,session,execution1,history1,context1,companion1. Pause after actual
+transaction BEFORE its future returns; caller/startup return, receipt preparation,
+model transport, SDK and preview remain0. Host kills only its owned live handle
+after the bounded report. Before-commit pause must not report captured bytes as
+durable proof. Existing working bytes/request journal/unrelated records unchanged.
+
+Launch2 independently reopens the exact native database through production readers.
+Precommit remains absent/no dispatch; postcommit loads exact historical join for
+selected request1 despite identical later return2. This is read-only: no host, source
+inspection, proposal restoration/copy, verification, new record write or execution.
+In separate corruption control only calculated run1 initial companion is replaced
+with fixed opaque malformed bytes before reading; core session/run/history remains
+available and stronger initial lineage unavailable. Report the deliberate mutation
+separately; no fallback to request2, repair origin or raw hash-only proof.
+
+Optional explicit retry launch3 uses production SavedCandidateRecoveryController
+on run1, its original initial origin, actual current raw revision1 session and two
+real working/candidate source inspections. New consent starts run2 with new context/
+dispatch/companion and revision2 while retaining SAME selected request1 origin and
+unchanged journal. Hold its actual seven-record startup return again. Candidate
+record may be rewritten with identical bytes; count transaction members, not seven
+necessarily changed hashes. Initial run1 audit/history/context/companion remain
+byte-identical. Launch4 independently joins BOTH retained companions, validates
+their exact reference1, original request raw bytes and distinct immediate admission
+raw bytes/run/context/dispatch, and starts nothing. Legacy absent/conflicting or
+malformed optional origins grant no inferred initial origin or additional authority.
+
+Report23 has EXACT40keys (all hashes lowercase64hex or genuine absent null):
+version, mode, nonce, launch, boundary, corruptOptional, stage, projectId, sessionId, boardTaskId, requirementId, requestedModel, observedModel, selectedRequestNumber, latestRequestNumber, requestCount, requestReference, selectedRequestSha256, latestRequestSha256, selectedReturnedSourceSha256, latestReturnedSourceSha256, targetRunNumber, targetDispatchId, committedTargetRunNumber, committedTargetDispatchId, proofState, originalRequestSessionSha256, capturedAdmissionSessionSha256, durableAdmissionSessionSha256, contextSha256, companionSha256, sessionRevision, sessionDispatchCount, recordsBefore, recordsAfter, unrelatedBeforeSha256, unrelatedAfterSha256, workingSourceSha256, preparedSourceSha256, counters.
+
+Use fixed stage paused/read-only/retry-paused/retry-read-only. Target run1 for1/2,
+run2 for3/4 is planned intent. committedTargetRunNumber/DispatchId stay null until
+that exact durable run exists. proofState absent before commit, joined only after
+full production join, unavailable only in the fixed corruption control. Never
+conflate target IDs with a committed run or opaque hashes with a validated join.
+Original request-session digest comes from exact selected metadata and, whenever
+joined, decoded original raw companion session. Before-commit it must match actual
+raw selected session; corruption may retain its independently pinned metadata/baseline
+observation without claiming readable raw companion. CapturedAdmission hashes the
+actual raw entry session at startup, pinned across launches; on retry it equals the
+prior launch's actual retained session hash, never reconstructed typed JSON.
+DurableAdmission is null for absent/unavailable proof and only hashes validated
+stored admission bytes otherwise. Context/companion hashes are raw stored-slot
+observations; opaque corrupt companion hash may be present with unavailable proof.
+
+Fixed recordsBefore/After EXACT15aliases:
+working, requestJournal, journal, candidate, session, execution1, history1, context1, companion1, execution2, history2, context2, companion2, repairCompanion1, repairCompanion2.
+
+Map working to studio.generation.v1.$project, requestJournal to
+studio.sessionProposalRequests.v1.$project.$session, journal/candidate/session to
+current existing keys, executionN to studio.agentExecution.v1.candidate-$project-N,
+historyN to studio.agentTaskHistory.v1.$project.N, contextN to
+studio.candidateReopen.v1.$project.N, companionN to
+studio.candidateRequestLineage.v1.$project.N, opposite repairCompanionN to
+studio.candidateRepairLineage.v1.$project.N. Both opposite repair slots remain null.
+New run slots absent before startup; run2 slots absent through launch2. Hash the
+entire unrelated record map separately and pin it across launches. Cold record maps
+equal preceding after maps; control corruption changes only companion1 after its
+entry baseline. Source hashes are retained SETUP manifest metadata, not fresh cold
+source inspections. Host physical-source inspections, if added, must be labelled
+separately and cannot silently change those app counters.
+
+Counters EXACT16keys:
+setupProviderCalls, sourceSetupCalls, requestSetupCalls, hostCreations, recoverySourceInspections, startupCalls, startupRecordUpdates, startupReturns, hostEntries, receiptPreparations, liveModelTransportAttempts, sourceCopies, sdkAttempts, previewAttempts, unrelatedRecordWrites, corruptionControls.
+
+Launch1 setupProviderCalls2,requestSetupCalls2,sourceSetupCalls1,hostCreations1;
+launch3 hostCreations2/recoverySourceInspections2; cold host/inspection0. startupCalls1
+only1/3; startupRecordUpdates7 only postcommit1/3. corruptionControls1 only control2.
+All other counts0, including cold/startup-return/receipt/SDK/transport/copy/preview/
+unrelated-record writes. Supplied source setup is not production copy and two
+provider returns are not live inference. Report artifact writes are instrumentation,
+not native record writes. Counters record actual boundaries, not success labels.
+
+Existing8KiB report bound is the new-mode maximum too; demonstrate exact40key/15slot
+report fits before accepting it. Raw root/challenge/report/baseline files stay bounded,
+regular and canonical with existing no-symlink/private-root protections. Host pins
+nonce, mode, launch, scenario, exact source and immutable compiled bundle identities
+before/after every stage; validates each report before another launch. Only own
+Popen handles may be killed/reaped; no owner-started processes or saved PID actions.
+Retain final source/binary/report digests and refused/failed artifacts separately.
+Do not reuse native observations for another binary/revision or relabel compilation.
+
+Failure matrix: wrong modes/versions/identity/counter types, duplicates/unknowns,
+nonfinite values, oversize/nonregular/symlink files, incompatible CLI flags; selected
+reference swapped to latest despite equal returned maps, changed terminal metadata/
+request journal/raw original/admission/context/run, foreign project/task/session/
+dispatch/model, occupied initial/opposite repair slot, stale adapter and failed
+transaction. No partial cohort or caller/host effects on refusal. Optional corrupt
+first companion must fail independent dual-join even when newest remains valid;
+core history control stays separately available. Historical proof must not suddenly
+require current working approval/source or infer current execution permission.
+
+Required implementation evidence: strict portable host/parser/mode and Dart input/
+seam tests; actual owned Mac precommit2,postcommit/retry4 and corruption2 launches;
+legacy20/21/repair22 regressions on SAME final binary, all bounded scopes labelled.
+Then relevant full format/analyze/Flutter/productionweb/isolatedmacOS/product/inventory
+checks, exact fresh PR review, both required CI jobs and verified protected merge.
+Unchanged runtime evidence may be reused only under explicit policy; live/native
+results remain exact-source/binary observations. No fullCE01/platform400/task
+completion, model weights, source restoration, unrestricted execution or deployment
+is established by this metadata fixture contract. If production seam cannot be
+reached, keep native acceptance pending and fix the bounded fixture without weakening
+production guards.
