@@ -23081,3 +23081,109 @@ Logs/tmp/asg404-proposal-{new-tests,full,analyze,format,inventory,web,native,bro
 Publication/fresh exact review/requiredCI/verifiedmerge pending at this checkpoint.
 FullF20 and unavailable-platform#400 acceptance remain open; marketplace gate/F23-last,
 Stop/recovery, approval and last-working-output boundaries preserved.
+
+
+### F20 / #404 — verified PR808 and recovery prerequisite started, 20 November 2026
+
+PR808 merged1fb3dfb6eedbf819be1a13c442da43e9b8e61c29 after fresh exact review of
+remoted4f5b0bf2ca3afb94b50310f414452177d14195c against039535cf80f42be49948b717dfd9782d269169c6.
+CI44782558188 Python136448790862/Flutter136448790440 all required and poststeps SUCCESS;
+completed logs inspected. Plugin main/mergedPR/404OPEN and fetched merge/tree
+77069c5d2fa4a35c6dbc0115ed4e8ad2072772ca verified equal to tested contents. Local
+2570FlutterPASS/13opt-inskips, analyze/624format/web/isolatedMac/inventory9/product32,
+IABsynthetic and two additional exact-model review probes passed (captured-before
+16KiB/500line refusal; full-plan-text identity and complete600row coarse reconstruction).
+The PR attachment tool was attempted and refused because this chat exceeds100attachment
+identities; PR remains available at https://github.com/arpit-it/ASG/pull/808. No other
+attachments removed. Coordinator recorded merge/outcome; completed claim/integration
+released. Owner dirty main and owner processes preserved; owned8399server stopped.
+
+Immediately claimed404-imported-proposal-recovery from verifiedmain in the same
+registered worktree, solewriter, no independent ready disjoint task. Existing umbrella404
+covers this F20 retain-history/reopen gap; no new issue. Read-only bounded investigation
+owns only these three canonical documents, with disposable probes outside repo.
+Acceptance: inspect existing proposal/source-context/plan/storage APIs; verify exact
+historical reconstruction using full captured/reviewed-plan provenance, strict identity,
+BOM/CRLF/limits/tamper and changed-current-plan examples; specify coherent bounded save/
+reopen consent and conditional previous-working retention before implementation.
+
+Concrete gap: current proposal identity deliberately stores root/context/plan/file hashes
+and replacement, but no original source text or full reviewed plan; no decoder or proposal
+persistence exists. Approved ImportedPlan.context retains source provenance only while
+that saved plan survives; using a later plan would silently substitute historical inputs.
+Existing advisory record/store offers strict bounded decode and conditional publication,
+but cannot directly reconstruct a source diff or grant source/write/command authority.
+Started recovery probes with existing factories and supplied data only. Production code
+and storage semantics remain unchanged; fullF20/#400 pending, marketplace/F23 order intact.
+
+
+Recovery start evidence: disposable/tmp/asg404_imported_recovery_probe_test.dart and
+12 existing proposal/controller/native-store checks passed15total, log
+/tmp/asg404-recovery-start.log. Full historical plan plus proposal identity reconstructs
+exact BOM/CRLF source/replacement and hashes using existing public factories; changed
+before text with old hash, changed replacement with old identity, or later reviewed-plan
+substitution refuse. Original historical inputs remain reconstructable without source
+reads. The small supplied envelope fits256KiB; this is not a proven universal whole-record
+limit or a production decoder/storage implementation.
+
+A naive RequirementsBoard.fromJson reuse initially failed two reconstruction probes:
+existing captured default board revision0 is valid in source context, while the durable
+board decoder requires revision>=1. The prototype recognizes only byte-equivalent
+canonical empty default before using that durable decoder for other boards. It does not
+change durable-board versioning or treat arbitrary revision0 input as an empty board.
+Further nonempty-board/order/duplicate/whole-envelope limit and actual saved-record CAS/
+reopen/disposal cases remain for this claimed investigation. Future storage must retain
+full original reviewed-plan/context provenance, distinguish historical comparison from
+current approval, require explicit local source/replacement storage consent, strictly
+revalidate all identities and keep previous output on conflict/failure. No proposal save
+or executable export exists yet. Active investigation retained; no completion claim.
+
+
+### F20 / #404 — imported proposal recovery investigation findings, 20 November 2026
+
+Completed bounded local prerequisite investigation404-imported-proposal-recovery.
+Six disposable recovery probes plus existing pure proposal/controller/native-store/manual
+plan regressions passed46total, log/tmp/asg404-recovery-final.log. Supplied BOM/CRLF
+before/after identity reconstructs through existing observation/context/proposal factories
+when the complete original reviewed plan is retained. A nonempty saved requirements board
+at revision3 reconstructs without changing its revision or contents. Exact canonical empty
+revision0 must be handled separately; arbitrary revision0 records must not be coerced to
+empty or passed through durable-board revision rules. This investigation changes no app
+runtime, storage format, durable-board versioning or source permissions.
+
+Bounded temporary envelope probe refuses duplicate/escaped duplicate members, unknown
+fields, oversize>256KiB, tampered captured text with old hash, changed replacement with old
+identity and substituted later reviewed plan. Historical reconstruction uses original
+provenance, not current plan substitution; comparison remains source_verified=false.
+The small fixture fits256KiB; the future writer must refuse larger complete envelopes
+before publication rather than promise every preview can be saved or truncate data.
+Prototype is disposable feasibility evidence, not a production decoder or saved-proposal
+feature; production needs exhaustive field/type/member/UTF8/byte/hash checks and private
+errors, including malformed/deep/nested JSON, field/selection order and unsupportedschema.
+
+Actual owned native DB probe verifies the proposed new studio.importedSourceProposal.v1
+key is currently unsupported and refused before any update; prior approved plan bytes
+survive. A direct durable plan change behind the app cache then causes the existing
+zero-update conditional fence to refuse, and separately reopened DB retains that later
+plan and no proposal record. This proves the registration prerequisite and current fence,
+not a production proposal save/reopen or CAS implementation. Temporary DB closed/deleted;
+no owner source/model/toolchain/commands/stable app effects.
+
+Next bounded implementation after verified investigation merge: explicitly save/reopen
+one last working historical imported-source comparison with local-storage consent. Add a
+strict immutable <=256KiB record containing full canonical reviewed plan (including source
+context) and proposal identity; reconstruct exact source/diff and verify all hashes. Use a
+new dedicated versioned per-folder key registered in StudioDatabase with key/root identity
+validation and no change to existing keys/formats. Save only the exact current nonstale
+preview after consent and durable expected folder/requirements/current-plan/previous-record
+CAS; validate again at commit and stop late disposed work. Failed/conflicting/corrupt saves
+retain prior bytes, draft and previous comparison, with explicit unchanged retry when safe.
+Reopen must show historical provenance independently from current saved plan, never revive
+current approval, auto-preview/rebase/apply, read/write source, or invoke model/commands.
+Cover pure decode/tamper/bounds/BOM/CRLF/revision0+nonempty boards, actual DB reopen/CAS,
+failed-save/disposal races and narrow/IAB explicit save consent/reopen/failure recovery,
+then format/analyze/fullFlutter/web/isolatedMac/inventory/requiredCI/freshreview/verifiedmerge.
+
+Investigation publication and protected merge remain pending at this checkpoint. Reuse
+umbrella404; no additional issue/backlog. FullF20/CE01 and unavailable-platform400 remain
+pending; marketplace gate and F23-last ordering unchanged. No second ready disjoint writer.
