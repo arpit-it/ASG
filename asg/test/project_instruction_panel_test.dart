@@ -4,6 +4,13 @@ import 'package:asg/controllers/project_instruction_controller.dart';
 import 'package:asg/services/runtime_setup_store.dart';
 import 'package:asg/models/runtime_setup.dart';
 import 'package:asg/views/project_instruction_panel.dart';
+import 'package:asg/models/project_inspection.dart';
+import 'package:asg/models/requirements_board.dart';
+import 'package:asg/services/inspected_folder_store.dart';
+import 'package:asg/services/requirements_store.dart';
+import 'package:asg/services/imported_plan_store.dart';
+import 'package:asg/controllers/imported_plan_controller.dart';
+import 'package:asg/views/imported_plan_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -170,6 +177,223 @@ void main() {
       await tester.pumpWidget(const SizedBox());
       await tester.pump();
       expect(tester.takeException(), isNull);
+    },
+  );
+  testWidgets(
+    'captured documents need explicit local-save disclosure before manual plan persistence',
+    (tester) async {
+      final records = await instructionRecords(), host = InstructionHost();
+      await InspectedFolderStore(records).save('/selected');
+      final inspection = ProjectInspection(
+        root: '/selected',
+        packageName: 'fixture',
+        dartSdk: '^3.0.0',
+        runners: ['web'],
+      );
+      final c = ProjectInstructionController(
+        root: '/selected',
+        setupStore: RuntimeSetupStore(records),
+        host: host,
+      );
+      ImportedPlanController? plan;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Builder(
+            builder: (context) => Scaffold(
+              body: SingleChildScrollView(
+                child: ProjectInstructionPanel(
+                  root: '/selected',
+                  records: records,
+                  controller: c,
+                  inspection: inspection,
+                  onPlan: (captured) {
+                    plan = ImportedPlanController(
+                      '/selected',
+                      ImportedPlanStore(records, capturedDocuments: captured),
+                      inspection: inspection,
+                    );
+                    Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => ImportedPlanScreen(controller: plan!),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      final planAction = find.widgetWithText(
+        OutlinedButton,
+        'Plan with captured documents',
+      );
+      expect(tester.widget<OutlinedButton>(planAction).onPressed, isNull);
+      await tester.tap(find.text('Review selected documents'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Read selected files'));
+      await tester.pumpAndSettle();
+      final before = records.writes;
+      await tester.tap(planAction);
+      await tester.pumpAndSettle();
+      expect(
+        find.textContaining('Saving a draft stores the captured document text'),
+        findsOneWidget,
+      );
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+      expect(plan, isNull);
+      expect(records.writes, before);
+      await tester.tap(planAction);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Open manual plan'));
+      await tester.pumpAndSettle();
+      expect(find.text('Imported project plan'), findsOneWidget);
+      expect(plan!.capturedDocuments, isNotNull);
+      expect(records.writes, before);
+      await tester.scrollUntilVisible(
+        find.byType(TextField),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.enterText(
+        find.byType(TextField),
+        'Review these captured documents',
+      );
+      await tester.ensureVisible(find.text('Save draft'));
+      await tester.tap(find.text('Save draft'));
+      await tester.pumpAndSettle();
+      expect(plan!.error, isNull);
+      expect(plan!.plan!.context, plan!.capturedDocuments!.recordJson);
+      await tester.scrollUntilVisible(
+        find.text('Approve saved plan'),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.tap(find.text('Approve saved plan'));
+      await tester.pumpAndSettle();
+      expect(plan!.approved, true);
+      expect(host.reads, 1);
+      await tester.pumpWidget(const SizedBox());
+      await tester.pump();
+      expect(tester.takeException(), isNull);
+    },
+  );
+  testWidgets(
+    'changed requirements during planning confirmation prevent navigation and writes',
+    (tester) async {
+      final records = await instructionRecords(), host = InstructionHost();
+      await InspectedFolderStore(records).save('/selected');
+      final inspection = ProjectInspection(
+        root: '/selected',
+        packageName: 'fixture',
+        dartSdk: '^3.0.0',
+        runners: ['web'],
+      );
+      final c = ProjectInstructionController(
+        root: '/selected',
+        setupStore: RuntimeSetupStore(records),
+        host: host,
+      );
+      var admitted = 0;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: SingleChildScrollView(
+              child: ProjectInstructionPanel(
+                root: '/selected',
+                records: records,
+                controller: c,
+                inspection: inspection,
+                onPlan: (_) => admitted++,
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('Review selected documents'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Read selected files'));
+      await tester.pumpAndSettle();
+      await tester.tap(
+        find.widgetWithText(OutlinedButton, 'Plan with captured documents'),
+      );
+      await tester.pumpAndSettle();
+      final store = RequirementsStore(records),
+          id = InspectedFolderStore.workspaceId('/selected');
+      await store.save(id, store.load(id), RequirementsBoard());
+      final writes = records.writes;
+      await tester.tap(find.text('Open manual plan'));
+      await tester.pumpAndSettle();
+      expect(admitted, 0);
+      expect(records.writes, writes);
+      expect(c.error, contains('changed'));
+      expect(c.findings, isNotNull);
+      await tester.pumpWidget(const SizedBox());
+      await tester.pump();
+    },
+  );
+  testWidgets(
+    'captured-plan disclosure remains scrollable at320pixels and enlarged text',
+    (tester) async {
+      tester.view.physicalSize = const Size(320, 800);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final records = await instructionRecords(), host = InstructionHost();
+      await InspectedFolderStore(records).save('/selected');
+      final inspection = ProjectInspection(
+        root: '/selected',
+        packageName: 'fixture',
+        dartSdk: '^3.0.0',
+        runners: ['web'],
+      );
+      final c = ProjectInstructionController(
+        root: '/selected',
+        setupStore: RuntimeSetupStore(records),
+        host: host,
+      );
+      var admitted = 0;
+      await tester.pumpWidget(
+        MaterialApp(
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(context)
+                .copyWith(textScaler: const TextScaler.linear(2)),
+            child: child!,
+          ),
+          home: Scaffold(
+            body: SingleChildScrollView(
+              child: ProjectInstructionPanel(
+                root: '/selected',
+                records: records,
+                controller: c,
+                inspection: inspection,
+                onPlan: (_) => admitted++,
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.ensureVisible(find.text('Review selected documents'));
+      await tester.tap(find.text('Review selected documents'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Read selected files'));
+      await tester.pumpAndSettle();
+      final action = find.widgetWithText(
+        OutlinedButton,
+        'Plan with captured documents',
+      );
+      await tester.ensureVisible(action);
+      await tester.tap(action);
+      await tester.pumpAndSettle();
+      expect(find.text('Open manual plan'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+      expect(admitted, 0);
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox());
+      await tester.pump();
     },
   );
 }

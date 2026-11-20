@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 
 import '../controllers/project_instruction_controller.dart';
 import '../models/project_instruction_observation.dart';
+import '../models/project_inspection.dart';
+import '../models/imported_document_context.dart';
 import '../services/record_storage.dart';
 import '../services/runtime_setup_store.dart';
 
@@ -13,10 +15,14 @@ class ProjectInstructionPanel extends StatefulWidget {
     required this.root,
     required this.records,
     this.controller,
+    this.inspection,
+    this.onPlan,
   });
   final String root;
   final RecordStorage records;
   final ProjectInstructionController? controller;
+  final ProjectInspection? inspection;
+  final ValueChanged<ImportedDocumentContext>? onPlan;
   @override
   State<ProjectInstructionPanel> createState() =>
       _ProjectInstructionPanelState();
@@ -105,6 +111,59 @@ class _ProjectInstructionPanelState extends State<ProjectInstructionPanel> {
         result == true;
   }
 
+  Future<void> _plan() async {
+    final owner = _controller;
+    final inspection = widget.inspection;
+    if (inspection == null || widget.onPlan == null) return;
+    final prepared = owner.preparePlan(inspection);
+    if (prepared == null || !mounted || !identical(owner, _controller)) return;
+    final approved = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        scrollable: true,
+        title: const Text('Plan with captured documents'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SelectableText('Folder: ${inspection.root}'),
+            SelectableText(
+              'Selected files: ${prepared.documents.map((d) => d.path).join(', ')}',
+            ),
+            SelectableText('Context SHA-256: ${prepared.digest}'),
+            const SizedBox(height: 12),
+            const Text(
+              'Open a manual plan using these captured documents, metadata and current requirements. Saving a draft stores the captured document text and provenance in ASG application storage. No repository files are changed and nothing is sent to a model. Approval records review consent only; execution is unavailable. Captures are historical, not current disk verification.',
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Open manual plan'),
+          ),
+        ],
+      ),
+    );
+    if (!mounted ||
+        !identical(owner, _controller) ||
+        owner.isDisposed ||
+        approved != true) {
+      return;
+    }
+    final currentInspection = widget.inspection;
+    if (currentInspection == null ||
+        !owner.acceptsPreparedPlan(prepared, currentInspection)) {
+      return;
+    }
+    if (!mounted || !identical(owner, _controller) || owner.isDisposed) return;
+    widget.onPlan?.call(prepared);
+  }
+
   void _read() {
     final owner = _controller;
     owner.read([
@@ -172,6 +231,11 @@ class _ProjectInstructionPanelState extends State<ProjectInstructionPanel> {
                       : _read,
                   child: const Text('Review selected documents'),
                 ),
+                if (widget.inspection != null && widget.onPlan != null)
+                  OutlinedButton(
+                    onPressed: c.canPreparePlan ? _plan : null,
+                    child: const Text('Plan with captured documents'),
+                  ),
                 if (c.busy)
                   OutlinedButton(
                     onPressed: c.canStop ? c.cancel : null,

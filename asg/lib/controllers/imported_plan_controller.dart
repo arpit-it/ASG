@@ -2,6 +2,7 @@
 // Copyright 2026 Arpit Sinha
 
 import '../models/imported_plan.dart';
+import '../models/imported_document_context.dart';
 import '../models/project_inspection.dart';
 import '../services/imported_plan_store.dart';
 import 'base_controller.dart';
@@ -26,6 +27,7 @@ class ImportedPlanController extends BaseController {
            });
   final String root;
   final ImportedPlanStore store;
+  ImportedDocumentContext? get capturedDocuments => store.capturedDocuments;
   final Future<ProjectInspection> Function(String) _inspect;
   ImportedPlan? plan;
   String? error;
@@ -34,7 +36,8 @@ class ImportedPlanController extends BaseController {
   bool busy = false;
   bool get current {
     try {
-      return _inspection != null &&
+      return !isDisposed &&
+          _inspection != null &&
           _context != null &&
           plan != null &&
           plan!.context == store.context(_inspection!);
@@ -51,7 +54,9 @@ class ImportedPlanController extends BaseController {
     _context = null;
     update();
     try {
+      if (isDisposed) return;
       final inspection = await _inspect(root);
+      if (isDisposed) return;
       if (inspection.root != root) {
         throw StateError('Folder identity changed. Reopen the workspace.');
       }
@@ -82,6 +87,7 @@ class ImportedPlanController extends BaseController {
     error = null;
     update();
     try {
+      if (isDisposed) return;
       final inspection = await _inspect(root);
       if (isDisposed) return;
       if (inspection.root != root) {

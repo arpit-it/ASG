@@ -65,6 +65,7 @@ void main() {
       expect(a.digest, isNot(changed.digest));
     }
     expect(a.sourceVerified, false);
+    expect(() => a.documents.clear(), throwsUnsupportedError);
     expect(a.untrustedEvidence, contains('untrusted repository data'));
     expect(a.recordJson, isNot(contains('/private/interpreter')));
     expect(
@@ -250,4 +251,91 @@ void main() {
       expect(() => capture(observation: observation), throwsFormatException);
     }
   });
+  test('planning input comparison rejects changed or invalid app inputs without granting authority', () {
+    final context = capture();
+    ProjectInspection metadata({
+      String root = '/selected',
+      String sdk = '^3.0.0',
+    }) => ProjectInspection(
+      root: root,
+      packageName: 'fixture',
+      dartSdk: sdk,
+      runners: ['web'],
+    );
+    expect(
+      context.matchesPlanningInputs(metadata(), RequirementsBoard()),
+      true,
+    );
+    expect(
+      context.matchesPlanningInputs(
+        metadata(root: '/other'),
+        RequirementsBoard(),
+      ),
+      false,
+    );
+    expect(
+      context.matchesPlanningInputs(
+        metadata(sdk: '^3.1.0'),
+        RequirementsBoard(),
+      ),
+      false,
+    );
+    expect(
+      context.matchesPlanningInputs(metadata(), RequirementsBoard(revision: 1)),
+      false,
+    );
+    expect(
+      context.matchesPlanningInputs(
+        metadata(),
+        RequirementsBoard(revision: -1),
+      ),
+      false,
+    );
+    expect(context.sourceVerified, false);
+    expect(context.matches(capture()), true);
+  });
+  test(
+    'both selected documents retain order and immutable attributed text',
+    () {
+      final names = ['AGENTS.md', 'README.md'];
+      final observation = ProjectInstructionObservation.fromJson(
+        jsonEncode({
+          'version': 1,
+          'scope': 'project-instruction-documents',
+          'status': 'observed',
+          'reason': null,
+          'source_verified': false,
+          'selected_paths': names,
+          'documents': [
+            for (final name in names)
+              {
+                'path': name,
+                'byte_length': utf8.encode(name).length,
+                'sha256': sha256.convert(utf8.encode(name)).toString(),
+                'content_base64': base64Encode(utf8.encode(name)),
+              },
+          ],
+        }),
+      );
+      final context = ImportedDocumentContext.capture(
+        inspection: ProjectInspection(
+          root: '/selected',
+          packageName: 'fixture',
+          dartSdk: '^3.0.0',
+          runners: ['web'],
+        ),
+        requirements: RequirementsBoard(),
+        request: ProjectInstructionReadRequest(
+          root: '/selected',
+          python: '/python',
+          selectedPaths: names,
+        ),
+        observation: observation,
+      );
+      expect(context.documents.map((d) => d.path).toList(), names);
+      expect(context.documents.map((d) => d.text).toList(), names);
+      expect(() => context.documents.clear(), throwsUnsupportedError);
+      expect(context.matches(capture(text: 'AGENTS.md')), false);
+    },
+  );
 }

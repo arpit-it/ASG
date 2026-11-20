@@ -6,6 +6,10 @@ import 'dart:convert';
 import 'package:path/path.dart' as path;
 
 import '../models/project_instruction_observation.dart';
+import '../models/project_inspection.dart';
+import '../models/imported_document_context.dart';
+import '../services/inspected_folder_store.dart';
+import '../services/requirements_store.dart';
 import '../services/project_instruction_host.dart';
 import '../services/project_instruction_host_factory.dart';
 import '../services/runtime_setup_store.dart';
@@ -32,6 +36,7 @@ class ProjectInstructionController extends BaseController {
       _cleanupUncertain = false;
   String? _error;
   ProjectInstructionObservation? _findings;
+  ProjectInstructionReadRequest? _capturedRequest;
   bool get supported => _host.supported;
   bool get busy => _busy;
   bool get confirming => _confirming;
@@ -40,6 +45,54 @@ class ProjectInstructionController extends BaseController {
   bool get canStop => _busy && !_stopped;
   String? get error => _error;
   ProjectInstructionObservation? get findings => _findings;
+
+  bool get canPreparePlan =>
+      !isDisposed &&
+      !_busy &&
+      !_stale &&
+      !_cleanupUncertain &&
+      _findings != null &&
+      _capturedRequest != null;
+
+  /// Captures current app requirements; does not read files or save a plan.
+  ImportedDocumentContext? preparePlan(ProjectInspection inspection) {
+    if (!canPreparePlan) return null;
+    try {
+      if (inspection.root != root ||
+          !InspectedFolderStore(_setupStore.records).load().contains(root)) {
+        throw const FormatException();
+      }
+      final findings = _findings!;
+      final context = ImportedDocumentContext.capture(
+        inspection: inspection,
+        requirements: RequirementsStore(_setupStore.records)
+            .load(InspectedFolderStore.workspaceId(root)),
+        request: _capturedRequest!,
+        observation: findings,
+      );
+      _error = null;
+      update();
+      return canPreparePlan && identical(_findings, findings) ? context : null;
+    } catch (_) {
+      _error = 'Planning context could not be prepared. Save the folder reference and review current documents and requirements.';
+      update();
+      return null;
+    }
+  }
+
+  bool acceptsPreparedPlan(
+    ImportedDocumentContext expected,
+    ProjectInspection inspection,
+  ) {
+    final current = preparePlan(inspection);
+    if (current == null) return false;
+    if (!expected.matches(current)) {
+      _error = 'Captured planning inputs changed. Review documents and requirements again.';
+      update();
+      return false;
+    }
+    return canPreparePlan;
+  }
 
   void invalidateSelection() {
     if (isDisposed || _busy) return;
@@ -105,6 +158,7 @@ class ProjectInstructionController extends BaseController {
         throw const FormatException();
       }
       _findings = result;
+      _capturedRequest = request;
       _stale = false;
     } catch (_) {
       if (!isDisposed && !_stopped) _error = 'Documents could not be read. Check selected files and the configured absolute Python path.';

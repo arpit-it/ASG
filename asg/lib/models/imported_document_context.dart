@@ -14,11 +14,37 @@ final class ImportedDocumentContext {
     this.recordJson,
     this.untrustedEvidence,
     this.digest,
+    this._metadataJson,
+    this._requirementsJson,
+    this.documents,
   );
   static const byteLimit = 128 * 1024;
   final String recordJson, untrustedEvidence, digest;
+  final String _metadataJson, _requirementsJson;
+  final List<ProjectInstructionDocument> documents;
   bool get sourceVerified => false;
   bool matches(ImportedDocumentContext other) => recordJson == other.recordJson;
+
+  static Map<String, Object> _metadata(ProjectInspection inspection) => {
+    'root': inspection.root,
+    'package': inspection.packageName,
+    'dartSdk': inspection.dartSdk,
+    'runners': inspection.runners,
+  };
+
+  /// Compares captured app inputs only, never disk freshness or authorization.
+  bool matchesPlanningInputs(
+    ProjectInspection inspection,
+    RequirementsBoard requirements,
+  ) {
+    try {
+      requirements.validate();
+      return _metadataJson == jsonEncode(_metadata(inspection)) &&
+          _requirementsJson == jsonEncode(requirements.toJson());
+    } catch (_) {
+      return false;
+    }
+  }
 
   factory ImportedDocumentContext.capture({
     required ProjectInspection inspection,
@@ -37,17 +63,14 @@ final class ImportedDocumentContext {
         throw const FormatException();
       }
       requirements.validate();
+      final metadata = _metadata(inspection);
+      final requirementData = requirements.toJson();
       final record = jsonEncode({
         'version': 1,
         'scope': 'captured-imported-document-context',
         'source_verified': false,
-        'metadata': {
-          'root': inspection.root,
-          'package': inspection.packageName,
-          'dartSdk': inspection.dartSdk,
-          'runners': inspection.runners,
-        },
-        'requirements': requirements.toJson(),
+        'metadata': metadata,
+        'requirements': requirementData,
         'selected_paths': observation.selectedPaths,
         'documents': [
           for (final document in observation.documents)
@@ -70,6 +93,9 @@ final class ImportedDocumentContext {
         record,
         evidence,
         sha256.convert(utf8.encode(record)).toString(),
+        jsonEncode(metadata),
+        jsonEncode(requirementData),
+        List<ProjectInstructionDocument>.unmodifiable(observation.documents),
       );
     } catch (_) {
       throw const FormatException('Captured document context is invalid.');

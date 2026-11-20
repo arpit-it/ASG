@@ -18,10 +18,15 @@ class _ImportedPlanScreenState extends State<ImportedPlanScreen> {
   bool hydrated = false;
   bool edited = false;
   Future<void> load() async {
-    await controller.load();
-    if (mounted && controller.error == null && !hydrated && !edited) {
+    final owner = controller;
+    await owner.load();
+    if (mounted &&
+        identical(owner, controller) &&
+        owner.error == null &&
+        !hydrated &&
+        !edited) {
       hydrated = true;
-      text.text = controller.plan?.text ?? '';
+      text.text = owner.plan?.text ?? '';
     }
   }
 
@@ -29,6 +34,18 @@ class _ImportedPlanScreenState extends State<ImportedPlanScreen> {
   void initState() {
     super.initState();
     load();
+  }
+
+  @override
+  void didUpdateWidget(covariant ImportedPlanScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!identical(oldWidget.controller, controller)) {
+      oldWidget.controller.dispose();
+      hydrated = false;
+      edited = false;
+      text.clear();
+      load();
+    }
   }
 
   @override
@@ -52,6 +69,38 @@ class _ImportedPlanScreenState extends State<ImportedPlanScreen> {
               'Write a plan against saved requirements and the workspace’s captured metadata. Reload refreshes saved planning data only. Reinspect the folder explicitly to refresh disk metadata. Approval records review consent only; source editing and execution are unavailable and no project files are changed.',
             ),
             SelectableText('Folder: ${controller.root}'),
+            if (controller.capturedDocuments != null) ...[
+              const Text(
+                'This draft uses historical captured documents. Saving stores their text and provenance locally in ASG application records. No model sharing, repository writes or execution is authorized. Changed requirements invalidate this capture; return to review and prepare a new context.',
+              ),
+              SelectableText(
+                'Captured context SHA-256: ${controller.capturedDocuments!.digest}',
+              ),
+              ExpansionTile(
+                title: const Text('Review captured document text'),
+                children: [
+                  for (final document
+                      in controller.capturedDocuments!.documents)
+                    Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SelectableText(
+                            '${document.path} · ${document.byteLength} bytes',
+                          ),
+                          SelectableText('SHA-256: ${document.digest}'),
+                          SelectableText(
+                            document.text.isEmpty
+                                ? '[Empty document]'
+                                : document.text,
+                          ),
+                        ],
+                      ),
+                    ),
+                ],
+              ),
+            ],
             if (controller.busy) const LinearProgressIndicator(),
             if (controller.error != null) ...[
               SelectableText(controller.error!),
