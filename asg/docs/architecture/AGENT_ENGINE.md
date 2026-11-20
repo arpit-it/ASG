@@ -3672,3 +3672,35 @@ required remote CI jobs and fresh exact review remain mandatory. Next: publish t
 three-doc bounded contract, verify merge, release the investigation claim, and
 immediately claim/start404-native-repair-lineage-fixture. FullF20/CE01/umbrella404,
 #400 and all other unmet acceptance remain open.
+
+
+Fresh PR765 contract review correction — captured versus durable identity.
+The before-commit native probe already has a fully encoded run2 companion/context
+in its captured update map, while neither record exists durably. Therefore report22
+must not overload planned target IDs/hashes as proof that startup committed.
+Use separate targetRunNumber/targetDispatchId (fixed planned2 or3) and
+committedTargetRunNumber/committedTargetDispatchId (null until that exact target is
+found in the retained journal). A retained earlier failed run1 is not the target.
+capturedAdmissionSessionSha256 hashes the actual pre-admission raw session read for
+the reservation; it exists even before commit. durableAdmissionSessionSha256 is null
+before commit and comes only from the decoded stored companion after joint validation.
+The original request raw session hash remains a third distinct origin observation.
+Context/companion durable hashes are null when their fixed stored slots are absent;
+never substitute the captured pending-update bytes. On joined committed/read-only stages,
+all durable fields must match the exact stored joined proof and declared target.
+Report file/baseline artifact writes are fixture instrumentation; zero record writes
+means zero native database record updates in read-only stages. Keep their counters
+separate, and compare baseline artifacts against the previously captured host facts.
+The strengthened two native seam probes pass and explicitly distinguish captured
+companion bytes from absent durable context/companion. Log:
+/tmp/asg404-native-repair-admission-review-probe.log. This clarification adds no
+runtime/schema implementation; forward revised review/CI are mandatory. Previous
+head approval is not granted and previous-head CI cannot authorize the revised merge.
+
+For an explicitly corrupted optional companion, fixed raw record hashes may remain
+present as observations even though stronger proof is unavailable. Keep proof state
+unavailable and derived durable admission/relationship fields null unless the full
+join succeeds. A physical opaque record hash is neither absence nor validated
+lineage. Independent core target run/dispatch facts remain readable from the journal;
+never invent their stronger relation. Retain this corruption control separately from
+successful joined-stage comparisons and preserve unchanged core record identities.
