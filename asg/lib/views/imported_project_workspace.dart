@@ -9,6 +9,9 @@ import '../services/inspected_folder_store.dart';
 import '../services/record_storage.dart';
 import '../services/requirements_store.dart';
 import 'requirements_screen.dart';
+import 'imported_source_baseline_screen.dart';
+import '../controllers/imported_source_baseline_controller.dart';
+import '../services/imported_source_baseline_store.dart';
 import 'git_metadata_panel.dart';
 import 'project_instruction_panel.dart';
 import 'project_source_panel.dart';
@@ -32,6 +35,26 @@ class ImportedProjectWorkspace extends StatelessWidget {
 
   final ProjectInspection inspection;
   final RecordStorage records;
+
+  Widget _comparisonScreen(
+    BuildContext context,
+    ImportedSourceProposalController controller,
+  ) => ImportedSourceProposalScreen(
+    controller: controller,
+    onBaseline: (saved) {
+      if (!context.mounted) return;
+      Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (_) => ImportedSourceBaselineScreen(
+            controller: ImportedSourceBaselineController(
+              saved: saved,
+              store: ImportedSourceBaselineStore(records),
+            ),
+          ),
+        ),
+      );
+    },
+  );
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -88,8 +111,9 @@ class ImportedProjectWorkspace extends StatelessWidget {
         OutlinedButton.icon(
           onPressed: () => Navigator.of(context).push(
             MaterialPageRoute<void>(
-              builder: (_) => ImportedSourceProposalScreen(
-                controller: ImportedSourceProposalController.history(
+              builder: (_) => _comparisonScreen(
+                context,
+                ImportedSourceProposalController.history(
                   root: inspection.root,
                   store: ImportedSourceProposalStore(records),
                 ),
@@ -119,8 +143,9 @@ class ImportedProjectWorkspace extends StatelessWidget {
             if (!context.mounted) return;
             Navigator.of(context).push(
               MaterialPageRoute<void>(
-                builder: (_) => ImportedSourceProposalScreen(
-                  controller: ImportedSourceProposalController(
+                builder: (_) => _comparisonScreen(
+                  context,
+                  ImportedSourceProposalController(
                     inspection: inspection,
                     context: captured,
                     store: ImportedSourceProposalStore(records),

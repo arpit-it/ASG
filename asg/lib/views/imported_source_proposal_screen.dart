@@ -9,8 +9,13 @@ import '../models/imported_source_proposal_record.dart';
 import 'source_diff_view.dart';
 
 class ImportedSourceProposalScreen extends StatefulWidget {
-  const ImportedSourceProposalScreen({super.key, required this.controller});
+  const ImportedSourceProposalScreen({
+    super.key,
+    required this.controller,
+    this.onBaseline,
+  });
   final ImportedSourceProposalController controller;
+  final ValueChanged<ImportedSourceProposalRecord>? onBaseline;
   @override
   State<ImportedSourceProposalScreen> createState() =>
       _ImportedSourceProposalScreenState();
@@ -98,6 +103,11 @@ class _ImportedSourceProposalScreenState
     SelectableText('Historical file: ${saved.proposal.source.path}'),
     SelectableText('Saved comparison SHA-256: ${saved.digest}'),
     SourceDiffView(diff: saved.proposal.diff),
+    if (widget.onBaseline != null)
+      OutlinedButton(
+        onPressed: c.busy ? null : () => widget.onBaseline!(saved),
+        child: const Text('Recheck captured files'),
+      ),
   ];
 
   @override
