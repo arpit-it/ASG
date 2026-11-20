@@ -22713,3 +22713,88 @@ queue; no arbitrary repo edits/commands, automaticapproval, model request or sch
 migration during investigation. Reuse404, preservefullF20/deferred400/F23-last and
 marketplacegate; no independent disjoint readywriter admitted. No install/download/
 cloud/deployment/owner-sourcewrite effects. Claim held through finalreview/merge.
+
+
+### 2026-11-20 — source advisory merged; source-plan boundary investigation started
+
+PR804 fresh reviewed head486a65b583a0af42fda4d301bb692961198aac44 protected squashmerge
+3694350855f4204cd8fd00439f880b2adc900d3b verified by plugin main/mergedPR/issue404OPEN
+and fetched exacttreef24216ec0bf2e6da31c369e5dd6cfa8ddce31216 matching localb3fa952.
+Full20file remote/localdiff match; typedcontext/legacyidentity/sourceeligibility/
+sharingconsent/CAS/Stop/retry/privatefailures/previousanswer review no blockers;
+emptythreads unchangedhead/base/main. RequiredCI44768507157 Python136399534052/
+Flutter136399534481 every required/poststep SUCCESS; completedlogs inspected new
+source responseID/failedsave/nativeDBreopen plus legacy/fullFlutter/browserstorage/
+transport/staticHTML/web/independentgeneratedFlutter/Python suites. Local60focused/
+full2547PASS13explicit skips/analyze/616fileformat/web/isolatedMac/inventory9/product32
+and IABsynthetic consent/cancel/save/reopen/failedsave retry PASS as recorded above.
+Explicit captured-source advisory boundedfeature delivered; owner runtime /health and
+/v1/models unavailable at15:51:16UTC, zero liveinference; nativebuild is not nativeUI.
+FullF20/liveQwen/deferred400 remainOPEN. Coordinator merge/outcome recorded,
+integration and completedclaim released; ownerdata/processes/stableapp preserved.
+
+Immediately claimed404-source-plan-boundary from verifiedmain in registered direct
+issueworktree, solewriter, threecanonicaldoc scope. Inspected actual ImportedPlan,
+ImportedPlanController/Store and captured source. Production store/controller still
+accept only ImportedDocumentContext; existing source-advisory answer cannot create
+manual plan or approval. Plan context is an opaque serialized string; source-backed
+planning needs explicit typed context admission and source-specific storage consent,
+while preserving legacy record formats and current-input approval comparison.
+
+Started two disposable pure/record/controller probes plus existing imported-plan
+regressions:24PASS, including actual native DB reopen/stale durable CAS from existing
+suite. ImportedPlan roundtrip can retain a synthetic source-context string and raw
+approved flag, but current legacy metadata plan controller correctly reports current
+false/approvedfalse and preserves the mismatched record withoutwrites. This is not a
+production sourceplan route or execution credential. /tmp/asg404_source_plan_probe_test.dart
+and /tmp/asg404-source-plan-start.log retain probe/evidence. No automatic approval,
+source edits, commands, schema mutation, model requests, installs/downloads/cloud/
+deployment effects. Continue source/current-input/legacy compatibility boundaries,
+then record one bounded source-backed manual-plan implementation in REQUIREMENTS.
+No independent disjoint readywriter; marketplacegate/F23-last unchanged. Activeclaim
+retained for continuation.
+
+
+### 20 November 2026 — source-backed manual-plan boundary findings
+
+Completed bounded local investigation404-source-plan-boundary. Five temporary
+source/record/controller probes plus existing imported-plan suite:27PASS, including
+actual native DB reopen and durable stale-inputCAS. Log/tmp/asg404-source-plan-final.log;
+probe/tmp/asg404_source_plan_probe_test.dart. No production plan/store/controller/UI
+or schema changed. Existing record shape{text,context,approved,recordedAt} roundtrips
+exact source-context JSON/BOM/CRLF; source root/byte changes alter full contextstring.
+The raw approved flag is not current approval: both metadata-only and captured-
+document controllers preserve a mismatched synthetic sourceplan withoutwrites and
+report currentfalse/approvedfalse. Legacy capturedDocuments constructor rejects a
+source object by type. No source->document relabelling or automatic approval route.
+
+Inspected store save and production conditional commits: draft must already match
+current exact text/context before approval; saved-record optimistic comparison and
+full context/requirements/root reads participate in durableCAS. Existing controller
+current/approved recalculate context compatibility; source mode must preserve those
+guards, lastworking draft and failure behavior. UI currently names capturedDocuments
+and explicitly discloses local captured-text storage, so adding a source type only
+at the record layer would omit necessary consent/review semantics.
+
+Next eligible bounded F20/#404 implementation after this investigation verifiedmerge:
+explicit source-backed user-authored manual plans. Add optional typed capturedSource
+admission alongside legacy capturedDocuments in ImportedPlanStore; reject ambiguous
+simultaneous contexts. Preserve old constructor/record/key/metadata/document behavior;
+select exact sourcecontext only when root/metadata/validatedrequirements match. Copy
+selected typed context into transactional save snapshots, retain draft-before-approve,
+current-input/durableCAS/record-staleness and inactiveapproval on context mismatch.
+Controller and view expose source review/provenance without rereading files. Source
+panel opens manualplan only from fresh eligible capture and a separate explicit
+localstorage confirmation disclosing captured source text/provenance persistence;
+recheck source capture/root/requirements/metadata after consent before navigation.
+No advisory answer imports, model call, automaticplan/approval, sourcewrite/command/
+execution authority. Empty/changed/corrupt/stale/disposed/cleanup-uncertain or cancelled
+inputs retain oldcapture/plan and refuse. Relevant legacy/source controller/store/UI,
+actual nativeDB reopen/staleCAS and supplied-data IAB consent/cancel/storage/reopen
+regressions; fullformat/analyze/tests/web/isolatedMac/requiredCI/freshreview/merge.
+
+This is the sole selected next task under existing404; no new issue/speculative
+backlog or independent disjoint readywriter. FullF20/liveQwen/deferred400 acceptance
+remainsOPEN; marketplacegate/F23-last preserved. No owner-source/model/runtime/
+install/download/stableapp/cloud/deployment effect. RequiredremoteCI/freshreview/
+verifiedmerge gate completion of this investigation; claim retained through review.
