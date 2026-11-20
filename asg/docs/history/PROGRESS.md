@@ -22055,3 +22055,126 @@ review-{full,analyze,inventory,format}.log. All six production runtime hashes st
 match the verified web/isolatedMac/native-flow/IAB receipt; no runtime changed after those
 checks. Local diff/whitespace review found no additional blocking issue. Publication and
 fresh exact remote PR review/requiredCI/verifiedmerge remain pending.
+
+
+### F20 / #404 — verified baseline recheck and snapshot admission investigation started, 20 November 2026 UTC
+
+PR812 verified merged a49895b562f5e570f3e2d1dc2596e022902f3310; exact tested/reviewed
+tree bcb1fa5c95d9d8493bfaa1a61c36d974b31b3f07. Fresh review remote7ae41870e54d8d881ecdc07ca6b706bcd35f0354
+against4e091c86e50247af0d3d07bd9dba19c3622f359a matched remote/localdiff; no blocking
+findings or review threads. Required CI44802431582 Python136517726157/Flutter136517726031
+all required and poststeps SUCCESS; completed logs inspected. Pluginmain/mergedPR/404OPEN
+and fetchedmain/tree verified. Coordinator recorded checks/review/merge/outcome, released
+integration and completed claim. Full2613FlutterPASS13existing skips, analyze635format/
+inventory9/product32, web/isolatedMac/nativeDB-reader/IAB evidence remains explicitly
+scoped. No owner-source writes/model requests/nativeGUI/install/deployment claim. Owner
+dirty checkout and processes preserved; attempted PR attachment hit existing100item limit,
+so PR remains accessible by its normal URL without deleting unrelated attachments.
+
+Immediately claimed404-imported-snapshot-admission from verifiedmain in same registered
+worktree, solewriter; no independent eligible disjoint second task. Existing404umbrella
+covers this concrete F20 prerequisite, no new issue. Bounded investigation owns only these
+three canonical documents, with disposable Mac probes outside repository. Acceptance:
+trace imported saved context/proposal/baseline versus generated/self snapshot admission;
+prove selected-file match does not establish complete-repository freshness, and partial
+selected manifest cannot be substituted into generic candidate preparation. Check a full
+synthetic-manifest control into a new owned destination with original preserved; compare
+imported path/empty-content/byte semantics against old fixed contracts. Determine exact
+next candidate-copy prerequisites without treating history/current plan/byte equality as
+write or command consent. No owner repository scans/copies, hooks/submodules, source
+writes, model requests or project execution. FullF20/CE01 and unavailable-platform400
+remain open; marketplacegate/F23-last unchanged.
+
+Initial read-only code trace: imported baseline reads at most four selected lib/test Dart
+files and has no whole-tree manifest. source_candidate_native._capture visits its input
+project and rejects unrecorded source entries; GeneratedProject.sources is a closed
+manifest belonging to a generated snapshot. The self-candidate helper instead reads a
+selected immutable Git commit tree with distinct mode/path/blob/destination/Git-metadata
+contracts; neither contract is imported write authorization or dirty/untracked capture.
+A future imported candidate needs separate bounded source-snapshot selection/provenance,
+explicit copy/write consent, current app-input/plan binding and owned destination/cleanup
+policy before any runnable-project or branch/edit/test acceptance. A successful selected
+recheck cannot supply missing unselected files or prove a later race-free write.
+
+
+Snapshot admission start: three disposable characterization probes plus10existing generic
+candidate regressions and5baseline model tests passed18total, log
+/tmp/asg404-snapshot-admission-byte-start.log; earlier two probes+10regressions passed12,
+/tmp/asg404-snapshot-admission-start.log. Actual packaged Mac reads demonstrated unchanged
+selected main/peer can yield a matched unverified baseline while an unselected source file
+changes. Passing only selected hashes to generic prepareCandidateFiles refused unrecorded
+entries before creating output. A complete four-file synthetic manifest control copied
+replacement and unchanged/changed peer contents to a newly owned destination, preserved
+original bytes and removed all owned fixture roots afterward. This exercises generic helper
+behavior under a fixture callback, not real imported copy/write authorization or an app UI.
+
+Additional byte/path findings: imported hyphen/dot path policy and empty replacement
+cannot silently map to older SourceEditProposal validation. A full generated manifest
+with a BOM-prefixed target and exact original BOM bytes refused before output because
+the generic candidate before-text decoder strips BOM. Imported observation/proposal
+semantics preserve those bytes; direct wrapping is incompatible. Original BOM/café/CRLF
+bytes and destination emptiness were asserted. This characterization adds no production
+change or widening of generated/self contracts. No arbitrary commands/builds, model or
+owner-source accesses occurred. Remaining investigation: bind imported root/readset to
+an explicitly selected complete snapshot/commit and characterize dirty/untracked/conflict
+inputs and destination/provenance admission before choosing a copy workflow. No current
+approval, full-repo freshness, source apply or runnable imported project is established.
+
+Coordinator report for completed baseline workflow: recorded start-to-merge2947.3seconds,
+paired CI observation wait503.8seconds, zero recorded review rework and one verified user
+outcome. These are cooperative/manual segment observations, not provider CI timing or
+whole-product throughput. Zero recorded escaped-defect observations does not prove none
+exist; actual escaped defects remain unknown. Next investigation claim retained for
+continuation; fullF20/CE01 and unavailable-platform400 remain open.
+
+
+### F20 / #404 — imported snapshot admission investigation findings, 20 November 2026 UTC
+
+Completed bounded local admission investigation. Four new disposable Git/reader/snapshot
+probes passed, log/tmp/asg404-snapshot-git-admission.log. Existing immutable snapshot44,
+command-free HEAD metadata33 and selected-source31 Python regressions passed separately
+(logs/tmp/asg404-snapshot-existing-{candidate,git,source}.log). Prior18Flutter checks covered
+selected-source matching/partial-manifest refusal/full synthetic copy control and imported
+path/empty/BOM compatibility. These are prerequisite observations, not a new app copy flow.
+
+Actual newly owned Git fixture outcomes: dirty selected BOM/café/CRLF working bytes can
+be captured while HEAD still declares a different immutable commit blob; an untracked Dart
+file remains in the original and is absent from the commit snapshot. A dirty unselected
+file leaves the two selected captures identical but the commit copy contains the earlier
+committed unselected bytes. An explicitly constructed unmerged three-stage index reports
+UU through bounded fixture Git status, while command-free HEAD metadata still says
+working_tree/ahead_behind/conflict unknown. The trusted self snapshot helper exports the
+chosen commit regardless of that conflicted index, preserves index/original bytes, and
+produces no .git directory. This is correct immutable-commit behavior, not permission to
+discard dirty work or represent that copy as current working content. A synthetic Git-link
+entry is refused before output; no submodule operation, hooks, filter or remote command
+was run. All fixture roots removed. No owner repository was read/copied by these probes.
+
+The generic generated helper requires a complete generated manifest and cannot serve
+as imported admission: selected files omit other repository content, imported hyphen/dot
+paths and empty replacement are incompatible with older fixed proposal validation, and
+BOM-prefixed original text is not preserved by its before-text comparison. Keep those
+existing contract limits; do not silently broaden them or relabel saved context as a
+GeneratedProject. A selected working baseline match grants neither whole-tree provenance
+nor current plan/write/execute permission. HEAD declarations cannot certify dirty/conflict
+state, object existence or selected commit contents. Unavailable-host acceptance400 and
+fullF20/CE01 remain open; marketplacegate/F23-last unchanged.
+
+Next coherent prerequisite implementation after this investigation's reviewed verified
+merge: a standalone bounded, read-only immutable-commit source observer, distinct from
+working-file reader and self-candidate execution transport. Explicit canonical repository
+root, full selected commit ID and1–4 selected lib/test Dart paths; verify actual commit/tree
+objects, bound complete tree metadata, refuse unsafe/symlink/Git-link/ambiguous entries,
+and return exact selected blob bytes/hash/count plus commit/tree/manifest identities.
+Preserve BOM/CRLF/multibyte bytes and distinguish selected working observations from
+committed content. Do not execute filters/hooks/submodules, fetch/network, project code,
+modify index/refs/files or allocate a candidate. Use fixed argument-vector Git object reads
+with scrubbed configuration/environment, deadlines/output bounds and owned cleanup;
+initial repository-layout subset must be explicit and fail closed. Cover dirty/untracked/
+conflict invariance, missing/wrong objects/paths, limits/configuration hazards/Stop and
+actual owned Mac fixtures. App UI/consent/current-plan binding, full repository copy,
+branching, runnable adapter checks and model sharing remain later separate admissions.
+This standalone observer does not claim an imported app action or certify working state.
+
+Investigation final publication, exact fresh review, all requiredCI and verified merge
+remain pending. Existing #404 covers the next prerequisite; no new issue or backlog.
