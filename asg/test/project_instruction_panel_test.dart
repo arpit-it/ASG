@@ -11,6 +11,12 @@ import 'package:asg/services/requirements_store.dart';
 import 'package:asg/services/imported_plan_store.dart';
 import 'package:asg/controllers/imported_plan_controller.dart';
 import 'package:asg/views/imported_plan_screen.dart';
+import 'package:asg/controllers/imported_advisory_controller.dart';
+import 'package:asg/services/imported_advisory_store.dart';
+import 'package:asg/views/imported_advisory_screen.dart';
+
+import 'imported_advisory_test.dart' show AdvisoryProvider;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -394,6 +400,89 @@ void main() {
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox());
       await tester.pump();
+    },
+  );
+  testWidgets(
+    'document advisory entry still requires separate sharing consent before provider dispatch',
+    (tester) async {
+      final records = await instructionRecords(),
+          host = InstructionHost(),
+          provider = AdvisoryProvider();
+      await InspectedFolderStore(records).save('/selected');
+      final inspection = ProjectInspection(
+        root: '/selected',
+        packageName: 'fixture',
+        dartSdk: '^3.0.0',
+        runners: ['web'],
+      );
+      final owner = ProjectInstructionController(
+        root: '/selected',
+        setupStore: RuntimeSetupStore(records),
+        host: host,
+      );
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Builder(
+            builder: (context) => Scaffold(
+              body: SingleChildScrollView(
+                child: ProjectInstructionPanel(
+                  root: '/selected',
+                  records: records,
+                  controller: owner,
+                  inspection: inspection,
+                  onAdvisory: (captured) => Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => ImportedAdvisoryScreen(
+                        controller: ImportedAdvisoryController(
+                          inspection: inspection,
+                          context: captured,
+                          store: ImportedAdvisoryStore(records),
+                          createProvider: (_) => provider,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      final action = find.widgetWithText(
+        OutlinedButton,
+        'Ask about captured documents',
+      );
+      expect(tester.widget<OutlinedButton>(action).onPressed, isNull);
+      await tester.tap(find.text('Review selected documents'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Read selected files'));
+      await tester.pumpAndSettle();
+      final writes = records.writes;
+      await tester.tap(action);
+      await tester.pumpAndSettle();
+      expect(provider.calls, 0);
+      expect(records.writes, writes);
+      await tester.scrollUntilVisible(
+        find.byType(TextField),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.enterText(find.byType(TextField), 'Explain only');
+      await tester.ensureVisible(find.text('Review and send question'));
+      await tester.tap(find.text('Review and send question'));
+      await tester.pumpAndSettle();
+      expect(
+        find.text('Send captured context to local model?'),
+        findsOneWidget,
+      );
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+      expect(provider.calls, 0);
+      expect(records.writes, writes);
+      expect(host.reads, 1);
+      await tester.pumpWidget(const SizedBox());
+      await tester.pump();
+      expect(tester.takeException(), isNull);
     },
   );
 }
