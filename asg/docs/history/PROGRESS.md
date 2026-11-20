@@ -20843,3 +20843,98 @@ preserved and no second independent ready task admitted. Next eligible outcome
 after verifiedmerge is explicit in-app selected-source capture/review with the
 same typed readset, identity, consent and owned helper lifecycle; model-sharing
 integration remains a separate validated boundary.
+
+
+### 2026-11-20 — contained source helper merged; app source review started
+
+PR800 reviewed head5ce5cd2b53fe836ece45a0261ecfc52ca7aeeef0 protected squashmerge
+6c0de187b3fa7fc7b01d9db937f3133c6b45311b verified by plugin main/mergedPR/issue404OPEN
+and fetched exact tree6c6da47de89ed242d592affb22f86ad19fac08dd matching local6f68e8b.
+Fresh full remote/localdiff/source/fixture/workflow review had no blockers; threads
+empty. RequiredCI44755977765 Python136355684638/Flutter136355684071 and every
+required/poststep SUCCESS, including browser/transport, normalweb and independent
+generated-project checks. New required source suite ran31active Linux/Python3.12
+tests PASS, distinct from31actualMac/POSIX tests. Local full2470PASS13skips,
+analysis/601-fileformat/web/document25/metadata29/product32/inventory9/coordinator20
+PASS. Bounded standalone helper Done; not app source selection, model sharing,
+nativeUI or fullF20. Coordinator merge/outcome recorded, integration/claim released;
+owner dirtymain/processes/stableapp preserved, full404/liveQwen/deferred400 open.
+
+Immediately claimed404-selected-source-review from verifiedmain, solewriter in
+registered issueworktree. Coherent outcome: explicit source-path form and exact
+root/existingPython/readset confirmation, trusted packaged helper execution with
+deadline/Stop/cleanup ownership, literal source capture/provenance/stale/error UI;
+no source writes, text persistence, model sharing or plan/command authority. Scope
+new pure typed model, host interface/factory/native/stub, controller/panel and
+workspace entry/asset, relevant model/controller/host/widget tests and shared docs/
+inventory. Preserve current instruction/plan/advisory formats. Unsupported platforms
+remain explicit; actual Mac helper/injected lifecycle regressions, IAB supplied-data
+UI, web/isolatedMac build/fullrequiredchecks/freshreview/verifiedmerge remain gates.
+No second independent ready task; marketplace/F23-last and deferred400 unchanged.
+
+Started pure ProjectSourceObservation/ProjectSourceFile/ProjectSourceReadRequest.
+Strict separate project-source-files envelope/status/reason/readset/file-key parser,
+128KiB whole response,32KiB/file64KiB aggregate, canonical base64/length/SHA256,
+strict UTF8/noNUL and immutable selected-path/file/byte snapshots. Preserves BOM,
+CRLF and Unicode byte distinctions; source_verified=false never authenticates a
+helper capture or current disk. Literal ASCII lib/test Dart selection mirrors the
+verified helper limits, rejects duplicate/case aliases, traversal/hidden/control/
+non-ASCII/surrogate/ambiguous paths and overflow. Frozen request inputs are data,
+not read consent; host-side root/Python validation and explicit user confirmation
+are still pending. No process, storage, provider or UI call site added by this start.
+
+Initial8domain+MVCarchitecture1 PASS: exact attributed bytes/order/immutability,
+selection boundaries/refusals/frozen request, strict envelope/legacy-scope/duplicate
+and invalid fields, byte/hash/base64/path/text mismatch, exact per-file/aggregate/
+whole-response ceilings and typed refusals with no partial source. Two initial
+brace-style infos corrected manually, then two-file analysis clean and ninechecks
+rerunPASS. Canonical inventory regenerated;9inventorychecks PASS. Logs
+/tmp/asg404-selected-source-model-start-final.log,
+/tmp/asg404-selected-source-model-start-analyze-final.log and
+/tmp/asg404-selected-source-model-start-inventory.log. Host/controller/view/assets,
+actual Mac helper lifecycle/UI/build/fullCI/review/merge remain pending within the
+same task. No owner-source read/model request, runtime/install/download/cloud/
+deployment effect; claim remainsactive for continuation and fullF20 staysOPEN.
+
+
+### 20 November 2026 — F20/#404 selected-source review implementation
+
+Continued claimed404-selected-source-review. Added separate MVC controller,
+conditional host and selected-source panel to the imported workspace. Explicit
+confirmation shows exact root/existing Python/readset and4file/32KiBfile/64KiBtotal
+limits. Literal ASCII lib/test .dart paths only; no scan. Changes to Python while
+consent is open prevent dispatch. Replaced/disposed workspace and Stop drop late
+results; previous captures remain visible stale after failure/selection changes.
+No source persistence, model transfer, plan approval or command authority.
+
+Native Mac host runs only packaged project_source_files.py using existing outside-
+project Python -I -S -B/fixed argv/private owned temporary directory. Bounded
+stdout/stderr/deadline and owned-handle kill/reap include late startup; uncertain
+cleanup blocks overlapping reads. Strict parser/readset and exit status agree:
+0observed/2typed refusal; an exit2successful capture refuses. Unsupported hosts
+remain explicit. Existing document/advisory/plan formats untouched; one helper
+asset added, no dependency/lockfile change.
+
+Validation: initial45model/controller/host/architecture plus4widget checks PASS;
+finalhost26 and finalwidget5 PASS, including actual Mac packaged helper against
+owned disposable lib/main.dart, exact32KiB response bytes, private failures,
+late process/temp startup, Stop/disposal, interpreter retarget, uncertain cleanup,
+wrongreadset, confirmation/workspace replacement and320px/textscale2. FullFlutter
+2518PASS/13explicit skips before two additional test-only cases; runtime code
+unchanged thereafter. Full analysis clean;612Dartfiles formatted; mainweb build
+PASS. SourcePython31/inventory9/product32/coordinator20 PASS. Product suite first
+attempt used a nonexistent filename; corrected to test_product_acceptance.py and
+32PASS. Narrowwidget initial ambiguous scroll finder corrected to explicit outer
+scrollable;5PASS. No product change was needed for this fixture failure.
+
+Isolated macOS build PASS: bundle com.arsinha.asg.sourcereviewvalidation, private
+DerivedData, exact packaged sourcehelper bytes verified. Build is not native UI
+launch evidence. Separate supplied-data IAB fixture verified explicit Cancel,
+confirmation/capture, literal untrusted link text/hash/bytes and stale warning;
+no real repository reads/model requests/storage. Owned8396preview server stopped.
+Logs /tmp/asg404-source-review-{analyze,full,web,native,format,reader,inventory,
+product,coordinator-test}.log, /tmp/asg404-source-host-final.log,
+/tmp/asg404-source-panel-final.log and /tmp/asg404-source-browser-build.log.
+Required remote CI, exact fresh PR review and verified merge pending. FullF20,
+source-context sharing/chat integration and unavailable-platform400 acceptance
+remain open. Marketplace gate/F23-last preserved. Claim retained through review.
