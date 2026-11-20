@@ -9,6 +9,7 @@ import 'package:http/http.dart' as http;
 import '../models/local_model_config.dart';
 import '../models/generation_event.dart';
 import '../models/model_runtime_metrics.dart';
+import '../models/structured_proposal_json.dart';
 import 'model_provider.dart';
 
 // Only locally authored guidance may cross the transport error boundary.
@@ -208,7 +209,7 @@ class LocalModelProvider
       final body = await http.ByteStream(bodyStream)
           .bytesToString()
           .timeout(idleTimeout);
-      final data = jsonDecode(body) as Map<String, dynamic>;
+      final data = _decodeResponse(body);
       _validateResponseModel(data);
       final choice = (data['choices'] as List).first as Map;
       if (choice['finish_reason'] == 'length') {
@@ -256,7 +257,7 @@ class LocalModelProvider
         _transportSucceeded = true;
         return;
       }
-      final data = jsonDecode(payload) as Map<String, dynamic>;
+      final data = _decodeResponse(payload);
       if (name == 'error' || data.containsKey('error')) {
         if (data['code'] == 'request_token_limit') {
           throw ModelRequestLimitFailure(
@@ -305,6 +306,14 @@ class LocalModelProvider
         'The model stream ended before completion. Your application was not changed.',
       );
     }
+  }
+
+  Map<String, dynamic> _decodeResponse(String raw) {
+    final data = jsonDecode(raw) as Map<String, dynamic>;
+    // The scanner requires validated JSON and decodes escaped member names.
+    // Refuse ambiguity before accepting response identity, text or metrics.
+    rejectDuplicateJsonMembers(raw);
+    return data;
   }
 
   Stream<List<int>> _boundedResponse(Stream<List<int>> source) {

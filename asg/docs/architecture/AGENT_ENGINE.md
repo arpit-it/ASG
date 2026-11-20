@@ -5025,3 +5025,84 @@ a pre-existing duplicate-member validation defect, not an observed owner inciden
 or the cause of the absent8765listener. Source runtime remains unavailable and
 owner inference acceptance PENDING; generation0. Required remote CI and fresh
 exact-revision review/verified protected merge remain pending. Full404 stays OPEN.
+
+
+### 2026-11-20 — #404 readiness validation merged; response identity investigation started
+
+PR781 protected expected-head mergea81f925e8cb43eb6cdc53204d4c0addd824666a9
+verified remote main/mergedPR/fetched treee3499e75e51f102d764788f2da5d397732bd0ccd.
+Fresh review c12beb94336a765069a25d763a46ed6bb3ab9fdd/basece89dde3 found no blocker;
+threads empty. Required CI44688550614 Python136128583776/Flutter136128584150 every
+mandatory/post step SUCCESS; new cases activeLinuxPASS. Local2255PASS13explicit
+skips/format560/analyze/web/isolatedMac/product32/inventory9. Coordinator merged/
+outcome recorded, integration and claim released. Bounded readiness fix Done,
+full404/liveQwen/#400 OPEN. No owner runtime change/inference/stable replacement.
+Missing8765listener remains separate prerequisite; metadata is not loaded evidence.
+
+Immediately claimed404-response-identity-ambiguity-investigation, sole docs writer
+in registered direct issue worktree. Existing404/F20 covers response identity;
+no new issue. Inspected LocalModel JSON compatibility/SSE frame jsonDecode before
+model validation; duplicate model keys may hide earlier contradictory ID. PR781
+excluded this boundary. Acceptance: mocked plain/escaped duplicate model cases
+for both transports plus valid unique controls, exact-source evidence and bounded
+follow-on remedy or no-gap result. No production edit/model/ownernetwork/nativeapp
+execution. Byte/deadline/cancellation/privacy/lastworking guarantees retained.
+Future publication requires checks/freshreview/protectedmerge. Marketplace gate/
+F23-last preserved. Private fixtures are investigation evidence only.
+
+
+#404 response identity investigation started on mergedsourcea81f925e. Four
+private negative fixtures EXPECTEDFAIL: JSON and SSE each accept plain or escaped
+duplicate model keys (foreign first, selected last), emitting Ready rather than
+rejecting. Two valid unique controls PASS and retain completedResponseModel=selected.
+MockClient only; no network/ownerinference. Logs /tmp/asg404-response-identity-
+ambiguity-probe.log and unique-control.log; current production remains unchanged.
+Concrete gap confirmed beyond PR781: reject ambiguous duplicate JSON members
+before response-model evidence/content/metrics publication in JSON and SSE paths,
+with permanent escaped/nested/malformed/privacy/cancellation controls. Do not
+relax token/output/byte/deadline policy or older optional-ID compatibility.
+This investigation's findings/contract await reviewable publication; implementation
+needs its own claimed scope, required checks/freshreview/verifiedmerge. Existing
+404 remains umbrella; no owner incident/introduction revision inferred.
+
+
+### #404 bounded response metadata validation admitted
+
+Task404-response-metadata-validation combines the stopped clean investigation
+handoff4817a0f with its concrete remedy under existing404/F20. Dependency is
+verified PR781 mergea81f925e; no dependency on an unmerged separate feature.
+Sole writer owns three docs, local_model.dart, new regression test and inventory.
+Acceptance: duplicate conflicting/identical/escaped/nested response members fail
+before interpreting model/text/finish/metrics in JSON/SSE; valid unique and absent
+optional-ID compatibility retained. Original bounds/deadlines/redirect/cancel/safe
+errors unchanged. Permanent red/green tests include malformed/private diagnostic
+and terminal duplicate after partial text with no completed identity/metrics.
+Format/analyze/focused/fullFlutter/web/isolatedMac/product/inventory, finalreview/
+requiredCI/protectedmerge mandatory. No ownerruntime/nativeapp/inference/install.
+
+
+### #404 response metadata validation — final local evidence
+
+Production LocalModelProvider now decodes valid JSON then reuses pure duplicate
+member validator before interpreting success JSON or SSE metadata. Escaped keys
+share identity; nested duplicates also rejected. Existing outer error boundary
+keeps failures locally authored; bounds/deadlines/redirect/Stop/client ownership
+and optional absent-model compatibility unchanged. Partial prior text can have
+streamed, but ambiguous terminal metadata cannot publish completed identity or
+metrics; source proposal validation/journal failure remains mandatory.
+
+Permanent regression baseline4PASS/3expectedFAIL before fix, now7PASS; original
+private4negative cases now4PASS. Focused30PASS including actual initial/repair
+HTTP/native journals and architecture. FullFlutter2262PASS/13explicit opt-in skips;
+format561unchanged, analyze clean, web built with Wasm dry run; isolated normal
+Mac debug build succeeded /private/tmp/asg404-response-metadata-derived with
+validation bundle ID, no install/launch/stable replacement. Product32/inventory9
+PASS; comparison inventory refreshed. Logs /tmp/asg404-response-metadata-{before,
+focused,private-now,format,analyze,full,web,macos,product,inventory}.log. One focused
+command initially named a nonexistent initial fixture; corrected to actual
+initial_request_http_journal_test.dart and reran successfully, no code workaround.
+No owner incident/introduction revision inferred from reproducible latent defect.
+This run fixedhealth/models both connection-refused, generation0; liveQwen pending.
+Prior native observations retain their original source/bundle identities and do
+not establish new native runtime acceptance. Required finalremoteCI/freshreview/
+verifiedmerge remain pending; full404/#400/marketplace gate/F23-last preserved.
