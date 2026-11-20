@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 
 import '../controllers/project_source_controller.dart';
 import '../models/project_source_observation.dart';
+import '../models/imported_source_context.dart';
+import '../models/project_inspection.dart';
 import '../services/record_storage.dart';
 import '../services/runtime_setup_store.dart';
 
@@ -13,10 +15,14 @@ class ProjectSourcePanel extends StatefulWidget {
     required this.root,
     required this.records,
     this.controller,
+    this.inspection,
+    this.onAdvisory,
   });
   final String root;
   final RecordStorage records;
   final ProjectSourceController? controller;
+  final ProjectInspection? inspection;
+  final ValueChanged<ImportedSourceContext>? onAdvisory;
   @override
   State<ProjectSourcePanel> createState() => _ProjectSourcePanelState();
 }
@@ -102,6 +108,19 @@ class _ProjectSourcePanelState extends State<ProjectSourcePanel> {
         approved == true;
   }
 
+  void _advisory() {
+    final owner = _controller, inspection = widget.inspection;
+    if (inspection == null || widget.onAdvisory == null) return;
+    final prepared = owner.prepareAdvisory(inspection);
+    if (prepared == null ||
+        !mounted ||
+        !identical(owner, _controller) ||
+        owner.isDisposed) {
+      return;
+    }
+    widget.onAdvisory?.call(prepared);
+  }
+
   Future<void> _read() async {
     final owner = _controller;
     // Preserve literal nonempty lines; validation must reject ambiguous whitespace.
@@ -135,7 +154,7 @@ class _ProjectSourcePanelState extends State<ProjectSourcePanel> {
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const Text(
-              'Enter 1–4 literal relative .dart paths under lib/ or test/, one per line. No directory scanning. Captures stay in this view only.',
+              'Enter 1–4 literal relative .dart paths under lib/ or test/, one per line. No directory scanning. This view does not save captures. Questions require separate sharing consent.',
             ),
             if (!c.supported)
               const Text(
@@ -162,6 +181,11 @@ class _ProjectSourcePanelState extends State<ProjectSourcePanel> {
                       : null,
                   child: const Text('Review selected source'),
                 ),
+                if (widget.inspection != null && widget.onAdvisory != null)
+                  OutlinedButton(
+                    onPressed: c.canPrepareAdvisory ? _advisory : null,
+                    child: const Text('Ask about captured source'),
+                  ),
                 if (c.busy)
                   OutlinedButton(
                     onPressed: c.canStop ? c.cancel : null,

@@ -4,6 +4,8 @@ import 'dart:async';
 
 import 'package:asg/controllers/project_source_controller.dart';
 import 'package:asg/services/runtime_setup_store.dart';
+import 'package:asg/services/inspected_folder_store.dart';
+import 'package:asg/models/project_inspection.dart';
 import 'package:asg/views/project_source_panel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -11,6 +13,66 @@ import 'package:flutter_test/flutter_test.dart';
 import 'project_source_controller_test.dart' show SourceHost, sourceRecords;
 
 void main() {
+  testWidgets(
+    'source advisory action opens only a fresh reviewed saved capture',
+    (tester) async {
+      final records = await sourceRecords();
+      final host = SourceHost();
+      final controller = ProjectSourceController(
+        root: '/selected',
+        setupStore: RuntimeSetupStore(records),
+        host: host,
+      );
+      await InspectedFolderStore(records).save('/selected');
+      var opens = 0;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: SingleChildScrollView(
+              child: ProjectSourcePanel(
+                root: '/selected',
+                records: records,
+                controller: controller,
+                inspection: ProjectInspection(
+                  root: '/selected',
+                  packageName: 'fixture',
+                  dartSdk: '^3.0.0',
+                  runners: ['web'],
+                ),
+                onAdvisory: (captured) {
+                  expect(captured.files.single.path, 'lib/main.dart');
+                  opens++;
+                },
+              ),
+            ),
+          ),
+        ),
+      );
+      expect(
+        tester
+            .widget<OutlinedButton>(
+              find.widgetWithText(OutlinedButton, 'Ask about captured source'),
+            )
+            .onPressed,
+        isNull,
+      );
+      await controller.read(['lib/main.dart'], confirm: (_) async => true);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Ask about captured source'));
+      expect(opens, 1);
+      expect(host.reads, 1);
+      await tester.enterText(find.byType(TextField), 'test/other.dart');
+      await tester.pump();
+      expect(
+        tester
+            .widget<OutlinedButton>(
+              find.widgetWithText(OutlinedButton, 'Ask about captured source'),
+            )
+            .onPressed,
+        isNull,
+      );
+    },
+  );
   testWidgets(
     'explicit confirmation captures literal source and selection changes mark it stale',
     (tester) async {

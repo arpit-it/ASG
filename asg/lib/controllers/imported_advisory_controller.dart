@@ -4,7 +4,7 @@ import 'dart:async';
 
 import '../models/imported_advisory_request.dart';
 import '../models/imported_advisory_record.dart';
-import '../models/imported_document_context.dart';
+import '../models/imported_repository_context.dart';
 import '../models/project_inspection.dart';
 import '../services/imported_advisory_store.dart';
 import '../services/local_model.dart';
@@ -27,7 +27,7 @@ class ImportedAdvisoryController extends BaseController {
              totalTimeout: requestLimit,
            ));
   final ProjectInspection inspection;
-  final ImportedDocumentContext context;
+  final ImportedRepositoryContext context;
   final ImportedAdvisoryStore store;
   final ProviderFactory _createProvider;
   final Duration requestLimit, cleanupLimit;

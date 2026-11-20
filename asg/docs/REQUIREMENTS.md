@@ -22612,3 +22612,104 @@ writer admitted. FullF20/deferred400/F23-last and marketplacegate unchanged.
 
 Final local fullFlutter2533PASS/13explicit opt-in skips and mainwebbuild PASS.
 Runtime source unchanged after these checks; no native UI or live model claim.
+
+
+### 2026-11-20 — captured source context merged; source advisory started
+
+PR803 fresh reviewed head20b348f58714e572bbc55d2950c358d4b549fd93 protected squashmerge
+f7282ef0f2af696e01c5d08f136f3e5185b3b661 verified by plugin main/mergedPR/issue404OPEN
+and fetched exacttree74ed02e88d47fe3ad1a708490f342ed48d3c3c6b matching localbae3513.
+Full remote/localdiff matched; private typed capture/root/readset/status/bytebudget/
+immutability/identity/compatibility review no blockers, emptythreads, unchangedbase.
+RequiredCI44764767750 Python136386321031/Flutter136386321730 every required/poststep
+SUCCESS; completedlogs inspected new exactcap/fourfile tests, fullFlutter/browser/
+transport/staticHTML/web/independentgeneratedFlutter and Python suites. Local30
+focused/full2533PASS13explicit skips/analyze/614fileformat/web/inventory9/product32
+PASS. Pure sourcecontext Done, not source sharing or fullF20. Coordinator merge/
+outcome recorded, integration/claim released; unrelatedownerstate preserved.
+
+Immediately claimed404-captured-source-advisory from verifiedmain, solewriter in
+registeredissueworktree. Contract covers typed document/source advisory input,
+explicit captured-source review action, separate destination/model/context sharing
+consent, bounded prompt/refusal, existing durableCAS/Stop/cleanup/failedsave retry/
+responseidentity and previousanswer guarantees, legacycompatibility and actual
+relevant fixture/UI/build/requiredCI gates. No second independent ready task.
+
+Started pure ImportedRepositoryContext interface and implemented read-only
+capturedFiles/includesSource metadata in existing final document/source captures.
+Payloads remain separate versioned scopes; immutable literal path/text/bytecount/hash
+attribution only. Existing document requests/payloads unchanged. Before editing,
+one synthetic legacy baseline fixture recorded requestSHA
+3da7af058494f289036bd4fa9acbae5b88a717f591f36b6bdeb48b8f8c321bec and contextSHA
+c80c69217fd617297c0f959fdb09a0e5fbd6a528777d16ab6a6c6e28713eec0b. New regression
+asserts both exact identities remain unchanged and document/source scope distinction,
+BOM/CRLF/literal untrustedlink attribution and immutable API lists. This interface
+is app-owned typed data, never model-sharing or execution authority.
+
+Initial32focused context/legacyrequest/architecture checks PASS, fourfileanalysis
+clean after eight required override annotations added manually; inventory regenerated
+and9inventorychecks PASS. Logs/tmp/asg404-source-advisory-legacy-baseline.log,
+/tmp/asg404-source-advisory-context-start.log,
+/tmp/asg404-source-advisory-context-analyze.log and
+/tmp/asg404-source-advisory-context-inventory.log. No advisory request/controller/
+store/UI callsite uses source yet. Continue consent/workflow integration, nativeDB/
+IABsynthetic/error regressions and fullbuild/requiredCI/review/verifiedmerge. No model
+requests/owner-source reads/writes/install/download/cloud/stableapp effects. FullF20,
+source sharing/liveQwen and unavailableplatform400 pending; marketplacegate/F23-last
+preserved. Activeclaim retained for continuation.
+
+
+### 20 November 2026 — captured-source advisory implementation and local validation
+
+Continued404-captured-source-advisory. Imported advisory request/controller/store
+now consume typed ImportedRepositoryContext; concrete final document/source captures
+retain distinct versioned payloads and exact legacy document request/context hashes.
+Source prompts label captured source as untrusted data; limits remain8000question,
+24KiBwholeprompt/64KiBrequestidentity/12000answer and exactmatchingresponsemodelID.
+No truncation, generated operation contracts or new execution authority.
+
+ProjectSourceController retains exact readrequest, prepares a pure sourcecontext only
+for a fresh nonbusy/cleanup-confirmed capture and saved reference with matchingroot/
+current validated requirements. Sourcepanel exposes Ask about captured source only
+when eligible; importedworkspace opens existing advisoryscreen with that context.
+No automatic reread/providercall on navigation. Source-specific literal review and
+separate destination/model/context/question sharing confirmation explain latestanswer
+storage and historical/unverified status. Source capture itself is not copied into
+answerrecord; answer prose and provenance use existing strict format/key. Existing
+advisory durable predispatch/completionCAS, previousanswer retention, Stop/disposal/
+cleanupownership and failedsave-only retry are reused without permission expansion.
+
+Final60focused PASS: legacy hashes and document compatibility, distinct sourcepayload/
+BOM/CRLF, exactprompt expansion refusal, eligible savedcapture/stale/root/corrupt
+requirements, sourcebutton/dialog/cancel/send, changedsettingsconsent refusal,
+source missing/wrongresponseID, failedsave retrywithoutinference and Stop retaining
+oldanswer. Actual native source DB close/reopen retained exactsavedanswer; changed
+durable settings refuse dispatch despite unchanged cache. Existing document storage,
+CAS/error/disposal regressions remainactive. FullFlutter2547PASS13explicit skips;
+fullanalysis clean;616fileformat; mainweb/isolatedMacbuild PASS; inventory9/product32
+PASS. One initial braceinfo corrected manually. Logprefix
+/tmp/asg404-source-advisory-{focused,analyze,full,web,native,format,inventory,product}.
+
+IsolatedMac bundlecom.arsinha.asg.sourceadvisoryvalidation, exact sourcehelper asset
+and10runtime sourcehashes recorded in/tmp/asg404-source-advisory-build-receipt.json.
+No install/stable replacement/nativeUIlaunch. Supplied-data IABfixture used synthetic
+source/provider and memoryrecords: readconfirmation->capturedsource->question,
+literal capturedreview, sharingCancel, separateconfirmedsyntheticanswer, return/
+reopen previousanswer, failedsave preservingoldanswer/completedunsavedanswer and
+Retry saving recovery PASS. Browserfixture build log
+/tmp/asg404-source-advisory-browser-build.log; owned8397previewserver stopped.
+Runtime probe2026-11-20T15:51:16.631755Z /health and/v1/models bothURLError,
+zeroinference requests. No fresh Qwen/liveweight/responseidentity claim; owner
+processes untouched. RequiredCI/fresh exactreview/verifiedmerge pending.
+
+Next eligible bounded F20/#404 prerequisite after verifiedmerge: inspect manual
+change-plan storage/approval boundaries for captured source. Existing manual plan
+flow accepts captured instruction documents; source advisory must not silently
+approve a change or treat source context as documents. Investigation scope current
+model/controller/store/tests, source/context identity binding and staleapproval/
+legacyformat compatibility, using deterministic owned fixtures on this Mac. Record
+one concrete source-backed manual-plan implementation with acceptance in this sole
+queue; no arbitrary repo edits/commands, automaticapproval, model request or schema
+migration during investigation. Reuse404, preservefullF20/deferred400/F23-last and
+marketplacegate; no independent disjoint readywriter admitted. No install/download/
+cloud/deployment/owner-sourcewrite effects. Claim held through finalreview/merge.

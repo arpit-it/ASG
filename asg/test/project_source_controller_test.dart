@@ -6,6 +6,9 @@ import 'dart:convert';
 import 'package:asg/controllers/project_source_controller.dart';
 import 'package:asg/models/project_source_observation.dart';
 import 'package:asg/models/runtime_setup.dart';
+import 'package:asg/models/project_inspection.dart';
+import 'package:asg/services/inspected_folder_store.dart';
+import 'package:asg/services/requirements_store.dart';
 import 'package:asg/services/project_source_host.dart';
 import 'package:asg/services/record_storage.dart';
 import 'package:asg/services/runtime_setup_store.dart';
@@ -281,4 +284,51 @@ void main() {
     expect(host.reads, 0);
     expect(c.error, isNotNull);
   });
+  test('source advisory requires saved reference and fresh capture; no preparation writes', () async {
+    final inspection = ProjectInspection(
+      root: '/selected',
+      packageName: 'fixture',
+      dartSdk: '^3.0.0',
+      runners: ['web'],
+    );
+    expect(c.prepareAdvisory(inspection), isNull);
+    await c.read(['lib/main.dart'], confirm: (_) async => true);
+    expect(c.prepareAdvisory(inspection), isNull);
+    await InspectedFolderStore(records).save('/selected');
+    final writes = records.writes;
+    final context = c.prepareAdvisory(inspection)!;
+    expect(context.files.single.path, 'lib/main.dart');
+    expect(records.writes, writes);
+    c.invalidateSelection();
+    expect(c.prepareAdvisory(inspection), isNull);
+    expect(c.findings, isNotNull);
+  });
+  test(
+    'wrong metadata root and corrupt requirements never prepare source context',
+    () async {
+      await InspectedFolderStore(records).save('/selected');
+      await c.read(['lib/main.dart'], confirm: (_) async => true);
+      final wrong = ProjectInspection(
+        root: '/other',
+        packageName: 'fixture',
+        dartSdk: '^3.0.0',
+        runners: ['web'],
+      );
+      expect(c.prepareAdvisory(wrong), isNull);
+      records.values[RequirementsStore.key(
+            InspectedFolderStore.workspaceId('/selected'),
+          )] =
+          'private-invalid';
+      final right = ProjectInspection(
+        root: '/selected',
+        packageName: 'fixture',
+        dartSdk: '^3.0.0',
+        runners: ['web'],
+      );
+      expect(c.prepareAdvisory(right), isNull);
+      expect(c.error, isNot(contains('private-invalid')));
+      c.dispose();
+      expect(c.prepareAdvisory(right), isNull);
+    },
+  );
 }

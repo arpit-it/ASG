@@ -5,11 +5,12 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 
 import 'project_inspection.dart';
+import 'imported_repository_context.dart';
 import 'project_source_observation.dart';
 import 'requirements_board.dart';
 
 /// Captured local data identity only; never permission or current-disk evidence.
-final class ImportedSourceContext {
+final class ImportedSourceContext implements ImportedRepositoryContext {
   ImportedSourceContext._(
     this.recordJson,
     this.untrustedEvidence,
@@ -19,10 +20,28 @@ final class ImportedSourceContext {
     this.files,
   );
   static const byteLimit = 128 * 1024;
-  final String recordJson, untrustedEvidence, digest;
+  @override
+  final String recordJson;
+  final String untrustedEvidence;
+  @override
+  final String digest;
   final String _metadataJson, _requirementsJson;
   final List<ProjectSourceFile> files;
+  @override
   bool get sourceVerified => false;
+  @override
+  bool get includesSource => true;
+  @override
+  List<({String path, int byteLength, String digest, String text})>
+  get capturedFiles => List.unmodifiable([
+    for (final file in files)
+      (
+        path: file.path,
+        byteLength: file.byteLength,
+        digest: file.digest,
+        text: file.text,
+      ),
+  ]);
   bool matches(ImportedSourceContext other) => recordJson == other.recordJson;
 
   static Map<String, Object> _metadata(ProjectInspection inspection) => {
@@ -33,6 +52,7 @@ final class ImportedSourceContext {
   };
 
   /// Compares captured app inputs only, never disk freshness or authorization.
+  @override
   bool matchesPlanningInputs(
     ProjectInspection inspection,
     RequirementsBoard requirements,

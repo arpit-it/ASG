@@ -55,8 +55,10 @@ class _ImportedAdvisoryScreenState extends State<ImportedAdvisoryScreen> {
             Text('Output budget: ${request.config.chatOutputTokens} tokens'),
             SelectableText('Question: ${request.question}'),
             const SizedBox(height: 12),
-            const Text(
-              'Send this question and the historical captured metadata, requirements and document text to the displayed local model endpoint. The latest completed answer, question and identity/provenance will replace this folder’s previous advisory answer in ASG application records. Captured document text is not copied into this answer record. Answers are advisory; no source writes, commands, builds, plan approval or scheduling are authorized. Stop closes the app connection; server inference may continue.',
+            Text(
+              request.context.includesSource
+                  ? 'Send this question and the historical captured metadata, requirements and source text to the displayed local model endpoint. The latest completed answer, question and identity/provenance will replace this folder’s previous advisory answer in ASG application records. Captured source text is not copied into this answer record. Answers are advisory; no source writes, commands, builds, plan approval or scheduling are authorized. Stop closes the app connection; server inference may continue.'
+                  : 'Send this question and the historical captured metadata, requirements and document text to the displayed local model endpoint. The latest completed answer, question and identity/provenance will replace this folder’s previous advisory answer in ASG application records. Captured document text is not copied into this answer record. Answers are advisory; no source writes, commands, builds, plan approval or scheduling are authorized. Stop closes the app connection; server inference may continue.',
             ),
           ],
         ),
@@ -98,15 +100,21 @@ class _ImportedAdvisoryScreenState extends State<ImportedAdvisoryScreen> {
       body: ListView(
         padding: const EdgeInsets.all(24),
         children: [
-          const Text(
-            'Ask one read-only question against historical captured documents. No files are reread. Each request needs separate local-model sharing consent. Suggestions are unverified and never grant execution or plan approval.',
+          Text(
+            c.context.includesSource
+                ? 'Ask one read-only question against historical captured source. No files are reread. Each request needs separate local-model sharing consent. Suggestions are unverified and never grant execution or plan approval.'
+                : 'Ask one read-only question against historical captured documents. No files are reread. Each request needs separate local-model sharing consent. Suggestions are unverified and never grant execution or plan approval.',
           ),
           SelectableText('Folder: ${c.inspection.root}'),
           SelectableText('Captured context SHA-256: ${c.context.digest}'),
           ExpansionTile(
-            title: const Text('Review captured documents'),
+            title: Text(
+              c.context.includesSource
+                  ? 'Review captured source'
+                  : 'Review captured documents',
+            ),
             children: [
-              for (final d in c.context.documents)
+              for (final d in c.context.capturedFiles)
                 Padding(
                   padding: const EdgeInsets.all(12),
                   child: Column(
@@ -116,7 +124,11 @@ class _ImportedAdvisoryScreenState extends State<ImportedAdvisoryScreen> {
                         '${d.path} · ${d.byteLength} bytes · SHA-256: ${d.digest}',
                       ),
                       SelectableText(
-                        d.text.isEmpty ? '[Empty document]' : d.text,
+                        d.text.isEmpty
+                            ? (c.context.includesSource
+                                  ? '[Empty source file]'
+                                  : '[Empty document]')
+                            : d.text,
                       ),
                     ],
                   ),
