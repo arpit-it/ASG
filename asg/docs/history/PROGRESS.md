@@ -18028,3 +18028,122 @@ before merge; no escaped defect observed. Revised exactreview and NEW requiredCI
 are still mandatory; failed3d12439 CI and older08bc27e4 results authorize no merge.
 Owner processes/primary edits/stable app/last output preserved. FullCE01/F20/#404/
 liveQwen/unavailable400 remain open; no install/download/cloud/deployment.
+
+
+### 2026-11-20 — #404 initial return boundary investigation started
+
+PR #774 verified merged at d083f8502d0c652f7442e432839575409207242b,
+exact tree 9f6c83b08c0e5a9667e099feac23a6a359caa693. Fresh review covered
+remote head a641e36860c45800a9badeef7281e26cc1bee1af; required CI run
+44672150217 passed both jobs and every required step. Eleven new VM tests
+ran on Linux. Final isolated Mac bundle passed all 32 native observations.
+Coordinator merge/outcome recorded; integration lock and previous claim released.
+#404 remains open for unmet F20/CE01 acceptance, including live inference.
+
+Next eligible bounded task: 404-initial-return-boundary-investigation under #404,
+claimed by the integration owner in its registered issue worktree. Scope is this
+ledger, PROGRESS.md and AGENT_ENGINE.md only. Acceptance: trace terminal write
+ordering, independently hold before and after physical terminal commit using
+actual synthetic loopback HTTP/native records, verify no early result, truthful
+stored status, final origin/hashes and unchanged unrelated records after actual
+close/reopen, and identify a bounded native-process follow-up. Root is the sole
+assigned runtime worker; no second independent ready writer is admitted.
+
+At 2026-11-20T04:19:50Z, fixed 8765 /health and /v1/models both refused
+connection (curl exit 7, HTTP000); generation requests zero. Existing owner model
+was neither started nor replaced. Exact Qwen3.8-27B-4bit live acceptance remains
+pending until the existing MLX/Metal endpoint is ready and identity verified.
+
+Private prerequisite probe /tmp/asg404-return-boundary-probe.dart passed 2/2
+using existing default HTTP proposer, supplied synthetic model metadata, and a
+disposable native database. Before physical terminal commit the journal remained
+reserved; after commit but before its Future completed it was returnedValidated.
+Both holds prevented proposal delivery. After release, request 1 had the exact
+validated origin and nonempty returned hashes; unrelated/session/working records
+were byte-equivalent. Actual database close/reopen retained the final raw map and
+one HTTP call, without replay. Cleanup settled pending work and removed temporary
+records. Log: /tmp/asg404-return-boundary-probe.log. This is phase-boundary evidence,
+not process-crash or live model evidence. Production ordering sets the terminal
+attempt flag before commit and exposes returned origin only after awaiting commit.
+
+Next bounded implementation candidate is native-process verification at these two
+terminal outcome boundaries, with parent-owned kill/wait, independent cold read,
+no automatic replay, preserved unrelated records and exact distinct references.
+Its report/host contract still needs investigation and review before implementing;
+current docs-only investigation remains active. Marketplace dependencies, F23-last
+and unavailable-platform acceptance under #400 are unchanged. No installs,
+downloads, source execution, stable app replacement, provisioning or deployment.
+
+### #404 native initial terminal-return boundary contract (investigated, not implemented)
+
+Evidence gap: protocol24 launch1 holds reservation completion BEFORE any provider;
+launch3 holds only AFTER ApprovedSourceProposer has fully returned. Neither kills
+an actual native process between a supplied validated response and completion of
+the terminal journal write. The two private HTTP/native probes above exercise
+that interval but do not establish crash durability. Do not relabel them as such.
+
+Next eligible implementation, dependent on this investigation's verified merge:
+`404-native-initial-return-boundary`, under existing #404. Preserve modes20–24;
+new isolated protocol25 mode `initial-return-boundary`, no production app flow or
+storage schema changes. Challenge exact keys: mode, nonce, launch, sdk, boundary.
+Boundary enum beforeCommit/afterCommit, launch integer1/2 only, nonce32lowerhex,
+fixed SDK inspection only. Challenge <=4096bytes and report <=8192bytes; refuse
+unknown/duplicate keys, nonfinite values, booleans as integers, malformed/mixed
+flags, stale reports and wrong identities before any child/record side effect.
+
+Each boundary is a separate fresh private0700 root, fixed supplied provider model
+`supplied-native-initial-return-boundary-model`, one fixed request1, no HTTP/live
+transport. Launch1 physically commits the reservation and returns to provider;
+provider emits fixed validated source once. Wrapper validates exact expected keys,
+owned journal state and no other writes. beforeCommit holds BEFORE delegating the
+terminal commit; afterCommit delegates, verifies physical bytes, then holds BEFORE
+its Future resolves. Report only after held state is reached. Proposal Future must
+remain pending; no returned-origin getter/reference may be reported as delivered.
+
+Stage1 counters: setup1/proposal1/reservationCommits1/reservationReturns1/provider1,
+terminalAttempts1/proposalReturns0, terminalCommits0 before or1 after; every live,
+SDK, candidate, preview, copy, host and unrelated-write count0. Separate validated
+response identity/hash fields describe fixed supplied metadata, never live weights.
+Physical request1 remains reserved with null stored response/hashes beforeCommit;
+afterCommit it is returnedValidated with exact supplied model and source hashes.
+Store fingerprint, returned hash and proposal delivery are distinct observations.
+
+Parent pins bundle/source/root/challenge/report identities and only its Popen
+handle. Validate report, confirm same child still alive at the hold, kill/wait
+expected -9, then launch2 as a separate cold read-only process using same root and
+fresh exact nonce-bound challenge. Cold counters all0 including provider/proposal,
+no replay/commit/copy/SDK/preview. Reopen native database, compare exact journal,
+original raw session/working/unrelated map against bounded private capture;
+requestCount1 and the same physical status/model/hashes must persist. Cold may
+derive a retained validated record reference only in afterCommit, labelled durable
+record identity; it is not evidence that launch1 delivered a proposal. beforeCommit
+must have no returned-only reference. Both processes must refuse altered journal,
+foreign/nonmatching capture and request identity; never repair corrupt records.
+
+Report schema implementation must explicitly enumerate identity/stage/boundary,
+request status/fingerprints, physical response/hashes, deliveredReference=null,
+optional cold retainedReference, exact ten literal record slots, unrelated hashes
+and exact counters. No arbitrary journal keys, paths or source text in reports.
+No fresh-request continuation or candidate dispatch is needed for this bounded
+outcome. Those effects remain separately gated by existing approval policies.
+
+Validation: permanent focused Dart tests for strict parser, both gate phases,
+no early delivery and real close/reopen; portable Python host tests for both
+sequences and adversarial report/control-file inputs including symlinks; active
+Linux POSIX VM coverage with fresh private roots and precise expected errors.
+Then format/analyze/full Flutter tests/web build and Python required checks on
+final revision. Build a NEW isolated macOS restartfixture bundle, identify all
+source inputs and whole bundle hash, and observe4actual launches (2per boundary).
+Repeat preserved20–24 matrix on the SAME new bundle, keeping metadata distinct
+from existing dated bundles. Kill/wait owned children and verify cleanup before
+releasing resources. Never replace stable app or start/stop owner runtime.
+
+Investigation evidence: private probe SHA256
+ e23ca597fae22cc55170b8b2428f18948e928450e1f6382ca008ed56c44d94a2.
+Two actual synthetic HTTP/native DB probes PASS; native protocol25 and native
+crash observations remain PENDING. Full F20/CE01, live Qwen and #400 remain open.
+
+Investigation verification: 25 focused Flutter checks PASS (including both private
+HTTP/native terminal gates), product acceptance32 PASS, inventory9 PASS; diff
+whitespace clean. No application code changed. Protected final-revision CI and
+fresh PR review remain required before this contract is marked delivered.
