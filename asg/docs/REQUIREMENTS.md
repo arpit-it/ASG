@@ -18596,3 +18596,48 @@ isolated macOS standard/fixture builds pass; direct two-module analysis clean,
 format552 unchanged. Fresh exact PR review/requiredCI/verifiedmerge remain gates;
 fullF20/CE01/umbrella404 and unavailable-platform400 stay open. Stable application,
 owner runtime/processes, last working output and unrelated primary edits preserved.
+
+
+20 November2026 — PR766 verified mergedeb2024a7882dbdc8c94dd815b2921c9d867b559e,
+exacttree86af93eaa14321ae1bb9bbc601b5eab69608a4b9 matches all9 tested published
+files. Fresh exact reviewe7e553d9af3a50592221d4652e87cafd71a74dbb/basef20a738e
+found no blocking issue after local retained-companion rework. RequiredCI44648530744
+Python135997230451/Flutter135997230840 both SUCCESS, every mandatory/post step
+SUCCESS, conversations empty and unchanged head/base/main rechecked before protected
+expected-head merge. PluginPR/main/issue404OPEN and fetchedmain/tree verified.
+Full finalFlutter2186/11existing skips, analysis/directfixture/format552/web/macOS,
+host76+restart6/product32/inventory9 and final native8new+10legacy launches pass.
+Delivered bounded supplied native repair-lineage startup/reopen/retry/corruption
+evidence, not fullCE01/platform or live inference. Coordinator merged/outcome_verified
+recorded before integration/writer release. Local review rework1, no escaped defect
+observed; CI observation wait/manual task timing distinct from unknown provider
+durations. PR attachment attempted; existing chat limit100. Owner edits/processes
+and last working outputs preserved.
+
+Immediately claimed next bounded F20/CE01 task404-native-host-ci under SAME#404 in
+reused clean registered worktree, branch404-native-host-ci from verifiedmain. Sole
+queue is REQUIREMENTS; no duplicate issue/new speculative backlog. One coherent
+three-path writer (this ledger, PROGRESS, .github/workflows/ci.yml); no independent
+second ready task or live/runtime worker required. Concrete gap: current runtime
+CI job does not invoke test_native_restart_probe.py or test_native_candidate_crash.py
+and no current invoked suite references them. Thus the82 portable report/process
+contract regressions were local evidence only, despite required CI itself passing.
+
+Acceptance: add both portable Python entrypoints to existing required runtime job
+as named native-fixture report contract step; preserve failures, read-only workflow
+permissions, pinned action identities, existing required checks/timeout and approval
+limits. No native app/model/SDK launches on Linux. Run82 locally and confirm new
+step SUCCESS in final exact-head required CI, fresh review and verified merge.
+This task does not expand product/platform acceptance; umbrella404/#400 remain open.
+
+
+404-native-host-ci implementation started: existing runtime job now has explicit
+Verify native fixture report contracts step invoking both portable suites. Local
+restart6 and candidate76 pass (82 total); logs /tmp/asg404-native-host-ci-{restart,
+candidate}.log. Exact workflow diff adds only4 lines, with no action/permission/
+timeout/job-control changes. Diff check passes. Runtime app/source and canonical
+acceptance inventory unchanged. Scoped local checkpoint ready; publication, final
+exact PR review, requiredCI with new step and verified merge still pending. Keep
+valid writer lease and resume this owned task first. No live model/native app,
+source-copy/restore, stable replacement, owner-process stop or deployment occurred
+for this CI increment. FullF20/CE01/umbrella404 and deferred400 stay open.

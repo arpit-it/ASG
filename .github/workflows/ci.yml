@@ -56,6 +56,10 @@ jobs:
         run: python -B tools/test_development_coordinator.py
       - run: python -B tools/test_product_acceptance.py
       - run: python -B tools/test_acceptance_inventory.py
+      - name: Verify native fixture report contracts
+        run: |
+          python -B tools/test_native_restart_probe.py
+          python -B tools/test_native_candidate_crash.py
       - run: python -B tools/test_download_model.py
       - run: python -B tools/test_live_mlx_profile.py
       - run: python -B tools/test_qwen_backends.py
