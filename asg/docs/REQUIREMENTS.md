@@ -21671,3 +21671,115 @@ owned selecteddocuments unchanged. New receipt preserves earlier observations:
 inference remain unverified. Previous CI44729698989 PASS belongs to the superseded
 revision and is not reused; revised exacthead/base freshreview and allrequiredCI
 must pass before protectedmerge. No full404/deferred400 completion or newauthority.
+
+
+### 2026-11-20 — #404 document review merged; captured context binding started
+
+PR794 corrected head979d58f67f860e0fdb5a1906d3cf7072b83ed7e5 protected squash
+a711935a69615e4421db25fcec82317e729aed4a verified by plugin main/mergedPR and
+fetched tree5df1c4c494f71994bd0d3bf22e436f638abe1f4a, matching retestedlocaldfdf2d2.
+Fresh exact final review resolved disposed-controller lifecycle finding; threads
+empty. Revised CI44732893210 Flutter136276873037/Python136276873346 every required/
+poststep SUCCESS. Bounded manual document review Done: explicit selected read
+consent, plain captured provenance and owned helper lifecycle.46focused/full2412
+PASS13skips, analysis/web/isolatedMac packaging/rebuilt IAB passed. NativeUI/live
+inference and full404 remainOPEN; no modelsharing/source authority enabled.
+Coordinator merged/outcome recorded, integration/claim released; owner dirty main,
+processes and stableapp preserved.
+
+Immediately claimed404-imported-document-context-binding, solewriter in registered
+issue worktree/currentverifiedmain, existingF20 boundedcontext acceptance. Concrete
+gap: document captures are manually reviewed but do not yet form a typed context
+identity bound to imported metadata/requirements. Acceptance: one immutable bounded
+canonical record binding exact root/metadata/validatedrequirements and selected
+document path/length/digest/content; reject root/readset/refused/provenance mismatch
+and overflow privately, never silently truncate. Deterministic same-input identity,
+changed included inputs differ, caller mutation cannot alter captures. Explicit
+untrusted-data/source_verified=false labels grant no tool/model/system/command/
+installation/sourcewrite/scheduler authority. No file read/model transfer or stored
+plan-format/schema change. Pure-model fixture/MVC/full required checks/freshreview/
+verifiedmerge required before delivery. Byte bounds are not tokenizer/modelfit
+proof; provider/UI integration and liveQwen remain later acceptance. Scope new
+model/test and these three shareddocs, no second independent ready outcome.
+
+
+Started pure ImportedDocumentContext.capture with fixed version/scope and immutable
+canonicalJSON/evidence/digest strings. Binds exact metadata/validatedrequirements,
+requestroot/selectedreadset and strict observed documents; configured interpreter
+is excluded from contextdata. Includes literal untrusted-data/source_verified=false
+labels, no effects/authority API.128KiB bound includes evidenceheader and JSON
+expansion, rejects overflow rather than trimming. Existing importedplan/store/UI
+call sites unchanged; this prerequisite is not automatically read, sent or saved.
+Initial3model+MVCarchitecture1 PASS: stable exactinput identity and changedSDK/
+requirementsrevision/text identity; hostileprose remainsquoteddata; wrongroot/
+readset/refusedobservation privatefailures; JSONcontrol expansion limit and caller
+selectionmutation isolation. One initial brace-style info corrected, then twofile
+analysis clean and4checks rerunPASS. Logs /tmp/asg404-document-context-start.log and
+-start-analyze.log. Expanded metadata/requirements/refusal/budget tests, fullrequired
+checks/freshreview/verifiedmerge and future explicit provider/UI integration remain
+pending. No liveinference/modelruntime/ownerdata/install/deployment/sourcewrite
+activity. Soleclaim remainsactive, full404/deferred400 open, marketplace/F23-last
+preserved. No independent second ready task was admitted.
+
+
+### #404 imported document context — completed local boundary implementation
+
+Pure ImportedDocumentContext.capture now provides immutable canonicalJSON,
+attributed untrusted-evidence text and SHA256 data identity. Fixedversion1/scope,
+source_verified=false, exact captured root/package/SDK/runners, validated authored
+requirements/tasks and selected document path/byte_length/digest/plaintext are
+included. Requestroot/readset must match the strict observed document snapshot;
+all refusal statuses fail privately. Interpreter configuration is excluded from
+contextdata. Hashes bind captured data only: no authentication/currentdisk proof,
+model-sharing consent, plan approval, tool or execution authority is inferred.
+
+The128KiB UTF8 cap covers the complete evidenceheader plus JSON expansion; oversize
+refuses rather than truncating. Canonical data equality, not digest alone, defines
+matches. Strings freeze the capture, without retaining mutable caller collections.
+There is no file/service/widget/model-provider/persistence API or change to current
+metadata-only ImportedPlanStore.context, plan records, source actions or scheduler.
+This is a typed local prerequisite for future explicit planning/model integration,
+not a claim that imported chat or source editing is delivered. Byte bounds do not
+establish tokenizer/model adequacy or prompt-injection immunity; deterministic
+operation/path/resource policies still control any future effects.
+
+9modeltests plus MVCarchitecture1 PASS. Covers deterministic exact inputs and
+changed root/package/SDK/runners/requirementsrevision/tasktitle/taskstatus/text;
+sevenfixedrecordkeys and SHA256 of exactcanonicalbytes; wrongroot/readset and all
+invalid/unsupported/changed/unavailable observations; invalid requirements/roots
+with fixedprivate errors; hostileinstruction prose remainsquoteddata; no interpreter
+leak; multibyte/BOM/Unicode-normalization distinctions; mutable selection
+isolation; JSONcontrol expansion overflow; exactly131072evidencebytes succeed and
+onebyte over refuses while preserving fullcapturedtext belowcap. Existing supplied
+snapshots are caller data, not authenticated filesystem read receipts or approval.
+Focused log /tmp/asg404-document-context-focused.log. Two test-only interpolation
+style infos corrected before final analysis and checks. Fullrequiredchecks/fresh
+exactPRreview/verifiedmerge remain mandatory. FullF20/liveQwen/deferred400 remain
+open; marketplacegate/F23-last preserved. No owner data/runtime/process/install/
+modeldownload/cloud/deployment/sourcewrite effects or independent second ready task.
+
+
+### #404 context binding — inventory scope correction and final validation
+
+Initial Pythoninventory9 included one failure: checked-in inventory no longer
+matched regeneration after adding the model/test. The earlier progress message
+claiming all inventory checks passed was corrected. No source defect or skipped
+fixture was hidden. Checkpointed clean owned changes, released the original claim
+and reclaimed revised404-imported-document-context-integration scope including
+canonicalacceptance_inventory.json before editing it. Same F20 outcome/branch,
+not another backlog item. Regenerated inventory now9PASS including exactgeneration
+match. Product32/coordinator20 PASS. Original failure log remains preserved:
+/tmp/asg404-document-context-inventory.log.
+
+Final corrected-input analysis clean, fullFlutter2421PASS13explicit skips, normal
+webbuild PASS, format593unchanged;10focused checks PASS. Logs /tmp/asg404-document-
+context-{inventory-final,product-final,coordinator,analyze-final2,full-final2,
+web-final2,format-final,focused}.log. Canonical inventory now captures current
+validation inputs; no currentdisk/source/model/UI capability is inferred. This
+six-file pure-model prerequisite does not change app call sites, manifests,
+workflows, persistence format, document reads, model routing or execution policy.
+No IAB/nativeUI/liveinference was needed or claimed for this boundary; prior manual
+document review evidence stays separate. Final exactPRreview/allrequiredCI and
+verifiedprotectedmerge remain mandatory. Full404/liveQwen/deferred400 open,
+marketplacegate/F23-last retained; owner dirty checkout/processes/stableapp remain
+untouched. No installations/modeldownloads/cloud/deployment/sourcewrite effects.
