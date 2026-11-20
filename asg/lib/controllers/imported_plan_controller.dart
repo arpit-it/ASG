@@ -3,6 +3,8 @@
 
 import '../models/imported_plan.dart';
 import '../models/imported_document_context.dart';
+import '../models/imported_source_context.dart';
+import '../models/imported_repository_context.dart';
 import '../models/project_inspection.dart';
 import '../services/imported_plan_store.dart';
 import 'base_controller.dart';
@@ -28,6 +30,8 @@ class ImportedPlanController extends BaseController {
   final String root;
   final ImportedPlanStore store;
   ImportedDocumentContext? get capturedDocuments => store.capturedDocuments;
+  ImportedSourceContext? get capturedSource => store.capturedSource;
+  ImportedRepositoryContext? get capturedContext => store.capturedContext;
   final Future<ProjectInspection> Function(String) _inspect;
   ImportedPlan? plan;
   String? error;
@@ -101,6 +105,11 @@ class ImportedPlanController extends BaseController {
         plan,
         text.trim(),
         approved: approved,
+        authorize: () {
+          if (isDisposed) {
+            throw StateError('Planning owner is no longer active.');
+          }
+        },
       );
       if (!isDisposed) plan = saved;
     } catch (_) {

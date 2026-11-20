@@ -7566,3 +7566,104 @@ backlog or independent disjoint readywriter. FullF20/liveQwen/deferred400 accept
 remainsOPEN; marketplacegate/F23-last preserved. No owner-source/model/runtime/
 install/download/stableapp/cloud/deployment effect. RequiredremoteCI/freshreview/
 verifiedmerge gate completion of this investigation; claim retained through review.
+
+
+### 2026-11-20 — manual-plan investigation merged; source manual-plan implementation started
+
+PR805 fresh reviewed head28bb2f6306facedb8e1da4f32ddc9e26d475f4b1 protected squashmerge
+0a22dbefa2e715202773ed924b2543d21bb4c19c verified by plugin main/mergedPR/issue404OPEN
+and fetched exacttree48c02db2c7619e85706c46103efc8512dc8ca79e matching local9502ad1.
+Full remote/localdiff/criteria/probe review no blockers, emptythreads, unchangedhead/
+base/main. RequiredCI44770999964 Python136408308891/Flutter136408309593 every required/
+poststep SUCCESS; completedlogs inspected fullFlutter/browserstorage/transport/
+staticHTML/web/independentgeneratedFlutter/Python. Local27sourceprobes+legacyplan
+checks PASS incl actual nativeDB/durableCAS. Investigation Done, no source-plan UI
+or new authority claimed. Coordinator merge/outcome recorded, integration/claim
+released; owner data/processes/stableapp preserved; fullF20/deferred400 remainOPEN.
+
+Immediately claimed404-source-backed-manual-plan from verifiedmain in registered
+issueworktree, solewriter. Scope store/controller/sourcepanel/workspace/manualplanview,
+relevant plan/sourcecontroller/widget tests and canonicaldocs/inventory. Complete
+outcome includes explicit source-text localstorage consent, currentcapture recheck,
+manualdraft/save/reviewapproval/current-input/durableCAS/staleapproval behavior,
+legacycompatibility and actual relevant fixture/UI/build/CI/review/merge gates.
+No second independent disjoint readytask admitted.
+
+Started ImportedPlanStore optional typed capturedSource alongside unchanged legacy
+capturedDocuments; ambiguous simultaneous contexts reject. Shared read-only
+capturedContext getter selects exact source identity for current-input checks and
+save transaction snapshots, preserves default/document payload/key/record formats.
+Controller exposes source/generic capture without changing existing document getter.
+No source-panel or manualplanview callsite added yet, no automatic UI admission,
+source read/write, model request, authoredplan generation or execution authority.
+
+Initial25plan+1architecture PASS. New source tests cover draft-before-approve,
+exactBOM/CRLF sourcecontext save/approve/reopen without recordmigration, ambiguous
+context no-write refusal and changedsource identity preservingoldrawapprovedrecord
+while current/activeapproval staysfalse (including failed reapproval before newdraft).
+Legacy22plan/nativeDB/durableCAS regressions remainactive. Threefileanalysis clean;
+inventory regenerated and9inventorychecks PASS. Logs
+/tmp/asg404-source-manual-plan-start.log,
+/tmp/asg404-source-manual-plan-start-analyze.log and
+/tmp/asg404-source-manual-plan-start-inventory.log. Continue source storage-consent/
+controller/view wiring and source-specific stale/disposal/requirements/nativeDB/
+IABsynthetic/fullbuild/requiredCI/freshreview/verifiedmerge gates. Activeclaim retained.
+FullF20/liveQwen/deferred400 acceptance pending; marketplacegate/F23-last unchanged.
+No install/download/stableapp/cloud/deployment or owner-source effects.
+
+
+### 20 November 2026 — source-backed manual-plan local delivery validation
+
+Continued404-source-backed-manual-plan. Source panel exposes manualplan only from
+fresh eligible capture and asks separate explicit local source-text/provenance
+storage consent. Root/readset/metadata/requirements and controller ownership are
+rechecked after dialog settlement before navigation. Cancel/changedselection/
+changedrequirements refuses. ImportedPlanScreen renders literal source attribution
+and historical storage/no-model/no-execution disclosure through typed capturedContext;
+old document API/text/metadata/default record/key behavior retained. Plan save still
+requires a current exact draft before reviewapproval; source snapshot follows all
+transactional save/current-input/stale-record comparisons. No model call, authored
+plan synthesis, sourcewrite/command or execution credential added.
+
+Meaningful async regression found and fixed: an injected delayed conditional approval
+commit could publish approved:true after its controller was disposed. Reproducer
+/tmp/asg404-source-manual-plan-dispose-before.log failed on old behavior. Added optional
+workflow authorization to store save, checked with input stability at the durable
+conditional commit boundary; controller refuses authorization once disposed. New
+regression now retains olddraft and reopenedapprovalfalse. The same guard protects
+legacy plan workflows; preexisting storage formats are unchanged. Existing commits
+already past authorization are not claimed reversible or cancelled.
+
+Final51focused plan/sourcecontroller/sourcepanel/architecture PASS: legacy and
+source save/draft/approval/reopen, ambiguouscontext refusal, stale source identity,
+consentCancel/no-write, selection/requirements changes duringconsent, dispose-before-
+commit and actual native sourceDBclose/reopen plus stale durableCAS. FullFlutter
+2556PASS13explicit opt-in skips/analyze/inventory9/product32/616fileformat/web/native
+build PASS. Full run preceded only one consentcopy grammar correction; finalpanel9
+PASS and finalanalysis/format/inventory/mainweb/isolatedMac builds rerun unchanged
+runtime hashreceipt. Two braceinfos corrected manually. Logs
+/tmp/asg404-source-manual-plan-{focused,full,analyze-final,format-final,inventory-final,
+product,panel-final,web-final,native-final}.log. Bundle
+com.arsinha.asg.sourcemanualplanvalidation and exact sourcehelper/six runtime hashes
+recorded/tmp/asg404-source-manual-plan-build-receipt.json; nativeUI not claimed.
+
+IABsupplied-data fixture (synthetic source, memoryrecords; no model/files/commands)
+verified read->localstorage consentCancel->explicitOpen->authoredSaveDraft(unapproved)
+->separateApprove->return/reopen samecontext approved->changesavedrequirements->new
+context olddraft retained/approvalinactive and approvalbuttonsdisabled. Fixturebuild
+/tmp/asg404-source-manual-plan-browser-build.log; owned8398server stopped. No live
+inference required or requested, owner runtime/processes/weights untouched. Required
+remoteCI/fresh exactreview/verifiedmerge remain gates; fullF20/deferred400 OPEN.
+
+Next eligible bounded F20/#404 prerequisite after verifiedmerge: inspect a read-only
+source-edit proposal/diff boundary. Manual plan reviewconsent is not write/command
+permission; inspect existing candidate/review models and imported workspace for a
+concrete typed proposal identity/diff gap. Determine how a user-authored replacement
+can bind exact selected source/root/context/currentmanualplan without modifying any
+repository, running a toolchain or treating text as executable authority. Use pure/
+disposable fixture checks, preserve legacy/fixed-candidate workflows and stale
+approval/lastworking output; record one bounded implementation with acceptance in
+REQUIREMENTS. Investigation scope canonicaldocs only, reuse404, no speculative queue
+or independent disjoint readywriter. Marketplacegate/F23-last/approvallimits and
+unavailableplatform400 unchanged. No owner-source/model/install/download/stableapp/
+cloud/deployment effects; activeclaim retained through review.

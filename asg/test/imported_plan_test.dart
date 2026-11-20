@@ -11,6 +11,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:asg/controllers/imported_plan_controller.dart';
 import 'package:asg/models/project_inspection.dart';
 import 'package:asg/models/imported_document_context.dart';
+import 'package:asg/models/imported_source_context.dart';
+import 'package:asg/models/project_source_observation.dart';
 import 'package:asg/models/project_instruction_observation.dart';
 import 'package:crypto/crypto.dart';
 
@@ -75,6 +77,26 @@ class PendingPlanRecords extends Records {
   }
 }
 
+class GatedPlanRecords extends Records implements ConditionalRecordStorage {
+  Completer<void>? gate;
+  Completer<void>? entered;
+  @override
+  Future<void> commitRecords({
+    required Map<String, String?> expected,
+    required Map<String, String> updates,
+    required void Function() authorize,
+  }) async {
+    entered?.complete();
+    await gate?.future;
+    authorize();
+    if (expected.entries.any((e) => values[e.key] != e.value)) {
+      throw StateError('Inputs changed');
+    }
+    values.addAll(updates);
+    writes++;
+  }
+}
+
 ImportedDocumentContext capturedPlan({
   String text = 'Captured untrusted instructions',
   ProjectInspection? inspection,
@@ -110,8 +132,151 @@ ImportedDocumentContext capturedPlan({
   );
 }
 
+ImportedSourceContext capturedSourcePlan({String text = 'Synthetic source'}) {
+  final data = utf8.encode(text);
+  return ImportedSourceContext.capture(
+    inspection: finding(),
+    requirements: RequirementsBoard(),
+    request: ProjectSourceReadRequest(
+      root: '/project',
+      python: '/python',
+      selectedPaths: ['lib/main.dart'],
+    ),
+    observation: ProjectSourceObservation.fromJson(
+      jsonEncode({
+        'version': 1,
+        'scope': 'project-source-files',
+        'status': 'observed',
+        'reason': null,
+        'source_verified': false,
+        'selected_paths': ['lib/main.dart'],
+        'files': [
+          {
+            'path': 'lib/main.dart',
+            'byte_length': data.length,
+            'sha256': sha256.convert(data).toString(),
+            'content_base64': base64Encode(data),
+          },
+        ],
+      }),
+    ),
+  );
+}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  test(
+    'disposed source-plan owner cannot authorize delayed durable approval',
+    () async {
+      final records = GatedPlanRecords();
+      await InspectedFolderStore(records).save('/project');
+      final c = ImportedPlanController(
+        '/project',
+        ImportedPlanStore(records, capturedSource: capturedSourcePlan()),
+        inspection: finding(),
+      );
+      await c.load();
+      await c.saveDraft('Last working draft');
+      final raw = records.values[ImportedPlanStore.key('/project')];
+      records.gate = Completer<void>();
+      records.entered = Completer<void>();
+      final pending = c.decide(true);
+      await records.entered!.future;
+      c.dispose();
+      records.gate!.complete();
+      await pending;
+      expect(records.values[ImportedPlanStore.key('/project')], raw);
+      final reopened = ImportedPlanController(
+        '/project',
+        ImportedPlanStore(records, capturedSource: capturedSourcePlan()),
+        inspection: finding(),
+      );
+      await reopened.load();
+      expect(reopened.approved, false);
+      reopened.dispose();
+    },
+  );
+  test('source plan saves current draft before approval and reopens same exact context without migration', () async {
+    final records = Records();
+    await InspectedFolderStore(records).save('/project');
+    final context = capturedSourcePlan(text: '\ufeffsource\r\n');
+    final c = ImportedPlanController(
+      '/project',
+      ImportedPlanStore(records, capturedSource: context),
+      inspection: finding(),
+    );
+    await c.load();
+    await c.decide(true);
+    expect(c.approved, false);
+    await c.saveDraft('User authored source proposal');
+    expect(c.approved, false);
+    await c.decide(true);
+    expect(c.approved, true);
+    expect(c.plan!.context, context.recordJson);
+    final raw = records.values[ImportedPlanStore.key('/project')]!;
+    expect((jsonDecode(raw) as Map).keys.toSet(), {
+      'text',
+      'context',
+      'approved',
+      'recordedAt',
+    });
+    final reopened = ImportedPlanController(
+      '/project',
+      ImportedPlanStore(
+        records,
+        capturedSource: capturedSourcePlan(text: '\ufeffsource\r\n'),
+      ),
+      inspection: finding(),
+    );
+    await reopened.load();
+    expect(reopened.approved, true);
+    expect(records.values[ImportedPlanStore.key('/project')], raw);
+    c.dispose();
+    reopened.dispose();
+  });
+  test('ambiguous document and source plan context refuses without writes', () {
+    final records = Records();
+    expect(
+      () => ImportedPlanStore(
+        records,
+        capturedDocuments: capturedPlan(),
+        capturedSource: capturedSourcePlan(),
+      ),
+      throwsArgumentError,
+    );
+    expect(records.writes, 0);
+  });
+  test('changed source identity preserves old approved record but makes approval inactive', () async {
+    final records = Records();
+    await InspectedFolderStore(records).save('/project');
+    final c = ImportedPlanController(
+      '/project',
+      ImportedPlanStore(records, capturedSource: capturedSourcePlan()),
+      inspection: finding(),
+    );
+    await c.load();
+    await c.saveDraft('Manual proposal');
+    await c.decide(true);
+    expect(c.approved, true);
+    final raw = records.values[ImportedPlanStore.key('/project')];
+    final changed = ImportedPlanController(
+      '/project',
+      ImportedPlanStore(
+        records,
+        capturedSource: capturedSourcePlan(text: 'changed'),
+      ),
+      inspection: finding(),
+    );
+    await changed.load();
+    expect(changed.approved, false);
+    expect(changed.current, false);
+    expect(changed.plan!.approved, true);
+    await changed.decide(true);
+    expect(changed.approved, false);
+    expect(records.values[ImportedPlanStore.key('/project')], raw);
+    c.dispose();
+    changed.dispose();
+  });
   test('default planning uses only the confirmed workspace snapshot and app records', () async {
     final records = Records();
     await InspectedFolderStore(records).save('/project');
@@ -782,6 +947,58 @@ void main() {
       await root.delete(recursive: true);
     }
   });
+  test('source captured plan survives an actual native database close and reopen unchanged', () async {
+    final root = await Directory.systemTemp.createTemp('asg-captured-plan-db-');
+    SharedPreferences.setMockInitialValues({});
+    final preferences = await SharedPreferences.getInstance();
+    var db = await databaseFactoryIo.openDatabase('${root.path}/records.db');
+    try {
+      final records = await StudioDatabase.migrate(db, preferences);
+      await InspectedFolderStore(records).save('/project');
+      final c = ImportedPlanController(
+        '/project',
+        ImportedPlanStore(
+          records,
+          capturedSource: capturedSourcePlan(
+            text: '\ufeffcafé\r\nCaptured data',
+          ),
+        ),
+        inspection: finding(),
+      );
+      await c.load();
+      await c.saveDraft('Durable captured plan');
+      await c.decide(true);
+      expect(c.approved, true);
+      final key = ImportedPlanStore.key('/project'),
+          raw = records.getString(key);
+      c.dispose();
+      await db.close();
+      db = await databaseFactoryIo.openDatabase('${root.path}/records.db');
+      final reopened = await StudioDatabase.migrate(db, preferences);
+      final next = ImportedPlanController(
+        '/project',
+        ImportedPlanStore(
+          reopened,
+          capturedSource: capturedSourcePlan(
+            text: '\ufeffcafé\r\nCaptured data',
+          ),
+        ),
+        inspection: finding(),
+      );
+      await next.load();
+      expect(next.approved, true);
+      expect(next.plan!.text, 'Durable captured plan');
+      expect(
+        next.plan!.context,
+        capturedSourcePlan(text: '\ufeffcafé\r\nCaptured data').recordJson,
+      );
+      expect(reopened.getString(key), raw);
+      next.dispose();
+    } finally {
+      await db.close();
+      await root.delete(recursive: true);
+    }
+  });
   test('production conditional save rejects changed durable inputs despite a stale session snapshot', () async {
     final root = await Directory.systemTemp.createTemp(
       'asg-captured-plan-cas-',
@@ -795,6 +1012,44 @@ void main() {
       final c = ImportedPlanController(
         '/project',
         ImportedPlanStore(records, capturedDocuments: capturedPlan()),
+        inspection: finding(),
+      );
+      await c.load();
+      await c.saveDraft('Last working draft');
+      final key = ImportedPlanStore.key('/project'),
+          raw = records.getString(key);
+      final requirementKey = RequirementsStore.key(
+        InspectedFolderStore.workspaceId('/project'),
+      );
+      final rows = StoreRef<String, String>('records');
+      await rows
+          .record(requirementKey)
+          .put(db, jsonEncode(RequirementsBoard(revision: 1).toJson()));
+      expect(records.getString(requirementKey), isNull);
+      await c.decide(true);
+      expect(c.error, isNotNull);
+      expect(c.approved, false);
+      expect(await rows.record(key).get(db), raw);
+      expect(records.getString(key), raw);
+      c.dispose();
+    } finally {
+      await db.close();
+      await root.delete(recursive: true);
+    }
+  });
+  test('source production conditional save rejects changed durable inputs despite a stale session snapshot', () async {
+    final root = await Directory.systemTemp.createTemp(
+      'asg-captured-plan-cas-',
+    );
+    SharedPreferences.setMockInitialValues({});
+    final preferences = await SharedPreferences.getInstance();
+    final db = await databaseFactoryIo.openDatabase('${root.path}/records.db');
+    try {
+      final records = await StudioDatabase.migrate(db, preferences);
+      await InspectedFolderStore(records).save('/project');
+      final c = ImportedPlanController(
+        '/project',
+        ImportedPlanStore(records, capturedSource: capturedSourcePlan()),
         inspection: finding(),
       );
       await c.load();

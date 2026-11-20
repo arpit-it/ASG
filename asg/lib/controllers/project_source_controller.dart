@@ -76,10 +76,28 @@ class ProjectSourceController extends BaseController {
           ? context
           : null;
     } catch (_) {
-      _error = 'Source advisory context could not be prepared. Save the folder reference and review current source files and requirements.';
+      _error = 'Captured source context could not be prepared. Save the folder reference and review current source files and requirements.';
       update();
       return null;
     }
+  }
+
+  bool get canPreparePlan => canPrepareAdvisory;
+  ImportedSourceContext? preparePlan(ProjectInspection inspection) =>
+      prepareAdvisory(inspection);
+
+  bool acceptsPreparedPlan(
+    ImportedSourceContext expected,
+    ProjectInspection inspection,
+  ) {
+    final current = preparePlan(inspection);
+    if (current == null) return false;
+    if (!expected.matches(current)) {
+      _error = 'Captured planning inputs changed. Review source and requirements again.';
+      update();
+      return false;
+    }
+    return canPreparePlan;
   }
 
   void invalidateSelection() {

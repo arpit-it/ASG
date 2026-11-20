@@ -5,6 +5,8 @@ import 'dart:async';
 import 'package:asg/controllers/project_source_controller.dart';
 import 'package:asg/services/runtime_setup_store.dart';
 import 'package:asg/services/inspected_folder_store.dart';
+import 'package:asg/services/requirements_store.dart';
+import 'package:asg/models/requirements_board.dart';
 import 'package:asg/models/project_inspection.dart';
 import 'package:asg/views/project_source_panel.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +15,118 @@ import 'package:flutter_test/flutter_test.dart';
 import 'project_source_controller_test.dart' show SourceHost, sourceRecords;
 
 void main() {
+  testWidgets(
+    'manual source plan requires explicit local source-text storage consent',
+    (tester) async {
+      final records = await sourceRecords(), host = SourceHost();
+      final c = ProjectSourceController(
+        root: '/selected',
+        setupStore: RuntimeSetupStore(records),
+        host: host,
+      );
+      await InspectedFolderStore(records).save('/selected');
+      await c.read(['lib/main.dart'], confirm: (_) async => true);
+      var opened = 0;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: SingleChildScrollView(
+              child: ProjectSourcePanel(
+                root: '/selected',
+                records: records,
+                controller: c,
+                inspection: ProjectInspection(
+                  root: '/selected',
+                  packageName: 'fixture',
+                  dartSdk: '^3.0.0',
+                  runners: ['web'],
+                ),
+                onPlan: (capture) {
+                  expect(capture.files.single.path, 'lib/main.dart');
+                  opened++;
+                },
+              ),
+            ),
+          ),
+        ),
+      );
+      final writes = records.writes;
+      await tester.tap(
+        find.widgetWithText(OutlinedButton, 'Plan with captured source'),
+      );
+      await tester.pumpAndSettle();
+      expect(
+        find.textContaining(
+          'Saving a draft stores the captured source text and provenance',
+        ),
+        findsOneWidget,
+      );
+      expect(opened, 0);
+      expect(records.writes, writes);
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+      expect(opened, 0);
+      await tester.tap(
+        find.widgetWithText(OutlinedButton, 'Plan with captured source'),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Open manual plan'));
+      await tester.pumpAndSettle();
+      expect(opened, 1);
+      expect(records.writes, writes);
+      expect(host.reads, 1);
+    },
+  );
+  for (final mode in ['selection', 'requirements']) {
+    testWidgets('changed $mode invalidates open source-plan storage consent', (
+      tester,
+    ) async {
+      final records = await sourceRecords(), host = SourceHost();
+      final c = ProjectSourceController(
+        root: '/selected',
+        setupStore: RuntimeSetupStore(records),
+        host: host,
+      );
+      await InspectedFolderStore(records).save('/selected');
+      await c.read(['lib/main.dart'], confirm: (_) async => true);
+      var opened = 0;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: SingleChildScrollView(
+              child: ProjectSourcePanel(
+                root: '/selected',
+                records: records,
+                controller: c,
+                inspection: ProjectInspection(
+                  root: '/selected',
+                  packageName: 'fixture',
+                  dartSdk: '^3.0.0',
+                  runners: ['web'],
+                ),
+                onPlan: (_) => opened++,
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(
+        find.widgetWithText(OutlinedButton, 'Plan with captured source'),
+      );
+      await tester.pumpAndSettle();
+      if (mode == 'selection') {
+        c.invalidateSelection();
+      } else {
+        final store = RequirementsStore(records),
+            id = InspectedFolderStore.workspaceId('/selected');
+        await store.save(id, store.load(id), RequirementsBoard());
+      }
+      await tester.tap(find.text('Open manual plan'));
+      await tester.pumpAndSettle();
+      expect(opened, 0);
+      expect(host.reads, 1);
+    });
+  }
   testWidgets(
     'source advisory action opens only a fresh reviewed saved capture',
     (tester) async {
