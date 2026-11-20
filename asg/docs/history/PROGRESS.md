@@ -20277,3 +20277,93 @@ document review evidence stays separate. Final exactPRreview/allrequiredCI and
 verifiedprotectedmerge remain mandatory. Full404/liveQwen/deferred400 open,
 marketplacegate/F23-last retained; owner dirty checkout/processes/stableapp remain
 untouched. No installations/modeldownloads/cloud/deployment/sourcewrite effects.
+
+
+### 2026-11-20 — #404 captured context merged; manual-plan binding started
+
+PR795 expected-head protected squashdc3922a1b7ac5026307ab185daac8dd145c3b77f
+verified by plugin main/mergedPR and fetched treeff81edd4ca35716d2e760072a3c52c6261952aab,
+identical testedlocal7b38f85. Fresh exactsix-file review remote
+df79eb9c902a7e1db2314b91f38ca9572d77142a/basea711935 found no blocker; threads
+empty. CI44735842522 Python136286881039/Flutter136286881352 allrequired/poststeps
+SUCCESS. Bounded purecontext prerequisite Done;10focused/full2421PASS13skips,
+analysis/format/web/product32/inventory9/coordinator20 passed after disclosed
+inventory correction. No app/provider/source authority enabled. Full404OPEN.
+Coordinator merge/outcome recorded, integration/claim released; owner dirty main/
+processes/stableapp untouched.
+
+Immediately claimed404-captured-document-plan-review, solewriter in registered
+issueworktree/currentverifiedmain, existingF20 approved-plan acceptance. Outcome:
+explicit manual plan preparation/save bound to captured documents, metadata and
+current validatedrequirements, with clear local app-record persistence disclosure,
+no automatic file read/model transfer/commands/sourcewrites. Acceptance: root/readset/
+capture/requirements changes and stale/cancelled/uncertain state prevent admission
+or invalidate affected review; preserve usertext/lastrecords and legacy metadata-
+only planning. Keep existing v1keys/string-context JSONformat; captured context is
+historical untrusteddata and localreviewconsent, never currentdisk/execution/model-
+sharing authority. Controller/store persistence ordering/CAS/disposal/old-dialog
+guards need regressioncoverage, actual honest IAB and appropriate builds. Scope
+existing model/controller/panel/workspace/plan store/controller/view/tests and shared
+docs/inventory. No second independent ready outcome. FullF20/liveQwen/deferred400
+remainopen; marketplacegate/F23-last retained.
+
+
+Started manual-plan admission guard: immutable context retains private canonical
+metadata/requirements snapshots and compares current validated app inputs through
+matchesPlanningInputs. Wrongroot/changedSDK/changedrequirementsrevision/invalidboard
+returnfalse privately; equality is data identity only, never diskfreshness or
+permission. Existing canonical record/evidence/digest bytes remain unchanged for
+the same capture. Initial10model+MVCarchitecture1 PASS, twofileanalysis clean;
+canonicalinventory regenerated and9inventorychecks PASS. Logs /tmp/asg404-document-
+plan-start.log, -start-analyze.log and -start-inventory.log. Store/controller/view
+admission, explicit local-save disclosure, persistence failure/CAS, legacy-plan
+regressions and honest UI/build/fullrequiredCI/review/merge remain pending. No
+plan records, document reads, model requests or source actions are enabled by this
+start checkpoint. Solelease staysactive; full404/liveQwen/deferred400 open and
+marketplacegate/F23-last preserved. No second independent ready task admitted.
+
+
+### 2026-11-20 — #404 captured-document manual plan review validation
+
+Implemented explicit Plan with captured documents admission after a successful,
+nonstale selected-document review. Confirmation identifies root, selected files
+and context SHA256 and discloses that saving stores captured text/provenance in
+local application records. Cancel does not navigate or write. Revalidate current
+saved folder/metadata/requirements after consent; changed inputs refuse. The
+manual editor previews literal captured text and preserves existing user-authored
+plan and legacy v1 four-field/string-context records. Approval is review consent
+only. A legacy metadata-only view of a captured plan retains text with approval
+inactive; exact same captured inputs can reopen the saved review.
+
+Production ConditionalRecordStorage commits compare exact durable plan, folder
+reference and requirements rows atomically, including stale session-cache cases.
+Injected plain RecordStorage retains its guarded legacy fallback; it does not
+claim cross-process atomicity. Controller disposal, replaced-editor hydration,
+old-dialog admission, failed writes, changed requirements and stale editors have
+regressions. Captures remain historical untrusted data, source_verified=false;
+no disk freshness, document authenticity, model-sharing or execution permission
+is inferred. No model request, source write, install or command is added.
+
+Final local evidence:79focused PASS; fullFlutter2440PASS/13explicit opt-in skips;
+clean analyzer;593-file zero-change format; normal web build and isolated Debug
+macOS build PASS (com.arsinha.asg.documentplanvalidation, no install/native launch).
+Product32/inventory9/coordinator20 PASS. Actual native Sembast close/reopen retains
+BOM/Unicode/CRLF context bytes and review; controlled durable-row mutation refuses
+approval while the session cache remains stale. This is database/service evidence,
+not native UI/app-process relaunch evidence. Final IAB supplied-data in-memory
+fixture verified explicit disclosure, save/approve and legacy approval inactivity;
+earlier same-source interface checks covered cancel, captured preview and reopen.
+Normal production web document actions stay unsupported/disabled. Packaged Mac/web
+helper bytes match source SHA256
+adbf58420bc5623942414892cf5087b7d205c4182ca7d715049cb3bf3db6fbdb.
+Logs /tmp/asg404-document-plan-{focused-final2,full-final2,analyze-final4,
+format-final2,web-final2,mac-final,product-final2,inventory-final2,coordinator-final}.log
+and /tmp/asg404-document-plan-ui-packaging-receipt.json. Source hashes match final
+UI/build receipt. Initial lazy-widget test scrolling and brace-style infos were
+corrected before passing final checks; no hidden skipped failure. Owned preview
+servers stopped; owner runtime/processes, dirty main and stable app preserved.
+
+Fresh exact PR review, required final CI and verified protected merge remain gates.
+Full F20/#404 stays OPEN; native UI, live Qwen, authenticated Git workflow and
+unavailable-platform #400 acceptance are pending. Marketplace gate and F23-last
+remain. No second dependency-ready disjoint task was admitted.

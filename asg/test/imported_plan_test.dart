@@ -2,9 +2,20 @@
 // Copyright 2026 Arpit Sinha
 
 import 'dart:async';
+import 'dart:io';
+
+import 'package:asg/services/studio_database.dart';
+import 'package:sembast/sembast_io.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:asg/controllers/imported_plan_controller.dart';
 import 'package:asg/models/project_inspection.dart';
+import 'package:asg/models/imported_document_context.dart';
+import 'package:asg/models/project_instruction_observation.dart';
+import 'package:crypto/crypto.dart';
+
+import 'dart:convert';
+
 import 'package:asg/models/requirements_board.dart';
 import 'package:asg/services/imported_plan_store.dart';
 import 'package:asg/services/inspected_folder_store.dart';
@@ -55,7 +66,52 @@ Future<ImportedPlanController> create(
   return c;
 }
 
+class PendingPlanRecords extends Records {
+  Completer<void>? gate;
+  @override
+  Future<bool> setString(String key, String value) async {
+    if (key.startsWith('studio.importedPlan.v1.')) await gate?.future;
+    return super.setString(key, value);
+  }
+}
+
+ImportedDocumentContext capturedPlan({
+  String text = 'Captured untrusted instructions',
+  ProjectInspection? inspection,
+  RequirementsBoard? board,
+}) {
+  final data = utf8.encode(text), metadata = inspection ?? finding();
+  return ImportedDocumentContext.capture(
+    inspection: metadata,
+    requirements: board ?? RequirementsBoard(),
+    request: ProjectInstructionReadRequest(
+      root: metadata.root,
+      python: '/python',
+      selectedPaths: ['AGENTS.md'],
+    ),
+    observation: ProjectInstructionObservation.fromJson(
+      jsonEncode({
+        'version': 1,
+        'scope': 'project-instruction-documents',
+        'status': 'observed',
+        'reason': null,
+        'source_verified': false,
+        'selected_paths': ['AGENTS.md'],
+        'documents': [
+          {
+            'path': 'AGENTS.md',
+            'byte_length': data.length,
+            'sha256': sha256.convert(data).toString(),
+            'content_base64': base64Encode(data),
+          },
+        ],
+      }),
+    ),
+  );
+}
+
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
   test('default planning uses only the confirmed workspace snapshot and app records', () async {
     final records = Records();
     await InspectedFolderStore(records).save('/project');
@@ -413,5 +469,355 @@ void main() {
     await tester.pumpAndSettle();
     expect(c.approved, isFalse);
     expect(tester.takeException(), isNull);
+  });
+  test('captured plan preserves v1 record shape and legacy text without silently reviving approval', () async {
+    final records = Records();
+    await InspectedFolderStore(records).save('/project');
+    final legacy = ImportedPlanController(
+      '/project',
+      ImportedPlanStore(records),
+      inspection: finding(),
+    );
+    await legacy.load();
+    await legacy.saveDraft('Existing authored plan');
+    await legacy.decide(true);
+    final key = ImportedPlanStore.key('/project'),
+        before = records.values[key]!,
+        keys = (jsonDecode(records.values[key]!) as Map).keys.toSet();
+    final capture = capturedPlan(),
+        store = ImportedPlanStore(records, capturedDocuments: capturedPlan());
+    final c = ImportedPlanController('/project', store, inspection: finding());
+    await c.load();
+    expect(c.plan!.text, 'Existing authored plan');
+    expect(c.approved, false);
+    expect(records.values[key], before);
+    await c.saveDraft('Review selected captured documents');
+    await c.decide(true);
+    expect(c.approved, true);
+    expect(c.plan!.context, capture.recordJson);
+    expect((jsonDecode(records.values[key]!) as Map).keys.toSet(), keys);
+    final saved = records.values[key];
+    final reopened = ImportedPlanController(
+      '/project',
+      ImportedPlanStore(records, capturedDocuments: capturedPlan()),
+      inspection: finding(),
+    );
+    await reopened.load();
+    expect(reopened.approved, true);
+    expect(records.values[key], saved);
+    final metadataOnly = ImportedPlanController(
+      '/project',
+      ImportedPlanStore(records),
+      inspection: finding(),
+    );
+    await metadataOnly.load();
+    expect(metadataOnly.approved, false);
+    expect(metadataOnly.plan!.text, c.plan!.text);
+    expect(records.values[key], saved);
+    legacy.dispose();
+    c.dispose();
+    reopened.dispose();
+    metadataOnly.dispose();
+  });
+  test('changed requirements or document capture invalidates approval and preserves last record', () async {
+    final records = Records();
+    await InspectedFolderStore(records).save('/project');
+    final c = ImportedPlanController(
+      '/project',
+      ImportedPlanStore(records, capturedDocuments: capturedPlan()),
+      inspection: finding(),
+    );
+    await c.load();
+    await c.saveDraft('Review capture');
+    await c.decide(true);
+    final key = ImportedPlanStore.key('/project'), saved = records.values[key];
+    final next = ImportedPlanController(
+      '/project',
+      ImportedPlanStore(
+        records,
+        capturedDocuments: capturedPlan(text: 'changed'),
+      ),
+      inspection: finding(),
+    );
+    await next.load();
+    expect(next.approved, false);
+    final requirements = RequirementsStore(records),
+        id = InspectedFolderStore.workspaceId('/project');
+    await requirements.save(id, requirements.load(id), RequirementsBoard());
+    expect(c.approved, false);
+    await c.decide(true);
+    expect(c.error, isNotNull);
+    expect(records.values[key], saved);
+    await c.saveDraft('Unsaved after requirements changed');
+    expect(records.values[key], saved);
+    c.dispose();
+    next.dispose();
+  });
+  test('captured context mismatch and failed writes retain bytes and allow an unchanged retry', () async {
+    final records = Records();
+    await InspectedFolderStore(records).save('/project');
+    final c = ImportedPlanController(
+      '/project',
+      ImportedPlanStore(records, capturedDocuments: capturedPlan()),
+      inspection: finding(),
+    );
+    await c.load();
+    await c.saveDraft('Old text');
+    final key = ImportedPlanStore.key('/project'), saved = records.values[key];
+    records.fail = true;
+    await c.saveDraft('New text');
+    expect(records.values[key], saved);
+    expect(c.approved, false);
+    records.fail = false;
+    await c.saveDraft('New text');
+    expect(c.plan!.text, 'New text');
+    final wrong = ImportedPlanStore(
+      records,
+      capturedDocuments: capturedPlan(
+        inspection: ProjectInspection(
+          root: '/other',
+          packageName: 'fixture',
+          dartSdk: '^3.0.0',
+          runners: ['web'],
+        ),
+      ),
+    );
+    expect(() => wrong.context(finding()), throwsStateError);
+    c.dispose();
+  });
+  test(
+    'concurrent captured-plan editors preserve the first committed record',
+    () async {
+      final records = Records();
+      await InspectedFolderStore(records).save('/project');
+      final first = ImportedPlanController(
+        '/project',
+        ImportedPlanStore(records, capturedDocuments: capturedPlan()),
+        inspection: finding(),
+      );
+      final second = ImportedPlanController(
+        '/project',
+        ImportedPlanStore(records, capturedDocuments: capturedPlan()),
+        inspection: finding(),
+      );
+      await first.load();
+      await second.load();
+      await first.saveDraft('First committed');
+      final saved = records.values[ImportedPlanStore.key('/project')];
+      await second.saveDraft('Stale second editor');
+      expect(second.error, isNotNull);
+      expect(records.values[ImportedPlanStore.key('/project')], saved);
+      first.dispose();
+      second.dispose();
+    },
+  );
+  test(
+    'disposal after snapshot await prevents late planning record access',
+    () async {
+      final records = Records();
+      await InspectedFolderStore(records).save('/project');
+      final pending = Completer<ProjectInspection>();
+      final c = ImportedPlanController(
+        '/project',
+        ImportedPlanStore(records, capturedDocuments: capturedPlan()),
+        inspect: (_) => pending.future,
+      );
+      final load = c.load();
+      c.dispose();
+      records.failure = 'private-sentinel';
+      pending.complete(finding());
+      await load;
+      expect(c.plan, isNull);
+      expect(c.error, isNull);
+    },
+  );
+  test('requirements changing during a pending approval write never become active consent', () async {
+    final records = PendingPlanRecords();
+    await InspectedFolderStore(records).save('/project');
+    final c = ImportedPlanController(
+      '/project',
+      ImportedPlanStore(records, capturedDocuments: capturedPlan()),
+      inspection: finding(),
+    );
+    await c.load();
+    await c.saveDraft('Historical snapshot review');
+    records.gate = Completer<void>();
+    final pending = c.decide(true);
+    await Future<void>.delayed(Duration.zero);
+    final requirements = RequirementsStore(records),
+        id = InspectedFolderStore.workspaceId('/project');
+    await requirements.save(id, requirements.load(id), RequirementsBoard());
+    records.gate!.complete();
+    await pending;
+    expect(c.approved, false);
+    expect(c.current, false);
+    final nextCapture = capturedPlan(board: requirements.load(id));
+    final next = ImportedPlanController(
+      '/project',
+      ImportedPlanStore(records, capturedDocuments: nextCapture),
+      inspection: finding(),
+    );
+    await next.load();
+    expect(next.plan!.text, 'Historical snapshot review');
+    expect(next.approved, false);
+    c.dispose();
+    next.dispose();
+  });
+  test('synchronous disposal at busy notification prevents injected inspection and writes', () async {
+    final records = Records();
+    await InspectedFolderStore(records).save('/project');
+    var inspected = 0;
+    final c = ImportedPlanController(
+      '/project',
+      ImportedPlanStore(records, capturedDocuments: capturedPlan()),
+      inspect: (_) async {
+        inspected++;
+        return finding();
+      },
+    );
+    c.addListener(c.dispose);
+    final writes = records.writes;
+    await c.load();
+    expect(inspected, 0);
+    expect(records.writes, writes);
+    expect(c.current, false);
+  });
+  testWidgets(
+    'replaced plan controller drops pending old hydration and clears old editor text',
+    (tester) async {
+      final records = Records();
+      await InspectedFolderStore(records).save('/project');
+      await InspectedFolderStore(records).save('/other');
+      final other = ProjectInspection(
+        root: '/other',
+        packageName: 'other',
+        dartSdk: '^3.0.0',
+        runners: ['web'],
+      );
+      final seed = ImportedPlanController(
+        '/other',
+        ImportedPlanStore(records),
+        inspection: other,
+      );
+      await seed.load();
+      await seed.saveDraft('Other workspace plan');
+      seed.dispose();
+      final pending = Completer<ProjectInspection>();
+      final old = ImportedPlanController(
+        '/project',
+        ImportedPlanStore(records),
+        inspect: (_) => pending.future,
+      );
+      await tester.pumpWidget(
+        MaterialApp(home: ImportedPlanScreen(controller: old)),
+      );
+      await tester.pump();
+      final next = ImportedPlanController(
+        '/other',
+        ImportedPlanStore(records),
+        inspection: other,
+      );
+      await tester.pumpWidget(
+        MaterialApp(home: ImportedPlanScreen(controller: next)),
+      );
+      await tester.pumpAndSettle();
+      pending.complete(finding());
+      await tester.pumpAndSettle();
+      expect(old.isDisposed, true);
+      expect(
+        tester.widget<TextField>(find.byType(TextField)).controller!.text,
+        'Other workspace plan',
+      );
+      expect(next.root, '/other');
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox());
+      await tester.pump();
+    },
+  );
+  test('captured plan survives an actual native database close and reopen unchanged', () async {
+    final root = await Directory.systemTemp.createTemp('asg-captured-plan-db-');
+    SharedPreferences.setMockInitialValues({});
+    final preferences = await SharedPreferences.getInstance();
+    var db = await databaseFactoryIo.openDatabase('${root.path}/records.db');
+    try {
+      final records = await StudioDatabase.migrate(db, preferences);
+      await InspectedFolderStore(records).save('/project');
+      final c = ImportedPlanController(
+        '/project',
+        ImportedPlanStore(
+          records,
+          capturedDocuments: capturedPlan(text: '\ufeffcafé\r\nCaptured data'),
+        ),
+        inspection: finding(),
+      );
+      await c.load();
+      await c.saveDraft('Durable captured plan');
+      await c.decide(true);
+      expect(c.approved, true);
+      final key = ImportedPlanStore.key('/project'),
+          raw = records.getString(key);
+      c.dispose();
+      await db.close();
+      db = await databaseFactoryIo.openDatabase('${root.path}/records.db');
+      final reopened = await StudioDatabase.migrate(db, preferences);
+      final next = ImportedPlanController(
+        '/project',
+        ImportedPlanStore(
+          reopened,
+          capturedDocuments: capturedPlan(text: '\ufeffcafé\r\nCaptured data'),
+        ),
+        inspection: finding(),
+      );
+      await next.load();
+      expect(next.approved, true);
+      expect(next.plan!.text, 'Durable captured plan');
+      expect(
+        next.plan!.context,
+        capturedPlan(text: '\ufeffcafé\r\nCaptured data').recordJson,
+      );
+      expect(reopened.getString(key), raw);
+      next.dispose();
+    } finally {
+      await db.close();
+      await root.delete(recursive: true);
+    }
+  });
+  test('production conditional save rejects changed durable inputs despite a stale session snapshot', () async {
+    final root = await Directory.systemTemp.createTemp(
+      'asg-captured-plan-cas-',
+    );
+    SharedPreferences.setMockInitialValues({});
+    final preferences = await SharedPreferences.getInstance();
+    final db = await databaseFactoryIo.openDatabase('${root.path}/records.db');
+    try {
+      final records = await StudioDatabase.migrate(db, preferences);
+      await InspectedFolderStore(records).save('/project');
+      final c = ImportedPlanController(
+        '/project',
+        ImportedPlanStore(records, capturedDocuments: capturedPlan()),
+        inspection: finding(),
+      );
+      await c.load();
+      await c.saveDraft('Last working draft');
+      final key = ImportedPlanStore.key('/project'),
+          raw = records.getString(key);
+      final requirementKey = RequirementsStore.key(
+        InspectedFolderStore.workspaceId('/project'),
+      );
+      final rows = StoreRef<String, String>('records');
+      await rows
+          .record(requirementKey)
+          .put(db, jsonEncode(RequirementsBoard(revision: 1).toJson()));
+      expect(records.getString(requirementKey), isNull);
+      await c.decide(true);
+      expect(c.error, isNotNull);
+      expect(c.approved, false);
+      expect(await rows.record(key).get(db), raw);
+      expect(records.getString(key), raw);
+      c.dispose();
+    } finally {
+      await db.close();
+      await root.delete(recursive: true);
+    }
   });
 }

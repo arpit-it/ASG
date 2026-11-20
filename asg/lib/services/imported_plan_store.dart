@@ -4,13 +4,43 @@
 import 'dart:convert';
 
 import '../models/imported_plan.dart';
+import '../models/imported_document_context.dart';
 import '../models/project_inspection.dart';
 import 'inspected_folder_store.dart';
 import 'record_storage.dart';
 import 'requirements_store.dart';
 
+/// Captures the exact app-record inputs used to validate one plan save.
+final class _PlanReads implements RecordStorage {
+  _PlanReads(this.source);
+  final RecordStorage source;
+  final Map<String, String?> expected = {};
+  @override
+  String? getString(String key) {
+    final value = source.getString(key);
+    if (expected.containsKey(key) && expected[key] != value) {
+      throw StateError('Planning inputs changed. Reopen review.');
+    }
+    expected[key] = value;
+    return value;
+  }
+
+  void requireUnchanged() {
+    if (expected.entries.any(
+      (entry) => source.getString(entry.key) != entry.value,
+    )) {
+      throw StateError('Planning inputs changed. Reopen review.');
+    }
+  }
+
+  @override
+  Future<bool> setString(String key, String value) =>
+      throw StateError('Planning input selection is read-only.');
+}
+
 class ImportedPlanStore {
-  ImportedPlanStore(this.records);
+  ImportedPlanStore(this.records, {this.capturedDocuments});
+  final ImportedDocumentContext? capturedDocuments;
   final RecordStorage records;
   static final _writers = Expando<Set<String>>();
   static String key(String root) =>
@@ -22,6 +52,15 @@ class ImportedPlanStore {
     final board = RequirementsStore(records)
         .load(InspectedFolderStore.workspaceId(inspection.root));
     board.validate();
+    final captured = capturedDocuments;
+    if (captured != null) {
+      if (!captured.matchesPlanningInputs(inspection, board)) {
+        throw StateError(
+          'Captured planning inputs changed. Review documents and requirements again.',
+        );
+      }
+      return captured.recordJson;
+    }
     return jsonEncode({
       'root': inspection.root,
       'package': inspection.packageName,
@@ -50,11 +89,17 @@ class ImportedPlanStore {
     }
     try {
       ImportedPlan.validateText(text);
-      final current = load(inspection.root);
+      final reads = _PlanReads(records);
+      final snapshot = ImportedPlanStore(
+        reads,
+        capturedDocuments: capturedDocuments,
+      );
+      final current = snapshot.load(inspection.root);
       if (jsonEncode(current?.toJson()) != jsonEncode(expected?.toJson())) {
         throw StateError('Plan changed. Reopen before saving.');
       }
-      final currentContext = context(inspection);
+      final currentContext = snapshot.context(inspection);
+      reads.requireUnchanged();
       if (approved &&
           (current == null ||
               current.text != text ||
@@ -67,11 +112,19 @@ class ImportedPlanStore {
         approved: approved,
         recordedAt: DateTime.now().toUtc(),
       );
-      if (!await records.setString(
-        key(inspection.root),
-        jsonEncode(result.toJson()),
-      )) {
-        throw StateError('Plan could not be saved. Retry the action.');
+      final storage = records;
+      final raw = jsonEncode(result.toJson());
+      if (storage is ConditionalRecordStorage) {
+        await storage.commitRecords(
+          expected: Map<String, String?>.unmodifiable(reads.expected),
+          updates: {key(inspection.root): raw},
+          authorize: reads.requireUnchanged,
+        );
+      } else {
+        reads.requireUnchanged();
+        if (!await storage.setString(key(inspection.root), raw)) {
+          throw StateError('Plan could not be saved. Retry the action.');
+        }
       }
       return result;
     } finally {

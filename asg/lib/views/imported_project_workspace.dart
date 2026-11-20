@@ -94,6 +94,21 @@ class ImportedProjectWorkspace extends StatelessWidget {
           key: ValueKey('instructions-${inspection.root}'),
           root: inspection.root,
           records: records,
+          inspection: inspection,
+          onPlan: (captured) {
+            if (!context.mounted) return;
+            Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => ImportedPlanScreen(
+                  controller: ImportedPlanController(
+                    inspection.root,
+                    ImportedPlanStore(records, capturedDocuments: captured),
+                    inspection: inspection,
+                  ),
+                ),
+              ),
+            );
+          },
         ),
         const SizedBox(height: 16),
         GitMetadataPanel(

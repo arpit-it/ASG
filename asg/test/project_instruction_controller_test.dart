@@ -6,6 +6,10 @@ import 'dart:convert';
 import 'package:asg/controllers/project_instruction_controller.dart';
 import 'package:asg/models/project_instruction_observation.dart';
 import 'package:asg/models/runtime_setup.dart';
+import 'package:asg/models/project_inspection.dart';
+import 'package:asg/models/requirements_board.dart';
+import 'package:asg/services/inspected_folder_store.dart';
+import 'package:asg/services/requirements_store.dart';
 import 'package:asg/services/project_instruction_host.dart';
 import 'package:asg/services/record_storage.dart';
 import 'package:asg/services/runtime_setup_store.dart';
@@ -272,4 +276,85 @@ void main() {
     expect(identical(old, c.findings), true);
     expect(c.stale, true);
   });
+  test('plan preparation requires a fresh capture and saved reference, without writing records', () async {
+    final inspection = ProjectInspection(
+      root: '/selected',
+      packageName: 'fixture',
+      dartSdk: '^3.0.0',
+      runners: ['web'],
+    );
+    expect(c.preparePlan(inspection), isNull);
+    await c.read(['AGENTS.md'], confirm: (_) async => true);
+    expect(c.preparePlan(inspection), isNull);
+    await InspectedFolderStore(records).save('/selected');
+    final writes = records.writes;
+    final prepared = c.preparePlan(inspection);
+    expect(prepared, isNotNull);
+    expect(records.writes, writes);
+    expect(prepared!.documents.single.path, 'AGENTS.md');
+    expect(c.acceptsPreparedPlan(prepared, inspection), true);
+    c.invalidateSelection();
+    expect(c.preparePlan(inspection), isNull);
+    expect(c.canPreparePlan, false);
+  });
+  test('changed requirements invalidate planning consent without another document read', () async {
+    await InspectedFolderStore(records).save('/selected');
+    final inspection = ProjectInspection(
+      root: '/selected',
+      packageName: 'fixture',
+      dartSdk: '^3.0.0',
+      runners: ['web'],
+    );
+    await c.read(['AGENTS.md'], confirm: (_) async => true);
+    final prepared = c.preparePlan(inspection)!;
+    final store = RequirementsStore(records),
+        id = InspectedFolderStore.workspaceId('/selected');
+    await store.save(id, store.load(id), RequirementsBoard());
+    expect(c.acceptsPreparedPlan(prepared, inspection), false);
+    expect(c.error, contains('changed'));
+    expect(host.reads, 1);
+  });
+  test('wrong metadata root corrupt requirements and disposed capture never admit a plan', () async {
+    await InspectedFolderStore(records).save('/selected');
+    await c.read(['AGENTS.md'], confirm: (_) async => true);
+    final wrong = ProjectInspection(
+      root: '/other',
+      packageName: 'fixture',
+      dartSdk: '^3.0.0',
+      runners: ['web'],
+    );
+    expect(c.preparePlan(wrong), isNull);
+    records.values[RequirementsStore.key(
+          InspectedFolderStore.workspaceId('/selected'),
+        )] =
+        'private-sentinel';
+    final right = ProjectInspection(
+      root: '/selected',
+      packageName: 'fixture',
+      dartSdk: '^3.0.0',
+      runners: ['web'],
+    );
+    expect(c.preparePlan(right), isNull);
+    expect(c.error, isNot(contains('private-sentinel')));
+    c.dispose();
+    expect(c.preparePlan(right), isNull);
+  });
+  test(
+    'synchronous selection invalidation prevents prepared context publication',
+    () async {
+      await InspectedFolderStore(records).save('/selected');
+      await c.read(['AGENTS.md'], confirm: (_) async => true);
+      c.addListener(() {
+        if (!c.stale) c.invalidateSelection();
+      });
+      final inspection = ProjectInspection(
+        root: '/selected',
+        packageName: 'fixture',
+        dartSdk: '^3.0.0',
+        runners: ['web'],
+      );
+      expect(c.preparePlan(inspection), isNull);
+      expect(c.canPreparePlan, false);
+    },
+  );
 }
