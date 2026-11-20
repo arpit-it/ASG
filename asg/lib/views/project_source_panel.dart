@@ -18,6 +18,7 @@ class ProjectSourcePanel extends StatefulWidget {
     this.inspection,
     this.onAdvisory,
     this.onPlan,
+    this.onProposal,
   });
   final String root;
   final RecordStorage records;
@@ -25,6 +26,7 @@ class ProjectSourcePanel extends StatefulWidget {
   final ProjectInspection? inspection;
   final ValueChanged<ImportedSourceContext>? onAdvisory;
   final ValueChanged<ImportedSourceContext>? onPlan;
+  final ValueChanged<ImportedSourceContext>? onProposal;
   @override
   State<ProjectSourcePanel> createState() => _ProjectSourcePanelState();
 }
@@ -163,6 +165,19 @@ class _ProjectSourcePanelState extends State<ProjectSourcePanel> {
     widget.onPlan?.call(prepared);
   }
 
+  void _proposal() {
+    final owner = _controller, inspection = widget.inspection;
+    if (inspection == null || widget.onProposal == null) return;
+    final captured = owner.preparePlan(inspection);
+    if (captured == null ||
+        !mounted ||
+        !identical(owner, _controller) ||
+        owner.isDisposed) {
+      return;
+    }
+    widget.onProposal?.call(captured);
+  }
+
   void _advisory() {
     final owner = _controller, inspection = widget.inspection;
     if (inspection == null || widget.onAdvisory == null) return;
@@ -236,6 +251,11 @@ class _ProjectSourcePanelState extends State<ProjectSourcePanel> {
                       : null,
                   child: const Text('Review selected source'),
                 ),
+                if (widget.inspection != null && widget.onProposal != null)
+                  OutlinedButton(
+                    onPressed: c.canPreparePlan ? _proposal : null,
+                    child: const Text('Review source proposal'),
+                  ),
                 if (widget.inspection != null && widget.onPlan != null)
                   OutlinedButton(
                     onPressed: c.canPreparePlan ? _plan : null,
