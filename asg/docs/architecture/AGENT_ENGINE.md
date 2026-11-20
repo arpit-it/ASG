@@ -4292,3 +4292,13 @@ All32same-binary native observations repeated with driverbc8dbaa/digest
 feaa8a1898e151d54d1c67f441b3b63864f46e7238ff30349af2be3b7a0af3f5.
 Native603source inputs/bundle remain unchanged; original driver evidence is kept
 separately. Final revised review/requiredCI/verifiedmerge still gate delivery.
+
+
+Final VM portability correction keeps the private-root guard strict: own scratch
+roots explicitly0700, exact pause errors required, Linux enabled. Full2229/12skips
+and116focused pass. A separate final build/source51c3ba4/603inputs832e6f690016adcaaed4eda3ad1bdeb085f5d2147808f3c20f54e76709651782
+produced bundlee6ed3a85de0c7b847958c2aa38c5b9448a8643c5db6bd914fc2e076219013bfd;
+all32native cases repeated successfully on it, prior bundles/reports preserved.
+/tmp/asg404-native-unresolved-posix-evidence-summary.json records exact source/
+driver/bundle/report identities. Final revised review/requiredCI/verifiedmerge
+remain gates; failed earlier CI does not authorize delivery or platform claims.

@@ -17980,3 +17980,51 @@ Dart inputs; final requiredCI reruns mandatory checks on revised published head.
 Final product/inventory and new exact PRreview/CI/verifiedmerge still gate delivery;
 fullCE01/F20/#404/liveQwen/platform400 stay open. Owner processes/primary edits/
 stable application/last working outputs preserved. No install/download/deployment.
+
+
+PR774 CI setup correction: requiredCI44669797978 PythonPASS but Linux Flutter
+failed3new VM stages because no launch1 report existed; the broad throwsStateError
+matcher had accepted an early setup failure as the deliberate pause. The tests
+had not guaranteed the fixture's mandatory private0700 root. Local broad0755-root
+regression reproduces the privacy refusal before DB/report creation. Runtime
+privacy guard is UNCHANGED; VM setup now chmods ONLY its own fresh temporary root
+0700 and verifies mode, cleans up on setup failure, and requires the EXACT supplied
+pause error. Linux VM cases stay enabled; unsupported non-POSIX VM/app acceptance
+is deferred under400, not counted as a pass.
+
+Primary SDK evidence (read through connected GitHub plugin), Dart3.13.5:
+https://github.com/dart-lang/sdk/blob/3.13.5/runtime/bin/directory_linux.cc#L465
+uses a process-umask-controlled directory creation; macOS same-tag source at
+https://github.com/dart-lang/sdk/blob/3.13.5/runtime/bin/directory_macos.cc#L414
+uses mkdtemp. This supports the setup diagnosis, but the failing CI job did not
+record actual mode/umask; missing report alone is not proof of those values.
+New explicit precondition removes that assumption and exact pause matching exposes
+any other early error. No guard weakening or Linux skip was used to force success.
+
+Local fullFlutter2229PASS/12explicit opt-in skips, focused116, cleananalysis/
+format556. Eleven native24Dart tests include the new broad-root refusal case.
+/tmp/asg404-native-unresolved-posix-{focused,analyze,format,full-test}.log.
+Sourcecommit51c3ba4adbf7ca826f38575ddfd9cc004f8eb77a changes only the VM test from
+the prior snapshot. A NEW final isolated build, preserving earlier working bundle,
+succeeded at /private/tmp/asg404-native-unresolved-derived/posix-final/Build/Products/
+Debug/Automated Software Generator.app, same restartfixture identity. Whole-bundle
+SHA256e6ed3a85de0c7b847958c2aa38c5b9448a8643c5db6bd914fc2e076219013bfd.
+603final source-input SHA256
+832e6f690016adcaaed4eda3ad1bdeb085f5d2147808f3c20f54e76709651782; app-only
+subset SHA25662d53f20cf16c39652d13087963be171b898479aeb5c34d5d358c81dcec74278.
+All final inputs byte-identical after AGAIN verifying all32actual native launches
+on that exact NEW bundle: new2+4 and preserved legacy23/22/21/20 twenty-six, allPASS.
+Host driver remainsbc8dbaa/feaa8a18 (121host/6restart tests passing).
+
+Final private manifest/bundle/evidence summary and case reports have distinct
+/tmp/asg404-native-unresolved-posix-*.json names; prior observations/bundles remain
+at their original identities and are not relabelled or counted as new capabilities.
+Summary verifies source/bundle/report hashes, artifacts and32launchcounts. All owned
+fixture processes settled. Newcases remain supplied metadata/no liveQwen/SDK/copy/
+candidate/host/preview; legacy20 retains its original fixed SDK/receipt scope.
+
+One PRreview control-file correction plus one CItest-setup correction occurred
+before merge; no escaped defect observed. Revised exactreview and NEW requiredCI
+are still mandatory; failed3d12439 CI and older08bc27e4 results authorize no merge.
+Owner processes/primary edits/stable app/last output preserved. FullCE01/F20/#404/
+liveQwen/unavailable400 remain open; no install/download/cloud/deployment.

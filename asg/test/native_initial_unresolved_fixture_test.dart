@@ -26,6 +26,24 @@ Map<String, Object> _challenge(int launch) => {
   'explicitNext': launch >= 3,
 };
 
+Future<Directory> _privateRoot(String prefix) async {
+  final temporary = await Directory.systemTemp.createTemp(prefix);
+  try {
+    final root = await temporary.resolveSymbolicLinks();
+    final mode = await Process.run('/bin/chmod', ['0700', root]);
+    expect(mode.exitCode, 0);
+    expect(
+      (await Directory(root).stat()).mode & 0x3f,
+      0,
+      reason: 'The VM fixture must meet the same private-root contract.',
+    );
+    return temporary;
+  } catch (_) {
+    await temporary.delete(recursive: true);
+    rethrow;
+  }
+}
+
 Future<Map<String, String>> _physical(String root) async {
   final db = await databaseFactoryIo.openDatabase(
     '$root/initial-unresolved.db',
@@ -57,7 +75,16 @@ Future<Map<String, dynamic>> _stage(
     },
   );
   if (launch == 1 || launch == 3) {
-    await expectLater(pending, throwsStateError);
+    await expectLater(
+      pending,
+      throwsA(
+        isA<StateError>().having(
+          (e) => e.message,
+          'pause message',
+          'Supplied VM pause release, not a native process crash.',
+        ),
+      ),
+    );
   } else {
     await pending;
   }
@@ -173,9 +200,7 @@ void main() {
     test(
       'same-process native stages explicitNext=$next; no app crash',
       () async {
-        final temp = await Directory.systemTemp.createTemp(
-          'asg-candidate-crash-vm-unresolved-',
-        );
+        final temp = await _privateRoot('asg-candidate-crash-vm-unresolved-');
         final root = await temp.resolveSymbolicLinks();
         await Directory('$root/sdk').create();
         try {
@@ -271,12 +296,13 @@ void main() {
           await temp.delete(recursive: true);
         }
       },
+      skip: !Platform.isMacOS && !Platform.isLinux,
     );
   }
   test(
     'cold stage refuses wrong nonce and symlink capture without writes',
     () async {
-      final temp = await Directory.systemTemp.createTemp(
+      final temp = await _privateRoot(
         'asg-candidate-crash-vm-unresolved-refusal-',
       );
       final root = await temp.resolveSymbolicLinks();
@@ -297,5 +323,39 @@ void main() {
         await temp.delete(recursive: true);
       }
     },
+    skip: !Platform.isMacOS && !Platform.isLinux,
+  );
+  test(
+    'broader root permissions refuse before database/report creation',
+    () async {
+      final temp = await _privateRoot(
+        'asg-candidate-crash-vm-unresolved-mode-',
+      );
+      final root = await temp.resolveSymbolicLinks();
+      await Directory('$root/sdk').create();
+      try {
+        final broaden = await Process.run('/bin/chmod', ['0755', root]);
+        expect(broaden.exitCode, 0);
+        SharedPreferences.setMockInitialValues({});
+        await expectLater(
+          runNativeInitialUnresolvedFixture(
+            root,
+            jsonEncode({..._challenge(1), 'sdk': '$root/sdk'}),
+          ),
+          throwsA(
+            isA<StateError>().having(
+              (e) => e.message,
+              'privacy refusal',
+              'Private canonical fixture root and existing SDK required.',
+            ),
+          ),
+        );
+        expect(await File('$root/initial-unresolved.db').exists(), isFalse);
+        expect(await File('$root/launch-1.json').exists(), isFalse);
+      } finally {
+        await temp.delete(recursive: true);
+      }
+    },
+    skip: !Platform.isMacOS && !Platform.isLinux,
   );
 }
