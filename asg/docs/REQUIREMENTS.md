@@ -22231,3 +22231,121 @@ removed/descriptors closed. Documentation-only local policy does not require
 unrelated builds; required finalCI/fresh exactreview/verifiedmerge still gate this
 investigation's delivery. Full404/nativeUI/liveQwen and deferred400 remainOPEN;
 marketplace/F23-last retained; owner dirty main/processes/stableapp preserved.
+
+
+### 2026-11-20 — selected-source contract merged; contained source helper started
+
+PR799 reviewed head3c05e1549097def66803d1be1dc0ea9e7282d625 protected squashmerge
+8c04a06fcf93549143da30209b8726e7a2121a37 verified by plugin main/mergedPR/issue404OPEN
+and fetched exact treec0ec9238cc8484f7a54498054524f0a0955dbbce matching local482b0f1.
+Fresh full remote/localdiff/issue/code/probe review had no blockers; conversations
+empty. RequiredCI44752768590 Python136344603443/Flutter136344603044 and every
+required/poststep SUCCESS, including browser/transport, normalweb and independent
+generated-project checks. Bounded source-boundary investigation Done:9descriptor
+probes/29selection examples/25existing reader regressions PASS. No source protocol
+or app effect was enabled by that documentation delivery. Coordinator merge/outcome
+recorded; integration/claim released. Full404/nativeUI/liveQwen/deferred400 remain
+OPEN; owner dirtymain/processes/stableapp and marketplace/F23-last preserved.
+
+Immediately claimed404-contained-source-reader from verifiedmain, solewriter in
+registered issueworktree under existingF20/#404. Coherent prerequisite outcome:
+standalone self-contained stdlib selected-Dart source observation protocol with
+complete path/readset validation and private all-or-nothing refusal, plus focused
+negative/CLI fixtures and required PythonCI. Scope new helper/test, one required CI
+step, shared docs/inventory; current document helper/app/provider/asset integrations
+remain unchanged. New typed app host/controller/UI/source-context integration and
+sharing require later verified work; no arbitrary repository execution is granted.
+
+Started project_source_files.py with a separate version1 project-source-files/
+selected_paths/files/source_verified=false record. Selection admits1–4 unique and
+casefold-unique literal ASCII .dart paths under lib/test, <=512pathbytes/16components/
+128chars per component; invalid types/control/surrogate/hidden/traversal/wildcard/
+absolute/backslash/ambiguous names refuse before filesystem calls. Selection is
+frozen, and each validated directory component/final basename is passed separately
+to nofollow descriptor primitives. Reader is self-contained for isolated-I-S-B
+execution, mirroring existing root-document descriptor semantics with source-specific
+refusal mapping. Single-link regular files only, repeated file identity guard,
+stable signatures/final readset validation, strict UTF8/noNUL,32KiB perfile/64KiB
+aggregate/128KiB output, exact byte length/base64/SHA256 and no partial captures.
+No project modules/hooks/commands/network/model/source writes are invoked.
+
+Initial7actual Mac tests PASS: exact ordered nested lib/test capture including BOM/
+CRLF/Unicode bytes and fixed schema;26invalid selection subcases open nothing;
+only single validated components reach directory/file operations; selected file/
+directory symlinks, hard links and missing files refuse; exact size/aggregate bounds,
+strict encoding/NUL and overflow return no partial payload; replaced file fails
+final validation; isolated real CLI runs from a synthetic project with hostile
+sitecustomize without importing it and refuses traversal privately. Existing
+instruction25/metadata29 regressions, product32/inventory9/coordinator20 PASS.
+Canonical inventory regenerated unchanged. Added only a required selected-source
+Python step; existing check names/commands/action pins/permissions/timeouts and
+protections retained. Logs /tmp/asg404-contained-source-{start,doc-regression,
+metadata-regression,inventory-start,product-start,coordinator-start}.log.
+
+This is a local start checkpoint, not delivered app source-reading support. Expand
+root/directory/read races, descriptor cleanup, duplicate identity, unsupported-host/
+private-error and CLI/output-boundary negatives; then run required regressions,
+fresh exact PRreview/allrequiredCI/verifiedmerge before delivery. Current public
+instruction protocol and app assets unchanged; no nativeUI/live model/platform
+support assertion, owner-source read, install/download/cloud/deployment or second
+independent ready task. Claim remainsactive for continuation.
+
+
+### #404 contained selected-source helper — final local implementation and validation
+
+Standalone project_source_files.py now supplies the separate version1
+project-source-files observation protocol: fixed seven envelope keys, ordered
+selected_paths/files and source_verified=false. Each successful item has only
+path/byte_length/SHA256/base64; strict UTF8/noNUL is validated without transforming
+BOM/CRLF/Unicode bytes. One to four exact unique/casefold-unique ASCII .dart files
+under lib/test;512pathbytes/16components/128chars percomponent. Invalid/traversal/
+absolute/hidden/wildcard/backslash/control/surrogate/type/depth/size selections
+refuse before opens. No input normalization or implicit recursive discovery.
+
+Each directory is opened by one admitted component, final source by basename,
+with read-only nofollow flags and nonblocking file open. Regular/single-link files
+only; repeated file identities, stat/open/read/final signatures and directory/
+root/ancestor replacements refuse.32KiB/file64KiBaggregate128KiB output ceilings,
+all-or-nothing private fixed refusals and reverse-order descriptor close on every
+exit. Namespaced source refusal codes are emitted directly; the initial legacy
+reason translation shim was removed for a self-contained source protocol. The
+helper deliberately mirrors descriptor semantics while remaining standalone for
+Python-I-S-B with no project/site imports. Existing document helper/model/context,
+app assets, native host, controllers and views remain unchanged. No source writes,
+project imports/hooks/commands, scan, process/network/model dispatch or permission
+expansion. Observations are historical data, not authentication or atomic source
+snapshots. A future app caller must own explicit root/Python/readset consent,
+deadline, Stop, output caps and cleanup; separate sharing consent still applies.
+
+Final31actual Mac/POSIX tests PASS, covering fixed schema/exact ordered nested
+bytes, invalid selections with zeroopens, maximum component/path/depth and actual
+512byte/16component reads, frozen readset, selected-only reads, zero-length/four
+sources/exact64KiB total, source/aggregate/output overflow, strict text, Unicode
+normalization distinctions, links/FIFO/directories, stat-to-open FIFO/symlink/
+disappear/growth/hardlink races, midread truncation/growth/same-size changes,
+same-byte replace/unlink, directory/root/ancestor replacement, simulated duplicate
+file identity, private open/read/validation errors, unsupported API/host, all-owned
+FD close+EBADF verification, malformed/isolatedCLI from hostile project cwd and
+fixed refusal output. Open-flag regression forbids create/truncate/append/follow;
+no-scan/high-level-open/process/network/write hooks are exercised. CLI subprocesses
+complete under bounded test timeouts and do not execute fixture source.
+
+Adjacent document25/metadata29 regressions PASS; product32/inventory9/coordinator20
+PASS. FullFlutter2470PASS13explicit opt-in skips,601-file zero-changeformat, clean
+analysis and normalwebbuild PASS. Logs /tmp/asg404-source-reader-{focused-final2,
+doc-final,metadata-final,inventory-final,product-final,coordinator-final,format-final,
+analyze-final,full-final,web-final}.log and final source/test hash receipt
+/tmp/asg404-source-reader-final-receipt.json. No app/runtime input changed, no new
+app asset/nativeUI/IAB behavior was enabled; actual Mac CLI evidence is separate
+from later app-host/device support. Added exactly one required PythonCI step for
+this suite, retaining every old step/check name, action pin, read-only permission,
+timeout and protection. No dependency/install/model download/cloud/deployment.
+
+Final exactPRreview/allrequiredCI/verifiedmerge remain delivery gates. This is a
+complete bounded standalone observation prerequisite, not app source-read, native
+UI, model-sharing or wholeF20 acceptance. Full404/liveQwen/nativeUI and deferred400
+remainOPEN; marketplace/F23-last retained. Owner dirtymain/processes/stableapp
+preserved and no second independent ready task admitted. Next eligible outcome
+after verifiedmerge is explicit in-app selected-source capture/review with the
+same typed readset, identity, consent and owned helper lifecycle; model-sharing
+integration remains a separate validated boundary.
