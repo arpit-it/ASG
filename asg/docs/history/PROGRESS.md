@@ -17690,3 +17690,130 @@ No source changed during this final run. Local diff reviewed for bounded routes,
 identity/budget refusal, native reservation/return/reopen integrity and cleanup.
 Scoped harness ready for plugin publication and exact fresh PRreview/requiredCI;
 no actual live acceptance or fullF20/CE01 completion claimed.
+
+
+20 November2026 — PR772 verified merged b99d077048f0ea520a1ad9615ceb5915833c7da8,
+exacttree7a43be1903647309c69cd10abe8b4275ad9f2f29 matches five tested/published
+files. Fresh five-patch review e241594be4f0a85332174b42ea24eefea5f11a19/baseb879f3d1
+found no blockers/rework. RequiredCI44662763052 Flutter136044703515/Python136044703864
+bothSUCCESS/every stepSUCCESS; emptythreads/unchangedhead/base/main/mergeable
+verified before protected expected-head merge. Plugin PR/main/issue404OPEN and
+fetched exact tree verified. Full2218PASS/12explicit opt-in skips, focused21/1skip,
+clean analyze/format555/product32/inventory9. Delivered test-only bounded readiness
+and same native journal harness, not live Qwen acceptance. Coordinator merged/
+outcome_verified recorded before integration/claim release. No escaped defect
+observed; provider timing unknown, manual observation intervals remain separate.
+Owner primary dirty edits/processes, stable app and last outputs preserved.
+
+Latest readiness recheck2026-11-20T02:47:02Z: both8765/health and /v1/models refuse
+connection(errno61), generation attempts0. /tmp/asg404-live-preflight-runtime-
+recheck.json. No identity/MLX/Metal/readiness/response proof; live acceptance still
+pending existing owner service becoming reachable with exactQwen3.8 readiness and
+actual matching response. No process/model install/download/start/stop performed.
+
+Immediately claimed next SAME#404/F20/CE01 bounded investigation
+404-native-unresolved-initial-investigation from verified main. Owned docs only:
+REQUIREMENTS, PROGRESS, AGENT_ENGINE. One coherent writer; no independent second
+ready implementation track yet and no runtime/native-build worker required.
+Concrete inspected evidence gap: protocol23native_initial_lineage._setup completes
+two validated supplied proposals BEFORE its candidate startup crash boundary.
+It cannot establish a separate native-process crash after durable initial reserve
+but before return/transport. Current SessionProposalRequestStore nativeDB test
+proves narrower actual close/reopen retains reserved metadata; source_request_history
+correctly labels Outcome unresolved and never infers transport started/stopped.
+Existing controller history reload and all these observations remain valid at
+their original scope. Do not invent a missing UI bug or overwrite history.
+
+Acceptance for this investigation: private synthetic HTTP/nativeDB prerequisite
+probe keeps unresolved request1 exact through actual close/reopen with no replay;
+only a fresh explicit request appends distinct returnedValidated request2/origin2,
+without overwriting1 or changing working/session/unrelated records. Identify the
+minimal owned native-process pause/cold read-only reopen proof and fixed challenge/
+report/counter constraints for a later bounded fixture if this gap is confirmed.
+DB-only/synthetic proof is not a native-process crash pass, live inference, source
+execution or fullCE01. No actual owner8765/candidate/SDK/preview effects.
+Fresh exact review/requiredCI/verifiedmerge still gate investigation delivery;
+separate process fixture acceptance remains pending. FullF20/CE01/umbrella404 and
+unavailable400 stay open; preserve F23-last and marketplace priority gates.
+
+
+Unresolved initial-request investigation checkpoint: private composed actual
+HTTP/nativeDB probe1PASS (/tmp/asg404-unresolved-initial-probe2.log). Direct durable
+reserve1 remains reserved with no response identity or returned hashes through
+actual database close/reopen; the complete records map is exact. A read-only reload
+and I/O window send0HTTP. A fresh EXPLICIT request invokes the default proposer,
+waits for its own durable reserve2, then sends exactly1synthetic HTTP request and
+retains returnedValidated request2/origin2. Unresolved request1 is byte-equivalent
+in decoded records, origin2 cannot match1, unrelated/working/session records are
+unchanged, and a second actual close/reopen preserves the exact final map without
+replay. Neutral synthetic-http-initial-metadata identity/ephemeralloopback only,
+not8765/model weights/live inference. Service/server/subscription/nativeDB/temp
+resources close and HTTP overrides restore via the existing owned fixture helpers.
+
+Private probe initially failed to load because extracted multiline show imports
+retained relative helper paths; corrected all private import paths and reranPASS.
+No product source changed for that correction. Existing journal model/store and
+source-review controller regressions85PASS:
+/tmp/asg404-unresolved-initial-components.log. This validates a narrower DB/HTTP
+prerequisite, not an actual app process kill/relaunch. The native23 fixture still
+sets up TWO validated responses before any pause, so its prior26launch observations
+remain valid only for those later boundaries. Source request UI/store correctly
+keep reserved intent unresolved and never replay on reload; no UI defect inferred.
+
+Next step within the OWNED investigation: map a minimal fixed challenge/report
+cohort for an owned native process paused after initial reservation commit and
+before transport/return, killed by its harness and separately read-only reopened.
+Require exact raw session/request/working hashes and zero model/provider/SDK/copy/
+publication/promotion effects on cold read; saved intent cannot prove remote state.
+Only a subsequent fresh explicit request may append a distinct outcome, never
+resolve or overwrite1 by assumption. Define refusal cases and resource boundaries
+before proposing the later fixture implementation; retain native-process proof
+as pending until actual same-binary process observations exist. Investigation is
+in progress under valid claim, docs only. No concurrent writer/runtime/build/
+preview worker, owner processes/stable app/last working output unchanged.
+FullF20/CE01/#404/platform400 remain open; fresh review/requiredCI/verifiedmerge
+still gate this bounded investigation.
+
+
+Unresolved native-process investigation result: confirmed exact gap and defined
+protocol24 initial-unresolved contract in AGENT_ENGINE.md. Primary two-launch
+case pauses real proposer reservation AFTER physical native commit but BEFORE
+completion permits provider entry, then parent kills its exact owned live child
+and separately read-only reopens. Request1 remains reserved/unknown with0provider,
+transport, candidate/host/SDK/copy/preview effects. Optional explicitly selected
+fresh-request continuation adds two launches: request2 validates under supplied
+metadata while1 remains exact, followed by another cold read-only reopen. No replay,
+new authority, live inference, source execution or production schema change.
+
+Strict challenge5keys, report32fields/10recordslots/14typed counters, 4096/8192byte
+bounds. Cross-stage immutable source declarations/session/request1/unrelated raw
+records and request2-reference disambiguation are mandatory. Private schema
+/tmp/asg404-native-unresolved-report-schema.json SHA256
+ba68700777c7eb0353b346d5835ebaea663ca906b319d4f8fd2226ac3ffa5459; representative
+full report2643bytes (not a native observation). Refusal matrix includes duplicate/
+unknown keys, bool-int/version/mode/stage mixing, unsafe root/report, bad identity/
+cohorts/counters, premature exit, changed binary and invalid owned kill/exit.
+
+Next sole bounded implementation AFTER investigation verifiedmerge is
+404-native-unresolved-initial-fixture under SAME#404. Disjoint Dart fixture/routing/
+tests and Python host/routing/test scopes may use two claimed writers once contract
+merged, then serialized exact-source integration and one isolated native binary.
+New2+4launch cases plus legacy23/22/21/20 on that binary, focused/full required
+checks/fresh exact review/verifiedmerge gate delivery. Six new launches are planned,
+NOT observed. Native-process acceptance stays pending; current useful prerequisite
+is one actual HTTP/nativeDB probe plus85existing regressions, never process crash
+or live Qwen proof. Finish documentation validation/publication/review/CI/merge
+before admitting either dependent writer. Umbrella404/CE01/F20/platform400 remain
+open; owner edits/processes/stable app/last working output preserved.
+
+
+Final investigation validation: composed private actualHTTP/nativeDB probe plus
+existing journal/controller tests86PASS on current unchanged production inputs:
+/tmp/asg404-unresolved-final-focused.log. Product32/inventory9PASS and diff whitespace
+clean; docs-only result adds no runtime/dependency/build claim. Contract review
+resolved key/hash ambiguity before publication: all10literalproductionkeys mapped,
+request digest uses current production toJson order, sorted-map digests kept
+distinct, reserved1 must NOT be passed to returned-only reference constructor.
+New fixture/host implementation and all separate native process observations
+remain pending. Docs-only scoped investigation ready for exact plugin publication,
+fresh review, all requiredCI and protected verifiedmerge, not yet delivered.

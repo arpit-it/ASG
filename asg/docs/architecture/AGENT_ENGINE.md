@@ -4099,3 +4099,165 @@ reachable with the documented ready identity/budget before that acceptance becom
 eligible. Continue the portable regression increment; no model/process install,
 download/start/stop or cloud/stable-app action is authorized by this contract.
 FullF20/CE01/umbrella404 and unavailable400 remain open.
+
+## Native unresolved initial intent contract — 20 November 2026
+
+This is the execution boundary for the next bounded #404/CE01 fixture, not a new
+queue. REQUIREMENTS.md owns selection/completion. Existing protocol23 begins after
+two validated supplied proposals; it cannot prove an app-process interruption at
+initial reservation. The current private HTTP/nativeDB probe and 85 component
+checks establish a narrower prerequisite only. No process-crash acceptance is yet
+claimed. Keep live Qwen, general CE01/F20 and deferred platform400 acceptance open.
+
+### Fixed mode, storage and launch sequence
+
+Use a separate protocol24 mode `initial-unresolved`, challenge at most4096 UTF-8
+bytes with EXACT keys `mode, nonce, launch, sdk, explicitNext`. Reject duplicate or
+unknown keys, wrong types (bool is not int), mode/version mixing, invalid32lowerhex
+nonce, noncanonical/unsafe SDK paths and unsupported stage combinations. SDK is the
+existing common driver input, inspected but NEVER executed by this mode. Launch1/2
+require explicitNext=false; launch3/4 require explicitNext=true. Default driver
+`--initial-unresolved` has two launches. Explicit `--unresolved-next` adds launch3/4;
+other scenario, nondefault operation, repair/initial-lineage, retry, corruption or
+stop selections must fail before bundle launch. --unresolved-next without the primary
+mode must also fail before launch. Do not change legacy20–23 behavior or guards.
+
+Parent fixture still requires the existing opt-in isolated bundle, private0700
+canonical disposable root under system temp, bounded regular nonsymlink challenge,
+fresh nonce-specific native database and preference prefix. Preserve original
+records and schema/wire formats. Only launch1 seeds a tiny synthetic approved board,
+plan, selected session and working-build metadata, with in-memory source hashes.
+No source tree/file copy, candidate, execution host, SDK or preview is needed.
+
+| Launch | Stage | Fixed observable boundary |
+| --- | --- | --- |
+| 1 | reserved-paused | Invoke real ApprovedSourceProposer with a supplied provider factory, intercept its initial reservation commit, delegate to real native storage, verify physical reserved intent and report, then hold commit completion indefinitely. Provider factory/generate never enters. Parent validates report, proves owned child is still live and kills/waits its exact subprocess handle. |
+| 2 | read-only | Separate launch opens the same native DB and only reads. Request1 remains reserved with no observed model/returned hashes. Complete raw record map and unrelated digest equal launch1 after. Report then exit0; no request, new approval, candidate, replay or inferred remote outcome. |
+| 3 | fresh-return-paused | Optional explicitly selected fixture continuation, never a reopen default. Read and preserve unresolved1, obtain current saved approval/session binding and call the real proposer afresh with one fixed supplied response. Durable reserve2/validated return2 and actual returned origin2 must complete. No candidate admission. Report and hold; parent kills only this owned live child. |
+| 4 | fresh-read-only | Separate read-only launch retains EXACT unresolved1 and distinct returnedValidated2/reference2. No provider, new proposal, mutation, source restoration or execution. Report and exit0. |
+
+Withheld reservation completion is the key first boundary. A pause after a model
+response, a manually invented reserved record or a process that already exited
+cannot satisfy launch1. Cold reads must not resolve unknown request1 by assumption.
+Any terminal result is request2 only, from a fresh explicit action and unchanged
+current consent; origin2 must not match1. A supplied model identity is test metadata,
+not a live bridge or authenticated weights. No HTTP transport/model process is used.
+VM pause injection may release by throwing after report for deterministic tests,
+but must be labelled same-process evidence; only parent-owned native kill/relaunch
+observations establish process acceptance. Do not signal unrelated PIDs or stable app.
+
+### Strict report identity and cohort
+
+Report maximum8192 UTF-8 bytes, EXACT32 fields:
+`version, mode, nonce, launch, explicitNext, stage, projectId, sessionId, boardTaskId,
+requirementId, requestedModel, requestCount, unresolvedRequestNumber,
+latestRequestNumber, unresolvedRequestStatus, latestRequestStatus,
+unresolvedRequestSha256, latestRequestSha256, unresolvedResponseModel,
+latestResponseModel, unresolvedReturnedSourceSha256, latestReturnedSourceSha256,
+originalSessionSha256, sessionRevision, sessionDispatchCount, requestReference,
+recordsBefore, recordsAfter, unrelatedBeforeSha256, unrelatedAfterSha256,
+declaredSourceSha256, counters`.
+
+version is exactly24; mode exactlyinitial-unresolved; requestedModel exactly
+`supplied-native-initial-unresolved-model`. projectId=`restart-<nonce>`,
+sessionId=`session-<nonce>`, boardTaskId=Tanalyze, requirementId=R1. Request1 is
+ALWAYS number1/reserved, null observed model/null returned-map digest. Latest is
+1/reserved on launches1/2, 2/returnedValidated on3/4, with exact supplied observed
+model and nonnull returned-map digest only on3/4. Request count is1 or2 respectively.
+Hashes are lowercase64hex of exact retained wire or explicitly canonicalized typed
+request/returned-source maps, never source text. Request digests use the production
+UTF-8 jsonEncode(request.toJson()) member order, as SessionProposalRequestReference
+uses; do NOT sort those members or construct a returned-only reference for reserved1.
+Map digests use UTF-8 jsonEncode with entries sorted by key, matching existing
+native fixture _mapHash. Slot digests hash the exact raw stored string instead.
+Python validates schema/transitions and digest links, not cryptographic provenance. requestReference is null on1/2; on3/4 it has exactly
+`version, projectId, sessionId, number, requestSha256`, version1/number2 and the
+latest request digest, with current production reference construction/validation.
+Its presence on a cold read is historical metadata, not a restored proposal/permit.
+originalSessionSha256 equals request1's captured raw-session fingerprint and the
+unchanged session record hash. Session revision0 and dispatch count0 throughout.
+declaredSourceSha256 is a digest of seeded source-hash metadata, NOT a fingerprint
+of existing filesystem source or a verified application/build output.
+
+recordsBefore/After have EXACT10 slots:
+`working, requestJournal, session, candidateJournal, candidate, execution, history,
+context, initialCompanion, repairCompanion`.
+The exact nonce-bound slot mapping, with p=projectId and s=sessionId, is:
+
+| Slot | Production key |
+| --- | --- |
+| working | studio.generation.v1.p |
+| requestJournal | studio.sessionProposalRequests.v1.p.s |
+| session | studio.agentSession.v1.p.s |
+| candidateJournal | studio.candidateChecks.v1.p |
+| candidate | studio.sourceCandidate.v1.p |
+| execution | studio.agentExecution.v1.candidate-p-1 |
+| history | studio.agentTaskHistory.v1.p.1 |
+| context | studio.candidateReopen.v1.p.1 |
+| initialCompanion | studio.candidateRequestLineage.v1.p.1 |
+| repairCompanion | studio.candidateRepairLineage.v1.p.1 |
+
+Substitute p/s literally, never the letters in the table. Map each key once and
+test against current model constants. Never invent a new production key or treat
+an absent wrong-key lookup as proof. Every
+present slot is the SHA256 of its RAW stored string; absent slots are null.
+Working/session are present and immutable. requestJournal absent before launch1's
+reserve, present after; it may change only for fresh request2 on launch3. Other7
+slots stay null. Hash all remaining native records independently as unrelated;
+their digest must never change across before/after or launches. Read-only2/4 have
+identical before/after maps. Before2 equals after1; before3 equals after2; before4
+equals after3. Immutable request1/session/declared-source fingerprints never change;
+request2 digest differs from1 even when source is identical. Reject missing cohorts,
+unexpected records, changed unrelated/working/session, request aliasing or stale
+nonce/project/session/stage/reference.
+
+EXACT14 integer (never bool) counters:
+`setupCalls, proposalCalls, reservationCommits, reservationReturns,
+suppliedProviderCalls, proposalReturns, terminalCommits, liveTransportAttempts,
+sdkAttempts, candidateEffects, unrelatedWrites, previewAttempts, sourceCopies,
+hostCreations`.
+Launch1 has setupCalls/proposalCalls/reservationCommits=1, all others0.
+Launch3 has proposalCalls/reservationCommits/reservationReturns/suppliedProviderCalls/
+proposalReturns/terminalCommits=1, all others0. Cold2/4 all0. Instrument actual
+entries/commits rather than prefill successful counters; reject writes outside the
+single request-journal cohort after seeding. Cold stages use rejecting mutation
+wrappers and compare physical DB maps, including around migration/open. Count and
+refuse any attempted live/model/host/copy/SDK/preview effect. No receipt authority or
+new execution permission is added by this fixture.
+
+Native host must validate bounded strict UTF-8 JSON (duplicate/unknown members and
+bool-int confusion rejected), report nonce/schema/stage/full cohorts and every
+cross-launch transition BEFORE accepting an observation. Inspect immutable bundle
+identity/executable digest before each launch and before each owned kill; missing,
+partial, wrong-stage report, premature exit, wrong signal/result, symlink roots or
+report replacement fail closed. Deadlines and cleanup apply to owned processes,
+with finally kill/wait only if that exact subprocess is still live. No build,
+install, model download, runtime startup or stable app replacement in the driver.
+Preserve public report scope: local observations, not authenticated remote state.
+
+### Implementation and validation boundary
+
+After this investigation's verified merge, use SAME#404 task
+404-native-unresolved-initial-fixture. Root owns new
+`tools/fixtures/native_initial_unresolved.dart`, parent Dart routing,
+`test/native_initial_unresolved_fixture_test.dart`, REQUIREMENTS/PROGRESS/
+AGENT_ENGINE/inventory. A second independent host writer may own new
+`tools/native_initial_unresolved.py`, Python driver routing and host regression
+file, once both register separate nonoverlapping worktrees/claims against this
+merged contract. Agree on the literal key mapping, schema above and test fixtures
+first; serialize shared integration/build resources. No writer edits another scope.
+Stop clean handoffs before integration-owner union claim if scope changes.
+
+Validation: fixed challenge/report/transition refusal tests on Dart/Python, VM
+same-process stage2/4 no-write tests and fresh-request1/2 identity checks, current
+journal/controller85 regressions and private composed probe. Run format/analyze/
+fullFlutter/product/inventory and existing requiredCI. Build one isolated fixture
+binary from exact final source, record source/executable digests; run new2-launch
+and explicit4-launch cases with separate private nonces (6 launches total), then
+relevant legacy23/22/21/20 acceptance on that SAME binary with original supplied/
+SDK receipt scopes. Preserve historical evidence. Native tests cannot be replaced
+by a VM throw or by old-binary reports; host report validation cannot alone prove
+a subprocess was killed. Fix/retest/review final inputs and verify protected merge
+before declaring this bounded fixture delivered. FullCE01/F20/liveQwen/unavailable
+platform acceptance remain pending. Existing approvals, Stop/recovery and last
+working outputs are unchanged.
