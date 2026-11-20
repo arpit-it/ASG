@@ -22,6 +22,15 @@ import 'approved_source_proposer_test.dart'
 import 'planning_conversation_test.dart' show project;
 import 'source_candidate_controller_test.dart' show AtomicRecords;
 
+enum _ResponseCase {
+  valid,
+  wrongId,
+  duplicateId,
+  escapedDuplicateId,
+  terminalDuplicateId,
+  terminalEscapedDuplicateId,
+}
+
 const _model = 'synthetic-http-initial-metadata';
 const _after = 'void main() { print("Hi"); }';
 const _wait = Duration(seconds: 10);
@@ -107,7 +116,7 @@ class _Fixture {
       row.key: row.value,
   };
 
-  void serve({bool mismatch = false}) {
+  void serve({_ResponseCase responseCase = _ResponseCase.valid}) {
     subscription = server.listen((request) async {
       httpCalls++;
       try {
@@ -131,24 +140,59 @@ class _Fixture {
           'event-stream',
           charset: 'utf-8',
         );
-        final observed = mismatch ? 'synthetic-wrong-response' : _model;
+        final observed = responseCase == _ResponseCase.wrongId
+            ? 'synthetic-wrong-response'
+            : _model;
+        String frame(Map<String, Object?> data, {required bool terminal}) {
+          final raw = jsonEncode(data);
+          final ambiguous = terminal
+              ? responseCase == _ResponseCase.terminalDuplicateId ||
+                    responseCase == _ResponseCase.terminalEscapedDuplicateId
+              : responseCase == _ResponseCase.duplicateId ||
+                    responseCase == _ResponseCase.escapedDuplicateId;
+          if (!ambiguous) return raw;
+          final escaped =
+              responseCase == _ResponseCase.escapedDuplicateId ||
+              responseCase == _ResponseCase.terminalEscapedDuplicateId;
+          return raw.replaceFirst(
+            '"model":',
+            escaped
+                ? r'"model":"synthetic-foreign","\u006dodel":'
+                : '"model":"synthetic-foreign","model":',
+          );
+        }
+
+        final terminalAmbiguity =
+            responseCase == _ResponseCase.terminalDuplicateId ||
+            responseCase == _ResponseCase.terminalEscapedDuplicateId;
+        final supplied = response();
+        final split = terminalAmbiguity
+            ? supplied.length ~/ 2
+            : supplied.length;
         request.response.write(
-          'data: ${jsonEncode({
+          'data: ${frame({
             'model': observed,
             'choices': [
               {
-                'delta': {'content': response()},
+                'delta': {'content': supplied.substring(0, split)},
               },
             ],
-          })}\n\n',
+          }, terminal: false)}\n\n',
         );
+        if (terminalAmbiguity) {
+          // Send the valid source frame before the ambiguous terminal frame.
+          await request.response.flush();
+        }
         request.response.write(
-          'data: ${jsonEncode({
+          'data: ${frame({
             'model': observed,
             'choices': [
-              {'delta': {}, 'finish_reason': 'stop'},
+              {
+                'delta': terminalAmbiguity ? {'content': supplied.substring(split)} : {},
+                'finish_reason': 'stop',
+              },
             ],
-          })}\n\n',
+          }, terminal: true)}\n\n',
         );
         request.response.write('data: [DONE]\n\n');
         await request.response.close();
@@ -277,13 +321,14 @@ Future<void> _withFixture(Future<void> Function(_Fixture) run) async {
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  for (final mismatch in [false, true]) {
+  for (final responseCase in _ResponseCase.values) {
+    final mismatch = responseCase != _ResponseCase.valid;
     test(
-      'actual HTTP and native initial journal: ${mismatch ? 'wrong response ID' : 'validated return'}; supplied SSE only',
+      'actual HTTP and native initial journal: ${responseCase.name}; supplied SSE only',
       () async {
         await _withFixture((f) async {
           final before = await f.raw();
-          f.serve(mismatch: mismatch);
+          f.serve(responseCase: responseCase);
           final pending = f.propose();
           await f.boundary!.entered.future.timeout(_wait);
           // Give real socket I/O an opportunity to arrive while completion stays held.
