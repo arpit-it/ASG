@@ -56,6 +56,49 @@ Future<ImportedPlanController> create(
 }
 
 void main() {
+  test('default planning uses only the confirmed workspace snapshot and app records', () async {
+    final records = Records();
+    await InspectedFolderStore(records).save('/project');
+    final c = ImportedPlanController(
+      '/project',
+      ImportedPlanStore(records),
+      inspection: finding(),
+    );
+    await c.load();
+    expect(c.error, isNull);
+    await c.saveDraft('Review captured metadata only');
+    await c.decide(true);
+    expect(c.approved, isTrue);
+    expect(c.plan!.context, contains('example'));
+    c.dispose();
+  });
+  test(
+    'missing or different-root planning snapshot fails closed without writes',
+    () async {
+      final records = Records();
+      await InspectedFolderStore(records).save('/project');
+      final before = Map<String, String>.of(records.values);
+      final other = ProjectInspection(
+        root: '/other',
+        packageName: 'other',
+        dartSdk: '^3.0.0',
+        runners: [],
+      );
+      for (final inspection in [null, other]) {
+        final c = ImportedPlanController(
+          '/project',
+          ImportedPlanStore(records),
+          inspection: inspection,
+        );
+        await c.load();
+        await c.saveDraft('No implicit helper launch');
+        expect(c.error, isNotNull);
+        expect(c.approved, isFalse);
+        expect(records.values, before);
+        c.dispose();
+      }
+    },
+  );
   test(
     'private write and corrupt JSON failures retain bytes and recover',
     () async {
@@ -364,7 +407,7 @@ void main() {
       MaterialApp(home: ImportedPlanScreen(controller: c)),
     );
     await tester.pumpAndSettle();
-    expect(find.text('Approved for current planning context'), findsOneWidget);
+    expect(find.text('Approved for captured planning context'), findsOneWidget);
     await tester.ensureVisible(find.text('Withdraw approval'));
     await tester.tap(find.text('Withdraw approval'));
     await tester.pumpAndSettle();

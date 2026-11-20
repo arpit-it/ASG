@@ -69,6 +69,7 @@ class ImportedProjectWorkspace extends StatelessWidget {
                 controller: ImportedPlanController(
                   inspection.root,
                   ImportedPlanStore(records),
+                  inspection: inspection,
                 ),
               ),
             ),

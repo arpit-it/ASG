@@ -21,6 +21,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'project_inspection_controller_test.dart' show Picker, result;
 
+import 'project_metadata_import_test.dart' as consent;
+
 class Records implements RecordStorage {
   String? value;
   bool fail = false;
@@ -50,11 +52,12 @@ void main() {
         legacy,
       );
       final c = ProjectInspectionController(
+        setupStore: consent.ImportSetup(),
         store: InspectedFolderStore(db),
         picker: Picker(),
         inspect: (root) async => result(root),
       );
-      await c.chooseFolder();
+      await c.chooseFolder(confirm: consent.approve);
       expect(c.savedFolders, isEmpty);
       await c.saveFolder();
       await c.saveFolder();
@@ -115,6 +118,7 @@ void main() {
       var reads = 0;
       var missing = false;
       final reopened = ProjectInspectionController(
+        setupStore: consent.ImportSetup(),
         store: InspectedFolderStore(db),
         picker: Picker(),
         inspect: (root) async {
@@ -125,7 +129,7 @@ void main() {
       );
       expect(reopened.findings, isNull);
       expect(reopened.savedFolders, ['/project']);
-      await reopened.reopen('/project');
+      await reopened.reopen('/project', confirm: consent.approve);
       expect(reads, 1);
       final reopenedBoard = RequirementsStore(db)
           .load(InspectedFolderStore.workspaceId(reopened.findings!.root));
@@ -143,9 +147,10 @@ void main() {
       );
       expect(reopened.findings?.root, '/project');
       missing = true;
-      await reopened.reopen('/project');
-      expect(reopened.findings, isNull);
-      expect(reopened.error, contains('Check that it still exists'));
+      await reopened.reopen('/project', confirm: consent.approve);
+      expect(reopened.findings?.root, '/project');
+      expect(reopened.stale, isTrue);
+      expect(reopened.error, contains('Folder metadata could not be read'));
       expect(reopened.savedFolders, ['/project']);
       reopened.dispose();
       await db.database.close();
@@ -157,18 +162,19 @@ void main() {
       final records = Records()..fail = true;
       final picker = Picker();
       final c = ProjectInspectionController(
+        setupStore: consent.ImportSetup(),
         store: InspectedFolderStore(records),
         picker: picker,
         inspect: (root) async => result(root),
       );
-      await c.chooseFolder();
+      await c.chooseFolder(confirm: consent.approve);
       await c.saveFolder();
       expect(c.savedFolders, isEmpty);
       expect(c.error, contains('could not be saved'));
       records.fail = false;
       records.pending = Completer<bool>();
       final save = c.saveFolder();
-      await c.chooseFolder();
+      await c.chooseFolder(confirm: consent.approve);
       await c.saveFolder();
       expect(picker.calls, 1);
       expect(c.savedFolders, isEmpty);
@@ -184,12 +190,13 @@ void main() {
       final records = Records()..value = raw;
       final store = InspectedFolderStore(records);
       final c = ProjectInspectionController(
+        setupStore: consent.ImportSetup(),
         store: store,
         picker: Picker(),
         inspect: (root) async => result(root),
       );
       expect(c.storageError, isNotNull);
-      await c.chooseFolder();
+      await c.chooseFolder(confirm: consent.approve);
       await c.saveFolder();
       expect(records.value, raw);
       await expectLater(store.save('/project'), throwsFormatException);
@@ -199,11 +206,12 @@ void main() {
   test('disposal during save ignores late state publication', () async {
     final records = Records()..pending = Completer<bool>();
     final c = ProjectInspectionController(
+      setupStore: consent.ImportSetup(),
       store: InspectedFolderStore(records),
       picker: Picker(),
       inspect: (root) async => result(root),
     );
-    await c.chooseFolder();
+    await c.chooseFolder(confirm: consent.approve);
     final save = c.saveFolder();
     c.dispose();
     records.pending!.complete(true);

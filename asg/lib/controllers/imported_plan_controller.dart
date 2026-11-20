@@ -4,7 +4,6 @@
 import '../models/imported_plan.dart';
 import '../models/project_inspection.dart';
 import '../services/imported_plan_store.dart';
-import '../services/project_inspector.dart';
 import 'base_controller.dart';
 
 class ImportedPlanController extends BaseController {
@@ -12,7 +11,19 @@ class ImportedPlanController extends BaseController {
     this.root,
     this.store, {
     Future<ProjectInspection> Function(String)? inspect,
-  }) : _inspect = inspect ?? ProjectInspector().inspect;
+    ProjectInspection? inspection,
+  }) : _inspect =
+           inspect ??
+           ((requested) async {
+             // Planning uses the workspace's explicitly confirmed snapshot. It never
+             // refreshes filesystem metadata or grants a helper execution implicitly.
+             if (inspection == null || inspection.root != requested) {
+               throw StateError(
+                 'Reinspect the folder before opening its planning workspace.',
+               );
+             }
+             return inspection;
+           });
   final String root;
   final ImportedPlanStore store;
   final Future<ProjectInspection> Function(String) _inspect;
