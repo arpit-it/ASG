@@ -24351,3 +24351,110 @@ Only three canonical documents changed; unrelated local builds were not repeated
 independent eligible disjoint task exists; dependent implementation waits for verified
 merge. FullF20/CE01 and isolated-copy/run acceptance remain open; unavailable platforms400,
 marketplacegate and F23-last ordering unchanged.
+
+### F20 / #404 — proposal admission verified and committed proposal workflow started, 20 November 2026 UTC
+
+PR818 protected mergedfc5097990201960d9cd42b2e6b58324bff1d3e9 verified through pluginmain,
+mergedPR/404OPEN and fetched treef8f1426d10316831b54fc60d949b7cd255e0b4d8, equal reviewed
+contents. Fresh exact review remote79b01706230afb4b2036d1d625fcd3331bd42d88 against
+c97c82b9a40c81fe859938c38852c6cd442772db matched normalized local/remote diff; only three
+append-only documents and no runtime/test/tool/dependency changes.39admission/reference
+checks passed, including disposable nativeDB preservation and durable conflict proof.
+RequiredCI44831035028 Python136615732600/Flutter136615732887 every required step/poststep
+SUCCESS; completed logs inspected. No blocking findings or unresolved conversations.
+Completed claim/integration released. Attachment attempt hit existing100identity limit;
+unrelated items retained. Owner six dirty files/processes preserved; no model/source/
+install/stableapp/deployment effect. Full404 remains open for unmet F20/CE01 acceptance.
+
+Coordinator manual investigation start-to-merge1052.1seconds, observed CI interval495.6
+seconds, zero recorded review rework and one prerequisite outcome-verification attestation.
+These are cooperative manual measurements, not provider CI timing or a new app capability;
+actual escaped defects remain unknown despite zero recorded escaped-defect observations.
+
+Immediately claimed404-committed-source-proposals on verifiedmain in same registered
+worktree, solewriter/no independent eligible disjoint second task. Existing404 covers the
+coherent selected preview/save/reopen app outcome, not a separate parser delivery. Claim
+owns new typed proposal/record/store/controller/focused view, current typed-plan/workspace
+entries, nativeDB new-prefix validation/quarantine, relevant model/race/nativeDB/widget/
+IAB/history coverage, inventory and these canonical docs. Preserve working-source keys/
+schemas and current plan format. Freeze four app inputs and require conditional durable
+fences/history CAS; strict separate history/root identity and retained corrupt bytes.
+Explicit local save consent, replacement/disposal/failure/unconfirmed-commit recovery
+and no implicit source read/model/save/copy/write/execute remain mandatory. Full checks/
+builds/freshreview/requiredCI/verifiedmerge gate completing this app workflow.
+
+Started ImportedCommitProposal pure model and five regressions. It accepts only supplied
+strict immutable context, exact full reviewed-plan context with approved flag, selected
+literal target and changed replacement. Model construction alone cannot establish current
+approval; future store/controller must bind durable inputs separately. Reuses only the
+established pure16KiB/500line preview text policy, not working-source context/schema/storage
+or approval interpretation. Exact BOM/CRLF/multibyte before/after byte hashes/counts, mode/
+Git blob, full commit/tree/manifest/context and full ImportedPlan JSON digest bind canonical
+proposal identity. Working/conflict unknown and source_verified=false; bounded SourceLineDiff
+is review data, not a patch or operation contract. Empty before text and coarse fallback
+preserve exact input tokens; larger readable captures refuse preview without truncation.
+
+Five new model tests plus17existing context/proposal/line-diff/architecture checks passed
+22total. Full plan timestamp/text, commit/tree/manifest, target and replacement changes
+alter identity; unapproved/mismatched plans, unselected/unsafe/no-op or oversized/invalid-
+Unicode/control inputs refuse privately. Tested16KiB boundary and over500line refusal,
+empty selected before file and coarse exact-token reconstruction. Analyzer clean, focused
+format zero-change, inventory9PASS after new-input regeneration. Logs /tmp/asg404-committed-
+source-proposals-{model-start,analyze-start,inventory-start}.log. These are pure-model start
+evidence only. Historical record/storage/native quarantine/controller/UI/workspace and
+full actual workflow validation remain pending in the active claim. No source/helper/model
+operation was dispatched. FullF20/CE01/400, marketplacegate and F23-last remain unchanged.
+
+
+### F20 / CE01 #404 — committed-source proposal workflow, 20 November 2026
+
+Active track 404-committed-source-proposals extends the verified PR818 admission
+investigation (main dfc5097990201960d9cd42b2e6b58324bff1d3e9). The bounded app
+workflow now has separate immutable proposal/history models, a conditional record
+store and controller, explicit local-save consent, current committed-plan entry
+and independent workspace history entry. The additive key is
+studio.importedCommitProposal.v1.<workspaceId>; working-source history and plan
+formats remain unchanged. Strict canonical restoration binds full immutable
+context, commit/tree/manifest, selected mode/blob/byte identities, full approved
+plan JSON and literal replacement. Four frozen app inputs (folder registration,
+requirements, full saved plan, previous committed history) are durably fenced;
+saving atomically compares and replaces only the committed history slot.
+
+History reopens without current approval and never revives it. Native database
+validation rejects key/root mismatches and quarantines unreadable optional new
+history while preserving its physical bytes and unrelated/working history.
+Preview remains 16 KiB UTF-8 / 500 lines and the complete saved record 256 KiB;
+there is no truncation, patch application, source copy/write, model request or
+execution authority. Full working/conflict state stays unknown. The old history
+and approval-limit disclosure remain available. A full-suite layout regression
+caused by the added history button was fixed by retaining the original disclosure
+position; focused workspace regression and new route checks pass.
+
+Initial integrated validation: 64 focused model/record/controller/store/screen/
+plan/database/architecture tests passed; two additional workflow-entry checks and
+16 combined workspace/route checks passed. Coverage includes exact historical
+BOM/CRLF restoration, malformed/duplicate/noncanonical records, current-plan and
+previous-record races, pending/disposed work, failed/unconfirmed commits,
+controller replacement during consent, narrow enlarged layout, durable cache
+conflicts, native close/reopen and corrupt-new-history isolation from existing
+working-source history. Analyzer clean; inventory9 and product32 checks passed.
+Final full-suite/build/browser evidence and protected PR review/CI/merge remain
+pending until recorded below. This paragraph records implementation progress,
+not completed F20/CE01 acceptance. #404 stays open; unavailable platforms remain
+under #400, marketplace stays gated, and F23 stays last among F01–F24.
+
+
+Final local validation, same source inputs: 2737 Flutter tests PASS / 13 opt-in skips;
+format zero-change, analyzer clean, inventory9/product32 PASS. Production web and
+isolated unsigned macOS build PASS (com.arsinha.asg.commitproposalvalidation); no
+installation or native GUI claim. IAB31 used the actual new MVC workflow with
+synthetic conditional app records: replacement preview, full commit/tree/context/
+plan/target/before/after provenance in local-save consent, Cancel retaining the
+preview with no saved comparison, then explicit save displaying historical review
+and disabling duplicate save. Native durable save/reopen/corruption/coexistence is
+covered separately by production StudioDatabase fixtures. Owner sources/runtime
+were not accessed; model requests0. Final source input hashes and build/browser
+receipt: /tmp/asg404-proposal-final-{inputs,receipt}.json; logs
+/tmp/asg404-proposal-{format,analyze,full,inventory,product,web,native}-final.log.
+Exact remote PR review, required CI and protected merge remain mandatory before
+this bounded outcome is recorded as merged. Full F20/CE01 remains open.
