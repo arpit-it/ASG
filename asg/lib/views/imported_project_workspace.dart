@@ -10,6 +10,7 @@ import '../services/record_storage.dart';
 import '../services/requirements_store.dart';
 import 'requirements_screen.dart';
 import 'git_metadata_panel.dart';
+import 'project_instruction_panel.dart';
 import 'imported_plan_screen.dart';
 import '../controllers/imported_plan_controller.dart';
 import '../services/imported_plan_store.dart';
@@ -87,6 +88,12 @@ class ImportedProjectWorkspace extends StatelessWidget {
           'Imported-project source editing, execution and preview '
           'are not available yet. Opening this workspace grants no write or '
           'execution approval.',
+        ),
+        const SizedBox(height: 16),
+        ProjectInstructionPanel(
+          key: ValueKey('instructions-${inspection.root}'),
+          root: inspection.root,
+          records: records,
         ),
         const SizedBox(height: 16),
         GitMetadataPanel(
