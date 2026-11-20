@@ -30,6 +30,14 @@ const _wait = Duration(seconds: 10);
 
 enum _AmbiguousMetadata { plain, escaped, terminalPlain, terminalEscaped }
 
+enum _JsonResponse {
+  valid,
+  wrongModel,
+  duplicateModel,
+  escapedDuplicateModel,
+  missingModel,
+}
+
 /// Actual native commit, with its completion withheld before transport may start.
 class _ReservationBoundary implements ConditionalRecordStorage {
   _ReservationBoundary(this.delegate, {required this.refuse});
@@ -117,7 +125,11 @@ class _Fixture {
       row.key: row.value,
   };
 
-  void serve({bool mismatch = false, _AmbiguousMetadata? ambiguity}) {
+  void serve({
+    bool mismatch = false,
+    _AmbiguousMetadata? ambiguity,
+    _JsonResponse? jsonResponse,
+  }) {
     subscription = server.listen((request) async {
       httpCalls++;
       try {
@@ -145,6 +157,34 @@ class _Fixture {
         expect(body['model'], _model);
         expect(body['max_tokens'], 4096);
         expect(body['stream'], true);
+        if (jsonResponse != null) {
+          request.response.headers.contentType = ContentType.json;
+          final selected = jsonEncode(_model);
+          final modelMembers = switch (jsonResponse) {
+            _JsonResponse.valid => '"model":$selected,',
+            _JsonResponse.wrongModel =>
+              '"model":"synthetic-wrong-repair-response",',
+            _JsonResponse.duplicateModel =>
+              '"model":"synthetic-wrong-repair-response","model":$selected,',
+            _JsonResponse.escapedDuplicateModel =>
+              '"model":"synthetic-wrong-repair-response",'
+                  r'"\u006dodel":'
+                  '$selected,',
+            _JsonResponse.missingModel => '',
+          };
+          // The request still asks for streaming; this is the production JSON
+          // compatibility response, not a mocked provider or stored proposal.
+          request.response.write(
+            '{$modelMembers"choices":${jsonEncode([
+              {
+                'message': {'content': response()},
+                'finish_reason': 'stop',
+              },
+            ])}}',
+          );
+          await request.response.close();
+          return;
+        }
         request.response.headers.contentType = ContentType(
           'text',
           'event-stream',
@@ -337,36 +377,82 @@ Future<void> _withFixture(Future<void> Function(_Fixture) run) async {
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   for (final scenario in [
-    (label: 'validated return', mismatch: false, ambiguity: null),
-    (label: 'wrong response ID', mismatch: true, ambiguity: null),
+    (label: 'validated return', mismatch: false, ambiguity: null, json: null),
+    (label: 'wrong response ID', mismatch: true, ambiguity: null, json: null),
     (
       label: 'contradictory plain duplicate model',
       mismatch: false,
       ambiguity: _AmbiguousMetadata.plain,
+      json: null,
     ),
     (
       label: 'contradictory escaped duplicate model',
       mismatch: false,
       ambiguity: _AmbiguousMetadata.escaped,
+      json: null,
     ),
     (
       label: 'plain terminal duplicate after valid partial source',
       mismatch: false,
       ambiguity: _AmbiguousMetadata.terminalPlain,
+      json: null,
     ),
     (
       label: 'escaped terminal duplicate after valid partial source',
       mismatch: false,
       ambiguity: _AmbiguousMetadata.terminalEscaped,
+      json: null,
+    ),
+    (
+      label: 'JSON validated return',
+      mismatch: false,
+      ambiguity: null,
+      json: _JsonResponse.valid,
+    ),
+    (
+      label: 'JSON wrong response ID',
+      mismatch: false,
+      ambiguity: null,
+      json: _JsonResponse.wrongModel,
+    ),
+    (
+      label: 'JSON contradictory plain duplicate model',
+      mismatch: false,
+      ambiguity: null,
+      json: _JsonResponse.duplicateModel,
+    ),
+    (
+      label: 'JSON contradictory escaped duplicate model',
+      mismatch: false,
+      ambiguity: null,
+      json: _JsonResponse.escapedDuplicateModel,
+    ),
+    (
+      label: 'JSON compatible return without response ID',
+      mismatch: false,
+      ambiguity: null,
+      json: _JsonResponse.missingModel,
     ),
   ]) {
-    final invalid = scenario.mismatch || scenario.ambiguity != null;
+    final invalid =
+        scenario.mismatch ||
+        scenario.ambiguity != null ||
+        (scenario.json != null &&
+            scenario.json != _JsonResponse.valid &&
+            scenario.json != _JsonResponse.missingModel);
+    final expectedResponseModel = scenario.json == _JsonResponse.missingModel
+        ? null
+        : _model;
     test(
-      'actual selected repair HTTP/native journal: ${scenario.label}; synthetic SSE only',
+      'actual selected repair HTTP/native journal: ${scenario.label}; synthetic ${scenario.json == null ? 'SSE' : 'JSON'} only',
       () async {
         await _withFixture((f) async {
           final before = await f.raw();
-          f.serve(mismatch: scenario.mismatch, ambiguity: scenario.ambiguity);
+          f.serve(
+            mismatch: scenario.mismatch,
+            ambiguity: scenario.ambiguity,
+            jsonResponse: scenario.json,
+          );
           final pending = f.propose();
           await f.boundary!.entered.future.timeout(_wait);
           await Future<void>.delayed(const Duration(milliseconds: 50));
@@ -411,7 +497,10 @@ void main() {
           expect(entry.modelRequest!.model, _model);
           expect(entry.failure.toJson(), reserved.failure.toJson());
           origin.requireAttempt(entry);
-          expect(entry.modelRequest!.responseModel, invalid ? null : _model);
+          expect(
+            entry.modelRequest!.responseModel,
+            invalid ? null : expectedResponseModel,
+          );
           if (invalid) {
             expect(refusal, anyOf(isA<FormatException>(), isA<StateError>()));
             expect(evidence, isNull);
@@ -419,7 +508,20 @@ void main() {
             expect(entry.proposal, isNull);
           } else {
             expect(refusal, isNull);
-            expect(evidence!.modelRequest!.responseModel, _model);
+            expect(
+              evidence!.modelRequest!.responseModel,
+              expectedResponseModel,
+            );
+            expect(entry.proposal, isNotNull);
+            if (scenario.json == _JsonResponse.missingModel) {
+              // Compatibility retains requested identity without inventing an
+              // observed response model or claiming live model verification.
+              expect(
+                entry.modelRequest!.toJson().containsKey('responseModel'),
+                isFalse,
+              );
+              expect(entry.modelRequest!.model, _model);
+            }
             expect(entry.status, RepairAttemptStatus.proposed);
             evidence.repairRequestReference!.requireMatch(origin, entry);
           }

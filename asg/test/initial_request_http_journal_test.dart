@@ -116,7 +116,11 @@ class _Fixture {
       row.key: row.value,
   };
 
-  void serve({_ResponseCase responseCase = _ResponseCase.valid}) {
+  void serve({
+    _ResponseCase responseCase = _ResponseCase.valid,
+    bool jsonResponse = false,
+    bool omitModel = false,
+  }) {
     subscription = server.listen((request) async {
       httpCalls++;
       try {
@@ -135,11 +139,9 @@ class _Fixture {
         expect(body['model'], _model);
         expect(body['max_tokens'], 4096);
         expect(body['stream'], true);
-        request.response.headers.contentType = ContentType(
-          'text',
-          'event-stream',
-          charset: 'utf-8',
-        );
+        request.response.headers.contentType = jsonResponse
+            ? ContentType.json
+            : ContentType('text', 'event-stream', charset: 'utf-8');
         final observed = responseCase == _ResponseCase.wrongId
             ? 'synthetic-wrong-response'
             : _model;
@@ -162,6 +164,21 @@ class _Fixture {
           );
         }
 
+        if (jsonResponse) {
+          request.response.write(
+            frame({
+              if (!omitModel) 'model': observed,
+              'choices': [
+                {
+                  'message': {'content': response()},
+                  'finish_reason': 'stop',
+                },
+              ],
+            }, terminal: false),
+          );
+          await request.response.close();
+          return;
+        }
         final terminalAmbiguity =
             responseCase == _ResponseCase.terminalDuplicateId ||
             responseCase == _ResponseCase.terminalEscapedDuplicateId;
@@ -321,14 +338,22 @@ Future<void> _withFixture(Future<void> Function(_Fixture) run) async {
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  for (final responseCase in _ResponseCase.values) {
+  for (final (responseCase, jsonResponse, omitModel) in [
+    for (final value in _ResponseCase.values) (value, false, false),
+    for (final value in _ResponseCase.values.take(4)) (value, true, false),
+    (_ResponseCase.valid, true, true),
+  ]) {
     final mismatch = responseCase != _ResponseCase.valid;
     test(
-      'actual HTTP and native initial journal: ${responseCase.name}; supplied SSE only',
+      'actual HTTP and native initial journal: ${omitModel ? 'missingId' : responseCase.name}; supplied ${jsonResponse ? 'JSON compatibility' : 'SSE'} only',
       () async {
         await _withFixture((f) async {
           final before = await f.raw();
-          f.serve(responseCase: responseCase);
+          f.serve(
+            responseCase: responseCase,
+            jsonResponse: jsonResponse,
+            omitModel: omitModel,
+          );
           final pending = f.propose();
           await f.boundary!.entered.future.timeout(_wait);
           // Give real socket I/O an opportunity to arrive while completion stays held.
@@ -364,7 +389,10 @@ void main() {
             expect(evidence, isNull);
           } else {
             expect(refusal, isNull);
-            expect(evidence!.modelRequest!.responseModel, _model);
+            expect(
+              evidence!.modelRequest!.responseModel,
+              omitModel ? null : _model,
+            );
             expect(evidence.initialRequestOrigin!.reference.number, 1);
             expect(
               evidence.initialRequestOrigin!.requestSessionRecord,
@@ -400,7 +428,10 @@ void main() {
             expect(retained.modelRequest.responseModel, isNull);
             expect(retained.returnedSha256, isEmpty);
           } else {
-            expect(retained.modelRequest.responseModel, _model);
+            expect(
+              retained.modelRequest.responseModel,
+              omitModel ? null : _model,
+            );
             expect(
               retained.sessionSha256,
               SessionProposalRequestStore.fingerprint(
