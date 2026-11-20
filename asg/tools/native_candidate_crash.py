@@ -14,6 +14,7 @@ import tempfile
 import time
 
 from native_restart_probe import inspect_bundle
+import native_repair_lineage
 
 OPERATIONS = ['resolve', 'analyze', 'test', 'build']
 
@@ -509,6 +510,10 @@ def main():
     parser.add_argument('--bundle', required=True)
     parser.add_argument('--sdk', required=True)
     parser.add_argument('--task-decision', action='store_true')
+    parser.add_argument('--repair-lineage', action='store_true')
+    parser.add_argument('--lineage-boundary', choices=('precommit', 'postcommit'))
+    parser.add_argument('--lineage-retry', action='store_true')
+    parser.add_argument('--lineage-corrupt', action='store_true')
     parser.add_argument('--stop', action='store_true')
     parser.add_argument('--precommit', action='store_true')
     parser.add_argument('--running', action='store_true')
@@ -525,7 +530,16 @@ def main():
     parser.add_argument('--operation', choices=OPERATIONS + ['all'], default='resolve')
     args = parser.parse_args()
     try:
-        if args.task_decision:
+        if args.repair_lineage:
+            if args.task_decision or args.operation != 'resolve' or any((args.stop, args.precommit, args.running, args.uncertain, args.acknowledge, args.retry, args.promote, args.promotion_crash, args.session_bound, args.admission_crash, args.session_cancel, args.session_cancel_active, args.session_cancel_unknown)):
+                raise ValueError('Repair-lineage mode cannot combine legacy scenarios')
+            native_repair_lineage.validate_mode(args.lineage_boundary or 'postcommit',
+                args.lineage_retry, args.lineage_corrupt)
+            print(json.dumps(native_repair_lineage.observe(args.bundle, args.sdk,
+                args.lineage_boundary or 'postcommit', args.lineage_retry, args.lineage_corrupt)))
+        elif args.lineage_boundary is not None or args.lineage_retry or args.lineage_corrupt:
+            raise ValueError('Repair-lineage options require their explicit mode')
+        elif args.task_decision:
             if args.operation != 'resolve' or any((args.stop, args.precommit, args.running, args.uncertain, args.acknowledge, args.retry, args.promote, args.promotion_crash, args.session_bound, args.admission_crash, args.session_cancel, args.session_cancel_active, args.session_cancel_unknown)):
                 raise ValueError('Decision-only mode cannot combine execution scenarios')
             print(json.dumps(observe_decision(args.bundle, args.sdk)))

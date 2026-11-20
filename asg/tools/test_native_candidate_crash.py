@@ -922,5 +922,322 @@ class CandidateCrashTests(unittest.TestCase):
             launch.assert_not_called()
 
 
+
+class RepairLineageTests(unittest.TestCase):
+    """New protocol22 observations do not relabel protocol20/21 fixtures."""
+    def setUp(self):
+        self.temporary = tempfile.TemporaryDirectory(prefix='asg-lineage-host-tests-')
+        self.addCleanup(self.temporary.cleanup)
+        self.root = Path(self.temporary.name).resolve()
+        self.nonce = 'b' * 32
+        self.protocol = fixture.native_repair_lineage
+
+    @staticmethod
+    def digest(text):
+        import hashlib
+        return hashlib.sha256(text.encode()).hexdigest()
+
+    def records(self, count):
+        result = {key: None for key in self.protocol.RECORD_SLOTS}
+        for key in self.protocol.BASE_SLOTS:
+            result[key] = self.digest(key + '-baseline')
+        result['session'] = self.digest('raw-session0')
+        for number in range(2, count + 1):
+            result.update(journal=self.digest(f'journal{number}'),
+                candidate=self.digest(f'candidate{number}'), session=self.digest(f'raw-session{number-1}'))
+            for prefix in ('execution', 'history', 'context', 'companion'):
+                result[f'{prefix}{number}'] = self.digest(f'{prefix}{number}')
+        return result
+
+    def report(self, launch, boundary='postcommit', corrupt=False):
+        admitted = boundary == 'postcommit'
+        target = 2 if launch <= 2 else 3
+        before = self.records(1 if launch == 1 or not admitted else 2 if launch <= 3 else 3)
+        after = self.records(target if admitted else 1)
+        if corrupt:
+            after['companion2'] = self.digest('opaque corrupt raw record')
+        captured = self.digest('raw-session0' if target == 2 else 'raw-session1')
+        project = f'restart-{self.nonce}'
+        dispatch = f'candidate-{project}-{target}:3'
+        counters = {key: 0 for key in self.protocol.COUNTER_KEYS}
+        if launch == 1:
+            counters.update(setupProviderCalls=1, sourceSetupCalls=1, failureSetupCalls=1, hostCreations=1)
+        if launch == 3:
+            counters.update(hostCreations=2, recoverySourceInspections=2)
+        counters.update(startupCalls=int(launch in (1, 3)),
+            startupRecordUpdates=7 if admitted and launch in (1, 3) else 0, corruptionControls=int(corrupt))
+        return {'version': 22, 'mode': 'repair-lineage', 'nonce': self.nonce,
+            'launch': launch, 'boundary': boundary, 'corruptOptional': corrupt,
+            'stage': {1:'paused', 2:'read-only', 3:'retry-paused', 4:'retry-read-only'}[launch],
+            'projectId': project, 'sessionId': f'session-{self.nonce}',
+            'boardTaskId': 'Tanalyze', 'requirementId': 'R1',
+            'requestedModel': self.protocol.MODEL, 'observedModel': self.protocol.MODEL,
+            'failedRunNumber': 1, 'attemptNumber': 1, 'targetRunNumber': target,
+            'targetDispatchId': dispatch, 'committedTargetRunNumber': target if admitted else None,
+            'committedTargetDispatchId': dispatch if admitted else None,
+            'proofState': 'unavailable' if corrupt else 'joined' if admitted else 'absent',
+            'repairReference': {'version':1, 'projectId':project, 'attemptNumber':1,
+                'attemptSha256':self.digest('terminal attempt1'), 'originSha256':after['repairOrigin']},
+            'originalRequestSessionSha256': self.digest('raw-session0'),
+            'capturedAdmissionSessionSha256':captured,
+            'durableAdmissionSessionSha256':captured if admitted and not corrupt else None,
+            'contextSha256':after[f'context{target}'], 'companionSha256':after[f'companion{target}'],
+            'sessionRevision':target-1 if admitted else 0, 'sessionDispatchCount':target-1 if admitted else 0,
+            'recordsBefore':before, 'recordsAfter':after,
+            'unrelatedBeforeSha256':self.digest('unrelated records'),
+            'unrelatedAfterSha256':self.digest('unrelated records'),
+            'workingSourceSha256':self.digest('recorded working source manifest'),
+            'preparedSourceSha256':self.digest('recorded prepared source manifest'), 'counters':counters}
+
+    def validate(self, value, launch=1, boundary='postcommit', corrupt=False):
+        return self.protocol.validate_report(value, launch, self.nonce, boundary, corrupt)
+
+    def test_all_fixed_stages_and_complete_retry_transition_fit_report_bound(self):
+        for boundary, launches in [('precommit', (1,2)), ('postcommit',(1,2,3,4))]:
+            previous = None
+            for launch in launches:
+                value = self.report(launch,boundary)
+                self.assertLess(len(json.dumps(value).encode()),8192)
+                self.validate(value,launch,boundary)
+                self.protocol.require_transition(previous,value)
+                previous = value
+
+    def test_corruption_is_raw_observation_not_joined_or_absent_proof(self):
+        current = self.report(2,corrupt=True)
+        self.validate(current,2,corrupt=True)
+        self.protocol.require_transition(self.report(1),current)
+        self.assertIsNotNone(current['companionSha256'])
+        self.assertIsNone(current['durableAdmissionSessionSha256'])
+        for patch in ({'proofState':'joined'}, {'proofState':'absent'},
+                      {'durableAdmissionSessionSha256':current['capturedAdmissionSessionSha256']},
+                      {'companionSha256':None}):
+            with self.subTest(patch=patch), self.assertRaises(ValueError):
+                self.validate(dict(current,**patch),2,corrupt=True)
+
+    def test_old_future_versions_and_wrong_mode_cannot_acquire_new_lineage(self):
+        for patch in ({'version':20},{'version':21},{'version':23},{'version':True},
+                      {'mode':'task-decision'},{'launch':True},{'targetRunNumber':True},
+                      {'sessionRevision':True},{'attemptNumber':True},{'failedRunNumber':True}):
+            with self.subTest(patch=patch),self.assertRaises(ValueError):
+                self.validate(dict(self.report(1),**patch))
+
+    def test_strict_report_reference_records_and_counter_member_sets(self):
+        for section in ('report','repairReference','recordsBefore','recordsAfter','counters'):
+            for extra in (False,True):
+                value=self.report(1)
+                target=value if section=='report' else value[section]
+                if extra: target['unrecognized']='private irrelevant value'
+                else: target.pop(next(iter(target)))
+                with self.subTest(section=section,extra=extra),self.assertRaises(ValueError):
+                    self.validate(value)
+
+    def test_foreign_task_session_nonce_dispatch_reference_and_model_are_refused(self):
+        for key,bad in {'nonce':'c'*32,'projectId':'foreign','sessionId':'foreign',
+            'boardTaskId':'Ttest','requirementId':'R2','requestedModel':'wrong',
+            'observedModel':'wrong','targetDispatchId':'candidate-foreign-2:3',
+            'committedTargetRunNumber':1,'committedTargetDispatchId':'candidate-foreign-1:3'}.items():
+            with self.subTest(key=key),self.assertRaises(ValueError):
+                self.validate(dict(self.report(1),**{key:bad}))
+        for key,bad in {'version':True,'projectId':'foreign','attemptNumber':2,
+                        'attemptSha256':'x'*64,'originSha256':'f'*64}.items():
+            value=self.report(1);value['repairReference'][key]=bad
+            with self.subTest(reference=key),self.assertRaises(ValueError):self.validate(value)
+
+    def test_captured_intent_does_not_count_as_committed_startup(self):
+        value=self.report(1,'precommit')
+        self.assertIsNotNone(value['capturedAdmissionSessionSha256'])
+        for patch in ({'committedTargetRunNumber':2},
+                      {'committedTargetDispatchId':value['targetDispatchId']},
+                      {'durableAdmissionSessionSha256':value['capturedAdmissionSessionSha256']},
+                      {'contextSha256':'a'*64},{'companionSha256':'a'*64},{'proofState':'joined'}):
+            with self.subTest(patch=patch),self.assertRaises(ValueError):
+                self.validate(dict(value,**patch),1,'precommit')
+
+    def test_exact_seven_record_cohort_not_aggregate_or_partial_update(self):
+        for slot in self.protocol.RECORD_SLOTS - {'candidate'}:
+            value=self.report(1)
+            if value['recordsAfter'][slot]!=value['recordsBefore'][slot]:
+                value['recordsAfter'][slot]=value['recordsBefore'][slot]
+            else:value['recordsAfter'][slot]='d'*64
+            with self.subTest(slot=slot),self.assertRaises(ValueError):self.validate(value)
+        value=self.report(1);value['unrelatedAfterSha256']='d'*64
+        with self.assertRaises(ValueError):self.validate(value)
+
+    def test_retry_can_rewrite_identical_candidate_bytes_with_seven_declared_updates(self):
+        previous=self.report(2)
+        retry=self.report(3)
+        retry['recordsAfter']['candidate']=retry['recordsBefore']['candidate']
+        self.validate(retry,3)
+        self.assertEqual(retry['counters']['startupRecordUpdates'],7)
+        self.protocol.require_transition(previous,retry)
+        reopened=self.report(4)
+        reopened['recordsBefore']['candidate']=retry['recordsAfter']['candidate']
+        reopened['recordsAfter']['candidate']=retry['recordsAfter']['candidate']
+        self.validate(reopened,4)
+        self.protocol.require_transition(retry,reopened)
+
+    def test_all_hashes_are_strict_and_raw_slots_match_context_companion(self):
+        for key in ('originalRequestSessionSha256','capturedAdmissionSessionSha256',
+                    'unrelatedBeforeSha256','workingSourceSha256','preparedSourceSha256'):
+            for bad in (None,True,'F'*64,'g'*64,'a'*63):
+                with self.subTest(key=key,bad=bad),self.assertRaises(ValueError):
+                    self.validate(dict(self.report(1),**{key:bad}))
+        for key in ('contextSha256','companionSha256'):
+            with self.subTest(key=key),self.assertRaises(ValueError):
+                self.validate(dict(self.report(1),**{key:'d'*64}))
+
+    def test_every_unexpected_effect_and_boolean_counter_is_refused(self):
+        for key in self.protocol.COUNTER_KEYS:
+            for bad in (True,-1,self.report(1)['counters'][key]+1):
+                value=self.report(1);value['counters'][key]=bad
+                with self.subTest(counter=key,bad=bad),self.assertRaises(ValueError):self.validate(value)
+
+    def test_readonly_report_cannot_hide_native_record_writes(self):
+        for slot in self.protocol.RECORD_SLOTS:
+            value=self.report(2);value['recordsAfter'][slot]='d'*64
+            with self.subTest(slot=slot),self.assertRaises(ValueError):self.validate(value,2)
+
+    def test_retry_keeps_actual_pre_session_and_old_run_members(self):
+        before=self.report(2);after=self.report(3)
+        self.protocol.require_transition(before,after)
+        for field in ('capturedAdmissionSessionSha256','originalRequestSessionSha256',
+                      'workingSourceSha256','preparedSourceSha256'):
+            value=self.report(3);value[field]='e'*64
+            if field=='capturedAdmissionSessionSha256':value['durableAdmissionSessionSha256']='e'*64
+            with self.subTest(field=field),self.assertRaises(ValueError):
+                self.protocol.require_transition(before,value)
+        value=self.report(3);value['recordsBefore']['companion2']='d'*64;value['recordsAfter']['companion2']='d'*64
+        with self.assertRaises(ValueError):self.protocol.require_transition(before,value)
+
+    def test_reopen_cannot_replace_reference_or_baseline_between_launches(self):
+        for launch in (2,3,4):
+            for change in ('reference','records','unrelated','captured'):
+                value=self.report(launch)
+                if change=='reference':value['repairReference']['attemptSha256']='e'*64
+                elif change=='records':
+                    value['recordsBefore']['working']='e'*64;value['recordsAfter']['working']='e'*64
+                elif change=='unrelated':
+                    value['unrelatedBeforeSha256']='e'*64;value['unrelatedAfterSha256']='e'*64
+                else:
+                    value['capturedAdmissionSessionSha256']='e'*64
+                    value['durableAdmissionSessionSha256']='e'*64
+                with self.subTest(launch=launch,change=change),self.assertRaises(ValueError):
+                    self.protocol.require_transition(self.report(launch-1),value)
+        with self.assertRaises(ValueError):self.protocol.require_transition(None,self.report(2))
+        for bad in ('wrong', [], True):
+            with self.subTest(previous=bad),self.assertRaises(ValueError):
+                self.protocol.require_transition(bad,self.report(2))
+        with self.assertRaises(ValueError):self.protocol.require_transition(self.report(2,corrupt=True),self.report(3))
+
+    def test_invalid_fixed_scenarios_refuse_before_inspection_or_process(self):
+        for mode in [dict(boundary='wrong'),dict(boundary='precommit',retry=True),
+            dict(boundary='precommit',corrupt_optional=True),dict(retry=True,corrupt_optional=True),
+            dict(retry=1),dict(corrupt_optional=1)]:
+            with self.subTest(mode=mode),mock.patch.object(self.protocol,'inspect_bundle') as inspect, \
+                    mock.patch.object(self.protocol.subprocess,'Popen') as launch:
+                with self.assertRaises(ValueError):self.protocol.observe(self.root,self.root,**mode)
+                inspect.assert_not_called();launch.assert_not_called()
+        for args in [(3,'precommit',False),(4,'precommit',False),(1,'postcommit',True),
+                     (3,'postcommit',True),(True,'postcommit',False)]:
+            with self.subTest(args=args),self.assertRaises(ValueError):
+                self.validate(self.report(1),args[0],args[1],args[2])
+
+    def test_strict_reader_rejects_duplicate_json_nonfinite_oversize_symlink_and_partial(self):
+        file=self.root/'launch-1.json'
+        text=json.dumps(self.report(1))
+        file.write_text(text)
+        self.protocol.read_report(self.root,1,self.nonce,'postcommit')
+        for raw in (text.replace('"version": 22','"version":22,"version":22',1),
+                    text.replace('"setupProviderCalls": 1','"setupProviderCalls":1,"setupProviderCalls":1',1),
+                    text.replace('"sessionRevision": 1','"sessionRevision":NaN',1),
+                    ' '*8193):
+            file.write_text(raw)
+            with self.subTest(raw=raw[:30]),self.assertRaises(ValueError):
+                self.protocol.read_report(self.root,1,self.nonce,'postcommit')
+        file.write_text('{"private-token":')
+        with self.assertRaises(json.JSONDecodeError) as caught:
+            self.protocol.read_report(self.root,1,self.nonce,'postcommit')
+        self.assertEqual(caught.exception.doc,'')
+        file.unlink();target=self.root/'target.json';target.write_text(text);file.symlink_to(target)
+        with self.assertRaises((ValueError,OSError)):
+            self.protocol.read_report(self.root,1,self.nonce,'postcommit')
+
+    def driver(self,boundary='postcommit',retry=False,corrupt=False,fail_launch=None,exit_code=0):
+        sdk=self.root/'sdk';(sdk/'bin/cache').mkdir(parents=True,exist_ok=True)
+        (sdk/'bin/cache/flutter_tools.snapshot').write_text('existing prepared SDK')
+        processes=[];outer=self
+        class Process:
+            def __init__(self,*args,**kwargs):
+                self.number=len(processes)+1;self.killed=False;processes.append(self)
+                value=outer.report(self.number,boundary,corrupt and self.number==2)
+                if fail_launch==self.number:value['counters']['sdkAttempts']=1
+                (outer.root/f'launch-{self.number}.json').write_text(json.dumps(value))
+            def poll(self):
+                if self.killed:return -9
+                return None if self.number in (1,3) else exit_code
+            def kill(self):self.killed=True
+            def wait(self,timeout):return self.poll()
+        with mock.patch.object(self.protocol.sys,'platform','darwin'), \
+                mock.patch.object(self.protocol,'inspect_bundle',return_value=(self.root/'owned-executable','a'*64)), \
+                mock.patch.object(self.protocol.tempfile,'mkdtemp',return_value=str(self.root)) as make_root, \
+                mock.patch.object(self.protocol.secrets,'token_hex',return_value=self.nonce), \
+                mock.patch.object(self.protocol.subprocess,'Popen',side_effect=Process):
+            try:
+                result=self.protocol.observe(self.root/'fixture.app',sdk,boundary,retry,corrupt)
+                make_root.assert_called_once_with(prefix='asg-candidate-crash-')
+                return result,processes
+            except ValueError:
+                self.failed_processes=processes
+                raise
+
+    def test_owned_driver_crashes_only_its_paused_handles_and_pins_retry(self):
+        value,processes=self.driver(retry=True)
+        self.assertEqual([p.killed for p in processes],[True,False,True,False])
+        self.assertEqual(len(value['launches']),4)
+        self.assertEqual(value['version'],22)
+        self.assertEqual(json.loads((self.root/'challenge.json').read_text()),
+            {'mode':'repair-lineage','nonce':self.nonce,'launch':4,'boundary':'postcommit',
+             'corruptOptional':False,'sdk':str(self.root/'sdk')})
+
+    def test_owned_driver_precommit_and_corruption_are_separate_two_launch_scenarios(self):
+        for boundary,corrupt in [('precommit',False),('postcommit',True)]:
+            for path in self.root.glob('launch-*.json'):path.unlink()
+            value,processes=self.driver(boundary=boundary,corrupt=corrupt)
+            self.assertEqual([p.killed for p in processes],[True,False])
+            self.assertEqual(value['corruptOptional'],corrupt)
+
+    def test_driver_refuses_bad_reopen_before_starting_retry_and_retains_artifacts(self):
+        with self.assertRaises(ValueError):self.driver(retry=True,fail_launch=2)
+        self.assertEqual(len(self.failed_processes),2)
+        self.assertEqual([p.killed for p in self.failed_processes],[True,False])
+        self.assertTrue((self.root/'launch-2.json').is_file())
+
+    def test_driver_refuses_nonzero_readonly_exit(self):
+        with self.assertRaises(ValueError):self.driver(exit_code=2)
+        self.assertEqual(len(self.failed_processes),2)
+
+    def test_cli_requires_explicit_mode_and_rejects_all_legacy_scenarios(self):
+        import contextlib
+        import io
+        base=['native_candidate_crash.py','--bundle','/supplied.app','--sdk','/supplied/sdk']
+        bad=[['--lineage-retry'],['--lineage-corrupt'],['--lineage-boundary','precommit']]
+        bad += [['--repair-lineage',flag] for flag in ('--task-decision','--stop','--precommit',
+            '--running','--uncertain','--acknowledge','--retry','--promote','--promotion-crash',
+            '--session-bound','--admission-crash','--session-cancel','--session-cancel-active','--session-cancel-unknown')]
+        bad += [['--repair-lineage','--operation','test'],
+                ['--repair-lineage','--lineage-boundary','precommit','--lineage-retry'],
+                ['--repair-lineage','--lineage-retry','--lineage-corrupt']]
+        for args in bad:
+            with self.subTest(args=args),mock.patch.object(fixture.sys,'argv',base+args), \
+                    mock.patch.object(self.protocol,'observe') as observe,contextlib.redirect_stderr(io.StringIO()):
+                with self.assertRaises(SystemExit) as caught:fixture.main()
+                self.assertEqual(caught.exception.code,2);observe.assert_not_called()
+        with mock.patch.object(fixture.sys,'argv',base+['--repair-lineage','--lineage-retry']), \
+                mock.patch.object(self.protocol,'observe',return_value={'supplied':True}) as observe, \
+                contextlib.redirect_stdout(io.StringIO()):
+            fixture.main()
+            observe.assert_called_once_with('/supplied.app','/supplied/sdk','postcommit',True,False)
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -3704,3 +3704,56 @@ join succeeds. A physical opaque record hash is neither absence nor validated
 lineage. Independent core target run/dispatch facts remain readable from the journal;
 never invent their stronger relation. Retain this corruption control separately from
 successful joined-stage comparisons and preserve unchanged core record identities.
+
+
+404-native-repair-lineage-fixture implementation checkpoint on verified PR765.
+Root added a pure typed NativeRepairLineageChallenge in the NEW isolated fixture
+module and new preflight tests. It accepts only exact6-key4096-byte new-mode input;
+strict mode/nonce/int launch/boundary/control/SDK fields; unknown/missing/duplicate/
+UTF8 oversize/mixed legacy values and unsafe relative/non-normal SDK paths fail
+with sanitized errors. Derived target run/dispatch/companion identities are explicitly
+planned values, with no committed-proof fields or execution/storage authority.
+Corruption control is restricted to postcommit read-only launch2. No native main
+entry is wired yet, so no new mode or native-process result is claimed.
+
+Ten focused preflight+architecture checks pass, general Flutter analysis and direct
+new-fixture module analysis clean, focused format/diff checks pass. Logs:
+/tmp/asg404-native-lineage-preflight-test.log,
+/tmp/asg404-native-lineage-preflight-analyze.log,
+/tmp/asg404-native-lineage-preflight-fixture-analyze.log,
+/tmp/asg404-native-lineage-preflight-format.log. These are pure input guards, not
+actual process ownership, durable startup or native crash/reopen acceptance.
+
+Delegated host writer claimed its3 Python paths in separate Git-registered worktree
+/Users/arpitsinha/.codex/worktrees/404-native-repair-lineage-host/ASG, branch
+404-native-repair-lineage-host. Managed create/attach both hit the existing chat
+attachment limit100; the clean registered Git worktree and coordinator claim exist,
+so scoped work proceeds explicitly there. No parent writer files were shared. Status
+confirms exactly2 active writers, root asg404 and host asg404-host, no integration
+lock. Root owns native launch/build resources; host tests mock those actions.
+
+Host report schema agreed at /tmp/asg404-native-lineage-report-schema.json, SHA256
+c4ca8bbd88c1898e3a5cf3880a93427aacc9c7be6d22b12642f73bdfae008790:35 exact top
+fields,14 fixed record slots,16 counters, existing5-key reference and8KiB report.
+It separates captured/durable target and pre-session facts, raw slots from joined
+proof, fixed setup/cold/recovery effects and across-launch comparisons. Cold source
+manifest digests are recorded metadata; any independent host physical source checks
+must be labelled separately rather than counted as new app inspections. Host writer
+is implementing parser/driver/negative-case fixtures and will stop edits for handoff.
+
+Remaining owned work: wire actual native mode and fixed setup/record reports,
+integrate tested disjoint host handoff, build isolated native binary and run owned
+precommit/postcommit/cold-read/retry/corruption plus legacy scenarios with exact
+source/binary/artifact identities. Then full required local checks, fresh exact PR
+review, both mandatory CI jobs and verified merge. Current implementation is dirty,
+unpublished and incomplete; keep valid leases and resume owned tracks first. No
+model/SDK/tool/app process, source copy/restore, stable replacement or deployment ran
+for this checkpoint. FullF20/CE01/umbrella404 and deferred400 acceptance remain open.
+
+
+Implemented opt-in native repair-lineage mode22 now uses fixed supplied proposer
+metadata and actual native startup/cold historical readers/recovery. Final cold
+launch validates both retained companions independently. It is never production
+bootstrap or a live-inference/SDK-result claim. Owned Mac scenarios and legacy20/21
+smokes passed on bundle b8a7522ce95e1694b665f9ab1172554f96a0a9634c227d434bb0d43be5ab41c2;
+see canonical requirements/progress for exact private report digests and limits.
