@@ -22694,3 +22694,154 @@ Next eligible work after verified merge: inspect exact committed-context/approve
 proposal and history admission, preserving old working-source schemas and avoiding
 conversion that discards commit identity. Use existing404, actual bounded local evidence
 and one coherent next outcome; no speculative backlog or source execution permission.
+
+### F20 / #404 — committed planning verified and proposal admission investigation started, 20 November 2026 UTC
+
+PR817 protected mergec97c82b9a40c81fe859938c38852c6cd442772db verified through pluginmain,
+mergedPR/404OPEN and fetched tree0ce7a4dd0850aed959482971e7030cf436ae1931, equal tested
+contents. Fresh exact review remote9dd1ac58f2fcd1843bd1355adfa0ba296bdb768d versus
+7fbd073fab0f79cfa7664bcc0d01c37817972502 matched normalized local/remote diff and14revised
+checked inputs. RequiredCI44828387289 Python136606733011/Flutter136606733553 every
+required step/poststep SUCCESS; completed logs inspected. No remaining blocking finding
+or unresolved conversation.77focused/2703full13existingopt-in skips, format653/analyze/
+inventory9/product32, web/isolatedMac and actual nativeDB/IAB outcomes verified. Initial
+local review's idle-notification disposal defect was fixed before publication with failing
+then passing regression and distinct revised receipts. Completed claim/integration released.
+Issue404 updated with verified progress, preserving open fullF20 scope. Attachment attempt
+hit existing100identity limit; unrelated attachments retained. Owner six dirty files and
+owner-started processes preserved; no model/install/stableapp/deployment effect.
+
+Coordinator manual start-to-merge2174.8seconds, observed CI interval615.4seconds, one
+pre-publication local review-rework observation and one verified bounded manual-planning
+app outcome. These are cooperative manual measurements, not provider CI timing. Actual
+escaped defects remain unknown despite zero recorded escaped-defect observations.
+
+Immediately claimed404-commit-proposal-admission on verifiedmain in same registered
+worktree, solewriter; no independent eligible disjoint task. Existing404 covers the next
+bounded prerequisite, no new issue/backlog. Claim owns these three canonical documents;
+disposable probes stay outside repository. Acceptance: inspect immutable-context/current-
+approved-plan proposal and history admission, exact diff/text identity and bounds, durable
+record validation/quarantine/reopen and preservation of working-source records. Define one
+coherent committed-source preview/save/reopen implementation boundary with adverse cases;
+no source copy/write/execute/model effect. Publication/freshreview/requiredCI/verifiedmerge
+remain gates before completing this investigation.
+
+Started read-only inspection of ImportedSourceProposal/Record/Store, SourceLineDiff,
+ImportedPlanStore and StudioDatabase validation/reopen policy. Existing proposal/record
+models are deliberately typed to working-source context; old historical decoder restores
+that strict version1 context before rebuilding the proposal. Immutable context must not
+be flattened or passed through that history schema. Existing proposal preview has stricter
+16KiB/500line bounds than32KiB source-read capture. New history prefix would require its
+own strict record validator/storage identity and corruption-recovery admission before any
+production save; StudioDatabase currently rejects unsupported record prefixes.
+
+Four disposable probes plus20existing line-diff/proposal/record/store regressions passed
+24total. Log /tmp/asg404-commit-proposal-admission-start.log; probe source
+/tmp/asg404_commit_proposal_admission_probe_test.dart. Exact diff tokens reconstruct
+committed BOM/café/CRLF, empty before text and replacement without final newline. Same
+selected bytes do not make immutable context restore as working source; substituting new
+context into old history refuses and leaves original bytes unchanged. A readable30000byte
+committed source capture is valid but outside existing bounded proposal preview; no data
+truncation or write inferred.
+
+Actual owned temporary nativeDB probe stores an existing working-source comparison and
+an immutable manual-plan record together. Production setString rejects a hypothetical
+new committed-proposal prefix before writing, preserving both records. Direct adverse
+fixture injection of that unsupported prefix makes reopen fail closed; removing only the
+owned injected fixture row restores reopening with exact original plan/context/history.
+This bypass exists only inside the disposable fixture, not in an exposed app path; it is
+not an existing app authorization bypass. It demonstrates why a future prefix must be
+validated and given deliberate quarantine/recovery treatment in the coherent change.
+Owned DB/root removed; no owner-source/helper/model operation occurred.
+
+Remaining investigation: settle versioned committed proposal/record provenance, approved-
+plan and full context binding, literal target/replacement bounds, failure-retained drafts,
+transactional expected-input/current-plan checks, separate history key/native quarantine,
+and focused review/reopen navigation. A diff is review data, not an applicable patch or
+copy/write/execution grant. FullF20/CE01, isolated-copy/run acceptance and400 remain open;
+marketplacegate/F23-last ordering unchanged. Active claim retained for next continuation.
+
+### F20 / #404 — committed-source proposal admission findings, 20 November 2026 UTC
+
+Completed local investigation; final publication/freshreview/requiredCI/verifiedmerge remain
+pending. Five disposable probes plus34existing line-diff/proposal/model/history/controller/
+nativeDB regressions passed39total. Final log /tmp/asg404-commit-proposal-admission-final.log;
+probe /tmp/asg404_commit_proposal_admission_probe_test.dart. Earlier24test start remains
+separate. Additional actual nativeDB probe confirms immutable-context plan saving rejects
+a changed durable plan row despite an unchanged app cache; the winning draft and working-
+source history survive, and close/reopen restores that draft without approval. No owner
+source/helper/model operation, runtime code change, install or deployment occurred.
+
+Admission conclusion: implement one committed-source preview/save/reopen workflow with
+separate typed proposal/record/controller/store/view and a validated additive history key.
+Reuse SourceLineDiff and the established preview text policy; do not convert commit context
+or relax existing working-source models, keys or decoders. The current importedCommitContext
+retains all immutable provenance; a proposal binds that complete canonical context and the
+exact full approved ImportedPlan JSON, not merely plan text or a historical approved flag.
+Approval stored in reopened comparison history is historical evidence, never current consent.
+
+Selected bounded implementation after verified merge, under existing404:
+- Pure ImportedCommitProposal: explicit immutable context + exact current approved plan,
+  one literal selected Dart path and changed user-authored replacement. Preserve current
+  16KiB/500line before/after limits, Unicode/BOM/CRLF identity, bounded deterministic diff
+  and coarse fallback.32KiB-readable files may be ineligible for preview; retain the read
+  context and explain refusal without truncation. Empty selected files remain valid before
+  content. Root comes from captured metadata; context digest binds commit/tree/manifest/
+  ordered readset/mode/blob/hash/count/text and app metadata/requirements. Proposal identity
+  includes full reviewed-plan digest, selected target/before/after hashes and replacement;
+  source_verified=false. A diff is review data, not an applicable patch or operation contract.
+- Pure ImportedCommitProposalRecord: separate versioned historical scope carrying full plan
+  (including strict canonical immutable context), canonical proposal and UTC recorded time.
+  Recompute context/plan/proposal/file hashes during restore; reject duplicate/unknown/type/
+  Unicode/noncanonical/oversized data and mismatched target/root/plan. Keep bounded256KiB
+  history admission; JSON expansion can still refuse otherwise valid capture/preview and
+  must preserve draft/history. Whole recorded-event digest may include recorded time;
+  transient proposal identity is independent of the later history-save timestamp.
+- Separate additive studio.importedCommitProposal.v1.<workspaceId(root)> key, one latest
+  comparison per root as the existing working-source history does. Do not replace/migrate
+  studio.importedSourceProposal.v1 or change ImportedPlan record format. StudioDatabase
+  validates the new decoder and exact root/key identity before every production write.
+  Add its prefix to deliberate unreadable-record quarantine on reopen so corrupt committed
+  history is retained verbatim and surfaced locally without blocking working history or
+  unrelated records. Never silently delete, reset or overwrite quarantined history.
+- New store freezes four exact app records: folder references, requirements for root,
+  current imported plan and the new history slot. Preview requires exact captured metadata/
+  requirements and full current plan approved against that context. Mandatory conditional
+  zero-update durable fences and transactional history compare-and-set recheck at pending
+  consent/preview/save/publication boundaries. History-only access can reopen a prior record
+  without fresh source capture or active plan approval, while visibly remaining historical.
+  No runtime configuration or source read is needed; selected bytes are already captured.
+- New controller owns loading/ready/busy/error/stale/current preview and last saved history,
+  rejects duplicate or stale saves and binds explicit save consent to the exact preview
+  object. Invalid or failed edits retain text, last preview and saved comparison; changed
+  inputs mark preview stale. Disposal/replacement/late callbacks and final notifications
+  cannot publish new results. A committed write followed by lost confirmation is treated
+  as unconfirmed until explicit history reload, not automatically replayed or erased.
+- Focused view owns target/text editing lifecycle and read-only diff rendering. Current
+  typed immutable-plan screen offers preview only for compatible approved saved plan;
+  the proposal controller must independently verify that state. Workspace adds a separate
+  committed-history entry. Match existing explicit local-save review: disclose root/full
+  commit/tree/context/plan/target hashes and that full captured source/plan/replacement is
+  stored in ASG application records. Entry/preview are not saves or source/model operations.
+  Reopened history shows immutable provenance and saved diff, with no implicit approval,
+  file freshness, copy/write/build/execution or external-sharing claim.
+
+Required representative failures and validation: unapproved/changed plan; same selected
+bytes at different commit/tree/manifest; root/readset/target/hash/schema corruption; unsafe
+or no-op/oversized replacement; changed requirements/plan/history during consent/preview/
+write; stale nativeDB caches; save conflict/failure; disposal and controller replacement;
+corrupt new record quarantine preserving old history and unrelated data; actual disposable
+nativeDB save-close-reopen; no extra reader/model calls; narrow2x-text/keyboard/scrolling
+and IAB injected flow. Run format/analyze/fullFlutter/inventory and relevant web/isolatedMac
+builds, fresh exact PR review, allrequiredCI and verifiedmerge before completing the coherent
+app outcome. New storage admission and history recovery belong in the same change as the
+models/controller/UI, not a separately advertised parser-only feature.
+
+Evidence limits: probes validate existing primitives and actual failure boundaries, not
+an implemented new proposal schema or authenticated repository origin. Direct unsupported-
+record insertion was only an owned adverse fixture; production APIs rejected it before
+writing. Existing39passing tests are reference/admission evidence, not new app capability.
+Only three canonical documents changed; unrelated local builds were not repeated. No
+independent eligible disjoint task exists; dependent implementation waits for verified
+merge. FullF20/CE01 and isolated-copy/run acceptance remain open; unavailable platforms400,
+marketplacegate and F23-last ordering unchanged.
