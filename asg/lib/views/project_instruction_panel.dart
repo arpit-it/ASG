@@ -26,7 +26,8 @@ class _ProjectInstructionPanelState extends State<ProjectInstructionPanel> {
   late ProjectInstructionController _controller;
   final _selection = <String>{'AGENTS.md'};
   ProjectInstructionController _create() =>
-      widget.controller?.root == widget.root
+      widget.controller?.root == widget.root &&
+          widget.controller?.isDisposed == false
       ? widget.controller!
       : ProjectInstructionController(
           root: widget.root,

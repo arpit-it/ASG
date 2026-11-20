@@ -21643,3 +21643,31 @@ proof. Retained isolated build output is not deployment. No runtime/model change
 installs/downloads/cloud provisioning/deployment. Full404/liveQwen/deferred400 open,
 marketplacegate/F23-last retained. Final exact PR review, allrequiredCI and verified
 protectedmerge remain mandatory; no full umbrella completion is claimed.
+
+
+### #404 document review — fresh-review lifecycle correction and retest
+
+Fresh review of PR794 remote103dc7c2ddf47080acb3147abba30a13e45f2a0f found a
+supported injection edge: changing records while passing the same controller
+caused dispose followed by reattachment of that disposed controller. Production
+null-controller creation was unaffected, but lifecycle acceptance was incomplete.
+_create now refuses a disposed injected instance and creates a fresh controller
+for current records. Regression replaces records during pending consent, verifies
+oldhost has zero reads, no listener exception, and fresh configuredPython in the
+new Mac confirmation; unsupportedhosts remain disabled with no fake native claim.
+Read-only source reviewer identified the edge; root fixed and freshly reviewed it.
+This is pre-merge review rework, not an owner incident or escaped defect.
+
+Revised fullFlutter2412PASS13explicit skips,46focusedPASS, format591unchanged,
+analysis clean, normalweb and supplied-datafixture rebuild PASS, isolatedMacdebug
+rebuild SUCCESS with verified customvalidationbundleID. Canonicalinventory rebuilt,
+product32/inventory9 PASS. Logs /tmp/asg404-instruction-review-revised-{full,focused,
+analyze,format,web,browser,mac,product,inventory}.log. IAB rerun visibly confirms
+cancel/no findings, selectedroot/files/interpreter and two captured plaintext
+provenances on rebuilt fixture. Owned8393 server stopped again. RebuiltMac/webasset
+bytes match unchangedhelper; actual builtMacasset isolatedCLI passes with two
+owned selecteddocuments unchanged. New receipt preserves earlier observations:
+/tmp/asg404-instruction-review-revised-packaging-ui-receipt.json. NativeUI and live
+inference remain unverified. Previous CI44729698989 PASS belongs to the superseded
+revision and is not reused; revised exacthead/base freshreview and allrequiredCI
+must pass before protectedmerge. No full404/deferred400 completion or newauthority.
