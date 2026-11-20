@@ -12,6 +12,8 @@ import 'package:asg/models/requirements_board.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'imported_source_context_test.dart' as sources;
+
 ImportedDocumentContext capture(String text) {
   final bytes = utf8.encode(text);
   return ImportedDocumentContext.capture(
@@ -59,6 +61,35 @@ ImportedAdvisoryRequest prepare({
 );
 
 void main() {
+  test('source context stays distinct and input expansion refuses without truncation', () {
+    final context = sources.capture(text: '\ufeffsource\r\n');
+    final request = ImportedAdvisoryRequest.prepare(
+      question: 'Explain source',
+      context: context,
+      config: const LocalModelConfig(),
+    );
+    expect(request.contextDigest, context.digest);
+    expect(request.prompt, contains('Captured source text'));
+    final data = jsonDecode(
+      request.prompt.split('User data JSON follows:\n').last,
+    );
+    expect(
+      data['captured_context']['scope'],
+      'captured-imported-source-context',
+    );
+    expect(data['captured_context']['files'][0]['text'], '\ufeffsource\r\n');
+    final large = sources.capture(text: '"' * 16384);
+    expect(
+      () => ImportedAdvisoryRequest.prepare(
+        question: 'Explain',
+        context: large,
+        config: const LocalModelConfig(),
+      ),
+      throwsFormatException,
+    );
+    expect(large.files.single.byteLength, 16384);
+  });
+
   test(
     'exact captured prose stays attributed data with no generated contract',
     () {

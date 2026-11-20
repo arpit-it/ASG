@@ -19,6 +19,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:sembast/sembast_io.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'project_source_controller_test.dart' show sourceReply;
+
+import 'package:asg/models/imported_source_context.dart';
+import 'package:asg/models/project_source_observation.dart';
+
 import 'imported_plan_test.dart' show Records, finding, capturedPlan;
 
 class AdvisoryProvider implements ModelResponseIdentityProvider {
@@ -46,16 +51,30 @@ class AdvisoryProvider implements ModelResponseIdentityProvider {
   }
 }
 
+ImportedSourceContext capturedSource() => ImportedSourceContext.capture(
+  inspection: finding(),
+  requirements: RequirementsBoard(),
+  request: ProjectSourceReadRequest(
+    root: '/project',
+    python: '/python',
+    selectedPaths: ['lib/main.dart'],
+  ),
+  observation: sourceReply(['lib/main.dart']),
+);
+
 Future<ImportedAdvisoryController> controller(
   RecordStorage records,
   AdvisoryProvider p, {
+  bool source = false,
   Duration timeout = const Duration(seconds: 1),
   Duration cleanup = const Duration(seconds: 2),
 }) async {
   await InspectedFolderStore(records).save('/project');
   return ImportedAdvisoryController(
     inspection: finding(),
-    context: capturedPlan(text: 'PRIVATE_SYNTHETIC_DOCUMENT'),
+    context: source
+        ? capturedSource()
+        : capturedPlan(text: 'PRIVATE_SYNTHETIC_DOCUMENT'),
     store: ImportedAdvisoryStore(records),
     createProvider: (_) => p,
     requestLimit: timeout,
@@ -66,6 +85,67 @@ Future<ImportedAdvisoryController> controller(
 Future<void> tick() => Future<void>.delayed(Duration.zero);
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  for (final identity in <String?>[null, 'wrong-source-fixture']) {
+    test('source response identity refusal $identity', () async {
+      final p = AdvisoryProvider()..identity = identity;
+      final c = await controller(Records(), p, source: true);
+      addTearDown(c.dispose);
+      await c.ask('Explain source', confirm: (_) async => true);
+      expect(c.saved, isNull);
+      expect(c.unsaved, isNull);
+      expect(c.error, isNotNull);
+    });
+  }
+  test('source advisory requires separate consent and stores provenance without source plaintext', () async {
+    final records = Records(), p = AdvisoryProvider();
+    final c = await controller(records, p, source: true);
+    addTearDown(c.dispose);
+    final writes = records.writes;
+    await c.ask('Explain source', confirm: (_) async => false);
+    expect(p.calls, 0);
+    expect(records.writes, writes);
+    await c.ask(
+      'Explain source',
+      confirm: (request) async {
+        expect(request.context.includesSource, true);
+        expect(request.contextDigest, capturedSource().digest);
+        expect(request.prompt, contains('Captured source text'));
+        expect(p.calls, 0);
+        return true;
+      },
+    );
+    expect(c.error, isNull);
+    expect(p.calls, 1);
+    expect(p.prompt, contains('captured-imported-source-context'));
+    final raw = c.saved!.encode();
+    expect(raw, isNot(contains('Untrusted [lib/main.dart]')));
+    expect(c.saved!.contextDigest, capturedSource().digest);
+    final reopened = await controller(
+      records,
+      AdvisoryProvider(),
+      source: true,
+    );
+    expect(reopened.saved!.encode(), raw);
+    reopened.dispose();
+  });
+  test('source settings changed during consent refuse dispatch and keep previous answer', () async {
+    final records = Records(), p = AdvisoryProvider();
+    final c = await controller(records, p, source: true);
+    addTearDown(c.dispose);
+    await c.ask('First', confirm: (_) async => true);
+    final old = c.saved!.encode();
+    await c.ask(
+      'Changed',
+      confirm: (_) async {
+        await ModelSettingsStore(records)
+            .save(const LocalModelConfig(model: 'changed-fixture'));
+        return true;
+      },
+    );
+    expect(p.calls, 1);
+    expect(c.saved!.encode(), old);
+    expect(c.error, isNotNull);
+  });
   test('explicit question stores only completed advisory provenance in an isolated key', () async {
     final records = Records(), p = AdvisoryProvider();
     final owner = await controller(records, p);
@@ -192,6 +272,27 @@ void main() {
     },
   );
   test(
+    'source failed save retains completed answer and retries without inference',
+    () async {
+      final records = Records(),
+          p = AdvisoryProvider(),
+          c = await controller(records, p, source: true);
+      addTearDown(c.dispose);
+      records.fail = true;
+      await c.ask('Question', confirm: (_) async => true);
+      expect(c.saved, isNull);
+      expect(c.unsaved!.answer, p.text);
+      expect(c.error, isNotNull);
+      expect(p.calls, 1);
+      records.fail = false;
+      await c.retrySaving();
+      expect(c.error, isNull);
+      expect(c.saved!.answer, p.text);
+      expect(c.unsaved, isNull);
+      expect(p.calls, 1);
+    },
+  );
+  test(
     'stale editor preserves first answer and refuses a second request',
     () async {
       final records = Records(),
@@ -213,6 +314,28 @@ void main() {
     final records = Records(),
         p = AdvisoryProvider(),
         c = await controller(records, p);
+    addTearDown(c.dispose);
+    await c.ask('First', confirm: (_) async => true);
+    final raw = records.values[ImportedAdvisoryStore.key('/project')];
+    final stream = StreamController<String>();
+    p.source = stream.stream;
+    final asking = c.ask('Next', confirm: (_) async => true);
+    await tick();
+    stream.add('Partial');
+    await tick();
+    expect(c.draft, 'Partial');
+    c.stop();
+    await asking;
+    expect(c.draft, isEmpty);
+    expect(c.error, contains('Stopped'));
+    expect(records.values[ImportedAdvisoryStore.key('/project')], raw);
+    expect(c.busy, false);
+    await stream.close();
+  });
+  test('source Stop discards partial response, closes app connection and retains saved answer', () async {
+    final records = Records(),
+        p = AdvisoryProvider(),
+        c = await controller(records, p, source: true);
     addTearDown(c.dispose);
     await c.ask('First', confirm: (_) async => true);
     final raw = records.values[ImportedAdvisoryStore.key('/project')];
@@ -370,6 +493,49 @@ void main() {
       final reopened = await StudioDatabase.migrate(db, prefs),
           nextProvider = AdvisoryProvider(),
           next = await controller(reopened, nextProvider);
+      expect(next.saved!.encode(), raw);
+      await StoreRef<String, String>('records')
+          .record('studio.localModel.v1')
+          .put(
+            db,
+            jsonEncode({
+              'baseUrl': 'http://127.0.0.1:8765/v1',
+              'model': LocalModelConfig.defaultModel,
+              'chatOutputTokens': 512,
+            }),
+          );
+      await next.ask('Next', confirm: (_) async => true);
+      expect(nextProvider.calls, 0);
+      expect(next.error, isNotNull);
+      expect(reopened.getString(ImportedAdvisoryStore.key('/project')), raw);
+      next.dispose();
+    } finally {
+      await db.close();
+      await directory.delete(recursive: true);
+    }
+  });
+  test('source actual native database reopen retains answer and stale durable settings reject dispatch', () async {
+    final directory = await Directory.systemTemp.createTemp(
+      'asg-imported-advisory-',
+    );
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    var db = await databaseFactoryIo.openDatabase(
+      '${directory.path}/records.db',
+    );
+    try {
+      final records = await StudioDatabase.migrate(db, prefs),
+          p = AdvisoryProvider(),
+          c = await controller(records, p, source: true);
+      await c.ask('Question', confirm: (_) async => true);
+      expect(c.error, isNull);
+      final raw = c.saved!.encode();
+      c.dispose();
+      await db.close();
+      db = await databaseFactoryIo.openDatabase('${directory.path}/records.db');
+      final reopened = await StudioDatabase.migrate(db, prefs),
+          nextProvider = AdvisoryProvider(),
+          next = await controller(reopened, nextProvider, source: true);
       expect(next.saved!.encode(), raw);
       await StoreRef<String, String>('records')
           .record('studio.localModel.v1')

@@ -94,7 +94,25 @@ class ImportedProjectWorkspace extends StatelessWidget {
           'execution approval.',
         ),
         const SizedBox(height: 16),
-        ProjectSourcePanel(root: inspection.root, records: records),
+        ProjectSourcePanel(
+          root: inspection.root,
+          records: records,
+          inspection: inspection,
+          onAdvisory: (captured) {
+            if (!context.mounted) return;
+            Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => ImportedAdvisoryScreen(
+                  controller: ImportedAdvisoryController(
+                    inspection: inspection,
+                    context: captured,
+                    store: ImportedAdvisoryStore(records),
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
         ProjectInstructionPanel(
           key: ValueKey('instructions-${inspection.root}'),
           root: inspection.root,

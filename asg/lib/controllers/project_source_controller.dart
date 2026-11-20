@@ -6,6 +6,10 @@ import 'dart:convert';
 import 'package:path/path.dart' as path;
 
 import '../models/project_source_observation.dart';
+import '../models/imported_source_context.dart';
+import '../models/project_inspection.dart';
+import '../services/inspected_folder_store.dart';
+import '../services/requirements_store.dart';
 import '../services/project_source_host.dart';
 import '../services/project_source_host_factory.dart';
 import '../services/runtime_setup_store.dart';
@@ -32,6 +36,7 @@ class ProjectSourceController extends BaseController {
       _cleanupUncertain = false;
   String? _error;
   ProjectSourceObservation? _findings;
+  ProjectSourceReadRequest? _capturedRequest;
   bool get supported => _host.supported;
   bool get busy => _busy;
   bool get confirming => _confirming;
@@ -40,6 +45,42 @@ class ProjectSourceController extends BaseController {
   bool get canStop => _busy && !_stopped;
   String? get error => _error;
   ProjectSourceObservation? get findings => _findings;
+
+  bool get canPrepareAdvisory =>
+      !isDisposed &&
+      !_busy &&
+      !_stale &&
+      !_cleanupUncertain &&
+      _findings != null &&
+      _capturedRequest != null;
+
+  /// Captures current app requirements; does not read files or send context.
+  ImportedSourceContext? prepareAdvisory(ProjectInspection inspection) {
+    if (!canPrepareAdvisory) return null;
+    try {
+      if (inspection.root != root ||
+          !InspectedFolderStore(_setupStore.records).load().contains(root)) {
+        throw const FormatException();
+      }
+      final findings = _findings!;
+      final context = ImportedSourceContext.capture(
+        inspection: inspection,
+        requirements: RequirementsStore(_setupStore.records)
+            .load(InspectedFolderStore.workspaceId(root)),
+        request: _capturedRequest!,
+        observation: findings,
+      );
+      _error = null;
+      update();
+      return canPrepareAdvisory && identical(_findings, findings)
+          ? context
+          : null;
+    } catch (_) {
+      _error = 'Source advisory context could not be prepared. Save the folder reference and review current source files and requirements.';
+      update();
+      return null;
+    }
+  }
 
   void invalidateSelection() {
     if (isDisposed || _busy) return;
@@ -108,6 +149,7 @@ class ProjectSourceController extends BaseController {
         throw const FormatException();
       }
       _findings = result;
+      _capturedRequest = request;
       _stale = false;
     } catch (_) {
       if (!isDisposed && !_stopped) _error = 'Source files could not be read. Check selected files and the configured absolute Python path.';

@@ -27,6 +27,37 @@ Future<void> openDialog(WidgetTester tester) async {
 
 void main() {
   testWidgets(
+    'source question consent names source and cancellation sends nothing',
+    (tester) async {
+      final records = Records(), p = AdvisoryProvider();
+      final c = await controller(records, p, source: true);
+      await tester.pumpWidget(
+        MaterialApp(home: ImportedAdvisoryScreen(controller: c)),
+      );
+      expect(find.text('Review captured source'), findsOneWidget);
+      await openDialog(tester);
+      expect(
+        find.textContaining(
+          'Captured source text is not copied into this answer record',
+        ),
+        findsOneWidget,
+      );
+      expect(p.calls, 0);
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+      expect(p.calls, 0);
+      await tester.tap(find.text('Review and send question'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Send question'));
+      await tester.runAsync(() async {
+        await Future<void>.delayed(const Duration(milliseconds: 10));
+      });
+      await tester.pumpAndSettle();
+      expect(p.calls, 1);
+      expect(c.saved, isNotNull);
+    },
+  );
+  testWidgets(
     'confirmation separates captured-data transfer from local answer storage and cancel retains question',
     (tester) async {
       final records = Records(),

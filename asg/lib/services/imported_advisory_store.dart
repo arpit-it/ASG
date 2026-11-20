@@ -2,7 +2,7 @@
 // Copyright 2026 Arpit Sinha
 import '../models/imported_advisory_request.dart';
 import '../models/imported_advisory_record.dart';
-import '../models/imported_document_context.dart';
+import '../models/imported_repository_context.dart';
 import '../models/project_inspection.dart';
 import 'inspected_folder_store.dart';
 import 'requirements_store.dart';
@@ -27,7 +27,7 @@ class ImportedAdvisoryStore {
 
   ({ImportedAdvisoryRequest request, Map<String, String?> inputs}) prepare(
     ProjectInspection inspection,
-    ImportedDocumentContext context,
+    ImportedRepositoryContext context,
     String question,
     ImportedAdvisoryRecord? expected,
   ) {
