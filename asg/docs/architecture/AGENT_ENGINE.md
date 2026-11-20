@@ -5291,3 +5291,90 @@ bounded owner route receipt /tmp/asg404-json-journal-runtime-status.json records
 this run's status separately; no generation requested. Full404/liveQwen/#400 OPEN;
 required exactPRreview/allrequiredCI/verifiedmerge pending. Marketplace/F23-last
 preserved.
+
+
+### 2026-11-20 — #404 JSON journals merged; MLX environment prerequisite started
+
+PR784 protected expected-head mergea88926e25ea2c80aea2a1af8d5fc7df972b77ed9
+verified remote main/mergedPR/fetched tree4b46c71e24d8d3e79def2136213eee18ced8a2a9.
+Fresh reviewedb3554908374b8f169f6c10e0d60788d1d7bbf0ad/base78b06b03 no blocker,
+threads empty. CI44694810001 Python136148901227/Flutter136148901616 every mandatory/
+post step SUCCESS; ten new actualJSON/nativeDB cases activeLinuxPASS, nullable
+legacy observedidentity retained. Local42focused/full2280PASS13explicit skips/
+format561/analyze/web/product32/inventory9. Coordinator merged/outcome recorded,
+integration and claim released. Both bounded JSON tracks Done; full404/liveQwen/
+#400 remain OPEN. Ownerdirty checkout/processes and lastworking outputs preserved.
+
+Immediately claimed404-mlx-environment-prerequisite-investigation in registered
+issue worktree, sole docs writer. Existing404/F20 covers unavailable live source
+acceptance; no new issue. Concrete prior diagnostic uncertainty: checkpoint metadata
+exists but no owner8765listener; current existing Python package discovery and
+compatibility are unknown. History identifies a project-local existing MLX
+environment candidate. Acceptance: bounded stat/config/package metadata and at
+most one reviewed --capabilities-only CLI on that existing Python; no --model,
+--probe-devices, frameworks/devices/weights load, server start/stop, install,
+download/conversion/fallback or owner saved preferences/credential access.
+Private paths stay local. Discovery cannot prove selected saved setup, Metal
+readiness, weight identity/integrity, memory fit or inference. Bounded owner
+health/models GET status only; record exact evidence/action needed for live
+acceptance. No second independent task admitted; root sole runtime observer.
+Docs publication still requires checks/freshreview/allrequiredCI/verifiedmerge.
+Marketplace gate/F23-last/deferred400 preserved, no stable replacement/cloud/deploy.
+
+
+#404 MLX environment prerequisite started with actual read-only observation at
+2026-11-20T07:34:53Z/sourcea88926e2. Historically documented project-local existing
+Python and venv config are present. Bounded distribution metadata declares
+mlx0.32.4, mlx-lm0.32.2, mlx-metal0.32.4, huggingface_hub2.3.0, tokenizers0.23.3
+and transformers5.20.2; existing qwen3_5 module file present. These are metadata/
+file observations, not package integrity or loaded model compatibility evidence.
+Exactly one reviewed --capabilities invocation exited0,574stdoutbytes/0stderr,
+within10s: Darwinarm64, MLX host_supported=true, missing_dependencies=[],
+readiness=unverified, device_ready=null, model_compatible=null. No --model or
+--probe-devices, device/framework/model loading, server start or generation.
+Legacy Torch dependencies absent does not call for installing or switching them.
+
+Both fixedhealth/models remain unavailableURLError; generation0. Thus a candidate
+existing MLX environment is dependency-discoverable, but this does not prove the
+owner's saved selected Python/backend/stable binary, Metal readiness, weight
+identity/memoryfit or live inference. No preferences/credentials/processes changed
+or read. Specific F20 live prerequisite remains owner-started/recovered approved
+MLX service on8765 reporting ready/idle/Metal, exactQwen3.8-27B-4bit and4096source
+budgets, then one standalone request with exactnonnull response identity.
+Private candidate path only in /tmp/asg404-mlx-environment-prerequisite-receipt.json;
+SHA2563e750fe4ec0c1dab6a4bd7c58e1a80cb445263884c9e098e39eb636abf68eafc.
+Investigation still owned; source/launch-contract cross-check, docs checks and
+reviewable publication pending. No install/download/conversion/fallback/stable
+replacement/cloud/deployment. Full404/liveQwen/#400 remain OPEN.
+
+
+### #404 MLX environment prerequisite — completed local investigation
+
+Cross-checked exact current source: qwen_server --capabilities returns before
+model path/config/load/server construction; default discover_capabilities uses
+module discovery without probe_device. Actual07:34candidate command omitted
+--probe-devices. Managed NativeRuntimeHost.discover instead explicitly adds that
+flag, so the observed dependency-only receipt is NOT an app Inspect capabilities
+device result. Actual managed start separately reserves8765 and passes explicit
+backend/model/path/ID/parent-pid; controller saves connection only after ready
+health matches selected candidate name AND path. Source contracts do not prove
+installed binary revision, saved owner selection, existing package integrity,
+Metal readiness, checkpoint loadability/memoryfit or live response identity.
+
+Existing dependency-discovery regression suite67ran/1explicit skip (66PASS),
+product32/inventory9PASS. These fixtures and CLI smoke checks are separate from
+the single actual candidate environment command; no candidate device probe or
+weight load was run. FullFlutter2280PASS/13explicit opt-in skips, format561unchanged,
+analyzer clean, web/Wasm dry run built. Logs /tmp/asg404-mlx-env-{backend-fixtures,
+product,inventory,full,format,analyze,web}.log. Three documentation paths only,
+no production/environment/model/source changes. All prior native/live evidence
+retains its original identity, not reused as new acceptance.
+
+Specific remainingF20 prerequisite is the approved owner MLX service ready/idle
+on8765, exactQwen3.8-27B-4bit model inventory with4096sourcebudgets, then exact
+nonnull response identity in a standalone source request. The historical Python
+candidate currently has discoverable MLX dependencies; no install/download or
+Torch fallback is indicated by this check. Saved setup choice and successful
+load remain unverified, and fixedhealth/models were unavailable at07:34:53.
+Required exactfreshPRreview/allrequiredCI/verifiedmerge remain pending for these
+findings. Full404/liveQwen/#400 stay OPEN, marketplace gate/F23-last preserved.
