@@ -17249,3 +17249,127 @@ validation reuses unchanged runtime build evidence from verifiedmain/PR767, with
 claiming a new app build or native-process result. Both required remote jobs remain
 mandatory. Local exact contract/failure-order review complete; publish only3docs,
 fresh exact PR review, requiredCI and verified merge before implementation.
+
+
+20 November2026 — PR768 verified merged6fdc864262ae5e7ff3df82ef1cde74ce41148463,
+exacttree0e88da4eabfdf399b4a39c1d1cf19f912db22d18 matches3tested published docs.
+Fresh3docreviewce67790fd579f998e48d25133fea8959363e6645/basef36ded5d found no
+blocking issue; requiredCI44652523952 Python136010649448/Flutter136010649765 both
+SUCCESS with everymandatory/poststepSUCCESS, threads empty and unchanged head/base/
+main checked before protected expected-head merge. PluginPR/main/issue404OPEN and
+fetchedmain/tree verified. Delivered bounded initial native fixture contract, not
+actual app/process acceptance. Two native DB seam probes/focused29/source/fit5008
+/host76/restart6/product32/inventory9 pass. Coordinator merged/outcome_verified
+recorded before integration/writer release. No review rework or escaped defect
+observed; provider timing unknown, manual observation wait separate. Stable app,
+owner dirty edits/processes and working output preserved.
+
+Immediately claimed404-native-initial-lineage-fixture from verifiedmain under SAME
+F20/CE01/#404, owning7literal Dart/preflight/shared-doc/inventory paths. Separate
+disjoint Python writer404-native-initial-lineage-host is delegated ONLY existing
+Python entry/parser tests and new native_initial_lineage.py in its prior clean
+registered worktree. Both depend on verified contract, not each other's unmerged
+work. Maximum2writers, root-only native/build resources; host tests mock process
+launches. Root serializes final integration/publication/review/CI/merge. No new issue
+or queue. Contract above/AGENT_ENGINE is implementation acceptance; fullF20/CE01/
+umbrella404 and unavailable400 stay open.
+
+Start fixed protocol23 input guards, then actual supplied initial setup/report/
+startup/cold/retry mode and disjoint host validation; exact final native scenarios
+and all required local/remote checks remain pending. No runtime/production source
+change, model/SDK execution or source restoration is claimed by preflight work.
+
+
+Initial-lineage fixture implementation checkpoint: new typed
+NativeInitialLineageChallenge accepts only exact6key4096byte protocol23-mode input,
+strict nonce/int launch/boundary/booleancontrol/canonicalabsoluteSDK fields and
+fixed precommit1/2 versus postcommit1..4 stages. Optional corruption only read-only
+postcommit2. Derived targetrun1/2,dispatch and candidateRequestLineage companion
+keys are planned values, never committed proof. Duplicate/missing/extra/invalid/
+UTF8-oversize or incompatible values fail with sanitized errors. Native entrypoint
+is not yet wired; this is parser preflight only, no new native crash acceptance.
+
+Ten focused parser+architecture checks PASS, direct module analysis clean. Logs:
+/tmp/asg404-native-initial-preflight-test.log,
+/tmp/asg404-native-initial-preflight-analyze.log. Host writer explicitly claimed
+its disjoint3Python paths from verified6fdc8642 in reused clean registered worktree
+/Users/arpitsinha/.codex/worktrees/404-native-repair-lineage-host/ASG, issue branch
+404-native-initial-lineage-host, valid3600sec lease; no host/native/build/model
+launches. Exactly2writers now own disjoint scopes, no integration lock. Root owns
+actual native/build resources. Frozen40field/15slot/16counter schema stays as merged.
+
+Remaining owned work: actual supplied two-initial-return setup, seven-record startup
+pauses/reports, cold/production-recovery retry/dual historical readers and control;
+finish/integrate stopped host handoff under properly expanded integration scope;
+then exact final binary native23andlegacy20/21/22 observations, full required checks,
+fresh PR review/CI/verifiedmerge. Implementation remains incomplete/unpublished.
+No source restore, live model/SDK execution, app kill, stable replacement or deployment
+has happened in this implementation checkpoint. FullF20/CE01/umbrella404 and
+unavailable400 remain open; resume owned tracks first and renew leases.
+
+
+Initial native fixture mode now wired in disposable entrypoint only. Actual supplied
+ApprovedSourceProposer called twice with matching model and identical proposals;
+first returned initial origin selected explicitly, latest request2 retained. Native
+StudioDatabase barrier/reports, production initial historical readers, optional
+corruption isolation and production saved recovery retry/dual companion readers
+implemented. Counters distinguish2provider/2request/1source setup, retry2inspections,
+7declared startup updates and zero receipt/model/SDK/copy/preview effects.
+
+Thirteen focused checks PASS:3same-process native database workflows,9challenge
+guards and architecture. Log:/tmp/asg404-native-initial-app-test.log. Direct fixture
+analysis clean after removing unused import and correcting setup acceptance label
+from repair to initial request. These are not actual separately launched app crashes.
+Host writer stopped clean at29e9f35d3e8544fe45999b39e38fc3e4995c386a,tree
+e9f1b0b231547d030d9dcaf92fd9f55d065ca497,exact3Python paths,100host+6restart
+tests PASS. Root acknowledged handoff and requested owner release before acquiring
+a fresh combined integration scope; no sibling scope is adopted before that claim.
+Actual final binary native23/legacy scenarios and full checks/publication/review/
+CI/verifiedmerge remain pending. FullF20/CE01/umbrella404/#400 stay open. No live
+inference,new SDK command,app crash,source restoration,stable replacement/deployment
+was performed for this checkpoint; owner processes/output preserved.
+
+
+Native initial-lineage integration: both clean writer tracks stopped/released before
+root acquired fresh union10path task404-native-initial-lineage-integration. Root
+appf10512a and host29e9f35 were preserved; handoff adopted only after union claim
+succeeded. Exactly1active writer now owns final integration. No scope was taken
+from a live writer, no sibling unmerged task was treated as prerequisite.
+
+Actual owned native23scenarios PASS on ONE isolated disposable binary: precommit2,
+postcommit+production-recovery retry4, optionalcorruption2 launches. Every case
+preserves explicit selectedrequest1/latest2 with equal returned-filehash maps and
+distinct terminal entry hashes. Captured versus durable startup identities and
+actual raw retry session remain separate; final cold reopen validates both stored
+companions. New mode has0receipt/live-model/SDK/copy/preview actions; setup2provider/
+2request/1source and retry2source inspections are declared. Source manifest hashes
+are recorded setup metadata, not cold inspections or production copy acceptance.
+SAME binary also passes all3legacy repair22cases(8launches), decision21(5launches)
+and bound-session20Stop/acknowledgement/retry/promotion smoke(5launches). These
+legacy modes retain their existing supplied command/process/receipt scopes. No
+actual inference/general SDK-result/platform completion is inferred.
+
+BinarySHA256 1a659b72cbb6eb0fb3a5b80103c68821744ba375e0cf6de70727d70b695b4d7d.
+Source Dart manifest SHA256 514d8764b7cb600e2d3af63b390ec4a62fc11bbb7a627c73d9f9daf023458f95.
+Private exactsource/report summary:/tmp/asg404-native-initial-evidence-summary.json.
+Reports:/tmp/asg404-native-initial-{precommit,retry,corrupt,repair-precommit,
+repair-retry,repair-corrupt,legacy21,legacy20}.json. Digests:
+precommit 4b3193d026295398cde2aaa073b1c4766d776c03e6d0588be3e43b181a8a08d7 (2launches)
+retry 5c0fc65a7ec98a1c3e53e541ae84e645d3bb0b9c817e0b6fd3fc0fd868b786d7 (4launches)
+corrupt 0dd091dd891c17cab69c485ef0a4cbb3ce2d5c81af9443b5a5dacf435ba3183e (2launches)
+repair-precommit 1a91228659c00c7d975ddd3e5520e6bb0d9828c48d9192980b3ff3ace3fd5fac (2launches)
+repair-retry 8c8559438519a850b2534fbc636ec0f7bd1cb2c90fe768eade0d25e94a194456 (4launches)
+repair-corrupt 3c01cda7dcdb50168a040b2f6c79f0656d155530e113b2e2044d61cf138f89db (2launches)
+legacy21 693d13968a70d977226b772376be407452da3f7f479dc203d5da26df89df4e12 (5launches)
+legacy20 cdef8324e44f7233df4163d957fd52023f9caec31369d2eb50f6c29f5bca96c9 (5launches)
+
+FullFlutter2198PASS/11existing skips, clean general and direct fixture analysis,
+format553unchanged, productionweb and isolatednativefixturebuild PASS. Portable
+host100+restart6(106total),product32,inventory9 PASS; canonical regenerated inventory
+unchanged (no productionlibsource changed). Logs:/tmp/asg404-native-initial-{full-
+analyze,full-test,full-format,web-build,isolated-build,integrated-host,integrated-
+restart,product,inventory-test}.log. Native app build is isolated separate identity
+com.arsinha.asg.restartfixture, never installed/replaced stable app. Owner processes
+and last working output preserved. Exact final source commit/publication, fresh PR
+review, requiredCI and verifiedmerge still gate delivery; fullF20/CE01/umbrella404
+and unavailable400 stay open.

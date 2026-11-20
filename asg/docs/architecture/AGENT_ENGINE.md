@@ -3954,3 +3954,14 @@ completion, model weights, source restoration, unrestricted execution or deploym
 is established by this metadata fixture contract. If production seam cannot be
 reached, keep native acceptance pending and fix the bounded fixture without weakening
 production guards.
+
+
+Implemented separate initial-lineage fixture23 now exercises explicit older selected
+request1 after identical later request2 via actual supplied proposer, native atomic
+startup/cold initial readers and production recovery retry. Both retained companions
+are joined independently; optional corrupt data preserves bare history. Final owned
+Mac23cases8launches plus preserved22/21/20cases18launches pass on bundle
+1a659b72cbb6eb0fb3a5b80103c68821744ba375e0cf6de70727d70b695b4d7d.
+This is supplied metadata/source fixture evidence, not production source-copy, live
+inference, general SDK or fullCE01/platform acceptance. See canonical requirements/
+progress for source/report digests and exact validation limits.
