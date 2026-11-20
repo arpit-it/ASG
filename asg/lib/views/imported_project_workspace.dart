@@ -11,6 +11,7 @@ import '../services/requirements_store.dart';
 import 'requirements_screen.dart';
 import 'git_metadata_panel.dart';
 import 'project_instruction_panel.dart';
+import 'project_source_panel.dart';
 import 'imported_plan_screen.dart';
 import 'imported_advisory_screen.dart';
 import '../controllers/imported_advisory_controller.dart';
@@ -93,6 +94,7 @@ class ImportedProjectWorkspace extends StatelessWidget {
           'execution approval.',
         ),
         const SizedBox(height: 16),
+        ProjectSourcePanel(root: inspection.root, records: records),
         ProjectInstructionPanel(
           key: ValueKey('instructions-${inspection.root}'),
           root: inspection.root,
