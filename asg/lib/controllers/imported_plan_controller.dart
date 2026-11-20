@@ -53,6 +53,8 @@ class ImportedPlanController extends BaseController {
   }
 
   bool get approved => current && plan!.approved;
+  bool get canReviewCommittedProposal =>
+      capturedCommit != null && approved && !busy;
   Future<void> load() async {
     if (isDisposed || busy) return;
     busy = true;

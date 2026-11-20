@@ -6,8 +6,13 @@ import 'package:flutter/material.dart';
 import '../controllers/imported_plan_controller.dart';
 
 class ImportedPlanScreen extends StatefulWidget {
-  const ImportedPlanScreen({super.key, required this.controller});
+  const ImportedPlanScreen({
+    super.key,
+    required this.controller,
+    this.onCommittedProposal,
+  });
   final ImportedPlanController controller;
+  final VoidCallback? onCommittedProposal;
   @override
   State<ImportedPlanScreen> createState() => _ImportedPlanScreenState();
 }
@@ -144,6 +149,13 @@ class _ImportedPlanScreenState extends State<ImportedPlanScreen> {
                   : () => controller.saveDraft(text.text),
               child: const Text('Save draft'),
             ),
+            if (widget.onCommittedProposal != null)
+              OutlinedButton(
+                onPressed: controller.canReviewCommittedProposal
+                    ? widget.onCommittedProposal
+                    : null,
+                child: const Text('Review committed-source change'),
+              ),
             if (controller.plan != null) ...[
               Text(
                 controller.approved

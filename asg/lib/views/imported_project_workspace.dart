@@ -5,6 +5,9 @@ import 'package:flutter/material.dart';
 
 import '../controllers/requirements_controller.dart';
 import '../models/project_inspection.dart';
+import 'imported_commit_proposal_screen.dart';
+import '../controllers/imported_commit_proposal_controller.dart';
+import '../services/imported_commit_proposal_store.dart';
 import '../services/inspected_folder_store.dart';
 import '../services/record_storage.dart';
 import '../services/requirements_store.dart';
@@ -64,6 +67,20 @@ class ImportedProjectWorkspace extends StatelessWidget {
                       ImportedPlanStore(records, capturedCommit: captured),
                       inspection: inspection,
                     ),
+                    onCommittedProposal: () {
+                      if (!context.mounted) return;
+                      Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) => ImportedCommitProposalScreen(
+                            controller: ImportedCommitProposalController(
+                              inspection: inspection,
+                              context: captured,
+                              store: ImportedCommitProposalStore(records),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ),
               );
@@ -166,6 +183,20 @@ class ImportedProjectWorkspace extends StatelessWidget {
           'execution approval.',
         ),
         const SizedBox(height: 16),
+        OutlinedButton.icon(
+          onPressed: () => Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) => ImportedCommitProposalScreen(
+                controller: ImportedCommitProposalController.history(
+                  root: inspection.root,
+                  store: ImportedCommitProposalStore(records),
+                ),
+              ),
+            ),
+          ),
+          icon: const Icon(Icons.history),
+          label: const Text('Open saved committed-source comparison'),
+        ),
         ProjectSourcePanel(
           root: inspection.root,
           records: records,
