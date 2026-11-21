@@ -2,6 +2,8 @@
 // Copyright 2026 Arpit Sinha
 import 'package:flutter/material.dart';
 
+import 'imported_head_index_panel.dart';
+
 import '../controllers/imported_index_controller.dart';
 import '../controllers/imported_workfile_controller.dart';
 import '../models/imported_workfile_comparison.dart';
@@ -226,6 +228,18 @@ class _ImportedWorkfilePanelState extends State<ImportedWorkfilePanel> {
             if (controller.lastObserved case final previous?)
               if (!identical(previous, controller.observation))
                 ..._result(previous, current: false),
+            if (controller.lastObserved != null)
+              ExpansionTile(
+                maintainState: true,
+                title: const Text('Declared-object read'),
+                children: [
+                  ImportedHeadIndexPanel(
+                    root: widget.root,
+                    records: widget.records,
+                    workfile: controller,
+                  ),
+                ],
+              ),
           ],
         ),
       ),

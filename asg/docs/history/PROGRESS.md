@@ -24548,3 +24548,108 @@ subset semantics/refusals, owned deadline/Stop/cleanup and native/reopen/IAB/
 full validation. No imported commit policy becomes eligible from literal matches.
 The investigation remains pending fresh exact review, required CI and verified
 merge; fullF20/#404OPEN and #400/marketplace/F23-last unchanged.
+
+
+### HEAD/index admission verified / declared-object read started, 21 November 2026 UTC
+
+PR836 verified merged22890118035dccadb5404afaebbc5cc32f7580aa, exact reviewed
+remote2413007ffed76a590561c8f57b535d717e31c332/local22e686cafa9184d1f3d4b01cc9ae19b5786b1e46,
+tree780507434ce7c801d7d29f7751b2dd03fcb3478b. Fresh review found no blockers;
+CI44884029374 jobs136785303787/136785304061 all steps/poststeps passed, decoded
+logs inspected (Flutter2906/96platformskips, browser17 and all build checks).
+Plugin/main/fetched merge/tree agree; #404OPEN.13 supplied-object and20 physical
+loose-object owned no-process probes passed; Python33/12/12/9/32 and immutable
+models14/architecture1 passed. This establishes a bounded prerequisite, not an
+application join, Git-state verification or commit authority. Completed claim/
+integration released; owner edits/processes preserved.
+
+Immediately claimed404-declared-head-index-read under existingF20/CE01/#404.
+Coherent outcome: explicit bounded literal declared-HEAD direct-loose tree read
+joined to a current reviewed index/selected-working-file comparison. Acceptance:
+strict root/current external Python/fresh nonce/workfile request+receipt/index/
+selected-byte+mode joins;1–4 indexed Dart paths. Trusted command-free helper
+holds no-follow HEAD/ref/object/index/source descriptors, bounds compressed and
+expanded object bytes/counts and path descent, verifies canonical object hashes
+and final identities/locks. No packed fallback or Git/project/config/replace
+execution; unsupported indirection/lookup-dependent layouts refuse explicitly.
+Separate review/single-use consent, current workfile/index and two durable fences,
+shared source ownership, owned deadline/Stop/disposal/cleanup and stale-result
+exclusion required. Show literal declared-tree/index/working-byte and mode flags
+separately, including absent tree paths; authenticated repository/filtered/
+untracked/whole-repository state stay false/unknown and commit/mutation authority
+false. Preserve Git/source/app bytes and dated prior evidence; unsupported hosts
+readable/action unavailable. Models/helper/host/store/controller/panel and adverse/
+native/reopen/IAB/full checks/build/fresh review/CI/verified merge remain one
+coherent pending implementation. Sole writer/no independent second ready task;
+#400/marketplace/F23-last/fullF20OPEN unchanged. No model/download/install/stable
+replacement/cloud/deploy.
+
+Declared-object read initial model checkpoint: immutable request joins current
+workfile request/receipt, index hash/length, root/current external interpreter,
+fresh nonce and1–4 sorted selected paths with index/working-byte/mode labels.
+Strict result models bind literal HEAD/ref, direct-loose acquisition, verified
+object/tree labels and bounded object statistics; separate index/tree, working
+bytes/tree and executable/tree flags include absent tree paths. Contradictory,
+foreign, malformed, excessive, forged-authority or partial failure payloads refuse.
+Authenticated repository/Git state and commit/mutation authority remain false;
+filters/untracked/whole-repository state remain unknown. Arrays immutable; no
+content payload. Seven adversarial model regressions plus architecture1PASS,
+analysis clean and two-file formatterPASS. New fixture map/nullability operations
+and one multiline guard style finding were corrected before clean reruns; no
+known failure bypassed. Models alone do not provide a physical application read.
+Next within this same coherent task: bounded trusted helper/general selected-tree
+descent and explicit subset refusals, owned host, current-workfile/durable fences,
+review/consent panel, native/reopen/IAB and final full checks/build/fresh review/
+required CI/verified merge. Initial checkpoint remains unmerged; #404/fullF20OPEN.
+PR836 manual metrics: start-to-merge1088.4s, CI observation444.3s, review rework0,
+verified prerequisite outcome1; escaped defects unknown (zero observations). Owner
+six primary IDE/docs edits/processes preserved; #400/marketplace/F23-last unchanged,
+no model/download/install/stable replacement/cloud/deploy.
+
+
+### Declared HEAD/index selected-file read implementation checkpoint, 21 November 2026 UTC
+
+Implemented the claimed404-declared-head-index-read under F20/CE01/#404:
+strict immutable request/result provenance, bounded held no-follow loose commit/
+tree/blob acquisition, explicit one-use consent, current reviewed working-file/
+index and two durable-input fences, shared ownership, Stop/disposal/deadline/
+cleanup handling and separately labelled historical results. One to four selected
+Dart paths expose independent index/tree, raw working bytes/tree and executable/
+tree flags, including absent tree paths. No Git commands, content sharing, model
+requests, repository authentication, filtered/untracked status or commit authority.
+Packed refs/objects, alternates, replacement refs and unsupported layouts refuse.
+Helper14/model7/store3/controller9/host8/native-flow1/panel6/architecture1 pass;
+focused total35. Existing workfile/index panels plus new panel17 pass. A constrained
+upstream layout overflow found during regression was fixed with a state-preserving
+advanced expansion section before clean reruns. Format784/0changes; analyze clean.
+Supporting Python HEAD33/index12/workfile12/source29/inventory9/product32 pass.
+Actual native loose-object read and database reopen preserve source/object/index/
+HEAD/ref/untracked bytes and durable inputs; no automatic read or result replay.
+Separate synthetic IAB tab39 verifies startup/Cancel0reads, matching/differing/
+absent facts and fingerprints, refused historical retention, delayed Stop and
+changed-runtime completion rejection:6explicit reads,0appwrites,1fixturechange.
+Receipts /tmp/asg404-declared-head-index-native-reopen-receipt.json and
+/tmp/asg404-declared-head-index-iab-receipt.json. Full regression/platform builds,
+fresh exact PR review, required CI and verified merge remain pending. FullF20/
+#404OPEN; #400/marketplace/F23-last unchanged. Owner primary edits/processes kept.
+
+
+PR837 initial CI44887325003 exposed a Linux-only2px constrained parent overflow
+in two existing index panel tests (unsupported child message increases height).
+Python job136795354692 passed; Flutter136795354929 failed; no merge/retry bypass.
+The advanced declared-object section now appears after the required successful
+selected-file baseline exists; retained lastObserved keeps its lifecycle stable
+through later invalidation. Existing acceptance/failure tests remain unchanged.
+Revised revision requires focused/full checks, production builds, fresh exact
+review and new required CI; initial CI evidence is closed as failed.
+
+
+PR837 derived-artifact repair: CI44888281001 Python136798267775 refused the
+stale current-source digest in acceptance_inventory.json after the UI repair.
+Regenerated the claimed inventory (one digest line); inventory9/product32 pass.
+No product/test/helper or workflow policy changed in this repair. Existing full
+3026/13skip, analysis/format and web/isolatedMac checks apply to the identical
+product inputs; final required CI and exact fresh review still mandatory. The
+failed CI remains failed; no checks weakened or blind rerun used. Flutter job
+136798267926 was still running when the Python failure was diagnosed; close its
+manual CI interval after the complete run is observed. FullF20/#404OPEN.
