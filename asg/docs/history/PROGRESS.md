@@ -23644,3 +23644,69 @@ Final unchanged input/build/native/IAB receipt /tmp/asg404-commit-edit-final-rec
 Fresh exact PR review, requiredCI and verified merge remain separate pending gates.
 No live inference, stable replacement, provisioning or deployment. FullF20/CE01/#404
 remains OPEN; #400/marketplace/F23-last unchanged.
+
+
+### F20 / CE01 — proposed-output comparison admission, started 21 November 2026 UTC
+
+PR #825 verified merged as `85d6caf524e2a14c2cdac7f0eed7ff3004daaf59`,
+reviewed remote head `0fb28f2b6fc12fd491b3a1da94c61960f456718e`, tested tree
+`ded818af6d9f64e15142eeae558ead0770cda29d`. Fresh exact PR review found no
+remaining blockers after the interpreter and final-publication fixes were retested.
+Required CI44856806349 jobs136700806415/136700806838 passed every step and
+poststep; logs inspected, no review threads, head/base unchanged. Plugin main/PR
+and fetched remote main/tree agree; #404 remains OPEN. Local2858 Flutter passed
+/13 opt-in skipped,38 focused,34 relevant Python, analysis/format/inventory9/
+product32, web/isolated unsigned Mac builds, actual native DB reopen and separate
+IAB consent/Stop/recovery/history evidence passed. Original work and runtime were
+preserved; no live inference, installation, native GUI acceptance or deployment.
+Coordinator records one bounded user outcome,2686.2s task-to-merge and391.7s CI
+observation wait,0 final-review rework; these are manual wall-clock observations,
+not provider execution timing. No escaped defect observed; absence remains unknown.
+Completed integration/claim released before the next claim.
+
+Started claimed track `404-proposed-output-comparison-admission` under existing
+#404, depending on that verified merge. Concrete gap: proposed-copy history stores
+a dated prepared fingerprint, while delivered recheck accepts original-copy history
+only. No fresh proposed-output comparison app flow exists. Bounded acceptance:
+inspect typed journal/request/result joins; probe both original/proposed complete
+fingerprints and exact one-file replacement, changed selected/binary bytes/modes,
+empty directories, links, missing outputs, physical identity and all three pending
+markers. Record current-input, Stop/cleanup and unconfirmed-history refusal
+requirements for a later read-only comparator. This investigation adds no app
+comparison, mutation, execution or revived approval. Sole writer; no independent
+disjoint requirement ready. #400/marketplace/F23-last unchanged.
+
+Comparison admission checkpoint: twelve disposable Python probes passed on the
+verified PR825 source. Probe /tmp/asg404_proposed_output_comparison_probe.py
+SHA256 `b10d2134e492111cb2aa95bed6ac7d3653fe74f6e254b1f57a91c07fd5c8f756`; log
+/tmp/asg404-proposed-output-comparison-probe.log. Matching exact one-file output
+can be scanned/compared with process entry points disabled after owned-fixture
+construction. Changed selected bytes, binary peer, executable mode, original copy,
+missing output, linked peer and a different prepared output refuse the guard sketch.
+Added empty directories leave file index/change counts identical but change the
+complete fingerprint. Replaced same-content output retains the fingerprint while
+held directory identity rejects it. All three pending markers on either copy refuse
+explicit guards; the generic scanner alone ignores the new edit-pending sibling.
+The linked-peer check initially expected ValueError only; actual NOFOLLOW refusal
+is OSError, and the test expectation was corrected before the successful rerun.
+No production defect or comparator implementation is claimed by that correction.
+
+Source inspection: original recheck request.create requires ImportedCommitCopyRecord
+and original-copy scope; it cannot accept an edit journal as an interchangeable
+record. ImportedCommitEditRecord.lastPrepared selects only durably prepared phase;
+a prepared receipt retained inside an unconfirmed attempt is recovery evidence,
+not a selected success. Future comparison must bind both exact saved journals,
+selected prepared edit attempt/request/receipt, original history identity, literal
+replacement/mode/byte identities, current runtime/registration and fresh read nonce.
+Use no-change durable fences and the existing shared source lease, pin destination/
+run/root descriptors for both copies and guard all markers before/after bounded
+complete scans. Matching observation is dated evidence, never revived plan approval
+or execution authority. Unknown cleanup retains ownership; Stop/disposal/stale input
+may not promote a partial observation. History-only reads must not dispatch helpers.
+These are admission requirements, not app/native comparison acceptance. Typed
+request/result, controller/store/helper/UI implementation and fresh exact revision
+checks/review/merge remain pending. No model calls or owner runtime changes.
+
+Checkpoint validation: comparison probes12, acceptance inventory9 and product32
+passed; git diff --check clean. Documentation-only checkpoint; full final revision
+review/publication/required CI remain pending for this investigation.
