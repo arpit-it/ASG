@@ -74,6 +74,7 @@ flutter:
     - tools/qwen_backends.py
     - tools/git_head_metadata.py
     - tools/imported_index.py
+    - tools/imported_workfile_comparison.py
     - tools/project_metadata.py
     - tools/project_instruction_documents.py
     - tools/project_source_files.py
