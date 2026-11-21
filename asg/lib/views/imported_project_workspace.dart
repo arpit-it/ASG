@@ -7,6 +7,11 @@ import '../controllers/requirements_controller.dart';
 import '../models/project_inspection.dart';
 import 'imported_commit_proposal_screen.dart';
 import 'imported_commit_copy_screen.dart';
+import '../controllers/imported_commit_copy_recheck_controller.dart';
+import '../services/imported_commit_copy_recheck_store.dart';
+import '../services/imported_commit_copy_recheck_host_factory.dart';
+import 'imported_commit_copy_recheck_screen.dart';
+
 import '../controllers/imported_commit_copy_controller.dart';
 import '../services/imported_commit_copy_store.dart';
 import '../services/imported_commit_copy_host_factory.dart';
@@ -46,6 +51,28 @@ class ImportedProjectWorkspace extends StatelessWidget {
   final ProjectInspection inspection;
   final RecordStorage records;
 
+  Widget _copyScreen(
+    BuildContext context, {
+    required ImportedCommitCopyController controller,
+  }) => ImportedCommitCopyScreen(
+    controller: controller,
+    onRecheck: (history) {
+      if (!context.mounted) return;
+      Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (_) => ImportedCommitCopyRecheckScreen(
+            controller: ImportedCommitCopyRecheckController(
+              root: inspection.root,
+              expectedHistoryDigest: history.digest,
+              store: ImportedCommitCopyRecheckStore(records),
+              host: createImportedCommitCopyRecheckHost(),
+            ),
+          ),
+        ),
+      );
+    },
+  );
+
   Widget _committedProposal(
     BuildContext context,
     ImportedCommitProposalController controller,
@@ -55,7 +82,8 @@ class ImportedProjectWorkspace extends StatelessWidget {
       if (!context.mounted) return;
       Navigator.of(context).push(
         MaterialPageRoute<void>(
-          builder: (_) => ImportedCommitCopyScreen(
+          builder: (_) => _copyScreen(
+            context,
             controller: ImportedCommitCopyController(
               root: inspection.root,
               inspection: inspection,
@@ -229,7 +257,8 @@ class ImportedProjectWorkspace extends StatelessWidget {
         OutlinedButton.icon(
           onPressed: () => Navigator.of(context).push(
             MaterialPageRoute<void>(
-              builder: (_) => ImportedCommitCopyScreen(
+              builder: (_) => _copyScreen(
+                context,
                 controller: ImportedCommitCopyController(
                   root: inspection.root,
                   store: ImportedCommitCopyStore(records),

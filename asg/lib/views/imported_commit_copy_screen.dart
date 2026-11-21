@@ -9,8 +9,13 @@ import '../models/imported_commit_copy_record.dart';
 import '../models/imported_commit_copy_request.dart';
 
 class ImportedCommitCopyScreen extends StatefulWidget {
-  const ImportedCommitCopyScreen({super.key, required this.controller});
+  const ImportedCommitCopyScreen({
+    super.key,
+    required this.controller,
+    this.onRecheck,
+  });
   final ImportedCommitCopyController controller;
+  final ValueChanged<ImportedCommitCopyRecord>? onRecheck;
   @override
   State<ImportedCommitCopyScreen> createState() =>
       _ImportedCommitCopyScreenState();
@@ -169,6 +174,13 @@ class _ImportedCommitCopyScreenState extends State<ImportedCommitCopyScreen> {
         'Whole-copy fingerprint: ${saved.observation!.fingerprint}',
       ),
       SelectableText('Original commit: ${saved.request.commit}'),
+      if (widget.onRecheck != null)
+        OutlinedButton(
+          onPressed: c.busy || history.needsRecovery
+              ? null
+              : () => widget.onRecheck!(history),
+          child: const Text('Review current copy recheck'),
+        ),
     ],
     for (final attempt in history.attempts.reversed)
       ExpansionTile(
