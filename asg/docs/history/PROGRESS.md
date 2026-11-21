@@ -25179,3 +25179,78 @@ frame/delta prerequisite. Reuse existing #404; no speculative new issue. FullF20
 #404 remainsOPEN; #400 unavailable-platform acceptance, marketplace gate and
 F23-last unchanged. Six unrelated primary edits and owner processes preserved;
 no installs/downloads/stable app replacement/cloud provisioning/deployment.
+
+
+### Selective admission verified / multi-pack-index prerequisite started, 21 November 2026 UTC
+
+PR841 verified merged51255f80688f1f5791369843d8317a52b2b1f97d, reviewed remote
+293944eadc538ff8f5517115bd76534f3f0cd847/localeb5598b505d8f66dd0e300b4946f439a8869bf11,
+tree930ae029b2bdccb7fc4c41ac23ac217fe4de9ee3. RequiredCI44898169742 success:
+Python136828182418 and Flutter136828182548 all steps/poststeps passed; decoded
+logs inspected, no error markers. Exact diff/head/base and no conversations
+verified before protected merge; plugin main/PR/issue and fetched merge tree agree.
+Supplied-index28/held-frame40 repeatedPASS; supporting helper21/source29/inventory9/
+product32/Flutter acquisition9+observation9+architecture1PASS. Delivered bounded
+selected frame identity prerequisite, not app packed-object support. FullF20/#404
+OPEN. Coordinator merge/outcome recorded and completed claim/integration released.
+Review rework0; bounded verified outcome1; escaped defects unknown (zero observed).
+Manual total/CI timing not provider-reported. PR attachment attempted; existing app
+thread identity limit100 prevented attachment; existing attachments preserved.
+
+Immediately claimed404-multi-pack-index-admission in the clean registered worktree
+from verified main under existingF20/CE01/#404, with exclusive3documentation paths.
+Concrete prerequisite: owner catalog's literal multi-pack-index caused a refusal
+before individual index/frame reads. Held no-follow metadata discovery finds a
+472004-byte regular single-link file, identity preserved, zero content reads/writes.
+No private labels recorded. Acceptance: optional literal opaque sidecar under1MiB
+metadata bound, held alongside the catalog/pack/index read set; no semantic or
+membership authority from its contents. Individual verified indexes still decide
+selected membership. Changed present/absent state/inode/locks, links/hardlinks,
+unknown/case names, oversize, Stop/deadline and cleanup must fail closed.
+
+Initial owned sidecar probe21casesPASS (4observations/17refusals), zero commands/
+reader writes, preserved nonadversarial fixture bytes, all owned descriptors closed.
+Success covers opaque/absent/empty/maximum-size sidecars with two independently
+verified candidate indexes. Refusals cover changed content/inode/deletion/appearance,
+sidecar lock, unmatched index changes, symlink/hardlink/directory, oversize, case-only
+catalog rename/unknown suffix, early and late Stop/deadline. Corrected two harness
+assumptions before passing: resolve the Mac temporary directory's /var alias, and
+actually rename the case-only catalog fixture on this case-insensitive filesystem.
+No product refusal was weakened. Prototype
+/tmp/asg404_multi_pack_index_probe.py SHA256
+544ea8fceb8ee5146e22eab9abdad11e20ff9a4b5b83de98ed8d91b8fab34cf0;
+receipt /tmp/asg404-multi-pack-index-receipt.json; dependency physical prototype
+SHA256850f5c7eb91df3d1dd78f2dc50d9e6ee766474b6e66b429e00f039a978e32fcc
+remains unchanged. Sidecar contents uninterpreted; whole-pack integrity and app
+acceptance remain false. Prior whole-container and selective proofs preserved.
+
+Sanitized owner availability with this prototype holds473952 individual index
+bytes across3indexes and reads1188pack prefix/frame bytes. One selected commit
+frame verifies; selected tree-path acquisition then refuses unsupported_layout at
+a type6 frame (offset delta). Observed frame type codes[1,6]; held identities remain
+preserved, no private object labels/body contents recorded, sidecar contents not
+read and zero writes/commands. Receipt
+/tmp/asg404-midx-owner-availability-receipt.json. This is a read-only prerequisite
+observation, not full path verification, an atomic Git snapshot or app acceptance.
+The concrete next prerequisite after this sidecar investigation's verified merge
+is bounded selected offset-delta reconstruction admission, with depth/base/span/
+aggregate expansion/canonical identity and Stop/change/cycle refusals before any
+application acquisition decision. Reuse #404; no new speculative task/issue.
+
+Current sidecar investigation remains in progress/unmerged: preserve this clean
+checkpoint and sole valid claim for resume, then finish focused checks, fresh exact
+PR review/requiredCI/verified merge before completion and delta admission. No app,
+helper, inventory or stable output changed. Six unrelated primary edits and owner
+processes preserved; #400/marketplace/F23-last unchanged; no live model requests,
+installs/downloads/cloud provisioning/deployment.
+
+Sidecar prerequisite final local verification, 21 November 2026 UTC: resumed
+clean checkpointdc05d7b3; plugin main51255f80688f1f5791369843d8317a52b2b1f97d,
+#404OPEN/no open PRs and sole valid claim confirmed; lease renewed. Repeated exact
+sidecar21/selectivephysical40/suppliedindex28 probesPASS with unchanged SHA256s.
+Canonical helper21/source29/inventory9/product32 and Flutter acquisition9/
+HEAD-index9/architecture1PASS. Fresh review must inspect the exact3-document PR
+and evidence; requiredCI and verified merge remain mandatory. No application
+acquisition expansion, helper/inventory change, model inference or new platform
+build/browser evidence. Next bounded offset-delta prerequisite remains dependent
+on this investigation's verified merge; fullF20/#404 staysOPEN.
