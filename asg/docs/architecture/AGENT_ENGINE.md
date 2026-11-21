@@ -10906,3 +10906,13 @@ Receipts /tmp/asg404-declared-head-index-native-reopen-receipt.json and
 /tmp/asg404-declared-head-index-iab-receipt.json. Full regression/platform builds,
 fresh exact PR review, required CI and verified merge remain pending. FullF20/
 #404OPEN; #400/marketplace/F23-last unchanged. Owner primary edits/processes kept.
+
+
+PR837 initial CI44887325003 exposed a Linux-only2px constrained parent overflow
+in two existing index panel tests (unsupported child message increases height).
+Python job136795354692 passed; Flutter136795354929 failed; no merge/retry bypass.
+The advanced declared-object section now appears after the required successful
+selected-file baseline exists; retained lastObserved keeps its lifecycle stable
+through later invalidation. Existing acceptance/failure tests remain unchanged.
+Revised revision requires focused/full checks, production builds, fresh exact
+review and new required CI; initial CI evidence is closed as failed.

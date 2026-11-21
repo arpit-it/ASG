@@ -228,17 +228,18 @@ class _ImportedWorkfilePanelState extends State<ImportedWorkfilePanel> {
             if (controller.lastObserved case final previous?)
               if (!identical(previous, controller.observation))
                 ..._result(previous, current: false),
-            ExpansionTile(
-              maintainState: true,
-              title: const Text('Declared-object read'),
-              children: [
-                ImportedHeadIndexPanel(
-                  root: widget.root,
-                  records: widget.records,
-                  workfile: controller,
-                ),
-              ],
-            ),
+            if (controller.lastObserved != null)
+              ExpansionTile(
+                maintainState: true,
+                title: const Text('Declared-object read'),
+                children: [
+                  ImportedHeadIndexPanel(
+                    root: widget.root,
+                    records: widget.records,
+                    workfile: controller,
+                  ),
+                ],
+              ),
           ],
         ),
       ),
