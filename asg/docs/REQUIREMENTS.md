@@ -26148,3 +26148,14 @@ selected-file baseline exists; retained lastObserved keeps its lifecycle stable
 through later invalidation. Existing acceptance/failure tests remain unchanged.
 Revised revision requires focused/full checks, production builds, fresh exact
 review and new required CI; initial CI evidence is closed as failed.
+
+
+PR837 derived-artifact repair: CI44888281001 Python136798267775 refused the
+stale current-source digest in acceptance_inventory.json after the UI repair.
+Regenerated the claimed inventory (one digest line); inventory9/product32 pass.
+No product/test/helper or workflow policy changed in this repair. Existing full
+3026/13skip, analysis/format and web/isolatedMac checks apply to the identical
+product inputs; final required CI and exact fresh review still mandatory. The
+failed CI remains failed; no checks weakened or blind rerun used. Flutter job
+136798267926 was still running when the Python failure was diagnosed; close its
+manual CI interval after the complete run is observed. FullF20/#404OPEN.
