@@ -24166,3 +24166,60 @@ changed; production timer defaults, worker code and packaged assets are unchange
 PR831 will be updated by an appended commit (no history rewrite), then reviewed
 fresh for its exact revised head with every required remote check rerun. Prior
 failed CI is retained as evidence, not treated as a passing run.
+
+PR831 verified merged — 21 November 2026 UTC: protected merge
+06c8da0f9c1f4c7b9aa1573c95add0f2e5a64132, exact reviewed remote
+6744609940857b44e290fdf42e312c21f3d257c5/localb2c648ef00aaa52491ed61f566fbafaeacb06a55,
+tree4b452dd117d4e3bc6573835702940508fba9b27d. Required CI44872212982 jobs
+136749038006/136749038263 and every step/poststep passed; decoded logs show both
+repaired deadline cases and2842PASS/94platformskips. Local2926PASS/13skips,
+focused19/analyze/format742/inventory9 and commit-admission probes5/metadata33/
+models10/product32 pass. Retained prior CI44871062084 failed the80ms fixture race;
+fixed by explicit pre-startup and post-handshake expiry, not relaxed deadlines or
+a blind rerun. Fresh revised review passed. Plugin/fetched main agree; #404OPEN.
+Completed repair integration/claim released; original docs-only claim was already
+explicitly released for the scoped repair handoff. No production capability,
+worker policy or runtime default changed; no model/install/stable replacement/
+cloud/deploy. The no-write imported commit-admission findings are now integrated.
+
+Immediately claimed 404-original-index-admission under F20/CE01/#404. Bounded
+prerequisite: establish a command-free, descriptor-contained original-index
+observation subset before proposing its app reader. Acceptance: valid bounded
+binary inputs plus checksum/version/mode/flags/path/extensions/count refusal;
+links/hardlinks/index locks and concurrent changes refuse without partial data;
+owned fixture bytes preserved and zero processes/writes. Distinguish index
+observations from original HEAD membership, working-tree state, commit readiness
+and mutation permission. Record exact probe identities and the smallest remaining
+reader/admission prerequisite; existing metadata33/models10 regressions and fresh
+review/CI required before completion. Existing primary Git index reference reviewed:
+https://git-scm.com/docs/gitformat-index . Deliberately smaller v2/SHA1 regular-file,
+stage0 ASCII subset is under investigation; unknown features refuse. No application
+index reader, commit or rollback is yet delivered. Contracts are execution scope,
+not another queue. Sole writer; #400/marketplace/F23-last unchanged.
+
+Original-index prerequisite checkpoint:28 owned cases PASS (3 observations and
+25 refusals), processCalls0/readerWrites0. Deliberately narrow prototype handles
+bounded regular stage0 index declarations and refuses corrupt checksum, unsupported
+versions/flags/modes, unsafe/aliased/unsorted paths, optional/mandatory extensions,
+excess entries, zero object labels and malformed padding/length. Existing no-follow
+metadata descriptors establish bounded index-file identity; index links/hardlinks,
+preexisting/appearing lock and changed held bytes refuse. Test-owned concurrent
+mutations are restored explicitly; the reader performs no writes. Metadata33 and
+immutable diagnostics models10PASS. Probe SHA256e427aa1defb7f1384d2815e036c9b9f1ff9e97a717e3ac598affb606469ba011;
+metadata helper SHA256c6252d5d47f6305f6d098d60b2cbe659d4d1199d19cc60ffec68ff6f4aec3be0; receipt
+/tmp/asg404-original-index-admission-receipt.json. This is an external prototype,
+not an app reader, Git status/HEAD membership, full working-tree proof, commit or
+rollback capability. A checksum pins supplied bytes, not repository trust. Exact
+HEAD/index/tree joins, object format/layout admission and working-file comparison
+remain necessary before any mutation policy. Next smallest candidate implementation
+is an explicitly scoped descriptor-contained index observation with typed bounded
+results and immutable identity, keeping unsupported layouts/refusals visible and
+all commit/mutation authority false. Its exact policy/review remains pending.
+Investigation's own final review/publication/CI are not complete yet.
+PR831 repair metrics (manual coordinator observations): start-to-merge1026.0s,
+CI-observation-wait587.7s, verified outcome1. Original docs-track CI failure caused
+one recorded review rework and a scoped claim handoff. Its original CI interval
+was not closed before release, so that counter remains incomplete/unknown; the
+actual failed run and reason are retained, not erased or reported passing. Revised
+CI passed in full. Escaped product defects remain unknown (zero observations does
+not prove none). #404OPEN; no model/install/deploy; owner processes preserved.
