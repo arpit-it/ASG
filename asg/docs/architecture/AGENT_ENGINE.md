@@ -11049,3 +11049,28 @@ current helpers' dated identities distinct; don't infer production readiness fro
 prototype adapters. Investigation evidence complete locally, pending exact fresh
 PR review/required CI/verified merge; app packed support/fullF20/#404 remain OPEN.
 #400/marketplace/F23-last unchanged; owner unrelated edits/processes preserved.
+
+
+Fresh PR838 review refinement: the original declaration prototype used bytes
+splitlines, which normalized CRLF records. An owned reproduction confirmed that
+acceptance; the original already refused vertical separators (also verified).
+This is a prototype prerequisite gap, not an escaped application defect:
+production still refuses packed refs. Original prototypes/receipts kept unchanged
+under their dated identities. New strict variants reject every control byte except
+LF before record splitting: declaration28casesPASS (3observations/25refusals),
+composed object/index/source30casesPASS (7observations/23refusals), including
+explicit CRLF regression and vertical-separator refusal cases. No process calls/
+reader writes; non-adversarial bytes preserved. Strict receipts
+/tmp/asg404-packed-ref-strict-admission-receipt.json and
+/tmp/asg404-packed-ref-strict-object-receipt.json. Strict prototype identities:
+/tmp/asg404_packed_ref_strict_admission_probe.py SHA256
+0a014ddc59d132882b9873f028fbe6957491a5914ccb5635a7b5c6c070718219;
+/tmp/asg404_packed_ref_strict_object_probe.py SHA256
+c9d964b0872c204b17c4f46e04c2ea46bbd04d74ae1af22966fefce135e6e8ce.
+Canonical helper identities unchanged. Next application subset must require exact
+known-header/LF records and reject CR/tabs/vertical/formfeed/NUL/other controls,
+with whole-table bounds/ordering/alias/namespace validation. Initial CI44890218201
+was pending when this review finding was corrected; revised docs need fresh exact
+review and final required CI. No production code or acceptance inventory changed;
+earlier evidence remains dated, not substituted for stricter probes. FullF20/
+#404OPEN and platform gates unchanged.
