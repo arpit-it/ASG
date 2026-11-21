@@ -24453,3 +24453,98 @@ fresh review, required CI and protected merge remain mandatory. One coherent
 unmerged task; fullF20/#404OPEN, #400/marketplace/F23-last unchanged. No model
 requests/download/install/stable replacement/cloud/deploy; owner edits/processes
 preserved.
+
+
+### Selected working-file comparison verified / HEAD-index admission started, 21 November 2026 UTC
+
+PR835 verified merged d9e13205c16a9c04eefe416f2baae8850d864a16, exact reviewed
+remote b74a4cff06296b8576020730977f859636e45dc8/local3280f323ee3a94946368099e3389345e3fc6f80f,
+tree f0b30623c4f9006d0ba5239ca65da5ae655ed4cc. Fresh review found no blockers;
+CI44882353729 jobs136780184273/136780184447 all steps/poststeps passed, decoded
+logs inspected (Flutter2906/96platformskips, browser17 and all build checks).
+Plugin/main/fetched merge/tree agree; #404OPEN. Delivered explicit bounded1–4
+selected-file comparisons against a reviewed index, separate raw-byte/mode flags,
+strict provenance/current-index/durable fences, shared ownership, Stop/stale/
+disposal/cleanup handling and retained historical evidence. No Git/filters/project
+commands/content sharing or commit authority. Local full2992PASS/13platformskips,
+focused35, analysis clean, format770/0changes, Python12/12/31/9/32, production web/
+isolatedMac with matching three packaged helpers, actual native/reopen and separate
+IAB checks pass. Final receipt /tmp/asg404-workfile-final-validation.json. Completed
+integration/claim released; owner six primary IDE/docs edits/processes preserved.
+
+Immediately claimed404-head-index-admission under existingF20/CE01/#404. Concrete
+gap: immutable source reader verifies a supplied commit, while HEAD reader reports
+literal HEAD/ref declarations; selected raw/index equality does not join the
+current HEAD/reference to immutable tree and index entries. Acceptance: bounded
+owned no-process fixtures using verified pure commit/tree/blob parsers and held
+no-follow HEAD/ref/index/file descriptors; show blob/mode/path differences despite
+raw/index equality, and reject changed held HEAD/ref/index/source, indirection,
+missing refs or mismatched object bytes without partial joins. Keep supplied
+fixture-object provenance distinct from trusted repository object acquisition.
+No filtered status, untracked inventory, whole-repository cleanliness, atomic
+snapshot or commit/rollback authority may be inferred. Record exact prototype/
+helper identities, focused checks and smallest coherent application prerequisite.
+Investigation completion requires fresh exact review/CI/verified merge; it adds no
+app HEAD/index join or write policy. Canonical queue only, sole writer/no independent
+second ready task. #400/marketplace/F23-last and fullF20OPEN unchanged; no model/
+download/install/stable replacement/cloud/deploy.
+
+HEAD/index admission investigation checkpoint:13 owned no-process probesPASS
+(6 observations/7 refusals). Raw bytes and literal executable mode can match the
+index while index versus supplied verified fixture tree differs by blob, mode or
+path. Untracked files and a filter-config fixture leave these literal comparisons
+unchanged and their broader status unknown. Combined held no-follow HEAD/ref/
+index/source validation rejects changed HEAD, changed symbolic-reference target
+with unchanged HEAD text, changed index/source, HEAD links, missing refs and
+corrupt supplied commit bytes without partial joins. Non-adversarial fixture
+bytes preserved; processCalls0/readerWrites0; no app integration or authority.
+Pure commit/tree/blob parsers validate supplied fixture bytes only. The probe does
+not acquire/authenticate immutable objects from the actual repository, establish
+filtered status/whole-repository cleanliness, provide an atomic snapshot, or
+authorize commit/rollback. Receipt /tmp/asg404-head-index-admission-receipt.json;
+prototypeSHA256
+7ad799463104c6f2c3dfba0225c900d6855003f6065845c419e56579c8f875a3.
+Helper identities: HEAD metadata
+c6252d5d47f6305f6d098d60b2cbe659d4d1199d19cc60ffec68ff6f4aec3be0,
+index
+832165220c8405f9a90961ea16d3c0e53564b6cf08772e97fcebd69470e682d7,
+immutable-source parser
+104e212836b458c60bae542b31647463a43d50dec3d57b072914aea37e66875c.
+Supporting Python HEAD33/index12/workfile12/inventory9/product32PASS; immutable
+index7/workfile7/architecture1PASS. Concrete next prerequisite: define trusted
+repository object acquisition joined to current declared HEAD/ref, immutable
+commit/tree and index/selected-file identities under one owned read/liveness
+contract. The existing immutable source reader performs bounded fixed Git object
+reads for a supplied commit; it does not declare that commit current HEAD. No
+caller-supplied object fixture or separate dated receipt can substitute for that
+physical provenance. Investigation stays in progress pending exact review/CI/
+verified merge; no application HEAD/index join or write policy added. FullF20/
+#404OPEN; #400/marketplace/F23-last unchanged. PR835 manual metrics: start-to-merge
+2378.6s, CI observation606.2s, review rework0, verified outcome1; escaped defects
+unknown (zero observations). Owner six primary IDE/docs paths/processes preserved;
+no model/install/deploy.
+
+HEAD/index physical-object prerequisite refinement: a second owned command-free
+prototype reads direct loose commit/tree/blob files through held no-follow
+descriptors, verifies bounded zlib envelopes and canonical object headers/hashes,
+then jointly revalidates HEAD/ref, acquired objects, index and selected source.
+20casesPASS (6 observations/14 refusals), including staged blob/mode/path
+differences despite raw/index equality, and refusals for changed HEAD/ref/index/
+source/object, missing references/objects, HEAD/object links, object hardlinks,
+corrupt/wrong-ID payloads, excessive inflation and trailing compressed bytes.
+Limits:128KiB stored object,64KiB commit/tree,32KiB blob and256KiB aggregate
+expanded object bytes. processCalls0/readerWrites0; non-adversarial fixture bytes
+preserved. Receipt /tmp/asg404-head-index-object-receipt.json; prototypeSHA256
+f1d80f973f10cb9a29f234807ed99bf9308cef425b8e356722cb78246722bb89.
+This refines the earlier supplied-object probe with actual owned repository-file
+acquisition; it remains a single-path loose-object prototype, not an application
+reader, authenticated repository, Git namespace/config/replace/packed-object
+interpretation, atomic snapshot, filtered/untracked status or write authority.
+No packed fallback or external commands are attempted. Supporting canonical
+helper hashes remain unchanged. A coherent next application read needs typed
+request/result provenance and explicit consent, bounded selected-path/tree
+descent, current workfile/index and durable-input fences, clear direct-loose
+subset semantics/refusals, owned deadline/Stop/cleanup and native/reopen/IAB/
+full validation. No imported commit policy becomes eligible from literal matches.
+The investigation remains pending fresh exact review, required CI and verified
+merge; fullF20/#404OPEN and #400/marketplace/F23-last unchanged.
