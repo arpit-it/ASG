@@ -11177,3 +11177,149 @@ Initial browser startup/Cancel0reads and packed source/fingerprint observed;
 remaining final browser scenarios pending. Native packed-fallback/loose-precedence
 flow source is unchanged, but final suite will re-run it on the final revision.
 No stable application replacement or owner process stopped.
+
+
+### Packed-reference read verified / packed-object admission started, 21 November 2026 UTC
+
+PR839 verified mergedc63cfdc2ed7f5628851582bcc2b6438965e0d664, exact reviewed
+remote65b0bc3e25fe4f6f7c2a2c7e0db765d293e63830/localdaca6ed974ba26d5a924e67a61df91e64ed5802e,
+tree7e254dcb1bb8af680a9bef354f309aaa49ac11b6. Final CI44893251232 success jobs
+136815502209/136815503230 all required steps/poststeps passed; decoded logs
+inspected: Linux2951PASS/97platformskips, Chrome17 and required builds. Initial
+Python136813394289 timed out an unchanged optimized-Python refusal child at5s;
+entry point rejects optimized execution before any runtime request. Scripts were
+unchanged; focused3 local rechecks0.09–0.12s and full synthetic10PASS. Targeted
+failed-job retry on identical reviewed head passed without source/timeout/check
+changes; both CI intervals closed and initial failure preserved. Fresh exact
+review/no conversations/main/base checks verified before protected merge.
+
+Delivered bounded known-header LF-only packed-reference declarations with loose
+precedence, whole-table fingerprint and typed HEAD/loose/packed source; held
+present/absent names, locks and current-input/Stop/cleanup/history boundaries.
+Local3038PASS/13platformskips, focused58, helper21 and supporting33/12/12/29/9/32,
+format786/0changes, clean analysis, production web/isolatedMac and all4packaged
+helper bytes matched. Actual native reopen verifies packed fallback then owned
+fixture transition to loose precedence over a differing packed label; source/app
+inputs preserved. Separate final IAB tab40 passes all3sources, corrected declared
+reference label, fingerprints, differences/absent path, refusal history, Cancel,
+Stop and stale runtime exclusion (8reads/0appwrites/1fixturechange). Initial IAB
+caught the stale Loose reference label; fixed before repeated final checks/builds.
+Final receipt /tmp/asg404-packed-reference-final-validation.json. Plugin/main/
+fetched merge/tree/#404OPEN agree; completed claim/integration released. Manual
+start-to-merge2108.0s, combined CI observation607.4s, fresh-PR review rework0,
+verified bounded outcome1; escaped defects unknown (zero observations). Earlier
+local browser correction is distinct from fresh-PR review metrics.
+
+Immediately claimed404-packed-object-admission under existingF20/CE01/#404.
+Concrete gap: bounded read-only owner discovery resolves symbolic HEAD from the
+known packed table(1055records), but direct loose commit acquisition refuses
+missing_loose_object. Held identities preserved, no private labels/content
+recorded, no process calls/writes. Absence of a loose file does not prove pack
+membership; that remains unknown. Acceptance: manually assembled owned bounded
+pack/index fixtures for header/checksum/fanout/offset/CRC and no-delta envelope/
+identity verification, then physical held pack/index and joined HEAD/reference/
+index/source liveness before app admission. Corruption/oversize/links/changes/
+deltas/unsupported kinds must refuse without partial object facts. Record exact
+prototype/helper identities and preservation; no Git/project/model commands,
+owner pack writes, authenticated Git namespace, atomic snapshot, filtered/untracked
+state or commit authority. Application remains direct-loose only until separate
+implementation/verification. Investigation completion needs exact fresh review,
+required CI and verified merge. Sole writer; no independent second ready task.
+Owner primary six edits/processes preserved; #400/marketplace/F23-last unchanged;
+no model/download/install/stable replacement/cloud/deploy.
+
+
+Packed-object admission initial checkpoint: manually assembled supplied in-memory
+pack2/index2 fixtures pass24cases (2observations/22refusals), with no process calls/
+reader writes and unchanged owned repository fixture bytes. A four-object pack
+verifies canonical commit/tree/blob identities and joins the fixture's selected
+path; an empty blob also verifies. Refusals cover bad versions/counts/checksums,
+index-to-pack binding, nonmonotonic/incorrect fanout, duplicate names, CRC/offset/
+large-offset errors, relabelled objects, delta/tag kinds, nonminimal headers,
+trailing/truncated compression, inflation, object-count/stored-byte bounds and
+aggregate expansion. Limits:512KiB pack,64KiB index,70objects,256KiB aggregate
+expanded payload,32KiB blob/64KiB commit/tree. Canonical object parser is reused;
+no Git/config/filter/project commands or model access. Supplied-byte verification
+is not physical repository pack acquisition, authenticated namespace, an atomic
+snapshot or commit authority. Owner HEAD pack membership remains unknown.
+Receipt /tmp/asg404-pack-index-admission-receipt.json; prototype
+/tmp/asg404_pack_index_admission_probe.py SHA256
+133665e99ad001bbc1775aa50e64c314d0924d87fcf2b8c930ab42547c9d510a;
+canonical immutable-source parserSHA256
+104e212836b458c60bae542b31647463a43d50dec3d57b072914aea37e66875c.
+Supporting declared-object21/source29/inventory9/product32 and acquisition9/
+HEAD-index9/architecture1PASS. No app/source/acceptance inventory change; docs-only
+check scope. Next within this claimed prerequisite: bounded no-follow held pack/
+index file acquisition, deterministic candidate selection and joint HEAD/ref/
+index/source revalidation with changed/link/lock/Stop/deadline refusals. Unknown
+pack/index versions, large offsets, deltas, unsupported kinds or oversized owner
+packs remain outside this first subset. Current application stays direct-loose
+only; no physical packed-object support claimed. Investigation remains in progress/
+unmerged; fresh exact review/required CI/verified merge needed before completion.
+Sole active claim retained for resume; owner six primary edits/processes preserved.
+FullF20/#404OPEN; #400/marketplace/F23-last unchanged; no model/install/deploy.
+
+
+Packed-object physical admission refinement, 21 November 2026 UTC: resumed the
+owned404-packed-object-admission claim and verified clean registered checkout/
+remote mainc63cfdc2, #404OPEN/no open PRs, sole active writer; renewed lease.
+Preserved byte-parser24casesPASS and composed actual held no-follow pack/index
+file acquisition with current declared HEAD/reference/index/selected-source read:
+50owned casesPASS (7observations/43refusals). Deterministic initial subset requires
+exactly one matching pack/idx pair (two bounded catalog entries), verifies basename
+against pack checksum and all container/object identities, and rechecks catalog,
+held files/directories, absent loose names and locks before publication. Mixed
+loose/packed cache and expanded/object-count budgets remain bounded. Successes
+include packed and direct HEAD, loose commit with packed tree/blobs, staged blob/
+mode differences, absent path and four nested selected paths. Refusals include
+changed HEAD/ref/index/source/pack/idx, loose-name or lock appearance, unchanged-
+catalog inode replacements, directory retargets, unpaired/extra catalogs, missing
+members, bad checksum/name identity, oversized files, links/hardlinks, alternates,
+sealed deltas, combined loose+pack resource limits, Stop before root access,
+Stop/deadline before parse and late Stop/deadline after parse. Explicit checks
+confirm every owned descriptor closed. No process calls/reader writes; successful
+fixture bytes preserved. Operator cancellation remains bounded user-space work,
+not native-kernel preemption or an OS sandbox.
+
+Prototype output deliberately uses prototype-bounded-pack-index-files and a
+separate fingerprint record; it cannot be accepted as production's strict direct-
+loose acquisition protocol. No app or helper code changed. Receipt
+/tmp/asg404-pack-physical-admission-receipt.json; prototype
+/tmp/asg404_pack_physical_admission_probe.py SHA256
+d731be16e0e9827431fc3d22ae325269470d5d662e31f4cf82fccd9662c7d7cd.
+Preserved supplied-byte parserSHA256
+133665e99ad001bbc1775aa50e64c314d0924d87fcf2b8c930ab42547c9d510a.
+Canonical helperSHA256: declared-object
+b0e6f88070c8d1fca63b015f34be7b0ac15f6099819c5ade0b8e95361f66cbf7;
+index832165220c8405f9a90961ea16d3c0e53564b6cf08772e97fcebd69470e682d7;
+HEADmetadata c6252d5d47f6305f6d098d60b2cbe659d4d1199d19cc60ffec68ff6f4aec3be0;
+sourceparser104e212836b458c60bae542b31647463a43d50dec3d57b072914aea37e66875c.
+Supporting declared-object21/source29/inventory9/product32 and acquisition9/
+HEAD-index9/architecture1PASS. Documentation-only local scope; no unrelated build,
+live inference or browser evidence claimed. Final exact PR review/required CI/
+verified merge still required before marking this bounded investigation complete.
+
+Bounded read-only owner metadata discovery found11catalog entries, three observed
+pack sizes521967/3378036/9165152bytes and index sizes2752/81684/389516bytes. No pack
+body or private labels/content recorded; selected HEAD commit is not loose, held
+metadata identities preserved. Actual pack membership and delta use remain
+unknown. Thus the initial one-pair/full-container limits cannot establish owner
+compatibility; do not silently enlarge budgets or claim complete F20 acceptance.
+The existing supplied-commit reader has a separately constrained fixed Git object
+transport and metadata validation, but that command-bearing path is not the
+current command-free HEAD/index consent profile and is not automatically reused.
+
+Next eligible prerequisite after this investigation's verified merge:
+404-selective-pack-admission under existingF20/#404. Determine bounded deterministic
+multi-pair/index selection and selective object-frame acquisition against manually
+assembled larger/multiple owned pack fixtures; test header/fanout/index identity,
+matching/missing/ambiguous membership, offset/compressed-span limits, held-file/
+namespace/Stop/deadline changes and eventual delta prerequisites. Keep verified
+selected-object IDs distinct from unread whole-pack checksum/integrity and unknown
+Git state; any alternative fixed-command transport needs its own explicit profile
+and evidence. Preserve earlier whole-container proofs/limits instead of silently
+weakening them. No owner writes, Git/project/model commands or product capability
+claim during this prerequisite. This is a local investigation before deciding the
+smallest coherent application acquisition increment; not a new speculative issue.
+FullF20/#404OPEN, #400/marketplace/F23-last unchanged; owner six primary edits and
+processes preserved, no model/install/download/stable replacement/cloud/deploy.
