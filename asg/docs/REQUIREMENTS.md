@@ -25302,3 +25302,62 @@ unchanged; combined build/native/IAB receipt
 /tmp/asg404-proposed-comparison-final-receipt.json. Fresh exact PR review, required
 CI and verified merge remain separate pending gates. FullF20/CE01/#404OPEN, #400/
 marketplace/F23-last unchanged; no live inference/install/stable replacement/cloud.
+
+
+### F20 / CE01 — imported verification admission, started 21 November 2026 UTC
+
+PR827 verified merged as24212249b253e586d2354c745498a5d8888621cd, reviewed
+d5e10de87bd414876f7eace1307993288fc2afa2, tested tree
+2c9c2902cdba4b5a9c35d39e2e1a98e403bd87b9. Exact fresh review found no blockers.
+RequiredCI44861370992 jobs136715304222/136715304448 passed all steps/poststeps;
+connected logs inspected, no conversations, head/base unchanged. Plugin main/PR
+and fetched main/tree agree;404OPEN. Local2891Flutter/13 opt-in skips,33new+arch1,
+46Python/inventory9/product32, clean analysis/format728, web/isolatedMac/nativeDB
+reopen/IAB passed. Explicit saved-copy comparison now gives dated matching/changed/
+refused evidence with preserved histories and Stop/stale-input/cleanup boundaries.
+Clarification: no native helper dispatch on opening/reloading review; transactional
+app-record reads/fences still occur. Earlier shorthand 'no native IO' referred to
+copy/helper IO, not the durable database. No approval or execution grant.
+Manual task-to-merge2100.7s, CI observation wait562.9s,0 finalreview rework,1 bounded
+user outcome; no escaped defects reported does not prove none. Completed ownership
+released; owner6unrelated edits and runtime processes preserved.
+
+Immediately claimed404-imported-verification-admission under existing404. Concrete
+gap: root lib/test proposed copies and a matching observation do not fit the ASG
+snapshot checker's nested asg/pubspec layout or establish the fixed authored
+hook/compiler/engine adapter's input permissions. Acceptance: inspect those
+existing boundaries; run disposable no-process admission probes and fixed adapter
+regressions; document exact adapter/toolchain/action/source scope, fresh/standing
+consent, dependency/hook confinement, durable receipt and Stop requirements before
+any imported command button can become eligible. No generic execution bridge,
+repository-authored command, install, download, live model, stable replacement,
+cloud or deployment. Sole writer/no independent second ready task. FullF20/CE01
+remainsOPEN; #400/marketplace/F23-last unchanged.
+
+Verification admission checkpoint:5 new portable no-process probes and10 existing
+fixed-adapter regressions PASS. Probe
+/tmp/asg404_imported_verification_admission_probe.py SHA256
+`4874072f5eddbe57122bf6f1d35e0bdcf88070b8637dfafcc6d70954c5b16c3f`; logs
+/tmp/asg404-imported-verification-admission-probe.log and
+/tmp/asg404-imported-verification-adapters.log. Root lib/test imported proposal
+paths refuse the ASG-only proposal_path predicate; an asg/lib literal passes
+only that path-shape predicate, not permission or physical-source admission.
+Arbitrary analyze/test/build/pub-get/run commands refuse even with supplied
+matching-comparison labels; imported hook paths, changed source/project/cwd and
+missing trusted toolchain identity refuse with process launch patched and asserted
+zero. Positive fixed-fixture invocation shape remains admitted separately.
+
+Existing checkSelfSnapshot expects nested asg/pubspec.yaml and its own explicit
+approved workflow. Fixed runner adapters admit only authored fixture_a/fixture_b
+hook/compiler shapes, pinned source/compiler/toolchain/package/cache identities
+and confined dispatch policy; their CLI has no generic candidate/command input.
+These controls are not an imported-project verification adapter. A new imported
+profile must bind the freshly compared full source, detected root layout, exact
+installed SDK/compiler/dependencies/hooks and permitted action/output scope, then
+prove confined dispatch/receipt/Stop/recovery on an owned disposable project before
+any command becomes available. Matching comparison remains dated read evidence;
+no dependency download, hook execution, project command, test/build or publication
+authority follows from it. Available Mac investigation can proceed; unavailable
+platform acceptance stays under400. No external owner action requested or inferred.
+This is a local investigation checkpoint pending its own review/publication/CI/
+verified merge; no imported command capability is claimed.
