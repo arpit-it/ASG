@@ -9,6 +9,10 @@ import 'imported_commit_proposal_screen.dart';
 import 'imported_commit_copy_screen.dart';
 import 'imported_commit_edit_screen.dart';
 import 'imported_commit_edit_comparison_screen.dart';
+import 'imported_dart_diagnostics_screen.dart';
+import '../controllers/imported_dart_diagnostics_controller.dart';
+import '../services/imported_dart_diagnostics_store.dart';
+import '../services/imported_dart_diagnostics_host_factory.dart';
 import '../controllers/imported_commit_edit_comparison_controller.dart';
 import '../services/imported_commit_edit_comparison_store.dart';
 import '../services/imported_commit_edit_comparison_host_factory.dart';
@@ -69,6 +73,21 @@ class ImportedProjectWorkspace extends StatelessWidget {
       Navigator.of(context).push(
         MaterialPageRoute<void>(
           builder: (_) => ImportedCommitEditComparisonScreen(
+            onDiagnostics: (comparison, observation) {
+              if (!context.mounted) return;
+              Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => ImportedDartDiagnosticsScreen(
+                    controller: ImportedDartDiagnosticsController(
+                      comparison: comparison,
+                      observation: observation,
+                      store: ImportedDartDiagnosticsStore(records),
+                      host: createImportedDartDiagnosticsHost(),
+                    ),
+                  ),
+                ),
+              );
+            },
             controller: ImportedCommitEditComparisonController(
               root: inspection.root,
               expectedEditHistoryDigest: history.digest,

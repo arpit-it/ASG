@@ -25464,3 +25464,130 @@ Flutter resolve/test/build available. Complete app model/host/controller/store/U
 adverse/native/IAB and final checks/review/merge remain required. This investigation
 is locally complete, awaiting its own exact review/required CI/verified merge.
 FullF20/CE01/#404OPEN and #400/marketplace/F23-last unchanged.
+
+
+### F20 / CE01 — isolated selected-file Dart diagnostics, started 21 November 2026 UTC
+
+PR829 verified merged as81830a1ff71bbfb08455128ffdd177123b7b7075, reviewed
+66495b973ce548e8591dae67e8f880d7a4651872, tested tree
+930fff888016bf91c0ddcb8a2ca0409f79220e16. Fresh exact review and requiredCI44864487682
+jobs136724984233/136724984461 every step/poststep and connected logs passed; no
+review threads and unchanged head/base. Plugin/fetched main/tree agree;404OPEN.
+Actual11 analyzer/preflight cases plus boundary10/adapter10/inventory9/product32
+passed. These are owned-fixture diagnostics/cleanup evidence, not app or generic
+project verification. Manual task-to-merge1470.4s, CI observation wait652.5s,0 final
+review rework,one prerequisite outcome; unknown escaped defects stay unknown.
+Completed integration/claim released; owner edits/runtime processes preserved.
+
+Immediately claimed404-isolated-dart-diagnostics under existing404. Coherent
+outcome: explicit isolated diagnostics for the exact freshly compared saved Dart
+replacement, with reviewed installed SDK identity and fixed private staging.
+Acceptance: typed request/result joins both histories/fresh matching observation,
+selected bytes/hash, current Python, reviewed SDK/runtime/analyzer hashes and fresh
+nonce. Explicit SDK review/consent, zero-update durable fences/shared lease; recheck
+whole copies before staging one file into trusted pubspec/packages/cache. Ignore
+all project config/hooks, no resolve/download or generic command. Restrict protocol
+actions, frames/output/deadline and group/pipe cleanup; Stop/stale/disposal/unknown
+cleanup cannot promote a result. Label clean/issues/incomplete/unavailable as
+isolated evidence, never project pass/failure. Preserve journals/working outputs
+and previous observation. Full coherent host/controller/store/UI plus adverse,
+native/reopen/IAB and final checks/build/review/CI/merge required before Done.
+Sole writer/no independent second task ready; fullF20OPEN and #400/marketplace/
+F23-last unchanged; no model/install/stable replacement/cloud/deploy.
+
+Initial isolated-diagnostics implementation checkpoint: immutable SDK identity
+labels and request model now bind exact prepared original/edit histories, fresh
+matching comparison request/receipt, literal replacement bytes/hash, current Python,
+SDK root/version/runtime/analyzer hashes and a fresh run nonce. SDK roots cannot
+alias source/copy destinations or interpreter ancestry. Strict bounded schemas
+reject unknown/duplicate/type/path/hash/nonce changes and noncanonical nested
+labels. Restoring labels grants no physical SDK trust, current admission, project
+verification or mutation/execution authority. Changed/refused/stale/unresolved
+inputs cannot borrow a prior matching observation. Literal BOM/CRLF bytes retained:
+the first valid-case test caught UTF-8 decode stripping the BOM, corrected with a
+prefix during scalar validation before this checkpoint. No existing history or
+request format changed. Six new model regressions +architecture1 PASS, clean full
+analysis and two-file formatter PASS. Native SDK review/reader/analyzer helper,
+controller/store/consent UI/result schema and native/reopen/IAB/full final checks
+remain pending as part of this coherent task; no app diagnostics action delivered
+yet. No model/install/stable replacement/cloud/deploy.
+
+Isolated Dart diagnostics helper checkpoint (21 November 2026): implemented
+bounded SDK review and exact private SDK copying, fixed one-file staging and
+analyzer protocol transport, plus immutable bounded diagnostic observations.
+SDK identity now also binds the complete library manifest, file count and byte
+count; reviewed binary hashes alone did not bind library parser inputs. Native
+review hashes no-link regular inputs without launching a tool. Analyzer uses only
+the verified private runtime/snapshot/libraries, fixed pubspec/package configuration
+and cache, a deny-default macOS profile, bounded frames/output/deadline and owned
+child cleanup. Both complete copy fingerprints and SDK identities are rechecked;
+Stop, changed inputs and protocol refusal cannot retain partial diagnostics.
+Twelve Python regressions PASS; ten new/current model tests plus architecture1
+PASS; full Flutter analysis clean. Actual existing SDK3.13.5/protocol1.40.1,
+502 library files/94,894,377 bytes: clean BOM/CRLF, invalid_assignment and missing
+package URI cases yield clean/issues/incomplete respectively, with both copies
+unchanged and private workspaces removed. Receipt /tmp/asg404-isolated-diagnostics-
+actual-receipt.json binds helper SHA256 1b04cb725aa585d2883b51b20f6e78ff6b71bc4f3eff4e15a3362014cf844230.
+These are isolated helper observations, not project verification or app acceptance.
+Reviewed the existing comparison host's owned session/group, bounded streams,
+late-startup, Stop and sticky cleanup handling as the next native integration step.
+App host/store/controller/explicit consent UI, final native/reopen/IAB checks,
+full regressions/build, exact fresh PR review/CI/merge remain pending. Claim
+404-isolated-dart-diagnostics renewed; sole writer. Remote main81830a1 and #404OPEN
+confirmed; no PR/merge claimed, no model/install/stable replacement/cloud/deploy.
+
+Native diagnostics and explicit-consent checkpoint (21 November 2026): added the
+macOS owned-session transport, unsupported-platform stub/factory, four-input
+read-only admission store, controller and isolated diagnostics screen. The current
+matching comparison offers the entry; neither history restoration nor screen load
+launches a worker. SDK review and exact single-use consent are separate. Changing
+the SDK field discards review. Both saved journals, runtime settings and inspected
+folder membership are fenced before/after work with the shared source-worker
+lease. Stop/late startup/disposal/stale input cannot promote a result; uncertain
+group or private-directory cleanup retains ownership and blocks overlap. Failed
+retry preserves prior evidence as historical. Completed evidence retains observed
+SDK/runtime/analyzer/library identity and never claims whole-project verification.
+Bundled the trusted helper and added its deterministic fixtures to existing CI.
+Focused suite35PASS (models10,host11,controller6,store3,screen4,architecture1).
+Consent cancellation, copied-intent refusal, field changes, stale dialog consent,
+Stop, narrow390px/200% text, unsupported platform and all four durable-input
+changes covered. Initial fixture mistakes used an old interpreter identity and
+marked cleanup unknown before dispatch; corrected to current durable identity and
+in-worker failure, then retested. Full Flutter2925PASS/13existing platform skips;
+full analysis clean; formatter741files/0changes; Python diagnostics12,comparison12,
+proposal11,product32 and inventory9PASS. Refreshed canonical inventory.
+Actual owned native SDK review and diagnose trial: Dart3.13.5/protocol1.40.1,
+clean BOM/CRLF replacement, private verified SDK copy, bounded native transport,
+confirmed group/private cleanup; original source and both copies byte-identical.
+Receipt /tmp/asg404-native-diagnostics-live-receipt.json binds native/model/helper
+source hashes. Production web build and isolated macOS build PASS; distinct
+com.arsinha.asg.diagnosticsvalidation bundle and packaged helper bytes verified in
+/private/tmp/asg404-diagnostics-derived. No install/stable app replacement.
+Platform summary /tmp/asg404-diagnostics-platform-receipt.json. Native database
+reopen flow and IAB screen review remain next under the same claim, then final
+fresh review/publication/required CI/protected merge. This is a tested local
+implementation checkpoint, not merged acceptance. #404OPEN; no model requests,
+downloads, cloud provisioning or deployment. Owner processes/edits preserved.
+
+Isolated diagnostics acceptance ready for final review (21 November 2026): the
+actual native flow now creates both outputs, reopens the Sembast database,
+performs a fresh matching comparison, reviews installed Dart3.13.5 and runs the
+exact saved BOM/CRLF replacement through the native diagnostics controller. Clean
+isolated result, confirmed cleanup, unchanged original/proposed journals, plans,
+proposal, dirty/untracked source and HEAD/index/refs asserted. Evidence:
+/tmp/asg404-isolated-diagnostics-native-flow.json. IAB tab36 synthetic fixture
+verified zero automatic work, reviewed SDK hashes/literal replacement, Cancel
+keeps analyzerCalls0, confirmed clean then incomplete results, disabled consumed
+consent, and delayed-worker Stop retaining prior evidence as historical. Final
+counters: SDKreviews3/analyzerCalls3/appWrites0/journals unchanged. Synthetic
+browser evidence is separate from actual native SDK evidence. Fixture server8409
+stopped; no owner process touched. Narrow390px/200% screen already covered by
+widget regression. Receipt /tmp/asg404-diagnostics-iab-receipt.json.
+Native helpers and production code are unchanged from the successful web/macOS
+build/native SDK checks; new native database-flow regression and inventory are
+included for final required checks. Full final Flutter/format/analyze and inventory
+checks are rerun before publication. Exact PR review, required remote CI and
+protected merge remain mandatory. FullF20 and #404 remainOPEN; #400 unavailable
+platform acceptance, marketplace prerequisites and F23-last unchanged. Solewriter
+404-isolated-dart-diagnostics lease renewed. No model/download/install/stable app
+replacement/cloud/deployment.

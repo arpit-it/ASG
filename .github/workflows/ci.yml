@@ -72,6 +72,8 @@ jobs:
         run: python -B tools/test_imported_commit_edit.py
       - name: Verify read-only proposed-copy comparison
         run: python -B tools/test_imported_commit_edit_comparison.py
+      - name: Isolated Dart diagnostics fixtures
+        run: python -B tools/test_imported_dart_diagnostics.py
       - run: python -B tools/test_product_acceptance.py
       - run: python -B tools/test_acceptance_inventory.py
       - name: Verify native fixture report contracts

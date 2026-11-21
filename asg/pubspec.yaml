@@ -79,6 +79,7 @@ flutter:
     - tools/imported_commit_source.py
     - tools/imported_commit_copy.py
     - tools/imported_commit_copy_recheck.py
+    - tools/imported_dart_diagnostics.py
     - tools/imported_commit_edit_comparison.py
     - tools/imported_commit_edit.py
     - tools/download_model.py
