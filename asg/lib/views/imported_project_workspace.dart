@@ -40,6 +40,7 @@ import '../services/imported_commit_comparison_store.dart';
 import '../controllers/imported_source_baseline_controller.dart';
 import '../services/imported_source_baseline_store.dart';
 import 'git_metadata_panel.dart';
+import 'imported_index_panel.dart';
 import 'project_instruction_panel.dart';
 import 'project_source_panel.dart';
 import 'imported_source_proposal_screen.dart';
@@ -442,6 +443,8 @@ class ImportedProjectWorkspace extends StatelessWidget {
           root: inspection.root,
           records: records,
         ),
+        const SizedBox(height: 16),
+        ImportedIndexPanel(root: inspection.root, records: records),
         const SizedBox(height: 16),
       ],
     ),

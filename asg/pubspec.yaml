@@ -73,6 +73,7 @@ flutter:
     - tools/qwen_server.py
     - tools/qwen_backends.py
     - tools/git_head_metadata.py
+    - tools/imported_index.py
     - tools/project_metadata.py
     - tools/project_instruction_documents.py
     - tools/project_source_files.py
