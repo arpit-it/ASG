@@ -149,6 +149,7 @@ void main() {
           'status': 'refused',
           'reason': 'changed',
           'acquisition': null,
+          'reference_acquisition': null,
           'head_form': null,
           'declared_ref': null,
           'head_oid': null,
@@ -278,4 +279,85 @@ void main() {
     await tester.pumpWidget(const SizedBox());
     closeWorkfile(workfile);
   });
+  testWidgets(
+    'packed provenance and table fingerprints remain distinct under loose precedence',
+    (tester) async {
+      tester.view.physicalSize = const Size(390, 844);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      for (final source in ['packed_ref', 'loose_ref']) {
+        final r = await baseline.indexRecords();
+        final workfile = await readyWorkfile(r);
+        final h = HeadIndexHost()..gate = Completer();
+        final c = headIndexController(r, h, workfile);
+        final request = await c.prepare();
+        final reading = c.inspect(request!, confirmed: true);
+        h.gate!.complete(
+          ImportedHeadIndexObservation.fromJson(
+            jsonEncode({
+              ...headIndexObservationData(request),
+              'head_form': 'symbolic',
+              'declared_ref': 'refs/heads/main',
+              'reference_acquisition': {
+                'source': source,
+                'packed_refs_sha256': 'e' * 64,
+                'packed_refs_byte_length': 100,
+                'packed_refs_entry_count': 1,
+              },
+            }),
+            request: request,
+          ),
+        );
+        await reading;
+        await tester.pumpWidget(
+          MaterialApp(
+            builder: (context, child) => MediaQuery(
+              data: MediaQuery.of(context)
+                  .copyWith(textScaler: const TextScaler.linear(2)),
+              child: child!,
+            ),
+            home: Scaffold(
+              body: SingleChildScrollView(
+                child: ImportedHeadIndexPanel(
+                  root: '/project',
+                  records: r,
+                  workfile: workfile,
+                  controller: c,
+                ),
+              ),
+            ),
+          ),
+        );
+        expect(
+          find.text(
+            source == 'packed_ref'
+                ? 'Reference source: packed declaration'
+                : 'Reference source: loose declaration',
+          ),
+          findsOneWidget,
+        );
+        await tester.ensureVisible(find.text('Declared-object fingerprints'));
+        await tester.tap(find.text('Declared-object fingerprints'));
+        await tester.pumpAndSettle();
+        expect(
+          find.text('Packed references SHA-256: ${'e' * 64}'),
+          findsOneWidget,
+        );
+        expect(
+          find.text('100 packed-reference bytes · 1 declaration'),
+          findsOneWidget,
+        );
+        expect(
+          find.text('Declared reference: refs/heads/main'),
+          findsOneWidget,
+        );
+        expect(find.text('Loose reference: refs/heads/main'), findsNothing);
+        expect(tester.takeException(), isNull);
+        expect(r.updatesSeen.every((m) => m.isEmpty), true);
+        await tester.pumpWidget(const SizedBox());
+        closeWorkfile(workfile);
+      }
+    },
+  );
 }

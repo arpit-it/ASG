@@ -23,7 +23,7 @@ ImportedHeadIndexRequest headIndexRequest({int count = 1, String id = 'f'}) {
 }
 
 Map<String, Object?> headIndexObservationData(ImportedHeadIndexRequest r) => {
-  'version': 1,
+  'version': 2,
   'scope': 'imported-head-index-observation',
   'request_sha256': r.digest,
   'read_id': r.readId,
@@ -31,6 +31,12 @@ Map<String, Object?> headIndexObservationData(ImportedHeadIndexRequest r) => {
   'status': 'observed',
   'reason': null,
   'acquisition': 'direct-loose-object-files',
+  'reference_acquisition': <String, Object?>{
+    'source': 'head',
+    'packed_refs_sha256': null,
+    'packed_refs_byte_length': null,
+    'packed_refs_entry_count': null,
+  },
   'head_form': 'direct_oid',
   'declared_ref': null,
   'head_oid': 'a' * 40,
@@ -283,6 +289,12 @@ void main() {
       ...headIndexObservationData(r),
       'head_form': 'symbolic',
       'declared_ref': 'refs/heads/main',
+      'reference_acquisition': <String, Object?>{
+        'source': 'loose_ref',
+        'packed_refs_sha256': null,
+        'packed_refs_byte_length': null,
+        'packed_refs_entry_count': null,
+      },
     };
     expect(
       ImportedHeadIndexObservation.fromJson(
@@ -430,6 +442,93 @@ void main() {
       expect(value.authorizesCommit, false);
     },
   );
+  test('versioned observation binds packed provenance and loose precedence to HEAD form', () {
+    final r = headIndexRequest();
+    for (final source in ['packed_ref', 'loose_ref', 'head']) {
+      final value = ImportedHeadIndexObservation.fromJson(
+        jsonEncode({
+          ...headIndexObservationData(r),
+          'head_form': source == 'head' ? 'direct_oid' : 'symbolic',
+          'declared_ref': source == 'head' ? null : 'refs/heads/main',
+          'reference_acquisition': {
+            'source': source,
+            'packed_refs_sha256': 'e' * 64,
+            'packed_refs_byte_length': 100,
+            'packed_refs_entry_count': 1,
+          },
+        }),
+        request: r,
+      );
+      expect(value.referenceAcquisition!.hasPackedRefs, true);
+      expect(value.referenceAcquisition!.packedRefsHash, 'e' * 64);
+      expect(value.referenceAcquisition!.packedRefsEntryCount, 1);
+      expect(value.authorizesCommit, false);
+      expect(
+        ImportedHeadIndexObservation.fromJson(
+          value.recordJson,
+          request: r,
+        ).recordJson,
+        value.recordJson,
+      );
+    }
+  });
+  test(
+    'legacy missing or contradictory acquisition results cannot be promoted',
+    () {
+      final r = headIndexRequest();
+      final d = headIndexObservationData(r);
+      for (final bad in [
+        {...d, 'version': 1},
+        {...d}..remove('reference_acquisition'),
+        {...d, 'reference_acquisition': null},
+        {
+          ...d,
+          'reference_acquisition': {
+            'source': 'packed_ref',
+            'packed_refs_sha256': null,
+            'packed_refs_byte_length': null,
+            'packed_refs_entry_count': null,
+          },
+        },
+        {...d, 'head_form': 'symbolic', 'declared_ref': 'refs/heads/main'},
+        {
+          ...d,
+          'reference_acquisition': {
+            'source': 'loose_ref',
+            'packed_refs_sha256': null,
+            'packed_refs_byte_length': null,
+            'packed_refs_entry_count': null,
+          },
+        },
+        {
+          ...d,
+          'reference_acquisition': {
+            'source': 'head',
+            'packed_refs_sha256': 'e' * 64,
+            'packed_refs_byte_length': 100,
+            'packed_refs_entry_count': 1,
+            'authenticated': true,
+          },
+        },
+      ]) {
+        expect(
+          () => ImportedHeadIndexObservation.fromJson(
+            jsonEncode(bad),
+            request: r,
+          ),
+          throwsFormatException,
+        );
+      }
+      final raw = jsonEncode(d).replaceFirst(
+        '"source":"head"',
+        '"source":"head","source":"packed_ref"',
+      );
+      expect(
+        () => ImportedHeadIndexObservation.fromJson(raw, request: r),
+        throwsFormatException,
+      );
+    },
+  );
   test('failure statuses carry no partial HEAD object index or file joins', () {
     final r = headIndexRequest();
     final d = headIndexObservationData(r);
@@ -450,6 +549,7 @@ void main() {
         'status': reason == 'stopped' ? 'stopped' : 'refused',
         'reason': reason,
         'acquisition': null,
+        'reference_acquisition': null,
         'head_form': null,
         'declared_ref': null,
         'head_oid': null,
@@ -468,6 +568,7 @@ void main() {
       );
       for (final k in [
         'acquisition',
+        'reference_acquisition',
         'head_form',
         'declared_ref',
         'head_oid',

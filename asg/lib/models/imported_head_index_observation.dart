@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 
 import 'git_head_observation.dart';
+import 'imported_reference_acquisition.dart';
 import 'imported_index_observation.dart';
 import 'imported_workfile_comparison.dart';
 import 'project_source_observation.dart';
@@ -244,6 +245,7 @@ final class ImportedHeadIndexObservation {
     this.status,
     this.requestDigest,
     this.reason,
+    this.referenceAcquisition,
     this.headForm,
     this.declaredRef,
     this.headOid,
@@ -277,6 +279,7 @@ final class ImportedHeadIndexObservation {
     'status',
     'reason',
     'acquisition',
+    'reference_acquisition',
     'head_form',
     'declared_ref',
     'head_oid',
@@ -297,6 +300,7 @@ final class ImportedHeadIndexObservation {
   };
   final ImportedHeadIndexStatus status;
   final String requestDigest, recordJson;
+  final ImportedReferenceAcquisition? referenceAcquisition;
   final String? reason, headForm, declaredRef, headOid, treeOid, indexHash;
   final int objectCount, objectBytes;
   final List<ImportedHeadIndexFile> files;
@@ -317,7 +321,7 @@ final class ImportedHeadIndexObservation {
     try {
       final d = _decode(raw, responseLimit, _keys);
       if (d['version'] is! int ||
-          d['version'] != 1 ||
+          d['version'] != 2 ||
           d['scope'] != 'imported-head-index-observation' ||
           d['request_sha256'] != request.digest ||
           d['read_id'] != request.readId ||
@@ -334,6 +338,7 @@ final class ImportedHeadIndexObservation {
       );
       final items = d['files'] as List;
       final files = <ImportedHeadIndexFile>[];
+      ImportedReferenceAcquisition? referenceAcquisition;
       if (status == ImportedHeadIndexStatus.observed) {
         if (d['reason'] != null ||
             d['acquisition'] != 'direct-loose-object-files' ||
@@ -347,6 +352,13 @@ final class ImportedHeadIndexObservation {
             items.length != request.files.length) {
           throw const FormatException();
         }
+        referenceAcquisition = ImportedReferenceAcquisition.fromMap(
+          d['reference_acquisition'],
+        );
+        if (!referenceAcquisition.matchesHeadForm(d['head_form'] as String?)) {
+          throw const FormatException();
+        }
+        // This parser checks only HEAD/reference syntax; acquisition stays typed above.
         GitHeadObservation.parse(
           jsonEncode({
             'version': 1,
@@ -432,6 +444,7 @@ final class ImportedHeadIndexObservation {
             d['object_bytes'] != 0 ||
             [
               'acquisition',
+              'reference_acquisition',
               'head_form',
               'declared_ref',
               'head_oid',
@@ -449,6 +462,7 @@ final class ImportedHeadIndexObservation {
         status,
         request.digest,
         d['reason'] as String?,
+        referenceAcquisition,
         d['head_form'] as String?,
         d['declared_ref'] as String?,
         d['head_oid'] as String?,
