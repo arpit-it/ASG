@@ -29,6 +29,9 @@ REQUEST_LIMIT = 16384
 RESPONSE_LIMIT = 32768
 OBJECT_LIMIT = 262144
 OBJECT_COUNT = 70
+PACKED_LIMIT = 262144
+PACKED_COUNT = 2048
+PACKED_HEADER = b'# pack-refs with: peeled fully-peeled sorted \n'
 
 
 class Refusal(Exception):
@@ -72,10 +75,42 @@ def request(raw):
     return d
 
 
+def packed_references(data):
+    """One explicit LF-only table subset, never Git namespace authority."""
+    index.check()
+    if (len(data) > PACKED_LIMIT or not data.startswith(PACKED_HEADER) or not data.endswith(b'\n')
+            or any((c < 32 and c != 10) or c == 127 for c in data)):
+        raise Refusal('unsupported_layout')
+    entries, seen, previous, pending = {}, set(), None, None
+    try:
+        for line in data[len(PACKED_HEADER):].split(b'\n')[:-1]:
+            index.check()
+            if line.startswith(b'^'):
+                value = line[1:].decode('ascii')
+                if pending is None or not pending.startswith('refs/tags/') or not parser.valid_oid(value):
+                    raise Refusal('unsupported_layout')
+                pending = None
+                continue
+            if len(entries) >= PACKED_COUNT or line.count(b' ') != 1:
+                raise Refusal('unsupported_layout')
+            oid, ref = line.decode('ascii').split(' ')
+            if (not parser.valid_oid(oid) or not ref.startswith(('refs/heads/', 'refs/tags/', 'refs/remotes/'))
+                    or not metadata.reference('refs/heads/' + ref[5:]) or ref.casefold() in seen
+                    or previous is not None and ref <= previous):
+                raise Refusal('unsupported_layout')
+            entries[ref], previous, pending = oid, ref, ref
+            seen.add(ref.casefold())
+    except (UnicodeError, ValueError):
+        raise Refusal('unsupported_layout') from None
+    index.check()
+    return entries
+
+
 class Reader(index.Reader):
     def __init__(self):
         super().__init__()
         self.objects = self.ref_parent = self.ref_name = None
+        self.reference_acquisition = None
 
     @staticmethod
     def present(parent, name):
@@ -87,12 +122,12 @@ class Reader(index.Reader):
 
     def layout(self, changed=False):
         super().layout(changed)
-        # This first slice refuses namespace indirection and packed-ref lookup.
+        # Literal packed tables are acquired once and held with the read set.
         # Config/filter/project commands are never evaluated.
-        for name in ('packed-refs', 'shallow', 'config.worktree'):
+        for name in ('shallow', 'config.worktree'):
             if self.present(self.git, name):
                 raise Refusal('changed' if changed else 'unsupported_layout')
-        if self.present(self.git, 'HEAD.lock'):
+        if any(self.present(self.git, name) for name in ('HEAD.lock', 'packed-refs.lock')):
             raise Refusal('changed')
         if self.present(self.git, 'refs'):
             refs = self.directory(self.git, 'refs')
@@ -167,24 +202,41 @@ class Objects:
 def declared_head(reader):
     try:
         head = metadata.line(reader.read(reader.git, 'HEAD', 4096), 'invalid_head')
+        packed, packed_hash, packed_bytes = {}, None, None
+        try:
+            raw = reader.read(reader.git, 'packed-refs', PACKED_LIMIT)
+            packed = packed_references(raw)
+            packed_hash, packed_bytes = hashlib.sha256(raw).hexdigest(), len(raw)
+        except FileNotFoundError:
+            # Reader holds the missing name too; appearance invalidates completion.
+            pass
         if head.startswith('ref: '):
             ref = head[5:]
             if not metadata.reference(ref):
                 raise Refusal('unsupported_layout')
             parent = reader.git
             parts = ref.split('/')
+            # Missing/indirect parent directories stay outside this initial subset.
             for part in parts[:-1]:
                 parent = reader.directory(parent, part)
             reader.ref_parent, reader.ref_name = parent, parts[-1]
             reader.layout()
-            oid = metadata.line(reader.read(parent, parts[-1], 256), 'invalid_ref')
+            try:
+                oid = metadata.line(reader.read(parent, parts[-1], 256), 'invalid_ref')
+                source = 'loose_ref'
+            except FileNotFoundError:
+                oid = packed.get(ref)
+                source = 'packed_ref'
             form = 'symbolic'
         else:
-            oid, form, ref = head, 'direct_oid', None
+            oid, form, ref, source = head, 'direct_oid', None, 'head'
     except FileNotFoundError:
         raise Refusal('unsupported_layout') from None
     if not parser.valid_oid(oid):
         raise Refusal('unsupported_layout')
+    reader.reference_acquisition = {'source': source, 'packed_refs_sha256': packed_hash,
+        'packed_refs_byte_length': packed_bytes,
+        'packed_refs_entry_count': len(packed) if packed_hash is not None else None}
     return form, ref, oid
 
 
@@ -264,9 +316,10 @@ def observe(raw):
             status, reason = 'refused', 'unavailable'
         index._deadline = None
     observed = status == 'observed'
-    return {'version': 1, 'scope': 'imported-head-index-observation',
+    return {'version': 2, 'scope': 'imported-head-index-observation',
             'request_sha256': hashlib.sha256(raw.encode('utf-8')).hexdigest(), 'read_id': d['read_id'], 'root': d['root'],
             'status': status, 'reason': reason, 'acquisition': 'direct-loose-object-files' if observed else None,
+            'reference_acquisition': reader.reference_acquisition if observed else None,
             'head_form': form if observed else None, 'declared_ref': ref if observed else None,
             'head_oid': head if observed else None, 'tree_oid': tree if observed else None,
             'index_sha256': d['index_sha256'] if observed else None,

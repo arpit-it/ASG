@@ -24800,3 +24800,106 @@ was pending when this review finding was corrected; revised docs need fresh exac
 review and final required CI. No production code or acceptance inventory changed;
 earlier evidence remains dated, not substituted for stricter probes. FullF20/
 #404OPEN and platform gates unchanged.
+
+
+### Packed-reference prerequisite verified / application read started, 21 November 2026 UTC
+
+PR838 verified merged2a3322434b14553e5f3bf42e4322a0979594bdcc, reviewed remote
+f888ba6493f455d0739437d52ece769c92b77fc6/local3ea72d779a50bd8f2c41d7cdfd6ed0ba373c407d,
+tree29e3d6043eba38e48b2d314ccf73e88aeae2307a. CI44890412063 jobs136804843042/
+136804843243 all required steps/poststeps success; decoded logs inspected:
+Linux2939PASS/97platformskips, Chrome17, analysis/format and production/generated
+builds. Exact fresh review corrected the prototype CRLF normalization gap before
+approval; superseded CI44890218201 closed as cancelled/success, not final evidence.
+Final strict declaration28/object-composition30 probesPASS with no process calls/
+reader writes and preserved non-adversarial bytes; original dated26/28 probes kept.
+Canonical helpers unchanged; supporting Python33/12/14/9/32 and models14/arch1PASS.
+Plugin/main/fetched merge/tree and #404OPEN verified; claim/integration released.
+Manual start-to-merge1370.1s, CI observation769.9s, review rework1, verified bounded
+prerequisite outcome1; escaped defects unknown (zero observations). This completes
+only prerequisite evidence; application packed support/fullF20/CE01 remain open.
+
+Immediately claimed404-packed-reference-read under existingF20/#404 in the same
+registered worktree. Acceptance: immutable typed HEAD/loose/packed acquisition and
+optional whole-table SHA256/byte/count provenance with contradictory/unknown/
+excessive payload refusals; exact known header/LF-only bounded whole-table parse,
+loose precedence and selected packed fallback, held HEAD/packed/ref/object/index/
+source plus missing-ref/lock validation; current workfile/index/durable fences,
+explicit one-use consent, shared worker ownership, Stop/disposal/deadline/cleanup
+and retained historical evidence. Display provenance/fingerprints without private
+contents or Git/commit authority. Missing packed objects/unknown headers/ambiguous
+records/linked or replacement/alternate namespaces continue to refuse. Focused
+adversarial and actual native/reopen/IAB/full checks/builds/fresh review/required
+CI/verified merge before completion. Start typed pure provenance model/tests,
+then join helper/results/UI within this one coherent increment. No production
+packed capability is claimed from the first model checkpoint. Sole writer; no
+independent second ready task. Owner primary six edits/processes preserved;
+#400/marketplace/F23-last unchanged; no model/install/download/deploy.
+
+
+Packed-reference application initial checkpoint: added the pure immutable
+ImportedReferenceAcquisition model, separating HEAD/loose_ref/packed_ref and an
+optional all-or-none packed-table SHA256/byte/count fingerprint. Exact keys,
+duplicate JSON, unknown source/authority fields, partial identity, noninteger/
+excessive/impossible table statistics, malformed hash labels and packed fallback
+without a nonempty table refuse. HEAD-form compatibility is explicit; owning
+observations must bind the acquisition to their request and HEAD. Caller/serialized
+map edits cannot mutate accepted evidence. All commit/mutation/authentication
+getters remain false. Nine adversarial model regressions plus architecture1PASS;
+analysis clean, two-file format0changes. Refreshed acceptance inventory after new
+source and verified inventory9/product32PASS. No transport/result schema or UI is
+yet wired to the model, and no physical packed read is enabled. Next in this same
+coherent task: strict bounded helper acquisition and reference-source/fingerprint
+result binding, loose precedence/absence and held-read refusals, clear consent/UI,
+actual native/reopen/IAB, full checks/builds/fresh review/required CI/verified merge.
+Checkpoint remains unmerged; application packed support/fullF20/#404OPEN. Active
+claim retained for resume; owner six primary edits/processes kept and no model/
+install/download/stable replacement/cloud/deploy. Platform/marketplace gates kept.
+
+
+Packed-reference application integrated implementation checkpoint, 21 November
+2026 UTC: trusted helper accepts exactly the known peeled fully-peeled sorted
+header and LF-only40hex records, bounded256KiB/2048entries; validates the entire
+table even with loose precedence. Unknown/control/malformed/duplicate/case-alias/
+unsafe/replacement/unsorted/excessive/invalid-peeled tables refuse. Optional packed
+file or missing name is held with HEAD/ref/object/index/source descriptors and
+locks until final validation; missing or indirect ref parents remain unsupported.
+Loose refs take precedence; selected packed fallback still acquires only verified
+bounded direct loose objects, with no pack/alternate/Git/project/model fallback.
+Result protocol2 includes strict immutable reference_acquisition provenance and
+whole-table hash/byte/count; legacy/missing/contradictory/partial failure results
+refuse. Existing request provenance, current workfile/index/two durable fences,
+shared ownership, Stop/disposal/deadline/cleanup and historical retention stay
+intact. No durable app schema/key migration; old dated evidence remains separate.
+Consent now names the bounded table; results distinguish HEAD/loose/packed and
+show fingerprints without source/table contents or broader Git/commit authority.
+
+Helper21PASS plus HEAD33/index12/workfile12/source29/inventory9/product32PASS;
+focused58PASS including provenance9/HEAD-index9, native host8/store3/controller9,
+actual native reopen1/panel7/upstream panels11/architecture1. Actual native flow
+observes packed fallback before reopen, then an explicit owned fixture transition
+to loose precedence over a differing packed label, with request freshness, Cancel,
+retained historical retry on a packed lock and confirmed cleanup. Each fixture
+baseline's source/object/index/HEAD/ref/packed/untracked bytes and durable inputs
+remain preserved by reads. Receipt
+/tmp/asg404-packed-reference-native-reopen-receipt.json records helper/host/models
+and the deliberate fixture reference transition. Narrow390px/200% provenance and
+fingerprint regressions pass for packed and loose acquisition. Format786/0changes,
+analysis clean; acceptance inventory regenerated after final source. Full suite,
+production web/isolatedMac/packaged asset identity, synthetic IAB, exact fresh PR
+review/required CI/verified merge remain pending. One coherent claimed task;
+fullF20/#404OPEN, #400/marketplace/F23-last unchanged. Owner edits/processes kept;
+no live inference/model/install/download/stable replacement/cloud/deploy.
+
+
+Prepublication IAB check caught a stale fingerprint label: a packed-acquired
+reference was still rendered as Loose reference. Corrected to Declared reference
+while keeping the separate HEAD/loose/packed source label; added explicit packed/
+loose widget assertions and singular declaration wording. Refreshed inventory
+again after the view change. Earlier full3038PASS/13skips and web/isolatedMac
+results predate this view correction and are not final-revision evidence; repeat
+full checks/builds and refresh the synthetic browser fixture before publication.
+Initial browser startup/Cancel0reads and packed source/fingerprint observed;
+remaining final browser scenarios pending. Native packed-fallback/loose-precedence
+flow source is unchanged, but final suite will re-run it on the final revision.
+No stable application replacement or owner process stopped.

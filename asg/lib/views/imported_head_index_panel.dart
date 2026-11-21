@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../controllers/imported_workfile_controller.dart';
 import '../controllers/imported_head_index_controller.dart';
 import '../models/imported_head_index_observation.dart';
+import '../models/imported_reference_acquisition.dart';
 import '../services/imported_head_index_host_factory.dart';
 import '../services/imported_head_index_store.dart';
 import '../services/record_storage.dart';
@@ -74,14 +75,14 @@ class _ImportedHeadIndexPanelState extends State<ImportedHeadIndexPanel> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                'Read the declared HEAD/reference, direct loose commit/tree/blob objects, expected index and selected files using the packaged read-only helper. No Git, project, filter or model commands run. Files and app records are not changed.',
+                'Read the declared HEAD/reference, an optional bounded packed-reference table, direct loose commit/tree/blob objects, expected index and selected files using the packaged read-only helper. No Git, project, filter or model commands run. Files and app records are not changed.',
               ),
               SelectableText('Folder: ${request.root}'),
               SelectableText('Existing interpreter: ${request.python}'),
               for (final file in request.files) SelectableText(file.path),
               SelectableText('Expected index SHA-256: ${request.indexHash}'),
               const Text(
-                'This initial read refuses packed-reference lookup, replacement or alternate stores and unsupported layouts. Object expansion and selected file reads are bounded. Literal matches do not authenticate the repository, establish filtered or untracked status, create an atomic snapshot, or grant commit permission.',
+                'This read accepts only the known packed-reference format, up to 256 KiB and 2,048 entries, with direct reference parent folders and direct loose objects. Unknown formats, replacement or alternate stores and unsupported layouts refuse. Object expansion and selected file reads are bounded. Literal matches do not authenticate the repository, establish filtered or untracked status, create an atomic snapshot, or grant commit permission.',
               ),
             ],
           ),
@@ -117,6 +118,14 @@ class _ImportedHeadIndexPanelState extends State<ImportedHeadIndexPanel> {
       const Text(
         'Direct loose-object declarations only. Repository authentication, filtered, untracked and whole-repository state remain unverified.',
       ),
+      if (value.referenceAcquisition case final reference?)
+        Text(switch (reference.source) {
+          ImportedReferenceSource.head => 'Reference source: HEAD file',
+          ImportedReferenceSource.looseRef =>
+            'Reference source: loose declaration',
+          ImportedReferenceSource.packedRef =>
+            'Reference source: packed declaration',
+        }),
       for (final file in value.files)
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 6),
@@ -153,7 +162,16 @@ class _ImportedHeadIndexPanelState extends State<ImportedHeadIndexPanel> {
         children: [
           SelectableText('Declared HEAD ID: ${value.headOid}'),
           if (value.declaredRef != null)
-            SelectableText('Loose reference: ${value.declaredRef}'),
+            SelectableText('Declared reference: ${value.declaredRef}'),
+          if (value.referenceAcquisition case final reference?)
+            if (reference.hasPackedRefs) ...[
+              SelectableText(
+                'Packed references SHA-256: ${reference.packedRefsHash}',
+              ),
+              Text(
+                '${reference.packedRefsByteLength} packed-reference bytes · ${reference.packedRefsEntryCount} ${reference.packedRefsEntryCount == 1 ? 'declaration' : 'declarations'}',
+              ),
+            ],
           SelectableText('Declared tree ID: ${value.treeOid}'),
           SelectableText('Index SHA-256: ${value.indexHash}'),
           SelectableText('Read request SHA-256: ${value.requestDigest}'),

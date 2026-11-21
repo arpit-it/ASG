@@ -113,6 +113,12 @@ void main() {
       final git = await Directory('${root.path}/.git').create();
       final source = utf8.encode('void main() {}\r\n');
       final ids = await nativeHeadFixture(git, source);
+      final packed = File('${git.path}/packed-refs');
+      final loose = File('${git.path}/refs/heads/main');
+      await packed.writeAsString(
+        '# pack-refs with: peeled fully-peeled sorted \n${ids.$1} refs/heads/main\n',
+      );
+      await loose.delete();
       await File('${git.path}/index').writeAsBytes(nativeIndexFixture());
       await Directory('${root.path}/lib').create();
       final target = File('${root.path}/lib/main.dart');
@@ -157,6 +163,15 @@ void main() {
         ];
         final saved = {for (final k in keys) k: records.getString(k)};
         for (var turn = 0; turn < 2; turn++) {
+          if (turn == 1) {
+            // Owned fixture transition: verify loose precedence after reopen.
+            await loose.writeAsString('${ids.$1}\n');
+            await packed.writeAsString(
+              '# pack-refs with: peeled fully-peeled sorted \n${'b' * 40} refs/heads/main\n',
+            );
+            before[loose.path] = await loose.readAsBytes();
+            before[packed.path] = await packed.readAsBytes();
+          }
           final index = ImportedIndexController(
             root: root.path,
             store: ImportedIndexStore(records),
@@ -209,6 +224,14 @@ void main() {
           expect(c.observation!.headOid, ids.$1);
           expect(c.observation!.treeOid, ids.$2);
           expect(c.observation!.declaredRef, 'refs/heads/main');
+          final reference = c.observation!.referenceAcquisition!;
+          expect(reference.source.name, turn == 0 ? 'packedRef' : 'looseRef');
+          expect(
+            reference.packedRefsHash,
+            sha256.convert(await packed.readAsBytes()).toString(),
+          );
+          expect(reference.packedRefsByteLength, await packed.length());
+          expect(reference.packedRefsEntryCount, 1);
           expect(c.observation!.files.single.indexMatchesTree, false);
           expect(c.observation!.files.single.workingBytesMatchTree, true);
           expect(
@@ -231,7 +254,7 @@ void main() {
             oldRequest = request;
             oldDigest = request.digest;
             final previous = c.lastObserved;
-            final lock = File('${git.path}/HEAD.lock');
+            final lock = File('${git.path}/packed-refs.lock');
             await lock.writeAsString('owned lock');
             final retry = await c.prepare();
             await c.inspect(retry!, confirmed: true);
@@ -270,6 +293,13 @@ void main() {
                   )
                   .toString(),
               'modelRequests': 0,
+              'fixtureReferenceTransition': 'packed fallback then loose precedence with differing packed label after reopen',
+              'referenceModelSha256': sha256
+                  .convert(
+                    await File('lib/models/imported_reference_acquisition.dart')
+                        .readAsBytes(),
+                  )
+                  .toString(),
             };
           }
           c.dispose();
@@ -286,7 +316,7 @@ void main() {
       } finally {
         await db.close();
       }
-      await File('/tmp/asg404-declared-head-index-native-reopen-receipt.json')
+      await File('/tmp/asg404-packed-reference-native-reopen-receipt.json')
           .writeAsString(jsonEncode(evidence));
     } finally {
       await base.delete(recursive: true);

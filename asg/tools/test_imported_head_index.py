@@ -102,7 +102,7 @@ class HeadIndexTests(unittest.TestCase):
         self.assertEqual(value['files'], [])
         self.assertEqual(value['object_count'], 0)
         self.assertEqual(value['object_bytes'], 0)
-        for key in ('acquisition', 'head_form', 'declared_ref', 'head_oid', 'tree_oid', 'index_sha256'):
+        for key in ('acquisition', 'reference_acquisition', 'head_form', 'declared_ref', 'head_oid', 'tree_oid', 'index_sha256'):
             self.assertIsNone(value[key])
         if reason: self.assertEqual(value['reason'], reason)
 
@@ -112,6 +112,7 @@ class HeadIndexTests(unittest.TestCase):
         self.assertEqual(value['status'], 'observed')
         self.assertEqual(value['head_oid'], self.commit)
         self.assertEqual(value['tree_oid'], self.tree)
+        self.assertEqual(value['reference_acquisition'], {'source': 'head', 'packed_refs_sha256': None, 'packed_refs_byte_length': None, 'packed_refs_entry_count': None})
         self.assertEqual(value['object_count'], 4)
         self.assertTrue(value['files'][0]['index_matches_tree'])
         self.assertTrue(value['files'][0]['working_bytes_match_tree'])
@@ -327,6 +328,150 @@ class HeadIndexTests(unittest.TestCase):
             close(reader)
             head.index.stop(None, None)
         with patch.object(head.Reader, 'close', stopped): self.refused(self.observe(), 'stopped')
+
+    def packed(self, *, loose=False, direct=False, table=None):
+        refs = self.git / 'refs/heads'
+        refs.mkdir(parents=True, exist_ok=True)
+        target = refs / 'main'
+        if loose:
+            target.write_text(self.commit + '\n')
+        elif target.exists():
+            target.unlink()
+        (self.git / 'HEAD').write_text(self.commit + '\n' if direct else 'ref: refs/heads/main\n')
+        raw = head.PACKED_HEADER + f'{self.commit} refs/heads/main\n'.encode() if table is None else table
+        (self.git / 'packed-refs').write_bytes(raw)
+        return raw
+
+    def test_packed_reference_provenance_fallback_loose_precedence_and_empty_tables(self):
+        for source in ('packed_ref', 'loose_ref', 'head'):
+            raw = self.packed(loose=source == 'loose_ref', direct=source == 'head',
+                table=head.PACKED_HEADER + f'{"b" * 40 if source == "loose_ref" else self.commit} refs/heads/main\n'.encode())
+            before = {p: p.read_bytes() for p in self.root.rglob('*') if p.is_file()}
+            value = self.observe()
+            self.assertEqual(value['version'], 2)
+            self.assertEqual(value['status'], 'observed')
+            self.assertEqual(value['head_oid'], self.commit)
+            self.assertEqual(value['reference_acquisition'], {'source': source,
+                'packed_refs_sha256': hashlib.sha256(raw).hexdigest(),
+                'packed_refs_byte_length': len(raw), 'packed_refs_entry_count': 1})
+            self.assertEqual(before, {p: p.read_bytes() for p in before})
+        raw = self.packed(loose=True, table=head.PACKED_HEADER)
+        value = self.observe()
+        self.assertEqual(value['status'], 'observed')
+        self.assertEqual(value['reference_acquisition']['packed_refs_entry_count'], 0)
+        self.assertEqual(value['reference_acquisition']['packed_refs_byte_length'], len(raw))
+
+    def test_entire_packed_table_validates_known_header_control_free_records_and_bounds(self):
+        a, b = 'a' * 40, 'b' * 40
+        valid = head.PACKED_HEADER + f'{self.commit} refs/heads/main\n{b} refs/remotes/origin/main\n{a} refs/tags/v1\n^{b}\n'.encode()
+        self.packed(table=valid)
+        self.assertEqual(self.observe()['reference_acquisition']['packed_refs_entry_count'], 3)
+        bad = [b'', b'# unknown\n', head.PACKED_HEADER.rstrip(b'\n'),
+            head.PACKED_HEADER + f'{a} refs/heads/main'.encode(),
+            head.PACKED_HEADER + f'{a} refs/heads/main\r\n'.encode(),
+            head.PACKED_HEADER + f'{a} refs/heads/main\v{b} refs/heads/z\n'.encode(),
+            head.PACKED_HEADER + f'{a}\trefs/heads/main\n'.encode(),
+            head.PACKED_HEADER + b'\xff\n', head.PACKED_HEADER + b'\n',
+            head.PACKED_HEADER + (f'{a} refs/heads/main\n' * 2).encode(),
+            head.PACKED_HEADER + f'{a} refs/heads/Main\n{b} refs/heads/main\n'.encode(),
+            head.PACKED_HEADER + f'{a} refs/heads/z\n{b} refs/heads/main\n'.encode(),
+            head.PACKED_HEADER + f'{a} refs/replace/{b}\n'.encode(),
+            head.PACKED_HEADER + f'{a} refs/heads/../main\n'.encode(),
+            head.PACKED_HEADER + f'{a} refs/heads/.hidden\n'.encode(),
+            head.PACKED_HEADER + f'{a}0 refs/heads/main\n'.encode(),
+            head.PACKED_HEADER + f'{"0" * 40} refs/heads/main\n'.encode(),
+            head.PACKED_HEADER + f'^{a}\n'.encode(),
+            head.PACKED_HEADER + f'{a} refs/heads/main\n^{b}\n'.encode(),
+            valid + f'^{a}\n'.encode(),
+            head.PACKED_HEADER + f'{a} refs/tags/v1\n^{a}{a[:24]}\n'.encode(),
+            head.PACKED_HEADER + b''.join(f'{a} refs/heads/n{i:04}\n'.encode() for i in range(2049)),
+            head.PACKED_HEADER + b'x' * 262144]
+        for loose in (False, True):
+            for raw in bad:
+                with self.subTest(loose=loose, raw=raw[:80]):
+                    self.packed(loose=loose, table=raw)
+                    self.refused(self.observe())
+                    self.assertEqual((self.git / 'packed-refs').read_bytes(), raw)
+
+    def test_packed_target_requires_existing_direct_ref_parents_and_direct_loose_objects(self):
+        self.packed(table=head.PACKED_HEADER)
+        self.refused(self.observe(), 'unsupported_layout')
+        self.packed()
+        (self.git / 'refs/heads').rmdir()
+        self.refused(self.observe())
+        (self.git / 'refs/heads').mkdir()
+        self.objects[('commit', self.commit)].unlink()
+        (self.git / 'objects/pack').mkdir()
+        (self.git / 'objects/pack/fixture.pack').write_text('never read')
+        self.refused(self.observe(), 'missing_loose_object')
+
+    def test_packed_table_links_hardlinks_and_preexisting_locks_are_preserved(self):
+        raw = self.packed()
+        table = self.git / 'packed-refs'
+        table.rename(self.git / 'owned-table')
+        table.symlink_to('owned-table')
+        self.refused(self.observe())
+        self.assertEqual((self.git / 'owned-table').read_bytes(), raw)
+        table.unlink()
+        table.write_bytes(raw)
+        os.link(table, self.git / 'owned-alias')
+        self.refused(self.observe())
+        (self.git / 'owned-alias').unlink()
+        for name in ('packed-refs.lock', 'HEAD.lock', 'refs/heads/main.lock'):
+            lock = self.git / name
+            lock.write_bytes(b'owner')
+            self.refused(self.observe(), 'changed')
+            self.assertEqual(lock.read_bytes(), b'owner')
+            lock.unlink()
+
+    def test_packed_whole_read_changes_and_new_loose_names_never_publish_partial_results(self):
+        original = head.Reader.validate
+        kinds = ('packed', 'HEAD', 'index', 'source', 'object', 'packed-inode',
+                 'loose-appears', 'packed-lock', 'HEAD-lock', 'ref-lock', 'replace')
+        for kind in kinds:
+            self.packed()
+            snapshots = {p: p.read_bytes() for p in self.root.rglob('*') if p.is_file()}
+            def mutate(reader):
+                if kind == 'packed': (self.git / 'packed-refs').write_bytes(head.PACKED_HEADER)
+                elif kind == 'HEAD': (self.git / 'HEAD').write_text('b' * 40 + '\n')
+                elif kind == 'index': (self.git / 'index').write_bytes(b'changed')
+                elif kind == 'source': (self.root / 'lib/main.dart').write_bytes(b'changed')
+                elif kind == 'object': self.objects[('commit', self.commit)].write_bytes(b'changed')
+                elif kind == 'packed-inode':
+                    table = self.git / 'packed-refs'
+                    table.rename(self.git / 'owned-previous')
+                    table.write_bytes(snapshots[table])
+                elif kind == 'loose-appears': (self.git / 'refs/heads/main').write_text(self.commit + '\n')
+                elif kind == 'replace': (self.git / 'refs/replace').mkdir()
+                else:
+                    name = {'packed-lock': 'packed-refs.lock', 'HEAD-lock': 'HEAD.lock', 'ref-lock': 'refs/heads/main.lock'}[kind]
+                    (self.git / name).write_bytes(b'owner')
+                original(reader)
+            with self.subTest(kind=kind), patch.object(head.Reader, 'validate', mutate):
+                self.refused(self.observe())
+            for path in self.root.rglob('*'):
+                if path.is_file() and path not in snapshots: path.unlink()
+            if (self.git / 'refs/replace').exists(): (self.git / 'refs/replace').rmdir()
+            for path, raw in snapshots.items(): path.write_bytes(raw)
+
+    def test_absent_packed_name_appearance_invalidates_even_direct_head_read(self):
+        original = head.Reader.validate
+        def appearing(reader):
+            (self.git / 'packed-refs').write_bytes(head.PACKED_HEADER)
+            original(reader)
+        with patch.object(head.Reader, 'validate', appearing):
+            self.refused(self.observe(), 'changed')
+
+    def test_packed_loose_parent_indirection_and_held_loose_change_refuse(self):
+        self.packed(loose=True)
+        original = head.Reader.validate
+        def changed(reader):
+            (self.git / 'refs/heads/main').write_text('b' * 40 + '\n')
+            original(reader)
+        with patch.object(head.Reader, 'validate', changed): self.refused(self.observe(), 'changed')
+        (self.git / 'refs/heads').rename(self.git / 'refs/owner-heads')
+        (self.git / 'refs/heads').symlink_to('owner-heads', target_is_directory=True)
+        self.refused(self.observe())
 
     def test_actual_private_cli_uses_only_four_bundled_assets(self):
         payload = self.root / 'request.json'
