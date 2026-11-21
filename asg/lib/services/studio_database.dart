@@ -15,6 +15,8 @@ import '../models/imported_plan.dart';
 import '../models/imported_source_proposal_record.dart';
 import '../models/imported_commit_proposal_record.dart';
 import '../models/imported_commit_copy_record.dart';
+import '../models/imported_commit_edit_record.dart';
+import 'imported_commit_edit_store.dart';
 import 'imported_commit_copy_store.dart';
 import 'imported_commit_proposal_store.dart';
 import 'imported_source_proposal_store.dart';
@@ -151,6 +153,7 @@ class StudioDatabase implements ConditionalRecordStorage {
             !record.key.startsWith(ImportedSourceProposalStore.prefix) &&
             !record.key.startsWith(ImportedCommitProposalStore.prefix) &&
             !record.key.startsWith(ImportedCommitCopyStore.prefix) &&
+            !record.key.startsWith(ImportedCommitEditStore.prefix) &&
             !record.key.startsWith('studio.planApproval.v1.')) {
           rethrow;
         }
@@ -180,6 +183,13 @@ class StudioDatabase implements ConditionalRecordStorage {
 
   static void validate(String key, String value) {
     if (key == 'studio.lastProject.v1') return;
+    if (key.startsWith(ImportedCommitEditStore.prefix)) {
+      final record = ImportedCommitEditRecord.decode(value);
+      if (key != ImportedCommitEditStore.key(record.root)) {
+        throw const FormatException('Proposed-copy history identity changed.');
+      }
+      return;
+    }
     if (key.startsWith(ImportedCommitCopyStore.prefix)) {
       final record = ImportedCommitCopyRecord.decode(value);
       if (key != ImportedCommitCopyStore.key(record.root)) {

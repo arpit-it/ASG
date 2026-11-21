@@ -13,9 +13,11 @@ class ImportedCommitCopyScreen extends StatefulWidget {
     super.key,
     required this.controller,
     this.onRecheck,
+    this.onPropose,
   });
   final ImportedCommitCopyController controller;
   final ValueChanged<ImportedCommitCopyRecord>? onRecheck;
+  final ValueChanged<ImportedCommitCopyRecord>? onPropose;
   @override
   State<ImportedCommitCopyScreen> createState() =>
       _ImportedCommitCopyScreenState();
@@ -174,6 +176,13 @@ class _ImportedCommitCopyScreenState extends State<ImportedCommitCopyScreen> {
         'Whole-copy fingerprint: ${saved.observation!.fingerprint}',
       ),
       SelectableText('Original commit: ${saved.request.commit}'),
+      if (widget.onPropose != null)
+        OutlinedButton(
+          onPressed: c.busy || history.needsRecovery
+              ? null
+              : () => widget.onPropose!(history),
+          child: const Text('Review isolated proposed copy'),
+        ),
       if (widget.onRecheck != null)
         OutlinedButton(
           onPressed: c.busy || history.needsRecovery
