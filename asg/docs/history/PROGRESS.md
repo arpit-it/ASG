@@ -23472,3 +23472,58 @@ verified. Actual native reader/database evidence is separate and retained in
 processes and six unrelated dirty paths untouched. No live model requests.
 Exact publication/review, requiredCI and verified merge remain pending gates.
 FullF20/CE01/#404 and #400/marketplace/F23-last limits remain unchanged.
+
+### Explicit saved-copy recheck — verified merge / replacement admission started, 21 November 2026 UTC
+
+PR #823 merged as `d6eba4572e657bcbdb3903ec8a05540ebdf63cef`, tested
+tree `46f0dfecbae5d6aa9e385a84eb3d61ef4f1ef577`, after fresh review of
+exact head `e505af98b2e7e78f1c22064097ce58d55253d387`. Required
+CI44851342471 Flutter136683158889/Python136683159090 passed every step and
+poststep; logs inspected, head/base unchanged and no unresolved conversations.
+Plugin main/PR and fetched remote tree independently confirm the tested merge;
+#404 remains OPEN. FullFlutter2820/13 opt-in skipped,31 focused,23 relevant
+Python, clean analysis/format, inventory9/product32, web/isolated unsigned Mac,
+actual native reader/database reopen and separate IAB evidence passed. Completed
+integration and writer ownership released. Manual metrics: 2092.5 seconds
+task-to-merge, 488.3 seconds paired CI observation wait,0 final-review rework
+events,1 verified bounded app outcome; escaped defects unknown (0 reported).
+
+Immediately claimed `404-rechecked-replacement-admission` in the registered
+worktree from verified main. Next concrete prerequisite: join a fresh matching
+copy observation with the exact current saved approved committed proposal before
+any explicit separately isolated replacement output can be admitted. A matching
+fingerprint alone binds neither current plan/replacement nor destination consent.
+Verify typed joins for changed/refused/foreign/stale reads, changed current
+plan/proposal/runtime/history and selected original byte metadata. Inspect the
+legacy ASG-only apply adapter's root lib/test and BOM/legal-header boundaries.
+This investigation grants no write or execution authority and does not route
+generic imported projects into the ASG execution adapter. Existing404 covers it;
+no new issue or speculative task. Only integration owner edits these shared docs.
+No model requests, installs, deployment or original/copy mutation. FullF20/CE01
+and #400/marketplace/F23-last remain open/unchanged. Owner6dirty preserved.
+
+Rechecked replacement admission started — 21 November 2026 UTC:10 pure typed
+fixture probes passed. An exact current saved proposal, prepared copy history
+and matching recheck join; changed/refused observations, foreign nonce, changed
+current Python, changed replacement/plan/original selected bytes, new unresolved
+or acknowledged history and restored foreign fingerprint labels cannot borrow
+the earlier matching result. Checks include original commit/tree/full manifest,
+selected path/mode/Git blob/byte hash/length and full history/request/receipt
+identity. This is an investigation-only supplied-data join, not actual durable
+current approval, live host proof, destination consent or permission to mutate.
+
+Read-only adapter inspection confirms prepare_self_candidate.proposal_path accepts
+only asg/lib or asg/test Dart paths, while imported proposals use root lib/test.
+Its existing test_bom_legal_header_is_explicitly_refused records a separate BOM/
+legal-header policy. The imported proposal model preserves literal BOM and hashes
+replacement bytes; these schemas/policies cannot be silently normalized or routed
+to legacy ASG apply/execute. A future coherent edit workflow needs exact current
+plan/proposal/copy/recheck/runtime fences, explicit new-output consent, original
+selected byte/legal-header policy, complete isolated-output verification, durable
+recovery and no generic execution grant. Existing working outputs remain untouched.
+
+Probe /tmp/asg404_rechecked_replacement_admission_test.dart SHA-256 0bc48372584ee71a333b174b6140bb1ade83af3d08ed575409f39e4ec911a84c;
+log /tmp/asg404-rechecked-replacement-admission.log. No production model changed,
+no source/copy writes, host processes or model requests in this investigation.
+This checkpoint awaits its own review/publication; fullF20/CE01 remains OPEN.
+#400/marketplace/F23-last and owner6dirty remain unchanged.
