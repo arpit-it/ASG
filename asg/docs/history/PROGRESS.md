@@ -24653,3 +24653,125 @@ product inputs; final required CI and exact fresh review still mandatory. The
 failed CI remains failed; no checks weakened or blind rerun used. Flutter job
 136798267926 was still running when the Python failure was diagnosed; close its
 manual CI interval after the complete run is observed. FullF20/#404OPEN.
+
+
+### Declared HEAD/index read verified / packed-reference admission started, 21 November 2026 UTC
+
+PR837 verified merged54d0a1ae344e7cb519bb2cd2a3b05de2d9760219, exact reviewed
+remote bf1acf8fc87375217712ae4e686b17bbcf4be06e/local15a9a94e621ada3d495b54427b6b1187f09834ba,
+tree731a0bc862e04ded7aed4b12564cb5dc68d538e5. Required CI44888637018 jobs
+136799432763/136799432931 all steps/poststeps passed; decoded logs inspected:
+Linux2939PASS/97platformskips, Chrome17, production/generated builds. Remote
+plugin/main/fetched merge/tree agree; #404OPEN. Delivered explicit bounded1–4
+selected declared HEAD/direct-loose tree/index/working-file comparisons with
+independent flags, dated fingerprints, current-input/consent/owned cleanup and
+historical retention. Local3026PASS/13platformskips, focused35, affectedpanels17,
+format784/0changes, clean analyze, Python14/33/12/12/29/9/32, production web and
+isolatedMac with all four packaged helper bytes matched. Actual native/database
+reopen preserved source and app inputs; refreshed separate synthetic IAB confirms
+startup/Cancel0reads, independent matching/different/absent flags, refused history,
+Stop and changed-runtime completion rejection (6reads/0appwrites/1fixturechange).
+Final validation /tmp/asg404-declared-head-index-final-validation.json. No Git/
+project/model commands or commit authority. CI44887325003 caught a Linux2px parent
+overflow; fixed advanced section visibility until its prerequisite baseline exists.
+CI44888281001 caught stale derived inventory after that repair; refreshed and
+verified inventory9/product32, remaining Flutter job superseded/cancelled. Neither
+failure bypassed; final fresh review and CI pass. Coordinator observations closed;
+completed claim/integration released. Manual start-to-merge3659.4s, combined CI
+observation1364.3s, review rework2, verified outcome1; escaped defects unknown
+(zero observations). Owner primary six IDE/docs edits and processes preserved.
+
+Immediately claimed404-packed-ref-admission under existingF20/CE01/#404. Concrete
+gap: application intentionally refuses packed-refs even when the selected HEAD
+has a loose declaration. Read-only bounded owner layout inspection found87174
+bytes/1055records, header peeled fully-peeled sorted,0peeled records; no private
+reference labels/object IDs/content recorded, held inode/bytes/mtime/ctime stable.
+Acceptance: owned no-command prototype for bounded known packed headers/40hex
+records and peeled syntax, loose precedence/packed fallback and held HEAD/ref/
+packed descriptor revalidation. Reject malformed/unknown headers, duplicate/case
+aliases, replacement/unsafe namespaces, excessive bytes/count, wrong object labels,
+links/hardlinks, locks, missing or changed reads with no partial declaration.
+Keep syntax/declaration provenance distinct from authenticated Git namespace,
+object acquisition, whole-repository status and commit permission. Record exact
+prototype/helper identities, fixture preservation and smallest coherent app
+prerequisite. Documentation investigation only, not packed app support. Complete
+only after fresh exact review/required CI/verified merge. Canonical queue only,
+sole writer/no independent second ready track. #400/marketplace/F23-last and
+fullF20OPEN unchanged; no model/download/install/stable replacement/cloud/deploy.
+
+
+Packed-reference admission checkpoint:26 owned no-command probesPASS
+(3observations/23refusals). Whole bounded known-header table is validated even
+when the selected loose ref takes precedence. Packed fallback, loose precedence
+and multi-namespace/tag-peeled fixture declarations remain distinct; malformed/
+unknown/truncated headers, duplicate/case aliases, replacement or unsafe refs,
+wrong/zero labels, orphan/branch-peeled records, unsorted/overcount/overbyte tables,
+missing target, packed/ref locks, symlinks/hardlinks, changed packed/HEAD/loose
+files, newly appearing loose target and late lock all refuse without a partial
+result. Held no-follow descriptors and final missing-loose absence recheck used;
+no process calls/reader writes, non-adversarial bytes preserved. Syntax-only
+prototype supports exactly the observed known header; it does not interpret
+peeled objects, acquire objects, authenticate Git namespace/configuration,
+establish an atomic snapshot/filtered status or authorize writes. Receipt
+/tmp/asg404-packed-ref-admission-receipt.json; prototype
+/tmp/asg404_packed_ref_admission_probe.py SHA256
+662a5bf22a8206a2260ebcf6231b776018be1cbf0ac954aab06ab3696255df52;
+canonical HEAD metadata helperSHA256
+c6252d5d47f6305f6d098d60b2cbe659d4d1199d19cc60ffec68ff6f4aec3be0.
+Supporting HEAD33/index12/declared-object14/inventory9/product32 and immutable
+HEAD/index7/workfile7/architecture1PASS. No app source or acceptance inventory
+changed; document-only check scope. Next within this claimed investigation:
+compose bounded packed declaration acquisition with held loose-object/index/
+selected-file validation and test whole-read races before admitting any coherent
+app implementation. Keep missing packed objects, loose replacement namespace,
+unknown headers/configuration and broader Git semantics explicitly unavailable.
+Checkpoint remains in progress/unmerged; fresh exact review/required CI/verified
+merge needed before completion. Sole active writer claim retained for resume.
+FullF20/#404OPEN; #400/marketplace/F23-last unchanged. Owner primary six edits/
+processes preserved; no model/download/install/stable replacement/cloud/deploy.
+
+
+Packed-reference whole-read prerequisite refinement, 21 November 2026 UTC:
+resumed the owned404-packed-ref-admission claim, renewed lease and verified
+clean registered checkout/current remote main54d0a1ae; #404OPEN/no open PRs or
+second independent ready writer. Repeated original26probePASS and composed a
+second owned prototype with the canonical bounded direct-loose object/index/
+selected-file reader:28casesPASS (7observations/21refusals). Valid packed fallback,
+loose precedence despite a differing packed label, direct HEAD with whole-table
+validation, staged blob/mode differences, missing tree path and nested multi-file
+selection succeed with independent literal flags. Changes to held packed/HEAD/
+loose/index/source/object files or packed inode, appearing loose target/locks/
+replacement namespace, missing loose object, unknown headers, replacement records,
+existing replacements/locks, packed/object hardlinks, packed symlink and alternates
+refuse without partial IDs/files/object statistics. No process calls/reader writes;
+non-adversarial fixture bytes preserved. Original app helper is unmodified; the
+composition uses scoped prototype adapters, not a production packed reader.
+Receipt /tmp/asg404-packed-ref-object-receipt.json; prototype
+/tmp/asg404_packed_ref_object_probe.py SHA256
+86e123f21fcc3312c0ec8f1e31335194b44cd4ba1b7d0cefb637daee029b37fe.
+Canonical helperSHA256: declared-object
+282cef1459c6093041b9bd71cfb89406bf225e84cf80496cffa27bf1569973dd,
+index832165220c8405f9a90961ea16d3c0e53564b6cf08772e97fcebd69470e682d7,
+HEADmetadata c6252d5d47f6305f6d098d60b2cbe659d4d1199d19cc60ffec68ff6f4aec3be0,
+sourceparser104e212836b458c60bae542b31647463a43d50dec3d57b072914aea37e66875c.
+Bounded owner layout recheck again87174bytes/1055records/0peeled, exact known
+peeled fully-peeled sorted header; held inode/size/mtime/ctime unchanged and no
+private labels/content recorded. Supporting HEAD33/index12/declared-object14/
+inventory9/product32 and immutable HEAD-index7/workfile7/architecture1PASS.
+Docs-only scope: no unrelated builds or live inference claimed.
+
+Concrete next coherent application increment after this prerequisite's verified
+merge: extend the explicit declared-object read to the bounded known packed-ref
+subset while preserving loose precedence, validated whole-table fingerprint and
+held missing-loose/packed/HEAD/object/index/source liveness. Add typed reference
+acquisition provenance (HEAD versus loose versus packed) and packed fingerprint
+without raw table/content disclosure, current consent/durable fences, historical
+retention, Stop/cleanup ownership, direct-loose object-only limits and native/
+reopen/IAB/full-check evidence. Unsupported/unknown headers, ambiguous records,
+replacement/alternate/linked namespaces and missing packed objects continue to
+refuse; no pack-object fallback, project/Git/model commands, authenticated Git
+namespace, atomic snapshot, filtered/untracked state or commit authority. Keep
+current helpers' dated identities distinct; don't infer production readiness from
+prototype adapters. Investigation evidence complete locally, pending exact fresh
+PR review/required CI/verified merge; app packed support/fullF20/#404 remain OPEN.
+#400/marketplace/F23-last unchanged; owner unrelated edits/processes preserved.
