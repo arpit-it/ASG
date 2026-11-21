@@ -23855,3 +23855,106 @@ authority follows from it. Available Mac investigation can proceed; unavailable
 platform acceptance stays under400. No external owner action requested or inferred.
 This is a local investigation checkpoint pending its own review/publication/CI/
 verified merge; no imported command capability is claimed.
+
+
+### F20 / CE01 — imported analyzer confinement investigation, started 21 November 2026 UTC
+
+PR828 verified merged as48c04ec6c8ebf7a886a9f16b3c62bedda25d788c, reviewed
+535ba782ab5f11cf6757a3ef762123ccddc9c33a, tested tree
+97bc89fb56fb6fea87deb1e32f39e927c06c2109. Fresh exact review, requiredCI44862653718
+jobs136719277906/136719278005 every step/poststep and connected logs passed; no
+review conversations, exact head/base unchanged. Plugin and fetched main/tree
+agree;404OPEN. Five no-process admission probes,ten adapter regressions,inventory9/
+product32 passed again. No generic imported execution capability added. Manual
+task-to-merge888.9s, CI observation wait550.4s,0 finalreview rework,one prerequisite
+outcome; no escaped defect reported does not prove none. Completed ownership
+released, unrelated owner edits/processes preserved.
+
+Immediately claimed404-imported-analyzer-confinement-probe under existing404.
+Concrete prerequisite: installed Dart SDK contains analysis_server_aot.dart.snapshot,
+but safe root-imported verification needs actual bounded protocol and host evidence,
+not an ASG/fixed-fixture adapter relabel. Acceptance: pin installed runtime/snapshot
+and reviewed boundary/profile; first run trusted help/startup only in disposable
+source/work directories with existing default-deny filesystem/network/child-process
+profile, bounded output/deadline and owned group cleanup. Record policy refusal
+without weakening or unrestricted fallback. Later investigate fixed owned root-Dart
+diagnostics, exact packages/source inputs, positive/error cases, plugins/dependencies
+and Stop before proposing an app adapter. Startup/help is not analysis acceptance.
+No install/download/model/owner-repository commands/stable replacement/cloud/deploy.
+Sole writer; #400/marketplace/F23-last and fullF20OPEN unchanged.
+
+Analyzer investigation initial actual-host checkpoint: trusted installed
+dartaotruntime + analysis_server_aot.dart.snapshot --help passed under the unchanged
+reviewed boundary.profile, exit0/reasonnull,1530 output bytes,owned group reaped,
+~0.050s measured local elapsed. No source files present/analyzed. Runtime, snapshot
+and boundary source hashes pinned before/after and unchanged. Profile SHA256
+`51e03ad0b8d07f4e4c57bb5304c999e7c317cd410f1f0be72133aa82f6d4d5a5` binds this disposable source/work instance;
+it is not an app support identity or a policy review for another input. Harness
+/tmp/asg404_imported_analyzer_startup_probe.py SHA256
+`e35be9e0aaa4ff30a2024ac4ede51b7f56c52cdef1c70bdb43f2cd4b77fdf8f3`; receipt
+/tmp/asg404-imported-analyzer-startup-receipt.json SHA256
+`8011d0a1885fce732e06ac1ec96e9a3b49cf7deb1d028c757cdc6b4615ef841d`.
+Private temporary source/work directories cleaned after confirmed group settlement.
+No unrestricted fallback, package resolution, Flutter command, hook, imported
+source execution, model request, install or download. Owner runtime untouched.
+
+Actual help advertises explicit --dart-sdk, --cache, --packages and analyzer/LSP
+protocol selection. Next work must use the default analyzer protocol with fixed
+owned source/package/cache inputs and a bounded supervised pipe conversation;
+prove useful diagnostics, invalid-source handling and Stop/cleanup under the same
+policy, then investigate unsupported plugin/dependency behavior before proposing
+an application adapter. Help/startup acceptance alone leaves all source-analysis
+and generic imported verification acceptance PENDING. This is a local claimed
+checkpoint; its own review/publication/CI/verified merge remains pending.
+
+Analyzer diagnostics investigation final local evidence:11 cases PASS, comprising
+7 actual supervised installed-server processes and4 fixture preflight refusals
+with0 launches. Installed protocol reports1.40.1. Fixed source/package/cache roots
+under the unchanged reviewed boundary.profile returned empty diagnostics for valid
+Dart, invalid_assignment for a type error and uri_does_not_exist for an unavailable
+package without package resolution/download. A valid owned main containing a
+file-write canary produced no diagnostics or observed canary effect. This does not
+prove arbitrary source/plugin safety. Graceful positive/error replies acknowledged
+server.shutdown, exit0. Stop during pending getErrors and forced deadline returned
+no diagnostics and reaped the group; all pipes settled. A400-error source exceeded
+the32KiB protocol-frame limit, was refused with invalidProtocol, retained37106
+stdout bytes below the64KiB combined cap and0stderr bytes, with no partial success.
+All7 source trees/tool pins unchanged; only private work/cache was writable and
+owned temporary directories were removed after confirmed cleanup.
+
+The initial oversized-frame harness closed its pipe too early, causing a bounded
+serverExited/broken-pipe result; red receipt/log retained at
+/tmp/asg404-imported-analyzer-diagnostics-before.json and .log. The harness now
+drains without retaining excess data while stopping and gives frame-limit refusal
+precedence. Final11 cases rerun successfully. Unsupported analysis_options.yaml,
+hook/build.dart, source .dart_tool/package_config.json and pubspec.lock are rejected
+by this authored fixture's exact input gate before process entry. This gate is an
+investigation sketch, not a delivered application policy or executed-plugin proof.
+No generalized Flutter/imported-project analysis, dependency or hook execution,
+network access, source execution or publication support is claimed.
+
+Protocol reference read through connected repository tools:
+https://github.com/dart-lang/sdk/blob/main/pkg/analysis_server/doc/api.html, blob
+6c06893bdf99f1c4062ecb21ccbf96310cdc67c3 (document1.41.0); only observed methods
+getVersion/setAnalysisRoots/getErrors/shutdown were used against installed1.40.1.
+Do not infer whole-protocol compatibility or upgrade the installed SDK. Final
+harness /tmp/asg404_imported_analyzer_diagnostics_probe.py SHA256
+`9190ab00198936c25578676d28a079b929f7d8e215f89ca16070e40a4209522a`; final receipt
+/tmp/asg404-imported-analyzer-diagnostics-receipt.json SHA256
+`78654efd8d69efe1d72a8e24e6852564b2dfdc966b28a5f4ea32d12986a4c42b`; log
+/tmp/asg404-imported-analyzer-diagnostics.log. Existing boundary10/adapter10 and
+inventory9/product32 regressions PASS. Boundary socket test was first denied by
+the tool's outer loopback restriction, then passed with its authorized owned
+ephemeral sockets; no production policy changed. No model/install/download/owner
+repo command/stable replacement/cloud/deploy.
+
+Next coherent implementation should expose only explicit isolated selected-file
+Dart diagnostics: stage the exact freshly compared saved replacement into private
+trusted fixed inputs, ignore all project configuration/hooks, pin installed SDK
+and restrict protocol/actions/output/deadline/cleanup, fence current histories
+and runtime, preserve previous results and original bytes. Show unresolved imports
+as incomplete standalone evidence; never call this project verification or make
+Flutter resolve/test/build available. Complete app model/host/controller/store/UI,
+adverse/native/IAB and final checks/review/merge remain required. This investigation
+is locally complete, awaiting its own exact review/required CI/verified merge.
+FullF20/CE01/#404OPEN and #400/marketplace/F23-last unchanged.
