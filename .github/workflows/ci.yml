@@ -64,6 +64,8 @@ jobs:
         run: python -B tools/test_project_source_files.py
       - name: Verify bounded immutable commit source observations
         run: python -B tools/test_imported_commit_source.py
+      - name: Verify bounded immutable baseline copies
+        run: python -B tools/test_imported_commit_copy.py
       - run: python -B tools/test_product_acceptance.py
       - run: python -B tools/test_acceptance_inventory.py
       - name: Verify native fixture report contracts

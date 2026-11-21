@@ -77,6 +77,7 @@ flutter:
     - tools/project_instruction_documents.py
     - tools/project_source_files.py
     - tools/imported_commit_source.py
+    - tools/imported_commit_copy.py
     - tools/download_model.py
     - tools/generation_command.py
     - tools/prepare_self_candidate.py

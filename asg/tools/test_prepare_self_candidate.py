@@ -35,6 +35,44 @@ class CandidateTests(unittest.TestCase):
                  '-c', 'commit.gpgsign=false', 'commit', '-qm', 'fixture')
         return self.git('rev-parse', 'HEAD').decode().strip()
 
+    def test_expected_destination_pin_refuses_swap_before_allocation(self):
+        (self.source/'entry').write_bytes(b'original')
+        commit=self.commit();output=self.parent/'output';output.mkdir()
+        info=output.stat();expected=(info.st_dev,info.st_ino)
+        original=candidate.open_snapshot_destination
+        def swapped(destination,*args,**kwargs):
+            output.rename(self.parent/'original-output');output.mkdir()
+            return original(destination,*args,**kwargs)
+        with patch.object(candidate,'open_snapshot_destination',swapped):
+            with self.assertRaisesRegex(ValueError,'destination identity changed'):
+                candidate.prepare(self.source,commit,output,expected_parent_identity=expected)
+        self.assertEqual(list(output.iterdir()),[])
+        self.assertEqual(list((self.parent/'original-output').iterdir()),[])
+
+    def test_expected_source_pin_refuses_mismatch_and_changed_root(self):
+        (self.source/'entry').write_bytes(b'original')
+        commit=self.commit();info=self.source.stat();expected=(info.st_dev,info.st_ino)
+        with self.assertRaisesRegex(ValueError,'source identity changed'):
+            candidate.prepare(self.source,commit,self.parent,expected_source_identity=(info.st_dev,info.st_ino+1))
+        self.assertFalse(list(self.parent.glob('asg-self-candidate-*')))
+        original=candidate.git_storage_directories
+        def swapped(*args,**kwargs):
+            result=original(*args,**kwargs)
+            self.source.rename(self.parent/'original-source');self.source.mkdir()
+            return result
+        with patch.object(candidate,'git_storage_directories',swapped):
+            with self.assertRaisesRegex(ValueError,'source identity changed'):
+                candidate.prepare(self.source,commit,self.parent,expected_source_identity=expected)
+        self.assertFalse(list(self.parent.glob('asg-self-candidate-*')))
+
+    def test_optional_expected_pins_preserve_normal_preparation(self):
+        (self.source/'entry').write_bytes(b'original')
+        commit=self.commit();source=self.source.stat();parent=self.parent.stat()
+        ready=candidate.prepare(self.source,commit,self.parent,
+                                expected_source_identity=(source.st_dev,source.st_ino),
+                                expected_parent_identity=(parent.st_dev,parent.st_ino))
+        self.assertEqual((ready/'entry').read_bytes(),b'original')
+
     def test_exact_bytes_and_dirty_source_with_replacement_and_filter(self):
         file = self.source / 'Example @1x'
         file.write_bytes(b'original\n')

@@ -9,8 +9,13 @@ import '../models/imported_commit_proposal_record.dart';
 import 'source_diff_view.dart';
 
 class ImportedCommitProposalScreen extends StatefulWidget {
-  const ImportedCommitProposalScreen({super.key, required this.controller});
+  const ImportedCommitProposalScreen({
+    super.key,
+    required this.controller,
+    this.onPrepareCopy,
+  });
   final ImportedCommitProposalController controller;
+  final ValueChanged<ImportedCommitProposalRecord>? onPrepareCopy;
   @override
   State<ImportedCommitProposalScreen> createState() =>
       _ImportedCommitProposalScreenState();
@@ -121,6 +126,11 @@ class _ImportedCommitProposalScreenState
     SelectableText('Historical file: ${saved.proposal.source.source.path}'),
     SelectableText('Saved comparison SHA-256: ${saved.digest}'),
     SourceDiffView(diff: saved.proposal.diff),
+    if (widget.onPrepareCopy != null)
+      OutlinedButton(
+        onPressed: c.busy ? null : () => widget.onPrepareCopy!(saved),
+        child: const Text('Prepare original commit copy'),
+      ),
   ];
 
   @override

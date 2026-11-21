@@ -216,16 +216,40 @@ def git_storage_directories(source, deadline, *, require_worktree_root=False):
     return list(dict.fromkeys([*directories, *object_stores]))
 
 
-def prepare(source, commit, parent):
-    """Return a complete candidate path. Only the returned path is ready."""
+def prepare(source, commit, parent, *, expected_source_identity=None, expected_parent_identity=None):
+    """Return a complete candidate path. Only the returned path is ready.
+
+    Optional caller-held directory identities survive an immutable-copy handoff;
+    they do not establish app consent or permission to execute the result.
+    """
     if not OBJECT_ID.fullmatch(commit.encode('ascii')):
         raise ValueError('Use the full 40-character commit ID.')
+    requested_source, requested_parent = source, parent
     source = source.resolve(strict=True)
     parent = parent.resolve(strict=True)
+    if ((expected_source_identity is not None and source != requested_source)
+            or (expected_parent_identity is not None and parent != requested_parent)):
+        raise ValueError('Preparation input identity changed.')
+    for expected in (expected_source_identity, expected_parent_identity):
+        if expected is not None and (not isinstance(expected, tuple) or len(expected) != 2
+                                     or any(type(value) is not int or value <= 0 for value in expected)):
+            raise ValueError('Invalid preparation input identity.')
+
+    def require_source_identity():
+        if expected_source_identity is not None:
+            descriptor = open_directory_no_links(source)
+            try:
+                info = os.fstat(descriptor)
+                if (info.st_dev, info.st_ino) != expected_source_identity:
+                    raise ValueError('Preparation source identity changed.')
+            finally:
+                os.close(descriptor)
+    require_source_identity()
     if source == parent or source in parent.parents:
         raise ValueError('Choose a candidate parent outside the source repository.')
     deadline = time.monotonic() + 60
     metadata = git_storage_directories(source, deadline, require_worktree_root=True)
+    require_source_identity()
     parent_fd = open_snapshot_destination(
         parent, (source, *metadata),
         'Choose a candidate parent outside the source repository and outside Git metadata.',
@@ -233,10 +257,16 @@ def prepare(source, commit, parent):
     run_fd = stage_fd = None
     run = None
     try:
+        if expected_parent_identity is not None:
+            info = os.fstat(parent_fd)
+            if (info.st_dev, info.st_ino) != expected_parent_identity:
+                raise ValueError('Preparation destination identity changed.')
+        require_source_identity()
         if read_git(source, ['cat-file', '-t', commit], 16, deadline) != b'commit\n':
             raise ValueError('The selected object must be a commit.')
         entries = parse_tree(read_git(source, ['ls-tree', '-rlz', commit], MAX_TREE_BYTES, deadline))
         require_directory_identity(parent, parent_fd)
+        require_source_identity()
         for _ in range(8):
             name = f'asg-self-candidate-{secrets.token_hex(4)}'
             try:
@@ -263,6 +293,7 @@ def prepare(source, commit, parent):
             file_mode = 0o700 if mode == b'100755' else 0o600
             expected_files['/'.join(parts)] = (file_mode, hashlib.sha256(data).digest())
             expected_directories.update('/'.join(parts[:i]) for i in range(1, len(parts)))
+            require_source_identity()
             write_blob(stage_fd, parts, file_mode, data)
 
         def verify_entry(relative, data, mode):
@@ -281,6 +312,7 @@ def prepare(source, commit, parent):
         if expected_files or expected_directories:
             raise ValueError('Staged snapshot is missing committed entries.')
 
+        require_source_identity()
         publish_verified_snapshot(
             ready, parent_fd, run_fd, stage_fd, staged_digest,
             deadline=deadline, entry_limit=entry_limit,
