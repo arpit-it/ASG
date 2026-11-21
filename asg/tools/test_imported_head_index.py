@@ -491,5 +491,356 @@ class HeadIndexTests(unittest.TestCase):
         self.assertEqual(run().returncode, 2)
 
 
+def pack_fixture(objects, *, delta_kinds=(), depth=1, extra=None, transform=None):
+    """Manually assembled owned pack2/index2; no Git or production encoder."""
+    import struct
+    def word(value): return struct.pack('!I', value)
+    def header(code, size):
+        raw = bytearray([(code << 4) | (size & 15)])
+        size >>= 4
+        while size:
+            raw[-1] |= 128
+            raw.append(size & 127)
+            size >>= 7
+        return bytes(raw)
+    def integer(value):
+        raw = bytearray()
+        while value >= 128:
+            raw.append((value & 127) | 128)
+            value >>= 7
+        raw.append(value)
+        return bytes(raw)
+    def distance(value):
+        raw = [value & 127]
+        value >>= 7
+        while value:
+            value -= 1
+            raw.insert(0, 128 | (value & 127))
+            value >>= 7
+        return bytes(raw)
+    records, offset = [], 12
+    codes = {'commit': 1, 'tree': 2, 'blob': 3}
+    def add(kind, body, raw, role):
+        nonlocal offset
+        row = {'kind': kind, 'body': body, 'oid': oid(kind, body), 'raw': raw, 'offset': offset, 'role': role}
+        if transform: transform(row)
+        records.append(row)
+        offset += len(row['raw'])
+        return row
+    for kind, body in objects:
+        if kind not in delta_kinds:
+            add(kind, body, header(codes[kind], len(body)) + zlib.compress(body), 'plain')
+            continue
+        last = add(kind, b'base' + body, header(codes[kind], len(body) + 4) + zlib.compress(b'base' + body), 'base')
+        for step in range(depth):
+            target = body if step == depth - 1 else b'chain' + bytes([step]) + body
+            program = integer(len(last['body'])) + integer(len(target))
+            for start in range(0, len(target), 127):
+                chunk = target[start:start + 127]
+                program += bytes([len(chunk)]) + chunk
+            raw = header(6, len(program)) + distance(offset - last['offset']) + zlib.compress(program)
+            last = add(kind, target, raw, 'delta')
+    if extra:
+        add('blob', extra, header(3, len(extra)) + zlib.compress(extra), 'unselected')
+    raw = b'PACK' + word(2) + word(len(records)) + b''.join(row['raw'] for row in records)
+    checksum = hashlib.sha1(raw).digest()
+    raw += checksum
+    rows = sorted((bytes.fromhex(row['oid']), zlib.crc32(row['raw']) & 0xffffffff, row['offset']) for row in records)
+    index = b'\xfftOc' + word(2)
+    index += b''.join(word(sum(label[0] <= i for label, _, _ in rows)) for i in range(256))
+    index += b''.join(label for label, _, _ in rows)
+    index += b''.join(word(crc) for _, crc, _ in rows)
+    index += b''.join(word(offset) for _, _, offset in rows) + checksum
+    return raw, index + hashlib.sha1(index).digest(), records
+
+
+class PackedHeadIndexTests(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory(prefix='asg-packed-head-')
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name).resolve()
+        self.serial = 0
+        self.pack = head.load('asg_head_pack_test', 'imported_pack_objects.py')
+        self.addCleanup(setattr, head.index, '_stop_requested', False)
+        self.addCleanup(setattr, head.index, '_deadline', None)
+        head.index._stop_requested = False
+        head.index._deadline = None
+
+    def fixture(self, packed=True, delta_kinds=(), depth=1, keep_commit=False, extra=None, transform=None, **options):
+        root = self.root / str(self.serial)
+        self.serial += 1
+        root.mkdir()
+        request, loose, commit, tree = repository(root, **options)
+        request.update(version=2, object_profile=head.OBJECT_PROFILE)
+        q = {'root': root, 'git': root / '.git', 'request': request, 'commit': commit, 'tree': tree, 'loose': loose}
+        if packed:
+            objects = []
+            for (kind, label), path in loose.items():
+                body = zlib.decompress(path.read_bytes()).split(b'\0', 1)[1]
+                objects.append((kind, body))
+                if kind != 'commit' or not keep_commit: path.unlink()
+            raw, index, rows = pack_fixture(objects, delta_kinds=delta_kinds, depth=depth, extra=extra, transform=transform)
+            folder = root / '.git/objects/pack'
+            folder.mkdir()
+            name = 'pack-' + raw[-20:].hex()
+            pack, idx = folder / (name + '.pack'), folder / (name + '.idx')
+            pack.write_bytes(raw)
+            idx.write_bytes(index)
+            q.update(folder=folder, pack=pack, idx=idx, rows=rows)
+        return q
+
+    def observe(self, q):
+        original_load = head.load
+        readers = []
+        original_reader = head.Reader
+        class TrackedReader(original_reader):
+            def __init__(self):
+                super().__init__()
+                readers.append(self)
+        def load(name, file):
+            return self.pack if file == 'imported_pack_objects.py' else original_load(name, file)
+        with patch.object(head, 'load', load), patch.object(head, 'Reader', TrackedReader), patch('subprocess.Popen', side_effect=AssertionError('No commands')) as process:
+            value = head.observe(json.dumps(q['request'], separators=(',', ':')))
+            process.assert_not_called()
+        for reader in readers:
+            for fd in reader.fds:
+                with self.assertRaises(OSError) as error: os.fstat(fd)
+                self.assertEqual(error.exception.errno, 9)
+        self.assertEqual(value['version'], 3)
+        for key in ('git_state_verified', 'repository_authenticated', 'commit_authorized', 'mutation_authorized'):
+            self.assertIs(value[key], False)
+        return value
+
+    def refused(self, value, reason=None):
+        self.assertNotEqual(value['status'], 'observed')
+        for key in ('object_acquisition', 'acquisition', 'reference_acquisition', 'head_oid', 'tree_oid', 'index_sha256'):
+            self.assertIsNone(value[key])
+        self.assertEqual(value['files'], [])
+        self.assertEqual(value['object_count'], 0)
+        self.assertEqual(value['object_bytes'], 0)
+        if reason: self.assertEqual(value['reason'], reason)
+
+    def test_explicit_profile_strictly_separates_legacy_requests_and_responses(self):
+        q = self.fixture()
+        old = dict(q['request'])
+        old.pop('object_profile')
+        old['version'] = 1
+        legacy = head.observe(json.dumps(old, separators=(',', ':')))
+        self.assertEqual(legacy['version'], 2)
+        self.assertNotIn('object_acquisition', legacy)
+        self.assertEqual(legacy['reason'], 'missing_loose_object')
+        invalid = [dict(old, object_profile=head.OBJECT_PROFILE), dict(q['request'], object_profile='unknown'),
+                   dict(q['request'], version=True), dict(q['request'], version=3)]
+        missing = dict(q['request']); missing.pop('object_profile'); invalid.append(missing)
+        for request in invalid:
+            with self.subTest(request=request), patch.object(head.Reader, 'root', side_effect=AssertionError('No root read')):
+                with self.assertRaises(ValueError): head.observe(json.dumps(request))
+
+    def test_loose_profile_provenance_and_no_source_or_authority_expansion(self):
+        q = self.fixture(packed=False)
+        before = {p: p.read_bytes() for p in q['root'].rglob('*') if p.is_file()}
+        value = self.observe(q)
+        self.assertEqual(value['status'], 'observed')
+        self.assertEqual(value['acquisition'], head.OBJECT_PROFILE)
+        provenance = value['object_acquisition']
+        self.assertEqual(provenance, {'profile': head.OBJECT_PROFILE, 'loose_object_count': 4,
+            'packed_object_count': 0, 'encoded_bytes': 0, 'expanded_bytes': value['object_bytes'],
+            'max_delta_depth': 0, 'indexes': [], 'whole_pack_integrity_verified': False})
+        self.assertEqual(before, {p: p.read_bytes() for p in before})
+
+    def test_plain_delta_mixed_and_deep_frames_have_complete_typed_provenance(self):
+        for kinds, depth, keep in [((), 1, False), (('commit', 'tree', 'blob'), 1, False),
+                                   (('tree', 'blob'), 1, True), (('commit',), 32, False)]:
+            with self.subTest(kinds=kinds, depth=depth, keep=keep):
+                q = self.fixture(delta_kinds=kinds, depth=depth, keep_commit=keep)
+                (q['folder'] / 'multi-pack-index').write_bytes(b'opaque; not interpreted')
+                before = {p: p.read_bytes() for p in q['root'].rglob('*') if p.is_file()}
+                value = self.observe(q)
+                self.assertEqual(value['status'], 'observed', value)
+                provenance = value['object_acquisition']
+                self.assertEqual(value['object_count'], provenance['loose_object_count'] + provenance['packed_object_count'])
+                self.assertEqual(value['object_bytes'], provenance['expanded_bytes'])
+                self.assertGreater(provenance['encoded_bytes'], 0)
+                self.assertEqual(provenance['max_delta_depth'], depth if kinds else 0)
+                self.assertFalse(provenance['whole_pack_integrity_verified'])
+                self.assertEqual(provenance['loose_object_count'], 1 if keep else 0)
+                index = provenance['indexes'][0]
+                self.assertEqual(set(index), {'index_sha256', 'index_byte_length', 'declared_pack_sha1', 'pack_file_bytes', 'object_count'})
+                self.assertEqual(index['index_sha256'], hashlib.sha256(q['idx'].read_bytes()).hexdigest())
+                self.assertEqual(index['index_byte_length'], 1072 + 28 * index['object_count'])
+                self.assertTrue(value['files'][0]['working_bytes_match_tree'])
+                self.assertEqual(before, {p: p.read_bytes() for p in before})
+
+    def test_large_unselected_objects_and_unmatched_index_stay_explicitly_unverified(self):
+        import random
+        q = self.fixture(delta_kinds=('commit', 'tree'), extra=random.Random(7).randbytes(600000))
+        raw, index, _ = pack_fixture([('blob', b'unmatched')])
+        name = 'pack-' + raw[-20:].hex()
+        (q['folder'] / (name + '.pack')).write_bytes(raw)
+        (q['folder'] / (name + '.idx')).write_bytes(index)
+        value = self.observe(q)
+        self.assertEqual(value['status'], 'observed', value)
+        provenance = value['object_acquisition']
+        self.assertEqual(len(provenance['indexes']), 2)
+        self.assertEqual([p['declared_pack_sha1'] for p in provenance['indexes']], sorted(p['declared_pack_sha1'] for p in provenance['indexes']))
+        self.assertLess(provenance['encoded_bytes'], 131072)
+        self.assertFalse(provenance['whole_pack_integrity_verified'])
+        raw = bytearray(q['pack'].read_bytes()); raw[-21] ^= 1; q['pack'].write_bytes(raw)
+        self.assertEqual(self.observe(q)['status'], 'observed')  # Unread whole-pack bytes stay unknown.
+
+    def test_nested_paths_absence_and_staged_differences_still_join_current_inputs(self):
+        options = [dict(files={'lib/a.dart': (b'a', '100644'), 'lib/nested/b.dart': (b'b', '100755'),
+                               'test/a.dart': (b'a', '100644'), 'test/b.dart': (b'b', '100644')}),
+                   dict(tree_files={'lib/other.dart': (b'other', '100644')}),
+                   dict(index_files={'lib/main.dart': (b'staged', '100644')})]
+        for option in options:
+            q = self.fixture(delta_kinds=('commit', 'tree', 'blob'), **option)
+            value = self.observe(q)
+            self.assertEqual(value['status'], 'observed', value)
+            self.assertEqual(len(value['files']), len(q['request']['selected_files']))
+            if 'tree_files' in option: self.assertIsNone(value['files'][0]['tree_oid'])
+            if 'index_files' in option: self.assertFalse(value['files'][0]['index_matches_tree'])
+
+    def test_corruption_sealed_identity_wrong_kind_and_backward_delta_fail_without_facts(self):
+        changes = [lambda row: row.update(oid=oid(row['kind'], b'wrong' + row['body'])) if row['role'] == 'base' else None,
+                   lambda row: row.update(oid=oid(row['kind'], b'wrong' + row['body'])) if row['role'] == 'delta' else None,
+                   lambda row: row.update(raw=b'\x62\0' + zlib.compress(b'\0\0')) if row['role'] == 'delta' else None,
+                   lambda row: row.update(raw=b'\x71' + zlib.compress(b'x')) if row['role'] == 'delta' else None]
+        for change in changes:
+            q = self.fixture(delta_kinds=('commit', 'tree', 'blob'), transform=change)
+            self.refused(self.observe(q))
+        q = self.fixture(delta_kinds=('commit', 'tree', 'blob'))
+        raw = bytearray(q['pack'].read_bytes()); raw[14] ^= 1; q['pack'].write_bytes(raw)
+        self.refused(self.observe(q), 'invalid_object')
+        q = self.fixture(delta_kinds=('commit',), depth=33)
+        self.refused(self.observe(q), 'bounds')
+
+    def test_namespace_links_locks_and_opaque_sidecar_bounds_fail_closed(self):
+        for marker in ('unknown', 'multi-pack-index.lock', 'pack-other.pack', 'Multi-pack-index'):
+            q = self.fixture()
+            (q['folder'] / marker).write_bytes(b'owner')
+            self.refused(self.observe(q))
+        for target in ('pack', 'idx'):
+            for link in ('symbolic', 'hard'):
+                q = self.fixture()
+                path = q[target]
+                if link == 'symbolic':
+                    outside = q['root'] / 'owner'; path.rename(outside); path.symlink_to(outside)
+                else: os.link(path, q['root'] / 'owner')
+                self.refused(self.observe(q))
+        for link in ('symbolic', 'hard'):
+            q = self.fixture()
+            sidecar = q['folder'] / 'multi-pack-index'
+            outside = q['root'] / 'owner-sidecar'; outside.write_bytes(b'opaque')
+            if link == 'symbolic': sidecar.symlink_to(outside)
+            else: os.link(outside, sidecar)
+            self.refused(self.observe(q))
+        q = self.fixture(); (q['folder'] / 'multi-pack-index').write_bytes(b'x' * 1048577)
+        self.refused(self.observe(q), 'bounds')
+        q = self.fixture(); q['idx'].unlink(); self.refused(self.observe(q))
+
+    def test_held_pack_index_sidecar_and_input_changes_invalidate_completion(self):
+        original = head.Reader.read
+        for change in ('HEAD', 'index', 'source', 'pack', 'idx', 'sidecar', 'pack-lock', 'loose'):
+            q = self.fixture(delta_kinds=('commit', 'tree', 'blob'))
+            sidecar = q['folder'] / 'multi-pack-index'; sidecar.write_bytes(b'opaque')
+            def read(reader, parent, name, limit):
+                raw = original(reader, parent, name, limit)
+                if name == 'main.dart':
+                    if change == 'HEAD': (q['git'] / 'HEAD').write_text('d' * 40 + '\n')
+                    elif change == 'index': (q['git'] / 'index').write_bytes(b'changed')
+                    elif change == 'source': (q['root'] / 'lib/main.dart').write_bytes(b'changed')
+                    elif change in ('pack', 'idx'): q[change].rename(q['root'] / 'held-old'); q[change].write_bytes(b'changed')
+                    elif change == 'sidecar': sidecar.write_bytes(b'changed')
+                    elif change == 'pack-lock': q['pack'].with_suffix('.pack.lock').write_bytes(b'lock')
+                    else: q['loose'][('commit', q['commit'])].write_bytes(zlib.compress(b'commit 1\0x'))
+                return raw
+            with self.subTest(change=change), patch.object(head.Reader, 'read', read):
+                self.refused(self.observe(q))
+
+    def test_ambiguous_membership_combined_cache_expansion_and_encoded_budgets_refuse(self):
+        q = self.fixture()
+        # A second valid pack declaring the selected commit is ambiguous, even if its bytes agree.
+        commit_body = next(row['body'] for row in q['rows'] if row['kind'] == 'commit')
+        raw, index, _ = pack_fixture([('commit', commit_body), ('blob', b'other')])
+        name = 'pack-' + raw[-20:].hex()
+        (q['folder'] / (name + '.pack')).write_bytes(raw); (q['folder'] / (name + '.idx')).write_bytes(index)
+        self.refused(self.observe(q), 'unsupported_layout')
+        for field, limit in [('OBJECT_COUNT', 2), ('EXPANDED_BYTES', 1), ('ENCODED_BYTES', 1)]:
+            q = self.fixture(delta_kinds=('commit', 'tree', 'blob'))
+            with self.subTest(field=field), patch.object(self.pack, field, limit): self.refused(self.observe(q), 'bounds')
+
+    def test_existing_corrupt_loose_object_never_falls_back_to_a_valid_pack(self):
+        q = self.fixture()
+        q['loose'][('commit', q['commit'])].write_bytes(b'corrupt loose object')
+        self.refused(self.observe(q), 'invalid_object')
+
+    def test_unmatched_index_and_absent_sidecar_changes_are_held(self):
+        original = head.Reader.read
+        for change in ('unmatched-index', 'sidecar-appearance'):
+            q = self.fixture()
+            raw, index, _ = pack_fixture([('blob', b'unmatched')])
+            name = 'pack-' + raw[-20:].hex()
+            pack, idx = q['folder'] / (name + '.pack'), q['folder'] / (name + '.idx')
+            pack.write_bytes(raw); idx.write_bytes(index)
+            def read(reader, parent, name, limit):
+                raw = original(reader, parent, name, limit)
+                if name == 'main.dart':
+                    if change == 'unmatched-index': idx.write_bytes(b'changed')
+                    else: (q['folder'] / 'multi-pack-index').write_bytes(b'new')
+                return raw
+            with self.subTest(change=change), patch.object(head.Reader, 'read', read):
+                self.refused(self.observe(q))
+
+    def test_actual_combined_count_and_expansion_bounds_remain_fixed(self):
+        files = {'lib/a.dart': (b'a', '100644'), 'lib/nested/b.dart': (b'b', '100644'),
+                 'test/a.dart': (b'c', '100644'), 'test/b.dart': (b'd', '100644')}
+        q = self.fixture(delta_kinds=('commit', 'tree', 'blob'), depth=32, files=files)
+        self.refused(self.observe(q), 'bounds')
+        trees = {('lib/file%03d.dart' % i): (b'x', '100644') for i in range(150)}
+        q = self.fixture(delta_kinds=('tree',), depth=32, tree_files=trees)
+        self.refused(self.observe(q), 'bounds')
+
+    def test_stop_and_deadline_before_during_and_after_reads_never_publish_provenance(self):
+        q = self.fixture()
+        head.index._stop_requested = True
+        with patch.object(head.Reader, 'root', side_effect=AssertionError('No root read')):
+            self.refused(self.observe(q), 'stopped')
+        head.index._stop_requested = False
+        original = self.pack.PackStore._pread
+        for mode in ('stop', 'deadline'):
+            q = self.fixture(delta_kinds=('commit', 'tree', 'blob'))
+            def read(store, *args):
+                raw = original(store, *args)
+                if mode == 'stop': head.index._stop_requested = True
+                else: head.index._deadline = 0
+                return raw
+            with self.subTest(mode=mode), patch.object(self.pack.PackStore, '_pread', read): self.refused(self.observe(q))
+            head.index._stop_requested = False
+        original_validate = head.Reader.validate
+        q = self.fixture()
+        def validate(reader):
+            original_validate(reader)
+            head.index._stop_requested = True
+        with patch.object(head.Reader, 'validate', validate): self.refused(self.observe(q), 'stopped')
+        head.index._stop_requested = False
+
+    def test_actual_new_profile_cli_uses_five_private_bundled_assets(self):
+        q = self.fixture(delta_kinds=('commit', 'tree', 'blob'))
+        private = self.root / 'private'; private.mkdir()
+        for name in ('imported_head_index.py', 'imported_commit_source.py', 'imported_index.py', 'git_head_metadata.py', 'imported_pack_objects.py'):
+            shutil.copyfile(Path(head.__file__).with_name(name), private / name)
+        payload = private / 'request.json'; payload.write_text(json.dumps(q['request'], separators=(',', ':')))
+        result = subprocess.run([q['request']['python'], '-I', '-S', '-B', str(private / 'imported_head_index.py'), str(payload)],
+                                cwd=private, env={'PATH': '/usr/bin:/bin', 'PYTHONDONTWRITEBYTECODE': '1'}, capture_output=True, text=True, timeout=10)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        value = json.loads(result.stdout)
+        self.assertEqual(value['version'], 3)
+        self.assertGreater(value['object_acquisition']['packed_object_count'], 0)
+        self.assertFalse(value['object_acquisition']['whole_pack_integrity_verified'])
+        self.assertFalse(list(private.rglob('*.pyc')))
+
+
+
 if __name__ == '__main__':
     unittest.main(verbosity=2)

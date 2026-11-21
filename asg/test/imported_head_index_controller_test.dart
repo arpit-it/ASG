@@ -105,6 +105,7 @@ void main() {
     expect(h.calls, 0);
     final request = await c.prepare();
     expect(request!.readId, isNot(first.readId));
+    expect(request.objectProfile, 'bounded-loose-pack2-index2-v1');
     await c.inspect(
       ImportedHeadIndexRequest.restore(request.requestJson),
       confirmed: true,

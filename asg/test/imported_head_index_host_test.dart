@@ -49,6 +49,7 @@ void main() {
     },
     loadAssets: () async => {
       'imported_head_index.py': '# trusted fixture',
+      'imported_pack_objects.py': '# trusted fixture',
       'imported_commit_source.py': '# trusted fixture',
       'imported_index.py': '# trusted fixture',
       'git_head_metadata.py': '# trusted fixture',

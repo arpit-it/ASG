@@ -6,6 +6,7 @@ import 'package:crypto/crypto.dart';
 
 import 'git_head_observation.dart';
 import 'imported_reference_acquisition.dart';
+import 'imported_object_acquisition.dart';
 import 'imported_index_observation.dart';
 import 'imported_workfile_comparison.dart';
 import 'project_source_observation.dart';
@@ -14,15 +15,28 @@ import 'structured_proposal_json.dart';
 bool _label(Object? value, int size) =>
     value is String && RegExp('^[a-f0-9]{$size}\$').hasMatch(value);
 bool _oid(Object? value) => _label(value, 40) && value != '0' * 40;
-Map<String, dynamic> _decode(String raw, int limit, Set<String> keys) {
+Map<String, dynamic> _decode(
+  String raw,
+  int limit,
+  Set<String> keys, {
+  String? extraKey,
+  int? extraVersion,
+}) {
   if (raw.length > limit || utf8.encode(raw).length > limit) {
     throw const FormatException();
   }
   rejectDuplicateJsonMembers(raw);
   final d = jsonDecode(raw);
+  final expected = {
+    ...keys,
+    if (d is Map<String, dynamic> &&
+        d['version'] == extraVersion &&
+        extraKey != null)
+      extraKey,
+  };
   if (d is! Map<String, dynamic> ||
-      d.length != keys.length ||
-      !d.keys.toSet().containsAll(keys)) {
+      d.length != expected.length ||
+      !d.keys.toSet().containsAll(expected)) {
     throw const FormatException();
   }
   return d;
@@ -55,6 +69,7 @@ final class ImportedHeadIndexRequest {
       workfileObservationDigest = d['workfile_observation_sha256'] as String,
       indexHash = d['index_sha256'] as String,
       indexByteLength = d['index_byte_length'] as int,
+      objectProfile = d['object_profile'] as String?,
       files = List.unmodifiable(files),
       requestJson = jsonEncode(d) {
     digest = sha256.convert(utf8.encode(requestJson)).toString();
@@ -81,6 +96,8 @@ final class ImportedHeadIndexRequest {
       requestJson;
   late final String digest;
   final int indexByteLength;
+  final String? objectProfile;
+  bool get supportsPackedObjects => objectProfile != null;
   final List<ImportedHeadIndexSelection> files;
   bool get authorizesCommit => false;
   bool get authorizesMutation => false;
@@ -104,7 +121,8 @@ final class ImportedHeadIndexRequest {
     }
     return ImportedHeadIndexRequest.restore(
       jsonEncode({
-        'version': 1,
+        'version': 2,
+        'object_profile': ImportedObjectAcquisition.profile,
         'scope': 'imported-head-index-read-request',
         'root': request.root,
         'python': request.python,
@@ -132,9 +150,17 @@ final class ImportedHeadIndexRequest {
   }
   factory ImportedHeadIndexRequest.restore(String raw) {
     try {
-      final d = _decode(raw, byteLimit, _keys);
+      final d = _decode(
+        raw,
+        byteLimit,
+        _keys,
+        extraKey: 'object_profile',
+        extraVersion: 2,
+      );
       if (d['version'] is! int ||
-          d['version'] != 1 ||
+          ![1, 2].contains(d['version']) ||
+          (d['version'] == 2 &&
+              d['object_profile'] != ImportedObjectAcquisition.profile) ||
           d['scope'] != 'imported-head-index-read-request' ||
           d['root'] is! String ||
           d['python'] is! String ||
@@ -212,6 +238,7 @@ final class ImportedHeadIndexRequest {
       }
       return ImportedHeadIndexRequest._({
         for (final k in _keys) k: d[k],
+        if (d['version'] == 2) 'object_profile': d['object_profile'],
       }, files);
     } catch (_) {
       throw const FormatException('Invalid declared-object read request.');
@@ -239,13 +266,14 @@ final class ImportedHeadIndexFile {
 
 enum ImportedHeadIndexStatus { observed, refused, stopped }
 
-/// Content-identified loose-object declarations, not authenticated Git state.
+/// Content-identified declared objects, not authenticated Git state.
 final class ImportedHeadIndexObservation {
   ImportedHeadIndexObservation._(
     this.status,
     this.requestDigest,
     this.reason,
     this.referenceAcquisition,
+    this.objectAcquisition,
     this.headForm,
     this.declaredRef,
     this.headOid,
@@ -301,6 +329,7 @@ final class ImportedHeadIndexObservation {
   final ImportedHeadIndexStatus status;
   final String requestDigest, recordJson;
   final ImportedReferenceAcquisition? referenceAcquisition;
+  final ImportedObjectAcquisition? objectAcquisition;
   final String? reason, headForm, declaredRef, headOid, treeOid, indexHash;
   final int objectCount, objectBytes;
   final List<ImportedHeadIndexFile> files;
@@ -319,9 +348,15 @@ final class ImportedHeadIndexObservation {
     required ImportedHeadIndexRequest request,
   }) {
     try {
-      final d = _decode(raw, responseLimit, _keys);
+      final d = _decode(
+        raw,
+        responseLimit,
+        _keys,
+        extraKey: 'object_acquisition',
+        extraVersion: 3,
+      );
       if (d['version'] is! int ||
-          d['version'] != 2 ||
+          d['version'] != (request.supportsPackedObjects ? 3 : 2) ||
           d['scope'] != 'imported-head-index-observation' ||
           d['request_sha256'] != request.digest ||
           d['read_id'] != request.readId ||
@@ -339,9 +374,13 @@ final class ImportedHeadIndexObservation {
       final items = d['files'] as List;
       final files = <ImportedHeadIndexFile>[];
       ImportedReferenceAcquisition? referenceAcquisition;
+      ImportedObjectAcquisition? objectAcquisition;
       if (status == ImportedHeadIndexStatus.observed) {
         if (d['reason'] != null ||
-            d['acquisition'] != 'direct-loose-object-files' ||
+            d['acquisition'] !=
+                (request.supportsPackedObjects
+                    ? ImportedObjectAcquisition.profile
+                    : 'direct-loose-object-files') ||
             !_oid(d['head_oid']) ||
             !_oid(d['tree_oid']) ||
             d['index_sha256'] != request.indexHash ||
@@ -351,6 +390,17 @@ final class ImportedHeadIndexObservation {
             d['object_bytes'] > objectByteLimit ||
             items.length != request.files.length) {
           throw const FormatException();
+        }
+        if (request.supportsPackedObjects) {
+          objectAcquisition = ImportedObjectAcquisition.fromMap(
+            d['object_acquisition'],
+          );
+          if (!objectAcquisition.matchesTotals(
+            count: d['object_count'] as int,
+            bytes: d['object_bytes'] as int,
+          )) {
+            throw const FormatException();
+          }
         }
         referenceAcquisition = ImportedReferenceAcquisition.fromMap(
           d['reference_acquisition'],
@@ -436,7 +486,8 @@ final class ImportedHeadIndexObservation {
           'unavailable',
           'stopped',
         };
-        if (items.isNotEmpty ||
+        if (d['object_acquisition'] != null ||
+            items.isNotEmpty ||
             !reasons.contains(d['reason']) ||
             ((status == ImportedHeadIndexStatus.stopped) !=
                 (d['reason'] == 'stopped')) ||
@@ -463,6 +514,7 @@ final class ImportedHeadIndexObservation {
         request.digest,
         d['reason'] as String?,
         referenceAcquisition,
+        objectAcquisition,
         d['head_form'] as String?,
         d['declared_ref'] as String?,
         d['head_oid'] as String?,
@@ -472,7 +524,10 @@ final class ImportedHeadIndexObservation {
         d['object_bytes'] as int,
         files,
         at,
-        jsonEncode({for (final k in _keys) k: d[k]}),
+        jsonEncode({
+          for (final k in _keys) k: d[k],
+          if (d['version'] == 3) 'object_acquisition': d['object_acquisition'],
+        }),
       );
     } catch (_) {
       throw const FormatException('Invalid declared-object observation.');

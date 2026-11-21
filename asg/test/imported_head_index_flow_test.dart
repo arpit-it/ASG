@@ -93,6 +93,42 @@ Future<(String, String)> nativeHeadFixture(
   return (commit, tree);
 }
 
+Future<void> packNativeFixture(Directory git, String python) async {
+  // Trusted owned-fixture preparation only; the application never invokes this.
+  const prepare = r'''import sys, zlib
+from pathlib import Path
+sys.path.insert(0, sys.argv[1])
+from test_imported_head_index import pack_fixture
+folder = Path(sys.argv[2]); objects = []; paths = []
+for path in sorted((folder / 'objects').glob('*/*')):
+    if not path.is_file(): continue
+    raw = zlib.decompress(path.read_bytes()); prefix, body = raw.split(b'\0', 1)
+    objects.append((prefix.split(b' ', 1)[0].decode('ascii'), body)); paths.append(path)
+pack, index, _ = pack_fixture(objects, delta_kinds=('commit', 'tree', 'blob'), depth=2)
+target = folder / 'objects' / 'pack'; target.mkdir()
+name = 'pack-' + pack[-20:].hex()
+(target / (name + '.pack')).write_bytes(pack)
+(target / (name + '.idx')).write_bytes(index)
+(target / 'multi-pack-index').write_bytes(b'opaque owned fixture')
+for path in paths: path.unlink()
+''';
+  final result = await Process.run(
+    python,
+    [
+      '-I',
+      '-S',
+      '-B',
+      '-c',
+      prepare,
+      await Directory('tools').resolveSymbolicLinks(),
+      git.path,
+    ],
+    runInShell: false,
+    includeParentEnvironment: false,
+  );
+  expect(result.exitCode, 0, reason: '${result.stderr}');
+}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   test('actual declared-object read after database reopen preserves source inputs and fresh consent', () async {
@@ -113,6 +149,11 @@ void main() {
       final git = await Directory('${root.path}/.git').create();
       final source = utf8.encode('void main() {}\r\n');
       final ids = await nativeHeadFixture(git, source);
+      final commitFile = File(
+        '${git.path}/objects/${ids.$1.substring(0, 2)}/${ids.$1.substring(2)}',
+      );
+      final commitBytes = await commitFile.readAsBytes();
+      await packNativeFixture(git, python);
       final packed = File('${git.path}/packed-refs');
       final loose = File('${git.path}/refs/heads/main');
       await packed.writeAsString(
@@ -132,6 +173,7 @@ void main() {
       final assets = {
         for (final n in [
           'imported_head_index.py',
+          'imported_pack_objects.py',
           'imported_index.py',
           'git_head_metadata.py',
           'imported_commit_source.py',
@@ -164,7 +206,9 @@ void main() {
         final saved = {for (final k in keys) k: records.getString(k)};
         for (var turn = 0; turn < 2; turn++) {
           if (turn == 1) {
-            // Owned fixture transition: verify loose precedence after reopen.
+            // Owned fixture transition: loose commit and ref precedence after reopen.
+            await commitFile.writeAsBytes(commitBytes);
+            before[commitFile.path] = await commitFile.readAsBytes();
             await loose.writeAsString('${ids.$1}\n');
             await packed.writeAsString(
               '# pack-refs with: peeled fully-peeled sorted \n${'b' * 40} refs/heads/main\n',
@@ -224,6 +268,20 @@ void main() {
           expect(c.observation!.headOid, ids.$1);
           expect(c.observation!.treeOid, ids.$2);
           expect(c.observation!.declaredRef, 'refs/heads/main');
+          final acquisition = c.observation!.objectAcquisition!;
+          expect(acquisition.packedObjectCount, greaterThan(0));
+          expect(acquisition.looseObjectCount, turn == 0 ? 0 : 1);
+          expect(acquisition.maxDeltaDepth, 2);
+          expect(acquisition.wholePackIntegrityVerified, false);
+          expect(acquisition.indexes.length, 1);
+          final packIndex =
+              (await Directory('${git.path}/objects/pack').list().toList())
+                  .whereType<File>()
+                  .singleWhere((file) => file.path.endsWith('.idx'));
+          expect(
+            acquisition.indexes.single.indexHash,
+            sha256.convert(await packIndex.readAsBytes()).toString(),
+          );
           final reference = c.observation!.referenceAcquisition!;
           expect(reference.source.name, turn == 0 ? 'packedRef' : 'looseRef');
           expect(
@@ -292,7 +350,19 @@ void main() {
                     ).readAsBytes(),
                   )
                   .toString(),
+              'packHelperSha256': sha256
+                  .convert(
+                    await File('tools/imported_pack_objects.py').readAsBytes(),
+                  )
+                  .toString(),
+              'objectAcquisitionModelSha256': sha256
+                  .convert(
+                    await File('lib/models/imported_object_acquisition.dart')
+                        .readAsBytes(),
+                  )
+                  .toString(),
               'modelRequests': 0,
+              'fixtureObjectTransition': 'packed depth2 objects then loose commit with packed trees and blobs after reopen',
               'fixtureReferenceTransition': 'packed fallback then loose precedence with differing packed label after reopen',
               'referenceModelSha256': sha256
                   .convert(
@@ -316,7 +386,7 @@ void main() {
       } finally {
         await db.close();
       }
-      await File('/tmp/asg404-packed-reference-native-reopen-receipt.json')
+      await File('/tmp/asg404-packed-object-native-reopen-receipt.json')
           .writeAsString(jsonEncode(evidence));
     } finally {
       await base.delete(recursive: true);

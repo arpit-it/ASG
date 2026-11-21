@@ -23,14 +23,27 @@ ImportedHeadIndexRequest headIndexRequest({int count = 1, String id = 'f'}) {
 }
 
 Map<String, Object?> headIndexObservationData(ImportedHeadIndexRequest r) => {
-  'version': 2,
+  'version': r.supportsPackedObjects ? 3 : 2,
+  if (r.supportsPackedObjects)
+    'object_acquisition': <String, Object?>{
+      'profile': 'bounded-loose-pack2-index2-v1',
+      'loose_object_count': 4,
+      'packed_object_count': 0,
+      'encoded_bytes': 0,
+      'expanded_bytes': 100,
+      'max_delta_depth': 0,
+      'indexes': <Object?>[],
+      'whole_pack_integrity_verified': false,
+    },
   'scope': 'imported-head-index-observation',
   'request_sha256': r.digest,
   'read_id': r.readId,
   'root': r.root,
   'status': 'observed',
   'reason': null,
-  'acquisition': 'direct-loose-object-files',
+  'acquisition': r.supportsPackedObjects
+      ? 'bounded-loose-pack2-index2-v1'
+      : 'direct-loose-object-files',
   'reference_acquisition': <String, Object?>{
     'source': 'head',
     'packed_refs_sha256': null,
@@ -556,6 +569,7 @@ void main() {
         'tree_oid': null,
         'index_sha256': null,
         'object_count': 0,
+        'object_acquisition': null,
         'object_bytes': 0,
         'files': <Object>[],
       };
@@ -569,6 +583,7 @@ void main() {
       for (final k in [
         'acquisition',
         'reference_acquisition',
+        'object_acquisition',
         'head_form',
         'declared_ref',
         'head_oid',
@@ -599,6 +614,7 @@ void main() {
       'tree_oid': null,
       'index_sha256': null,
       'object_count': 0,
+      'object_acquisition': null,
       'object_bytes': 0,
       'files': <Object>[],
     };

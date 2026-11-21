@@ -49,6 +49,7 @@ const _cleanupFailed =
     'Declared-object worker cleanup could not be confirmed. New work remains blocked.';
 const _assets = [
   'imported_head_index.py',
+  'imported_pack_objects.py',
   'imported_commit_source.py',
   'imported_index.py',
   'git_head_metadata.py',
