@@ -11,8 +11,14 @@ class ImportedCommitEditComparisonScreen extends StatefulWidget {
   const ImportedCommitEditComparisonScreen({
     super.key,
     required this.controller,
+    this.onDiagnostics,
   });
   final ImportedCommitEditComparisonController controller;
+  final void Function(
+    ImportedCommitEditComparisonRequest,
+    ImportedCommitEditComparisonObservation,
+  )?
+  onDiagnostics;
   @override
   State<ImportedCommitEditComparisonScreen> createState() =>
       _ImportedCommitEditComparisonScreenState();
@@ -154,6 +160,17 @@ class _ImportedCommitEditComparisonScreenState
                 ),
             ],
           ),
+          if (widget.onDiagnostics != null)
+            OutlinedButton(
+              onPressed:
+                  !c.busy &&
+                      c.resultCurrent &&
+                      c.result?.status ==
+                          ImportedCommitEditComparisonStatus.matching
+                  ? () => widget.onDiagnostics!(c.resultRequest!, c.result!)
+                  : null,
+              child: const Text('Review isolated Dart diagnostics'),
+            ),
           if (c.stale)
             const Text(
               'Current input selection is unavailable or changed. Reopen history after resolving recovery.',
