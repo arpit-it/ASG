@@ -24085,3 +24085,84 @@ protected merge remain mandatory. FullF20 and #404 remainOPEN; #400 unavailable
 platform acceptance, marketplace prerequisites and F23-last unchanged. Solewriter
 404-isolated-dart-diagnostics lease renewed. No model/download/install/stable app
 replacement/cloud/deployment.
+
+Verified isolated diagnostics delivery — PR830, 21 November 2026 UTC:
+protected merge beccc354eff66643260acb7d6147a7000e851915, exact reviewed remote
+b4aa104d987389031afeaf10257378936713708b/localfb7308d5825fc4b855de57545f393d500ffe0bff,
+tested/merged tree2fbcff19c044a59681e9ec9c4d89463b23918a24. Fresh review found no
+blockers; required CI44869706704 jobs136741248331/136741248498 and every step/
+poststep passed, decoded logs inspected. Plugin and fetched main agree; #404OPEN.
+Delivered explicit isolated diagnostics after current matching comparison, SDK
+review and exact one-use consent, with private verified runtime/snapshot/libraries,
+four read-only durable fences, Stop/stale/disposal/unknown-cleanup handling and
+retained dated evidence. Local Flutter2926PASS/13platformskips, format742/analyze,
+Python12+12+11/product32/inventory9, web/isolatedMac, real SDK3.13.5 protocol1.40.1,
+actual native database reopen and separate synthetic IAB checks passed. Isolated
+clean evidence is never original/project verification or mutation/execution
+permission. No model/install/stable replacement/cloud/deploy. Completed integration
+and claim released. Owner working edits/runtime processes preserved.
+
+Immediately started 404-imported-commit-admission under existing F20/CE01/#404.
+Bounded next prerequisite: examine commit/rollback admission after isolated file
+feedback without changing the original repository. Current literal HEAD metadata
+explicitly leaves working tree/index/conflicts unknown; local candidate publication
+is not an imported Git commit. Acceptance: inspect typed workflow/Git boundaries;
+five disposable no-process probes preserve bytes and never establish commit
+readiness; distinguish current HEAD/index/worktree, literal path scope, explicit
+final consent and durable write/recovery evidence. Confirm clean diagnostics and
+saved plan approval cannot authorize a Git write. Document the smallest remaining
+prerequisite and its failure examples. Validation: owned fixtures, immutable
+Dart-diagnostics models, exact evidence identities, review/CI before completing
+this investigation. No original Git write/command, commit or rollback capability
+is authorized by the investigation. Canonical queue only; task contract is
+execution ownership, not a new backlog. Sole writer; no dependency-independent
+second task ready. #400, marketplace gate and F23-last remain unchanged.
+
+Commit-admission investigation checkpoint: five owned no-process observations
+PASS. Direct loose HEAD labels remain git_state_verified=false and working_tree=
+unknown when unrelated synthetic index bytes, an index.lock and untracked files
+exist; linked Git metadata does not establish mutation admission. Every observed
+byte is preserved; processCalls0/GitWrites0. Existing diagnostics request/result
+models10PASS, including forged authority rejection. Metadata helper SHA256
+c6252d5d47f6305f6d098d60b2cbe659d4d1199d19cc60ffec68ff6f4aec3be0; probe SHA2560f3580b9f4acfed84608102989cdb9bc43952cd3a496ed6df5abd16200893eeb; receipt
+/tmp/asg404-imported-commit-admission-receipt.json. Source inspection confirms
+ExecutionPolicy's approved Build-mode boolean is not a typed imported Git-write
+gate, and AgentSessionPublication binds generated-candidate record promotion,
+not original HEAD/index/working-tree changes or rollback. No imported commit host
+is claimed. A future commit offer needs its own exact original HEAD/index/tree and
+path-scope evidence, fresh explicit review/consent, atomic durable intent and
+interrupted-write reconciliation; isolated clean results cannot substitute.
+Investigation's exact review/publication/CI remain pending; no app capability
+added. #404OPEN. The next implementation prerequisite is trusted read-only
+original worktree/index admission before any scoped write policy is proposed.
+PR830 coordinator metrics (manual observations): start-to-merge3844.8s,
+CI-observation-wait557.9s, fresh-review rework0, verified user outcomes1. Escaped
+defects unknown (zero observations is not proof of none). Owner primary checkout
+still has its same six unrelated IDE/docs paths; no reset/stash/staging there.
+
+PR831 CI repair admission — 404-commit-admission-deadline-fix: required
+CI44871062084 failed the existing comparison-host deadline fixture. Its80ms
+wall-clock limit elapsed during slow runner setup, before the fake process was
+allocated; children.single then threw No element. No production source changed
+in PR831 and the Python job passed. This is a test lifecycle race, not evidence
+that runtime timeout/reaping failed. Original investigation claim explicitly
+released after recording review_changes; acquired exact two host-test paths plus
+shared documentation under a new scoped repair claim, same PR/umbrella404.
+Acceptance: inject deadline expiry before startup and after confirmed fake-child
+startup in both comparison and diagnostics fixtures. Assert zero launches in the
+first case, owned-child reaping in the second, no current observation and confirmed
+cleanup in both. Keep production deadlines and protection unchanged. Rerun focused
+and full tests/analyze/format plus required CI, then freshly review the revised
+exact PR head. Original commit-admission investigation stays pending until that
+reviewed merge; no index reader, commit or rollback capability is added.
+
+Deadline fixture repair validation: comparison/diagnostics19PASS, covering injected
+expiry before any child and after the explicit startup handshake. Both confirm
+cleanup and absence of a current observation; startup case asserts zero launches,
+running case asserts owned-child signals/reaping. Full Flutter2926PASS/13existing
+platformskips, analysis clean, formatter742/0changes, inventory9PASS and regenerated
+inventory byte-identical. Only two test files and the three scoped documents
+changed; production timer defaults, worker code and packaged assets are unchanged.
+PR831 will be updated by an appended commit (no history rewrite), then reviewed
+fresh for its exact revised head with every required remote check rerun. Prior
+failed CI is retained as evidence, not treated as a passing run.
