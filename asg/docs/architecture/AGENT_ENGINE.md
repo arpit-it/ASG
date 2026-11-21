@@ -10579,3 +10579,66 @@ build and exact fresh PR review/required CI/protected merge remain mandatory.
 This is an unmerged coherent implementation checkpoint. FullF20/#404OPEN;
 #400/marketplace/F23-last unchanged; no model/download/install/stable replacement/
 cloud/deploy. Owner processes/edits preserved; lease remains active.
+
+
+### Original-index declarations — verified merge / working-file admission started, 21 November 2026 UTC
+
+PR833 verified merged at b82621b3e2e6f6736b5df423f8d152755dd8b56a, exact
+reviewed remote83dac2a23b7d7cd3e5c0b08f2e6c2c3c428ec884/local43e8d495c3987ef8c8af6cd8b45c34117f7232db,
+tree5484406bd5c42fe35a40da3d5aeb1ca52cd18cfc. Fresh review found no blockers;
+CI44878338353 jobs136767906932/136767907217 and every step/poststep passed,
+decoded logs inspected. Plugin/main and fetched merge/tree agree; #404OPEN.
+Explicit single-use consent now reads bounded supported index declarations, with
+opaque TREE cache handling, runtime/folder read-only fences and shared ownership,
+Stop/stale/disposal/cleanup handling and dated historical evidence. Local full
+Flutter2958PASS/13platformskips, format756/0changes, analysis, Python index12/
+metadata33/inventory9/product32, production web/isolatedMac builds and matching
+packaged helpers pass. Actual native/reopen, unchanged existing946-entry index
+and separate synthetic IAB consent/Cancel/Stop/stale-runtime checks pass. These
+are index declarations, never working-tree/HEAD verification or commit authority.
+Final receipt /tmp/asg404-index-final-validation.json. Completed integration/claim
+released. Manual coordinator metrics: start-to-merge3125.6s, CI-observation447.0s,
+review rework0, verified outcome1; escaped defects unknown, zero observations.
+
+Immediately claimed404-index-workfile-admission under existingF20/CE01/#404.
+Current index and selected-source readers do not hold a combined readset or join
+raw working-file bytes to a specific current index fingerprint. Investigate a
+bounded explicit selection (up to4 Dart regular files,32KiB each/64KiB aggregate),
+using owned no-process fixtures and held no-follow descriptors. Acceptance:
+compare raw Git-blob labels and literal executable mode; revalidate index and
+selected files together; refuse stale/changed/replaced/locked metadata, missing/
+unindexed paths, links/hardlinks and excessive bounds without partial results.
+Raw-byte equality does not account for Git filters/attributes, verify HEAD
+membership or untracked files, establish whole-repository cleanliness, or permit
+commit/rollback. Preserve source/index bytes and record prototype/helper identity,
+adversarial outcomes and smallest coherent application prerequisite. No app
+working-file reader or write policy is added by this investigation. Focused
+fixtures/models/inventory/product checks and fresh review/CI/merge are required
+before completing it. REQUIREMENTS remains the sole queue; this contract records
+execution ownership only. Sole writer/no independent second ready task. No model
+requests, downloads, installs, stable replacement, cloud or deployment; owner
+edits/processes preserved. #400/marketplace/F23-last and fullF20OPEN unchanged.
+
+Working-file admission investigation checkpoint:20 owned no-process fixturesPASS
+(6 observed comparisons/14 refusals). Raw byte and executable-mode mismatches
+remain explicit observations; CRLF bytes are not normalized, empty/binary content
+is compared literally. Missing/unindexed paths, symlink/hardlink/parent indirection,
+per-file/aggregate bounds, stale fingerprint, existing/appearing lock and source/
+index change or index replacement refuse without partial results. The combined
+prototype holds index and selected-file descriptors until final revalidation.
+No project/config/filter/Git command is executed; processCalls0/readerWrites0,
+all non-adversarial fixture bytes preserved. This is not an atomic repository
+snapshot, filtered Git status, HEAD join, untracked inventory or commit authority.
+Receipt /tmp/asg404-index-workfile-admission-receipt.json; prototypeSHA256
+7b111d7be4dc30f8c5c7ba08fe96ebf27e95f06ff75424d1d0dbad5d91fe9702; index helperSHA256
+832165220c8405f9a90961ea16d3c0e53564b6cf08772e97fcebd69470e682d7; selected-source helperSHA256
+073b8f2addc76592aa2a19906f1461a92264641248641fdcecceb9cc037a0c13.
+Supporting Python index12/selected-source31/inventory9/product32PASS; immutable
+index models7 plus architecture1PASS. The smallest next app outcome needs exact
+current index/selection consent, typed raw comparison receipts, joint readset
+validation, durable fences, owned cleanup/Stop and historical-only stale results.
+It still cannot offer imported commits. This investigation remains in progress
+pending fresh exact review, required CI and verified merge; fullF20/#404OPEN.
+PR833 remote full Flutter2873PASS/95platformskips and browser17PASS were confirmed
+in decoded CI logs, separate from this Mac2958PASS/13skips. Owner processes and
+six unrelated primary IDE/docs paths preserved. No model calls or installs.
