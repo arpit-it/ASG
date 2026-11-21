@@ -24821,3 +24821,66 @@ Read-only history added no effects and proposal bytes remained unchanged. Local
 receipt: /tmp/asg404-copy-final-receipt.json. No live model requests, deployment,
 stable replacement or unavailable-platform acceptance. Exact PR review, required
 CI and verified merge remain separate gates; F20/CE01/#404 remains open.
+
+### Original immutable baseline copies — verified merge / next prerequisite, 21 November 2026 UTC
+
+PR #821 merged as `3053d8b058ae03b07519a8197932bf39cb92b0c2`,
+tested tree `7c64925ea524881766a3b043d3b240d2508e7ac5`. Fresh review of
+head `fc5e51c0bcd44c0f2e242ece9b0ff43e971dca78` against current main found
+no remaining blockers; required CI44846484871 Flutter136667347221 and
+Python136667347527 passed every step/poststep, with logs inspected. Plugin
+main/PR and fetched remote tree independently confirmed the merge; #404 stays
+OPEN. Local2789 Flutter tests/13 opt-in skips,90 Python fixtures, clean analysis
+and format, inventory9/product32, web/isolated unsigned Mac builds, actual
+native controller/helper/durableDB-reopen and IAB consent/Stop/recovery passed.
+Completed integration and writer claims released. Manual coordinator observations:
+3390.0 seconds from expanded boundary claim to merge,466.9 seconds paired CI
+observation wait,0 final-review rework events,1 verified bounded user outcome;
+escaped defects remain unknown (0 reported observations). Earlier same-feature
+checkpoint/reclaim and pre-publication fixes are not erased by those metrics.
+Owner's six unrelated dirty paths remain preserved; no stable install or deployment.
+
+Immediately claimed `404-copy-recheck-admission` under this umbrella and reused
+the registered worktree. Concrete next prerequisite: the saved baseline-copy
+receipt is historical and does not establish current disk contents, incomplete
+marker state or permission for later editing. Inspect existing bounded snapshot
+scan and compare primitives, then verify owned disposable-copy cases for unchanged
+content, selected/nonselected byte edits, executable changes, added directories,
+links, root identity and both preparation markers. Acceptance is a bounded
+read-only recheck admission contract with exact fixture evidence, preserving source
+and history and granting no proposal mutation/execution. No new issue is needed.
+FullF20/CE01 remains open; #400, marketplace gate and F23-last remain unchanged.
+
+Fresh-copy recheck admission started and exercised — 21 November 2026 UTC:
+11 owned disposable-copy probes passed; every case retained dirty/untracked
+source bytes, HEAD, index and refs. Unchanged full copy matches its saved whole
+fingerprint; selected/nonselected byte changes, executable-bit changes and added
+empty directories change it. Symlink/hardlink inputs refuse. Existing preparation
+pending marker refuses and pinned copy-root replacement fails directory identity.
+Two distinct original copies have equal fingerprints but different directory
+identities: content equivalence cannot prove same physical output or ownership.
+An added empty directory changes the whole fingerprint while Git-file comparison
+counts stay zero. Selected bytes or zero Git counts cannot substitute for whole-copy
+identity.
+
+Concrete prerequisite gap reproduced: the generic legacy fingerprint accepts an
+unchanged tree even with the new sibling `.asg-imported-copy-pending` marker.
+This does not invalidate PR821 creation admission, whose native host explicitly
+checks both markers; saved-history views already label receipts historical. Any
+later explicit recheck must independently pin root/run/parent, validate exact saved
+request/commit/path and both absent markers, scan the full bounded tree against the
+saved whole fingerprint, preserve source/history and treat completion as a dated
+observation only. It must not apply replacement, authenticate origin, revive plan
+approval or authorize execution. Lost cleanup/delivery remains recovery.
+Current task is an investigation, not a delivered recheck button; app integration
+requires its own reviewed bounded implementation after this prerequisite merges.
+
+Probe /tmp/asg404_copy_recheck_probe.py; log
+/tmp/asg404-copy-recheck-admission.log; receipt
+/tmp/asg404-copy-recheck-admission-receipt.json. Probe SHA-256: b0afd7113d1fce6b067173dc665413467f41eb9d873de78ede5724b768c4b08c.
+prepare_self_candidate.py SHA-256: b0510c9e6e8dfde56d261173196795dcd9ce7eb499f65509dc8466275d23752e.
+An added preservation assertion initially had a one-element tuple fixture typo;
+its failed log is retained separately and the corrected 11-case run passed.
+No model requests, production source writes, installs or deployment. Investigation
+documentation awaits its own fresh review/requiredCI/verified merge; fullF20/CE01
+remains open, and #400/marketplace/F23-last are unchanged.
