@@ -24884,3 +24884,97 @@ its failed log is retained separately and the corrected 11-case run passed.
 No model requests, production source writes, installs or deployment. Investigation
 documentation awaits its own fresh review/requiredCI/verified merge; fullF20/CE01
 remains open, and #400/marketplace/F23-last are unchanged.
+
+### Fresh immutable-copy recheck admission — verified / implementation started, 21 November 2026 UTC
+
+PR #822 merged as `41b6bbbc4e51bb108548ebe132ada26b8b2ddcf7`,
+reviewed tree `affa96e6f5012f9ff76084b56525802562bb0103`, after fresh review
+of exact head `3a8105fe1a476a605623d895c120529166cefa3f` and required
+CI44847970453. Flutter136672257595/Python136672257865 passed every step and
+poststep; logs inspected, no unresolved conversations, main unchanged at merge.
+Plugin main/PR and fetched remote tree independently agree; #404 remains OPEN.
+The eleven actual admission probes passed again on unchanged trusted helper
+hashes. Runtime/build inputs were unchanged by this documentation-only increment.
+Completed integration and writer ownership released. Manual observations: 780.2
+seconds task-to-merge, 412.8 seconds paired CI observation wait,0 recorded final
+review rework,1 verified prerequisite evidence outcome; escaped defects unknown
+(0 reported observations). No app recheck capability was claimed by PR822.
+
+Immediately claimed and started `404-explicit-copy-recheck` under the same issue
+in the registered worktree, from verified main. Bounded user outcome: explicitly
+read the selected saved copy and display dated matching/changed/refused whole-tree
+evidence while preserving the original-copy journal, previous successful output
+and existing approval/execution boundaries. Typed current-history/runtime admission,
+shared source-worker lease, both pending-marker guards, pinned parent/run/root,
+complete bounded scans, owned Stop/deadline/cleanup, stale/disposed publication
+guards and actual UI/native checks belong to one coherent increment. No copy
+creation, replacement application, repository-authored commands or model sharing.
+
+Initial pure request model implemented: revalidates saved history, selects its
+last durably prepared copy only when no unresolved recovery remains, binds current
+Python, whole fingerprint, full commit/tree, exact output path, history/request/
+receipt digests and distinct recheck intent. Strict canonical keys/types/size/
+paths/IDs and source/output interpreter exclusion reject retargeting. Historical
+restore remains supplied data; application admission must rebuild exact intent
+from current inputs. No stored format changed and no host dispatch exists yet.
+Six new model regressions passed; focused request/record/architecture12 passed,
+analysis clean and new files formatted. Logs /tmp/asg404-explicit-copy-recheck-
+{start,focused,analyze}.log. Native helper/host, fenced controller/store, production
+UI route, full validation, fresh PR review/requiredCI/merge remain pending. This
+checkpoint is in progress, not a delivered recheck button. Sole writer; no second
+disjoint dependency-ready task. Owner's six dirty paths and processes preserved.
+No model requests, installs, stable replacement or deployment; fullF20/CE01,
+#400/marketplace/F23-last remain open/unchanged.
+
+### Explicit saved original-copy recheck — integrated validation, 21 November 2026 UTC
+
+The claimed read-only recheck now has strict request/result models, current
+copy-history/runtime/folder-registration zero-update durable fences, one shared
+source-worker lease, an owned native process group and a production saved-copy
+history route. Each reviewed nonce admits only one explicit read; another attempt
+requires reload. Result publication rechecks current inputs and confirmed cleanup.
+Stop/deadline/disposal reject late observations and uncertain cleanup retains the
+lease. Unsupported platforms retain history with an unavailable native-read notice.
+
+Bundled imported_commit_copy_recheck.py never invokes Git or original-repository
+reads. It pins parent/run/copy descriptors, requires private output, rejects both
+preparation markers including links, performs two complete bounded scans, and
+rechecks markers/identities. It compares all bounded bytes, executable bits and
+directory names against the saved whole fingerprint, without applying replacement
+or executing repository text. Supplied histories/results do not authenticate origin,
+prove physical lineage, revive approval or authorize mutation/execution.
+
+Failures retain the previous completed content observation as historical. A later
+refused receipt is displayed separately while preserving that prior observation.
+The original-copy journal, previous ready output and existing storage formats are
+unchanged. No new persistent record format or auto-replay was introduced.
+
+31 focused model/controller/store/native-host/widget/actual-native checks passed
+(30 before the final retained-observation regression). Final fullFlutter2820 passed
+with13 opt-in skips; analysis and formatting clean. Python9 new recheck/14 original
+copy fixtures, inventory9/product32 passed. Actual native controller admission,
+matching observation, changed nonselected binary, pending-marker refusal and
+separate native database reopen preserved the full copy journal and dirty original
+source/index/HEAD/ref bytes. The original repository was temporarily absent during
+a successful copy-only read, confirming no original-source filesystem dependency.
+Read-only boundary review found no blockers. The browser controls are synthetic and
+will be recorded separately from actual native evidence. Final isolated builds,
+IAB interactions, exact PR review, requiredCI and verified merge remain pending
+until recorded below. No live model requests, stable install/replacement or
+deployment. FullF20/CE01/#404 remains open; #400/marketplace/F23-last unchanged.
+
+Final recheck evidence — 21 November 2026 UTC: fullFlutter2820 passed/13 opt-in
+skipped;31 focused unique checks, Python9 new/14 original-copy, inventory9/product32,
+clean analysis/format, production web and isolated unsigned macOS builds passed.
+Bundle com.arsinha.asg.recheckvalidation contains exact trusted helper bytes; no
+installation or native GUI acceptance claimed. IAB33 synthetic controls verified
+opening0calls, explicit matching1, changed2, refused3, Stop4; app writes stayed0
+and copy history stayed byte-identical. The previous completed content observation
+remained visible as historical after refusal and Stop. Recheck is disabled after
+each use until reload; provenance and no-approval/no-execution disclosure visually
+verified. Actual native reader/database evidence is separate and retained in
+/tmp/asg404-recheck-native-flow.json. Final unchanged input hashes/build/IAB receipt
+/tmp/asg404-recheck-final-receipt.json. Owned8406 preview stopped; owner-started
+processes and six unrelated dirty paths untouched. No live model requests.
+Exact publication/review, requiredCI and verified merge remain pending gates.
+FullF20/CE01/#404 and #400/marketplace/F23-last limits remain unchanged.
