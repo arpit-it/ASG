@@ -25049,3 +25049,133 @@ claim during this prerequisite. This is a local investigation before deciding th
 smallest coherent application acquisition increment; not a new speculative issue.
 FullF20/#404OPEN, #400/marketplace/F23-last unchanged; owner six primary edits and
 processes preserved, no model/install/download/stable replacement/cloud/deploy.
+
+
+### Physical pack prerequisite verified / selective lookup started, 21 November 2026 UTC
+
+PR840 verified merged517c97e6b4155d25625a5cb867c390335b367d55, exact reviewed
+remote33797716c0f69d1fc30d6fb0b345a2b66147cfb1/local7409a64a78029d511bcf941443102bdaba78ed42,
+tree87bb8d187d79c2e4ea6c3dedfa7a01f981a2f416. CI44895846253 jobs136821200534/
+136821200617 all required steps/poststeps pass; decoded logs inspected:
+Linux2951PASS/97platformskips, Chrome17 and production/generated builds. Fresh
+exact review found no blockers; no conversations/main/base changes before protected
+merge. Bounded physical50/supplied-byte24 probes and canonical21/29/9/32/models19
+pass locally; no app packed-object support claimed. Plugin/main/fetched merge/tree
+and #404OPEN agree. Completed claim/integration released. Manual start-to-merge
+1733.1s, CI observation429.0s, review rework0, verified bounded prerequisite1;
+escaped defects unknown (zero observations). Owner six primary edits/processes kept.
+
+Immediately claimed404-selective-pack-admission under existingF20/#404. The owner
+layout exceeds the verified single-pair/full-container subset, so investigate a
+separate deterministic multi-pair and selective index/frame profile rather than
+silently increasing whole-pack copy/inflation limits. Acceptance: bounded owned
+larger/multiple fixtures, verified index header/checksum/fanout/names/offsets,
+exact matching/missing/ambiguous membership and byte/pair/encoded-span budgets;
+physical held index and pack header/trailer/frame identities, namespace changes,
+Stop/deadline cases and separate delta prerequisites before admitting object facts.
+Keep index declarations/selected object identities distinct from unread whole-pack
+checksum/integrity. Earlier whole-container proofs and direct-loose application
+remain unchanged. Read-only owner evidence may record bounded counts/metadata but
+no private labels or body contents; no owner writes, Git/project/model commands,
+app capability or commit authority. First checkpoint: strict index membership and
+frame geometry with explicit unverified body/container provenance; physical frame
+verification and full joined liveness remain subsequent work in this investigation.
+Complete only after exact fresh review/required CI/verified merge. Sole writer,
+no independent second ready task; fullF20/#404OPEN and #400/marketplace/F23-last
+unchanged, no model/install/download/stable replacement/cloud/deploy.
+
+
+Selective pack-index initial checkpoint: supplied-index/header/trailer probe28
+casesPASS (4metadata observations/24refusals), with no commands/reader writes.
+A small selected span in a manually assembled pack beyond the prior whole-copy
+limit, unique membership across two candidates, declaration-only missing label
+and a16000-entry index validate within an explicit separate profile. Ambiguous
+or duplicate candidates, excess pair/index/metadata-size/span budgets, aliases,
+name/trailer mismatch, bad index checksum/version/fanout/names/offsets/count,
+large offsets and invalid queries refuse. Prior whole-pack verifier remains
+unchanged and still refuses the larger fixture. Initial selective budgets:
+4candidate pairs,512KiB per-index and aggregate index bytes,16384objects/index,
+64MiB metadata-only pack file size,128KiB selected encoded span. These are supplied
+metadata/geometry limits, not permission to copy/inflate larger pack contents.
+The selected frame/body and whole-pack checksum flags remain false even when
+index checksum and declared header/trailer consistency hold. Missing declaration
+is not whole-repository object absence. No actual owner membership, delta usage,
+source body or application behavior is verified by this probe.
+Receipt /tmp/asg404-selective-pack-index-receipt.json; prototype
+/tmp/asg404_selective_pack_index_probe.py SHA256
+e52cdc8ab5e5be3fab28dbf46a4bc1c32459e445c8f62f4a8d32ab114c7dfc56;
+prior whole-pack verifierSHA256
+133665e99ad001bbc1775aa50e64c314d0924d87fcf2b8c930ab42547c9d510a.
+Supporting declared-object21/source29/inventory9/product32 and acquisition9/
+HEAD-index9/architecture1PASS. No app source/inventory changed; docs-only checks.
+Next within this claimed investigation: held bounded physical index and pack
+prefix/trailer/frame acquisition, bind every inspected index identity (including
+unmatched candidates), namespace/input/Stop/deadline validation, selected-frame
+CRC/canonical object identity and separate delta prerequisites. Keep partial
+integrity explicit rather than reusing whole-container fingerprints/protocol.
+Checkpoint remains in progress/unmerged; exact fresh review/required CI/verified
+merge needed before completion. Sole active claim retained for resume. FullF20/
+#404OPEN; owner six primary edits/processes preserved; #400/marketplace/F23-last
+unchanged, no model/install/download/stable replacement/cloud/deploy.
+
+
+Selective physical pack admission, 21 November 2026 UTC: resumed the owned
+404-selective-pack-admission investigation under F20/CE01/#404. Remote main remains
+517c97e6b4155d25625a5cb867c390335b367d55; no open PR or competing active writer.
+The initial supplied-index28 cases remain separate. The held selective-frame
+prototype passes40 owned cases (8 observations/32 refusals), with zero process
+calls/reader writes, preserved nonadversarial fixture bytes and all owned file
+handles closed. The first run exposed a missing tempfile import in the temporary
+harness; corrected before this complete passing run, without application changes.
+
+The physical prototype holds bounded pack/idx/catalog and known opaque sidecar
+identities, reads every candidate index and only pack header/trailer plus selected
+frames, and joins existing declared HEAD/reference/index/source liveness checks.
+Every inspected index identity is retained, including unmatched candidates. It
+verifies selected frame CRC and canonical commit/tree/blob identity. Larger packs
+with an unread 600000-byte unrelated object, mixed loose/packed acquisition,
+staged differences, absent paths and four nested paths succeed. Ambiguity,
+changed input/held inode/catalog/locks, links/hardlinks, malformed or unpaired
+namespaces, selected CRC or canonical identity corruption, selected delta,
+metadata-size bounds and Stop/deadline refuse without partial object facts.
+
+Partial integrity is deliberate: preexisting corruption in an unrequested object
+can coexist with verified selected objects. Whole-pack checksum/integrity stays
+unverified, despite matching index declarations/header/trailer/basename. Output is
+explicitly prototype-selective-pack-frames, outside the production strict protocol.
+Budgets remain4 pairs/32 catalog entries,512KiB aggregate index bytes,
+16384 objects/index,64MiB metadata-only pack size,128KiB selected encoded span,
+512KiB aggregate encoded frames; existing70 cached objects/256KiB expanded payload
+and32KiB blob/64KiB commit/tree limits remain. No delta reconstruction, large-offset
+support, authenticated namespace, atomic Git snapshot, commands or write authority.
+Prior whole-container proofs/limits are preserved; no source/helper/inventory edits.
+
+Receipt /tmp/asg404-selective-pack-physical-receipt.json; physical prototype
+/tmp/asg404_selective_pack_physical_probe.py SHA256
+850f5c7eb91df3d1dd78f2dc50d9e6ee766474b6e66b429e00f039a978e32fcc;
+selectorSHA256 e52cdc8ab5e5be3fab28dbf46a4bc1c32459e445c8f62f4a8d32ab114c7dfc56.
+Canonical declared-object helper remainsSHA256
+b0e6f88070c8d1fca63b015f34be7b0ac15f6099819c5ade0b8e95361f66cbf7.
+Supporting declared-object21/source29/inventory9/product32 and acquisition9/
+HEAD-index9/architecture1PASS. Documentation-only local validation scope; no new
+platform build, browser or model evidence claimed. Fresh exact PR review, required
+CI and verified merge still govern completion of this bounded investigation.
+
+Read-only owner availability discovery refuses unsupported_layout at commit
+acquisition before reading index/frame bytes. Held identities remain preserved;
+no private labels/body contents recorded and zero reader writes. Bounded catalog
+classification observes11 entries:3pack/3idx/3rev/1mtimes plus the literal
+multi-pack-index; no other unsupported entry. This identifies an actual catalog
+prerequisite, not owner object membership or delta compatibility. Receipt
+/tmp/asg404-selective-owner-discovery-receipt.json. Owner files/processes unchanged.
+
+Next eligible bounded prerequisite after verified merge: investigate a held,
+bounded literal multi-pack-index sidecar policy and its changed/link/lock/Stop
+refusals on owned fixtures, while continuing to derive membership independently
+from individual verified indexes. Do not silently ignore an unknown catalog name,
+interpret multi-pack-index declarations as Git authority, or claim owner support.
+Then repeat sanitized owner availability to determine the next concrete selected
+frame/delta prerequisite. Reuse existing #404; no speculative new issue. FullF20/
+#404 remainsOPEN; #400 unavailable-platform acceptance, marketplace gate and
+F23-last unchanged. Six unrelated primary edits and owner processes preserved;
+no installs/downloads/stable app replacement/cloud provisioning/deployment.
