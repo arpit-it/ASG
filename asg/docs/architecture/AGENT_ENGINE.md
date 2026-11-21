@@ -11528,3 +11528,146 @@ and evidence; requiredCI and verified merge remain mandatory. No application
 acquisition expansion, helper/inventory change, model inference or new platform
 build/browser evidence. Next bounded offset-delta prerequisite remains dependent
 on this investigation's verified merge; fullF20/#404 staysOPEN.
+
+
+### Opaque sidecar prerequisite verified / offset-delta admission started, 21 November 2026 UTC
+
+PR842 verified merged85cfb4e1abf3cc19f54babdfe031ddbdde9419ab, reviewed remote
+36f125b56f7da83385131a4dea67b79e338171ea/local0ed44841e569ca674b8f350d64101127090b7075,
+treea2c09510f43c26ad38e86ae0ab41497510aab268. RequiredCI44899924590 success,
+Flutter136833469471/Python136833469572 every required step/poststep success; decoded
+logs inspected with zero error markers. Exact reviewed head/base unchanged and no
+conversations before protected merge. Plugin main/PR/#404OPEN and fetched merge
+tree agree; coordinator merge/outcome recorded and completed claim/integration
+released. Repeated sidecar21/selectivephysical40/suppliedindex28 and canonical
+helper21/source29/inventory9/product32/Flutter19PASS. Bounded sidecar admission
+outcome1; fresh-review rework0; escaped defects unknown(zero observed). Manual
+total/CI timing unknown; not provider-reported. App attachment attempted, existing
+thread100identity limit preserved. Umbrella issue updated with PR841/842 evidence.
+
+Immediately claimed404-offset-delta-admission from verified main in the clean
+registered checkout under existingF20/CE01/#404, exclusive3documentation paths.
+Concrete gap: prior sanitized owner acquisition verifies a commit then reaches
+unsupported selected type6 offset-delta. Acceptance: verify backward indexed base
+selection, every base/result canonical identity and CRC, bounded delta programs,
+depth/count/encoded/inflated/reconstructed aggregate budgets, then physical held
+pack/index/catalog/sidecar/input liveness before any application admission. Keep
+reference/thin deltas, unread whole-pack integrity and full owner support pending.
+
+Initial owned supplied-frame prototype48casesPASS (15observations/33refusals),
+zero process calls/reader writes. Tests cover independently expected copy/literal
+reconstruction, empty/literal-only targets, default65536 copy length and sparse
+copy-offset bytes; positive biased offset encodings through64MiB; exact depth8
+and70cached frames, cache reuse, malformed/zero/truncated/overflow/underflow delta
+instructions, base-size mismatch, CRC/base/result identity mismatch, unsupported
+reference delta, invalid/zero/missing/backward-base offsets, compression envelope,
+header/frame/blob/count/depth/aggregate budgets, overlapping/duplicate frame
+claims, Stop/deadline. Supplied frame offsets/labels are fixture declarations,
+not yet actual pack-index acquisition. Cycle construction is structurally excluded
+by strictly backward indexed bases; physical lookup and changed-read/cancellation
+composition remain pending. No descriptor/owner/platform evidence is claimed by
+this in-memory probe. Existing source/parser/app protocol remains unchanged.
+
+Limits: depth8, selected cache70, expanded program+base+reconstructed payload256KiB,
+selected encoded aggregate512KiB, encoded frame128KiB, delta program64KiB,
+blob32KiB/commit-tree64KiB, supplied declaration count16384; sizes/offsets explicitly
+bounded. A reconstructed result is admitted only after canonical identity matches;
+intermediate failures publish no application result. Reader/source is temporary
+investigation code, not production support or authenticated Git state. Prototype
+/tmp/asg404_offset_delta_probe.py SHA256
+28bcd67dd51665f2c910c0839f3260ecbfcc1c21426223ce8c9a5d8d3f908f6b;
+receipt /tmp/asg404-offset-delta-receipt.json. Dependency physical prototypeSHA256
+850f5c7eb91df3d1dd78f2dc50d9e6ee766474b6e66b429e00f039a978e32fcc preserved.
+Official format reference checked21November2026:
+https://git-scm.com/docs/gitformat-pack . Delta object headers size the uncompressed
+instruction stream; backward offset encoding differs from size encoding, and
+copy instructions retain byte positions when optional fields are absent. These
+rules informed the bounded owned fixtures; no Git/project/model command runs.
+An oversized sparse-offset fixture and refusal exception adapters were corrected
+before the complete passing run; no product guard or limit was weakened.
+
+Next within this active claimed investigation: compose actual held selective
+index/base-frame lookup with delta reconstruction; verify every indexed base span/
+CRC/identity and joint namespace/input/Stop/deadline checks, then sanitized owner
+availability only after owned physical proof. Complete focused checks, exact fresh
+PR review/requiredCI/verified merge before marking this prerequisite done. Current
+checkpoint remains in progress/unmerged; sole valid claim retained for resume.
+FullF20/#404OPEN; unavailable-platform #400, marketplace and F23-last unchanged.
+Six unrelated primary edits, owner processes and last working outputs preserved;
+no live inference/install/download/stable replacement/cloud provisioning/deploy.
+
+
+Offset-delta physical admission refinement, 21 November 2026 UTC: resumed the
+owned404-offset-delta-admission claim, clean registered checkout, main85cfb4e1,
+#404OPEN/no open PR and sole valid writer confirmed; lease renewed. Kept the
+original supplied-frame48cases and depth8 contract intact. Composed actual held
+pack/index/opaque-sidecar lookup with the supplied delta decoder: every backward
+base offset must match a validated individual index entry in the same held pack;
+each bounded base span is read through the retained descriptor, CRC checked and
+canonical identity verified before reconstruction. All inspected indexes remain
+bound, including unmatched candidates. Shared encoded/expanded/cache budgets cover
+all pack graphs and loose inputs; cache hits do not reset or duplicate budgets.
+
+Initial depth8 physical39casesPASS (11observations/28refusals); preserved as
+/tmp/asg404_offset_delta_physical_depth8_probe.py SHA256
+a2910ee62009187bfb83db307bb7c65cc2cfc64e496c989e5c8b7e2ded7f3e7f,
+receipt /tmp/asg404-offset-delta-physical-depth8-receipt.json. Sanitized owner
+observation then stopped at the depth limit after8verified frames,473952index bytes
+and3152prefix/frame bytes; held identities preserved. It did not verify the selected
+path. Receipt /tmp/asg404-offset-delta-owner-depth8-receipt.json. A failed bounded
+subset remains failed; its evidence is not relabelled as later success.
+
+Separate depth32 physical candidate41casesPASS (11observations/30refusals), keeping
+all other limits unchanged:70combined selected/base/loose cached objects,
+512KiB encoded frames,256KiB expanded programs+bases+reconstructed bodies,
+128KiB encoded span,64KiB delta program/commit/tree and32KiB blob; prior namespace,
+pair/index and opaque-sidecar limits remain. Tests verify exact depth32 success
+and33refusal, combined graph-cache refusal specifically count/base, combined tree
+expansion refusal specifically expanded bound, commit/tree/blob reconstruction,
+mixed loose/packed reads, four nested selections, staged difference, absent path,
+unmatched candidate and an unread600000-byte unrelated payload. Refusals include
+changed HEAD/reference/index/source/pack/base inode/idx/sidecar/locks, links and
+hardlinks/directory retargets, corrupt CRC, sealed mismatching base/result labels,
+invalid backward offsets/reference delta, missing/ambiguous membership, replacements,
+Stop/deadline during frame acquisition and late completion. No partial object facts
+are returned on failure. All owned descriptors close, successful owned bytes remain
+unchanged, zero process calls/reader writes. Whole-pack integrity/app acceptance
+remain false; prototype output is explicitly outside the strict production profile.
+
+Final physical prototype /tmp/asg404_offset_delta_physical_probe.py SHA256
+8e52424e9f7b0d97f9e3fb1365d251083c1ff7bffd59f48eba26c1f1503f55df;
+receipt /tmp/asg404-offset-delta-physical-receipt.json. Supplied delta48SHA256
+28bcd67dd51665f2c910c0839f3260ecbfcc1c21426223ce8c9a5d8d3f908f6b;
+sidecar21SHA256544ea8fceb8ee5146e22eab9abdad11e20ff9a4b5b83de98ed8d91b8fab34cf0
+and selectivephysical40SHA256
+850f5c7eb91df3d1dd78f2dc50d9e6ee766474b6e66b429e00f039a978e32fcc preserved.
+Canonical helper remainsSHA256
+b0e6f88070c8d1fca63b015f34be7b0ac15f6099819c5ade0b8e95361f66cbf7.
+Supporting helper21/source29/inventory9/product32 and Flutter acquisition9/
+HEAD-index9/architecture1PASS. Documentation-only local scope; no unrelated build,
+model request or browser app evidence claimed. Fresh exact PR review, required CI
+and verified merge still required before completing this bounded investigation.
+
+After owned physical proof, separate read-only owner selected-path discovery with
+the depth32 candidate resolves the selected blob:3inspected indexes/473952bytes,
+4465prefix/frame bytes,21verified frames,4369encoded frame bytes/13839expanded bytes,
+maximum observed delta depth10. Held identities preserved; no private labels/body
+contents recorded, no commands/writes, no sidecar content interpretation. Receipt
+/tmp/asg404-offset-delta-owner-receipt.json. This manual observation verifies only
+this selected path's declared-object availability and held metadata identities;
+it does not join app consent/current upstream/history/input fingerprints, establish
+an atomic Git snapshot, authenticate repository state or verify unread pack bytes.
+Production application remains direct-loose-object-files only.
+
+Next eligible coherent increment after this prerequisite's verified merge:
+404-packed-head-index-read under existingF20/CE01/#404. Implement the explicitly
+bounded command-free loose-or-pack2/index2 acquisition profile, with typed selected
+object/index provenance and explicit whole-pack-integrity unknown, current request/
+consent and strict stored-response validation, native held helper packaging, views
+and failure/Stop/disposal/reopen tests. Reuse the verified bounded depth32 subset;
+reference/thin deltas, unknown layouts, large offsets or limits remain refusals.
+Keep older direct-loose results and exact historical model/host observations
+unchanged. Complete actual local/native/browser checks and all required CI before
+claiming that bounded app behavior. FullF20/#404 staysOPEN; #400 unavailable-platform
+acceptance, marketplace and F23-last unchanged. Six unrelated primary edits and
+owner processes preserved; no installs/downloads/stable replacement/cloud/deploy.
