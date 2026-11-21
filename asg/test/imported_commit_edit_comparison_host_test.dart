@@ -26,10 +26,12 @@ void main() {
     Duration deadline = const Duration(seconds: 3),
     Duration grace = const Duration(milliseconds: 50),
     Future<Process> Function(original.CopyProcess)? start,
+    Timer Function(Duration, void Function())? createTimer,
   }) => NativeImportedCommitEditComparisonHost(
     platformSupported: true,
     deadline: deadline,
     cleanupGrace: grace,
+    createTimer: createTimer,
     groupExists: (_) => group,
     killGroup: (pid) {
       if (kill != null) {
@@ -155,14 +157,35 @@ void main() {
     await h.dispose();
   });
   test(
-    'deadline interrupts owned read and retains no current result',
+    'deadline before startup or during owned read retains no current result',
     () async {
-      respond = (_) {};
-      final h = host(deadline: const Duration(milliseconds: 80));
-      await expectLater(h.compare(request), throwsStateError);
-      expect(children.single.signals, isNotEmpty);
-      expect(h.cleanupConfirmed, true);
-      await h.dispose();
+      for (final beforeStartup in [true, false]) {
+        started = Completer<void>();
+        respond = (_) {};
+        late void Function() expire;
+        final h = host(
+          createTimer: (duration, callback) {
+            expect(duration, const Duration(seconds: 3));
+            expire = callback;
+            if (beforeStartup) callback();
+            // Cleanup cancels this owned timer. Wall-clock setup speed cannot
+            // decide which lifecycle boundary this test exercises.
+            return Timer(const Duration(days: 1), () {});
+          },
+        );
+        final pending = h.compare(request);
+        final checked = expectLater(pending, throwsStateError);
+        if (!beforeStartup) {
+          await started!.future;
+          expire();
+        }
+        await checked;
+        expect(starts, beforeStartup ? 0 : 1);
+        if (!beforeStartup) expect(children.single.signals, isNotEmpty);
+        expect(h.lastObservation, isNull);
+        expect(h.cleanupConfirmed, true);
+        await h.dispose();
+      }
     },
   );
   test(

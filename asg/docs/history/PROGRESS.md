@@ -24139,3 +24139,30 @@ PR830 coordinator metrics (manual observations): start-to-merge3844.8s,
 CI-observation-wait557.9s, fresh-review rework0, verified user outcomes1. Escaped
 defects unknown (zero observations is not proof of none). Owner primary checkout
 still has its same six unrelated IDE/docs paths; no reset/stash/staging there.
+
+PR831 CI repair admission — 404-commit-admission-deadline-fix: required
+CI44871062084 failed the existing comparison-host deadline fixture. Its80ms
+wall-clock limit elapsed during slow runner setup, before the fake process was
+allocated; children.single then threw No element. No production source changed
+in PR831 and the Python job passed. This is a test lifecycle race, not evidence
+that runtime timeout/reaping failed. Original investigation claim explicitly
+released after recording review_changes; acquired exact two host-test paths plus
+shared documentation under a new scoped repair claim, same PR/umbrella404.
+Acceptance: inject deadline expiry before startup and after confirmed fake-child
+startup in both comparison and diagnostics fixtures. Assert zero launches in the
+first case, owned-child reaping in the second, no current observation and confirmed
+cleanup in both. Keep production deadlines and protection unchanged. Rerun focused
+and full tests/analyze/format plus required CI, then freshly review the revised
+exact PR head. Original commit-admission investigation stays pending until that
+reviewed merge; no index reader, commit or rollback capability is added.
+
+Deadline fixture repair validation: comparison/diagnostics19PASS, covering injected
+expiry before any child and after the explicit startup handshake. Both confirm
+cleanup and absence of a current observation; startup case asserts zero launches,
+running case asserts owned-child signals/reaping. Full Flutter2926PASS/13existing
+platformskips, analysis clean, formatter742/0changes, inventory9PASS and regenerated
+inventory byte-identical. Only two test files and the three scoped documents
+changed; production timer defaults, worker code and packaged assets are unchanged.
+PR831 will be updated by an appended commit (no history rewrite), then reviewed
+fresh for its exact revised head with every required remote check rerun. Prior
+failed CI is retained as evidence, not treated as a passing run.
