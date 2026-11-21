@@ -9984,3 +9984,89 @@ checks/review/merge remain pending. No model calls or owner runtime changes.
 Checkpoint validation: comparison probes12, acceptance inventory9 and product32
 passed; git diff --check clean. Documentation-only checkpoint; full final revision
 review/publication/required CI remain pending for this investigation.
+
+
+### F20 / CE01 — explicit proposed-copy comparison, started 21 November 2026 UTC
+
+PR826 admission investigation verified merged as4f346dc958c679b644068b052fff6f55fd08aa57,
+reviewed remote f2ba194c7da2b35b2d7c1405559f14eaa400bf94, tested tree
+782f023d34b42c8d7cdcccb4f604028dca96d932. Fresh exact review, requiredCI44858337019
+jobs136705671626/136705671954 every step/poststep and inspected logs passed.
+Plugin/main/PR/fetched tree agree,404OPEN. Twelve disposable probes/inventory9/
+product32 passed again. This was admission evidence, not an app comparator.
+Manual task-to-merge1029.6s, CI observation wait602.7s,0 finalreview rework, one
+bounded prerequisite outcome; no escaped defects reported does not establish none.
+Completed integration/claim released. Owner6unrelated edits/processes preserved.
+
+Immediately started claimed404-explicit-proposed-copy-comparison under existing404.
+Outcome: explicit fresh bounded read-only observation of both saved complete trees,
+with dated matching/changed/refused comparison and retained previous evidence.
+Acceptance: strict prepared original/edit journal cross-links, current runtime and
+fresh nonce; unresolved recovery/foreign/stale joins refuse; zero-update durable
+fences/shared source lease; trusted owned helper pins destination/run/root identities
+for both copies and guards all three pending markers before/after complete scans.
+No Git/repository commands, mutations, revived approval or execution authority.
+Stop/disposal/changed input/unknown cleanup cannot publish new matching evidence.
+Complete model/store/controller/helper/native/UI, adverse tests, actual native DB
+reopen, IAB and relevant full checks/builds/review/CI/verifiedmerge required.
+Sole coherent writer; no independent second task ready. No inference/install/
+stable replacement/cloud/deploy; #400/marketplace/F23-last and fullF20OPEN remain.
+
+Initial implementation checkpoint: strict ImportedCommitEditComparisonRequest now
+binds both exact prepared journal/request/receipt digests, original/edit attempts,
+commit/tree/complete fingerprints, selected byte/mode identities, current trusted
+Python and fresh nonce without copying replacement text into the read request.
+Both unresolved and acknowledged-but-never-prepared edit evidence refuse; changed
+original histories and foreign proposal joins refuse. Runtime must remain outside
+protected roots/copy destinations; strict bounded schema rejects duplicate/unknown
+keys, types, malformed hashes, paths, modes and counts. Schema restoration grants
+no current durable or physical read authority. Six new model regressions plus one
+architecture test pass, clean full analysis, two-file formatter passed. A test
+fixture initially reused an original attempt ID; changed to a fresh ID, preserving
+the existing journal duplicate refusal. No production journal policy weakened.
+Full comparator result/helper/host/store/controller/UI, native/reopen/IAB and final
+full regression/build/review/CI/merge acceptance remain pending in this same task.
+No native comparison button or completed comparison capability is claimed yet.
+
+Comparison implementation local acceptance: complete strict request/result,
+zero-update four-input store, shared source lease, fenced controller, trusted
+helper/owned native host/stub, explicit view and pinned history route now wired.
+No native IO on opening/reloading history; explicit read only, no durable writes.
+Dated matching/changed/refused evidence and previous complete observation remain
+separate from current-input validity, approval, source trust and execution.
+Both full trees are scanned twice with pinned destination/run/root descriptors,
+all three pending markers guarded, selected hashes/lengths/mode checked before
+matching. Missing/linked/changed/binary/mode/empty-directory and directory-swap
+fixtures pass. Owned helper makes no Git/repository-command/model calls. Native
+input resolution excludes both complete copy destinations before process entry,
+including outside symlinks into copied code. Stop/deadline/session/group cleanup,
+late startup, foreign/oversized/stderr receipts, final-cleanup Stop and unknown
+cleanup ownership remain fail-closed. All existing journal schemas preserved.
+
+Final local checks:2891Flutter PASS/13 opt-in skips,33 new unique focused tests
+plus architecture1, Python12comparison/11edit/14copy/9recheck, inventory9/product32,
+728-file zero-change format and clean analysis. Production web build passed at
+/private/tmp/asg404-proposed-comparison-web. Isolated unsigned macOS debug build
+passed with separate identifier com.arsinha.asg.comparisonvalidation, output
+/private/tmp/asg404-proposed-comparison-derived/Build/Products/Debug/Automated
+Software Generator.app; both packaged trusted tool bytes match source. No install
+or native GUI launch acceptance claimed. Actual bundled native current-plan/
+original-copy/proposed-copy/database-reopen comparison passed matching, changed
+binary peer and incomplete-output refusal while retaining previous observation.
+Six exact durable inputs, original/copy/replacement bytes, dirty/untracked source,
+index/HEAD/refs preserved; native event binds comparison request/receipt/helper
+SHA256s in /tmp/asg404-proposed-comparison-native-flow.json. Test-only fixture
+issues (wrong synthetic run name, private database snapshot accessor and offscreen
+Stop tap) were corrected without weakening production refusal or cleanup policy.
+
+Separate IAB35 synthetic evidence: initial0helpercalls; explicitmatching1,changed2,
+refused3,delayedStop4,changed-runtime5. Appwrites0 and both saved histories unchanged
+throughout. Matching result showed exact one-file comparison; refused read retained
+last completed observation, Stop/runtime mutation did not relabel prior evidence
+as current. Visual disclosure included both copy paths/fingerprints, history
+digests, selected path, current Python, fresh nonce, bounds and no authority grant.
+Owned8408 preview stopped, owner processes preserved. Final20scoped input hashes
+unchanged; combined build/native/IAB receipt
+/tmp/asg404-proposed-comparison-final-receipt.json. Fresh exact PR review, required
+CI and verified merge remain separate pending gates. FullF20/CE01/#404OPEN, #400/
+marketplace/F23-last unchanged; no live inference/install/stable replacement/cloud.
