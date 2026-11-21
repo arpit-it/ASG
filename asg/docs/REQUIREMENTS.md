@@ -25874,3 +25874,88 @@ pending fresh exact review, required CI and verified merge; fullF20/#404OPEN.
 PR833 remote full Flutter2873PASS/95platformskips and browser17PASS were confirmed
 in decoded CI logs, separate from this Mac2958PASS/13skips. Owner processes and
 six unrelated primary IDE/docs paths preserved. No model calls or installs.
+
+
+### Working-file admission verified / selected-file comparison started, 21 November 2026 UTC
+
+PR834 verified merged c4e985fd7136082c458b2d2e1af769a15f28f280, exact reviewed
+remote794cc767ce3f363d0d93d3911ea06c4f1f53a1da/local2741810baf8d65f6d63ea34f40310a9ffa6c9ddc,
+tree dab7701eb49dbeba5e66421ae929a81a55c0845c. Fresh review found no blockers;
+CI44879631975 jobs136771850581/136771850771 all steps/poststeps passed, decoded
+logs inspected: Flutter2873/95platformskips, browser17, analysis/format, web and
+independent generated-project checks. Prototype20 (6 comparisons/14 refusals),
+Python12/31/9/32 and immutable models7/architecture1 passed. Plugin/main/fetched
+merge and tree agree; #404OPEN. This investigation adds no app working-file
+reader, Git status or commit authority. Completed integration/claim released.
+
+Immediately claimed404-selected-workfile-comparison under existingF20/CE01/#404.
+Coherent outcome: explicit read-only comparison of1–4 selected indexed Dart files
+against a matching current index observation. Acceptance: strict root/Python/
+index-request/index-receipt/fingerprint/selection/fresh-nonce joins; trusted
+command-free helper holds no-follow index and file descriptors, bounds32KiB/file
+and64KiB aggregate, revalidates all held identities and locks, refuses without
+partial files. Explicit selection, review and one-use consent; current-index and
+two durable record fences/shared source ownership; owned cleanup/Stop/stale/
+disposal handling and dated historical results. Show raw-byte and literal-mode
+comparisons separately; filters/HEAD/whole-repository state stay unknown and
+commit/mutation authority false. No file content sharing. Preserve source/index
+bytes and app records. Unsupported hosts remain readable/unavailable. Pure models,
+helper/host/store/controller/panel and adverse/native/reopen/IAB/full checks/
+builds/fresh review/CI/merge remain one coherent pending implementation. Sole
+writer/no independent second ready task. #400/marketplace/F23-last/fullF20OPEN
+unchanged; no model/download/install/stable replacement/cloud/deploy. Owner edits
+and processes preserved.
+
+Selected working-file comparison initial model checkpoint: request binds exact
+index request/receipt hashes, index fingerprint/length, current external Python,
+root,1–4 sorted declared Dart paths/modes/object labels and fresh nonce. Strict
+result schemas separate raw-byte and literal executable-mode comparisons, bound
+per-file/aggregate sizes and refuse foreign/forged/contradictory/partial results.
+No raw content is carried; filters/HEAD/whole-repository state remain unknown and
+commit/mutation/Git-state authority false. Arrays are immutable. Seven adverse
+model tests plus architecture1PASS; full analysis clean, two-file formatterPASS.
+Initial test invocation used an incorrect path and did not start; corrected before
+validation. Six new brace-style findings were fixed and tests/analyze rerun clean.
+No known failure bypassed. Models alone do not prove physical readset identity or
+provide an app working-file reader. Next in this same coherent task: trusted
+command-free joint index/file helper, owned host, current-index/durable fences,
+selection/review/consent UI, native/reopen/IAB and final full checks/build/review/
+CI/verified merge. Initial checkpoint stays unmerged and fullF20/#404OPEN.
+PR834 manual metrics: start-to-merge915.3s, CI observation430.6s, review rework0,
+verified prerequisite outcome1; escaped defects unknown (zero observations).
+Owner six primary IDE/docs edits/processes preserved; no model/install/deploy.
+
+Selected working-file comparison implementation ready for final validation:
+trusted command-free helper binds the expected index hash/length and exact selected
+entry declarations, holds no-follow descriptors for index and1–4 selected files,
+bounds32KiB/file64KiB aggregate, computes raw blob/SHA256 and literal executable
+comparisons, then revalidates all held files/directories and index locks. No
+filters/config/project commands or content sharing; failures contain no partial
+files or accepted index identity. Owned native session/group/stream/private
+cleanup handles late startup/Stop/deadline/disposal and blocks overlap on uncertain
+cleanup. Current index request/receipt and two zero-update durable runtime/folder
+fences join explicit selection/review/single-use consent and shared source-worker
+ownership. Stale inputs exclude current results; dated prior comparisons remain
+historical. Index panel now exposes the separate read; unsupported hosts remain
+readable with action unavailable. Raw bytes and executable differences stay
+separate; Git filters/HEAD/whole-repository state unknown and commit authority false.
+Python helper12PASS; focused35PASS (models7,host8,store3,controller9,panel6,actual
+native/reopen1,architecture1). Existing index-panel5PASS alongside the new panels.
+An initial store/domain selection-name collision was fixed by naming the durable
+input snapshot separately; style findings fixed. A duplicate hint label and a
+virtual-clock wait in new widget checks were corrected, then tests reran clean.
+No known failure bypassed. Full analysis clean; format770/0changes. Inventory
+refreshed, inventory9/product32PASS. Actual native/reopen verifies Cancel0dispatch,
+no automatic/replayed read, binary raw mismatch/mode match, lock refusal without
+partial files retaining prior evidence, preserved source/index/untracked bytes
+and both app inputs, and confirmed cleanup. Receipt:
+/tmp/asg404-workfile-native-reopen-receipt.json. Separate IAB tab38 synthetic
+fixture verifies startup0/Cancel0 calls, matching/differing byte/mode labels and
+fingerprints, refused retry retaining dated history, delayed Stop and changed
+runtime refusing current completion. Finalcalls5/appwrites0/fixturechanges1; no
+native source/model accessed. Receipt /tmp/asg404-workfile-iab-receipt.json; owned
+server8411 stopped. Final full regression, production web/isolatedMac build, exact
+fresh review, required CI and protected merge remain mandatory. One coherent
+unmerged task; fullF20/#404OPEN, #400/marketplace/F23-last unchanged. No model
+requests/download/install/stable replacement/cloud/deploy; owner edits/processes
+preserved.

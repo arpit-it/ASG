@@ -2,6 +2,8 @@
 // Copyright 2026 Arpit Sinha
 import 'package:flutter/material.dart';
 
+import 'imported_workfile_panel.dart';
+
 import '../controllers/imported_index_controller.dart';
 import '../models/imported_index_observation.dart';
 import '../services/imported_index_host_factory.dart';
@@ -196,6 +198,11 @@ class _ImportedIndexPanelState extends State<ImportedIndexPanel> {
             if (controller.lastObserved case final previous?)
               if (!identical(previous, controller.observation))
                 ..._observation(previous, current: false),
+            ImportedWorkfilePanel(
+              root: widget.root,
+              records: widget.records,
+              index: controller,
+            ),
           ],
         ),
       ),
