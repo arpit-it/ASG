@@ -10,8 +10,13 @@ import '../models/imported_commit_edit_request.dart';
 import 'source_diff_view.dart';
 
 class ImportedCommitEditScreen extends StatefulWidget {
-  const ImportedCommitEditScreen({super.key, required this.controller});
+  const ImportedCommitEditScreen({
+    super.key,
+    required this.controller,
+    this.onCompare,
+  });
   final ImportedCommitEditController controller;
+  final void Function(ImportedCommitEditRecord)? onCompare;
   @override
   State<ImportedCommitEditScreen> createState() =>
       _ImportedCommitEditScreenState();
@@ -178,6 +183,14 @@ class _ImportedCommitEditScreenState extends State<ImportedCommitEditScreen> {
         'Whole-copy fingerprint: ${saved.observation!.fingerprint}',
       ),
       SelectableText('Original commit: ${saved.request.commit}'),
+      if (widget.onCompare != null)
+        OutlinedButton.icon(
+          onPressed: !c.busy && !history.needsRecovery
+              ? () => widget.onCompare!(history)
+              : null,
+          icon: const Icon(Icons.compare_arrows),
+          label: const Text('Compare saved proposed copy'),
+        ),
     ],
     for (final attempt in history.attempts.reversed)
       ExpansionTile(
