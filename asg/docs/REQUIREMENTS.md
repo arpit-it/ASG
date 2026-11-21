@@ -25033,3 +25033,120 @@ log /tmp/asg404-rechecked-replacement-admission.log. No production model changed
 no source/copy writes, host processes or model requests in this investigation.
 This checkpoint awaits its own review/publication; fullF20/CE01 remains OPEN.
 #400/marketplace/F23-last and owner6dirty remain unchanged.
+
+### Rechecked replacement admission — verified / isolated proposal output started, 21 November 2026 UTC
+
+PR #824 merged as `271ec4b4f133cbe3048333055854c92310a2a5b5`, reviewed
+tree `d0d1f4b4041d26778ddf1731d35f5f354f4e7c59`, after fresh review of
+exact head `e3ca47e9e18332da10aa02ba7cd5b642e3646144`. Required
+CI44852692517 Flutter136687518208/Python136687518353 passed every step and
+poststep; logs inspected, reviewed head/base unchanged, no unresolved threads.
+Plugin main/PR and fetched remote tree independently agree; #404 remains OPEN.
+Ten typed admission probes passed again on unchanged runtime inputs; the reviewed
+change was documentation only. Completed integration/writer ownership released.
+Manual observations: 921.3 seconds task-to-merge, 570.9 seconds paired
+CI observation wait,0 final-review rework events,1 verified prerequisite evidence
+outcome; escaped defects unknown (0 reported observations).
+
+Immediately claimed `404-isolated-commit-proposal-copy` from verified main in
+the registered worktree. One coherent app outcome: after current committed-plan
+approval, fresh complete-copy review and explicit destination consent, prepare a
+separate private full output substituting exactly one reviewed root lib/test Dart
+file. Preserve original repository/copy, executable mode, literal byte format,
+last ready outputs and durable recovery; no generic execution adapter or command
+authority. Scope includes strict request/result/journal, full current-input fences,
+owned reader/writer cleanup, trusted bounded staging/publication, explicit UI and
+separate history/reopen with relevant tests/builds/IAB/review/requiredCI/merge.
+No second independent disjoint dependency-ready task was found; sole writer.
+
+Initial pure ImportedCommitEditRequest implemented and tested. It revalidates
+prepared copy history, exact current saved proposal/context/plan and selected
+path/mode/Git blob/hash/length; a strict matching recheck must bind the same whole
+copy and current interpreter. Destination/attempt constraints, request/receipt/
+recheck/current proposal digests and literal replacement hash/length are recorded
+in bounded intent. BOM presence is preserved; an existing supported leading legal
+header must remain byte-identical, and unsupported placement refuses. A leading
+line-comment or block-comment header is supported without silently normalizing
+BOM/CRLF. The original mode is retained in intent. Supplied intent remains neither
+current consent nor native evidence/execution authority.
+
+Six new model regressions passed; focused model/recheck/architecture15 passed,
+analysis clean and new files formatted. Logs /tmp/asg404-commit-edit-start*.log.
+No host dispatch or output write exists in this initial checkpoint. Strict restore,
+result/journal, fenced controller/store, native helper/host, UI/history, complete
+validation and fresh PR review/requiredCI/verified merge remain pending within
+the same coherent task before publication. No new issue, model request, install,
+stable replacement, provisioning or deployment. Owner6dirty/processes and
+#400/marketplace/F23-last unchanged; fullF20/CE01/#404 remains OPEN.
+
+### Isolated committed proposal copies — integrated validation, 21 November 2026 UTC
+
+The claimed coherent workflow now joins the current approved saved proposal and
+original-copy history to an owned fresh full read, reviews the exact replacement
+diff and destination, then requires explicit confirmation before writing. Seven
+current durable inputs fence admission and completion: folder registration,
+requirements, full plan, saved committed proposal, runtime, original-copy history
+and separate proposed-copy history. Pending intent is durable before helper entry;
+failed/lost admission does not dispatch. Journal-only recovery never promotes an
+uncertain receipt, overwrites a competing winner or replays work. Original schemas
+and working outputs remain intact; the additive proposed-copy journal has a
+16-attempt/1MiB limit and optional-record corruption isolation on native reopen.
+
+The bundled writer pins original source/copy/run/destination identities and guards
+both original preparation markers, protected Git storage and application bundles.
+Only bounded config-disabled trusted Git metadata reads protect storage; no
+repository-authored commands, hooks, filters, builds, tests, model or execution
+authority. All bounded nonselected files/directories are copied; exactly one
+reviewed existing root lib/test Dart file is substituted with its original
+executable mode. Literal BOM/CRLF and exact supported leading legal-header bytes
+are preserved. Full staged and published fingerprints are verified before the
+new pending marker is removed. Original repository/copy and earlier outputs are
+not overwritten or reset.
+
+Read-only boundary review found and closed a resolved-interpreter escape: an
+outside configured symlink could point into the original copy. Native admission
+now rejects resolved paths and ancestor identities against the full baseline
+parent; the actual symlink regression proves zero starts/assets/temp effects.
+Review also identified a new-marker publication interval. A regression reproduced
+prepared output after post-publication mutation; final output directory identity,
+complete fingerprint and file count are now checked again before declaring this
+protocol complete. /tmp/asg404-commit-edit-publication-before.log retains the
+red case; final Python suite passes. The lost-admission assertion was corrected
+to observe the actual injected host. All findings were pre-publication.
+
+38 focused unique model/controller/store/native-host/widget/native-flow checks
+passed after fixes. Actual native review creates no output, explicit confirmation
+creates the separate replacement, and native database reopen retains both old and
+new histories without dispatch. Original dirty/untracked/index/HEAD/ref bytes and
+the original copy stay unchanged. The strengthened native fixture preserves
+BOM/CRLF/MPL/legal header while changing the code body; an initial fixture trying
+to alter its protected comment prefix was correctly refused. Python11 writer
+fixtures include real owned SIGTERM during staging with retained pending output,
+plus original-copy14/recheck9 passed. Final fullFlutter2858/13 opt-in skipped,
+analysis/format/inventory9/product32 and production web passed. Isolated unsigned
+macOS build, separate synthetic IAB interactions, fresh exact PR review, requiredCI
+and verified merge remain pending until recorded below. No model requests,
+installs, stable replacement or deployment; fullF20/CE01/#404 remains OPEN,
+#400/marketplace/F23-last unchanged.
+
+Final isolated proposal-copy validation — 21 November 2026 UTC: fullFlutter2858
+passed/13 opt-in skipped,38 focused unique checks, Python11 writer/14 original-copy/
+9 recheck, inventory9/product32, clean analysis/format and production web/isolated
+unsigned macOS builds passed. Bundle com.arsinha.asg.proposedcopyvalidation contains
+exact source tool bytes; no install or native GUI acceptance claimed. Actual native
+proposal review -> durable pending -> owned writer -> full output verification ->
+completion -> database reopen retained original copy, committed proposal and dirty
+source/index/HEAD/refs; BOM/CRLF/legal header and binary peer bytes were preserved.
+
+Separate IAB34 synthetic evidence: initial0reads/0writers/0writes; review+Cancel
+1read/0writers/0writes; explicit success1/1/2; second Stop2/2/4; checked operator
+acknowledgement2/2/5; failed completion3/3/7. Original-copy/proposal bytes remained
+unchanged throughout, prior ready output retained, uncertain receipt recovery-only.
+Independent read-only history preserved the same counters and three attempts.
+Consent visually disclosed exact copy/file/hash/plan/destination and replacement,
+all-file bounds, legal/BOM/mode preservation, private history retention and no
+execution/model grant. Owned8407 preview stopped; owner processes preserved.
+Final unchanged input/build/native/IAB receipt /tmp/asg404-commit-edit-final-receipt.json.
+Fresh exact PR review, requiredCI and verified merge remain separate pending gates.
+No live inference, stable replacement, provisioning or deployment. FullF20/CE01/#404
+remains OPEN; #400/marketplace/F23-last unchanged.

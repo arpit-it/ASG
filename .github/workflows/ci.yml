@@ -68,6 +68,8 @@ jobs:
         run: python -B tools/test_imported_commit_copy.py
       - name: Verify read-only immutable copy rechecks
         run: python -B tools/test_imported_commit_copy_recheck.py
+      - name: Verify bounded isolated imported proposals
+        run: python -B tools/test_imported_commit_edit.py
       - run: python -B tools/test_product_acceptance.py
       - run: python -B tools/test_acceptance_inventory.py
       - name: Verify native fixture report contracts

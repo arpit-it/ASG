@@ -7,6 +7,10 @@ import '../controllers/requirements_controller.dart';
 import '../models/project_inspection.dart';
 import 'imported_commit_proposal_screen.dart';
 import 'imported_commit_copy_screen.dart';
+import 'imported_commit_edit_screen.dart';
+import '../controllers/imported_commit_edit_controller.dart';
+import '../services/imported_commit_edit_store.dart';
+import '../services/imported_commit_edit_host_factory.dart';
 import '../controllers/imported_commit_copy_recheck_controller.dart';
 import '../services/imported_commit_copy_recheck_store.dart';
 import '../services/imported_commit_copy_recheck_host_factory.dart';
@@ -56,6 +60,23 @@ class ImportedProjectWorkspace extends StatelessWidget {
     required ImportedCommitCopyController controller,
   }) => ImportedCommitCopyScreen(
     controller: controller,
+    onPropose: (history) {
+      if (!context.mounted) return;
+      Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (_) => ImportedCommitEditScreen(
+            controller: ImportedCommitEditController(
+              root: inspection.root,
+              inspection: inspection,
+              expectedCopyDigest: history.digest,
+              store: ImportedCommitEditStore(records),
+              host: createImportedCommitEditHost(),
+              reader: createImportedCommitCopyRecheckHost(),
+            ),
+          ),
+        ),
+      );
+    },
     onRecheck: (history) {
       if (!context.mounted) return;
       Navigator.of(context).push(
@@ -269,6 +290,22 @@ class ImportedProjectWorkspace extends StatelessWidget {
           ),
           icon: const Icon(Icons.history),
           label: const Text('Open baseline-copy history'),
+        ),
+        OutlinedButton.icon(
+          onPressed: () => Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) => ImportedCommitEditScreen(
+                controller: ImportedCommitEditController(
+                  root: inspection.root,
+                  store: ImportedCommitEditStore(records),
+                  host: createImportedCommitEditHost(),
+                  reader: createImportedCommitCopyRecheckHost(),
+                ),
+              ),
+            ),
+          ),
+          icon: const Icon(Icons.history),
+          label: const Text('Open proposed-copy history'),
         ),
         ProjectSourcePanel(
           root: inspection.root,
