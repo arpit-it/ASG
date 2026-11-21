@@ -10497,3 +10497,85 @@ was not closed before release, so that counter remains incomplete/unknown; the
 actual failed run and reason are retained, not erased or reported passing. Revised
 CI passed in full. Escaped product defects remain unknown (zero observations does
 not prove none). #404OPEN; no model/install/deploy; owner processes preserved.
+
+Verified index-admission prerequisite — PR832,21 November2026 UTC: protected merge
+d49cfd13a4809cb354166a12e44197319bd9240a, exact reviewed remote
+cc35dd33bf8bf1178517a1fb188f5fbaecb94c11/local8495bc545d3b68cbdc5a13be5aaf8c71d9f02abd,
+tree6a7c33b3dc8737f344aa8c5f37960139d1089d44. Fresh exact review and required
+CI44874043494 jobs136754682410/136754682631 all steps/poststeps passed; decoded
+logs inspected. Plugin/fetched main agree; #404OPEN. Prototype28 zero-process/
+reader-write cases, metadata33/models10/inventory9/product32 passed again. No app
+index reader was added by that investigation. Completed integration/claim released.
+
+Immediately claimed404-original-index-observation under existingF20/CE01/#404.
+Coherent outcome: explicit bounded local index declarations in inspected projects,
+not Git status/working-tree/HEAD-membership verification or commit authority.
+Acceptance: strict root/current external Python/fresh nonce request/result joins;
+no-follow whole-index identity checks and checksum/entry/lock validation; bounded
+known optional TREE envelope as opaque checksum-bound cache, refusing unknown or
+mandatory extensions. Existing owner's index read-only format inspection found
+v2/946entries/TREE5556bytes, no paths/content printed and no files changed. That
+compatibility gap must be covered rather than inheriting HEAD packed-ref refusal
+as an unrelated index-entry rule. No cache truth or configured-object-format trust
+is inferred. Explicit consent, runtime/folder zero-update fences/shared lease,
+owned worker/Stop/stale/disposal/unknown-cleanup, retained dated evidence and
+unsupported-platform behavior required. Typed models/helper/host/store/controller/
+view plus adverse, native/reopen/IAB/full checks/build/fresh review/CI/merge remain
+one pending implementation, not separate delivered features. No model/install/
+stable replacement/cloud/deploy. Sole writer; #400/marketplace/F23-last unchanged.
+
+Original-index observation initial implementation checkpoint: immutable request
+binds literal root, current external interpreter and fresh read nonce. Strict
+bounded response binds exact request/root/nonce, entry paths/modes/object labels,
+whole-index hash/byte length, known opaque optional-cache labels and timestamp.
+All decoded results keep Git/working-tree/HEAD membership unknown and commit/
+mutation authority false. Failure statuses carry no partial entries/index/cache
+identity. Unknown/duplicate fields, malformed scalar paths, unsafe/aliased/unsorted
+entries, unsupported modes/caches, impossible byte bounds, foreign identity and
+forged authority refuse. Arrays are immutable. Seven model regressions plus
+architecture1PASS; full analysis clean and two-file formatterPASS. Models alone
+do not establish physical index trust, app inspection or execution permission.
+Native helper/transport/store/controller/consent UI and final native/reopen/IAB/
+regressions/build/review/CI/merge remain pending as the same coherent task.
+PR832 coordinator manual metrics: start-to-merge1424.8s, CI-observation-wait607.4s,
+review rework0, verified prerequisite outcome1. Escaped defects unknown (zero
+observations do not prove none). Owner primary still has the same six unrelated
+IDE/docs paths; no reset/stash/staging there. #404OPEN; no model/download/install/
+stable replacement/cloud/deploy. Active implementation lease renewed.
+
+Original-index observation implementation ready for final local validation:
+command-free helper validates bounded whole-index checksum and regular stage0
+entries through held no-follow descriptors. Known optional TREE cache is bounded,
+opaque and checksum-bound; unknown/mandatory extensions refuse. Packed refs are
+unrelated and never opened. Index links/hardlinks/locks, changed bytes/inodes/
+directories, unsupported fields and Stop/deadline refuse without partial data.
+Native host owns session/group, bounded streams and private cleanup, with sticky
+unknown cleanup blocking overlap. Two zero-update durable runtime/folder fences,
+shared source ownership, exact one-use consent, stale/disposal handling and dated
+historical observations are integrated into an explicit inspected-project panel.
+No automatic read occurs. Index labels never grant Git/working-tree/HEAD-membership
+verification or commit/mutation authority. App wiring/assets and Python CI fixture
+step added. Arrays/paths/hashes stay bounded; UI limits visible entries to50.
+Python12PASS; initial focused32PASS (model7,host8,controller8,store3,panel4,
+native/reopen1,architecture1); added observed-result390px/200% panel coverage
+PASS, giving33focused checks. A busy-listener regression exposed repeated Stop
+notifications during implementation; stopped-state guard made Stop idempotent,
+then full foundations reran successfully. Retained red log:
+/tmp/asg404-index-foundation-before-stop-fix.log. No known failing test is bypassed.
+Actual native Sembast reopen flow confirms no automatic/replayed/cancelled
+consent dispatch, TREE observation, both durable inputs/source metadata/dirty and
+untracked bytes preserved, and confirmed group/private cleanup. Receipt:
+/tmp/asg404-index-native-reopen-receipt.json. Separate native read-only existing
+primary index compatibility:946entries/118836bytes/TREE observed; index bytes and
+modification metadata unchanged, no paths/file contents recorded, cleanup true;
+Git state/commit authority false. Receipt /tmp/asg404-index-existing-native-receipt.json.
+Separate IAB tab37 synthetic checks: startup0/cancel0 calls, observed details,
+unsupported refusal retaining historical read, delayed Stop, changed runtime
+refusing current completion; finalcalls4/appwrites0/fixturechanges1. No native
+metadata/model accessed by the browser fixture; server8410 stopped. Receipt:
+/tmp/asg404-index-iab-receipt.json. Acceptance inventory refreshed; inventory9/
+product32PASS. Final full regression/analyze/format, production web/isolatedMac
+build and exact fresh PR review/required CI/protected merge remain mandatory.
+This is an unmerged coherent implementation checkpoint. FullF20/#404OPEN;
+#400/marketplace/F23-last unchanged; no model/download/install/stable replacement/
+cloud/deploy. Owner processes/edits preserved; lease remains active.
