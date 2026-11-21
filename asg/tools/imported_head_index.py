@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MPL-2.0
 # Copyright 2026 Arpit Sinha
-"""Declared HEAD direct-loose object facts. Never Git status or write authority."""
+"""Explicit bounded declared-object reads. Never Git status or write authority."""
 import hashlib
 import importlib.util
 import json
@@ -32,6 +32,7 @@ OBJECT_COUNT = 70
 PACKED_LIMIT = 262144
 PACKED_COUNT = 2048
 PACKED_HEADER = b'# pack-refs with: peeled fully-peeled sorted \n'
+OBJECT_PROFILE = 'bounded-loose-pack2-index2-v1'
 
 
 class Refusal(Exception):
@@ -47,10 +48,15 @@ def request(raw):
     if not isinstance(raw, str) or len(raw.encode('utf-8')) > REQUEST_LIMIT:
         raise ValueError()
     d = json.loads(raw, object_pairs_hook=index.unique)
-    if (not isinstance(d, dict) or set(d) != {'version', 'scope', 'root', 'python', 'read_id',
-            'workfile_request_sha256', 'workfile_observation_sha256', 'index_sha256', 'index_byte_length', 'selected_files'}
-            or type(d['version']) is not int or d['version'] != 1
-            or d['scope'] != 'imported-head-index-read-request'
+    legacy_keys = {'version', 'scope', 'root', 'python', 'read_id', 'workfile_request_sha256',
+                   'workfile_observation_sha256', 'index_sha256', 'index_byte_length', 'selected_files'}
+    if not isinstance(d, dict) or type(d.get('version')) is not int:
+        raise ValueError()
+    if (d['version'] == 1 and set(d) != legacy_keys
+            or d['version'] == 2 and (set(d) != legacy_keys | {'object_profile'} or d.get('object_profile') != OBJECT_PROFILE)
+            or d['version'] not in (1, 2)):
+        raise ValueError()
+    if (d['scope'] != 'imported-head-index-read-request'
             or not all(label(d[k], 64) for k in ('workfile_request_sha256', 'workfile_observation_sha256', 'index_sha256'))
             or type(d['index_byte_length']) is not int or not 32 <= d['index_byte_length'] <= index.INDEX_LIMIT
             or not isinstance(d['selected_files'], list) or not 1 <= len(d['selected_files']) <= 4):
@@ -111,6 +117,7 @@ class Reader(index.Reader):
         super().__init__()
         self.objects = self.ref_parent = self.ref_name = None
         self.reference_acquisition = None
+        self.pack_store = None
 
     @staticmethod
     def present(parent, name):
@@ -139,6 +146,8 @@ class Reader(index.Reader):
                 raise Refusal('changed' if changed else 'unsupported_layout')
         if self.ref_parent is not None and self.present(self.ref_parent, self.ref_name + '.lock'):
             raise Refusal('changed')
+        if self.pack_store is not None:
+            self.pack_store.validate()
 
 
 class Objects:
@@ -197,6 +206,38 @@ class Objects:
                 return None
             tree = entry.oid
         raise Refusal('invalid_object')
+
+
+
+class PackedObjects(Objects):
+    def __init__(self, reader):
+        super().__init__(reader)
+        # Load only for the new explicit request profile. Legacy requests keep
+        # their original sibling assets and their loose-only behavior.
+        self.pack = load('asg_head_pack_objects', 'imported_pack_objects.py')
+        self.store = self.pack.PackStore(reader, index.check, parser.verified_object, metadata.signature)
+        reader.pack_store = self.store
+
+    def read(self, kind, oid):
+        key = (kind, oid)
+        if key in self.cache:
+            return self.cache[key]
+        if self.store.object_count >= OBJECT_COUNT:
+            raise Refusal('bounds')
+        try:
+            result = super().read(kind, oid)
+        except Refusal as error:
+            if error.reason != 'missing_loose_object':
+                raise
+        else:
+            self.store.record_loose(kind, oid, result)
+            return result
+        result = self.store.read(kind, oid)
+        self.bytes += len(result)
+        if self.bytes > OBJECT_LIMIT:
+            raise Refusal('bounds')
+        self.cache[key] = result
+        return result
 
 
 def declared_head(reader):
@@ -258,7 +299,7 @@ def observe(raw):
             raise Refusal('unsupported_layout') from None
         reader.layout()
         form, ref, head = declared_head(reader)
-        objects = Objects(reader)
+        objects = PackedObjects(reader) if d['version'] == 2 else Objects(reader)
         tree = parser.commit_tree(head, objects.read('commit', head))
         try:
             content = reader.read(reader.git, 'index', index.INDEX_LIMIT)
@@ -305,8 +346,13 @@ def observe(raw):
         reason = 'changed' if error.status == 'changed' else 'bounds' if error.reason == 'metadata_too_large' else 'unsupported_layout'
     except (parser.InvalidCommitSource, zlib.error):
         reason = 'invalid_object'
-    except (OSError, ValueError, TypeError, UnicodeError, KeyboardInterrupt):
-        reason = 'unavailable'
+    except (OSError, ValueError, TypeError, UnicodeError, KeyboardInterrupt) as error:
+        if isinstance(objects, PackedObjects) and isinstance(error, objects.pack.PackReadError):
+            reason = error.reason
+        elif isinstance(objects, PackedObjects) and isinstance(error, objects.pack.PackFormatError):
+            reason = 'invalid_object'
+        else:
+            reason = 'unavailable'
     finally:
         if reader is not None:
             reader.close()
@@ -316,17 +362,21 @@ def observe(raw):
             status, reason = 'refused', 'unavailable'
         index._deadline = None
     observed = status == 'observed'
-    return {'version': 2, 'scope': 'imported-head-index-observation',
+    result = {'version': 3 if d['version'] == 2 else 2, 'scope': 'imported-head-index-observation',
             'request_sha256': hashlib.sha256(raw.encode('utf-8')).hexdigest(), 'read_id': d['read_id'], 'root': d['root'],
-            'status': status, 'reason': reason, 'acquisition': 'direct-loose-object-files' if observed else None,
+            'status': status, 'reason': reason, 'acquisition': (OBJECT_PROFILE if d['version'] == 2 else 'direct-loose-object-files') if observed else None,
             'reference_acquisition': reader.reference_acquisition if observed else None,
             'head_form': form if observed else None, 'declared_ref': ref if observed else None,
             'head_oid': head if observed else None, 'tree_oid': tree if observed else None,
             'index_sha256': d['index_sha256'] if observed else None,
-            'object_count': len(objects.cache) if observed else 0, 'object_bytes': objects.bytes if observed else 0,
+            'object_count': (objects.store.object_count if d['version'] == 2 else len(objects.cache)) if observed else 0,
+            'object_bytes': (objects.store.expanded_bytes if d['version'] == 2 else objects.bytes) if observed else 0,
             'files': files if observed else [], 'git_state_verified': False, 'repository_authenticated': False,
             'working_tree': 'unknown', 'head_membership': 'unknown', 'filters': 'unknown', 'untracked': 'unknown',
             'commit_authorized': False, 'mutation_authorized': False, 'recorded_at': index.timestamp()}
+    if d['version'] == 2:
+        result['object_acquisition'] = objects.store.provenance() if observed else None
+    return result
 
 
 def main(argv):

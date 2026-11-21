@@ -10,6 +10,7 @@ import 'package:asg/views/imported_head_index_panel.dart';
 
 import 'imported_index_controller_test.dart' as baseline;
 import 'imported_head_index_controller_test.dart';
+import 'imported_object_acquisition_test.dart' show objectAcquisitionData;
 import 'imported_head_index_observation_test.dart'
     show headIndexObservationData;
 
@@ -156,6 +157,7 @@ void main() {
           'tree_oid': null,
           'index_sha256': null,
           'object_count': 0,
+          'object_acquisition': null,
           'object_bytes': 0,
           'files': <Object>[],
         }),
@@ -297,6 +299,7 @@ void main() {
           ImportedHeadIndexObservation.fromJson(
             jsonEncode({
               ...headIndexObservationData(request),
+              'object_acquisition': objectAcquisitionData(),
               'head_form': 'symbolic',
               'declared_ref': 'refs/heads/main',
               'reference_acquisition': {
@@ -353,6 +356,20 @@ void main() {
           findsOneWidget,
         );
         expect(find.text('Loose reference: refs/heads/main'), findsNothing);
+        expect(
+          find.text('Objects: 1 loose, 3 packed including bases'),
+          findsOneWidget,
+        );
+        expect(
+          find.text('Inspected index SHA-256: ${'1' * 64}'),
+          findsOneWidget,
+        );
+        expect(
+          find.text(
+            'Declared pack checksum: ${'2' * 40} (unread contents unverified)',
+          ),
+          findsOneWidget,
+        );
         expect(tester.takeException(), isNull);
         expect(r.updatesSeen.every((m) => m.isEmpty), true);
         await tester.pumpWidget(const SizedBox());

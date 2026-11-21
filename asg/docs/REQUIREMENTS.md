@@ -26903,3 +26903,158 @@ unchanged. Complete actual local/native/browser checks and all required CI befor
 claiming that bounded app behavior. FullF20/#404 staysOPEN; #400 unavailable-platform
 acceptance, marketplace and F23-last unchanged. Six unrelated primary edits and
 owner processes preserved; no installs/downloads/stable replacement/cloud/deploy.
+
+
+### Offset-delta prerequisite verified / packed-object app increment started, 21 November 2026 UTC
+
+PR843 verified merged11415f125d3287f686a408a33adb06ac6b1e51a7, reviewed remote
+1fbb9af04ff67ba19db428227588fa3d1e4cde43/localf0abe427e0a3a8eebd43705ef2a3b16ba2ba5a7e,
+tree7c44c55ad0acf178b8a73b4b0035096a1a1d9a3f. RequiredCI44902700191 success,
+Python136841752754/Flutter136841753100 every required step/poststep passed; decoded
+logs inspected with zero error markers. Final reviewed head/base unchanged and
+no unresolved conversations before protected merge; plugin main/PR/#404OPEN and
+fetched merged tree agree. Coordinator merge/outcome recorded, completed claim/
+integration released. Supplied48/physical41 and helper21/source29/inventory9/
+product32/Flutter19PASS. Separate depth8 refusal and depth32 selected-owner
+availability remain correctly distinguished. Fresh review rework0; bounded outcome1;
+escaped defects unknown(zero observed). Total manual duration unknown; CI observation
+approximately740s is a manual interval, not provider timing. Attachment attempted;
+existing thread100identity limit preserved. Issue updated with verified evidence.
+
+Immediately claimed404-packed-head-index-read in the clean registered worktree
+from verified main under existingF20/CE01/#404. Coherent outcome: an explicitly
+consented bounded loose-or-pack2/index2 selected HEAD/index read with strict typed
+object/index provenance, legacy direct-loose history compatibility, native helper
+packaging and current input/upstream/Stop/disposal/cleanup/history fences. Literal
+request profile must bind current consent; adding prototype fallback under the old
+loose-only request/response would incorrectly widen consent. New provenance must
+separate index declarations/selected canonical objects from unread pack integrity,
+repository authentication and mutation/commit authority. FullF20 remains pending.
+
+Implementation started with asg/tools/imported_pack_objects.py and independent
+asg/tools/test_imported_pack_objects.py. Pure bounded index2 parser validates exact
+byte types and sizes, pack2/header count, SHA-1 index checksum and declared trailer
+binding, ordered nonzero unique labels, exact fanout, unique31-bit offsets and
+geometry. Immutable typed tuples retain index SHA256/size, declared pack checksum,
+pack metadata size and entries. Selected lookup and exact backward indexed base
+lookup enforce9..128KiB spans; an oversized unselected span is not read or claimed
+verified. Whole-pack integrity stays false, and an index CRC remains only a
+supplied declaration until selected bytes are independently checked. No file IO,
+commands or project execution in this module. It is not yet imported by the
+production helper or included as an application asset.
+
+Initial parser8 test groupsPASS with multiple independent malformed-input examples:
+exact lookup/immutability, backward-base and missing-label behavior, strict bounds/
+versions/count/checksum binding, resealed fanout/name/offset corruption, CRC
+non-authority, oversized unselected geometry, cancellation propagation, exact
+16384object boundary and byte bound. Existing declared-object helper21 and
+acceptance inventory9PASS. No UI/runtime behavior, acquisition protocol, stored
+record format or working output changed. Current app remains direct-loose only;
+this is an in-progress implementation checkpoint, not accepted packed-object support.
+
+Next within the active claimed increment: production held index/frame/base/delta
+composition with the verified depth32/count/encoded/expanded limits; strict typed
+request/response provenance and legacy records; explicit consent/view text; private
+native asset loading; corruption/current-input/stale/history/Stop/cleanup/reopen
+regressions. Wire the new Python tests into the unchanged required runtime check,
+update relevant acceptance inventory only with real capability evidence, then run
+format/analyze/fullFlutter/relevant web+isolatedMac builds/native packaging/reopen
+and IAB checks. Fresh exact review, requiredCI and verified merge remain mandatory.
+Checkpoint unmerged; sole valid claim retained for resume, no integration lock.
+No independent disjoint second ready task admitted. #404OPEN; unavailable-platform
+#400/marketplace/F23-last unchanged. Six unrelated primary edits, owner processes
+and last working outputs preserved; no model request/install/download/stable
+replacement/cloud provisioning/deployment.
+
+
+Packed HEAD/index application increment final local validation, 21 November 2026 UTC:
+resumed parent404-packed-head-index-read, main11415f125d3287f686a408a33adb06ac6b1e51a7,
+#404OPEN/no PR and clean checkpoint confirmed. Split the clean parent ownership
+into disjoint UI/integration and four-Python-file helper tracks under one exact
+wire contract. Helper writer committedc23bf514894b2c3a1d9a75cec3fe1f9671eed6a4,
+stopped/released; UI checkpointcf6ae121 and scoped helper cherry-pickc4e9922a
+combined under sole404-packed-head-index-integration ownership/serialized lock.
+No shared writer checkout or overlapping claim; one coherent application PR.
+
+New request2 explicitly binds object_profile bounded-loose-pack2-index2-v1 to the
+reviewed nonce/upstream/index/selected-working-file fingerprints and consent.
+New response3 carries strict typed object/index provenance and totals. Legacy
+request1/response2 retains exact direct-loose interpretation and no packed fallback;
+old observations remain historical and cannot become new consent. No preference
+keys or saved originals rewritten. Failed/stopped reads exclude all partial object,
+reference, index and provenance facts; current input/upstream/Stop/disposal/durable
+fences and sticky cleanup/shared worker ownership stay mandatory.
+
+Production parser/held store validates pack2/index2 SHA-1 declarations, exact fanout,
+unique names/31-bit geometry, deterministic unique membership, retained unmatched
+indexes, held opaque sidecars and namespace. Every selected/base frame verifies
+CRC and canonical object identity before bounded offset-delta reconstruction.
+Depth32,70combined loose/packed/base objects,512KiB encoded frames,256KiB expanded
+program/base/result work,128KiB span and64KiB program/commit/tree/32KiB blob limits
+remain. Up to4pairs/32catalog names,512KiB total index bytes/16384objects per index,
+64MiB pack metadata and optional literal1MiB opaque multi-pack-index metadata.
+Unknown/reference/thin delta/large-offset/layout/link/hardlink/lock/change/bounds
+refuse. Selected identities and declared pack checksum do not verify unread pack
+contents, an atomic snapshot, filtered/untracked state or repository authentication.
+No Git/project/filter/model command or source write is authorized.
+
+Typed immutable acquisition includes loose/packed counts, encoded/expanded bytes,
+maximum delta depth and sorted unique inspected index fingerprints/declarations.
+Totals must match the parent observation. Read-only integration review found and
+fixed contradictory provenance acceptance: require at least9encoded bytes per
+packed object, at most128KiB per packed object, depth below packed count and packed
+count no greater than inspected index declarations. Forged standalone and enclosing
+response regressions cover these invariants; all relevant checks/builds repeated.
+This was one integration-review finding before publication, not an escaped defect.
+Consent/result views show bounded loose/packed/mixed facts and label unread pack
+integrity unknown. Native packaging adds the fifth trusted sibling module while
+keeping isolated Python, held private inputs, process groups and cleanup limits.
+Required Python runtime CI adds the new pack suite; existing checks/permissions
+and branch protection unchanged. Acceptance inventory regenerated, retaining old
+observations/identities and no combined current-support verdict.
+
+Final local3045FlutterPASS/13platformskips, focused typed/model/controller/store/
+host/widget/architecture44PASS, parser11/helper35 (21legacy+14new), immutable-source29,
+HEADmetadata33/index12/workfile12/inventory9/product32PASS. Formatter788/0changes,
+analysis clean. Production web and isolated unsigned Mac buildPASS; separate bundle
+com.arsinha.asg.packedobjectvalidation was built, not installed/launched over the
+stable app. All5web/Mac helper assets match tested source bytes; receipt
+/tmp/asg404-packed-bundle-receipt.json. Test-only receipt path corrected to preserve
+earlier packed-reference observation payload; current native receipt is separate.
+No source/runtime change followed the final repeated builds/browser verification.
+
+Actual packaged native pipeline after database reopenPASS: owned manually assembled
+commit/tree/blob offset-delta pack depth2, then loose commit/ref precedence with
+packed trees/blobs after reopen. Typed counts/index fingerprint match, staged and
+working comparisons remain independent, cancelled/old consent never dispatches,
+lock refusal preserves previous dated observation, exact source/pack/index/app
+inputs remain unchanged, cleanup confirmed and model requests0. Receipt
+/tmp/asg404-packed-object-native-reopen-receipt.json includes helper/pack-helper/
+host/request-model/object-provenance-model hashes. No owner repository data used.
+
+Final IAB synthetic fixture tab41PASS: startup/Cancel0reads; packed, loose and mixed
+object provenance and all3reference sources; visible index hash/declared checksum
+and explicit unread integrity unknown; independent differences/absent path, refused
+history, delayed Stop and stale-runtime exclusion.8reads/0appwrites/1deliberate
+fixture input change, no native/source/model access. Receipt
+/tmp/asg404-packed-object-iab-receipt.json. Owned localhost8414 server stopped;
+owner-started processes untouched. Browser evidence is synthetic UI evidence,
+separate from the real native/descriptor tests. Fresh exact PR review, required CI
+and verified remote merge still gate acceptance of this bounded app increment.
+FullF20/CE01/#404 remainsOPEN; #400/marketplace/F23-last unchanged.
+
+Next eligible bounded prerequisite after verified merge under existingF20/#404:
+404-unindexed-path-admission. The canonical F07/F08/F20/CE07/CE08/CE13 relationship
+requires a read-only Git workspace inventory before approved source changes.
+Current code covers index/selected HEAD/file facts, while literal unindexed path
+inventory is absent and Git untracked/filter state intentionally remains unknown.
+Investigate bounded no-follow owned-directory name enumeration joined to the held
+index path set: literal indexed/not-declared names, deterministic order, byte/count/
+depth limits, exclusions of .git internals, aliases/links/changed-directory/locks/
+Stop/deadline refusals, preservation and cleanup. Do not label literal index absence
+as Git untracked/ignored/filtered status, evaluate Git config/ignore rules, run Git
+or project commands, read arbitrary file contents or grant write/commit authority.
+Use owned fixtures first; record concrete bounds and failure evidence before any
+app admission decision. Reuse umbrella #404 rather than inventing a new issue.
+Six unrelated primary edits, owner processes and last working outputs preserved;
+no installs/downloads/live inference/stable replacement/cloud provisioning/deploy.

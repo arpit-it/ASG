@@ -76,6 +76,7 @@ flutter:
     - tools/imported_index.py
     - tools/imported_workfile_comparison.py
     - tools/imported_head_index.py
+    - tools/imported_pack_objects.py
     - tools/project_metadata.py
     - tools/project_instruction_documents.py
     - tools/project_source_files.py

@@ -75,14 +75,14 @@ class _ImportedHeadIndexPanelState extends State<ImportedHeadIndexPanel> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                'Read the declared HEAD/reference, an optional bounded packed-reference table, direct loose commit/tree/blob objects, expected index and selected files using the packaged read-only helper. No Git, project, filter or model commands run. Files and app records are not changed.',
+                'Read the declared HEAD/reference, an optional bounded packed-reference table, bounded loose files or indexed pack2 commit/tree/blob objects, expected index and selected files using the packaged read-only helper. No Git, project, filter or model commands run. Files and app records are not changed.',
               ),
               SelectableText('Folder: ${request.root}'),
               SelectableText('Existing interpreter: ${request.python}'),
               for (final file in request.files) SelectableText(file.path),
               SelectableText('Expected index SHA-256: ${request.indexHash}'),
               const Text(
-                'This read accepts only the known packed-reference format, up to 256 KiB and 2,048 entries, with direct reference parent folders and direct loose objects. Unknown formats, replacement or alternate stores and unsupported layouts refuse. Object expansion and selected file reads are bounded. Literal matches do not authenticate the repository, establish filtered or untracked status, create an atomic snapshot, or grant commit permission.',
+                'This read accepts the known packed-reference format (256 KiB, 2,048 entries), direct reference parents, loose objects and up to four pack2/index2 pairs. Selected and base objects are limited to 70, delta depth 32, 512 KiB encoded and 256 KiB expanded bytes. Reference deltas, large offsets, unknown formats, replacement or alternate stores and changed layouts refuse. Unread pack contents are not verified. Literal matches do not authenticate the repository, establish filtered or untracked status, create an atomic snapshot, or grant commit permission.',
               ),
             ],
           ),
@@ -115,9 +115,28 @@ class _ImportedHeadIndexPanelState extends State<ImportedHeadIndexPanel> {
     ),
     Text('Read at ${value.recordedAt.toIso8601String()}'),
     if (value.observed) ...[
-      const Text(
-        'Direct loose-object declarations only. Repository authentication, filtered, untracked and whole-repository state remain unverified.',
+      Text(
+        value.objectAcquisition == null
+            ? 'Historical direct loose-object declarations. Repository authentication and whole-repository state remain unverified.'
+            : 'Bounded declared-object identities. Unread pack integrity, repository authentication, filtered, untracked and whole-repository state remain unverified.',
       ),
+      if (value.objectAcquisition case final acquisition?) ...[
+        Text(
+          'Objects: ${acquisition.looseObjectCount} loose, ${acquisition.packedObjectCount} packed including bases',
+        ),
+        Text(
+          'Packed encoded bytes: ${acquisition.encodedBytes}; expanded work bytes: ${acquisition.expandedBytes}; delta depth: ${acquisition.maxDeltaDepth}',
+        ),
+        for (final index in acquisition.indexes) ...[
+          SelectableText('Inspected index SHA-256: ${index.indexHash}'),
+          SelectableText(
+            'Declared pack checksum: ${index.declaredPackChecksum} (unread contents unverified)',
+          ),
+          Text(
+            'Index bytes: ${index.indexByteLength}; declared objects: ${index.objectCount}; pack file bytes: ${index.packFileBytes}',
+          ),
+        ],
+      ],
       if (value.referenceAcquisition case final reference?)
         Text(switch (reference.source) {
           ImportedReferenceSource.head => 'Reference source: HEAD file',
@@ -199,7 +218,7 @@ class _ImportedHeadIndexPanelState extends State<ImportedHeadIndexPanel> {
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const Text(
-              'First complete a selected-file comparison. This separate read compares direct loose-object tree declarations with the reviewed index and working-file fingerprints. It does not verify whole-repository state or grant commit permission.',
+              'First complete a selected-file comparison. This separate bounded read compares loose or indexed packed-object tree declarations with the reviewed index and working-file fingerprints. It does not verify whole-repository state or grant commit permission.',
             ),
             if (!controller.supported)
               const Text(

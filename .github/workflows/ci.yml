@@ -60,7 +60,9 @@ jobs:
         run: python -B tools/test_imported_index.py
       - name: Verify bounded selected working-file comparisons
         run: python -B tools/test_imported_workfile_comparison.py
-      - name: Verify bounded declared HEAD loose-object joins
+      - name: Verify bounded pack-index and selected-object acquisition
+        run: python -B tools/test_imported_pack_objects.py
+      - name: Verify bounded declared HEAD object joins
         run: python -B tools/test_imported_head_index.py
       - name: Verify descriptor-contained project metadata
         run: python -B tools/test_project_metadata.py
