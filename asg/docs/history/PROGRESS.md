@@ -23087,3 +23087,231 @@ review, required CI and verified merge remain pending. It does not complete full
 F20/CE01. Sole writer: next implementation depends on this evidence and no eligible
 disjoint independent task was admitted. #400 deferrals, marketplace gate, F23-last,
 approval limits and last working outputs remain unchanged.
+
+
+### F20 / #404 — candidate admission merged and isolated baseline copy started
+
+PR820 protected merge71a49462a13d2802cd891ff82d893cc07f2b8358 verified through plugin
+main/mergedPR/404OPEN and fetched tree3260be40ab2f8bad0f442209390112969ec98192,
+identical to reviewed documents. Exact fresh review remote3ed86adfcec6ab9e195af178b
+972ec12e040720f against c0f1910e827d4060c74829111e6c8fc76d05f01b found no blocking
+issues; all3canonical documents append-only.69local investigation/reference checks
+passed; requiredCI44837158649 Flutter136636365525/Python136636365996 every step/
+poststep SUCCESS and completed logs inspected. Claim/integration released. Existing
+100attachment limit preserved unrelated attachments; six owner edits/processes and
+last working outputs untouched. This is a prerequisite investigation, not new app
+copy or execution capability; fullF20/CE01 remains open.
+
+Coordinator manual start-to-merge1103.3s and CI observation wait632.2s; recorded review
+rework0 and one prerequisite outcome attestation. These are manual event measurements,
+not provider execution duration; actual escaped defects remain unknown despite zero
+recorded observations.
+
+Immediately claimed404-immutable-baseline-copy in the same registered worktree on
+verifiedmain, existing umbrella404. Scope owns the coherent typed request/result/
+history, trusted helper/native host and cancellation/recovery, conditional app store/
+controller, focused consent/history UI and workspace/proposal entry, native database
+prefix/quarantine, asset declaration, relevant regression/fixture/browser coverage,
+inventory and canonical documents. No eligible independent disjoint second writer;
+copy implementation depends on the newly verified admission evidence above.
+
+Started ImportedCommitCopyRequest and five regression cases. Pure intent revalidates
+the historical proposal record, binds full original commit/tree/manifest/count,
+context/full approved-plan/proposal/history digests, root, explicit canonical parent,
+trusted Python path and nonzero32hex attempt ID. Original selected path/mode/Git blob/
+SHA/byte count are retained in a bounded32KiB canonical request. It includes neither
+source text nor replacement, candidate fingerprint, execution command or destination
+rewrite. Source_verified remains false; appliesReplacement is false. Request creation
+alone does not prove current consent, live root/destination, full-copy eligibility or
+native effects. Store/controller/native validation remain mandatory.
+
+Unsafe/relative/noncanonical/control/invalid-Unicode/oversized/app-bundle destinations,
+destination within source (including case aliases), interpreter within source/output,
+and malformed/reused-zero attempt shapes are refused without normalizing. Runtime,
+destination, attempt, full plan and proposal changes alter identity. Five new plus12
+existing immutable-proposal/history/architecture tests passed17total; analyzer clean,
+focused format pass, regenerated inventory9PASS. Logs /tmp/asg404-immutable-baseline-
+copy-{start,analyze-start,inventory-start}.log. These are initial pure-model checks,
+not complete copy acceptance. Native helper/result/history/controller/UI and full
+workflow checks/builds/IAB/freshreview/requiredCI/merge remain pending in this active
+claim. No source/model/copy/helper operation was dispatched. FullF20/CE01/400,
+marketplacegate and F23-last remain unchanged.
+
+
+### F20 / #404 — baseline-copy components and boundary review checkpoint
+
+Owned404-immutable-baseline-copy now includes strict compact request restoration,
+request-bound prepared/refused observations, a trusted immutable-copy helper, native
+process-group host/stub/factory and asset declaration. Components remain unexposed
+until durable admission/recovery and UI are complete. Helper verifies original
+selected hashes plus complete path/mode/Git blob manifest and whole-copy fingerprint,
+preserves BOM/CRLF/binary bytes/modes and dirty source/index/HEAD/refs, refuses all-file
+overflow and retains incomplete/pending runs.11native helper fixtures passed. Seven
+request tests/five result tests/architecture/actual Mac CLI+native-host round trip
+passed14; nine host lifecycle tests plus actual native copy passed10. Analyzer clean.
+Actual component receipt /tmp/asg404-immutable-copy-native-components.json binds
+helper/request/result source hashes and confirms native host cleanup, original bytes,
+source/index/refs preservation and no replacement/model operation.
+
+Read-only boundary review found two concrete races. Stop during final async cleanup
+could return prepared success; the focused regression FAILED before correction,
+then host/actual-copy10PASS after a post-cleanup cancellation check. The late receipt
+is retained only as recovery evidence. Logs /tmp/asg404-immutable-copy-final-stop-
+{before,after}.log. Second, replacing destination in the call to the legacy preparation
+primitive can allocate in the replacement before final wrapper refusal. Regression
+/tmp/asg404-immutable-copy-handoff-before.log reproduces this; it remains intentionally
+red at this checkpoint. No production copy path is exposed or published.
+
+The integration owner is preserving this local checkpoint, then releasing/reclaiming
+an expanded same-feature track to add expected root/destination identities to the
+shared preparation primitive and its regressions, and register the new helper suite
+in existing required CI. No new action, dependency or protection change is needed.
+Durable pre-dispatch state, recovery acknowledgement, store/controller/UI and final
+full checks/builds/IAB/review/CI/verified merge remain pending. No app capability is
+marked Done; fullF20/CE01/400, marketplace gate and F23-last unchanged.
+
+
+### F20 / #404 — immutable-copy boundary fixes and verified component checkpoint, 21 November 2026 UTC
+
+Active same-feature ownership is404-immutable-baseline-copy-boundaries. The previous
+track was deliberately released after committing its owned checkpoint, then a clean
+registered worktree was reclaimed with expanded literal paths before editing the
+shared preparation primitive, its tests and required CI workflow. This did not mark
+the unmerged app workflow complete or bypass a dependency/ownership conflict.
+
+Both concrete read-only review findings are fixed and rechecked. Final-cleanup Stop
+regression FAILED before the native-host correction; after cleanup, cancellation
+now revokes current success while preserving the receipt only as recovery data.
+Destination handoff regression FAILED before the shared preparation correction:
+wrapper pins could previously be lost when the legacy routine reopened the path.
+Optional expected source/parent identities now carry still-held descriptor identities
+into preparation. Source is checked before/after metadata discovery, before allocation,
+blob writes and publication; expected destination is checked before allocation and
+its pinned descriptor remains protected by existing publication checks. Both swapped
+source and destination now refuse before output allocation, preserving replacement
+and original directories. Existing callers retain their default behavior. Reference
+logs /tmp/asg404-immutable-copy-final-stop-{before,after}.log and
+/tmp/asg404-immutable-copy-handoff-before.log; corrected suites below are green.
+
+Final component validation:14new helper fixtures,47shared preparation regressions
+and29immutable-reader regressions PASS90Python total. New cases include original
+BOM/CRLF/empty/binary bytes and executable modes, dirty/untracked/index/HEAD/refs
+preservation, selected identity changes, full-copy overflow, Git/bundle/link destination
+refusal, complete-copy mode/manifest changes, pending-marker tampering, Stop and
+retained incomplete output, pinned-input handoff races and actual isolated CLI.
+Fixture Git setup disables hooks and global/system configuration. The existing
+required Python CI job now explicitly runs the new helper suite, without changing
+permissions, action versions, protection or allowlist policy.
+
+FullFlutter2759PASS/13optinskips; focused request/result/host/actual-native/architecture
+23PASS; analyzer clean;674Dart files zero-change format; inventory9/product32PASS.
+Production web and isolated unsigned macOS build PASS; validation identifier
+com.arsinha.asg.immutablecopyvalidation, no installation/stable replacement/native GUI
+claim. All3packaged tools exactly match the tested source bytes. Actual Mac fixture
+runs both the isolated CLI and new native process-group host: distinct original-commit
+copies have equal full fingerprints, proposed replacement is absent, and dirty source,
+untracked/index/HEAD/refs remain unchanged. Owned helper cleanup confirmed; model
+requests0. /tmp/asg404-immutable-copy-components-receipt.json binds exact source inputs,
+packaged hashes, bundle identity and /tmp/asg404-immutable-copy-native-components.json.
+Logs /tmp/asg404-immutable-copy-{helper-final,legacy-final,observer-regression,
+components-final,analyze-final,full-components,format-components,inventory-components,
+product-components,web-components,native-components}.log.
+
+These remain local component/asset/native-protocol checks, not completed app copy
+acceptance. No new UI entry or automatic copy is exposed, no feature PR is published,
+and no action applies the proposal, executes repository commands, fetches, runs hooks,
+installs or alters owner outputs. Further app-layer changes invalidate their affected
+checks; full final workflow checks/builds/IAB/fresh PR review/requiredCI/verified merge
+remain mandatory before delivery. FullF20/CE01 remains open.
+
+Next work in this same active coherent workflow: durable pre-dispatch admission and
+recovery, then controller/UI. Before starting a helper, conditionally persist the exact
+attempt intent against frozen folder/requirements/current full approved plan/saved
+committed proposal/runtime/history inputs. A pending attempt after restart or any
+unconfirmed receipt/write must block automatic replay, including when a directory may
+have been published but its result was lost. Retain last successful copy and known
+run/destination separately from current success. Explicit recovery acknowledgement
+requires the operator to inspect output and establish old work has stopped; never
+kill a process from a saved PID or treat a fresh host's idle state as restart proof.
+An active cleanup-uncertain host keeps its shared lease and cannot be bypassed by a
+new controller. Late prepared/refused receipts are evidence only after Stop/disposal,
+not permission to promote success. Historical reopening never revives current plan
+approval or assumes saved paths/fingerprints still describe current disk. Bounded
+attempt retention must refuse overflow before effects rather than silently dropping
+unknown runs. Store/nativeDB quarantine, persistence races, lost confirmation,
+controller replacement, explicit destination consent and narrow/IAB recovery remain
+pending. #400 deferrals, marketplace gate and F23-last unchanged.
+
+
+### F20 / #404 — integrated immutable baseline-copy workflow, 21 November 2026 UTC
+
+Active same-feature track404-immutable-baseline-copy-boundaries now integrates the
+previously tested helper/native components with a durable bounded attempt journal,
+conditional store/controller and explicit consent/history/recovery screens. Only the
+original commit is copied; the proposed replacement is never applied and no imported
+repository check/build/command execution is offered. FullF20/CE01 remains open.
+
+The additive studio.importedCommitCopy.v1.<workspaceId> record retains up to16attempts
+and512KiB, refusing overflow before effects. Pending intent is durably committed before
+helper entry; six frozen app inputs bind folder registration, requirements, exact full
+approved plan, saved committed proposal, runtime selection and previous copy history.
+A durable zero-update fence follows admission and precedes dispatch. Prepared completion
+requires the same input snapshot; recovery-only CAS may retain an unconfirmed receipt
+against the exact pending journal after plan changes, never overwrite a competing
+winner or promote uncertain success. NativeDB validates root/key/schema and quarantines
+corrupt new history while preserving physical bytes and old working/committed histories.
+
+Pending or unconfirmed restart state blocks copies. Explicit operator inspection and
+confirmation that old work stopped records acknowledgement only, without replay,
+receipt promotion, approval revival, output deletion or killing from saved PIDs.
+Last prepared copy remains historical; saved paths/fingerprints do not certify current
+disk. An active cleanup-uncertain host retains shared source-worker ownership across
+controller replacement. Lost admission confirmation never dispatches; a completion
+that actually committed but lost confirmation is shown only after explicit durable
+history reload, not automatically replayed or silently erased.
+
+The focused UI offers original-copy review with full commit/tree/context/plan/proposal,
+trusted Python and canonical destination. The create dialog discloses all committed
+files including nonselected/binary data, complete-copy bounds, private fresh output,
+app-history retention and that replacement is not applied. Navigation pins the clicked
+saved proposal digest; stale/replaced dialogs cannot retarget consent. Folder picker
+lifecycle belongs to the view/controller boundary and late/disposed selection is ignored.
+Recovery requires an unchecked-by-default inspection assertion. Stop appears only for
+actual copy work, not local acknowledgement persistence. Workspace offers independent
+read-only copy history without source access or revived planning authority.
+
+App-layer boundary review found restored historical request digest labels alone could
+mask substituted commit/tree/manifest/selected metadata. Admission now rebuilds the full
+request from the current saved proposal and compares exact canonical intent before any
+pending write; six substitutions are rejected with zero journal effects. Review also
+caught an ineffective Stop control during acknowledgement; an active-copy flag and gated
+acknowledgement regression remove that misleading control. Earlier native cleanup-Stop
+and source/destination handoff fixes remain covered. Further read-only review found no
+additional blockers in journal, CAS, disposal, approval or route/dialog binding paths.
+
+58focused checks passed before two additional picker/route lifecycle regressions were
+added for the final full suite. Actual Mac flow now covers controller admission -> owned
+native group -> original copy -> durable completion -> database close/reopen -> read-only
+history with no new dispatch. Distinct copies have matching whole fingerprints and keep
+dirty source/untracked/index/HEAD/refs unchanged; old proposal data is retained. NativeDB
+admission-crash/reopen, corrupt record isolation and stale durable cache tests passed.
+Final full checks/builds/browser evidence and exact PR review/requiredCI/verified merge
+remain pending until recorded below. No unavailable-platform, stable installation,
+model-sharing, deployment or generalized CE01 acceptance is claimed. #400, marketplace
+gate and F23-last unchanged.
+
+Final immutable-copy validation — 21 November 2026 UTC: 2,789 Flutter tests passed
+with 13 opt-in skips; clean analysis and formatting, inventory9/product32,
+14 copy +47 legacy candidate +29 immutable observer Python fixtures passed.
+Production web and isolated unsigned macOS builds passed; packaged trusted tool
+bytes match source, bundle com.arsinha.asg.immutablecopyvalidation, no installation
+or native GUI launch. Runtime/build inputs were unchanged by the final route-only
+regression; the complete Flutter suite was rerun after that test. Actual native
+controller -> durable admission -> owned helper -> completed journal -> database
+reopen passed. IAB verified Cancel zero effects; success1call/2writes, Stop at
+2calls/4writes, explicit inspection acknowledgement2calls/5writes, and lost
+completion confirmation3calls/7writes retained recovery and the previous success.
+Read-only history added no effects and proposal bytes remained unchanged. Local
+receipt: /tmp/asg404-copy-final-receipt.json. No live model requests, deployment,
+stable replacement or unavailable-platform acceptance. Exact PR review, required
+CI and verified merge remain separate gates; F20/CE01/#404 remains open.

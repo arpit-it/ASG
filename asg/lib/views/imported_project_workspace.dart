@@ -6,6 +6,10 @@ import 'package:flutter/material.dart';
 import '../controllers/requirements_controller.dart';
 import '../models/project_inspection.dart';
 import 'imported_commit_proposal_screen.dart';
+import 'imported_commit_copy_screen.dart';
+import '../controllers/imported_commit_copy_controller.dart';
+import '../services/imported_commit_copy_store.dart';
+import '../services/imported_commit_copy_host_factory.dart';
 import '../controllers/imported_commit_proposal_controller.dart';
 import '../services/imported_commit_proposal_store.dart';
 import '../services/inspected_folder_store.dart';
@@ -42,6 +46,29 @@ class ImportedProjectWorkspace extends StatelessWidget {
   final ProjectInspection inspection;
   final RecordStorage records;
 
+  Widget _committedProposal(
+    BuildContext context,
+    ImportedCommitProposalController controller,
+  ) => ImportedCommitProposalScreen(
+    controller: controller,
+    onPrepareCopy: (saved) {
+      if (!context.mounted) return;
+      Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (_) => ImportedCommitCopyScreen(
+            controller: ImportedCommitCopyController(
+              root: inspection.root,
+              inspection: inspection,
+              expectedHistoryDigest: saved.digest,
+              store: ImportedCommitCopyStore(records),
+              host: createImportedCommitCopyHost(),
+            ),
+          ),
+        ),
+      );
+    },
+  );
+
   Widget _comparisonScreen(
     BuildContext context,
     ImportedSourceProposalController controller,
@@ -71,8 +98,9 @@ class ImportedProjectWorkspace extends StatelessWidget {
                       if (!context.mounted) return;
                       Navigator.of(context).push(
                         MaterialPageRoute<void>(
-                          builder: (_) => ImportedCommitProposalScreen(
-                            controller: ImportedCommitProposalController(
+                          builder: (_) => _committedProposal(
+                            context,
+                            ImportedCommitProposalController(
                               inspection: inspection,
                               context: captured,
                               store: ImportedCommitProposalStore(records),
@@ -186,8 +214,9 @@ class ImportedProjectWorkspace extends StatelessWidget {
         OutlinedButton.icon(
           onPressed: () => Navigator.of(context).push(
             MaterialPageRoute<void>(
-              builder: (_) => ImportedCommitProposalScreen(
-                controller: ImportedCommitProposalController.history(
+              builder: (_) => _committedProposal(
+                context,
+                ImportedCommitProposalController.history(
                   root: inspection.root,
                   store: ImportedCommitProposalStore(records),
                 ),
@@ -196,6 +225,21 @@ class ImportedProjectWorkspace extends StatelessWidget {
           ),
           icon: const Icon(Icons.history),
           label: const Text('Open saved committed-source comparison'),
+        ),
+        OutlinedButton.icon(
+          onPressed: () => Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) => ImportedCommitCopyScreen(
+                controller: ImportedCommitCopyController(
+                  root: inspection.root,
+                  store: ImportedCommitCopyStore(records),
+                  host: createImportedCommitCopyHost(),
+                ),
+              ),
+            ),
+          ),
+          icon: const Icon(Icons.history),
+          label: const Text('Open baseline-copy history'),
         ),
         ProjectSourcePanel(
           root: inspection.root,
